@@ -21,50 +21,38 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jsmol;
+package org.jsmol.test;
 
-import java.util.BitSet;
 import javax.vecmath.Point3f;
 
-public class JSmol {
 
-  public JSmol() {
-  	sayHello("JSmol contstructor");
-  	testEnum();
-  	sayHello("OK-JSmol");
-	}
+//import java.util.BitSet;
 
-  protected int testing = 22;
-	protected static BitSet bs = new BitSet();
-	static {
-		bs.set(5);
-		bs.set(6);
-	}
+//import javax.vecmath.Point3f;
 
-	protected static Point3f pt = new Point3f(2,3,4);
+//import org.openscience.jmol.app.jmolpanel.JmolPanel;
+//import org.openscience.jmol.app.jmolpanel.Splash;
+
+public class JSTest extends JSmol {
+
+	public static void main(String[] args) {	
+    JSTest jmolApp = new JSTest(args);
+    jmolApp.sayHello("...second time...");
+    jmolApp = new JSTest(args);
+    jmolApp.sayHello("...third time...");
+    jmolApp = new JSTest(args);
+  }
+	
+	private static Point3f pt2 = new Point3f(2,3,4);
   
-	protected void testStatic() {
-		sayHello("testing = " + testing + " pt = " + pt + " bs = " + bs);
-		bs.clear(5);
-		bs.set(11);
-	}
-
-
-	//private String test = EnumTest.LOOP.toString();
-  // THIS DOES NOT WORK:  
-	private enum TT {A, B, C, D}; // -- bug in Java2JavaScript compiler
-  private void testEnum() {  	
-		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE + "; TT.A = " + TT.A);
-	}
-
-	void sayHello(String s) {
-		/**
-		 * @j2sNative alert("Hello, JavaScript -- " + s);
-		 */
-		{
-			System.out.println("Hello Java -- " + s);
-		}
-
+	private JSTest(String[] args) {
+  	super();
+  	sayHello("JSTest contstructor -- after super()");
+  	testStatic();
+		bs.set((int)(12 + pt2.x));
+		pt.x = -1;
+  	sayHello("OK-JSTest pt2.x = " + pt2);
+		pt2.x -= 1;
 	}
 
 }
