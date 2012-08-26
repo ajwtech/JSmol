@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jsmol;
+package org.jsmol.test;
 
 public enum EnumTest {
   ONCE, LOOP, PALINDROME;  
