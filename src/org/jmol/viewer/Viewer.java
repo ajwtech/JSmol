@@ -4200,9 +4200,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isAntialiased() {
     return antialiasDisplay;
   }
-
+/*
   private void render() {
-/*  	
     if (!refreshing && !creatingImage)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
@@ -4212,10 +4211,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       repaintManager.render(g3d, modelSet, false);
       transformManager.setAntialias(antialiasDisplay);
     }
-*/    
-    
   }
-/*
+*//*
   @SuppressWarnings("incomplete-switch")
   private Object getStereoImage(EnumStereoMode stereoMode) {
     g3d.beginRendering(transformManager.getStereoRotationMatrix(true));
@@ -10550,7 +10547,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param height
    * @return  "OK" or error
    */
-  String createSceneSet(String sceneFile, String type, int width, int height) {
+/*  String createSceneSet(String sceneFile, String type, int width, int height) {
     
     String script0 = getFileAsString(sceneFile);
     if (script0 == null)
@@ -10602,5 +10599,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     return "OK " + nFiles + " files created";
   }
-
+*/
 }
