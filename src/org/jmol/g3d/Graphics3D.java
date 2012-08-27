@@ -4,7 +4,6 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.ApiPlatform;
@@ -536,10 +535,6 @@ public class Graphics3D {
 		return false;
 	}
 
-  public static void getHermiteList(int tension, Tuple3f s0, Tuple3f s1, Tuple3f s2, Tuple3f s3, Tuple3f s4, Tuple3f[] list, int index0, int n) {
-    Hermite3D.getHermiteList(tension, s0, s1, s2, s3, s4, list, index0, n);
-  }
-
 	public boolean isAntialiased() {
 		// TODO Auto-generated method stub
 		return false;
@@ -599,6 +594,11 @@ public class Graphics3D {
 			boolean zShadeEnabled, int zSlabValue, int zDepthValue) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean isDisplayAntialiased() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

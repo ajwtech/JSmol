@@ -27,13 +27,13 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Hashtable;
+//import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Escape;
+//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;

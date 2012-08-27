@@ -3515,16 +3515,16 @@ if (pt >= 0) {
 option = strMode.substring (pt + 1);
 strMode = strMode.substring (0, pt);
 }pickingMode = org.jmol.viewer.ActionManager.getPickingMode (strMode);
-}if (pickingMode < 0) pickingMode = 0;
+}if (pickingMode < 0) pickingMode = 1;
 this.actionManager.setPickingMode (pickingMode);
 this.global.setParameterValue ("picking", org.jmol.viewer.ActionManager.getPickingModeName (this.actionManager.getAtomPickingMode ()));
 if (option == null || option.length == 0) return ;
 option = Character.toUpperCase (option.charAt (0)) + (option.length == 1 ? "" : option.substring (1, 2));
 switch (pickingMode) {
-case -14:
+case 32:
 this.setAtomPickingOption (option);
 break;
-case -13:
+case 33:
 this.setBondPickingOption (option);
 break;
 default:
@@ -4829,8 +4829,8 @@ if (doRepaint) this.setTainted (true);
 Clazz.defineMethod (c$, "setModelKitMode", 
 ($fz = function (value) {
 if (value || this.global.modelKitMode) {
-this.setPickingMode (null, value ? -13 : 0);
-this.setPickingMode (null, value ? -14 : 0);
+this.setPickingMode (null, value ? 33 : 1);
+this.setPickingMode (null, value ? 32 : 1);
 }var isChange = (this.global.modelKitMode != value);
 this.global.modelKitMode = value;
 this.highlight (null);
@@ -5712,10 +5712,10 @@ Clazz.defineMethod (c$, "checkObjectDragged",
 function (prevX, prevY, x, y, action) {
 var iShape = 0;
 switch (this.getPickingMode ()) {
-case -11:
+case 2:
 iShape = 5;
 break;
-case -12:
+case 4:
 iShape = 22;
 break;
 }

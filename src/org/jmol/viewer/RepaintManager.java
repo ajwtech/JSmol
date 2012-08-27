@@ -23,13 +23,13 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.JmolRendererInterface;
+//import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
-import org.jmol.util.Rectangle;
+//import org.jmol.util.Rectangle;
 
 import java.util.BitSet;
 
