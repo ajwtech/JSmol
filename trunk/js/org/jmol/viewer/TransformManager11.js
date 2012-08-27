@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["org.jmol.viewer.TransformManager"], "org.jmol.viewer.TransformManager11", ["java.lang.Float", "$.Thread", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.g3d.Graphics3D", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.viewer.TransformManager"], "org.jmol.viewer.TransformManager11", ["java.lang.Float", "$.Thread", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.util.Escape", "$.Hermite", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.navigationSlabOffset = 0;
 this.zoomFactor = 3.4028235E38;
@@ -534,10 +534,10 @@ iNext = Math.min (i + 1, nSegments) + indexStart;
 iNext2 = Math.min (i + 2, nSegments) + indexStart;
 iNext3 = Math.min (i + 3, nSegments) + indexStart;
 if (isPathGuide) {
-org.jmol.g3d.Graphics3D.getHermiteList (7, pathGuide[iPrev][0], pathGuide[pt][0], pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0], points, i * nPer, nPer + 1);
-org.jmol.g3d.Graphics3D.getHermiteList (7, pathGuide[iPrev][1], pathGuide[pt][1], pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1], pointGuides, i * nPer, nPer + 1);
+org.jmol.util.Hermite.getHermiteList (7, pathGuide[iPrev][0], pathGuide[pt][0], pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0], points, i * nPer, nPer + 1);
+org.jmol.util.Hermite.getHermiteList (7, pathGuide[iPrev][1], pathGuide[pt][1], pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1], pointGuides, i * nPer, nPer + 1);
 } else {
-org.jmol.g3d.Graphics3D.getHermiteList (7, path[iPrev], path[pt], path[iNext], path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
+org.jmol.util.Hermite.getHermiteList (7, path[iPrev], path[pt], path[iNext], path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
 }}
 var totalSteps = nSteps;
 this.viewer.setInMotion (true);

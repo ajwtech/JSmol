@@ -378,7 +378,7 @@ public class GVector implements java.io.Serializable, Cloneable {
       */  
     public final void sub(GVector vector1, GVector vector2) 
 	{
-	    int i,l;
+	    int i;//,l;
 	    
 
 	if( vector1.length != vector2.length ) 

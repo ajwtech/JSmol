@@ -45,9 +45,7 @@ function (text) {
 return this.apiPlatform.fontStringWidth (this.fontMetrics, text);
 }, "~S");
 Clazz.defineStatics (c$,
-"FONT_ALLOCATION_UNIT", 8,
-"fontkeyCount", 1,
-"fontkeys",  Clazz.newArray (8, 0));
+"FONT_ALLOCATION_UNIT", 8);
 c$.font3ds = c$.prototype.font3ds =  new Array (8);
 Clazz.defineStatics (c$,
 "FONT_FACE_SANS", 0,

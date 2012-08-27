@@ -36,7 +36,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
-import org.jmol.api.JmolRendererInterface;
+//import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 

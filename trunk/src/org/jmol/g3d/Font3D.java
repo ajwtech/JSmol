@@ -71,8 +71,8 @@ final public class Font3D {
   ////////////////////////////////////////////////////////////////
   
   private final static int FONT_ALLOCATION_UNIT = 8;
-  private static int fontkeyCount = 1;
-  private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
+  //private static int fontkeyCount = 1;
+  //private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 /*
   static synchronized Font3D getFont3D(int fontface, int fontstyle,

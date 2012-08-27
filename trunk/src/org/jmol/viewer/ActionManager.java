@@ -2,14 +2,26 @@ package org.jmol.viewer;
 
 import org.jmol.util.Rectangle;
 
-class ActionManager {
+public class ActionManager {
 
-	public static final int PICKING_IDENTIFY = 0;
-	public static final int PICKINGSTYLE_SELECT_JMOL = 0;
-	public static final int PICKING_LABEL = -11;
-	public static final int PICKING_DRAW = -12;
-	public static final int PICKING_ASSIGN_BOND = -13;
-	public static final int PICKING_ASSIGN_ATOM = -14;
+	// just placeholders here
+	
+  public final static int PICKING_OFF       = 0;
+  public final static int PICKING_IDENTIFY  = 1;
+  public final static int PICKING_LABEL     = 2;
+  public final static int PICKING_DRAW      = 4;
+  public final static int PICKING_ASSIGN_ATOM      = 32;
+  public final static int PICKING_ASSIGN_BOND      = 33;
+
+  public final static int PICKINGSTYLE_SELECT_JMOL = 0;
+  public final static int PICKINGSTYLE_SELECT_CHIME = 0;
+  public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
+  public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
+  public final static int PICKINGSTYLE_SELECT_DRAG = 3;
+  public final static int PICKINGSTYLE_MEASURE_ON = 4;
+  public final static int PICKINGSTYLE_MEASURE_OFF = 5;
+
+  public final static int ACTION_pickIsosurface = 38;
 
 	public static int getPickingMode(String strMode) {
 		// TODO Auto-generated method stub

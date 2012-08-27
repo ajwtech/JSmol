@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.g3d");
-Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.g3d.Graphics3D", ["java.lang.Float", "$.StringBuffer", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "org.jmol.g3d.Colix3D", "$.Hermite3D", "$.Sphere3D", "org.jmol.util.ColorUtil", "$.Escape", "$.Logger", "$.Normix", "$.Parser", "$.Shader"], function () {
+Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.g3d.Graphics3D", ["java.lang.Float", "$.StringBuffer", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "org.jmol.g3d.Colix3D", "$.Sphere3D", "org.jmol.util.ColorUtil", "$.Escape", "$.Logger", "$.Normix", "$.Parser", "$.Shader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.normix3d = null;
 this.inGreyscaleMode = false;
@@ -337,10 +337,6 @@ Clazz.defineMethod (c$, "isClippedZ",
 function (screenZ) {
 return false;
 }, "~N");
-c$.getHermiteList = Clazz.defineMethod (c$, "getHermiteList", 
-function (tension, s0, s1, s2, s3, s4, list, index0, n) {
-org.jmol.g3d.Hermite3D.getHermiteList (tension, s0, s1, s2, s3, s4, list, index0, n);
-}, "~N,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,~A,~N,~N");
 Clazz.defineMethod (c$, "isAntialiased", 
 function () {
 return false;
@@ -382,6 +378,10 @@ function (argb) {
 Clazz.defineMethod (c$, "setSlabAndDepthValues", 
 function (slabValue, depthValue, zShadeEnabled, zSlabValue, zDepthValue) {
 }, "~N,~N,~B,~N,~N");
+Clazz.defineMethod (c$, "isDisplayAntialiased", 
+function () {
+return false;
+});
 Clazz.defineStatics (c$,
 "NORMIX_NULL", 9999,
 "EXPORT_NOT", 0,
