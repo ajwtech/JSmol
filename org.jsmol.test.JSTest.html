@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-<title>org.jsmol.JSTest</title>
+<title>org.jsmol.test.JSTest</title>
 <style text="text/css">
 div.powered {
 	position:absolute;
@@ -36,7 +36,7 @@ span.alaa-icon {
 <body>
 <!-- A Link An Application (ALAA) -->
 <div class="powered">Powered by <a href="http://java2script.org/">Java2Script</a></div>
-<a class="alaa" title="Launch org.jsmol.JSTest" href="javascript:if(a='org.jsmol.JSTest@bin',window['ClazzLoader']!=null)$w$(a);else{var d=document,t='onreadystatechange',x=d.createElement('SCRIPT'),f=function(){var s=this.readyState;if(s==null||s=='loaded'||s=='complete'){$w$(a);}};x.src='../../eclipse/plugins/net.sf.j2s.lib_2.0.0/j2slib/j2slib.z.js';(typeof x[t]=='undefined')?x.onload=f:x[t]=f;d.getElementsByTagName('HEAD')[0].appendChild(x);void(0);}"><span class="alaa-icon"></span>org.jsmol.JSTest</a>
+<a class="alaa" title="Launch org.jsmol.test.JSTest" href="javascript:if(a='org.jsmol.test.JSTest@bin',window['ClazzLoader']!=null)$w$(a);else{var d=document,t='onreadystatechange',x=d.createElement('SCRIPT'),f=function(){var s=this.readyState;if(s==null||s=='loaded'||s=='complete'){$w$(a);}};x.src='../../eclipse/plugins/net.sf.j2s.lib_2.0.0/j2slib/j2slib.z.js';(typeof x[t]=='undefined')?x.onload=f:x[t]=f;d.getElementsByTagName('HEAD')[0].appendChild(x);void(0);}"><span class="alaa-icon"></span>org.jsmol.test.JSTest</a>
 
 <script type="text/javascript">
 window["j2s.script.debugging"] = true;
@@ -54,8 +54,9 @@ window["j2s.lib"] = {
 		var j2sBase = window["j2s.lib"].j2sBase;
 		ClazzLoader.packageClasspath ("java", j2sBase, true);
 		ClazzLoader.setPrimaryFolder ("bin");
-		ClazzLoader.loadClass ("org.jsmol.JSTest", function () {
-			org.jsmol.JSTest.main([]);
+		ClazzLoader.packageClasspath (["org.jmol.jvxl.readers", "org.jmol.minimize.forcefield", "org.jmol.quantum", "$.awt", "$.applet", "org.jmol.adapter.readers.molxyz", "org.jmol.symmetry", "$.modelkit", "$.bspt", "org.jmol.adapter.readers.xtal", "org.jmol.viewer", "$.atomdata", "org.jmol.export.history", "org.jsmol.test", "org.jmol.i18n", "javax.util", "org.jmol.modelset", "$.multitouch", "org.jmol.jvxl.calc", "org.jmol.minimize", "$.modelsetbio", "org.jmol.multitouch.jni", "javax.vecmath", "org.jmol.util", "$.shapespecial", "$.g3d", "$.popup", "java.util", "org.jmol.geodesic", "org.jmol.adapter.readers.simple", "org.jmol.export", "$.api", "org.jmol.adapter.smarter", "org.jmol.smiles", "$.constant", "org.jmol.adapter.readers.xml", "$.cifpdb", "org.jmol.multitouch.sparshui", "org.jmol.jvxl.data", "org.jmol.adapter.readers.more", "org.jmol.jvxl.api", "org.jmol.console", "org.jmol.adapter.readers.quantum", "org.jmol.script", "$.shape", "$.shapebio", "org.jsmol", "org.jmol.viewer.binding", "org.jmol.export.image", "org.jmol.shapesurface", "org.jmol.export.dialog"], "bin/");
+		ClazzLoader.loadClass ("org.jsmol.test.JSTest", function () {
+			org.jsmol.test.JSTest.main([]);
 		});
 	}
 };
