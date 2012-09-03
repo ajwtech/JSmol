@@ -52,9 +52,9 @@ public class JSmol {
 
 	//private String test = EnumTest.LOOP.toString();
   // THIS DOES NOT WORK:  
-	//private enum TT {A, B, C, D}; // -- bug in Java2JavaScript compiler
+	private enum TT {A, B, C, D}; // -- bug in Java2JavaScript compiler
   private void testEnum() {  	
-		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE );//+ "; TT.A = " + TT.A);
+		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE + "; TT.A = " + TT.A);
 	}
 
 	void sayHello(String s) {

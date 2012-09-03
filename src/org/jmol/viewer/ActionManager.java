@@ -133,4 +133,35 @@ public class ActionManager {
 		
 	}
 
+	public void mouseAction(int clicked, long time, int x, int y, int i,
+			int modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyPressed(int keyCode, int modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyReleased(int keyCode) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseEntered(long time, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(long time, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
