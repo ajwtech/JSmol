@@ -25,6 +25,9 @@ package org.jsmol.test;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
+
 
 //import java.util.BitSet;
 
@@ -47,12 +50,27 @@ public class JSTest extends JSmol {
   
 	private JSTest(String[] args) {
   	super();
-  	sayHello("JSTest contstructor -- after super()");
+  	System.out.println("testing123");
+  	sayHello("JSTest constructor -- after super()");
   	testStatic();
 		bs.set((int)(12 + pt2.x));
 		pt.x = -1;
   	sayHello("OK-JSTest pt2.x = " + pt2);
 		pt2.x -= 1;
+		TestInner ti = new TestInner();
+		ti.say("ok - ti");
+		Logger.info("test log info");
+		Logger.debug("test log debug");
+		Logger.error("test log error");
+		Logger.info(testArray[3]);
+		Logger.info(JmolConstants.getShapeClassName(JmolConstants.SHAPE_HOVER));
+	}
+	
+	static String[] testArray = {"a", "b", "c", "d"};
+	class TestInner {
+		void say(String msg) {
+			sayHello(msg);
+		}
 	}
 
 }
