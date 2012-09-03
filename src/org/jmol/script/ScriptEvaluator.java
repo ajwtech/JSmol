@@ -10890,8 +10890,6 @@ public class ScriptEvaluator {
     if (xyz != Token.x && xyz != Token.y && xyz != Token.z)
       error(ERROR_axisExpected);
     float amount = floatParameter(++i);
-    if (amount == 0)
-      return;
     char type;
     switch (tokAt(++i)) {
     case Token.nada:
@@ -10902,6 +10900,8 @@ public class ScriptEvaluator {
     default:
       type = (optParameterAsString(i).toLowerCase() + '\0').charAt(0);
     }
+    if (amount == 0 && type != '\0')
+      return;
     iToken = (type == '\0' ? 2 : 3);
     bs = (isSelected ? viewer.getSelectionSet(false)
         : iToken + 1 < statementLength ? atomExpression(++iToken) : null);
