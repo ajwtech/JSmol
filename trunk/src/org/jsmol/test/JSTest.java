@@ -28,14 +28,6 @@ import javax.vecmath.Point3f;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
-
-//import java.util.BitSet;
-
-//import javax.vecmath.Point3f;
-
-//import org.openscience.jmol.app.jmolpanel.JmolPanel;
-//import org.openscience.jmol.app.jmolpanel.Splash;
-
 public class JSTest extends JSmol {
 
 	public static void main(String[] args) {	
