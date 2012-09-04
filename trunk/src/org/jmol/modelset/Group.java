@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2011-11-12 15:53:54 -0600 (Sat, 12 Nov 2011) $
- * $Revision: 16460 $
+ * $Date: 2012-09-03 08:11:54 -0500 (Mon, 03 Sep 2012) $
+ * $Revision: 17495 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -28,7 +28,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.J2SRequireImport;
+import org.jmol.util.J2SRequireImport;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-06-12 00:48:40 -0500 (Tue, 12 Jun 2012) $
- * $Revision: 17284 $
+ * $Date: 2012-08-31 10:35:29 -0500 (Fri, 31 Aug 2012) $
+ * $Revision: 17493 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -86,7 +86,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener,
                                           ApiPlatform implementedPlatform) {
-
     return Viewer.allocateViewer(container, jmolAdapter, htmlName,
         documentBase, codeBase, commandOptions, statusListener,
         implementedPlatform);
@@ -99,7 +98,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
                                           String commandOptions, 
                                           JmolStatusListener statusListener) {
     
-    return Viewer.allocateViewer(container, jmolAdapter,
+    return allocateViewer(container, jmolAdapter,
         htmlName, documentBase, codeBase, commandOptions, statusListener, null);
   }
 
@@ -488,7 +487,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public JmolAdapter getModelAdapter();
 
-  abstract public void openFileAsynchronously(String fileName);
+  abstract public void openFileAsynchronously(String fileName, boolean pdbCartoons);
+  public void openFileAsynchronously(String fileName) {
+    openFileAsynchronously(fileName, false);    
+  }
+  
   abstract public Object getFileAsBytes(String fullPathName, OutputStream os);
 
   abstract public String getErrorMessage();
@@ -544,6 +547,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
 
-
+  abstract public void cacheFile(String fileName, byte[] bytes);
+  
 }
 

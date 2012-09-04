@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-02-28 22:41:24 -0600 (Tue, 28 Feb 2012) $
- * $Revision: 16839 $
+ * $Date: 2012-09-03 19:02:08 -0500 (Mon, 03 Sep 2012) $
+ * $Revision: 17502 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -23,13 +23,15 @@
  */
 package org.jmol.viewer;
 
-//import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Graphics3D;
+import org.jmol.api.JmolRendererInterface;
+//import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
+//import org.jmol.render.ShapeRenderer;
 import org.jmol.shape.Shape;
-import org.jmol.shape.ShapeRenderer;
+import org.jmol.util.Colix;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
-//import org.jmol.util.Rectangle;
+import org.jmol.util.Rectangle;
 
 import java.util.BitSet;
 
@@ -39,7 +41,7 @@ class RepaintManager {
 
   private Viewer viewer;
   private ShapeManager shapeManager;
-  private ShapeRenderer[] renderers;
+  //private ShapeRenderer[] renderers;
   
   RepaintManager(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
@@ -105,19 +107,19 @@ class RepaintManager {
   /////////// renderer management ///////////
   
   void clear(int iShape) {
-    if (renderers ==  null)
+/*    if (renderers ==  null)
       return;
     if (iShape >= 0)
       renderers[iShape] = null;
     else
       for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
         renderers[i] = null;
-  }
-
+*/  }
+/*
   private ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
-    String className = JmolConstants.getShapeClassName(shapeID) + "Renderer";
+    String className = JmolConstants.getShapeClassName(shapeID, true) + "Renderer";
     try {
       Class<?> shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
@@ -128,20 +130,22 @@ class RepaintManager {
       return null;
     }
   }
-
+*/
   /////////// actual rendering ///////////
   
   private boolean logTime;
   
-  void render(Graphics3D g3d, ModelSet modelSet, boolean isFirstPass) {
+  void render(GData gdata, ModelSet modelSet, boolean isFirstPass) {
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
     logTime = false;//viewer.getTestFlag(2);
     if (logTime)
       Logger.startTimer();
     viewer.finalizeTransformParameters();
+/*    
     try {
-      g3d.renderBackground();
+      Graphics3D g3d = (Graphics3D) gdata;
+      g3d.renderBackground(null);
       if (isFirstPass)  {
         int[] minMax = shapeManager.transformAtoms(bsAtoms, ptOffset);
         bsAtoms = null;
@@ -157,17 +161,18 @@ class RepaintManager {
           continue;
         getRenderer(i, g3d).render(g3d, modelSet, shape);
         if (logTime)
-          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i));
+          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i, false));
       }
     } catch (Exception e) {
       e.printStackTrace();
       Logger.error("rendering error? ");
     }
+*/    
   }
 
-/*  String renderExport(String type, Graphics3D g3d, ModelSet modelSet,
+  String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
-
+/*
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK;
@@ -185,15 +190,17 @@ class RepaintManager {
       Logger.error("Cannot export " + type);
       return null;
     }
-    g3dExport.renderBackground();
+    g3dExport.renderBackground(g3dExport);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapeManager.getShape(i);
       if (shape != null)
-        getRenderer(i, g3d).render(g3dExport, modelSet, shape);
+        getRenderer(i, (Graphics3D) gdata).render(g3dExport, modelSet, shape);
     }
     return g3dExport.finalizeOutput();
+*/  
+    return "";	
   }
-*/
+
   /////////// Allow during-rendering mouse operations ///////////
   
   private BitSet bsAtoms;
@@ -219,14 +226,14 @@ class RepaintManager {
   }
   
   /////////// special rendering ///////////
-  
+/*  
   private void renderCrossHairs(Graphics3D g3d, int[] minMax) {
-/*    // this is the square and crosshairs for the navigator
+    // this is the square and crosshairs for the navigator
     Point3f navOffset = new Point3f(viewer.getNavigationOffset());
     boolean antialiased = g3d.isAntialiased();
     float navDepth = viewer.getNavigationDepthPercent();
-    g3d.setColix(navDepth < 0 ? Graphics3D.RED
-        : navDepth > 100 ? Graphics3D.GREEN : Graphics3D.GOLD);
+    g3d.setColix(navDepth < 0 ? Colix.RED
+        : navDepth > 100 ? Colix.GREEN : Colix.GOLD);
     int x = Math.max(Math.min(viewer.getScreenWidth(), (int) navOffset.x), 0);
     int y = Math.max(Math.min(viewer.getScreenHeight(), (int) navOffset.y), 0);
     int z = (int) navOffset.z + 1;
@@ -239,34 +246,24 @@ class RepaintManager {
     g3d.drawRect(x - off, y - off, z, 0, h, h);
     off = h;
     h = h >> 1;
-    g3d.setColix(minMax[1] < navOffset.x ? Graphics3D.YELLOW
-            : Graphics3D.GREEN);
+    g3d.setColix(minMax[1] < navOffset.x ? Colix.YELLOW
+            : Colix.GREEN);
     g3d.drawRect(x - off, y, z, 0, h, w);
-    g3d.setColix(minMax[0] > navOffset.x ? Graphics3D.YELLOW
-            : Graphics3D.GREEN);
+    g3d.setColix(minMax[0] > navOffset.x ? Colix.YELLOW
+            : Colix.GREEN);
     g3d.drawRect(x + h, y, z, 0, h, w);
-    g3d.setColix(minMax[3] < navOffset.y ? Graphics3D.YELLOW
-            : Graphics3D.GREEN);
+    g3d.setColix(minMax[3] < navOffset.y ? Colix.YELLOW
+            : Colix.GREEN);
     g3d.drawRect(x, y - off, z, 0, w, h);
-    g3d.setColix(minMax[2] > navOffset.y ? Graphics3D.YELLOW
-            : Graphics3D.GREEN);
+    g3d.setColix(minMax[2] > navOffset.y ? Colix.YELLOW
+            : Colix.GREEN);
     g3d.drawRect(x, y + h, z, 0, w, h);
-*/
   }
 
   private void renderSelectionRubberBand(Graphics3D g3d) {
-  	
-  /*	
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
-*/
   }
-
-	public String renderExport(String type, Graphics3D g3d, ModelSet modelSet,
-			String fName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-  
+*/  
 }

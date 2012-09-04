@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-06-10 13:54:48 -0500 (Sun, 10 Jun 2012) $
- * $Revision: 17269 $
+ * $Date: 2012-09-03 08:11:54 -0500 (Mon, 03 Sep 2012) $
+ * $Revision: 17495 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
@@ -382,7 +383,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * <p>This method may not return <code>null</code>.
    * @param atomSetCollection The client file
    * @return An AtomIterator
-   * @see AtomIterator
+   * @see JmolAdapterAtomIterator
    */
   abstract public JmolAdapterAtomIterator getAtomIterator(Object atomSetCollection);
   /**
@@ -393,7 +394,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * rebonding code to build bonds between atoms.
    * @param atomSetCollection The client file
    * @return A BondIterator or <code>null</code>
-   * @see BondIterator
+   * @see JmolAdapterBondIterator
    */
   abstract public JmolAdapterBondIterator getBondIterator(Object atomSetCollection);
 

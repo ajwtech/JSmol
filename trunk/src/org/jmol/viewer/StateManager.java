@@ -35,7 +35,6 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.ScriptFunction;
@@ -44,6 +43,7 @@ import org.jmol.script.Token;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -560,7 +560,7 @@ public class StateManager {
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-        + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
+        + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
@@ -701,15 +701,15 @@ public class StateManager {
       // also initialized within the managers. 
 
       setParameterValue("depth", 0);                 // maintained by TransformManager
-      // setParameterValue("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
+      setParameterValue("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
       setParameterValue("hideNotSelected", false); //maintained by the selectionManager
       setParameterValue("hoverLabel", ""); // maintained by the Hover shape
       setParameterValue("isKiosk", viewer.isKiosk()); // maintained by Viewer
       setParameterValue("logFile", viewer.getLogFile()); // maintained by Viewer
       setParameterValue("logLevel", Logger.getLogLevel());
-      //setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
-      //setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
-      //setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 
+      setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
+      setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
+      setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 
       setParameterValue("navigationDepth", 0);   // maintained by TransformManager
       setParameterValue("navigationSlab", 0);    // maintained by TransformManager
       setParameterValue("navX", 0);              // maintained by TransformManager
@@ -813,6 +813,7 @@ public class StateManager {
       setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
       setParameterValue("defaultDirectory", defaultDirectory);
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultDropScript", defaultDropScript);
       setParameterValue("defaultLabelPDB", defaultLabelPDB);
       setParameterValue("defaultLabelXYZ", defaultLabelXYZ);
       setParameterValue("defaultLoadFilter", defaultLoadFilter);
@@ -975,7 +976,7 @@ public class StateManager {
       setParameterValue("zSlab", zSlab);  
     }
 
-    //lighting (see Graphics3D.Shade3D
+    //lighting (see GData.Shade3D
 
     int ambientPercent = 45;
     int diffusePercent = 84;
@@ -1010,6 +1011,7 @@ public class StateManager {
     final Point3f ptDefaultLattice = new Point3f();
     String defaultLoadScript = "";
     String defaultLoadFilter = "";
+    String defaultDropScript = "zap; load %FILE;if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}";
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;
@@ -1319,18 +1321,18 @@ public class StateManager {
 
     String getSpecularState() {
       StringBuffer str = new StringBuffer("");
-      appendCmd(str, "set ambientPercent " + Graphics3D.getAmbientPercent());
-      appendCmd(str, "set diffusePercent " + Graphics3D.getDiffusePercent());
-      appendCmd(str, "set specular " + Graphics3D.getSpecular());
-      appendCmd(str, "set specularPercent " + Graphics3D.getSpecularPercent());
-      appendCmd(str, "set specularPower " + Graphics3D.getSpecularPower());
-      int se = Graphics3D.getSpecularExponent();
-      int pe = Graphics3D.getPhongExponent();
+      appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
+      appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
+      appendCmd(str, "set specular " + GData.getSpecular());
+      appendCmd(str, "set specularPercent " + GData.getSpecularPercent());
+      appendCmd(str, "set specularPower " + GData.getSpecularPower());
+      int se = GData.getSpecularExponent();
+      int pe = GData.getPhongExponent();
       if (Math.pow(2, se) == pe)
         appendCmd(str, "set specularExponent " + se);
       else
         appendCmd(str, "set phongExponent " + pe);        
-      appendCmd(str, "set zShadePower " + Graphics3D.getZShadePower());
+      appendCmd(str, "set zShadePower " + GData.getZShadePower());
       return str.toString();
     }
 
@@ -1505,9 +1507,15 @@ public class StateManager {
     Object getParameter(String name, boolean asVariable) {
       name = name.toLowerCase();
       if (name.equals("_memory")) {
-        Runtime runtime = Runtime.getRuntime();
-        float bTotal = runtime.totalMemory() / 1000000f;
-        float bFree = runtime.freeMemory() / 1000000f;
+      	float bTotal = 0;
+      	float bFree = 0;
+      	try {
+          Runtime runtime = Runtime.getRuntime();
+          bTotal = runtime.totalMemory() / 1000000f;
+          bFree = runtime.freeMemory() / 1000000f;
+        } catch (Throwable e) {
+      		// Runtime absent (JavaScript)
+      	}
         String value = TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
             + TextFormat.formatDecimal(bTotal, 1);
         htNonbooleanParameterValues.put("_memory", value);

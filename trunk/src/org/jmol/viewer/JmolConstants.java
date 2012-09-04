@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-08-25 18:40:08 -0500 (Sat, 25 Aug 2012) $
- * $Revision: 17477 $
+ * $Date: 2012-09-03 19:02:08 -0500 (Mon, 03 Sep 2012) $
+ * $Revision: 17502 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -28,9 +28,9 @@ import org.jmol.script.Token;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.J2SRequireImport;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-08-25 18:40:08 -0500 (Sat, 25 Aug 2012) $"
+        // $Date: 2012-09-03 19:02:08 -0500 (Mon, 03 Sep 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do
@@ -1459,10 +1459,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return -1;
   }
   
-  public final static String getShapeClassName(int shapeID) {
+  public final static String getShapeClassName(int shapeID, boolean isRenderer) {
     if (shapeID < 0)
       return shapeClassBases[~shapeID];
-    return CLASSBASE_OPTIONS + "shape" 
+    return CLASSBASE_OPTIONS + (isRenderer ? "render" : "shape") 
         + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
             ? "bio."
         : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 

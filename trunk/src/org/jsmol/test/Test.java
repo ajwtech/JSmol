@@ -15,6 +15,7 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
+import org.jmol.viewer.Viewer;
 
 public class Test {
 
@@ -30,8 +31,10 @@ public class Test {
 
 	private static AtomSetCollection atomSetCollection;
 
+  private JmolViewer viewer;
+  private static JmolAdapter adapter;
 
-	public Test() {
+  public Test() {
 		adapter = new SmarterJmolAdapter();
 		BufferedReader reader = getBufferedReaderForString(strXyzHOH);
 		Hashtable<String, Object> htParams = new Hashtable<String, Object>();
@@ -41,8 +44,11 @@ public class Test {
 			ret = adapter.getAtomSetCollection(ret);
 		if (!(ret instanceof String))
 			atomSetCollection = (AtomSetCollection) ret;
-		/*
-		 * viewer = JmolViewer.allocateViewer(this, adapter); JFrame newFrame = new
+		String commandOptions = "-ionj \"load 1crn.pdb\"";
+		viewer = Viewer.allocateViewer(null, adapter, 
+        null, null, null, commandOptions, null);
+		/* JmolViewer.allocateViewer(this, adapter);
+		 * JFrame newFrame = new
 		 * JFrame(); newFrame.getContentPane().add(this); newFrame.setSize(300,
 		 * 300); newFrame.setVisible(true); newFrame.addWindowListener(new
 		 * AppCloser());
@@ -60,8 +66,6 @@ public class Test {
   		"H  0.76923955 -0.59357141 0.0\n" +
   		"H -0.76923955 -0.59357141 0.0\n";
 
-  private JmolViewer viewer;
-  private static JmolAdapter adapter;
   //private Dimension currentSize = new Dimension();
 /*
   @Override

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-03-21 11:31:10 -0500 (Wed, 21 Mar 2012) $
- * $Revision: 16916 $
+ * $Date: 2012-09-03 20:41:34 -0500 (Mon, 03 Sep 2012) $
+ * $Revision: 17503 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -23,6 +23,9 @@
  */
 
 package org.jmol.util;
+
+import javax.vecmath.Matrix4f;
+
 
 
 
@@ -180,7 +183,7 @@ public final class Shader {
 
   public static int getShadeIndex(float x, float y, float z) {
     // from Cylinder3D.calcArgbEndcap and renderCone
-    // from Graphics3D.getShadeIndex and getShadeIndex
+    // from GData.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return (int) (getFloatShadeIndexNormalized((float)(x/magnitude),
                                                (float)(y/magnitude),
@@ -367,6 +370,65 @@ public final class Shader {
     int t = seed;
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
     return t >> 23;
+  }
+
+
+  private final static int SLIM = 20;
+  private final static int SDIM = SLIM * 2;
+  public final static int maxSphereCache = 128;
+  public final static int[][] sphereShapeCache = new int[maxSphereCache][];
+  public static byte[][][] ellipsoidShades;
+  public static int nOut;
+  public static int nIn;
+
+  public static int getEllipsoidShade(float x, float y, float z, int radius,
+                                       Matrix4f mDeriv) {
+    float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
+    float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
+    float tz = mDeriv.m20 * x + mDeriv.m21 * y + mDeriv.m22 * z + mDeriv.m23;
+    float f = Math.min(radius/2f, 45) / 
+        (float) Math.sqrt(tx * tx + ty * ty + tz * tz);
+    // optimized for about 30-100% inclusion
+    int i = (int) (-tx * f);
+    int j = (int) (-ty * f);
+    int k = (int) (tz * f);
+    boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
+        || k < 0 || k >= SDIM;
+    if (outside) {
+      while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
+        i >>= 1;
+        j >>= 1;
+        k >>= 1;
+      }
+      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < 0
+          || k >= SDIM;
+    }
+    
+    if (outside)
+      nOut++;
+    else
+      nIn++;
+  
+    return (outside ? getShadeIndex(i, j, k)
+        : ellipsoidShades[i + SLIM][j + SLIM][k]);
+  }
+
+  public static void createEllipsoidShades() {
+    
+    // we don't need to cache rear-directed normals (kk < 0)
+    
+    ellipsoidShades = new byte[SDIM][SDIM][SDIM];
+    for (int ii = 0; ii < SDIM; ii++)
+      for (int jj = 0; jj < SDIM; jj++)
+        for (int kk = 0; kk < SDIM; kk++)
+          ellipsoidShades[ii][jj][kk] = (byte) getShadeIndex(ii - SLIM, jj
+              - SLIM, kk);
+  }
+
+  public static synchronized void flushSphereCache() {
+    for (int i =  maxSphereCache; --i >= 0;)
+      sphereShapeCache[i] = null;
+    ellipsoidShades = null;
   }
 
 }

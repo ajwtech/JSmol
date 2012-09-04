@@ -24,8 +24,8 @@
 package org.jmol.script;
 
 import org.jmol.util.Escape;
-//import org.jmol.util.CommandHistory;
-//import org.jmol.util.JpegEncoder;
+import org.jmol.util.CommandHistory;
+import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -188,14 +188,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   public static String getEmbeddedScript(String script) {
     if (script == null)
       return script;
-    
-/*    
-    
     int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
     if (pt < 0)
       return script;
     int pt1 = script.lastIndexOf("/*", pt);
-    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*" + "/",
+    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/",
         pt);
     if (pt1 >= 0 && pt2 >= pt)
       script = script.substring(
@@ -204,12 +201,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while ((pt1 = script.indexOf(JpegEncoder.CONTINUE_STRING)) >= 0)
       script = script.substring(0, pt1)
           + script.substring(pt1 + JpegEncoder.CONTINUE_STRING.length() + 4);
-*/
-
     if (Logger.debugging)
       Logger.info(script);
-    
-    
     return script;
   }
 
@@ -2661,7 +2654,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       while (!lookingAtEndOfLine() && !lookingAtEndOfStatement())
         ichToken++;
       errorLine = script.substring(ichCurrentCommand, ichToken);      
-      //viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
+      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
       Logger.error(errorMessage);
     }
     return false;

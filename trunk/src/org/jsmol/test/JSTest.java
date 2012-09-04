@@ -55,7 +55,7 @@ public class JSTest extends JSmol {
 		Logger.debug("test log debug");
 		Logger.error("test log error");
 		Logger.info(testArray[3]);
-		Logger.info(JmolConstants.getShapeClassName(JmolConstants.SHAPE_HOVER));
+		Logger.info(JmolConstants.getShapeClassName(JmolConstants.SHAPE_HOVER, false));
 	}
 	
 	static String[] testArray = {"a", "b", "c", "d"};

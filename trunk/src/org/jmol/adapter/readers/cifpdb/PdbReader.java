@@ -1022,12 +1022,12 @@ Polyproline 10
   }
 
   private int getModelNumber() {
-      int startModelColumn = 6; // should be 10 0-based
-      int endModelColumn = 14;
-      if (endModelColumn > lineLength)
-        endModelColumn = lineLength;
-      int iModel = parseInt(line, startModelColumn, endModelColumn);
-      return (iModel == Integer.MIN_VALUE ? 0 : iModel);
+    int startModelColumn = 6; // should be 10 0-based
+    int endModelColumn = 14;
+    if (endModelColumn > lineLength)
+      endModelColumn = lineLength;
+    int iModel = parseInt(line, startModelColumn, endModelColumn);
+    return (iModel == Integer.MIN_VALUE ? 0 : iModel);
   }
   
   private void model(int modelNumber) {
