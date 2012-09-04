@@ -2,8 +2,8 @@ package org.jmol.api;
 
 import javax.vecmath.Point3f;
 
-//import org.jmol.g3d.Font3D;
-//import org.jmol.viewer.ActionManager;
+import org.jmol.util.JmolFont;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
@@ -36,7 +36,7 @@ public interface ApiPlatform {
 
   void disposeMouse();
 
-  //void getMouseManager(Viewer viewer, ActionManager actionManager);
+  void getMouseManager(Viewer viewer, ActionManager actionManager);
 
   boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time);
 
@@ -80,9 +80,9 @@ public interface ApiPlatform {
   
   void renderScreenImage(JmolViewer jmolViewer, Object g, Object currentSize);
 
-  //int[] getTextPixels(String text, Font3D font3d, Object gObj,
-    //                  Object image, int mapWidth, int height,
-      //                int ascent);
+  int[] getTextPixels(String text, JmolFont font3d, Object gObj,
+                      Object image, int mapWidth, int height,
+                      int ascent);
 
   ///// Image creation for export (optional for any platform)
 
@@ -126,7 +126,5 @@ public interface ApiPlatform {
   JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
 
   Object getJsObjectInfo(Object jsObject, String method, Object[] args);
-
-//	void getMouseManager(Viewer viewer, ActionManager actionManager);
 
 }

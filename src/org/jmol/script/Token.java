@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-08-09 07:55:43 -0500 (Thu, 09 Aug 2012) $
- * $Revision: 17433 $
+ * $Date: 2012-08-31 10:35:29 -0500 (Fri, 31 Aug 2012) $
+ * $Revision: 17493 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -301,6 +301,7 @@ public class Token {
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
+//final static int cache        see mathfunc
   final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
   final static int centerAt     = scriptCommand | 9;
 //final static int color        see intproperty
@@ -692,7 +693,7 @@ public class Token {
   final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
   public final static int within    = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
-
+  final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
   // xxx(a)
   
   final static int acos         = 3 | 1 << 9 | mathfunc;
@@ -799,7 +800,8 @@ public class Token {
   public final static int defaultlabelxyz                = strparam | 24;
   public final static int defaultcolorscheme             = strparam | 25;
   public final static int defaultdirectory               = strparam | 26;
-  public final static int defaultdistancelabel           = strparam | 28;
+  public final static int defaultdistancelabel           = strparam | 27;
+  public final static int defaultdropscript              = strparam | 28;
   public final static int defaultloadfilter              = strparam | 29;
   public final static int defaultloadscript              = strparam | 30;
   public final static int defaults                       = strparam | 32;
@@ -1076,7 +1078,6 @@ public class Token {
   final static int bondset       = misc  | 46;
   final static int bottom        = misc  | 47;
   public final static int brillouin     = misc  | 48;
-  final static int cache         = misc  | 49;
   final static int cancel        = misc  | 50;
   public final static int cap    = misc  | 51 | expression;
   final static int cavity        = misc  | 52;
@@ -2155,6 +2156,7 @@ public class Token {
       "defaultColors",                            null,
       "defaultDirectory",                         new Token(defaultdirectory),
       "defaultDistanceLabel",                     new Token(defaultdistancelabel),
+      "defaultDropScript",                        new Token(defaultdropscript), 
       "defaultLabelPDB",                          new Token(defaultlabelpdb),
       "defaultLabelXYZ",                          new Token(defaultlabelxyz),
       "defaultLoadFilter",                        new Token(defaultloadfilter),

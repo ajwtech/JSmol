@@ -27,12 +27,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.jmol.util.BinaryDocument;
 import org.jmol.util.Parser;
 
 abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
-  protected Object binarydoc;
+  protected BinaryDocument binarydoc;
   protected OutputStream os;
  
   SurfaceFileReader(SurfaceGenerator sg, BufferedReader br) {
@@ -63,8 +64,8 @@ abstract class SurfaceFileReader extends SurfaceReader {
       } catch (IOException e) {
         // ignore
       }
-    //if (binarydoc != null)
-      //binarydoc.close();
+    if (binarydoc != null)
+      binarydoc.close();
   }
   
   @Override

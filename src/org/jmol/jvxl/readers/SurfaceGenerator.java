@@ -137,7 +137,6 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
-//import org.jmol.util.BinaryDocument;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -1043,37 +1042,37 @@ public class SurfaceGenerator {
       surfaceReader = new IsoPlaneReader(this);
       break;
     case Parameters.SURFACE_PROPERTY:
-      //surfaceReader = new AtomPropertyMapper(this, null);
+      surfaceReader = new AtomPropertyMapper(this, null);
       break;
     case Parameters.SURFACE_INTERSECT:
-      //surfaceReader = new IsoIntersectReader(this);
+      surfaceReader = new IsoIntersectReader(this);
       break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:
     case Parameters.SURFACE_SASURFACE:
-      //surfaceReader = new IsoSolventReader(this);
+      surfaceReader = new IsoSolventReader(this);
       break;
     case Parameters.SURFACE_NCI:
     case Parameters.SURFACE_MOLECULARORBITAL:
-      //surfaceReader = new IsoMOReader(this);
+      surfaceReader = new IsoMOReader(this);
       break;
     case Parameters.SURFACE_FUNCTIONXY:
-      //surfaceReader = new IsoFxyReader(this);
+      surfaceReader = new IsoFxyReader(this);
       break;
     case Parameters.SURFACE_FUNCTIONXYZ:
-      //surfaceReader = new IsoFxyzReader(this);
+      surfaceReader = new IsoFxyzReader(this);
       break;
     case Parameters.SURFACE_MEP:
-      //if (params.state == Parameters.STATE_DATA_COLORED)
-      //  surfaceReader = new AtomPropertyMapper(this, "Mep");
-      //else
-      //  surfaceReader = new IsoMepReader(this);
+      if (params.state == Parameters.STATE_DATA_COLORED)
+        surfaceReader = new AtomPropertyMapper(this, "Mep");
+      else
+        surfaceReader = new IsoMepReader(this);
       break;
     case Parameters.SURFACE_MLP:
-      //if (params.state == Parameters.STATE_DATA_COLORED)
-      //  surfaceReader = new AtomPropertyMapper(this, "Mlp");
-      //else
-      //  surfaceReader = new IsoMlpReader(this);
+      if (params.state == Parameters.STATE_DATA_COLORED)
+        surfaceReader = new AtomPropertyMapper(this, "Mlp");
+      else
+        surfaceReader = new IsoMlpReader(this);
       break;
     }
     Logger.info("Using surface reader " + surfaceReader);
@@ -1243,13 +1242,12 @@ public class SurfaceGenerator {
     if (fileType == null)
       fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
-    if (fileType.equals("JvxlXML"))
-      return new JvxlXmlReader(this, br);
-    /*
     if (fileType.equals("Jvxl+"))
       return new JvxlReader(this, br);
     if (fileType.equals("Jvxl"))
       return new JvxlReader(this, br);
+    if (fileType.equals("JvxlXML"))
+      return new JvxlXmlReader(this, br);
     if (fileType.equals("Apbs"))
       return new ApbsReader(this, br);
     if (fileType.equals("Cube"))
@@ -1294,7 +1292,6 @@ public class SurfaceGenerator {
       return new CastepDensityReader(this, br);
     if (fileType.equals("Nff"))
       return new NffFileReader(this, br);
-      */
     return null;
   }
 
