@@ -1,0 +1,83 @@
+﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.TlsDataOnlyReader", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.Logger", "$.Parser"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.vTlsModels = null;
+this.sbTlsErrors = null;
+this.tlsGroupID = 0;
+Clazz.instantialize (this, arguments);
+}, org.jmol.adapter.readers.more, "TlsDataOnlyReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
+Clazz.overrideMethod (c$, "initializeReader", 
+function () {
+this.readTlsData ();
+this.continuing = false;
+});
+Clazz.defineMethod (c$, "readTlsData", 
+($fz = function () {
+this.vTlsModels =  new java.util.ArrayList ();
+var tlsGroups;
+var tlsGroup = null;
+var ranges = null;
+var range = null;
+tlsGroups =  new java.util.ArrayList ();
+while (this.readLine () != null) {
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.$replace ('\'', ' '));
+if (tokens.length == 0) continue ;if (tokens[0].equals ("TLS")) {
+tlsGroup =  new java.util.Hashtable ();
+ranges =  new java.util.ArrayList ();
+tlsGroup.put ("ranges", ranges);
+tlsGroups.add (tlsGroup);
+tlsGroup.put ("id", Integer.$valueOf (++this.tlsGroupID));
+} else if (tokens[0].equals ("RANGE")) {
+range =  new java.util.Hashtable ();
+var chain1 = tokens[1].charAt (0);
+var chain2 = tokens[3].charAt (0);
+var res1 = org.jmol.util.Parser.parseInt (tokens[2]);
+var res2 = org.jmol.util.Parser.parseInt (tokens[4]);
+if ((chain1).charCodeAt (0) == (chain2).charCodeAt (0)) {
+range.put ("chains", "" + chain1 + chain2);
+if (res1 <= res2) {
+range.put ("residues", [res1, res2]);
+ranges.add (range);
+} else {
+this.tlsAddError (" TLS group residues are not in order (range ignored)");
+}} else {
+this.tlsAddError (" TLS group chains are different (range ignored)");
+}} else if (tokens[0].equals ("ORIGIN")) {
+var origin =  new javax.vecmath.Point3f ();
+tlsGroup.put ("origin", origin);
+origin.set (this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+if (Float.isNaN (origin.x) || Float.isNaN (origin.y) || Float.isNaN (origin.z)) {
+origin.set (NaN, NaN, NaN);
+this.tlsAddError ("invalid origin: " + this.line);
+}} else if (tokens[0].equals ("T") || tokens[0].equals ("L") || tokens[0].equals ("S")) {
+var tensorType = tokens[0].charAt (0);
+var nn = ((tensorType).charCodeAt (0) == ('S').charCodeAt (0) ? org.jmol.adapter.readers.more.TlsDataOnlyReader.Snn : org.jmol.adapter.readers.more.TlsDataOnlyReader.TLnn);
+var tensor =  Clazz.newArray (3, 3, 0);
+tlsGroup.put ("t" + tensorType, tensor);
+for (var i = 1; i < tokens.length; i++) {
+var ti = (nn[i].charAt (0)).charCodeAt (0) - ('1').charCodeAt (0);
+var tj = (nn[i].charAt (1)).charCodeAt (0) - ('1').charCodeAt (0);
+tensor[ti][tj] = this.parseFloat (tokens[++i]);
+if (ti < tj) tensor[tj][ti] = tensor[ti][tj];
+}
+if ((tensorType).charCodeAt (0) == ('S').charCodeAt (0)) tensor[0][0] = -tensor[0][0];
+for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) if (Float.isNaN (tensor[i][j])) {
+this.tlsAddError ("invalid tensor: " + org.jmol.util.Escape.escapeArray (tensor));
+}
+
+}}
+org.jmol.util.Logger.info (this.tlsGroupID + " TLS groups read");
+var groups =  new java.util.Hashtable ();
+groups.put ("groupCount", Integer.$valueOf (this.tlsGroupID));
+groups.put ("groups", tlsGroups);
+this.vTlsModels.add (groups);
+this.htParams.put ("vTlsModels", this.vTlsModels);
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "tlsAddError", 
+($fz = function (error) {
+if (this.sbTlsErrors == null) this.sbTlsErrors =  new StringBuffer ();
+this.sbTlsErrors.append (this.fileName).append ('\t').append ("TLS group ").append (this.tlsGroupID).append ('\t').append (error).append ('\n');
+}, $fz.isPrivate = true, $fz), "~S");
+c$.TLnn = c$.prototype.TLnn = ["11", "22", "33", "12", "13", "23"];
+c$.Snn = c$.prototype.Snn = ["22", "11", "12", "13", "23", "21", "31", "32"];
+});
