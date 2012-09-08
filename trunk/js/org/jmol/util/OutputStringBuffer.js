@@ -1,0 +1,66 @@
+﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.OutputStringBuffer", ["java.io.BufferedWriter", "$.OutputStreamWriter", "java.lang.StringBuffer"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.type = null;
+this.sb = null;
+this.bw = null;
+this.nBytes = 0;
+Clazz.instantialize (this, arguments);
+}, org.jmol.util, "OutputStringBuffer");
+Clazz.makeConstructor (c$, 
+function (os) {
+if (os == null) {
+this.sb =  new StringBuffer ();
+} else {
+var osw =  new java.io.OutputStreamWriter (os);
+this.bw =  new java.io.BufferedWriter (osw, 8192);
+}}, "java.io.BufferedOutputStream");
+Clazz.defineMethod (c$, "append", 
+function (s) {
+if (this.bw == null) {
+this.sb.append (s);
+} else {
+this.nBytes += s.length;
+try {
+this.bw.write (s);
+} catch (e) {
+if (Clazz.instanceOf (e, java.io.IOException)) {
+} else {
+throw e;
+}
+}
+}return this;
+}, "~S");
+Clazz.defineMethod (c$, "length", 
+function () {
+return (this.bw == null ? this.sb.length () : this.nBytes);
+});
+Clazz.overrideMethod (c$, "toString", 
+function () {
+if (this.bw != null) try {
+this.bw.flush ();
+} catch (e) {
+if (Clazz.instanceOf (e, java.io.IOException)) {
+} else {
+throw e;
+}
+}
+return (this.bw == null ? this.sb.toString () : this.nBytes + " bytes");
+});
+Clazz.defineMethod (c$, "append", 
+function (c) {
+if (this.bw == null) {
+this.sb.append (c);
+} else {
+this.nBytes += 1;
+try {
+this.bw.write (c.charCodeAt (0));
+} catch (e) {
+if (Clazz.instanceOf (e, java.io.IOException)) {
+} else {
+throw e;
+}
+}
+}return this;
+}, "~N");
+});
