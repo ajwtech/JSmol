@@ -1,6 +1,8 @@
-﻿ // BH added wrapper at line 2856
+ // BH added wrapper at line 2856
  // BH newArray fix at line 2205
  // BH System.getProperty fix at line 6693
+ // BH added Enum .value() method at line 2183
+ // BH added String.contains() at end
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -2179,6 +2181,13 @@ Clazz.defineEnumConstant = function (clazzEnum, enumName, enumOrdinal, initialPa
 	}
 	clazzEnum[enumName] = o;
 	clazzEnum.prototype[enumName] = o;
+	if (clazzEnum["$ values"] == null) {  // BH added
+	  clazzEnum["$ values"] = []          // BH added
+	  clazzEnum.values = function() {     // BH added
+	    return this["$ values"];          // BH added
+	  };                                  // BH added
+	}
+	clazzEnum["$ values"].push(o);
 	return o;
 };
 
@@ -2779,7 +2788,18 @@ Clazz.int0RightShift = function (n, o) { // 64bit
 };
 
 // Compress the common public API method in shorter name
-$_L=Clazz.load;$_W=Clazz.declareAnonymous;$_T=Clazz.declareType;$_J=Clazz.declarePackage;$_C=Clazz.decorateAsClass;$_Z=Clazz.instantialize;$_I=Clazz.declareInterface;$_D=Clazz.isClassDefined;$_H=Clazz.pu$h;$_P=Clazz.p0p;$_B=Clazz.prepareCallback;$_N=Clazz.innerTypeInstance;$_K=Clazz.makeConstructor;$_U=Clazz.superCall;$_R=Clazz.superConstructor;$_M=Clazz.defineMethod;$_V=Clazz.overrideMethod;$_S=Clazz.defineStatics;$_E=Clazz.defineEnumConstant;$_F=Clazz.cloneFinals;$_Y=Clazz.prepareFields;$_A=Clazz.newArray;$_O=Clazz.instanceOf;$_G=Clazz.inheritArgs;$_X=Clazz.checkPrivateMethod;$_Q=Clazz.makeFunction;$_s=Clazz.registerSerializableFields;
+$_L=Clazz.load;
+$_W=Clazz.declareAnonymous;$_T=Clazz.declareType;
+$_J=Clazz.declarePackage;$_C=Clazz.decorateAsClass;
+$_Z=Clazz.instantialize;$_I=Clazz.declareInterface;$_D=Clazz.isClassDefined;
+$_H=Clazz.pu$h;$_P=Clazz.p0p;$_B=Clazz.prepareCallback;
+$_N=Clazz.innerTypeInstance;$_K=Clazz.makeConstructor;$_U=Clazz.superCall;$_R=Clazz.superConstructor;
+$_M=Clazz.defineMethod;$_V=Clazz.overrideMethod;$_S=Clazz.defineStatics;
+$_E=Clazz.defineEnumConstant;
+$_F=Clazz.cloneFinals;
+$_Y=Clazz.prepareFields;$_A=Clazz.newArray;$_O=Clazz.instanceOf;
+$_G=Clazz.inheritArgs;$_X=Clazz.checkPrivateMethod;$_Q=Clazz.makeFunction;
+$_s=Clazz.registerSerializableFields;
 
 
 var reflect = Clazz.declarePackage ("java.lang.reflect");
@@ -4150,7 +4170,7 @@ ClazzLoader.generatingIEScriptOnCallback = function (path) {
  # ignoreOnload -> iol
  #-*/
 ClazzLoader.loadScript = function (file) {
-  //alert("j2slib.z.js ClazzLoader.loadScript " + file)
+  alert("j2slib.z.js ClazzLoader.loadScript " + file)
 	// maybe some scripts are to be loaded without needs to know onload event.
 	var ignoreOnload = (arguments[1] == true);
 	if (ClazzLoader.loadedScripts[file] && !ignoreOnload) {
@@ -5420,7 +5440,7 @@ ClazzLoader.loadClass = function (name, optionalsLoaded, forced, async) {
 				}
 			}
 		}
-		alert("@#@#@#@# " + name);
+		//alert("@#@#@#@# " + name);
 		if (!existed) {
 			var n = null;
 			if (Clazz.unloadedClasses[name] != null) {
@@ -5462,7 +5482,7 @@ ClazzLoader.loadClass = function (name, optionalsLoaded, forced, async) {
 			} else if (needBeingQueued) {
 				qq[qq.length] = n;
 			}
-alert(["-------------"]);
+//alert(["-------------"]);
 			if (!needBeingQueued) { // can be loaded directly
 				/*-# bakEntryClassLoading -> bkECL #-*/
 				var bakEntryClassLoading = false;
@@ -5471,7 +5491,7 @@ alert(["-------------"]);
 					ClazzLoader.isLoadingEntryClass = true;
 				}
 				ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, 1);
-				alert(n.path)
+				alert("loading " + n.path)
 				ClazzLoader.loadScript (n.path);
 				if (optionalsLoaded != null) {
 					ClazzLoader.isLoadingEntryClass = bakEntryClassLoading;
@@ -6836,3 +6856,7 @@ window.assert = function () {
 	};
 //}
 }
+
+String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+
+
