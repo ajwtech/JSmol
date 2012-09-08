@@ -23,14 +23,6 @@
  */
 package org.jmol.awtjs;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -43,8 +35,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-class Mouse implements MouseWheelListener, MouseListener, MouseMotionListener,
-		KeyListener {
+class Mouse {
 
 	private Viewer viewer;
 	private ActionManager actionManager;
@@ -75,7 +66,7 @@ class Mouse implements MouseWheelListener, MouseListener, MouseMotionListener,
 	boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
 		return false;
 	}
-
+/*
 	public void mouseClicked(MouseEvent e) {
 		// not implemented
 	}
@@ -119,5 +110,5 @@ class Mouse implements MouseWheelListener, MouseListener, MouseMotionListener,
 	public void keyReleased(KeyEvent ke) {
 		// not implemented
 	}
-
+*/
 }
