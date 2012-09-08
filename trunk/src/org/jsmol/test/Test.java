@@ -46,7 +46,7 @@ public class Test {
 			atomSetCollection = (AtomSetCollection) ret;
 		String commandOptions = "-ionj \"load 1crn.pdb\"";
 		viewer = Viewer.allocateViewer(null, adapter, 
-        null, null, null, commandOptions, null);
+        null, null, null, commandOptions, null, new org.jmol.awtjs.Platform());
 		/* JmolViewer.allocateViewer(this, adapter);
 		 * JFrame newFrame = new
 		 * JFrame(); newFrame.getContentPane().add(this); newFrame.setSize(300,
