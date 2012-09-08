@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-08 11:12:17 -0500 (Sat, 08 Sep 2012) $
- * $Revision: 17530 $
+ * $Date: 2012-09-08 17:32:04 -0500 (Sat, 08 Sep 2012) $
+ * $Revision: 17537 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -10893,9 +10893,11 @@ public class ScriptEvaluator {
     // translate {x y z} [{atomExpression}]
     BitSet bs = null;
     int i = 1;
+    int i0 = 0;
     if (tokAt(1) == Token.selected) {
       isSelected = true;
-      i++;
+      i0 = 1;
+      i = 2;
     }
     if (isPoint3f(i)) {
       Point3f pt = getPoint3f(i, true);
@@ -10906,8 +10908,8 @@ public class ScriptEvaluator {
         viewer.setAtomCoordRelative(pt, bs);
       return;
     }
-    int xyz = getToken(i).tok;
-    if (xyz != Token.x && xyz != Token.y && xyz != Token.z)
+    char xyz = parameterAsString(i).toLowerCase().charAt(0);
+    if ("xyz".indexOf(xyz) < 0)
       error(ERROR_axisExpected);
     float amount = floatParameter(++i);
     char type;
@@ -10922,12 +10924,12 @@ public class ScriptEvaluator {
     }
     if (amount == 0 && type != '\0')
       return;
-    iToken = (type == '\0' ? 2 : 3);
+    iToken = i0 + (type == '\0' ? 2 : 3);
     bs = (isSelected ? viewer.getSelectionSet(false)
         : iToken + 1 < statementLength ? atomExpression(++iToken) : null);
     checkLast(iToken);
     if (!isSyntaxCheck)
-      viewer.translate(parameterAsString(1).charAt(0), amount, type, bs);
+      viewer.translate(xyz, amount, type, bs);
   }
 
   private void zap(boolean isZapCommand) throws ScriptException {

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-08 16:41:08 -0500 (Sat, 08 Sep 2012) $
- * $Revision: 17536 $
+ * $Date: 2012-09-08 17:32:04 -0500 (Sat, 08 Sep 2012) $
+ * $Revision: 17537 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -538,11 +538,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getHtmlName() {
     return htmlName;
-  }
-
-  public boolean mustRenderFlag() {
-    // from repaintManager
-    return mustRender && (refreshing || creatingImage);
   }
 
   @Override
@@ -4222,13 +4217,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void render() {
-    if (!refreshing && !creatingImage || repaintManager == null)
+    if (modelSet == null || !mustRender  
+        || !refreshing && !creatingImage || repaintManager == null)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(gdata, modelSet, true, transformManager.bsSelectedAtoms, transformManager.ptOffset);
+    finalizeTransformParameters();
+    int[] minMax = shapeManager.transformAtoms(transformManager.bsSelectedAtoms, 
+        transformManager.ptOffset);
+    transformManager.bsSelectedAtoms = null;
+    repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(gdata, modelSet, false, null, null);
+      repaintManager.render(gdata, modelSet, false, null);
       transformManager.setAntialias(antialiasDisplay);
     }
   }
