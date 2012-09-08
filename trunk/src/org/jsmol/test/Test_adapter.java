@@ -15,12 +15,14 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
+import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
 public class Test_adapter {
 
   // Main application
   public static void main(String[] args) {
+  	Logger.setLogLevel(Logger.LEVEL_DEBUG);
     Test_adapter test = new Test_adapter();
     //test.viewer.loadInline(strXyzHOH);
   }
