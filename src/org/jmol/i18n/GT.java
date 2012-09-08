@@ -25,6 +25,12 @@ package org.jmol.i18n;
 
 import java.text.MessageFormat;
 
+/**
+ * special "dummy" version just for JavaScript
+ * 
+ * @author Bob Hanson
+ *
+ */
 public class GT {
 
 
