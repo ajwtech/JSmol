@@ -6,7 +6,7 @@
 //import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Hashtable;
+import java.net.URL;
 
 //import javax.swing.JFrame;
 //import javax.swing.JPanel;
@@ -35,28 +35,16 @@ public class Test {
   private static JmolAdapter adapter;
 
   public Test() {
+		String commandOptions = "-i -n";
 		adapter = new SmarterJmolAdapter();
-		BufferedReader reader = getBufferedReaderForString(strXyzHOH);
-		Hashtable<String, Object> htParams = new Hashtable<String, Object>();
-		Object ret = adapter.getAtomSetCollectionReader("string", null,
-				reader, htParams);
-		if (!(ret instanceof String))
-			ret = adapter.getAtomSetCollection(ret);
-		if (!(ret instanceof String))
-			atomSetCollection = (AtomSetCollection) ret;
-		String commandOptions = "-ionj \"load 1crn.pdb\"";
-		viewer = Viewer.allocateViewer(null, adapter, 
-        null, null, null, commandOptions, null, new org.jmol.awtjs.Platform());
-		/* JmolViewer.allocateViewer(this, adapter);
-		 * JFrame newFrame = new
-		 * JFrame(); newFrame.getContentPane().add(this); newFrame.setSize(300,
-		 * 300); newFrame.setVisible(true); newFrame.addWindowListener(new
-		 * AppCloser());
-		 */
-		if (ret instanceof String)
-			System.out.println(ret);
-		else
-  		System.out.println("testing atomCount=" + atomSetCollection.getAtomCount());
+		try {
+			viewer = Viewer.allocateViewer(null, adapter, 
+			    null, new URL("http://chemapps.stolaf.edu/Jmol/test"), new URL("http://chemapps.stolaf.edu/Jmol/test"), commandOptions, null, new org.jmol.awtjs.Platform());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		viewer.scriptWait("load 1crn.pdb");
 	}
 
   private final static String strXyzHOH = 
