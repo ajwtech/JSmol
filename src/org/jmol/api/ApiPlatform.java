@@ -4,6 +4,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
+import org.jmol.viewer.URLAdapter;
 import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
@@ -126,5 +127,7 @@ public interface ApiPlatform {
   JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
 
   Object getJsObjectInfo(Object jsObject, String method, Object[] args);
+
+  FileAdapterInterface getFileAdapter();
 
 }
