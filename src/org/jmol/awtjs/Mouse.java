@@ -23,6 +23,7 @@
  */
 package org.jmol.awtjs;
 
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -35,7 +36,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-class Mouse {
+class Mouse implements JmolMouseInterface {
 
 	private Viewer viewer;
 	private ActionManager actionManager;
@@ -50,11 +51,11 @@ class Mouse {
 		// display.addMouseWheelListener(this);
 	}
 
-	void clear() {
+	public void clear() {
 		// nothing to do here now -- see ActionManager
 	}
 
-	void dispose() {
+	public void dispose() {
 		// Component display = (Component) viewer.getDisplay();
 		actionManager.dispose();
 		// display.removeMouseListener(this);
@@ -63,7 +64,7 @@ class Mouse {
 		// display.removeKeyListener(this);
 	}
 
-	boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+	public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
 		return false;
 	}
 /*

@@ -36,19 +36,21 @@ this.logFilePath = "";
 this.multiTouch = false;
 this.isSilent = false;
 this.$isApplet = false;
+this.viewerOptions = null;
 this.$isPreviewOnly = false;
 this.haveDisplay = false;
 this.autoExit = false;
 this.mustRender = true;
 this.isPrintOnly = false;
-this.isCmdLine_C_Option = false;
-this.isCmdLine_c_or_C_Option = false;
+this.isSyntaxAndFileCheck = false;
+this.isSyntaxCheck = false;
 this.listCommands = false;
 this.useCommandThread = false;
 this.$isSignedApplet = false;
 this.isSignedAppletLocal = false;
 this.commandOptions = null;
 this.$noGraphicsAllowed = false;
+this.mouse = null;
 this.mouseEnabled = true;
 this.noneSelected = false;
 this.ligandModels = null;
@@ -79,8 +81,7 @@ this.appConsole = null;
 this.scriptEditor = null;
 this.jmolpopup = null;
 this.modelkitPopup = null;
-this.haveHeadlessExitTimeout = false;
-this.headlessWriteCmd = null;
+this.headlessImage = null;
 this.isTainted = true;
 this.movingSelected = false;
 this.showSelected = false;
@@ -122,14 +123,6 @@ function () {
 org.jmol.util.Logger.debug ("viewer finalize " + this);
 Clazz.superCall (this, org.jmol.viewer.Viewer, "finalize", []);
 });
-c$.allocateViewer = Clazz.defineMethod (c$, "allocateViewer", 
-function (display, modelAdapter, fullName, documentBase, codeBase, commandOptions, statusListener) {
-return org.jmol.viewer.Viewer.allocateViewer (display, modelAdapter, fullName, documentBase, codeBase, commandOptions, statusListener, null);
-}, "~O,org.jmol.api.JmolAdapter,~S,java.net.URL,java.net.URL,~S,org.jmol.api.JmolStatusListener");
-c$.allocateViewer = Clazz.defineMethod (c$, "allocateViewer", 
-function (display, modelAdapter, fullName, documentBase, codeBase, commandOptions, statusListener, implementedPlatform) {
-return  new org.jmol.viewer.Viewer (display, modelAdapter, statusListener, implementedPlatform, commandOptions, fullName, documentBase, codeBase);
-}, "~O,org.jmol.api.JmolAdapter,~S,java.net.URL,java.net.URL,~S,org.jmol.api.JmolStatusListener,org.jmol.api.ApiPlatform");
 Clazz.defineMethod (c$, "isRestricted", 
 function (a) {
 return this.access === a;
@@ -181,32 +174,66 @@ Clazz.overrideMethod (c$, "isApplet",
 function () {
 return this.$isApplet;
 });
-Clazz.defineMethod (c$, "getApiPlatform", 
-function () {
-return this.apiPlatform;
-});
+c$.allocateViewer = Clazz.defineMethod (c$, "allocateViewer", 
+function (display, modelAdapter, fullName, documentBase, codeBase, commandOptions, statusListener, implementedPlatform) {
+var info =  new java.util.Hashtable ();
+info.put ("display", display);
+info.put ("adapter", modelAdapter);
+info.put ("statusListener", statusListener);
+info.put ("platform", implementedPlatform);
+info.put ("options", commandOptions);
+info.put ("fullName", fullName);
+info.put ("documentBase", documentBase);
+info.put ("codeBase", codeBase);
+return  new org.jmol.viewer.Viewer (info);
+}, "~O,org.jmol.api.JmolAdapter,~S,java.net.URL,java.net.URL,~S,org.jmol.api.JmolStatusListener,org.jmol.api.ApiPlatform");
 Clazz.makeConstructor (c$, 
-($fz = function (display, modelAdapter, statusListener, implementedPlatform, commandOptions, fullName, documentBase, codeBase) {
+function (info) {
 Clazz.superConstructor (this, org.jmol.viewer.Viewer, []);
+this.setOptions (info);
+}, "java.util.Map");
+Clazz.defineMethod (c$, "getViewerOptions", 
+function () {
+return this.viewerOptions;
+});
+Clazz.defineMethod (c$, "setOptions", 
+($fz = function (info) {
+this.viewerOptions = info;
+this.$display = info.get ("display");
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("Viewer constructor " + this);
-}this.commandOptions = commandOptions = (commandOptions == null ? "" : commandOptions);
-this.fullName = fullName = (fullName == null ? "" : fullName);
-this.appletDocumentBase = (documentBase == null ? "" : documentBase.toString ());
-this.appletCodeBase = (codeBase == null ? "" : codeBase.toString ());
-this.$noGraphicsAllowed = (display == null && commandOptions.indexOf ("-n") >= 0);
-this.access = (commandOptions.indexOf ("-r") >= 0 ? org.jmol.viewer.Viewer.ACCESS.READSPT : commandOptions.indexOf ("-R") >= 0 ? org.jmol.viewer.Viewer.ACCESS.NONE : org.jmol.viewer.Viewer.ACCESS.ALL);
-this.apiPlatform = implementedPlatform;
-if (this.apiPlatform == null) this.apiPlatform = org.jmol.api.Interface.getInterface (!commandOptions.contains ("platform=") ? "org.jmol.awt.Platform" : commandOptions.substring (commandOptions.indexOf ("platform=") + 9));
-this.apiPlatform.setViewer (this, display);
-this.gdata = org.jmol.api.Interface.getInterface ("org.jmol.g3d.Graphics3D");
-this.gdata.initialize (this.apiPlatform);
-this.haveDisplay = (display != null && !this.isHeadless () && commandOptions.indexOf ("-n") < 0);
+}this.modelAdapter = info.get ("adapter");
+var statusListener = info.get ("statusListener");
+this.fullName = info.get ("fullName");
+if (this.fullName == null) this.fullName = "";
+var o = info.get ("codeBase");
+this.appletCodeBase = (o == null ? "" : o.toString ());
+o = info.get ("documentBase");
+this.appletDocumentBase = (o == null ? "" : o.toString ());
+o = info.get ("options");
+this.commandOptions = (o == null ? "" : o.toString ());
+if (info.containsKey ("debug") || this.commandOptions.indexOf ("-debug") >= 0) org.jmol.util.Logger.setLogLevel (5);
+this.$isSignedApplet = this.checkOption ("signedApplet", "-signed");
+this.$isApplet = this.$isSignedApplet || this.checkOption ("applet", "-applet");
+if (this.$isApplet && info.containsKey ("maximumSize")) this.setMaximumSize ((info.get ("maximumSize")).intValue ());
+this.isPrintOnly = this.checkOption ("printOnly", "-p");
+this.multiTouch = this.haveDisplay && this.checkOption ("multiTouch", "-multitouch");
+this.$noGraphicsAllowed = (this.$display == null && this.checkOption ("noGraphics", "-n"));
+this.$isPreviewOnly = info.containsKey ("previewOnly");
+if (this.$isPreviewOnly) info.remove ("previewOnly");
+this.access = (this.checkOption ("access:READSPT", "-r") ? org.jmol.viewer.Viewer.ACCESS.READSPT : this.checkOption ("access:NONE", "-R") ? org.jmol.viewer.Viewer.ACCESS.NONE : org.jmol.viewer.Viewer.ACCESS.ALL);
+o = info.get ("platform");
+if (o == null) o = (this.commandOptions.contains ("platform=") ? this.commandOptions.substring (this.commandOptions.indexOf ("platform=") + 9) : "org.jmol.awt.Platform");
+if (Clazz.instanceOf (o, String)) o = org.jmol.api.Interface.getInterface (o);
+this.apiPlatform = o;
+this.apiPlatform.setViewer (this, this.$display);
+this.haveDisplay = (!this.$noGraphicsAllowed && !this.isHeadless ());
 this.mustRender = this.haveDisplay;
-if (!this.haveDisplay) display = null;
-this.$display = display;
-this.modelAdapter = modelAdapter;
-this.multiTouch = (this.haveDisplay && commandOptions.indexOf ("-multitouch") >= 0);
+if (!this.haveDisplay) this.$display = null;
+o = info.get ("graphicsAdapter");
+if (o == null) o = org.jmol.api.Interface.getInterface ("org.jmol.g3d.Graphics3D");
+this.gdata = (o == null ?  new org.jmol.util.GData () : o);
+this.gdata.initialize (this.apiPlatform);
 this.stateManager =  new org.jmol.viewer.StateManager (this);
 this.colorManager =  new org.jmol.viewer.ColorManager (this, this.gdata);
 this.statusManager =  new org.jmol.viewer.StatusManager (this);
@@ -214,42 +241,39 @@ this.scriptManager =  new org.jmol.viewer.ScriptManager (this);
 this.transformManager =  new org.jmol.viewer.TransformManager11 (this);
 this.selectionManager =  new org.jmol.viewer.SelectionManager (this);
 if (this.haveDisplay) {
-if (this.multiTouch) {
-if (commandOptions.indexOf ("-multitouch-sparshui-simulated") < 0) this.apiPlatform.setTransparentCursor (display);
- else commandOptions = org.jmol.util.TextFormat.simpleReplace (commandOptions, "-multitouch-sparshui-simulated", "");
-this.actionManager = org.jmol.api.Interface.getOptionInterface ("multitouch.ActionManagerMT");
-} else {
-this.actionManager =  new org.jmol.viewer.ActionManager ();
-}this.actionManager.setViewer (this, commandOptions);
-this.apiPlatform.getMouseManager (this, this.actionManager);
+this.actionManager = (this.multiTouch ? org.jmol.api.Interface.getOptionInterface ("multitouch.ActionManagerMT") :  new org.jmol.viewer.ActionManager ());
+this.actionManager.setViewer (this, this.commandOptions + "-multitouch-" + info.get ("multiTouch"));
+this.mouse = this.apiPlatform.getMouseManager (this, this.actionManager);
+if (this.multiTouch && !this.checkOption ("-simulated", "-simulated")) this.apiPlatform.setTransparentCursor (this.$display);
 }this.modelManager =  new org.jmol.viewer.ModelManager (this);
 this.shapeManager =  new org.jmol.viewer.ShapeManager (this);
 this.tempManager =  new org.jmol.util.TempArray ();
 this.dataManager =  new org.jmol.viewer.DataManager (this);
 this.animationManager =  new org.jmol.viewer.AnimationManager (this);
-this.repaintManager = (org.jmol.api.Interface.getOptionInterface ("render.RepaintManager"));
-if (this.repaintManager != null) this.repaintManager.set (this, this.shapeManager);
+o = info.get ("repaintManager");
+if (o == null) o = (org.jmol.api.Interface.getOptionInterface ("render.RepaintManager"));
+if (o != null) (this.repaintManager = o).set (this, this.shapeManager);
 this.initialize (true);
 this.fileManager =  new org.jmol.viewer.FileManager (this);
 this.compiler =  new org.jmol.script.ScriptCompiler (this);
 this.definedAtomSets =  new java.util.Hashtable ();
 this.$eval =  new org.jmol.script.ScriptEvaluator (this);
 this.setJmolStatusListener (statusListener);
-var i = fullName.indexOf ("__");
-this.htmlName = (i < 0 ? fullName : fullName.substring (0, i));
-this.syncId = (i < 0 ? "" : fullName.substring (i + 2, fullName.length - 2));
-var str = commandOptions;
-if (str.indexOf ("-debug") >= 0) org.jmol.util.Logger.setLogLevel (5);
-this.isPrintOnly = (commandOptions.indexOf ("-p") >= 0);
-this.$isApplet = (commandOptions.indexOf ("-applet") >= 0);
+var i = this.fullName.indexOf ("__");
+this.htmlName = (i < 0 ? this.fullName : this.fullName.substring (0, i));
+this.syncId = (i < 0 ? "" : this.fullName.substring (i + 2, this.fullName.length - 2));
 if (this.$isApplet) {
-org.jmol.util.Logger.info ("applet context: " + commandOptions);
-var appletProxy = null;
-if ((i = str.indexOf ("-appletProxy ")) >= 0) {
-appletProxy = str.substring (i + 13);
-str = str.substring (0, i);
-}this.fileManager.setAppletContext (documentBase, codeBase, appletProxy);
-this.$isSignedApplet = (str.indexOf ("-signed") >= 0);
+org.jmol.util.Logger.info ("applet context: " + this.commandOptions);
+($t$ = org.jmol.viewer.Viewer.jsDocumentBase = this.appletDocumentBase, org.jmol.viewer.Viewer.prototype.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase, $t$);
+i = org.jmol.viewer.Viewer.jsDocumentBase.indexOf ("#");
+if (i >= 0) ($t$ = org.jmol.viewer.Viewer.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase.substring (0, i), org.jmol.viewer.Viewer.prototype.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase, $t$);
+i = org.jmol.viewer.Viewer.jsDocumentBase.lastIndexOf ("?");
+if (i >= 0) ($t$ = org.jmol.viewer.Viewer.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase.substring (0, i), org.jmol.viewer.Viewer.prototype.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase, $t$);
+i = org.jmol.viewer.Viewer.jsDocumentBase.lastIndexOf ("/");
+if (i >= 0) ($t$ = org.jmol.viewer.Viewer.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase.substring (0, i), org.jmol.viewer.Viewer.prototype.jsDocumentBase = org.jmol.viewer.Viewer.jsDocumentBase, $t$);
+this.fileManager.setAppletContext (this.appletDocumentBase);
+var appletProxy = info.get ("appletProxy");
+if (appletProxy != null) this.setStringProperty ("appletProxy", appletProxy);
 if (this.$isSignedApplet) {
 this.logFilePath = org.jmol.util.TextFormat.simpleReplace (this.appletCodeBase, "file://", "");
 this.logFilePath = org.jmol.util.TextFormat.simpleReplace (this.logFilePath, "file:/", "");
@@ -257,27 +281,36 @@ if (this.logFilePath.indexOf ("//") >= 0) this.logFilePath = null;
  else this.isSignedAppletLocal = true;
 } else {
 this.logFilePath = null;
-}if ((i = str.indexOf ("-maximumSize ")) >= 0) this.setMaximumSize (org.jmol.util.Parser.parseInt (str.substring (i + 13)));
-} else {
-this.gdata.setBackgroundTransparent (str.indexOf ("-b") >= 0);
-this.isSilent = (str.indexOf ("-i") >= 0);
+}} else {
+this.gdata.setBackgroundTransparent (this.checkOption ("backgroundTransparent", "-b"));
+this.isSilent = this.checkOption ("silent", "-i");
 if (this.isSilent) org.jmol.util.Logger.setLogLevel (3);
-this.isCmdLine_c_or_C_Option = (str.toLowerCase ().indexOf ("-c") >= 0);
-this.isCmdLine_C_Option = (str.indexOf ("-C") >= 0);
-this.listCommands = (str.indexOf ("-l") >= 0);
-this.autoExit = (str.indexOf ("-x") >= 0);
+this.isSyntaxAndFileCheck = this.checkOption ("checkLoad", "-C");
+this.isSyntaxCheck = this.isSyntaxAndFileCheck || this.checkOption ("check", "-c");
+this.listCommands = this.checkOption ("listCommands", "-l");
+this.autoExit = this.checkOption ("exit", "-x");
 this.cd (".");
-}this.useCommandThread = (str.indexOf ("-threaded") >= 0 && !this.isHeadless ());
+if (this.isHeadless ()) {
+this.headlessImage = info.get ("headlessImage");
+o = info.get ("headlistMaxTimeMs");
+if (o == null) o = Integer.$valueOf (60000);
+this.setTimeout ("" + Math.random (), (o).intValue (), "exitJmol");
+}}this.useCommandThread = !this.isHeadless () && this.checkOption ("useCommandThread", "-threaded");
 if (this.useCommandThread) this.scriptManager.startCommandWatcher (true);
-this.$isPreviewOnly = (str.indexOf ("#previewOnly") >= 0);
 this.setStartupBooleans ();
 this.setIntProperty ("_nProcessors", org.jmol.viewer.Viewer.nProcessors);
+o = info.get ("menuFile");
+if (o != null) this.getProperty ("DATA_API", "setMenu", this.getFileAsString (o));
 if (!this.isSilent) {
 org.jmol.util.Logger.info ("(C) 2012 Jmol Development" + "\nJmol Version: " + org.jmol.viewer.Viewer.getJmolVersion () + "\njava.vendor: " + org.jmol.viewer.Viewer.strJavaVendor + "\njava.version: " + org.jmol.viewer.Viewer.strJavaVersion + "\nos.name: " + org.jmol.viewer.Viewer.strOSName + "\nAccess: " + this.access + "\nmemory: " + this.getParameter ("_memory") + "\nprocessors available: " + org.jmol.viewer.Viewer.nProcessors + "\nuseCommandThread: " + this.useCommandThread + (!this.$isApplet ? "" : "\nappletId:" + this.htmlName + (this.$isSignedApplet ? " (signed)" : "")));
 }this.zap (false, true, false);
 this.global.setParameterValue ("language", org.jmol.i18n.GT.getLanguage ());
 this.stateManager.setJmolDefaults ();
-}, $fz.isPrivate = true, $fz), "~O,org.jmol.api.JmolAdapter,org.jmol.api.JmolStatusListener,org.jmol.api.ApiPlatform,~S,~S,java.net.URL,java.net.URL");
+}, $fz.isPrivate = true, $fz), "java.util.Map");
+Clazz.defineMethod (c$, "checkOption", 
+($fz = function (key1, key2) {
+return (this.viewerOptions.containsKey (key1) || this.commandOptions.indexOf (key2) >= 0);
+}, $fz.isPrivate = true, $fz), "~S,~S");
 Clazz.defineMethod (c$, "isPreviewOnly", 
 function () {
 return this.$isPreviewOnly;
@@ -285,10 +318,6 @@ return this.$isPreviewOnly;
 Clazz.defineMethod (c$, "isHeadless", 
 function () {
 return this.apiPlatform.isHeadless ();
-});
-Clazz.defineMethod (c$, "getCommandOptions", 
-function () {
-return this.commandOptions;
 });
 Clazz.defineMethod (c$, "setStartupBooleans", 
 ($fz = function () {
@@ -318,9 +347,18 @@ Clazz.overrideMethod (c$, "getDisplay",
 function () {
 return this.$display;
 });
+Clazz.defineMethod (c$, "clearMouse", 
+function () {
+this.mouse.clear ();
+});
+Clazz.defineMethod (c$, "disposeMouse", 
+function () {
+this.mouse.dispose ();
+this.mouse = null;
+});
 Clazz.overrideMethod (c$, "handleOldJvm10Event", 
 function (id, x, y, modifiers, time) {
-return this.apiPlatform.handleOldJvm10Event (id, x, y, modifiers, time);
+return this.mouse.handleOldJvm10Event (id, x, y, modifiers, time);
 }, "~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "reset", 
 function (includingSpin) {
@@ -1272,8 +1310,10 @@ return org.jmol.script.ScriptEvaluator.getAtomBitSetVector (this.$eval, this.get
 Clazz.overrideMethod (c$, "setModeMouse", 
 function (modeMouse) {
 if (modeMouse == -1) {
-if (this.haveDisplay) this.apiPlatform.disposeMouse ();
-this.clearScriptQueue ();
+if (this.mouse != null) {
+this.mouse.dispose ();
+this.mouse = null;
+}this.clearScriptQueue ();
 this.haltScriptExecution ();
 this.stopAnimationThreads ("setModeMouse NONE");
 this.scriptManager.startCommandWatcher (false);
@@ -1871,7 +1911,7 @@ this.clearAllMeasurements ();
 this.clearMinimization ();
 this.modelSet = this.modelManager.zap ();
 if (this.haveDisplay) {
-this.apiPlatform.clearMouse ();
+this.mouse.clear ();
 this.clearTimeouts ();
 this.actionManager.clear ();
 }this.stateManager.clear (this.global);
@@ -3180,8 +3220,8 @@ this.transformManager.setSpinOn (false);
 this.stopMinimization ();
 }if (isInterrupt || this.waitForMoveTo ()) {
 this.stopMotion ();
-}org.jmol.util.Logger.info (this.isCmdLine_c_or_C_Option ? haltType + " -- stops script checking" : (isInterrupt ? "!" : "") + haltType + " received");
-this.isCmdLine_c_or_C_Option = false;
+}org.jmol.util.Logger.info (this.isSyntaxCheck ? haltType + " -- stops script checking" : (isInterrupt ? "!" : "") + haltType + " received");
+this.isSyntaxCheck = false;
 return exitScript;
 }, "~S,~B");
 Clazz.overrideMethod (c$, "scriptWait", 
@@ -3215,7 +3255,7 @@ if (str != null) return str;
 var outputBuffer = (statusList == null || statusList.equals ("output") ?  new StringBuffer () : null);
 var oldStatusList = this.statusManager.getStatusList ();
 this.getProperty ("String", "jmolStatus", statusList);
-if (this.isCmdLine_c_or_C_Option) org.jmol.util.Logger.info ("--checking script:\n" + this.$eval.getScript () + "\n----\n");
+if (this.isSyntaxCheck) org.jmol.util.Logger.info ("--checking script:\n" + this.$eval.getScript () + "\n----\n");
 var historyDisabled = (strScript.indexOf (")") == 0);
 if (historyDisabled) strScript = strScript.substring (1);
 historyDisabled = historyDisabled || !isQueued;
@@ -3227,7 +3267,7 @@ this.setErrorMessage (strErrorMessage, strErrorMessageUntranslated);
 if (isOK) {
 this.isScriptQueued = isQueued;
 if (!isQuiet) this.scriptStatus (null, strScript, -2 - (++this.scriptIndex), null);
-this.$eval.evaluateCompiledScript (this.isCmdLine_c_or_C_Option, this.isCmdLine_C_Option, historyDisabled, this.listCommands, outputBuffer);
+this.$eval.evaluateCompiledScript (this.isSyntaxCheck, this.isSyntaxAndFileCheck, historyDisabled, this.listCommands, outputBuffer);
 this.setErrorMessage (strErrorMessage = this.$eval.getErrorMessage (), strErrorMessageUntranslated = this.$eval.getErrorMessageUntranslated ());
 if (!isQuiet) this.scriptStatus ("Jmol script terminated", strErrorMessage, 1 + this.$eval.getExecutionWalltime (), strErrorMessageUntranslated);
 } else {
@@ -3235,10 +3275,10 @@ this.scriptStatus (strErrorMessage);
 this.scriptStatus ("Jmol script terminated", strErrorMessage, 1, strErrorMessageUntranslated);
 }this.setStateScriptVersion (null);
 if (strErrorMessage != null && this.autoExit) this.exitJmol ();
-if (this.isCmdLine_c_or_C_Option) {
+if (this.isSyntaxCheck) {
 if (strErrorMessage == null) org.jmol.util.Logger.info ("--script check ok");
  else org.jmol.util.Logger.error ("--script check error\n" + strErrorMessageUntranslated);
-}if (this.isCmdLine_c_or_C_Option) org.jmol.util.Logger.info ("(use 'exit' to stop checking)");
+}if (this.isSyntaxCheck) org.jmol.util.Logger.info ("(use 'exit' to stop checking)");
 this.isScriptQueued = true;
 if (returnType.equalsIgnoreCase ("String")) return strErrorMessageUntranslated;
 if (outputBuffer != null) return (strErrorMessageUntranslated == null ? outputBuffer.toString () : strErrorMessageUntranslated);
@@ -3249,9 +3289,9 @@ return info;
 Clazz.defineMethod (c$, "exitJmol", 
 function () {
 if (this.$isApplet) return ;
-if (this.headlessWriteCmd != null) {
+if (this.headlessImage != null) {
 try {
-var p = this.headlessWriteCmd;
+var p = this.headlessImage;
 if (this.isHeadless ()) this.createImage (p[0], p[1], null, (p[2]).intValue (), (p[3]).intValue (), (p[4]).intValue ());
 } catch (e) {
 if (Clazz.instanceOf (e, Exception)) {
@@ -4918,6 +4958,7 @@ if (doRepaint) this.setTainted (true);
 }, $fz.isPrivate = true, $fz), "~S,~N,~B");
 Clazz.defineMethod (c$, "setModelKitMode", 
 ($fz = function (value) {
+if (this.actionManager == null) return ;
 if (value || this.global.modelKitMode) {
 this.setPickingMode (null, value ? 33 : 1);
 this.setPickingMode (null, value ? 32 : 1);
@@ -5719,7 +5760,7 @@ return this.scriptEditorVisible;
 Clazz.defineMethod (c$, "getProperty", 
 function (returnType, infoType, paramInfo) {
 if (!"DATA_API".equals (returnType)) return org.jmol.viewer.PropertyManager.getProperty (this, returnType, infoType, paramInfo);
-switch (("scriptCheck.........scriptContext.......scriptEditor........scriptEditorState...getAppConsole.......getScriptEditor.....setMenu.............spaceGroupInfo......disablePopupMenu....defaultDirectory....getPopupMenu........shapeManager........consoleText.........headlessImage.......headlessMaxTime.....").indexOf (infoType)) {
+switch (("scriptCheck.........scriptContext.......scriptEditor........scriptEditorState...getAppConsole.......getScriptEditor.....setMenu.............spaceGroupInfo......disablePopupMenu....defaultDirectory....getPopupMenu........shapeManager........consoleText.........").indexOf (infoType)) {
 case 0:
 return this.scriptCheck (paramInfo, true);
 case 20:
@@ -5774,14 +5815,6 @@ case 220:
 return this.shapeManager.getProperty (paramInfo);
 case 240:
 return (this.appConsole == null ? "" : this.appConsole.getText ());
-case 260:
-if (this.isHeadless ()) this.headlessWriteCmd = paramInfo;
-return null;
-case 280:
-if (!this.isHeadless () || this.haveHeadlessExitTimeout) return null;
-this.haveHeadlessExitTimeout = true;
-this.setTimeout ("" + Math.random (), (paramInfo).intValue (), "exitJmol");
-return null;
 }
 org.jmol.util.Logger.error ("ERROR in getProperty DATA_API: " + infoType);
 return null;
@@ -7621,6 +7654,7 @@ c$.strJavaVendor = c$.prototype.strJavaVendor = System.getProperty ("java.vendor
 c$.strOSName = c$.prototype.strOSName = System.getProperty ("os.name", "j2s");
 c$.strJavaVersion = c$.prototype.strJavaVersion = System.getProperty ("java.version", "0.0");
 Clazz.defineStatics (c$,
+"jsDocumentBase", "",
 "STATE_VERSION_STAMP", "# Jmol state version ",
 "SYNC_GRAPHICS_MESSAGE", "GET_GRAPHICS",
 "SYNC_NO_GRAPHICS_MESSAGE", "SET_GRAPHICS_OFF",

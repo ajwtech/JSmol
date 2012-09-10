@@ -12,7 +12,8 @@ return org.jmol.api.Interface.getInterface ("org.openscience.jmol.app." + name);
 c$.getInterface = Clazz.defineMethod (c$, "getInterface", 
 function (name) {
 try {
-return Class.forName (name).newInstance ();
+var x = Class.forName (name);
+return (x == null ? null : x.newInstance ());
 } catch (e) {
 if (Clazz.instanceOf (e, Exception)) {
 org.jmol.util.Logger.error ("Interface.java Error creating instance for " + name + ": \n" + e.getMessage ());

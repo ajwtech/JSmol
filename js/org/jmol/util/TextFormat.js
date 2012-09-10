@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.text.DecimalFormat", "org.jmol.util.Parser"], function () {
+Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.util, "TextFormat");
 Clazz.prepareFields (c$, function () {
 {
@@ -11,12 +11,13 @@ org.jmol.util.TextFormat.useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean
 }, "~B");
 c$.formatDecimal = Clazz.defineMethod (c$, "formatDecimal", 
 function (value, decimalDigits) {
-if (decimalDigits == 2147483647) return "" + value;
+if (decimalDigits == 2147483647 || value == -Infinity || value == Infinity || Float.isNaN (value)) return "" + value;
+var n;
 if (decimalDigits < 0) {
 decimalDigits = -decimalDigits;
 if (decimalDigits > org.jmol.util.TextFormat.formattingStrings.length) decimalDigits = org.jmol.util.TextFormat.formattingStrings.length;
 if (value == 0) return org.jmol.util.TextFormat.formattingStrings[decimalDigits] + "E+0";
-var n = 0;
+n = 0;
 var d;
 if (Math.abs (value) < 1) {
 n = 10;
@@ -29,10 +30,33 @@ var i = s.indexOf ("E");
 n = org.jmol.util.Parser.parseInt (s.substring (i + 1)) + n;
 return (i < 0 ? "" + value : org.jmol.util.TextFormat.formatDecimal (org.jmol.util.Parser.parseFloat (s.substring (0, i)), decimalDigits - 1) + "E" + (n >= 0 ? "+" : "") + n);
 }if (decimalDigits >= org.jmol.util.TextFormat.formattingStrings.length) decimalDigits = org.jmol.util.TextFormat.formattingStrings.length - 1;
-var formatter = org.jmol.util.TextFormat.formatters[decimalDigits];
-if (formatter == null) formatter = org.jmol.util.TextFormat.formatters[decimalDigits] =  new java.text.DecimalFormat (org.jmol.util.TextFormat.formattingStrings[decimalDigits]);
-var s = formatter.format (value);
-return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s : s.$replace (',', '.'));
+var s1 = ("" + value).toUpperCase ();
+var isNeg = s1.startsWith ("-");
+if (isNeg) s1 = s1.substring (1);
+var pt = s1.indexOf (".");
+if (pt < 0) return s1 + org.jmol.util.TextFormat.formattingStrings[decimalDigits].substring (1);
+var pt1 = s1.indexOf ("E-");
+if (pt1 > 0) {
+n = org.jmol.util.Parser.parseInt (s1.substring (pt1 + 1));
+s1 = "0." + "0000000000000000000000000000000000000000".substring (0, -n - 1) + s1.substring (0, 1) + s1.substring (2, pt1);
+pt = 1;
+}pt1 = s1.indexOf ("E");
+if (pt1 > 0) {
+n = org.jmol.util.Parser.parseInt (s1.substring (pt1 + 1));
+s1 = s1.substring (0, 1) + s1.substring (2, pt1) + "0000000000000000000000000000000000000000";
+s1 = s1.substring (0, n + 1) + "." + s1.substring (n + 1);
+pt = s1.indexOf (".");
+}var len = s1.length;
+var pt2 = decimalDigits + pt + 1;
+if (pt2 < len && (s1.charAt (pt2)).charCodeAt (0) >= ('5').charCodeAt (0)) {
+return org.jmol.util.TextFormat.formatDecimal (value + (isNeg ? -1 : 1) * org.jmol.util.TextFormat.formatAdds[decimalDigits], decimalDigits);
+}var sb =  new StringBuffer (s1.substring (0, (decimalDigits == 0 ? pt : ++pt)));
+for (var i = 0; i < decimalDigits; i++, pt++) {
+if (pt < len) sb.append (s1.charAt (pt));
+ else sb.append ('0');
+}
+s1 = (isNeg ? "-" : "") + sb;
+return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
 }, "~N,~N");
 c$.format = Clazz.defineMethod (c$, "format", 
 function (value, width, precision, alignLeft, zeroPad) {
@@ -377,8 +401,9 @@ if (!newName.equals (name)) s = org.jmol.util.TextFormat.simpleReplace (s, name,
 }
 return s;
 }, "~S,java.util.List,java.util.List");
-c$.formatters = c$.prototype.formatters =  new Array (10);
 Clazz.defineStatics (c$,
-"formattingStrings", ["0", "0.0", "0.00", "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000"]);
+"formattingStrings", ["0", "0.0", "0.00", "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000"],
+"zeros", "0000000000000000000000000000000000000000",
+"formatAdds", [0.5, 0.05, 0.005, 0.0005, 0.00005, 0.000005, 0.0000005, 0.00000005, 0.000000005, 0.0000000005]);
 c$.useNumberLocalization = c$.prototype.useNumberLocalization =  new Array (1);
 });

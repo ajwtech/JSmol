@@ -2285,7 +2285,6 @@ var f2 = org.jmol.script.ScriptVariable.fValue (x2);
 switch (x1.tok) {
 default:
 var f1 = org.jmol.script.ScriptVariable.fValue (x1);
-if (f2 == 0) return this.addX (f1 == 0 ? 0 : f1 < 0 ? Infinity : Infinity);
 return this.addX (f1 / f2);
 case 8:
 pt =  new javax.vecmath.Point3f (x1.value);

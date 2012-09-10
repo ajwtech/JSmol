@@ -1,23 +1,36 @@
 package org.jmol.awtjs;
 
+import java.net.URL;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.FileAdapterInterface;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolFileInterface;
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.FileAdapter;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
+/**
+ * JavaScript version requires Ajax-based URL stream processing.
+ * (Not fully implemented) 
+ * 
+ * @author Bob Hanson
+ *
+ */
 public class Platform implements ApiPlatform {
 
-	private Mouse mouse;
-
 	public void setViewer(JmolViewer viewer, Object display) {
-		// ignored
+		//
+		try {
+		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
+		} catch (Exception e) {
+		  // maybe is already created	
+		}
 	}
 
 	// /// Display
@@ -78,22 +91,8 @@ public class Platform implements ApiPlatform {
 
 	// //// Mouse
 
-	public void getMouseManager(Viewer viewer, ActionManager actionManager) {
-		mouse = new Mouse(viewer, actionManager);
-	}
-
-	public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
-			long time) {
-		return mouse.handleOldJvm10Event(id, x, y, modifiers, time);
-	}
-
-	public void clearMouse() {
-		mouse.clear();
-	}
-
-	public void disposeMouse() {
-		mouse.dispose();
-		mouse = null;
+	public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+		return new Mouse(viewer, actionManager);
 	}
 
 	// //// Image
@@ -209,5 +208,10 @@ public class Platform implements ApiPlatform {
   public FileAdapterInterface getFileAdapter() {
     return (fileAdapter == null  ? fileAdapter = new FileAdapter() : fileAdapter);
   }
+
+	@Override
+	public JmolFileInterface newFile(String name) {
+		return new JmolFile(name);
+	}
 
 }
