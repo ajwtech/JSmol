@@ -1,13 +1,12 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedReader", "java.lang.Enum", "org.jmol.api.JmolFilesReaderInterface", "java.util.Hashtable"], "org.jmol.viewer.FileManager", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "$.ByteArrayOutputStream", "$.File", "$.FileInputStream", "$.FileOutputStream", "$.InputStreamReader", "$.OutputStreamWriter", "$.StringReader", "java.lang.Long", "$.StringBuffer", "java.net.URL", "$.URLEncoder", "java.text.DateFormat", "java.util.ArrayList", "$.Date", "java.util.zip.CRC32", "$.GZIPInputStream", "$.ZipEntry", "$.ZipInputStream", "$.ZipOutputStream", "org.jmol.api.JmolViewer", "org.jmol.script.ScriptCompiler", "org.jmol.util.ArrayUtil", "$.Base64", "$.BinaryDocument", "$.CompoundDocument", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.DataManager", "$.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.io.BufferedReader", "java.lang.Enum", "org.jmol.api.JmolFilesReaderInterface", "java.util.Hashtable"], "org.jmol.viewer.FileManager", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "$.ByteArrayOutputStream", "$.FileInputStream", "$.FileOutputStream", "$.InputStreamReader", "$.StringReader", "java.lang.Long", "$.StringBuffer", "java.net.URL", "$.URLEncoder", "java.text.DateFormat", "java.util.ArrayList", "$.Date", "java.util.zip.CRC32", "$.GZIPInputStream", "$.ZipEntry", "$.ZipInputStream", "$.ZipOutputStream", "org.jmol.api.JmolViewer", "org.jmol.script.ScriptCompiler", "org.jmol.util.ArrayUtil", "$.Base64", "$.BinaryDocument", "$.CompoundDocument", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.DataManager", "$.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.pathForAllFiles = "";
 this.nameAsGiven = "zapped";
 this.fullPathName = null;
 this.fileName = null;
-this.appletDocumentBase = null;
-this.appletCodeBase = null;
+this.appletDocumentBaseURL = null;
 this.appletProxy = null;
 this.jmolZip = null;
 if (!Clazz.isClassDefined ("org.jmol.viewer.FileManager.DOMReader")) {
@@ -83,15 +82,19 @@ return this.fileName != null ? this.fileName : this.nameAsGiven;
 });
 Clazz.defineMethod (c$, "getAppletDocumentBase", 
 function () {
-return (this.appletDocumentBase == null ? "" : this.appletDocumentBase.toString ());
+return (this.appletDocumentBaseURL == null ? "" : this.appletDocumentBaseURL.toString ());
 });
 Clazz.defineMethod (c$, "setAppletContext", 
-function (documentBase, codeBase, jmolAppletProxy) {
-this.appletDocumentBase = documentBase;
-this.appletCodeBase = codeBase;
-this.appletProxy = jmolAppletProxy;
-org.jmol.util.Logger.info ("appletDocumentBase=" + this.appletDocumentBase + "\nappletCodeBase=" + this.appletCodeBase);
-}, "java.net.URL,java.net.URL,~S");
+function (documentBase) {
+try {
+this.appletDocumentBaseURL = (documentBase.length == 0 ? null :  new java.net.URL (documentBase));
+} catch (e) {
+if (Clazz.instanceOf (e, java.net.MalformedURLException)) {
+} else {
+throw e;
+}
+}
+}, "~S");
 Clazz.defineMethod (c$, "setAppletProxy", 
 function (appletProxy) {
 this.appletProxy = (appletProxy == null || appletProxy.length == 0 ? null : appletProxy);
@@ -268,32 +271,23 @@ var post = null;
 if (isURL && (iurl = name.indexOf ("?POST?")) >= 0) {
 post = name.substring (iurl + 6);
 name = name.substring (0, iurl);
-}var isApplet = (this.appletDocumentBase != null);
+}var isApplet = (this.appletDocumentBaseURL != null);
 var bis = null;
+var ret = null;
 try {
+var fai = this.viewer.getFileAdapter ();
 if (cacheBytes == null && (isApplet || isURL)) {
-if (isApplet && isURL && this.appletProxy != null) name = this.appletProxy + "?url=" + java.net.URLEncoder.encode (name, "utf-8");
-var url = (isApplet ?  new java.net.URL (this.appletDocumentBase, name) :  new java.net.URL (name));
+if (isApplet && isURL && this.appletProxy != null) name = this.appletProxy + "?url=" + this.urlEncode (name);
+var url = (isApplet ?  new java.net.URL (this.appletDocumentBaseURL, name) :  new java.net.URL (name));
 name = url.toString ();
 if (showMsg && !checkOnly && name.toLowerCase ().indexOf ("password") < 0) org.jmol.util.Logger.info ("FileManager opening " + name);
-var conn = url.openConnection ();
-if (outputBytes != null && !checkOnly) {
-conn.setRequestProperty ("Content-Type", "application/octet-stream;");
-conn.setDoOutput (true);
-conn.getOutputStream ().write (outputBytes);
-conn.getOutputStream ().flush ();
-} else if (post != null && !checkOnly) {
-conn.setRequestProperty ("Content-Type", "application/x-www-form-urlencoded");
-conn.setDoOutput (true);
-var wr =  new java.io.OutputStreamWriter (conn.getOutputStream ());
-wr.write (post);
-wr.flush ();
-}bis =  new java.io.BufferedInputStream (conn.getInputStream ());
+ret = fai.getBufferedURLInputStream (url, outputBytes, post, checkOnly);
 } else if (cacheBytes == null && (cacheBytes = this.cacheGet (name, true)) == null) {
 if (showMsg) org.jmol.util.Logger.info ("FileManager opening " + name);
-var file =  new java.io.File (name);
-bis =  new java.io.BufferedInputStream ( new java.io.FileInputStream (file));
-}if (cacheBytes != null) bis =  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (cacheBytes));
+ret = fai.getBufferedFileInputStream (name);
+}if (Clazz.instanceOf (ret, String)) return ret;
+if (cacheBytes == null) bis = ret;
+ else bis =  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (cacheBytes));
 if (checkOnly) {
 bis.close ();
 bis = null;
@@ -315,6 +309,18 @@ throw e;
 }
 return errorMessage;
 }, "~S,~S,~B,~B,~A");
+Clazz.defineMethod (c$, "urlEncode", 
+($fz = function (name) {
+try {
+return java.net.URLEncoder.encode (name, "utf-8");
+} catch (e) {
+if (Clazz.instanceOf (e, java.io.UnsupportedEncodingException)) {
+return name;
+} else {
+throw e;
+}
+}
+}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getFullPathNameOrError", 
 function (filename) {
 var names = this.classifyName (filename, true);
@@ -630,7 +636,7 @@ if (names == null) {
 retFileNameOrError[0] = "cannot read file name: " + name;
 return null;
 }var image = null;
-var apiPlatform = this.viewer.getApiPlatform ();
+var apiPlatform = this.viewer.apiPlatform;
 var fullPathName = names[0].$replace ('\\', '/');
 if (fullPathName.indexOf ("|") > 0) {
 var ret = this.getFileAsBytes (fullPathName, null, true);
@@ -671,13 +677,13 @@ return null;
 return image;
 }, "~S,~A");
 c$.urlTypeIndex = Clazz.defineMethod (c$, "urlTypeIndex", 
-($fz = function (name) {
+function (name) {
 for (var i = 0; i < org.jmol.viewer.FileManager.urlPrefixes.length; ++i) {
 if (name.startsWith (org.jmol.viewer.FileManager.urlPrefixes[i])) {
 return i;
 }}
 return -1;
-}, $fz.isPrivate = true, $fz), "~S");
+}, "~S");
 Clazz.defineMethod (c$, "classifyName", 
 ($fz = function (name, isFullLoad) {
 if (name == null) return [null];
@@ -695,10 +701,10 @@ names[1] = org.jmol.viewer.FileManager.stripPath (names[0]);
 return names;
 }name = this.viewer.resolveDatabaseFormat (name);
 if (name.indexOf (":") < 0 && name.indexOf ("/") != 0) name = org.jmol.viewer.FileManager.addDirectory (this.viewer.getDefaultDirectory (), name);
-if (this.appletDocumentBase != null) {
+if (this.appletDocumentBaseURL != null) {
 try {
 if (name.indexOf (":\\") == 1 || name.indexOf (":/") == 1) name = "file:/" + name;
-url =  new java.net.URL (this.appletDocumentBase, name);
+url =  new java.net.URL (this.appletDocumentBaseURL, name);
 } catch (e) {
 if (Clazz.instanceOf (e, java.net.MalformedURLException)) {
 return [isFullLoad ? e.getMessage () : null];
@@ -718,7 +724,7 @@ throw e;
 }
 }
 } else {
-file =  new java.io.File (name);
+file = this.viewer.apiPlatform.newFile (name);
 names = [file.getAbsolutePath (), file.getName (), "file:/" + file.getAbsolutePath ().$replace ('\\', '/')];
 }}if (url != null) {
 names =  new Array (3);
@@ -783,15 +789,15 @@ for (var i = 0; i < org.jmol.viewer.FileManager.urlPrefixPairs.length; i++) if (
 for (var i = 0; i < org.jmol.viewer.FileManager.urlPrefixPairs.length; i += 2) if (path.indexOf (org.jmol.viewer.FileManager.urlPrefixPairs[i]) > 0) return org.jmol.viewer.FileManager.urlPrefixPairs[i + 1] + org.jmol.util.TextFormat.trim (path.substring (path.indexOf (org.jmol.viewer.FileManager.urlPrefixPairs[i]) + org.jmol.viewer.FileManager.urlPrefixPairs[i].length), "/");
 
 return null;
-}, "java.io.File");
+}, "org.jmol.api.JmolFileInterface");
 c$.getLocalDirectory = Clazz.defineMethod (c$, "getLocalDirectory", 
 function (viewer, forDialog) {
 var localDir = viewer.getParameter (forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
 if (forDialog && localDir.length == 0) localDir = viewer.getParameter ("defaultDirectoryLocal");
-if (localDir.length == 0) return (viewer.isApplet () ? null :  new java.io.File (System.getProperty ("user.dir", ".")));
+if (localDir.length == 0) return (viewer.isApplet () ? null : viewer.apiPlatform.newFile (System.getProperty ("user.dir", ".")));
 if (viewer.isApplet () && localDir.indexOf ("file:/") == 0) localDir = localDir.substring (6);
-var f =  new java.io.File (localDir);
-return f.isDirectory () ? f : f.getParentFile ();
+var f = viewer.apiPlatform.newFile (localDir);
+return f.isDirectory () ? f : f.getParentAsFile ();
 }, "org.jmol.api.JmolViewer,~B");
 c$.setLocalPath = Clazz.defineMethod (c$, "setLocalPath", 
 function (viewer, path, forDialog) {
@@ -1016,7 +1022,7 @@ var ret = this.postByteArray (outFileName, bytes);
 if (ret.indexOf ("Exception") >= 0) return ret;
 msg += " " + ret;
 } else {
-var f =  new java.io.File (outFileName);
+var f = this.viewer.apiPlatform.newFile (outFileName);
 fullFilePath = f.getAbsolutePath ().$replace ('\\', '/');
 nBytes = f.length ();
 }} catch (e) {
@@ -1214,7 +1220,7 @@ this.htParams = b;
 }, "~O,java.util.Map");
 Clazz.defineMethod (c$, "run", 
 function () {
-this.htParams.put ("nameSpaceInfo", this.b$["org.jmol.viewer.FileManager"].viewer.getApiPlatform ().getJsObjectInfo (this.aDOMNode, null, null));
+this.htParams.put ("nameSpaceInfo", this.b$["org.jmol.viewer.FileManager"].viewer.apiPlatform.getJsObjectInfo (this.aDOMNode, null, null));
 this.atomSetCollection = this.b$["org.jmol.viewer.FileManager"].viewer.getModelAdapter ().getAtomSetCollectionFromDOM (this.aDOMNode, this.htParams);
 if (Clazz.instanceOf (this.atomSetCollection, String)) return ;
 this.b$["org.jmol.viewer.FileManager"].viewer.zap (false, true, false);

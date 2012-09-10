@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jsmol.test");
-Clazz.load (null, "org.jsmol.test.Test", ["java.io.BufferedReader", "$.StringReader", "java.util.Hashtable", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (null, "org.jsmol.test.Test", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "java.util.Hashtable", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 Clazz.instantialize (this, arguments);
@@ -14,19 +14,26 @@ return  new java.io.BufferedReader ( new java.io.StringReader (string));
 }, "~S");
 Clazz.makeConstructor (c$, 
 function () {
-($t$ = org.jsmol.test.Test.adapter =  new org.jmol.adapter.smarter.SmarterJmolAdapter (), org.jsmol.test.Test.prototype.adapter = org.jsmol.test.Test.adapter, $t$);
-var reader = org.jsmol.test.Test.getBufferedReaderForString ("3\nwater\nO  0.0 0.0 0.0\nH  0.76923955 -0.59357141 0.0\nH -0.76923955 -0.59357141 0.0\n");
-var htParams =  new java.util.Hashtable ();
-var ret = org.jsmol.test.Test.adapter.getAtomSetCollectionReader ("string", null, reader, htParams);
-if (!(Clazz.instanceOf (ret, String))) ret = org.jsmol.test.Test.adapter.getAtomSetCollection (ret);
-if (!(Clazz.instanceOf (ret, String))) ($t$ = org.jsmol.test.Test.atomSetCollection = ret, org.jsmol.test.Test.prototype.atomSetCollection = org.jsmol.test.Test.atomSetCollection, $t$);
-var commandOptions = "-ionj \"load 1crn.pdb\"";
-this.viewer = org.jmol.viewer.Viewer.allocateViewer (null, org.jsmol.test.Test.adapter, null, null, null, commandOptions, null);
-if (Clazz.instanceOf (ret, String)) System.out.println (ret);
- else System.out.println ("testing atomCount=" + org.jsmol.test.Test.atomSetCollection.getAtomCount ());
+try {
+var viewerOptions =  new java.util.Hashtable ();
+viewerOptions.put ("adapter",  new org.jmol.adapter.smarter.SmarterJmolAdapter ());
+viewerOptions.put ("applet", Boolean.TRUE);
+viewerOptions.put ("platform", "org.jmol.awtjs.Platform");
+viewerOptions.put ("fullName", "http://chemapps.stolaf.edu/jmol/test/jsmol.htm");
+viewerOptions.put ("documentBase", "http://chemapps.stolaf.edu/jmol/test/jsmol.htm");
+viewerOptions.put ("codeBase", "http://chemapps.stolaf.edu/jmol/test");
+this.viewer =  new org.jmol.viewer.Viewer (viewerOptions);
+} catch (e) {
+if (Clazz.instanceOf (e, Exception)) {
+System.out.println (e.getMessage ());
+e.printStackTrace ();
+} else {
+throw e;
+}
+}
+this.viewer.scriptWait ("load DATA \"model\" \n3\nwater\nO  0.0 0.0 0.0\nH  0.76923955 -0.59357141 0.0\nH -0.76923955 -0.59357141 0.0\n\nend \"model\"\n");
 });
 Clazz.defineStatics (c$,
-"atomSetCollection", null,
 "adapter", null,
 "strXyzHOH", "3\nwater\nO  0.0 0.0 0.0\nH  0.76923955 -0.59357141 0.0\nH -0.76923955 -0.59357141 0.0\n");
 });

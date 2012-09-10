@@ -4,7 +4,6 @@ import javax.vecmath.Point3f;
 
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.URLAdapter;
 import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
@@ -33,13 +32,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  void clearMouse();
-
-  void disposeMouse();
-
-  void getMouseManager(Viewer viewer, ActionManager actionManager);
-
-  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time);
+  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager);
 
   ///// Font
   
@@ -129,5 +122,7 @@ public interface ApiPlatform {
   Object getJsObjectInfo(Object jsObject, String method, Object[] args);
 
   FileAdapterInterface getFileAdapter();
+
+  JmolFileInterface newFile(String name);
 
 }

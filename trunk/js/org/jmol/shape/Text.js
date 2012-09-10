@@ -102,8 +102,8 @@ Clazz.overrideMethod (c$, "recalc",
 function () {
 if (this.image != null) {
 this.textWidth = this.textHeight = 0;
-this.boxWidth = this.viewer.getApiPlatform ().getImageWidth (this.image) * this.fontScale * this.imageScale;
-this.boxHeight = this.viewer.getApiPlatform ().getImageHeight (this.image) * this.fontScale * this.imageScale;
+this.boxWidth = this.viewer.apiPlatform.getImageWidth (this.image) * this.fontScale * this.imageScale;
+this.boxHeight = this.viewer.apiPlatform.getImageHeight (this.image) * this.fontScale * this.imageScale;
 this.ascent = 0;
 return ;
 }if (this.text == null) {

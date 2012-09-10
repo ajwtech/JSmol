@@ -182,8 +182,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlReadSurfaceInfo();
   }
 
-  protected void jvxlSkipData(@SuppressWarnings("unused") int nPoints,
-                              @SuppressWarnings("unused") boolean doSkipColorData)
+  protected void jvxlSkipData(int nPoints, boolean doSkipColorData)
       throws Exception {
     readLine();
     xr.skipTag("jvxlSurface");

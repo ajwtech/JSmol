@@ -7,6 +7,8 @@
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Hashtable;
+import java.util.Map;
 
 //import javax.swing.JFrame;
 //import javax.swing.JPanel;
@@ -29,22 +31,24 @@ public class Test {
     return new BufferedReader(new StringReader(string));
   }
 
-	private static AtomSetCollection atomSetCollection;
-
   private JmolViewer viewer;
   private static JmolAdapter adapter;
 
-  public Test() {
-		String commandOptions = "-i -n";
-		adapter = new SmarterJmolAdapter();
+	public Test() {
 		try {
-			viewer = Viewer.allocateViewer(null, adapter, 
-			    null, new URL("http://chemapps.stolaf.edu/Jmol/test"), new URL("http://chemapps.stolaf.edu/Jmol/test"), commandOptions, null, new org.jmol.awtjs.Platform());
+			Map<String, Object> viewerOptions = new Hashtable<String, Object>();
+			viewerOptions.put("adapter", new SmarterJmolAdapter());
+			viewerOptions.put("applet", Boolean.TRUE);
+			viewerOptions.put("platform", "org.jmol.awtjs.Platform");
+			viewerOptions.put("fullName", "http://chemapps.stolaf.edu/jmol/test/jsmol.htm");
+			viewerOptions.put("documentBase", "http://chemapps.stolaf.edu/jmol/test/jsmol.htm");
+			viewerOptions.put("codeBase", "http://chemapps.stolaf.edu/jmol/test");
+			viewer = new Viewer(viewerOptions);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		viewer.scriptWait("load 1crn.pdb");
+		viewer.scriptWait("load DATA \"model\" \n" + strXyzHOH + "\nend \"model\"\n");
 	}
 
   private final static String strXyzHOH = 
