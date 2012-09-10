@@ -1,9 +1,9 @@
-String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
-
  // BH added wrapper at line 2856
  // BH newArray fix at line 2205
  // BH System.getProperty fix at line 6693
  // BH added Enum .value() method at line 2183
+ // BH added System.getSecurityManager() at end
+ // BH added String.contains() at end
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -2895,6 +2895,7 @@ Clazz.forName = function (clazzName) {
 	if (window["ClazzLoader"] != null) {
 		ClazzLoader.setLoadingMode ("xhr.sync");
 		ClazzLoader.loadClass (clazzName);
+		alert("TESTING HERE in Clazz.forName")
 		return Clazz.evalType (clazzName);
 	} else {
 		alert ("[Java2Script] Error: No ClassLoader!");
@@ -6856,6 +6857,11 @@ window.assert = function () {
 		return o;
 	};
 //}
+
+  System.getSecurityManager = function() { return null };
+  String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+
 }
+
 
 
