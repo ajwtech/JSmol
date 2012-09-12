@@ -1028,39 +1028,6 @@ public final class URL implements java.io.Serializable {
     }
 
     /**
-     * Gets the contents of this URL. This method is a shorthand for:
-     * <blockquote><pre>
-     *     openConnection().getContent()
-     * </pre></blockquote>
-     *
-     * @return     the contents of this URL.
-     * @exception  IOException  if an I/O exception occurs.
-     * @see        java.net.URLConnection#getContent()
-     */
-    public final Object getContent() throws java.io.IOException {
-        return openConnection().getContent();
-    }
-
-    /**
-     * Gets the contents of this URL. This method is a shorthand for:
-     * <blockquote><pre>
-     *     openConnection().getContent(Class[])
-     * </pre></blockquote>
-     *
-     * @param classes an array of Java types
-     * @return     the content object of this URL that is the first match of
-     *               the types specified in the classes array.
-     *               null if none of the requested types are supported.
-     * @exception  IOException  if an I/O exception occurs.
-     * @see        java.net.URLConnection#getContent(Class[])
-     * @since 1.3
-     */
-    public final Object getContent(Class<?>[] classes)
-    throws java.io.IOException {
-        return openConnection().getContent(classes);
-    }
-
-    /**
      * The URLStreamHandler factory.
      */
     static URLStreamHandlerFactory factory;

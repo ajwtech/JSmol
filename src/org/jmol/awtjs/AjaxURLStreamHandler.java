@@ -7,7 +7,8 @@ import java.net.URLStreamHandler;
 
 /**
  * 
- * A method to allow a JavaScript Ajax 
+ * A method to allow a JavaScript AJAX adapter to 
+ * deliver web content to JSmol. This handler is just a formality.
  * 
  */
 public class AjaxURLStreamHandler extends URLStreamHandler {
@@ -20,7 +21,7 @@ public class AjaxURLStreamHandler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
-		return null;
+		return new JmolURLConnection(url);
 	}
 
 
