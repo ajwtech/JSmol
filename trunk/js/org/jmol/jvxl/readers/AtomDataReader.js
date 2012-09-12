@@ -97,7 +97,7 @@ Clazz.defineMethod (c$, "getAtoms",
 function (bsSelected, doAddHydrogens, getRadii, getMolecules, getAllModels, addNearbyAtoms, getAtomMinMax, marginAtoms) {
 if (addNearbyAtoms) getRadii = true;
 if (getRadii) {
-if (this.params.atomRadiusData == null) this.params.atomRadiusData =  new org.jmol.atomdata.RadiusData (1, org.jmol.atomdata.RadiusData.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO);
+if (this.params.atomRadiusData == null) this.params.atomRadiusData =  new org.jmol.atomdata.RadiusData (1, org.jmol.atomdata.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO);
 this.atomData.radiusData = this.params.atomRadiusData;
 this.atomData.radiusData.valueExtended = this.params.solventExtendedAtomRadius;
 if (doAddHydrogens) this.atomData.radiusData.vdwType = org.jmol.constant.EnumVdw.NOJMOL;

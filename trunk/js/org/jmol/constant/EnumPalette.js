@@ -5,6 +5,11 @@ this.$$name = null;
 this.id = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumPalette", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (name, id) {
+this.$$name = name;
+this.id = id;
+}, $fz.isPrivate = true, $fz), "~S,~N");
 c$.pidOf = Clazz.defineMethod (c$, "pidOf", 
 function (value) {
 return (Clazz.instanceOf (value, org.jmol.constant.EnumPalette) ? (value).id : Clazz.instanceOf (value, Byte) ? (value).byteValue () : org.jmol.constant.EnumPalette.UNKNOWN.id);

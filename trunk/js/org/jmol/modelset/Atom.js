@@ -1,7 +1,7 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.util.JmolNode", "$.Point3fi", "org.jmol.constant.EnumPalette", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Atom", ["java.lang.Float", "$.StringBuffer", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.util.Colix", "$.ColorUtil", "$.Elements"], function () {
 c$ = Clazz.decorateAsClass (function () {
-this.alternateLocationID = 0;
+this.alternateLocationID = '\0';
 this.atomID = 0;
 this.atomSite = 0;
 this.group = null;
@@ -40,7 +40,7 @@ function () {
 return this.nBackbonesDisplayed;
 });
 Clazz.makeConstructor (c$, 
-function (modelIndex, atomIndex, x, y, z, radius, atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge, isHetero, alternateLocationID) {
+function (modelIndex, atomIndex, x, y, z, radius, atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge, isHetero) {
 Clazz.superConstructor (this, org.jmol.modelset.Atom, []);
 this.modelIndex = modelIndex;
 this.atomSymmetry = atomSymmetry;
@@ -49,10 +49,17 @@ this.index = atomIndex;
 this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
 if (isHetero) this.formalChargeAndFlags = 2;
 this.setFormalCharge (formalCharge);
-this.alternateLocationID = alternateLocationID;
 this.userDefinedVanDerWaalRadius = radius;
 this.set (x, y, z);
-}, "~N,~N,~N,~N,~N,~N,java.util.BitSet,~N,~N,~N,~B,~N");
+}, "~N,~N,~N,~N,~N,~N,java.util.BitSet,~N,~N,~N,~B");
+Clazz.defineMethod (c$, "setAltLoc", 
+function (altLoc) {
+this.alternateLocationID = altLoc.charAt (0);
+}, "~S");
+Clazz.defineMethod (c$, "setAltLoc", 
+function (altLoc) {
+this.alternateLocationID = altLoc;
+}, "~N");
 Clazz.defineMethod (c$, "setShapeVisibilityFlags", 
 function (flag) {
 this.shapeVisibilityFlags = flag;
@@ -154,7 +161,7 @@ break;
 default:
 r = this.getVanderwaalsRadiusFloat (viewer, rd.vdwType);
 }
-if (rd.factorType === org.jmol.atomdata.RadiusData.RadiusData.EnumType.FACTOR) f *= r;
+if (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.FACTOR) f *= r;
  else f += r;
 break;
 case org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE:

@@ -7,7 +7,7 @@ var s;
 try {
 s = java.util.ResourceBundle.getBundle ("javax.vecmath.ExceptionStrings").getString (key);
 } catch (e) {
-if (Clazz.instanceOf (e, java.util.MissingResourceException)) {
+if (Clazz.exceptionOf (e, java.util.MissingResourceException)) {
 System.err.println ("VecMathI18N: Error looking up: " + key);
 s = key;
 } else {

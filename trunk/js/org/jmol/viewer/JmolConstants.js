@@ -262,7 +262,7 @@ tmpDate = props.getProperty ("___date", tmpDate);
 if (tmpDate != null) {
 tmpDate = tmpDate.substring (7, 23);
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -271,7 +271,7 @@ if (bis != null) {
 try {
 bis.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -280,7 +280,7 @@ throw e;
 try {
 is.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

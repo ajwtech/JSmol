@@ -345,7 +345,7 @@ return NaN;
 Clazz.defineMethod (c$, "getLabel", 
 function (i, asBitSet, withModelIndex) {
 var atomIndex = this.countPlusIndices[i];
-return (atomIndex < 0 ? (withModelIndex ? "modelIndex " + this.getAtom (i).modelIndex + " " : "") + org.jmol.util.Escape.escape (this.getAtom (i)) : asBitSet ? "(({" + atomIndex + "}))" : this.viewer.getAtomInfo (atomIndex));
+return (atomIndex < 0 ? (withModelIndex ? "modelIndex " + this.getAtom (i).modelIndex + " " : "") + org.jmol.util.Escape.escapePt (this.getAtom (i)) : asBitSet ? "(({" + atomIndex + "}))" : this.viewer.getAtomInfo (atomIndex));
 }, "~N,~B,~B");
 Clazz.defineMethod (c$, "setModelIndex", 
 function (modelIndex) {
@@ -389,7 +389,7 @@ return sb.toString ();
 }, "~S");
 Clazz.defineMethod (c$, "isInRange", 
 function (radiusData, value) {
-if (radiusData.factorType === org.jmol.atomdata.RadiusData.RadiusData.EnumType.FACTOR) {
+if (radiusData.factorType === org.jmol.atomdata.RadiusData.EnumType.FACTOR) {
 var atom1 = this.getAtom (1);
 var atom2 = this.getAtom (2);
 var d = (atom1.getVanderwaalsRadiusFloat (this.viewer, radiusData.vdwType) + atom2.getVanderwaalsRadiusFloat (this.viewer, radiusData.vdwType)) * radiusData.value;

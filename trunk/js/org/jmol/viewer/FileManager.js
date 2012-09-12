@@ -89,7 +89,7 @@ function (documentBase) {
 try {
 this.appletDocumentBaseURL = (documentBase.length == 0 ? null :  new java.net.URL (documentBase));
 } catch (e) {
-if (Clazz.instanceOf (e, java.net.MalformedURLException)) {
+if (Clazz.exceptionOf (e, java.net.MalformedURLException)) {
 } else {
 throw e;
 }
@@ -293,11 +293,11 @@ bis.close ();
 bis = null;
 }return bis;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 try {
 if (bis != null) bis.close ();
 } catch (e1) {
-if (Clazz.instanceOf (e1, java.io.IOException)) {
+if (Clazz.exceptionOf (e1, java.io.IOException)) {
 } else {
 throw e1;
 }
@@ -314,7 +314,7 @@ Clazz.defineMethod (c$, "urlEncode",
 try {
 return java.net.URLEncoder.encode (name, "utf-8");
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.UnsupportedEncodingException)) {
+if (Clazz.exceptionOf (e, java.io.UnsupportedEncodingException)) {
 return name;
 } else {
 throw e;
@@ -420,7 +420,7 @@ return org.jmol.viewer.FileManager.getBufferedReaderForString (s);
 }}if (asInputStream) return bis;
 return  new java.io.BufferedReader ( new java.io.InputStreamReader (bis));
 } catch (ioe) {
-if (Clazz.instanceOf (ioe, Exception)) {
+if (Clazz.exceptionOf (ioe, Exception)) {
 return ioe.getMessage ();
 } else {
 throw ioe;
@@ -470,7 +470,7 @@ try {
 while (true) sb.append (Integer.toHexString ((bd.readByte ()) & 0xFF)).append (' ');
 
 } catch (e1) {
-if (Clazz.instanceOf (e1, Exception)) {
+if (Clazz.exceptionOf (e1, Exception)) {
 sb.append ('\n');
 } else {
 throw e1;
@@ -491,7 +491,7 @@ br.close ();
 if (header != null) sb.append ("\nEND Directory Entry " + name0 + "\n");
 fileData.put (name0, sb.toString ());
 }} catch (ioe) {
-if (Clazz.instanceOf (ioe, Exception)) {
+if (Clazz.exceptionOf (ioe, Exception)) {
 fileData.put (name0, ioe.getMessage ());
 } else {
 throw ioe;
@@ -500,7 +500,7 @@ throw ioe;
 if (bis != null) try {
 bis.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -525,7 +525,7 @@ var bytes = (os != null || subFileList == null || subFileList.length <= 1 || !al
 bis.close ();
 return bytes;
 } catch (ioe) {
-if (Clazz.instanceOf (ioe, Exception)) {
+if (Clazz.exceptionOf (ioe, Exception)) {
 return ioe.getMessage ();
 } else {
 throw ioe;
@@ -585,7 +585,7 @@ data[1] = sb.toString ();
 org.jmol.viewer.FileManager.fixUnicode (data, 1);
 return true;
 } catch (ioe) {
-if (Clazz.instanceOf (ioe, Exception)) {
+if (Clazz.exceptionOf (ioe, Exception)) {
 data[1] = ioe.getMessage ();
 return false;
 } else {
@@ -618,7 +618,7 @@ default:
 break;
 }
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.UnsupportedEncodingException)) {
+if (Clazz.exceptionOf (e, java.io.UnsupportedEncodingException)) {
 System.out.println (e);
 } else {
 throw e;
@@ -648,7 +648,7 @@ return null;
 try {
 image = apiPlatform.createImage ( new java.net.URL (fullPathName));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 retFileNameOrError[0] = "bad URL: " + fullPathName;
 return null;
 } else {
@@ -662,7 +662,7 @@ try {
 if (!apiPlatform.waitForDisplay (this.viewer.getDisplay (), image)) {
 return null;
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 retFileNameOrError[0] = e.getMessage () + " opening " + fullPathName;
 return null;
@@ -706,7 +706,7 @@ try {
 if (name.indexOf (":\\") == 1 || name.indexOf (":/") == 1) name = "file:/" + name;
 url =  new java.net.URL (this.appletDocumentBaseURL, name);
 } catch (e) {
-if (Clazz.instanceOf (e, java.net.MalformedURLException)) {
+if (Clazz.exceptionOf (e, java.net.MalformedURLException)) {
 return [isFullLoad ? e.getMessage () : null];
 } else {
 throw e;
@@ -717,7 +717,7 @@ if (org.jmol.viewer.FileManager.urlTypeIndex (name) >= 0 || this.viewer.isRestri
 try {
 url =  new java.net.URL (name);
 } catch (e) {
-if (Clazz.instanceOf (e, java.net.MalformedURLException)) {
+if (Clazz.exceptionOf (e, java.net.MalformedURLException)) {
 return [isFullLoad ? e.getMessage () : null];
 } else {
 throw e;
@@ -880,7 +880,7 @@ org.jmol.viewer.FileManager.getFileReferences (script, fileNames);
 if (haveSceneScript) org.jmol.viewer.FileManager.getFileReferences (scripts[1], fileNames);
 }var haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
 if (haveScripts) {
-script = org.jmol.viewer.FileManager.wrapPathForAllFiles ("script " + org.jmol.util.Escape.escape (scripts[0]), "");
+script = org.jmol.viewer.FileManager.wrapPathForAllFiles ("script " + org.jmol.util.Escape.escapeStr (scripts[0]), "");
 for (var i = 0; i < scripts.length; i++) fileNames.add (scripts[i]);
 
 }var nFiles = fileNames.size ();
@@ -1026,7 +1026,7 @@ var f = this.viewer.apiPlatform.newFile (outFileName);
 fullFilePath = f.getAbsolutePath ().$replace ('\\', '/');
 nBytes = f.length ();
 }} catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.info (e.getMessage ());
 return e.getMessage ();
 } else {
@@ -1042,11 +1042,11 @@ if (Clazz.instanceOf (ret, String)) return ret;
 try {
 ret = org.jmol.viewer.FileManager.getStreamAsBytes (ret, null);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 try {
 (ret).close ();
 } catch (e1) {
-if (Clazz.instanceOf (e1, java.io.IOException)) {
+if (Clazz.exceptionOf (e1, java.io.IOException)) {
 } else {
 throw e1;
 }
@@ -1101,7 +1101,7 @@ var shortName = this.shortSceneFilename (data[0]);
 try {
 data[1] = org.jmol.util.ZipUtil.cacheZipContents (org.jmol.util.ZipUtil.checkPngZipStream (this.getBufferedInputStreamOrErrorMessageFromName (data[0], null, false, false, null)), shortName, this.pngjCache);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return false;
 } else {
 throw e;
@@ -1156,7 +1156,7 @@ list.add (Integer.$valueOf (iScene));
 var key = iSceneLast + "-" + iScene;
 htScenes.put (key, scenes[i - 1]);
 if (i > 1) sceneScript.append (",");
-sceneScript.append ('\n').append (org.jmol.util.Escape.escape (key)).append (": ").append (org.jmol.util.Escape.escape (scenes[i - 1]));
+sceneScript.append ('\n').append (org.jmol.util.Escape.escapeStr (key)).append (": ").append (org.jmol.util.Escape.escapeStr (scenes[i - 1]));
 iSceneLast = iScene;
 }
 sceneScript.append ("\n}\n");
@@ -1282,7 +1282,7 @@ this.atomSetCollection = this.b$["org.jmol.viewer.FileManager"].viewer.getModelA
 try {
 e.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1293,7 +1293,7 @@ if (!(Clazz.instanceOf (this.atomSetCollection, String))) this.atomSetCollection
 }if (this.reader != null) try {
 this.reader.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -1483,25 +1483,6 @@ Clazz.defineEnumConstant (c$, "UTF_16BE", 2, []);
 Clazz.defineEnumConstant (c$, "UTF_16LE", 3, []);
 Clazz.defineEnumConstant (c$, "UTF_32BE", 4, []);
 Clazz.defineEnumConstant (c$, "UTF_32LE", 5, []);
-c$ = Clazz.p0p ();
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-this.code = 0;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.FileManager, "EnumFileStatus", Enum);
-Clazz.defineMethod (c$, "getCode", 
-function () {
-return this.code;
-});
-Clazz.makeConstructor (c$, 
-function (a) {
-this.code = a;
-}, "~N");
-Clazz.defineEnumConstant (c$, "DELETED", 0, [5]);
-Clazz.defineEnumConstant (c$, "CREATED", 1, [3]);
-Clazz.defineEnumConstant (c$, "CREATING_MODELSET", 2, [2]);
-Clazz.defineEnumConstant (c$, "ZAPPED", 3, [0]);
-Clazz.defineEnumConstant (c$, "NOT_LOADED", 4, [-1]);
 c$ = Clazz.p0p ();
 Clazz.defineStatics (c$,
 "URL_LOCAL", 3,

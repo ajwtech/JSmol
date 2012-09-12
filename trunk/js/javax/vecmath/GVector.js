@@ -350,7 +350,7 @@ if (this.values[i] != vector1.values[i]) return false;
 }
 return true;
 } catch (e2) {
-if (Clazz.instanceOf (e2, NullPointerException)) {
+if (Clazz.exceptionOf (e2, NullPointerException)) {
 return false;
 } else {
 throw e2;
@@ -367,12 +367,12 @@ if (this.values[i] != v2.values[i]) return false;
 }
 return true;
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, ClassCastException)) {
+if (Clazz.exceptionOf (e$$, ClassCastException)) {
 var e1 = e$$;
 {
 return false;
 }
-} else if (Clazz.instanceOf (e$$, NullPointerException)) {
+} else if (Clazz.exceptionOf (e$$, NullPointerException)) {
 var e2 = e$$;
 {
 return false;
@@ -475,7 +475,7 @@ var v1 = null;
 try {
 v1 = Clazz.superCall (this, javax.vecmath.GVector, "clone", []);
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 throw  new InternalError ();
 } else {
 throw e;

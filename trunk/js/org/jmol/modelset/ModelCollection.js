@@ -227,12 +227,12 @@ function (withOptions) {
 if (!withOptions && this.bboxAtoms != null) return "boundbox " + org.jmol.util.Escape.escape (this.bboxAtoms);
 this.ptTemp.set (this.boxInfo.getBoundBoxCenter ());
 var bbVector = this.boxInfo.getBoundBoxCornerVector ();
-var s = (withOptions ? "boundbox " + org.jmol.util.Escape.escape (this.ptTemp) + " " + org.jmol.util.Escape.escape (bbVector) + "\n#or\n" : "");
+var s = (withOptions ? "boundbox " + org.jmol.util.Escape.escapePt (this.ptTemp) + " " + org.jmol.util.Escape.escapePt (bbVector) + "\n#or\n" : "");
 this.ptTemp.sub (bbVector);
-s += "boundbox corners " + org.jmol.util.Escape.escape (this.ptTemp) + " ";
+s += "boundbox corners " + org.jmol.util.Escape.escapePt (this.ptTemp) + " ";
 this.ptTemp.scaleAdd (2, bbVector, this.ptTemp);
 var v = Math.abs (8 * bbVector.x * bbVector.y * bbVector.z);
-s += org.jmol.util.Escape.escape (this.ptTemp) + " # volume = " + v;
+s += org.jmol.util.Escape.escapePt (this.ptTemp) + " # volume = " + v;
 return s;
 }, "~B");
 Clazz.defineMethod (c$, "getDefaultVdwType", 
@@ -841,7 +841,7 @@ var maxXYZ = parameters[5];
 var factors = parameters[6];
 var center = parameters[7];
 sb.append ("REMARK   6 Jmol PDB-encoded data: ").append (type).append (";\n");
-sb.append ("REMARK   6 Jmol data").append (" min = ").append (org.jmol.util.Escape.escape (minXYZ)).append (" max = ").append (org.jmol.util.Escape.escape (maxXYZ)).append (" unScaledXyz = xyz * ").append (org.jmol.util.Escape.escape (factors)).append (" + ").append (org.jmol.util.Escape.escape (center)).append (";\n");
+sb.append ("REMARK   6 Jmol data").append (" min = ").append (org.jmol.util.Escape.escapePt (minXYZ)).append (" max = ").append (org.jmol.util.Escape.escapePt (maxXYZ)).append (" unScaledXyz = xyz * ").append (org.jmol.util.Escape.escapePt (factors)).append (" + ").append (org.jmol.util.Escape.escapePt (center)).append (";\n");
 var strExtra = "";
 var atomLast = null;
 for (var i = bsAtoms.nextSetBit (0), n = 0; i >= 0; i = bsAtoms.nextSetBit (i + 1), n++) {
@@ -1243,7 +1243,7 @@ if (centroidPacked || n > 0 && org.jmol.modelset.ModelCollection.isNotCentroid (
 }
 if (bsDelete.nextSetBit (0) >= 0) this.viewer.deleteAtoms (bsDelete, false);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1909,14 +1909,14 @@ if (this.modelSetProperties != null) {
 var e = this.modelSetProperties.propertyNames ();
 while (e.hasMoreElements ()) {
 var propertyName = e.nextElement ();
-sb.append ("\n <property name=\"").append (propertyName).append ("\" value=").append (org.jmol.util.Escape.escape (this.modelSetProperties.getProperty (propertyName))).append (" />");
+sb.append ("\n <property name=\"").append (propertyName).append ("\" value=").append (org.jmol.util.Escape.escapeStr (this.modelSetProperties.getProperty (propertyName))).append (" />");
 }
 sb.append ("\n</properties>");
 }for (var i = 0; i < this.modelCount; ++i) {
-sb.append ("\n<model index=\"").append (i).append ("\" n=\"").append (this.getModelNumberDotted (i)).append ("\" id=").append (org.jmol.util.Escape.escape ("" + this.getModelAuxiliaryInfo (i, "modelID")));
+sb.append ("\n<model index=\"").append (i).append ("\" n=\"").append (this.getModelNumberDotted (i)).append ("\" id=").append (org.jmol.util.Escape.escapeStr ("" + this.getModelAuxiliaryInfo (i, "modelID")));
 var ib = this.getBaseModelIndex (i);
 if (ib != i) sb.append (" baseModelId=").append (org.jmol.util.Escape.escape (this.getModelAuxiliaryInfo (ib, "jdxModelID")));
-sb.append (" name=").append (org.jmol.util.Escape.escape (this.getModelName (i))).append (" title=").append (org.jmol.util.Escape.escape (this.getModelTitle (i))).append (" hasVibrationVectors=\"").append (this.modelHasVibrationVectors (i)).append ("\" />");
+sb.append (" name=").append (org.jmol.util.Escape.escapeStr (this.getModelName (i))).append (" title=").append (org.jmol.util.Escape.escapeStr (this.getModelTitle (i))).append (" hasVibrationVectors=\"").append (this.modelHasVibrationVectors (i)).append ("\" />");
 }
 sb.append ("\n</models>");
 return sb.toString ();
@@ -2158,11 +2158,11 @@ function (frames) {
 var sb =  new StringBuffer ();
 for (var i = 0; i < this.modelCount; ++i) {
 if (frames != null && !frames.get (i)) continue ;var s = "[\"" + this.getModelNumberDotted (i) + "\"] = ";
-sb.append ("\n\nfile").append (s).append (org.jmol.util.Escape.escape (this.getModelFileName (i)));
+sb.append ("\n\nfile").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelFileName (i)));
 var id = this.getModelAuxiliaryInfo (i, "modelID");
-if (id != null) sb.append ("\nid").append (s).append (org.jmol.util.Escape.escape (id));
-sb.append ("\ntitle").append (s).append (org.jmol.util.Escape.escape (this.getModelTitle (i)));
-sb.append ("\nname").append (s).append (org.jmol.util.Escape.escape (this.getModelName (i)));
+if (id != null) sb.append ("\nid").append (s).append (org.jmol.util.Escape.escapeStr (id));
+sb.append ("\ntitle").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelTitle (i)));
+sb.append ("\nname").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelName (i)));
 }
 return sb.toString ();
 }, "java.util.BitSet");
@@ -2420,7 +2420,7 @@ switch (type) {
 case 135266306:
 return info;
 case 1073742001:
-var sinfo = [info[0], info[1], info[2], org.jmol.util.Escape.escape (info[4]), org.jmol.util.Escape.escape (info[5]), org.jmol.util.Escape.escape (info[6]), org.jmol.util.Escape.escape (info[7]), org.jmol.util.Escape.escape (info[8]), "" + info[9], "" + org.jmol.util.Escape.escape (info[10])];
+var sinfo = [info[0], info[1], info[2], org.jmol.util.Escape.escapePt (info[4]), org.jmol.util.Escape.escapePt (info[5]), org.jmol.util.Escape.escapePt (info[6]), org.jmol.util.Escape.escapePt (info[7]), org.jmol.util.Escape.escapePt (info[8]), "" + info[9], "" + org.jmol.util.Escape.escape (info[10])];
 return sinfo;
 case 1073741982:
 return info[0];
@@ -2666,11 +2666,11 @@ if (this.atomSerials != null) this.atomSerials = org.jmol.util.ArrayUtil.setLeng
 }, "~N");
 Clazz.defineMethod (c$, "addAtom", 
 function (modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z) {
-return this.addAtom (modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, NaN, NaN, NaN, NaN, 0, 0, 100, NaN, null, false, '\0', 0, null);
+return this.addAtom (modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, NaN, NaN, NaN, NaN, 0, 0, 100, NaN, null, false, 0, null);
 }, "~N,org.jmol.modelset.Group,~N,~S,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "addAtom", 
-function (modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY, vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid, isHetero, alternateLocationID, specialAtomID, atomSymmetry) {
-var atom =  new org.jmol.modelset.Atom (modelIndex, this.atomCount, x, y, z, radius, atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge, isHetero, alternateLocationID);
+function (modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY, vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid, isHetero, specialAtomID, atomSymmetry) {
+var atom =  new org.jmol.modelset.Atom (modelIndex, this.atomCount, x, y, z, radius, atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);
 this.models[modelIndex].atomCount++;
 this.models[modelIndex].bsAtoms.set (this.atomCount);
 if (atomicAndIsotopeNumber % 128 == 1) this.models[modelIndex].hydrogenCount++;
@@ -2698,7 +2698,7 @@ this.atomSerials[this.atomCount] = atomSerial;
 }if (!Float.isNaN (vectorX)) this.setVibrationVector (this.atomCount, vectorX, vectorY, vectorZ);
 this.atomCount++;
 return atom;
-}, "~N,org.jmol.modelset.Group,~N,~S,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~A,~B,~N,~N,java.util.BitSet");
+}, "~N,org.jmol.modelset.Group,~N,~S,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~A,~B,~N,java.util.BitSet");
 Clazz.defineMethod (c$, "getInlineData", 
 function (modelIndex) {
 var data = null;
@@ -2898,7 +2898,7 @@ Clazz.overrideMethod (c$, "toString",
 function () {
 if (!this.isValid ()) return "";
 var a =  new StringBuffer (this.script1);
-if (this.bsBonds != null) a.append (" ").append (org.jmol.util.Escape.escape (this.bsBonds, false));
+if (this.bsBonds != null) a.append (" ").append (org.jmol.util.Escape.escapeBs (this.bsBonds, false));
 if (this.bsAtoms1 != null) a.append (" ").append (org.jmol.util.Escape.escape (this.bsAtoms1));
 if (this.bsAtoms2 != null) a.append (" ").append (org.jmol.util.Escape.escape (this.bsAtoms2));
 if (this.script2 != null) a.append (" ").append (this.script2);

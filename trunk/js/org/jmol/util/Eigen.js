@@ -282,7 +282,7 @@ org.jmol.util.Logger.info ("v[i], n, n x v[i]" + evec[i] + " " + n + " " + cross
 n.set (evec[i]);
 n.normalize ();
 cross.cross (evec[i], evec[(i + 1) % 3]);
-org.jmol.util.Logger.info ("draw id eigv" + i + " " + org.jmol.util.Escape.escape (evec[i]) + " color " + (i == 0 ? "red" : i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+org.jmol.util.Logger.info ("draw id eigv" + i + " " + org.jmol.util.Escape.escapePt (evec[i]) + " color " + (i == 0 ? "red" : i == 1 ? "green" : "blue") + " # " + n + " " + cross);
 }
 org.jmol.util.Logger.info ("eigVl (" + eigen.d[0] + " + " + eigen.e[0] + "I) (" + eigen.d[1] + " + " + eigen.e[1] + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
 var unitVectors =  new Array (3);

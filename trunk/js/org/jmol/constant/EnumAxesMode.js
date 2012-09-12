@@ -4,6 +4,10 @@ c$ = Clazz.decorateAsClass (function () {
 this.code = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumAxesMode", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (code) {
+this.code = code;
+}, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "getCode", 
 function () {
 return this.code;

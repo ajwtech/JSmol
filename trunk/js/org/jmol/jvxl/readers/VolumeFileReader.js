@@ -95,7 +95,7 @@ this.scaleIsosurface (this.params.scale);
 this.volumeData.setVolumetricXml ();
 return this.nSurfaces;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (e.toString ());
 return 0;
 } else {
@@ -247,7 +247,7 @@ if (this.nSkipY != 0) this.skipVoxels (this.nSkipY);
 }
 if (this.nSkipZ != 0) this.skipVoxels (this.nSkipZ);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

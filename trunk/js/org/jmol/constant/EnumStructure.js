@@ -5,6 +5,11 @@ this.id = 0;
 this.color = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumStructure", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (id, color) {
+this.id = id;
+this.color = color;
+}, $fz.isPrivate = true, $fz), "~N,~N");
 Clazz.defineMethod (c$, "getId", 
 function () {
 return this.id;

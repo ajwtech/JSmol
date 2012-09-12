@@ -43,7 +43,7 @@ this.binarydoc.setStream (this.sg.getAtomDataServer ().getBufferedInputStream (f
 return true;
 }this.br.reset ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -61,7 +61,7 @@ try {
 if (this.isBinary && !this.readBinaryHeader ()) return false;
 if (this.readVertices () && this.readPolygons ()) return true;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (this.pmeshError == null) this.pmeshError = this.type + " ERROR: " + e;
 } else {
 throw e;
@@ -79,7 +79,7 @@ this.nVertices = this.binarydoc.readInt ();
 this.nPolygons = this.binarydoc.readInt ();
 this.binarydoc.readByteArray (ignored, 0, 64);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 this.pmeshError += " " + e.getMessage ();
 this.binarydoc.close ();
 return false;

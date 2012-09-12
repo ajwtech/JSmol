@@ -41,7 +41,7 @@ this.addTriangleCheck (i1, i2, i3, 7, 0, false, color);
 }continue ;}
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

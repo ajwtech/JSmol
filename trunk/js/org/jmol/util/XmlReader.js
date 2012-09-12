@@ -39,7 +39,7 @@ while (this.line.indexOf (tag) < 0) {
 this.line = this.br.readLine ();
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return null;
 } else {
 throw e;

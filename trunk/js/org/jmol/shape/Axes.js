@@ -111,11 +111,11 @@ Clazz.defineMethod (c$, "getShapeState",
 function () {
 var sb =  new StringBuffer ();
 sb.append ("  axes scale ").append (this.viewer.getAxesScale ()).append (";\n");
-if (this.fixedOrigin != null) sb.append ("  axes center ").append (org.jmol.util.Escape.escape (this.fixedOrigin)).append (";\n");
+if (this.fixedOrigin != null) sb.append ("  axes center ").append (org.jmol.util.Escape.escapePt (this.fixedOrigin)).append (";\n");
 if (this.axisXY.z != 0) sb.append ("  axes position [").append (Math.round (this.axisXY.x)).append (" ").append (Math.round (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
 if (this.labels != null) {
 sb.append ("  axes labels ");
-for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.escape (this.labels[i])).append (" ");
+for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.escapeStr (this.labels[i])).append (" ");
 
 sb.append (";\n");
 }return Clazz.superCall (this, org.jmol.shape.Axes, "getShapeState", []) + sb;

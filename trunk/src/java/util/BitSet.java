@@ -41,6 +41,11 @@ import java.util.Arrays;
 
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * hashCode algorithm taken from JDK 1.2 docs.
+ * 
+ * Additions by Bob Hanson to allow for JavaScript mix of int/long
+ * Note that Firefox (Sept 2012) does not really treat "Int32Array" as such, because
+ * any element can be pushed into being a 64-bit number, which really isn't
+ * because the last 8 bits are not usable.  
  */
 
 /**
@@ -76,21 +81,21 @@ public class BitSet implements Cloneable, Serializable
   /**
    * A common mask.
    */
-  private static final int LONG_MASK = 0x3f;
+  private static final int INT_MASK = 0x4;
 
   /**
    * The actual bits.
-   * @serial the i'th bit is in bits[i/64] at position i%64 (where position
+   * @serial the i'th bit is in bits[i/32] at position i%32 (where position
    *         0 is the least significant).
    */
-  private long[] bits;
+  private int[] bits;
 
   /**
    * Create a new empty bit set. All bits are initially false.
    */
   public BitSet()
   {
-    this(64);
+    this(32);
   }
 
   /**
@@ -106,10 +111,10 @@ public class BitSet implements Cloneable, Serializable
     if (nbits < 0)
       throw new NegativeArraySizeException();
 
-    int length = nbits >>> 6;
-    if ((nbits & LONG_MASK) != 0)
+    int length = nbits >>> 5;
+    if ((nbits & INT_MASK) != 0)
       ++length;
-    bits = new long[length];
+    bits = new int[length];
   }
 
   /**
@@ -143,8 +148,9 @@ public class BitSet implements Cloneable, Serializable
   public void andNot(BitSet bs)
   {
     int i = Math.min(bits.length, bs.bits.length);
-    while (--i >= 0)
+    while (--i >= 0) {
       bits[i] &= ~bs.bits[i];
+    }
   }
 
   /**
@@ -158,23 +164,22 @@ public class BitSet implements Cloneable, Serializable
     int card = 0;
     for (int i = bits.length - 1; i >= 0; i--)
     {
-      long a = bits[i];
+      int a = bits[i];
       // Take care of common cases.
       if (a == 0)
         continue;
       if (a == -1)
       {
-        card += 64;
+        card += 32;
         continue;
       }
 
       // Successively collapse alternating bit groups into a sum.
-      a = ((a >> 1) & 0x5555555555555555L) + (a & 0x5555555555555555L);
-      a = ((a >> 2) & 0x3333333333333333L) + (a & 0x3333333333333333L);
-      int b = (int) ((a >>> 32) + a);
-      b = ((b >> 4) & 0x0f0f0f0f) + (b & 0x0f0f0f0f);
-      b = ((b >> 8) & 0x00ff00ff) + (b & 0x00ff00ff);
-      card += ((b >> 16) & 0x0000ffff) + (b & 0x0000ffff);
+      a = ((a >> 1) & 0x55555555) + (a & 0x55555555);
+      a = ((a >> 2) & 0x33333333) + (a & 0x33333333);
+      a = ((a >> 4) & 0x0f0f0f0f) + (a & 0x0f0f0f0f);
+      a = ((a >> 8) & 0x00ff00ff) + (a & 0x00ff00ff);
+      card += ((a >> 16) & 0x0000ffff) + (a & 0x0000ffff);
     }
     return card;
   }
@@ -199,11 +204,11 @@ public class BitSet implements Cloneable, Serializable
    */
   public void clear(int pos)
   {
-    int offset = pos >> 6;
+    int offset = pos >> 5;
     ensure(offset);
     // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
     // so we'll just let that be our exception.
-    bits[offset] &= ~(1L << pos);
+    bits[offset] &= ~(1 << pos);
   }
 
   /**
@@ -220,17 +225,17 @@ public class BitSet implements Cloneable, Serializable
       throw new IndexOutOfBoundsException();
     if (from == to)
       return;
-    int lo_offset = from >>> 6;
-    int hi_offset = to >>> 6;
+    int lo_offset = from >>> 5;
+    int hi_offset = to >>> 5;
     ensure(hi_offset);
     if (lo_offset == hi_offset)
     {
-      bits[hi_offset] &= ((1L << from) - 1) | (-1L << to);
+      bits[hi_offset] &= ((1 << from) - 1) | (-1 << to);
       return;
     }
 
-    bits[lo_offset] &= (1L << from) - 1;
-    bits[hi_offset] &= -1L << to;
+    bits[lo_offset] &= (1 << from) - 1;
+    bits[hi_offset] &= -1 << to;
     for (int i = lo_offset + 1; i < hi_offset; i++)
       bits[i] = 0;
   }
@@ -247,7 +252,7 @@ public class BitSet implements Cloneable, Serializable
     try
     {
       BitSet bs = (BitSet) super.clone();
-      bs.bits = (long[]) bits.clone();
+      bs.bits = (int[]) bits.clone();
       return bs;
     }
     catch (CloneNotSupportedException e)
@@ -293,11 +298,11 @@ public class BitSet implements Cloneable, Serializable
    */
   public void flip(int index)
   {
-    int offset = index >> 6;
+    int offset = index >> 5;
     ensure(offset);
     // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
     // so we'll just let that be our exception.
-    bits[offset] ^= 1L << index;
+    bits[offset] ^= 1 << index;
   }
 
   /**
@@ -314,17 +319,17 @@ public class BitSet implements Cloneable, Serializable
       throw new IndexOutOfBoundsException();
     if (from == to)
       return;
-    int lo_offset = from >>> 6;
-    int hi_offset = to >>> 6;
+    int lo_offset = from >>> 5;
+    int hi_offset = to >>> 5;
     ensure(hi_offset);
     if (lo_offset == hi_offset)
     {
-      bits[hi_offset] ^= (-1L << from) & ((1L << to) - 1);
+      bits[hi_offset] ^= (-1 << from) & ((1 << to) - 1);
       return;
     }
 
-    bits[lo_offset] ^= -1L << from;
-    bits[hi_offset] ^= (1L << to) - 1;
+    bits[lo_offset] ^= -1 << from;
+    bits[hi_offset] ^= (1 << to) - 1;
     for (int i = lo_offset + 1; i < hi_offset; i++)
       bits[i] ^= -1;
   }
@@ -340,12 +345,12 @@ public class BitSet implements Cloneable, Serializable
   public boolean get
     (int pos)
   {
-    int offset = pos >> 6;
+    int offset = pos >> 5;
     if (offset >= bits.length)
       return false;
     // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
     // so we'll just let that be our exception.
-    return (bits[offset] & (1L << pos)) != 0;
+    return (bits[offset] & (1 << pos)) != 0;
   }
 
   /**
@@ -363,18 +368,18 @@ public class BitSet implements Cloneable, Serializable
     if (from < 0 || from > to)
       throw new IndexOutOfBoundsException();
     BitSet bs = new BitSet(to - from);
-    int lo_offset = from >>> 6;
+    int lo_offset = from >>> 5;
     if (lo_offset >= bits.length)
       return bs;
 
-    int lo_bit = from & LONG_MASK;
-    int hi_offset = to >>> 6;
+    int lo_bit = from & INT_MASK;
+    int hi_offset = to >>> 5;
     if (lo_bit == 0)
     {
       int len = Math.min(hi_offset - lo_offset + 1, bits.length - lo_offset);
       System.arraycopy(bits, lo_offset, bs.bits, 0, len);
       if (hi_offset < bits.length)
-        bs.bits[hi_offset - lo_offset] &= (1L << to) - 1;
+        bs.bits[hi_offset - lo_offset] &= (1 << to) - 1;
       return bs;
     }
 
@@ -384,10 +389,10 @@ public class BitSet implements Cloneable, Serializable
     for (i = 0; lo_offset < len; lo_offset++, i++)
       bs.bits[i] = ((bits[lo_offset] >>> lo_bit)
                     | (bits[lo_offset + 1] << reverse));
-    if ((to & LONG_MASK) > lo_bit)
+    if ((to & INT_MASK) > lo_bit)
       bs.bits[i++] = bits[lo_offset] >>> lo_bit;
     if (hi_offset < bits.length)
-      bs.bits[i - 1] &= (1L << (to - from)) - 1;
+      bs.bits[i - 1] &= (1 << (to - from)) - 1;
     return bs;
   }
 
@@ -401,8 +406,8 @@ public class BitSet implements Cloneable, Serializable
    * bit <code>k</code> is set in the BitSet (for non-negative values
    * of <code>k</code>) if and only if
    *
-   * <code>((k/64) &lt; bits.length)
-   * && ((bits[k/64] & (1L &lt;&lt; (bit % 64))) != 0)
+   * <code>((k/32) &lt; bits.length)
+   * && ((bits[k/32] & (1L &lt;&lt; (bit % 32))) != 0)
    * </code>
    *
    * Then the following definition of the hashCode method
@@ -426,10 +431,10 @@ public class BitSet implements Cloneable, Serializable
    */
   public int hashCode()
   {
-    long h = 1234;
+    int h = 1234;
     for (int i = bits.length; i > 0; )
       h ^= i * bits[--i];
-    return (int) ((h >> 32) ^ h);
+    return h;
   }
 
   /**
@@ -484,15 +489,14 @@ public class BitSet implements Cloneable, Serializable
       return 0;
 
     // Now determine the exact length.
-    long b = bits[i];
-    int len = (i + 1) * 64;
+    int b = bits[i];
+    int len = (i + 1) * 32;
     // b >= 0 checks if the highest bit is zero.
-    while (b >= 0)
+    while ((b & 0x80000000) == 0)
     {
       --len;
       b <<= 1;
     }
-
     return len;
   }
 
@@ -507,13 +511,13 @@ public class BitSet implements Cloneable, Serializable
    */
   public int nextClearBit(int from)
   {
-    int offset = from >> 6;
-    long mask = 1L << from;
+    int offset = from >> 5;
+    int mask = 1 << from;
     while (offset < bits.length)
     {
       // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
       // so we'll just let that be our exception.
-      long h = bits[offset];
+      int h = bits[offset];
       do
       {
         if ((h & mask) == 0)
@@ -545,13 +549,13 @@ public class BitSet implements Cloneable, Serializable
    */
   public int nextSetBit(int from)
   {
-    int offset = from >> 6;
-    long mask = 1L << from;
+    int offset = from >> 5;
+    int mask = 1 << from;
     while (offset < bits.length)
     {
       // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
       // so we'll just let that be our exception.
-      long h = bits[offset];
+      int h = bits[offset];
       do
       {
         if ((h & mask) != 0)
@@ -594,11 +598,11 @@ public class BitSet implements Cloneable, Serializable
   public void set
     (int pos)
   {
-    int offset = pos >> 6;
+    int offset = pos >> 5;
     ensure(offset);
     // ArrayIndexOutOfBoundsException subclasses IndexOutOfBoundsException,
     // so we'll just let that be our exception.
-    bits[offset] |= 1L << pos;
+    bits[offset] |= 1 << pos;
   }
 
   /**
@@ -620,35 +624,35 @@ public class BitSet implements Cloneable, Serializable
       clear(index);
   }
 
-  /**
-   * Sets the bits between from (inclusive) and to (exclusive) to true.
-   *
-   * @param from the start range (inclusive)
-   * @param to the end range (exclusive)
-   * @throws IndexOutOfBoundsException if from &lt; 0 || from &gt; to
-   * @since 1.4
-   */
-  public void set
-    (int from, int to)
-  {
-    if (from < 0 || from > to)
-      throw new IndexOutOfBoundsException();
-    if (from == to)
-      return;
-    int lo_offset = from >>> 6;
-    int hi_offset = to >>> 6;
-    ensure(hi_offset);
-    if (lo_offset == hi_offset)
-    {
-      bits[hi_offset] |= (-1L << from) & ((1L << to) - 1);
-      return;
-    }
+	/**
+	 * Sets the bits between from (inclusive) and to (exclusive) to true.
+	 * 
+	 * @param from
+	 *          the start range (inclusive)
+	 * @param to
+	 *          the end range (exclusive)
+	 * @throws IndexOutOfBoundsException
+	 *           if from &lt; 0 || from &gt; to
+	 * @since 1.4
+	 */
+	public void set(int from, int to) {
+		if (from < 0 || from > to)
+			throw new IndexOutOfBoundsException();
+		if (from == to)
+			return;
+		int lo_offset = from >>> 5;
+		int hi_offset = to >>> 5;
+		ensure(hi_offset);
+		if (lo_offset == hi_offset) {
+			bits[hi_offset] |= (-1 << from) & ((1 << to) - 1);
+			return;
+		}
 
-    bits[lo_offset] |= -1L << from;
-    bits[hi_offset] |= (1L << to) - 1;
-    for (int i = lo_offset + 1; i < hi_offset; i++)
-      bits[i] = -1;
-  }
+		bits[lo_offset] |= -1 << from;
+		bits[hi_offset] |= (1 << to) - 1;
+		for (int i = lo_offset + 1; i < hi_offset; i++)
+			bits[i] = -1;
+	}
 
   /**
    * Sets the bits between from (inclusive) and to (exclusive) to the
@@ -679,7 +683,7 @@ public class BitSet implements Cloneable, Serializable
    */
   public int size()
   {
-    return bits.length * 64;
+    return bits.length * 32;
   }
 
   /**
@@ -695,17 +699,17 @@ public class BitSet implements Cloneable, Serializable
     boolean first = true;
     for (int i = 0; i < bits.length; ++i)
     {
-      long bit = 1;
-      long word = bits[i];
+      int bit = 1;
+      int word = bits[i];
       if (word == 0)
         continue;
-      for (int j = 0; j < 64; ++j)
+      for (int j = 0; j < 32; ++j)
       {
         if ((word & bit) != 0)
         {
           if (! first)
             r.append(", ");
-          r.append(64 * i + j);
+          r.append(32 * i + j);
           first = false;
         }
         bit <<= 1;
@@ -740,7 +744,7 @@ public class BitSet implements Cloneable, Serializable
   {
     if (lastElt >= bits.length)
     {
-      long[] nd = new long[lastElt + 1];
+      int[] nd = new int[lastElt + 1];
       System.arraycopy(bits, 0, nd, 0, bits.length);
       bits = nd;
     }

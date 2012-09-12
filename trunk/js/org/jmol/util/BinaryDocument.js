@@ -20,7 +20,7 @@ function () {
 if (this.stream != null) try {
 this.stream.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -30,7 +30,7 @@ try {
 this.os.flush ();
 this.os.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -213,7 +213,7 @@ offset -= this.nBytes;
 }this.stream.skipBytes (offset);
 this.nBytes += offset;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 } else {
 throw e;

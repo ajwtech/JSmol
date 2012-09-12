@@ -406,7 +406,7 @@ for (var i = 0; i < this.tokenCount; ++i) {
 try {
 this.tokens[i] = st.nextToken ();
 } catch (nsee) {
-if (Clazz.instanceOf (nsee, java.util.NoSuchElementException)) {
+if (Clazz.exceptionOf (nsee, java.util.NoSuchElementException)) {
 this.tokens[i] = null;
 } else {
 throw nsee;

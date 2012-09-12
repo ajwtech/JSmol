@@ -775,7 +775,7 @@ if (fileType.equals ("MRC")) {
 try {
 br.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -786,7 +786,7 @@ return  new org.jmol.jvxl.readers.MrcBinaryReader (this, this.params.fileName);
 try {
 br.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }

@@ -60,7 +60,7 @@ c$.sizeOf = Clazz.defineMethod (c$, "sizeOf",
 function (x) {
 switch (x == null ? 0 : x.tok) {
 case 10:
-return org.jmol.util.BitSetUtil.cardinalityOf (org.jmol.script.ScriptVariable.bsSelect (x));
+return org.jmol.util.BitSetUtil.cardinalityOf (org.jmol.script.ScriptVariable.bsSelectToken (x));
 case 1048589:
 case 1048588:
 return -1;
@@ -79,17 +79,13 @@ return -64;
 case 4:
 return (x.value).length;
 case 7:
-return x.intValue == 2147483647 ? (x).getList ().size () : org.jmol.script.ScriptVariable.sizeOf (org.jmol.script.ScriptVariable.selectItem (x));
+return x.intValue == 2147483647 ? (x).getList ().size () : org.jmol.script.ScriptVariable.sizeOf (org.jmol.script.ScriptVariable.selectItemTok (x));
 case 6:
 return (x.value).size ();
 default:
 return 0;
 }
 }, "org.jmol.script.Token");
-c$.intVariable = Clazz.defineMethod (c$, "intVariable", 
-function (intValue) {
-return  new org.jmol.script.ScriptVariable (2, intValue);
-}, "~N");
 c$.isVariableType = Clazz.defineMethod (c$, "isVariableType", 
 function (x) {
 return (Clazz.instanceOf (x, org.jmol.script.ScriptVariable) || Clazz.instanceOf (x, java.util.BitSet) || Clazz.instanceOf (x, Boolean) || Clazz.instanceOf (x, Float) || Clazz.instanceOf (x, Integer) || Clazz.instanceOf (x, javax.vecmath.Point3f) || Clazz.instanceOf (x, javax.vecmath.Vector3f) || Clazz.instanceOf (x, javax.vecmath.Point4f) || Clazz.instanceOf (x, org.jmol.util.Quaternion) || Clazz.instanceOf (x, String) || Clazz.instanceOf (x, java.util.Map) || Clazz.instanceOf (x, java.util.List) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array));
@@ -99,7 +95,7 @@ function (x) {
 if (x == null) return  new org.jmol.script.ScriptVariable ();
 if (Clazz.instanceOf (x, org.jmol.script.ScriptVariable)) return x;
 if (Clazz.instanceOf (x, Boolean)) return org.jmol.script.ScriptVariable.getBoolean ((x).booleanValue ());
-if (Clazz.instanceOf (x, Integer)) return  new org.jmol.script.ScriptVariable (2, (x).intValue ());
+if (Clazz.instanceOf (x, Integer)) return  new org.jmol.script.ScriptVariableInt ((x).intValue ());
 if (Clazz.instanceOf (x, Float)) return  new org.jmol.script.ScriptVariable (3, x);
 if (Clazz.instanceOf (x, String)) {
 x = org.jmol.script.ScriptVariable.unescapePointOrBitsetAsVariable (x);
@@ -270,7 +266,7 @@ case 2:
 return Integer.$valueOf (x.intValue);
 case 10:
 case 135266306:
-return org.jmol.script.ScriptVariable.selectItem (x).value;
+return org.jmol.script.ScriptVariable.selectItemVar (x).value;
 default:
 return x.value;
 }
@@ -336,7 +332,7 @@ case 11:
 case 12:
 return Math.round (org.jmol.script.ScriptVariable.fValue (x));
 case 10:
-return org.jmol.util.BitSetUtil.cardinalityOf (org.jmol.script.ScriptVariable.bsSelect (x));
+return org.jmol.util.BitSetUtil.cardinalityOf (org.jmol.script.ScriptVariable.bsSelectToken (x));
 default:
 return 0;
 }
@@ -389,15 +385,14 @@ return "false";
 case 2:
 return "" + x.intValue;
 case 10:
-return org.jmol.util.Escape.escape (org.jmol.script.ScriptVariable.bsSelect (x), !(Clazz.instanceOf (x.value, org.jmol.modelset.Bond.BondSet)));
+return org.jmol.util.Escape.escapeBs (org.jmol.script.ScriptVariable.bsSelectToken (x), !(Clazz.instanceOf (x.value, org.jmol.modelset.Bond.BondSet)));
 case 7:
-case 6:
-if (x.tok == 7) {
 var sv = (x).getList ();
 i = x.intValue;
 if (i <= 0) i = sv.size () - i;
 if (i != 2147483647) return (i < 1 || i > sv.size () ? "" : org.jmol.script.ScriptVariable.sValue (sv.get (i - 1)));
-}sb =  new StringBuffer ();
+case 6:
+sb =  new StringBuffer ();
 map =  new java.util.Hashtable ();
 org.jmol.script.ScriptVariable.sValueArray (sb, x, map, 0, false);
 return sb.toString ();
@@ -433,7 +428,7 @@ sb.append ("{ ");
 var sep = "";
 for (var i = 0; i < keys.length; i++) {
 var key = keys[i];
-sb.append (sep).append (org.jmol.util.Escape.escape (key)).append (':');
+sb.append (sep).append (org.jmol.util.Escape.escapeStr (key)).append (':');
 org.jmol.script.ScriptVariable.sValueArray (sb, ht.get (key), map, level + 1, true);
 sep = ", ";
 }
@@ -517,37 +512,37 @@ if (v2 == null) vlist.add (x2);
 
 return org.jmol.script.ScriptVariable.getVariable (vlist);
 }, "org.jmol.script.ScriptVariable,org.jmol.script.ScriptVariable,~B");
-c$.bsSelect = Clazz.defineMethod (c$, "bsSelect", 
+c$.bsSelectToken = Clazz.defineMethod (c$, "bsSelectToken", 
 function (x) {
-x = org.jmol.script.ScriptVariable.selectItem (x, -2147483648);
+x = org.jmol.script.ScriptVariable.selectItemTok (x, -2147483648);
 return x.value;
 }, "org.jmol.script.Token");
-c$.bsSelect = Clazz.defineMethod (c$, "bsSelect", 
+c$.bsSelectVar = Clazz.defineMethod (c$, "bsSelectVar", 
 function ($var) {
-if ($var.index == 2147483647) $var = org.jmol.script.ScriptVariable.selectItem ($var);
+if ($var.index == 2147483647) $var = org.jmol.script.ScriptVariable.selectItemVar ($var);
 return $var.value;
 }, "org.jmol.script.ScriptVariable");
 c$.bsSelectRange = Clazz.defineMethod (c$, "bsSelectRange", 
 function (x, n) {
-x = org.jmol.script.ScriptVariable.selectItem (x);
-x = org.jmol.script.ScriptVariable.selectItem (x, (n <= 0 ? n : 1));
-x = org.jmol.script.ScriptVariable.selectItem (x, (n <= 0 ? 2147483646 : n));
+x = org.jmol.script.ScriptVariable.selectItemTok (x);
+x = org.jmol.script.ScriptVariable.selectItemTok (x, (n <= 0 ? n : 1));
+x = org.jmol.script.ScriptVariable.selectItemTok (x, (n <= 0 ? 2147483646 : n));
 return x.value;
 }, "org.jmol.script.Token,~N");
-c$.selectItem = Clazz.defineMethod (c$, "selectItem", 
+c$.selectItemVar = Clazz.defineMethod (c$, "selectItemVar", 
 function ($var) {
 if ($var.index != 2147483647 || $var.tok == 7 && $var.intValue == 2147483647) return $var;
-return org.jmol.script.ScriptVariable.selectItem ($var, -2147483648);
+return org.jmol.script.ScriptVariable.selectItemVar ($var, -2147483648);
 }, "org.jmol.script.ScriptVariable");
-c$.selectItem = Clazz.defineMethod (c$, "selectItem", 
+c$.selectItemTok = Clazz.defineMethod (c$, "selectItemTok", 
 function ($var) {
-return org.jmol.script.ScriptVariable.selectItem ($var, -2147483648);
+return org.jmol.script.ScriptVariable.selectItemTok ($var, -2147483648);
 }, "org.jmol.script.Token");
-c$.selectItem = Clazz.defineMethod (c$, "selectItem", 
+c$.selectItemVar = Clazz.defineMethod (c$, "selectItemVar", 
 function ($var, i2) {
-return org.jmol.script.ScriptVariable.selectItem ($var, i2);
+return org.jmol.script.ScriptVariable.selectItemTok ($var, i2);
 }, "org.jmol.script.ScriptVariable,~N");
-c$.selectItem = Clazz.defineMethod (c$, "selectItem", 
+c$.selectItemTok = Clazz.defineMethod (c$, "selectItemTok", 
 function (tokenIn, i2) {
 switch (tokenIn.tok) {
 case 11:
@@ -568,7 +563,7 @@ var v =  new org.jmol.script.ScriptVariable (tokenIn.tok, i2, tokenIn.value);
 return v;
 }var len = 0;
 var isInputSelected = (Clazz.instanceOf (tokenIn, org.jmol.script.ScriptVariable) && (tokenIn).index != 2147483647);
-var tokenOut =  new org.jmol.script.ScriptVariable (tokenIn.tok, 2147483647);
+var tokenOut =  new org.jmol.script.ScriptVariableInt (2147483647);
 switch (tokenIn.tok) {
 case 10:
 if (Clazz.instanceOf (tokenIn.value, org.jmol.modelset.Bond.BondSet)) {
@@ -804,7 +799,7 @@ c$.getBitSet = Clazz.defineMethod (c$, "getBitSet",
 function (x, allowNull) {
 switch (x.tok) {
 case 10:
-return org.jmol.script.ScriptVariable.bsSelect (x);
+return org.jmol.script.ScriptVariable.bsSelectVar (x);
 case 7:
 var bs =  new java.util.BitSet ();
 var sv = x.value;

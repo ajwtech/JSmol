@@ -258,7 +258,7 @@ if (!this.isWindowCentered ()) org.jmol.viewer.StateManager.appendCmd (commands,
 org.jmol.viewer.StateManager.appendCmd (commands, "set cameraDepth " + this.cameraDepth);
 if (this.mode == 1) org.jmol.viewer.StateManager.appendCmd (commands, "set navigationMode true");
 org.jmol.viewer.StateManager.appendCmd (commands, this.viewer.getBoundBoxCommand (false));
-org.jmol.viewer.StateManager.appendCmd (commands, "center " + org.jmol.util.Escape.escape (this.fixedRotationCenter));
+org.jmol.viewer.StateManager.appendCmd (commands, "center " + org.jmol.util.Escape.escapePt (this.fixedRotationCenter));
 commands.append (this.viewer.getSavedOrienationText (null));
 org.jmol.viewer.StateManager.appendCmd (commands, this.getMoveToText (0, false));
 if (this.stereoMode !== org.jmol.constant.EnumStereoMode.NONE) org.jmol.viewer.StateManager.appendCmd (commands, "stereo " + (this.stereoColors == null ? this.stereoMode.getName () : org.jmol.util.Escape.escapeColor (this.stereoColors[0]) + " " + org.jmol.util.Escape.escapeColor (this.stereoColors[1])) + " " + this.stereoDegrees);
@@ -267,9 +267,9 @@ commands.append ("  slab ").append (this.slabPercentSetting).append (";depth ").
 commands.append ("  set slabRange ").append (this.slabRange).append (";\n");
 if (this.zShadeEnabled) commands.append ("  set zShade;\n");
 try {
-if (this.zSlabPoint != null) commands.append ("  set zSlab ").append (org.jmol.util.Escape.escape (this.zSlabPoint)).append (";\n");
+if (this.zSlabPoint != null) commands.append ("  set zSlab ").append (org.jmol.util.Escape.escapePt (this.zSlabPoint)).append (";\n");
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -294,9 +294,9 @@ var prefix = (this.isSpinSelected ? "\n  select " + org.jmol.util.Escape.escape 
 if (this.isSpinInternal) {
 var pt =  new javax.vecmath.Point3f (this.internalRotationCenter);
 pt.sub (this.rotationAxis);
-s += prefix + " spin " + this.rotationRate + " " + org.jmol.util.Escape.escape (this.internalRotationCenter) + " " + org.jmol.util.Escape.escape (pt);
+s += prefix + " spin " + this.rotationRate + " " + org.jmol.util.Escape.escapePt (this.internalRotationCenter) + " " + org.jmol.util.Escape.escapePt (pt);
 } else if (this.isSpinFixed) {
-s += prefix + " spin axisangle " + org.jmol.util.Escape.escape (this.rotationAxis) + " " + this.rotationRate;
+s += prefix + " spin axisangle " + org.jmol.util.Escape.escapePt (this.rotationAxis) + " " + this.rotationRate;
 } else {
 s += " spin on";
 }return s + ";";
@@ -604,7 +604,7 @@ info.put ("transYPercent",  new Float (this.getTranslationYPercent ()));
 info.put ("zoom",  new Float (this.zoomPercent));
 info.put ("modelRadius",  new Float (this.modelRadius));
 if (this.mode == 1) {
-info.put ("navigationCenter", "navigate center " + org.jmol.util.Escape.escape (this.navigationCenter));
+info.put ("navigationCenter", "navigate center " + org.jmol.util.Escape.escapePt (this.navigationCenter));
 info.put ("navigationOffsetXPercent",  new Float (this.getNavigationOffsetPercent ('X')));
 info.put ("navigationOffsetYPercent",  new Float (this.getNavigationOffsetPercent ('Y')));
 info.put ("navigationDepthPercent",  new Float (this.getNavigationDepthPercent ()));
@@ -962,7 +962,7 @@ try {
 this.transformPoint (this.zSlabPoint, this.pointT2);
 this.zSlabValue = Math.round (this.pointT2.z);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -995,7 +995,7 @@ this.matrixTransform.m23 += this.modelCenterOffset;
 try {
 this.matrixTransformInv.invert (this.matrixTransform);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1136,7 +1136,7 @@ if (timeToSleep > 0) {
 try {
 Thread.sleep (timeToSleep);
 } catch (e) {
-if (Clazz.instanceOf (e, InterruptedException)) {
+if (Clazz.exceptionOf (e, InterruptedException)) {
 } else {
 throw e;
 }
@@ -1179,7 +1179,7 @@ this.motion = null;
 } else {
 this.motion.startMotion (true);
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1231,7 +1231,7 @@ return sb.toString ();
 }, "~N,~B");
 Clazz.defineMethod (c$, "getCenterText", 
 ($fz = function () {
-return org.jmol.util.Escape.escape (this.fixedRotationCenter);
+return org.jmol.util.Escape.escapePt (this.fixedRotationCenter);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getRotateXyzText", 
 ($fz = function () {
@@ -1282,7 +1282,7 @@ sb.append (" set rotationRadius");
 org.jmol.viewer.TransformManager.truncate2 (sb, this.modelRadius);
 sb.append (";");
 }if (this.mode == 1) {
-sb.append ("navigate 0 center ").append (org.jmol.util.Escape.escape (this.navigationCenter));
+sb.append ("navigate 0 center ").append (org.jmol.util.Escape.escapePt (this.navigationCenter));
 sb.append (";navigate 0 translate");
 org.jmol.viewer.TransformManager.truncate2 (sb, this.getNavigationOffsetPercent ('X'));
 org.jmol.viewer.TransformManager.truncate2 (sb, this.getNavigationOffsetPercent ('Y'));
@@ -1713,7 +1713,7 @@ if (this.totalSteps > 0) this.b$["org.jmol.viewer.TransformManager"].viewer.setI
 try {
 if (this.totalSteps == 0 || this.startMotion ()) this.endMotion ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1808,7 +1808,7 @@ if (b > 0) {
 try {
 Thread.sleep (b);
 } catch (ie) {
-if (Clazz.instanceOf (ie, InterruptedException)) {
+if (Clazz.exceptionOf (ie, InterruptedException)) {
 return false;
 } else {
 throw ie;
@@ -1919,7 +1919,7 @@ if (!this.isNav && this.nDegrees >= this.endDegrees - 0.001) this.b$["org.jmol.v
 }Thread.sleep (j);
 if (this.isReset) break;
 } catch (e) {
-if (Clazz.instanceOf (e, InterruptedException)) {
+if (Clazz.exceptionOf (e, InterruptedException)) {
 break;
 } else {
 throw e;
@@ -1962,7 +1962,7 @@ this.b$["org.jmol.viewer.TransformManager"].setVibrationT (f);
 this.b$["org.jmol.viewer.TransformManager"].viewer.refresh (3, "VibrationThread:run()");
 } while (!this.isInterrupted ());
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

@@ -199,7 +199,7 @@ return org.jmol.util.MeshSurface.getSlabObject (1679429641, [org.jmol.util.Escap
 }var plane = org.jmol.util.Escape.unescapePoint (s);
 if (Clazz.instanceOf (plane, javax.vecmath.Point4f)) return org.jmol.util.MeshSurface.getSlabObject (135266319, plane, isCap, null);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

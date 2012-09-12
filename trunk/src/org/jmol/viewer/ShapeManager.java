@@ -125,8 +125,9 @@ public class ShapeManager {
   public Shape loadShape(int shapeID) {
     if (shapes == null)
       return null;
-    if (shapes[shapeID] != null)
+    if (shapes[shapeID] != null) {
       return shapes[shapeID];
+    }
     if (shapeID == JmolConstants.SHAPE_HSTICKS
         || shapeID == JmolConstants.SHAPE_SSSTICKS
         || shapeID == JmolConstants.SHAPE_STRUTS)

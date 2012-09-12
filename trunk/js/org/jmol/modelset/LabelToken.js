@@ -295,7 +295,7 @@ default:
 }
 }
 } catch (ioobe) {
-if (Clazz.instanceOf (ioobe, IndexOutOfBoundsException)) {
+if (Clazz.exceptionOf (ioobe, IndexOutOfBoundsException)) {
 floatT = NaN;
 strT = null;
 ptT = null;

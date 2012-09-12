@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-10 20:34:48 -0500 (Mon, 10 Sep 2012) $
+ * $Revision: 17550 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -28,6 +28,7 @@ package org.jmol.modelset;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
@@ -57,7 +58,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  char alternateLocationID;
+  char alternateLocationID = '\0';
   public byte atomID;
   int atomSite;
   Group group;
@@ -107,7 +108,7 @@ final public class Atom extends Point3fi implements JmolNode {
         float x, float y, float z, float radius,
         BitSet atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
-        boolean isHetero, char alternateLocationID) {
+        boolean isHetero) {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
@@ -116,11 +117,18 @@ final public class Atom extends Point3fi implements JmolNode {
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
     setFormalCharge(formalCharge);
-    this.alternateLocationID = alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
     set(x, y, z);
   }
 
+  public void setAltLoc(String altLoc) {
+    alternateLocationID = altLoc.charAt(0);
+  }
+  
+  public void setAltLoc(char altLoc) {
+    alternateLocationID = altLoc;
+  }
+  
   public final void setShapeVisibilityFlags(int flag) {
     shapeVisibilityFlags = flag;
   }
@@ -254,7 +262,7 @@ final public class Atom extends Point3fi implements JmolNode {
       default:
         r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
       }
-      if (rd.factorType == RadiusData.EnumType.FACTOR)
+      if (rd.factorType == EnumType.FACTOR)
         f *= r;
       else
         f += r;

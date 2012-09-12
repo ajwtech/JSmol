@@ -124,7 +124,7 @@ vNH.sub (prev.getCarbonylCarbonAtom (), oxygen);
 }vNH.normalize ();
 aminoHydrogenPoint.add (nitrogenPoint, vNH);
 this.nitrogenHydrogenPoint =  new javax.vecmath.Point3f (aminoHydrogenPoint);
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("draw ID \"pta" + this.monomerIndex + "_" + nitrogenPoint.index + "\" " + org.jmol.util.Escape.escape (nitrogenPoint) + org.jmol.util.Escape.escape (aminoHydrogenPoint) + " # " + nitrogenPoint);
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("draw ID \"pta" + this.monomerIndex + "_" + nitrogenPoint.index + "\" " + org.jmol.util.Escape.escapePt (nitrogenPoint) + org.jmol.util.Escape.escapePt (aminoHydrogenPoint) + " # " + nitrogenPoint);
 return true;
 }, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~B,~B");
 Clazz.defineMethod (c$, "getQuaternionFrameCenter", 

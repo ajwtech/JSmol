@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -181,7 +181,7 @@ public String getShapeState() {
     sb.append("  axes scale ").append(viewer.getAxesScale()).append(";\n"); 
     if (fixedOrigin != null)
       sb.append("  axes center ")
-          .append(Escape.escape(fixedOrigin)).append(";\n");
+          .append(Escape.escapePt(fixedOrigin)).append(";\n");
     if (axisXY.z != 0)
       sb.append("  axes position [")
           .append((int) axisXY.x).append(" ")
@@ -190,7 +190,7 @@ public String getShapeState() {
     if (labels != null) {
       sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
-        sb.append(Escape.escape(labels[i])).append(" ");
+        sb.append(Escape.escapeStr(labels[i])).append(" ");
       sb.append(";\n");
     }
     return super.getShapeState() + sb;

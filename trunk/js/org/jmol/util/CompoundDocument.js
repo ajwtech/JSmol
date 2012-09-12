@@ -171,7 +171,7 @@ for (var j = this.nIntPerSector; --j >= 0; ) this.SAT[nSID++] = this.readInt ();
 thisSID = MSAT[this.nIntPerSector - 1];
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 } else {
 throw e;
@@ -193,7 +193,7 @@ this.SSAT[nSSID++] = this.readInt ();
 thisSID = this.SAT[thisSID];
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 } else {
 throw e;
@@ -218,7 +218,7 @@ this.directory.add (thisEntry);
 thisSID = this.SAT[thisSID];
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 } else {
 throw e;
@@ -244,7 +244,7 @@ thisSID = this.SAT[thisSID];
 }
 if (nBytes == -9999) return  new StringBuffer ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 } else {
 throw e;
@@ -290,7 +290,7 @@ nBytes = this.getSectorData (data, byteBuf, this.shortSectorSize, nBytes, asBina
 shortSID = this.SSAT[shortSID];
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (data.toString ());
 org.jmol.util.Logger.error (null, e);
 } else {
@@ -356,7 +356,7 @@ this.nAdditionalMATsectors = this.b$["org.jmol.util.CompoundDocument"].readInt (
 for (var c = 0; c < 109; c++) this.MSAT0[c] = this.b$["org.jmol.util.CompoundDocument"].readInt ();
 
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 return false;
 } else {
@@ -408,7 +408,7 @@ this.SIDfirstSector = this.b$["org.jmol.util.CompoundDocument"].readInt ();
 this.lenStream = this.b$["org.jmol.util.CompoundDocument"].readInt ();
 this.b$["org.jmol.util.CompoundDocument"].readByteArray (this.unused);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (null, e);
 return false;
 } else {

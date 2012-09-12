@@ -829,7 +829,7 @@ if (this.values[i][j] != m1.values[i][j]) return false;
 }
 return true;
 } catch (e2) {
-if (Clazz.instanceOf (e2, NullPointerException)) {
+if (Clazz.exceptionOf (e2, NullPointerException)) {
 return false;
 } else {
 throw e2;
@@ -850,12 +850,12 @@ if (this.values[i][j] != m2.values[i][j]) return false;
 }
 return true;
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, ClassCastException)) {
+if (Clazz.exceptionOf (e$$, ClassCastException)) {
 var e1 = e$$;
 {
 return false;
 }
-} else if (Clazz.instanceOf (e$$, NullPointerException)) {
+} else if (Clazz.exceptionOf (e$$, NullPointerException)) {
 var e2 = e$$;
 {
 return false;
@@ -1796,7 +1796,7 @@ var m1 = null;
 try {
 m1 = Clazz.superCall (this, javax.vecmath.GMatrix, "clone", []);
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 throw  new InternalError ();
 } else {
 throw e;

@@ -51,11 +51,11 @@ this.viewer.evalStringQuiet ((looping ? this.script + ";\ntimeout ID \"" + this.
 }if (!looping) break;
 }
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, InterruptedException)) {
+if (Clazz.exceptionOf (e$$, InterruptedException)) {
 var ie = e$$;
 {
 }
-} else if (Clazz.instanceOf (e$$, Exception)) {
+} else if (Clazz.exceptionOf (e$$, Exception)) {
 var ie = e$$;
 {
 org.jmol.util.Logger.info ("Timeout " + this.$name + " Exception: " + ie);

@@ -26,7 +26,7 @@ function () {
 if (this.br != null) try {
 this.br.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -35,7 +35,7 @@ if (this.os != null) try {
 this.os.flush ();
 this.os.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }

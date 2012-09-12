@@ -162,7 +162,7 @@ for (var i = 0; i < 3; i++) this.volumetricMatrix.setColumn (i, this.volumetricV
 try {
 this.inverseMatrix.invert (this.volumetricMatrix);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("VolumeData error setting matrix -- bad unit vectors? ");
 return false;
 } else {
@@ -347,8 +347,8 @@ var sb =  new StringBuffer ();
 if (this.voxelCounts[0] == 0) {
 org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeData", null);
 } else {
-org.jmol.util.XmlUtil.openTag (sb, "jvxlVolumeData", ["origin", org.jmol.util.Escape.escape (this.volumetricOrigin)]);
-for (var i = 0; i < 3; i++) org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeVector", ["type", "" + i, "count", "" + this.voxelCounts[i], "vector", org.jmol.util.Escape.escape (this.volumetricVectors[i])]);
+org.jmol.util.XmlUtil.openTag (sb, "jvxlVolumeData", ["origin", org.jmol.util.Escape.escapePt (this.volumetricOrigin)]);
+for (var i = 0; i < 3; i++) org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeVector", ["type", "" + i, "count", "" + this.voxelCounts[i], "vector", org.jmol.util.Escape.escapePt (this.volumetricVectors[i])]);
 
 org.jmol.util.XmlUtil.closeTag (sb, "jvxlVolumeData");
 }return this.xmlData = sb.toString ();

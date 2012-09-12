@@ -232,6 +232,6 @@ return (bs == null ? sb.toString () : "\n  DATA \"element_vdw\"\n" + sb.append (
 c$.getInlineData = Clazz.defineMethod (c$, "getInlineData", 
 function (loadScript, strModel, isAppend, loadFilter) {
 var tag = (isAppend ? "append" : "model") + " inline";
-loadScript.append ("load /*data*/ data \"").append (tag).append ("\"\n").append (strModel).append ("end \"").append (tag).append (loadFilter == null || loadFilter.length == 0 ? "" : " filter" + org.jmol.util.Escape.escape (loadFilter)).append ("\";");
+loadScript.append ("load /*data*/ data \"").append (tag).append ("\"\n").append (strModel).append ("end \"").append (tag).append (loadFilter == null || loadFilter.length == 0 ? "" : " filter" + org.jmol.util.Escape.escapeStr (loadFilter)).append ("\";");
 }, "StringBuffer,~S,~B,~S");
 });

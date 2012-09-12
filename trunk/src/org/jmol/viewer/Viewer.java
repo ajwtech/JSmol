@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-08 21:39:22 -0500 (Sat, 08 Sep 2012) $
- * $Revision: 17541 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -30,6 +30,7 @@ import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
+import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.i18n.GT;
@@ -65,9 +66,11 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.constant.EnumFileStatus;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
@@ -445,7 +448,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     o = info.get("repaintManager");
     if (o == null)
       o = (Interface.getOptionInterface("render.RepaintManager"));
-    if (o != null)
+    if (o != null && !o.equals(""))
       (repaintManager = (JmolRepaintInterface) o).set(this, shapeManager);
     initialize(true);
     fileManager = new FileManager(this);
@@ -459,7 +462,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
 
     if (isApplet) {
-      Logger.info("applet context: " + commandOptions);
+      Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
       jsDocumentBase = appletDocumentBase;
       i = jsDocumentBase.indexOf("#");
       if (i >= 0)
@@ -1949,9 +1952,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             .determineSurfaceFileType(getBufferedInputStream(fileName));
         if (type != null) {
           evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
-              + Escape.escape(fileName)
+              + Escape.escapeStr(fileName)
               + " mesh nofill }; else; { isosurface "
-              + Escape.escape(fileName) + "}");
+              + Escape.escapeStr(fileName) + "}");
           return;
         }
       } else if (type.equals("Jmol")) {
@@ -1969,7 +1972,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (allowScript && scriptEditorVisible && cmd == null)
       showEditor(new String[] { fileName, getFileAsString(fileName) });
     else
-      evalString((cmd == null ? "script " : cmd) + Escape.escape(fileName));
+      evalString((cmd == null ? "script " : cmd) + Escape.escapeStr(fileName));
   }
 
   /**
@@ -2078,7 +2081,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (fileTypes != null && fileTypes[i] != null)
           fname = fileTypes[i] + "::" + fname;
         s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
-            .escape(fname.replace('\\', '/')));
+            .escapeStr(fname.replace('\\', '/')));
       }
 
       loadScript = new StringBuffer(s);
@@ -2128,7 +2131,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         loadScript = (StringBuffer) htParams.get("loadScript");
       htParams.put("loadScript", loadScript = new StringBuffer(TextFormat
           .simpleReplace(loadScript.toString(), "$FILENAME$", Escape
-              .escape(fname.replace('\\', '/')))));
+              .escapeStr(fname.replace('\\', '/')))));
     }
 
     // and finally to create the model set...
@@ -2247,7 +2250,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveFileData) {
       strModel = (String) htParams.get("fileData");
       if (htParams.containsKey("isData")) {
-        return loadInline(strModel, '\0', isAppend, htParams);
+        return loadInlineScript(strModel, '\0', isAppend, htParams);
       }
     } else if (isString) {
       strModel = modelSet.getInlineData(-1);
@@ -2292,19 +2295,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String loadInline(String strModel) {
     // jmolViewer interface
-    return loadInline(strModel, global.inlineNewlineChar, false, null);
+    return loadInlineScript(strModel, global.inlineNewlineChar, false, null);
   }
 
   @Override
   public String loadInline(String strModel, char newLine) {
     // JmolViewer interface
-    return loadInline(strModel, newLine, false, null);
+    return loadInlineScript(strModel, newLine, false, null);
   }
 
   @Override
   public String loadInline(String strModel, boolean isAppend) {
     // JmolViewer interface
-    return loadInline(strModel, (char) 0, isAppend, null);
+    return loadInlineScript(strModel, '\0', isAppend, null);
   }
 
   @Override
@@ -2345,7 +2348,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
-  public String loadInline(String strModel, char newLine, boolean isAppend,
+  private String loadInlineScript(String strModel, char newLine, boolean isAppend,
                            Map<String, Object> htParams) {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
@@ -2482,7 +2485,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
-      setFileLoadStatus(FileManager.EnumFileStatus.NOT_LOADED, fullPathName,
+      setFileLoadStatus(EnumFileStatus.NOT_LOADED, fullPathName,
           null, null, errMsg);
       if (displayLoadErrors && !isAppend
           && !errMsg.equals("#CANCELED#"))
@@ -2493,7 +2496,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAtomSets();
     else if (getModelkitMode() && !fileName.equals("Jmol Model Kit"))
       setModelKitMode(false);
-    setFileLoadStatus(FileManager.EnumFileStatus.CREATING_MODELSET,
+    setFileLoadStatus(EnumFileStatus.CREATING_MODELSET,
         fullPathName, fileName, null, null);
 
     // null fullPathName implies we are doing a merge
@@ -2530,7 +2533,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     popHoldRepaint("createModelSet");
     errMsg = getErrorMessage();
 
-    setFileLoadStatus(FileManager.EnumFileStatus.CREATED, fullPathName,
+    setFileLoadStatus(EnumFileStatus.CREATED, fullPathName,
         fileName, getModelSetName(), errMsg);
     if (isAppend) {
       selectAll();
@@ -2846,7 +2849,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     initializeModel(false);
     if (notify)
-      setFileLoadStatus(FileManager.EnumFileStatus.ZAPPED, null,
+      setFileLoadStatus(EnumFileStatus.ZAPPED, null,
           (resetUndo ? "resetUndo" : getZapName()), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
@@ -3539,11 +3542,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll)
       s.append(STATE_VERSION_STAMP + getJmolVersion() + ";\n");
     if (isApplet && isAll) {
-      StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
+      StateManager.appendCmd(s, "# fullName = " + Escape.escapeStr(fullName));
       StateManager.appendCmd(s, "# documentBase = "
-          + Escape.escape(appletDocumentBase));
+          + Escape.escapeStr(appletDocumentBase));
       StateManager
-          .appendCmd(s, "# codeBase = " + Escape.escape(appletCodeBase));
+          .appendCmd(s, "# codeBase = " + Escape.escapeStr(appletCodeBase));
       s.append("\n");
     }
     // window state
@@ -4985,7 +4988,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
           .append(pts[i].z).append(" - - - - ").append(++atomno).append('\n');
-    loadInline(sb.toString(), '\n', true, null);
+    loadInlineScript(sb.toString(), '\n', true, null);
     eval.runScript(sbConnect.toString(), null);
     BitSet bsB = getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);
@@ -5524,12 +5527,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Viewer.createModelSetAndReturnError (-1, 1, 4) Viewer.deleteAtoms (5)
    * Viewer.zap (0)
    */
-  private void setFileLoadStatus(FileManager.EnumFileStatus ptLoad,
+  private void setFileLoadStatus(EnumFileStatus ptLoad,
                                  String fullPathName, String fileName,
                                  String modelName, String strError) {
     setErrorMessage(strError);
-    global.setParameterValue("_loadPoint", ptLoad.getCode());
-    boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET);
+    global.setParameterValue("_loadPoint", ptLoad.getCode()); 
+    boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
     if (doCallback)
@@ -6475,7 +6478,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     default:
       // stateversion is not tokenized
       if (!global.htNonbooleanParameterValues.containsKey(key)) {
-        global.setUserVariable(key, ScriptVariable.intVariable(value));
+        global.setUserVariable(key, new ScriptVariableInt(value));
         return;
       }
     }
@@ -7593,7 +7596,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("percentVdwAtom", value);
     global.percentVdwAtom = value;
     rd.value = value / 100f;
-    rd.factorType = RadiusData.EnumType.FACTOR;
+    rd.factorType = EnumType.FACTOR;
     rd.vdwType = EnumVdw.AUTO;
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }
@@ -7875,7 +7878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return text;
       Object v = evaluateExpression(name);
       if (v instanceof Point3f)
-        v = Escape.escape((Point3f) v);
+        v = Escape.escapePt((Point3f) v);
       text = text.substring(0, i0 - 2) + v.toString() + text.substring(i + 1);
     }
     if (isEscaped) {
@@ -8038,10 +8041,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // /////////////// getProperty /////////////
-
-  public Object getProperty(String returnType, String infoType, String paramInfo) {
-    return getProperty(returnType, infoType, (Object) paramInfo);
-  }
 
   private boolean scriptEditorVisible;
 
@@ -8286,7 +8285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setDefaultLattice(Point3f ptLattice) {
     // Eval -- handled separately
     global.setDefaultLattice(ptLattice);
-    global.setParameterValue("defaultLattice", Escape.escape(ptLattice));
+    global.setParameterValue("defaultLattice", Escape.escapePt(ptLattice));
   }
 
   public Point3f getDefaultLattice() {
@@ -9146,9 +9145,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
-            + Escape.escape(filename) : "");
+            + Escape.escapeStr(filename) : "");
         if (id != null)
-          script += ";model " + Escape.escape(id);
+          script += ";model " + Escape.escapeStr(id);
         if (atoms != null)
           script += ";select visible & (@"
               + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
@@ -9336,7 +9335,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     animationManager.initializePointers(1);
     setCurrentModelIndex(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
     hoverAtomIndex = -1;
-    setFileLoadStatus(FileManager.EnumFileStatus.DELETED, null, null, null,
+    setFileLoadStatus(EnumFileStatus.DELETED, null, null, null,
         null);
     refreshMeasures(true);
     if (bsD0 != null)

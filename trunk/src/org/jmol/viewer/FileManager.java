@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-08 22:02:20 -0500 (Sat, 08 Sep 2012) $
- * $Revision: 17543 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -1288,7 +1288,7 @@ public class FileManager {
     }
     boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
     if (haveScripts) {
-      script = wrapPathForAllFiles("script " + Escape.escape(scripts[0]), "");
+      script = wrapPathForAllFiles("script " + Escape.escapeStr(scripts[0]), "");
       for (int i = 0; i < scripts.length; i++)
         fileNames.add(scripts[i]);
     }
@@ -1937,24 +1937,6 @@ public class FileManager {
   }
   */
   
-  enum EnumFileStatus {
-    
-    DELETED(5), 
-    CREATED(3), 
-    CREATING_MODELSET(2), 
-    ZAPPED(0), 
-    NOT_LOADED(-1);
-
-    private int code;
-    int getCode() {
-      return code;
-    }
-    
-    EnumFileStatus(int code) {
-      this.code = code;
-    }
-  }
-  
   private Map<String, byte[]> pngjCache;
   private Map<String, byte[]> spardirCache;
   
@@ -2074,9 +2056,9 @@ public class FileManager {
       if (i > 1)
         sceneScript.append(",");
       sceneScript.append('\n')
-        .append(Escape.escape(key))
+        .append(Escape.escapeStr(key))
         .append(": ")
-        .append(Escape.escape(scenes[i - 1]));
+        .append(Escape.escapeStr(scenes[i - 1]));
       iSceneLast = iScene;
     }
     sceneScript.append("\n}\n");

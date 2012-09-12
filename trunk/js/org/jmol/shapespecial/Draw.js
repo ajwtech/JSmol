@@ -318,7 +318,7 @@ if ((pt2 = axisID.lastIndexOf ("]")) < pt) pt2 = axisID.length;
 try {
 vertexIndex = Integer.parseInt (axisID.substring (pt + 1, pt2));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -855,7 +855,7 @@ this.pickedModel = iModel;
 this.pickedVertex = iVertex;
 this.pickedPt = pt;
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 System.out.println (e);
 } else {
 throw e;
@@ -884,7 +884,7 @@ if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.NONE && mesh.lineD
 var str =  new StringBuffer ();
 var modelCount = this.viewer.getModelCount ();
 if (!mesh.isFixed && iModel >= 0 && modelCount > 1) org.jmol.shape.Shape.appendCmd (str, "frame " + this.viewer.getModelNumberDotted (iModel));
-str.append ("  draw ID ").append (org.jmol.util.Escape.escape (mesh.thisID));
+str.append ("  draw ID ").append (org.jmol.util.Escape.escapeStr (mesh.thisID));
 if (mesh.isFixed) str.append (" fixed");
 if (iModel < 0) iModel = 0;
 if (mesh.noHead) str.append (" noHead");
@@ -897,9 +897,9 @@ str.append ("  lineData [");
 var n = mesh.lineData.size ();
 for (var j = 0; j < n; ) {
 var pts = mesh.lineData.get (j);
-str.append (org.jmol.util.Escape.escape (pts[0]));
+str.append (org.jmol.util.Escape.escapePt (pts[0]));
 str.append (" ");
-str.append (org.jmol.util.Escape.escape (pts[1]));
+str.append (org.jmol.util.Escape.escapePt (pts[1]));
 if (++j < n) str.append (", ");
 }
 str.append ("]");
@@ -952,7 +952,7 @@ str.append (s);
 str.append (" ] ");
 }
 } else if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.POLYGON) {
-for (var i = 0; i < mesh.vertexCount; i++) str.append (" ").append (org.jmol.util.Escape.escape (mesh.vertices[i]));
+for (var i = 0; i < mesh.vertexCount; i++) str.append (" ").append (org.jmol.util.Escape.escapePt (mesh.vertices[i]));
 
 str.append (" ").append (mesh.polygonCount);
 for (var i = 0; i < mesh.polygonCount; i++) if (mesh.polygonIndexes[i] == null) str.append (" [0 0 0 0]");
@@ -965,12 +965,12 @@ str.append (s);
 }}if (mesh.mat4 != null) {
 var v =  new javax.vecmath.Vector3f ();
 mesh.mat4.get (v);
-str.append (" offset ").append (org.jmol.util.Escape.escape (v));
+str.append (" offset ").append (org.jmol.util.Escape.escapePt (v));
 }if (mesh.title != null) {
 var s = "";
 for (var i = 0; i < mesh.title.length; i++) s += "|" + mesh.title[i];
 
-str.append (org.jmol.util.Escape.escape (s.substring (1)));
+str.append (org.jmol.util.Escape.escapeStr (s.substring (1)));
 }str.append (";\n");
 org.jmol.shape.Shape.appendCmd (str, mesh.getState ("draw"));
 org.jmol.shape.Shape.appendCmd (str, this.getColorCommand ("draw", mesh.colix));
@@ -993,12 +993,12 @@ str += (i == 0 ? " " : " ,") + "[" + Math.round (pt.x) + " " + Math.round (pt.y)
 } else if (adjustPt && i == 1) {
 var pt1 =  new javax.vecmath.Point3f (pt);
 pt1.sub (mesh.vertices[mesh.polygonIndexes[iModel][0]]);
-str += " " + org.jmol.util.Escape.escape (pt1);
+str += " " + org.jmol.util.Escape.escapePt (pt1);
 } else {
-str += " " + org.jmol.util.Escape.escape (pt);
+str += " " + org.jmol.util.Escape.escapePt (pt);
 }}
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Unexpected error in Draw.getVertexList");
 } else {
 throw e;

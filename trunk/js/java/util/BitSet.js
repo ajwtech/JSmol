@@ -5,13 +5,13 @@ Clazz.instantialize (this, arguments);
 }, java.util, "BitSet", null, [Cloneable, java.io.Serializable]);
 Clazz.makeConstructor (c$, 
 function () {
-this.construct (64);
+this.construct (32);
 });
 Clazz.makeConstructor (c$, 
 function (nbits) {
 if (nbits < 0) throw  new NegativeArraySizeException ();
-var length = nbits >>> 6;
-if ((nbits & 63) != 0) ++length;
+var length = nbits >>> 5;
+if ((nbits & 4) != 0) ++length;
 this.bits =  Clazz.newArray (length, 0);
 }, "~N");
 Clazz.defineMethod (c$, "and", 
@@ -26,8 +26,9 @@ while (i < this.bits.length) this.bits[i++] = 0;
 Clazz.defineMethod (c$, "andNot", 
 function (bs) {
 var i = Math.min (this.bits.length, bs.bits.length);
-while (--i >= 0) this.bits[i] &= ~bs.bits[i];
-
+while (--i >= 0) {
+this.bits[i] &= ~bs.bits[i];
+}
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "cardinality", 
 function () {
@@ -35,13 +36,12 @@ var card = 0;
 for (var i = this.bits.length - 1; i >= 0; i--) {
 var a = this.bits[i];
 if (a == 0) continue ;if (a == -1) {
-card += 64;
-continue ;}a = ((a >> 1) & 0x5555555555555555) + (a & 0x5555555555555555);
-a = ((a >> 2) & 0x3333333333333333) + (a & 0x3333333333333333);
-var b = ((a >>> 32) + a);
-b = ((b >> 4) & 0x0f0f0f0f) + (b & 0x0f0f0f0f);
-b = ((b >> 8) & 0x00ff00ff) + (b & 0x00ff00ff);
-card += ((b >> 16) & 0x0000ffff) + (b & 0x0000ffff);
+card += 32;
+continue ;}a = ((a >> 1) & 0x55555555) + (a & 0x55555555);
+a = ((a >> 2) & 0x33333333) + (a & 0x33333333);
+a = ((a >> 4) & 0x0f0f0f0f) + (a & 0x0f0f0f0f);
+a = ((a >> 8) & 0x00ff00ff) + (a & 0x00ff00ff);
+card += ((a >> 16) & 0x0000ffff) + (a & 0x0000ffff);
 }
 return card;
 });
@@ -51,7 +51,7 @@ java.util.Arrays.fill (this.bits, 0);
 });
 Clazz.defineMethod (c$, "clear", 
 function (pos) {
-var offset = pos >> 6;
+var offset = pos >> 5;
 this.ensure (offset);
 this.bits[offset] &= ~(1 << pos);
 }, "~N");
@@ -59,8 +59,8 @@ Clazz.defineMethod (c$, "clear",
 function (from, to) {
 if (from < 0 || from > to) throw  new IndexOutOfBoundsException ();
 if (from == to) return ;
-var lo_offset = from >>> 6;
-var hi_offset = to >>> 6;
+var lo_offset = from >>> 5;
+var hi_offset = to >>> 5;
 this.ensure (hi_offset);
 if (lo_offset == hi_offset) {
 this.bits[hi_offset] &= ((1 << from) - 1) | (-1 << to);
@@ -77,7 +77,7 @@ var bs = Clazz.superCall (this, java.util.BitSet, "clone", []);
 bs.bits = this.bits.clone ();
 return bs;
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 return null;
 } else {
 throw e;
@@ -100,7 +100,7 @@ return true;
 }, "~O");
 Clazz.defineMethod (c$, "flip", 
 function (index) {
-var offset = index >> 6;
+var offset = index >> 5;
 this.ensure (offset);
 this.bits[offset] ^= 1 << index;
 }, "~N");
@@ -108,8 +108,8 @@ Clazz.defineMethod (c$, "flip",
 function (from, to) {
 if (from < 0 || from > to) throw  new IndexOutOfBoundsException ();
 if (from == to) return ;
-var lo_offset = from >>> 6;
-var hi_offset = to >>> 6;
+var lo_offset = from >>> 5;
+var hi_offset = to >>> 5;
 this.ensure (hi_offset);
 if (lo_offset == hi_offset) {
 this.bits[hi_offset] ^= (-1 << from) & ((1 << to) - 1);
@@ -121,7 +121,7 @@ for (var i = lo_offset + 1; i < hi_offset; i++) this.bits[i] ^= -1;
 }, "~N,~N");
 Clazz.defineMethod (c$, "get", 
 function (pos) {
-var offset = pos >> 6;
+var offset = pos >> 5;
 if (offset >= this.bits.length) return false;
 return (this.bits[offset] & (1 << pos)) != 0;
 }, "~N");
@@ -129,10 +129,10 @@ Clazz.defineMethod (c$, "get",
 function (from, to) {
 if (from < 0 || from > to) throw  new IndexOutOfBoundsException ();
 var bs =  new java.util.BitSet (to - from);
-var lo_offset = from >>> 6;
+var lo_offset = from >>> 5;
 if (lo_offset >= this.bits.length) return bs;
-var lo_bit = from & 63;
-var hi_offset = to >>> 6;
+var lo_bit = from & 4;
+var hi_offset = to >>> 5;
 if (lo_bit == 0) {
 var len = Math.min (hi_offset - lo_offset + 1, this.bits.length - lo_offset);
 System.arraycopy (this.bits, lo_offset, bs.bits, 0, len);
@@ -143,7 +143,7 @@ var reverse = ~lo_bit;
 var i;
 for (i = 0; lo_offset < len; lo_offset++, i++) bs.bits[i] = ((this.bits[lo_offset] >>> lo_bit) | (this.bits[lo_offset + 1] << reverse));
 
-if ((to & 63) > lo_bit) bs.bits[i++] = this.bits[lo_offset] >>> lo_bit;
+if ((to & 4) > lo_bit) bs.bits[i++] = this.bits[lo_offset] >>> lo_bit;
 if (hi_offset < this.bits.length) bs.bits[i - 1] &= (1 << (to - from)) - 1;
 return bs;
 }, "~N,~N");
@@ -152,7 +152,7 @@ function () {
 var h = 1234;
 for (var i = this.bits.length; i > 0; ) h ^= i * this.bits[--i];
 
-return ((h >> 32) ^ h);
+return h;
 });
 Clazz.defineMethod (c$, "intersects", 
 function (set) {
@@ -173,8 +173,8 @@ var i;
 for (i = this.bits.length - 1; i >= 0 && this.bits[i] == 0; --i) ;
 if (i < 0) return 0;
 var b = this.bits[i];
-var len = (i + 1) * 64;
-while (b >= 0) {
+var len = (i + 1) * 32;
+while ((b & 0x80000000) == 0) {
 --len;
 b <<= 1;
 }
@@ -182,7 +182,7 @@ return len;
 });
 Clazz.defineMethod (c$, "nextClearBit", 
 function (from) {
-var offset = from >> 6;
+var offset = from >> 5;
 var mask = 1 << from;
 while (offset < this.bits.length) {
 var h = this.bits[offset];
@@ -198,7 +198,7 @@ return from;
 }, "~N");
 Clazz.defineMethod (c$, "nextSetBit", 
 function (from) {
-var offset = from >> 6;
+var offset = from >> 5;
 var mask = 1 << from;
 while (offset < this.bits.length) {
 var h = this.bits[offset];
@@ -220,7 +220,7 @@ for (var i = bs.bits.length - 1; i >= 0; i--) this.bits[i] |= bs.bits[i];
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "set", 
 function (pos) {
-var offset = pos >> 6;
+var offset = pos >> 5;
 this.ensure (offset);
 this.bits[offset] |= 1 << pos;
 }, "~N");
@@ -233,8 +233,8 @@ Clazz.defineMethod (c$, "set",
 function (from, to) {
 if (from < 0 || from > to) throw  new IndexOutOfBoundsException ();
 if (from == to) return ;
-var lo_offset = from >>> 6;
-var hi_offset = to >>> 6;
+var lo_offset = from >>> 5;
+var hi_offset = to >>> 5;
 this.ensure (hi_offset);
 if (lo_offset == hi_offset) {
 this.bits[hi_offset] |= (-1 << from) & ((1 << to) - 1);
@@ -251,7 +251,7 @@ if (value) this.set (from, to);
 }, "~N,~N,~B");
 Clazz.defineMethod (c$, "size", 
 function () {
-return this.bits.length * 64;
+return this.bits.length * 32;
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
@@ -260,10 +260,10 @@ var first = true;
 for (var i = 0; i < this.bits.length; ++i) {
 var bit = 1;
 var word = this.bits[i];
-if (word == 0) continue ;for (var j = 0; j < 64; ++j) {
+if (word == 0) continue ;for (var j = 0; j < 32; ++j) {
 if ((word & bit) != 0) {
 if (!first) r.append (", ");
-r.append (64 * i + j);
+r.append (32 * i + j);
 first = false;
 }bit <<= 1;
 }
@@ -284,5 +284,5 @@ System.arraycopy (this.bits, 0, nd, 0, this.bits.length);
 this.bits = nd;
 }}, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineStatics (c$,
-"LONG_MASK", 0x3f);
+"INT_MASK", 0x4);
 });

@@ -37,7 +37,7 @@ grn = Integer.parseInt (strColor.substring (3, 5), 16);
 blu = Integer.parseInt (strColor.substring (5, 7), 16);
 return org.jmol.util.ColorUtil.colorTriadToInt (red, grn, blu);
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 return 0;
 } else {
 throw e;

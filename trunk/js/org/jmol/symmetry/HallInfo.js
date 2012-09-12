@@ -39,7 +39,7 @@ this.primitiveHallSymbol += " " + r.primitiveCode;
 }
 this.primitiveHallSymbol += this.vectorCode;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Invalid Hall symbol");
 this.nRotations = 0;
 } else {

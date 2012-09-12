@@ -236,7 +236,7 @@ try {
 if (this.bsAtoms != null) this.bsAtoms.set (this.atomCount);
 this.newCloneAtom (collection.atoms[clonedAtoms]);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 this.errorMessage = "appendAtomCollection error: " + e;
 } else {
 throw e;
@@ -646,7 +646,7 @@ if (strSupercell != null) this.setSuperCell (strSupercell);
 Clazz.defineMethod (c$, "setSupercell", 
 function (pt) {
 this.ptSupercell = pt;
-org.jmol.util.Logger.info ("Using supercell " + org.jmol.util.Escape.escape (pt));
+org.jmol.util.Logger.info ("Using supercell " + org.jmol.util.Escape.escapePt (pt));
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setSuperCell", 
 ($fz = function (supercell) {
@@ -1040,7 +1040,7 @@ var iAtom2 = atomMap[this.atoms[bond.atomIndex2].atomSite];
 if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBond (iAtom1, iAtom2, bond.order);
 }
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 this.errorMessage = "appendAtomCollection error: " + e;
 } else {
 throw e;

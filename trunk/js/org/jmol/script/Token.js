@@ -20,26 +20,29 @@ function (tok) {
 this.tok = tok;
 }, "~N");
 Clazz.makeConstructor (c$, 
-function (tok, intValue) {
-this.tok = tok;
-this.intValue = intValue;
-}, "~N,~N");
-Clazz.makeConstructor (c$, 
 function (tok, value) {
 this.tok = tok;
 this.value = value;
 }, "~N,~O");
+c$.newToken = Clazz.defineMethod (c$, "newToken", 
+function (tok, intValue) {
+var token =  new org.jmol.script.Token (tok);
+token.intValue = intValue;
+return token;
+}, "~N,~N");
 c$.intToken = Clazz.defineMethod (c$, "intToken", 
 function (intValue) {
-return  new org.jmol.script.Token (2, intValue);
+var token =  new org.jmol.script.Token (2);
+token.intValue = intValue;
+return token;
 }, "~N");
 c$.tokAttr = Clazz.defineMethod (c$, "tokAttr", 
 function (a, b) {
-return (a & b) == b;
+return (a & b) == (b & b);
 }, "~N,~N");
 c$.tokAttrOr = Clazz.defineMethod (c$, "tokAttrOr", 
 function (a, b1, b2) {
-return (a & b1) == b1 || (a & b2) == b2;
+return (a & b1) == (b1 & b1) || (a & b2) == (b2 & b2);
 }, "~N,~N,~N");
 c$.getPrecedence = Clazz.defineMethod (c$, "getPrecedence", 
 function (tokOperator) {
@@ -1055,7 +1058,7 @@ c$.tokenConnected = c$.prototype.tokenConnected =  new org.jmol.script.Token (13
 c$.tokenCoordinateBegin = c$.prototype.tokenCoordinateBegin =  new org.jmol.script.Token (1048586, "{");
 c$.tokenRightBrace = c$.prototype.tokenRightBrace =  new org.jmol.script.Token (1048590, "}");
 c$.tokenCoordinateEnd = c$.prototype.tokenCoordinateEnd = org.jmol.script.Token.tokenRightBrace;
-c$.tokenColon = c$.prototype.tokenColon =  new org.jmol.script.Token (269484066, ':'.charCodeAt (0));
+c$.tokenColon = c$.prototype.tokenColon =  new org.jmol.script.Token (269484066, ":");
 c$.tokenSetCmd = c$.prototype.tokenSetCmd =  new org.jmol.script.Token (1085443, "set");
 c$.tokenSet = c$.prototype.tokenSet =  new org.jmol.script.Token (1085443, '='.charCodeAt (0), "");
 c$.tokenSetArray = c$.prototype.tokenSetArray =  new org.jmol.script.Token (1085443, '['.charCodeAt (0), "");

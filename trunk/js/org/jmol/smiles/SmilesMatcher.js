@@ -14,7 +14,7 @@ search.createTopoMap (null);
 search.nodes = search.jmolAtoms;
 return search.getMolecularFormula (!isSmarts);
 } catch (e) {
-if (Clazz.instanceOf (e, org.jmol.smiles.InvalidSmilesException)) {
+if (Clazz.exceptionOf (e, org.jmol.smiles.InvalidSmilesException)) {
 if (org.jmol.smiles.InvalidSmilesException.getLastError () == null) org.jmol.smiles.InvalidSmilesException.setLastError (e.getMessage ());
 return null;
 } else {
@@ -29,7 +29,7 @@ try {
 if (asBioSmiles) return ( new org.jmol.smiles.SmilesGenerator ()).getBioSmiles (atoms, atomCount, bsSelected, allowUnmatchedRings, addCrossLinks, comment);
 return ( new org.jmol.smiles.SmilesGenerator ()).getSmiles (atoms, atomCount, bsSelected);
 } catch (e) {
-if (Clazz.instanceOf (e, org.jmol.smiles.InvalidSmilesException)) {
+if (Clazz.exceptionOf (e, org.jmol.smiles.InvalidSmilesException)) {
 if (org.jmol.smiles.InvalidSmilesException.getLastError () == null) org.jmol.smiles.InvalidSmilesException.setLastError (e.getMessage ());
 return null;
 } else {
@@ -54,7 +54,7 @@ try {
 var search = org.jmol.smiles.SmilesParser.getMolecule (smiles, false);
 return this.find (pattern, search, isSmarts, !isSmarts, firstMatchOnly);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (org.jmol.smiles.InvalidSmilesException.getLastError () == null) org.jmol.smiles.InvalidSmilesException.setLastError (e.getMessage ());
 e.printStackTrace ();
 return null;
@@ -116,7 +116,7 @@ search.asVector = false;
 search.subSearches =  new Array (1);
 search.getSelections ();
 } catch (e) {
-if (Clazz.instanceOf (e, org.jmol.smiles.InvalidSmilesException)) {
+if (Clazz.exceptionOf (e, org.jmol.smiles.InvalidSmilesException)) {
 } else {
 throw e;
 }
@@ -134,7 +134,7 @@ ret.add (bs);
 bsDone.or (bs);
 if (bsDone.cardinality () == atomCount) return ;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (org.jmol.smiles.InvalidSmilesException.getLastError () == null) org.jmol.smiles.InvalidSmilesException.setLastError (e.getMessage ());
 e.printStackTrace ();
 } else {
@@ -185,7 +185,7 @@ var vl = search.search (false);
 return vl.toArray ( Clazz.newArray (vl.size (), 0));
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (org.jmol.smiles.InvalidSmilesException.getLastError () == null) org.jmol.smiles.InvalidSmilesException.setLastError (e.getMessage ());
 e.printStackTrace ();
 } else {

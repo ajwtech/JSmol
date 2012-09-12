@@ -46,7 +46,7 @@ if (title != null) for (var i = 0; i < title.length; i++) sb.append (title[i]).a
 
 org.jmol.util.XmlUtil.appendCdata (data, "jvxlSurfaceTitle", null, sb.toString ());
 }sb =  new StringBuffer ();
-org.jmol.util.XmlUtil.openTag (sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null : jvxlData.mapLattice == null ? ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane)] : ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane), "maplattice", org.jmol.util.Escape.escape (jvxlData.mapLattice)]));
+org.jmol.util.XmlUtil.openTag (sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null : jvxlData.mapLattice == null ? ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane)] : ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane), "maplattice", org.jmol.util.Escape.escapePt (jvxlData.mapLattice)]));
 if (vertexDataOnly) {
 org.jmol.jvxl.data.JvxlCoder.appendXmlVertexOnlyData (sb, jvxlData, meshData, true);
 } else if (jvxlData.jvxlPlane == null) {
@@ -189,8 +189,8 @@ org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  contourColors", jvxlData.c
 }}if (jvxlData.insideOut) org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  insideOut", "true");
 if (jvxlData.vertexDataOnly) org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  note", "vertex/face data only");
  else if (jvxlData.isXLowToHigh) org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  note", "progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")");
-org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMin", org.jmol.util.Escape.escape (jvxlData.boundingBox[0]));
-org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMax", org.jmol.util.Escape.escape (jvxlData.boundingBox[1]));
+org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMin", org.jmol.util.Escape.escapePt (jvxlData.boundingBox[0]));
+org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMax", org.jmol.util.Escape.escapePt (jvxlData.boundingBox[1]));
 org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  approximateCompressionRatio", "not calculated");
 org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  jmolVersion", jvxlData.version);
 var info =  new StringBuffer ();
@@ -374,7 +374,7 @@ org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (p.y, min.y, max.y, colorFract
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (p.z, min.z, max.z, colorFractionBase, colorFractionRange, list1, list2);
 }
 list1.append (list2);
-org.jmol.util.XmlUtil.appendTag (sb, "jvxlVertexData", ["count", "" + n, "min", org.jmol.util.Escape.escape (min), "max", org.jmol.util.Escape.escape (max), "encoding", "base90xyz2", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (list1.toString (), escapeXml)], null);
+org.jmol.util.XmlUtil.appendTag (sb, "jvxlVertexData", ["count", "" + n, "min", org.jmol.util.Escape.escapePt (min), "max", org.jmol.util.Escape.escapePt (max), "encoding", "base90xyz2", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (list1.toString (), escapeXml)], null);
 if (polygonColorData != null) org.jmol.util.XmlUtil.appendTag (sb, "jvxlPolygonColorData", ["encoding", "jvxlnc", "count", "" + polygonCount], "\n" + polygonColorData);
 if (!addColorData) return ;
 list1 =  new StringBuffer ();

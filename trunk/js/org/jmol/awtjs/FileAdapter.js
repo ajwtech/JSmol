@@ -19,7 +19,7 @@ wr.write (post);
 wr.flush ();
 }return  new java.io.BufferedInputStream (conn.getInputStream ());
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 return e.getMessage ();
 } else {
 throw e;
@@ -32,7 +32,7 @@ var file =  new java.io.File (name);
 try {
 return  new java.io.BufferedInputStream ( new java.io.FileInputStream (file));
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 return e.getMessage ();
 } else {
 throw e;

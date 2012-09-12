@@ -4,6 +4,8 @@
  // BH added Enum .value() method at line 2183
  // BH added System.getSecurityManager() at end
  // BH added String.contains() at end
+ // BH added System.gc() at end
+ // BH added Clazz.exceptionOf = Clazz.instanceOf  at end
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -655,6 +657,7 @@ Clazz.superCall = function (objThis, clazzThis, funName, funParams) {
 		/* No super constructor! */
 		return ;
 	}
+	alert(["j2slib","no class found",(funParams).typeString])
 	throw new Clazz.MethodNotFoundException (objThis, clazzThis, funName, 
 			Clazz.getParamsType (funParams).typeString);
 };
@@ -770,6 +773,7 @@ Clazz.getParamsType = function (funParams) {
 Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 	var params = Clazz.getParamsType (funParams);
 	var fx = objThis[fxName];
+	
 	/*
 	 * Cache last matched method
 	 */
@@ -806,6 +810,8 @@ Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 		stacks = claxxRef.prototype[fxName].stacks;
 	}
 	var length = stacks.length;
+	if (fxName == "loadInline")alert(["loadinline", params, length]);
+
 	/*
 	 * Search the inheritance stacks to get the given class' function
 	 */
@@ -824,7 +830,7 @@ Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 			 */
 			var clazzFun = stacks[i].prototype[fxName];
 			
-			var ret = Clazz.tryToSearchAndExecute (objThis, clazzFun, params, 
+			var ret = Clazz.tryToSearchAndExecute (fxName, objThis, clazzFun, params, 
 					funParams/*, isSuper, clazzThis*/, fx);
 			if (!(ret instanceof Clazz.MethodException)) {
 				return ret;
@@ -866,13 +872,15 @@ Clazz.tracingCalling = false;
 
 /* private */
 /*-# tryToSearchAndExecute -> tsae #-*/
-Clazz.tryToSearchAndExecute = function (objThis, clazzFun, params, funParams/*, 
+Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funParams/*, 
 		isSuper, clazzThis*/, fx) {
+	if (fxName == "loadInline")alert(["loadinline-tyrtosearchandexec", params]);
 	var methods = new Array ();
 	//var xfparams = null;
 	var generic = true;
 	for (var fn in clazzFun) {
 		//if (fn.indexOf ('\\') == 0) {
+	if (fxName == "loadInline" || fxName=="checkMap")alert([fxName,	"fn=", fn]);
 		if (fn.charCodeAt (0) == 92) { // 92 == '\\'.charCodeAt (0)
 			var ps = (Clazz.ie$plit ? fn : fn.substring (1)).split (/\\/);
 			if (ps.length == params.length) {
@@ -913,6 +921,8 @@ Clazz.tryToSearchAndExecute = function (objThis, clazzFun, params, funParams/*,
 	//if (methods.length == 0 && xfparams != null) {
 	//	methods[0] = xfparams.substring (1);
 	//}
+		if (fxName == "loadInline")alert(["loadinline params=", params, "methods=",methods]);
+
 	var method = Clazz.searchMethod (methods, params);
 	if (method != null) {
 		var f = null;
@@ -6858,8 +6868,10 @@ window.assert = function () {
 	};
 //}
 
+  System.gc = function() {};
   System.getSecurityManager = function() { return null };
   String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+  Clazz.exceptionOf = Clazz.instanceOf
 
 }
 

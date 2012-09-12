@@ -139,7 +139,7 @@ var s =  new StringBuffer ();
 s.append ("dipole ID ").append (this.thisID);
 if (this.haveAtoms) s.append (" ({").append (this.atoms[0].getIndex ()).append (" ").append (this.atoms[1].getIndex ()).append ("})");
  else if (this.coords[0] == null) return "";
- else s.append (" ").append (org.jmol.util.Escape.escape (this.coords[0])).append (" ").append (org.jmol.util.Escape.escape (this.coords[1]));
+ else s.append (" ").append (org.jmol.util.Escape.escapePt (this.coords[0])).append (" ").append (org.jmol.util.Escape.escapePt (this.coords[1]));
 if (this.isUserValue) s.append (" value ").append (this.dipoleValue);
 if (this.mad != 5) s.append (" width ").append (this.mad / 1000);
 if (this.offsetAngstroms != 0) s.append (" offset ").append (this.offsetAngstroms);

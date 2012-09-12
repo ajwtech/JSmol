@@ -24,7 +24,7 @@ try {
 os.flush ();
 os.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -48,7 +48,7 @@ org.jmol.util.JpegEncoder.WriteEOI (this.outStream);
 if (longState != null) try {
 this.outStream.write (longState.getBytes ());
 } catch (e1) {
-if (Clazz.instanceOf (e1, java.io.IOException)) {
+if (Clazz.exceptionOf (e1, java.io.IOException)) {
 System.out.println ("ERROR WRITING COMMENT");
 } else {
 throw e1;
@@ -57,7 +57,7 @@ throw e1;
 try {
 this.outStream.flush ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -283,7 +283,7 @@ function (data, out) {
 try {
 out.write (data, 0, 2);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -295,7 +295,7 @@ function (data, out) {
 try {
 out.write (data);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -613,7 +613,7 @@ var c = ((PutBuffer >> 16) & 0xFF);
 try {
 outStream.write (c);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -623,7 +623,7 @@ if (c == 0xFF) {
 try {
 outStream.write (0);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -644,7 +644,7 @@ var c = ((PutBuffer >> 16) & 0xFF);
 try {
 outStream.write (c);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -654,7 +654,7 @@ if (c == 0xFF) {
 try {
 outStream.write (0);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;
@@ -668,7 +668,7 @@ var c = ((PutBuffer >> 16) & 0xFF);
 try {
 outStream.write (c);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 org.jmol.util.Logger.error ("IO Error", e);
 } else {
 throw e;

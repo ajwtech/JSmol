@@ -377,7 +377,7 @@ mesh.visibilityFlags = (mesh.visible && mesh.isValid && (mesh.modelIndex < 0 || 
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "setStatusPicked", 
 function (flag, v) {
-this.viewer.setStatusAtomPicked (flag, "[\"" + this.myType + "\"," + org.jmol.util.Escape.escape (this.pickedMesh.thisID) + "," + +this.pickedModel + "," + this.pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," + (this.pickedMesh.title == null ? "\"\"" : org.jmol.util.Escape.escape (this.pickedMesh.title[0])) + "]");
+this.viewer.setStatusAtomPicked (flag, "[\"" + this.myType + "\"," + org.jmol.util.Escape.escapeStr (this.pickedMesh.thisID) + "," + +this.pickedModel + "," + this.pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," + (this.pickedMesh.title == null ? "\"\"" : org.jmol.util.Escape.escapeStr (this.pickedMesh.title[0])) + "]");
 }, "~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getPickedPoint", 
 function (v, modelIndex) {

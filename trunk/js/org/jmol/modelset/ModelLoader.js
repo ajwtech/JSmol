@@ -94,7 +94,7 @@ var shapeClass = Class.forName ("org.jmol.modelsetbio.Resolver");
 this.jbr = shapeClass.newInstance ();
 this.jbr.initialize (this.modelSet);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("developer error: org.jmol.modelsetbio.Resolver could not be found");
 } else {
 throw e;
@@ -492,7 +492,8 @@ if (atomName != null) {
 if (isPDB && atomName.indexOf ('*') >= 0) atomName = atomName.$replace ('*', '\'');
 specialAtomID = org.jmol.viewer.JmolConstants.lookupSpecialAtomID (atomName);
 if (isPDB && specialAtomID == 2 && "CA".equalsIgnoreCase (group3)) specialAtomID = 0;
-}var atom = this.modelSet.addAtom (this.currentModelIndex, this.nullGroup, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY, vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid, isHetero, alternateLocationID, specialAtomID, atomSymmetry);
+}var atom = this.modelSet.addAtom (this.currentModelIndex, this.nullGroup, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY, vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid, isHetero, specialAtomID, atomSymmetry);
+atom.setAltLoc (alternateLocationID);
 this.htAtomMap.put (atomUid, atom);
 }, $fz.isPrivate = true, $fz), "~B,java.util.BitSet,~N,~O,~N,~S,~N,~N,~A,~N,~N,~N,~N,~N,~B,~N,~S,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "checkNewGroup", 

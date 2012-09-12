@@ -63,7 +63,7 @@ this.mads =  Clazz.newArray (this.atomCount, 0);
 for (var i = 0; i < this.atomCount; i++) if (this.atoms[i].isInFrame () && this.atoms[i].isShapeVisible (this.myVisibilityFlag)) try {
 this.mads[i] = Math.round ((this.ec.getAppropriateRadius (i) * 1000));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -101,7 +101,7 @@ if (this.ec == null) this.ec =  new org.jmol.geodesic.EnvelopeCalculation (this.
 });
 Clazz.defineMethod (c$, "setSize", 
 function (rd, bsSelected) {
-if (rd == null) rd =  new org.jmol.atomdata.RadiusData (0, org.jmol.atomdata.RadiusData.RadiusData.EnumType.ABSOLUTE, null);
+if (rd == null) rd =  new org.jmol.atomdata.RadiusData (0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null);
 if (this.bsSelected != null) bsSelected = this.bsSelected;
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("Dots.setSize " + rd.value);

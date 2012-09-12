@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -597,7 +597,7 @@ public class Labels extends AtomShape {
     Map<String, BitSet> temp3 = new Hashtable<String, BitSet>();
     for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
         .nextSetBit(i + 1)) {
-      setStateInfo(temp, i, "label " + Escape.escape(formats[i]));
+      setStateInfo(temp, i, "label " + Escape.escapeStr(formats[i]));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
             colixes[i]));

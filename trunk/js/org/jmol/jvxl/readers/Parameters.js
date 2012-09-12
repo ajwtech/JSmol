@@ -308,7 +308,7 @@ this.script = this.getScriptParams () + " LOBE {" + v.x + " " + v.y + " " + v.z 
 }, "javax.vecmath.Point4f");
 Clazz.defineMethod (c$, "getScriptParams", 
 ($fz = function () {
-return " center " + org.jmol.util.Escape.escape (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale);
+return " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setLp", 
 function (v) {
@@ -318,7 +318,7 @@ if (this.cutoff == 3.4028235E38) {
 this.cutoff = 0.14;
 if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
 }this.isSilent = !this.logMessages;
-this.script = " center " + org.jmol.util.Escape.escape (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " LP {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
+this.script = " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " LP {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
 }, "javax.vecmath.Point4f");
 Clazz.defineMethod (c$, "setRadical", 
 function (v) {
@@ -328,7 +328,7 @@ if (this.cutoff == 3.4028235E38) {
 this.cutoff = 0.14;
 if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
 }this.isSilent = !this.logMessages;
-this.script = " center " + org.jmol.util.Escape.escape (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " RAD {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
+this.script = " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " RAD {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
 }, "javax.vecmath.Point4f");
 Clazz.defineMethod (c$, "setLcao", 
 function (type, colorPtr) {

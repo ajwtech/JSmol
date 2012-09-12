@@ -108,6 +108,12 @@ this.number = null;
 this.$$name = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util.JmolEdge, "EnumBondOrder", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (a, b, c) {
+this.code = a;
+this.number = b;
+this.$$name = c;
+}, $fz.isPrivate = true, $fz), "~N,~S,~S");
 c$.getCodeFromName = Clazz.defineMethod (c$, "getCodeFromName", 
 function (a) {
 for (var item, $item = 0, $$item = org.jmol.util.JmolEdge.EnumBondOrder.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) if (item.$$name.equalsIgnoreCase (a)) return item.code;

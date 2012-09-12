@@ -1907,7 +1907,7 @@ function (m1) {
 try {
 return (this.m00 == m1.m00 && this.m01 == m1.m01 && this.m02 == m1.m02 && this.m03 == m1.m03 && this.m10 == m1.m10 && this.m11 == m1.m11 && this.m12 == m1.m12 && this.m13 == m1.m13 && this.m20 == m1.m20 && this.m21 == m1.m21 && this.m22 == m1.m22 && this.m23 == m1.m23 && this.m30 == m1.m30 && this.m31 == m1.m31 && this.m32 == m1.m32 && this.m33 == m1.m33);
 } catch (e2) {
-if (Clazz.instanceOf (e2, NullPointerException)) {
+if (Clazz.exceptionOf (e2, NullPointerException)) {
 return false;
 } else {
 throw e2;
@@ -1920,12 +1920,12 @@ try {
 var m2 = t1;
 return (this.m00 == m2.m00 && this.m01 == m2.m01 && this.m02 == m2.m02 && this.m03 == m2.m03 && this.m10 == m2.m10 && this.m11 == m2.m11 && this.m12 == m2.m12 && this.m13 == m2.m13 && this.m20 == m2.m20 && this.m21 == m2.m21 && this.m22 == m2.m22 && this.m23 == m2.m23 && this.m30 == m2.m30 && this.m31 == m2.m31 && this.m32 == m2.m32 && this.m33 == m2.m33);
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, ClassCastException)) {
+if (Clazz.exceptionOf (e$$, ClassCastException)) {
 var e1 = e$$;
 {
 return false;
 }
-} else if (Clazz.instanceOf (e$$, NullPointerException)) {
+} else if (Clazz.exceptionOf (e$$, NullPointerException)) {
 var e2 = e$$;
 {
 return false;
@@ -2218,7 +2218,7 @@ var m1 = null;
 try {
 m1 = Clazz.superCall (this, javax.vecmath.Matrix4f, "clone", []);
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 throw  new InternalError ();
 } else {
 throw e;

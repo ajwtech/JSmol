@@ -34,7 +34,7 @@ var saxParser = spf.newSAXParser ();
 xmlr = saxParser.getXMLReader ();
 org.jmol.util.Logger.debug ("Using JAXP/SAX XML parser.");
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.debug ("Could not instantiate JAXP/SAX XML reader: " + e.getMessage ());
 } else {
 throw e;
@@ -64,7 +64,7 @@ className = org.jmol.adapter.smarter.Resolver.getReaderClassBase (name);
 atomSetCollectionReaderClass = Class.forName (className);
 thisReader = atomSetCollectionReaderClass.newInstance ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 err = "File reader was not found:" + className;
 org.jmol.util.Logger.error (err);
 return err;
@@ -93,7 +93,7 @@ is.setSystemId ("foo");
 try {
 xmlReader.parse (is);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 this.atomSetCollection.errorMessage = "XML parsing error: " + e.getMessage ();
 } else {
@@ -114,7 +114,7 @@ atomSetCollectionReaderClass = Class.forName (className);
 thisReader = atomSetCollectionReaderClass.newInstance ();
 thisReader.processXml (this, this.atomSetCollection, this.reader, DOMNode, thisReader.getHandler (null));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 this.atomSetCollection.errorMessage = "File reader was not found:" + className;
 } else {
 throw e;
@@ -142,7 +142,7 @@ try {
 if (this.parent == null) Clazz.superCall (this, org.jmol.adapter.readers.xml.XmlReader, "applySymmetryAndSetTrajectory", []);
  else this.parent.applySymmetryAndSetTrajectory ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 org.jmol.util.Logger.error ("applySymmetry failed: " + e);
 } else {
@@ -176,7 +176,7 @@ a.setEntityResolver (b);
 a.setContentHandler (b);
 a.setErrorHandler (b);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("ERROR IN XmlReader.JmolXmlHandler.setHandler", e);
 } else {
 throw e;

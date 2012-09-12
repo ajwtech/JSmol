@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["java.lang.StringBuffer", "org.jmol.script.ScriptVariable", "$.Token"], function () {
+Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["java.lang.StringBuffer", "org.jmol.script.ScriptVariable", "$.ScriptVariableInt", "$.Token"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.pt0 = 0;
 this.chpt0 = 0;
@@ -40,7 +40,7 @@ var $var = (i < this.nParameters && i < nParams ? params.get (i) : null);
 if ($var != null && $var.tok != 7) $var =  new org.jmol.script.ScriptVariable ($var);
 contextVariables.put (name, ($var == null ? ( new org.jmol.script.ScriptVariable (4, "")).setName (name) : $var));
 }
-contextVariables.put ("_retval", org.jmol.script.ScriptVariable.intVariable (this.tok == 364558 ? 2147483647 : 0));
+contextVariables.put ("_retval",  new org.jmol.script.ScriptVariableInt (this.tok == 364558 ? 2147483647 : 0));
 }, "java.util.Map,java.util.List");
 Clazz.defineMethod (c$, "unsetVariables", 
 function (contextVariables, params) {
