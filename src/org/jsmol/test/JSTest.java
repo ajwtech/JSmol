@@ -23,6 +23,9 @@
  */
 package org.jsmol.test;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
@@ -61,7 +64,21 @@ public class JSTest extends JSmol {
 	static String[] testArray = {"a", "b", "c", "d"};
 	class TestInner {
 		void say(String msg) {
+			char a = '@';
+			int x = 2 + a;
+			int y = 2;
+			String x1 = "3" + a;
+			char x2 = (char) (a + y);
+      System.out.println("x,x1,x2=" + x + "," + x1 + "," + x2);			
+			checkMap('K');
 			sayHello(msg);
+		}
+		
+		String checkMap(char c) {
+			return "OK-checkMap-" + c;
+		}
+		String checkMap(boolean b) {
+			return "OK-checkMap-" + b;
 		}
 	}
 

@@ -155,11 +155,11 @@ var e = this.htEllipsoids.values ().iterator ();
 var v1 =  new javax.vecmath.Vector3f ();
 while (e.hasNext ()) {
 var ellipsoid = e.next ();
-if (ellipsoid.axes == null || ellipsoid.lengths == null) continue ;sb.append ("  Ellipsoid ID ").append (ellipsoid.id).append (" modelIndex ").append (ellipsoid.modelIndex).append (" center ").append (org.jmol.util.Escape.escape (ellipsoid.center)).append (" axes");
+if (ellipsoid.axes == null || ellipsoid.lengths == null) continue ;sb.append ("  Ellipsoid ID ").append (ellipsoid.id).append (" modelIndex ").append (ellipsoid.modelIndex).append (" center ").append (org.jmol.util.Escape.escapePt (ellipsoid.center)).append (" axes");
 for (var i = 0; i < 3; i++) {
 v1.set (ellipsoid.axes[i]);
 v1.scale (ellipsoid.lengths[i]);
-sb.append (" ").append (org.jmol.util.Escape.escape (v1));
+sb.append (" ").append (org.jmol.util.Escape.escapePt (v1));
 }
 sb.append (" " + this.getColorCommand ("", ellipsoid.colix));
 if (!ellipsoid.isOn) sb.append (" off");

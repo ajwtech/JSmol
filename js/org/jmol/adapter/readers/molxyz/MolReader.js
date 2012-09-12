@@ -45,7 +45,7 @@ var partialCharge = this.parseFloat (tokens[1]);
 if (!Float.isNaN (partialCharge)) atoms[atomIndex].partialCharge = partialCharge;
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return ;
 } else {
 throw e;

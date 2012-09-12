@@ -35,7 +35,7 @@ function (isMapData) {
 try {
 this.readSurfaceData (isMapData);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 return false;
 } else {

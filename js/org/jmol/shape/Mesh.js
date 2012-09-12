@@ -172,7 +172,7 @@ var k = this.polygonIndexes[i][j];
 normals[k].add (this.vTemp);
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -187,14 +187,14 @@ Clazz.defineMethod (c$, "getState",
 function (type) {
 var s =  new StringBuffer ();
 s.append (type);
-if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escape (this.thisID));
-if (this.lattice != null) s.append (" lattice ").append (org.jmol.util.Escape.escape (this.lattice));
+if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escapeStr (this.thisID));
+if (this.lattice != null) s.append (" lattice ").append (org.jmol.util.Escape.escapePt (this.lattice));
 if (this.meshColix != 0) s.append (" color mesh ").append (org.jmol.util.Colix.getHexCode (this.meshColix));
 s.append (this.getRendering ());
 if (!this.visible) s.append (" hidden");
 if (this.bsDisplay != null) {
 s.append (";\n  ").append (type);
-if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escape (this.thisID));
+if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escapeStr (this.thisID));
 s.append (" display " + org.jmol.util.Escape.escape (this.bsDisplay));
 }return s.toString ();
 }, "~S");

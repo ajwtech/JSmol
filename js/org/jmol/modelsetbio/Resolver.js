@@ -90,7 +90,7 @@ this.modelSet.getModels ()[this.modelSet.atoms[iFirst].modelIndex].isPdbWithMult
 this.bsAtomsForHs.set (iFirst, atomCount);
 this.bsAddedHydrogens.set (atomCount, atomCount + nH);
 var isHetero = this.modelSet.atoms[iFirst].isHetero ();
-for (var i = 0; i < nH; i++) this.modelSet.addAtom (this.modelSet.atoms[iFirst].modelIndex, this.modelSet.atoms[iFirst].getGroup (), 1, "H", 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, null, isHetero, '\0', 0, null).$delete (null);
+for (var i = 0; i < nH; i++) this.modelSet.addAtom (this.modelSet.atoms[iFirst].modelIndex, this.modelSet.atoms[iFirst].getGroup (), 1, "H", 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, null, isHetero, 0, null).$delete (null);
 
 }, "org.jmol.api.JmolAdapter,~N");
 Clazz.defineMethod (c$, "getBondInfo", 

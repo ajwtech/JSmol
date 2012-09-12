@@ -15,7 +15,7 @@ function (br) {
 try {
 return org.jmol.adapter.smarter.Resolver.determineAtomSetCollectionReader (br, false);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return null;
 } else {
 throw e;
@@ -87,7 +87,7 @@ className = org.jmol.adapter.smarter.Resolver.getReaderClassBase (readerName);
 atomSetCollectionReaderClass = Class.forName (className);
 atomSetCollectionReader = atomSetCollectionReaderClass.newInstance ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 err = "File reader was not found:" + className;
 org.jmol.util.Logger.error (err);
 return err;
@@ -97,7 +97,7 @@ throw e;
 }
 return atomSetCollectionReader;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 err = "uncaught error in file loading for " + className;
 org.jmol.util.Logger.error (err);
 e.printStackTrace ();
@@ -122,7 +122,7 @@ atomSetCollectionReaderClass = Class.forName (className);
 atomSetCollectionReader = atomSetCollectionReaderClass.newInstance ();
 return atomSetCollectionReader;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 var err = "File reader was not found:" + className;
 org.jmol.util.Logger.error (err, e);
 return err;
@@ -164,7 +164,7 @@ if ((token = tokens.nextToken ()).equals (")")) v.add (lasttoken);
 lasttoken = token;
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -296,7 +296,7 @@ if ((pt = line.indexOf ("ATOMS")) >= 0 && line.indexOf ("BONDS") > pt) try {
 var n = Integer.parseInt (line.substring (0, pt).trim ());
 return (n > 0);
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 } else {
 throw nfe;
 }
@@ -334,7 +334,7 @@ for (var i = 3; --i >= 0; ) if (( new Float (tokens3.nextToken ())).floatValue (
 
 return true;
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 } else {
 throw nfe;
 }
@@ -348,7 +348,7 @@ if (tokens.countTokens () < 2) return false;
 try {
 Integer.parseInt (tokens.nextToken ().trim ());
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 return false;
 } else {
 throw nfe;
@@ -361,7 +361,7 @@ if (tokens.countTokens () == 0) return false;
 try {
 Integer.parseInt (tokens.nextToken ().trim ());
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 return false;
 } else {
 throw nfe;
@@ -391,7 +391,7 @@ var n1 = Integer.parseInt (lines[3].substring (0, 3).trim ());
 var n2 = Integer.parseInt (lines[3].substring (3, 6).trim ());
 return (n1 > 0 && n2 >= 0 && lines[0].indexOf ("@<TRIPOS>") != 0 && lines[1].indexOf ("@<TRIPOS>") != 0 && lines[2].indexOf ("@<TRIPOS>") != 0);
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 } else {
 throw nfe;
 }
@@ -416,7 +416,7 @@ if (spin < 0 || spin > 5 || atom1 <= 0 || charge > 5) return false;
 var atomline = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensFloat (lines[i], null, 5);
 return !Float.isNaN (atomline[1]) && !Float.isNaN (atomline[2]) && !Float.isNaN (atomline[3]) && Float.isNaN (atomline[4]);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -433,7 +433,7 @@ try {
 Integer.parseInt (lines[0].trim ());
 return true;
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 } else {
 throw nfe;
 }

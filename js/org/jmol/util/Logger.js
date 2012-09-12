@@ -8,7 +8,7 @@ var property = System.getProperty ("jmol.logger." + level);
 if (property != null) {
 return Boolean.TRUE.equals (Boolean.$valueOf (property));
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

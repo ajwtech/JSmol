@@ -27,7 +27,7 @@ org.jmol.util.Logger.info ("reading from file " + this.fileName);
 try {
 this.br =  new java.io.BufferedReader ( new java.io.InputStreamReader (this.sg.getAtomDataServer ().getBufferedInputStream (this.fileName)));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.info ("Note: file " + this.fileName + " was not found");
 this.br = null;
 return true;

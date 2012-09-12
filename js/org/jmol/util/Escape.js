@@ -16,7 +16,7 @@ var b = "00" + Integer.toHexString (argb & 0xFF);
 b = b.substring (b.length - 2);
 return r + g + b;
 }, "~N");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapePt = Clazz.defineMethod (c$, "escapePt", 
 function (xyz) {
 if (xyz == null) return "null";
 return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
@@ -27,25 +27,25 @@ return org.jmol.util.TextFormat.replaceAllCharacters (m.toString (), "\n\r ", ""
 }, "~O");
 c$.escape = Clazz.defineMethod (c$, "escape", 
 function (x) {
-if (Clazz.instanceOf (x, String)) return org.jmol.util.Escape.escape (x);
-if (Clazz.instanceOf (x, java.util.List)) return org.jmol.util.Escape.escape (x);
-if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.util.Escape.escape (x, true);
+if (Clazz.instanceOf (x, String)) return org.jmol.util.Escape.escapeStr (x);
+if (Clazz.instanceOf (x, java.util.List)) return org.jmol.util.Escape.escapeVar (x);
+if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.util.Escape.escapeBs (x, true);
 if (Clazz.instanceOf (x, javax.vecmath.Matrix3f)) return org.jmol.util.TextFormat.simpleReplace ((x).toString (), "\t", ",\t");
 if (Clazz.instanceOf (x, javax.vecmath.Matrix4f)) return org.jmol.util.TextFormat.simpleReplace ((x).toString (), "\t", ",\t");
-if (Clazz.instanceOf (x, javax.vecmath.Tuple3f)) return org.jmol.util.Escape.escape (x);
+if (Clazz.instanceOf (x, javax.vecmath.Tuple3f)) return org.jmol.util.Escape.escapePt (x);
 if (Clazz.instanceOf (x, javax.vecmath.Point4f)) {
 var xyzw = x;
 return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
 }if (Clazz.instanceOf (x, javax.vecmath.AxisAngle4f)) {
 var a = x;
 return "{" + a.x + " " + a.y + " " + a.z + " " + (a.angle * 180 / 3.141592653589793) + "}";
-}if (Clazz.instanceOf (x, Array)) return org.jmol.util.Escape.escape (x, true);
+}if (Clazz.instanceOf (x, Array)) return org.jmol.util.Escape.escapeStrA (x, true);
 if (Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array)) return org.jmol.util.Escape.toJSON (null, x);
 if (Clazz.instanceOf (x, Array)) return org.jmol.util.Escape.escapeArray (x);
-if (Clazz.instanceOf (x, java.util.Map)) return org.jmol.util.Escape.escape (x);
+if (Clazz.instanceOf (x, java.util.Map)) return org.jmol.util.Escape.escapeMap (x);
 return (x == null ? "null" : x.toString ());
 }, "~O");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeStr = Clazz.defineMethod (c$, "escapeStr", 
 function (str) {
 if (str == null) return "\"\"";
 var haveEscape = false;
@@ -76,9 +76,9 @@ c$.unicode = Clazz.defineMethod (c$, "unicode",
 var s = "0000" + Integer.toHexString (c.charCodeAt (0));
 return "\\u" + s.substring (s.length - 4);
 }, $fz.isPrivate = true, $fz), "~N");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeVar = Clazz.defineMethod (c$, "escapeVar", 
 function (list) {
-if (list == null) return org.jmol.util.Escape.escape ("");
+if (list == null) return org.jmol.util.Escape.escapeStr ("");
 var s =  new StringBuilder ();
 s.append ("[");
 for (var i = 0; i < list.size (); i++) {
@@ -88,14 +88,14 @@ s.append (org.jmol.util.Escape.escapeNice (list.get (i).asString ()));
 s.append ("]");
 return s.toString ();
 }, "java.util.ArrayList");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeMap = Clazz.defineMethod (c$, "escapeMap", 
 function (ht) {
 var sb =  new StringBuilder ();
 sb.append ("{ ");
 var sep = "";
 for (var entry, $entry = ht.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
-sb.append (sep).append (org.jmol.util.Escape.escape (key)).append (':');
+sb.append (sep).append (org.jmol.util.Escape.escapeStr (key)).append (':');
 var val = entry.getValue ();
 if (!(Clazz.instanceOf (val, org.jmol.script.ScriptVariable))) val = org.jmol.script.ScriptVariable.getVariable (val);
 sb.append ((val).escape ());
@@ -104,7 +104,7 @@ sep = ",";
 sb.append (" }");
 return sb.toString ();
 }, "java.util.Map");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeFloatA = Clazz.defineMethod (c$, "escapeFloatA", 
 function (f, asArray) {
 if (asArray) return org.jmol.util.Escape.toJSON (null, f);
 var sb =  new StringBuilder ();
@@ -114,7 +114,7 @@ sb.append (f[i]);
 }
 return sb.toString ();
 }, "~A,~B");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeFloatAA = Clazz.defineMethod (c$, "escapeFloatAA", 
 function (f, addSemi) {
 var sb =  new StringBuilder ();
 var eol = (addSemi ? ";\n" : "\n");
@@ -125,7 +125,7 @@ for (var j = 0; j < f[i].length; j++) sb.append (f[i][j]).append ('\t');
 }
 return sb.toString ();
 }, "~A,~B");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeFloatAAA = Clazz.defineMethod (c$, "escapeFloatAAA", 
 function (f, addSemi) {
 var sb =  new StringBuilder ();
 var eol = (addSemi ? ";\n" : "\n");
@@ -141,21 +141,21 @@ for (var k = 0; k < f[i][j].length; k++) sb.append (f[i][j][k]).append ('\t');
 }
 return sb.toString ();
 }, "~A,~B");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeStrA = Clazz.defineMethod (c$, "escapeStrA", 
 function (list, nicely) {
-if (list == null) return org.jmol.util.Escape.escape ("");
+if (list == null) return org.jmol.util.Escape.escapeStr ("");
 var s =  new StringBuilder ();
 s.append ("[");
 for (var i = 0; i < list.length; i++) {
 if (i > 0) s.append (", ");
-s.append (nicely ? org.jmol.util.Escape.escapeNice (list[i]) : org.jmol.util.Escape.escape (list[i]));
+s.append (nicely ? org.jmol.util.Escape.escapeNice (list[i]) : org.jmol.util.Escape.escapeStr (list[i]));
 }
 s.append ("]");
 return s.toString ();
 }, "~A,~B");
 c$.escapeArray = Clazz.defineMethod (c$, "escapeArray", 
 function (x) {
-if (x == null) return org.jmol.util.Escape.escape ("");
+if (x == null) return org.jmol.util.Escape.escapeStr ("");
 if (Clazz.instanceOf (x, Float)) return "" + x;
 var s =  new StringBuilder ();
 s.append ("[");
@@ -182,7 +182,7 @@ var plist = x;
 s =  new StringBuilder ("[");
 for (var i = 0; i < plist.length; i++) {
 if (i > 0) s.append (", ");
-s.append (org.jmol.util.Escape.escape (plist[i]));
+s.append (org.jmol.util.Escape.escapePt (plist[i]));
 }
 return s.append ("]").toString ();
 }s.append ("]");
@@ -192,7 +192,7 @@ c$.escapeNice = Clazz.defineMethod (c$, "escapeNice",
 ($fz = function (s) {
 if (s == null) return "null";
 var f = org.jmol.util.Parser.parseFloatStrict (s);
-return (Float.isNaN (f) ? org.jmol.util.Escape.escape (s) : s);
+return (Float.isNaN (f) ? org.jmol.util.Escape.escapeStr (s) : s);
 }, $fz.isPrivate = true, $fz), "~S");
 c$.unescapePointOrBitsetOrMatrixOrArray = Clazz.defineMethod (c$, "unescapePointOrBitsetOrMatrixOrArray", 
 function (s) {
@@ -240,7 +240,7 @@ if (++lastN == len) lastN = 0;
  else try {
 lastN = Integer.parseInt (str.substring (lastN, len));
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 return null;
 } else {
 throw e;
@@ -294,7 +294,7 @@ if (nPoints == 9) return  new javax.vecmath.Matrix3f (points);
 if (nPoints == 16) return  new javax.vecmath.Matrix4f (points);
 return strMatrix;
 }, "~S");
-c$.escape = Clazz.defineMethod (c$, "escape", 
+c$.escapeBs = Clazz.defineMethod (c$, "escapeBs", 
 function (bs, isAtoms) {
 var chOpen = (isAtoms ? '(' : '[');
 var chClose = (isAtoms ? ')' : ']');
@@ -489,12 +489,12 @@ function (name, info) {
 var sb =  new StringBuilder ();
 var sep = "";
 if (info == null) return "null";
-if (Clazz.instanceOf (info, String)) return org.jmol.util.Escape.packageReadable (name, null, org.jmol.util.Escape.escape (info));
+if (Clazz.instanceOf (info, String)) return org.jmol.util.Escape.packageReadable (name, null, org.jmol.util.Escape.escapeStr (info));
 if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
 for (var i = 0; i < imax; i++) {
-sb.append (sep).append (org.jmol.util.Escape.escape ((info)[i]));
+sb.append (sep).append (org.jmol.util.Escape.escapeStr ((info)[i]));
 sep = ",";
 }
 sb.append ("]");
@@ -521,7 +521,7 @@ return org.jmol.util.Escape.packageReadable (name, "float[" + imax + "]", sb);
 sb.append ("[");
 var imax = (info).length;
 for (var i = 0; i < imax; i++) {
-sb.append (sep).append (org.jmol.util.Escape.escape ((info)[i]));
+sb.append (sep).append (org.jmol.util.Escape.escapePt ((info)[i]));
 sep = ",";
 }
 sb.append ("]");
@@ -587,7 +587,7 @@ return "" + (Math.floor (iv / 1000000)) + "." + (iv % 1000000);
 }, "~N");
 c$.encapsulateData = Clazz.defineMethod (c$, "encapsulateData", 
 function (name, data) {
-return "  DATA \"" + name + "\"\n" + (Clazz.instanceOf (data, Array) ? org.jmol.util.Escape.escape (data, true) + ";\n" : Clazz.instanceOf (data, Array) ? org.jmol.util.Escape.escape (data, true) + ";\n" : data) + "    END \"" + name + "\";\n";
+return "  DATA \"" + name + "\"\n" + (Clazz.instanceOf (data, Array) ? org.jmol.util.Escape.escapeFloatAA (data, true) + ";\n" : Clazz.instanceOf (data, Array) ? org.jmol.util.Escape.escapeFloatAAA (data, true) + ";\n" : data) + "    END \"" + name + "\";\n";
 }, "~S,~O");
 c$.escapeXml = Clazz.defineMethod (c$, "escapeXml", 
 function (value) {

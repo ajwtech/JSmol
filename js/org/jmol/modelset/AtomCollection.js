@@ -295,7 +295,7 @@ Clazz.defineMethod (c$, "calculateSurface",
 function (bsSelected, envelopeRadius) {
 if (envelopeRadius < 0) envelopeRadius = 3.0;
 var ec =  new org.jmol.geodesic.EnvelopeCalculation (this.viewer, this.atomCount, null);
-ec.calculate ( new org.jmol.atomdata.RadiusData (envelopeRadius, org.jmol.atomdata.RadiusData.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, bsSelected, org.jmol.util.BitSetUtil.copyInvert (bsSelected, this.atomCount), false, false, false, true);
+ec.calculate ( new org.jmol.atomdata.RadiusData (envelopeRadius, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, bsSelected, org.jmol.util.BitSetUtil.copyInvert (bsSelected, this.atomCount), false, false, false, true);
 var points = ec.getPoints ();
 this.surfaceDistanceMax = 0;
 this.bsSurface = ec.getBsSurfaceClone ();
@@ -311,7 +311,7 @@ var dMin = 3.4028235E38;
 var atom = this.atoms[i];
 for (var j = points.length; --j >= 0; ) {
 var d = Math.abs (points[j].distance (atom) - radiusAdjust);
-if (d < 0 && org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("draw d" + j + " " + org.jmol.util.Escape.escape (points[j]) + " \"" + d + " ? " + atom.getInfo () + "\"");
+if (d < 0 && org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("draw d" + j + " " + org.jmol.util.Escape.escapePt (points[j]) + " \"" + d + " ? " + atom.getInfo () + "\"");
 dMin = Math.min (d, dMin);
 }
 var d = this.surfaceDistance100s[i] = Math.round ((dMin * 100));
@@ -693,7 +693,7 @@ this.taint (atomIndex, type);
 }
 if (type == 14 && n > 0) this.viewer.setData (name, [name, fData, bs], 0, 0, 0, 0, 0);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("AtomCollection.loadData error: " + e);
 } else {
 throw e;
@@ -718,7 +718,7 @@ this.setAtomCoord (atomIndex, x, y, z);
 if (!doTaint) this.untaint (atomIndex, 2);
 }}
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Frame.loadCoordinate error: " + e);
 } else {
 throw e;
@@ -930,7 +930,7 @@ break;
 default:
 r = atom.getVanderwaalsRadiusFloat (this.viewer, atomData.radiusData.vdwType);
 }
-if (rd.factorType === org.jmol.atomdata.RadiusData.RadiusData.EnumType.FACTOR) r *= rd.value;
+if (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.FACTOR) r *= rd.value;
  else r += rd.value;
 }
 return r + rd.valueExtended;
@@ -1763,7 +1763,7 @@ var seqNumber = 0;
 try {
 seqNumber = Integer.parseInt (identifier.substring (pt0, pt));
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 return null;
 } else {
 throw nfe;

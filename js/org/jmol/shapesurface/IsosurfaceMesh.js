@@ -542,9 +542,9 @@ pts[pt].scaleAdd (k, vectors[3], pts[pt]);
 }
 
 
-System.out.println ("draw line1 {0 0 0} color red" + org.jmol.util.Escape.escape (this.spanningVectors[1]));
-System.out.println ("draw line2 {0 0 0} color green" + org.jmol.util.Escape.escape (this.spanningVectors[2]));
-System.out.println ("draw line3 {0 0 0} color blue" + org.jmol.util.Escape.escape (this.spanningVectors[3]));
+System.out.println ("draw line1 {0 0 0} color red" + org.jmol.util.Escape.escapePt (this.spanningVectors[1]));
+System.out.println ("draw line2 {0 0 0} color green" + org.jmol.util.Escape.escapePt (this.spanningVectors[2]));
+System.out.println ("draw line3 {0 0 0} color blue" + org.jmol.util.Escape.escapePt (this.spanningVectors[3]));
 var ptTemp =  new javax.vecmath.Point3f ();
 var planeGammaK =  new javax.vecmath.Point4f ();
 var vGammaToKPoint =  new javax.vecmath.Vector3f ();

@@ -152,7 +152,7 @@ var s = this.jvxlFileHeaderBuffer.toString ();
 var i = s.indexOf ('\n', s.indexOf ('\n', s.indexOf ('\n') + 1) + 1) + 1;
 this.jvxlData.jvxlFileTitle = s.substring (0, i);
 }if (this.params.contactPair == null) this.setBoundingBox ();
-if (!this.params.isSilent) org.jmol.util.Logger.info ("boundbox corners " + org.jmol.util.Escape.escape (this.xyzMin) + " " + org.jmol.util.Escape.escape (this.xyzMax));
+if (!this.params.isSilent) org.jmol.util.Logger.info ("boundbox corners " + org.jmol.util.Escape.escapePt (this.xyzMin) + " " + org.jmol.util.Escape.escapePt (this.xyzMax));
 this.jvxlData.boundingBox = [this.xyzMin, this.xyzMax];
 this.jvxlData.dataMin = this.dataMin;
 this.jvxlData.dataMax = this.dataMax;
@@ -226,7 +226,7 @@ if (this.nPointsX > 0 && this.nPointsY > 0 && this.nPointsZ > 0) try {
 this.gotoData (this.params.fileIndex - 1, this.nPointsX * this.nPointsY * this.nPointsZ);
 this.readSurfaceData (isMapData);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (e.toString ());
 return false;
 } else {
@@ -268,7 +268,7 @@ if (this.vertexDataOnly) {
 try {
 this.readSurfaceData (false);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 org.jmol.util.Logger.error ("Exception in SurfaceReader::readSurfaceData: " + e.getMessage ());
 } else {

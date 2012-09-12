@@ -47,7 +47,7 @@ function () {
 try {
 return Clazz.superCall (this, org.jmol.adapter.smarter.Atom, "clone", []);
 } catch (cnse) {
-if (Clazz.instanceOf (cnse, Exception)) {
+if (Clazz.exceptionOf (cnse, Exception)) {
 throw  new Exception ("cloneAtom error: " + cnse.getMessage (), cnse);
 } else {
 throw cnse;

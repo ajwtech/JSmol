@@ -5,6 +5,11 @@ this.$$name = null;
 this.$isBiColor = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumStereoMode", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (name, isBiColor) {
+this.$$name = name;
+this.$isBiColor = isBiColor;
+}, $fz.isPrivate = true, $fz), "~S,~B");
 Clazz.defineMethod (c$, "getName", 
 function () {
 return this.$$name;

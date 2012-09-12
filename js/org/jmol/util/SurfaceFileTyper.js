@@ -7,7 +7,7 @@ var br;
 try {
 br =  new java.io.BufferedReader ( new java.io.InputStreamReader ( new java.io.BufferedInputStream (is, 8192), "ISO-8859-1"));
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.UnsupportedEncodingException)) {
+if (Clazz.exceptionOf (e, java.io.UnsupportedEncodingException)) {
 return null;
 } else {
 throw e;
@@ -23,7 +23,7 @@ try {
 br =  new org.jmol.util.LimitedLineReader (bufferedReader, 16000);
 line = br.getHeader (0);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

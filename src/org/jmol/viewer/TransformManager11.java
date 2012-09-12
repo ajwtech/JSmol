@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-08-27 07:35:03 -0500 (Mon, 27 Aug 2012) $
- * $Revision: 17483 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -992,7 +992,7 @@ class TransformManager11 extends TransformManager {
   protected String getNavigationText(boolean addComments) {
     getNavigationOffset();
     return (addComments ? " /* navigation center, translation, depth */ " : " ")
-        + Escape.escape(navigationCenter)
+        + Escape.escapePt(navigationCenter)
         + " "
         + getNavigationOffsetPercent('X')
         + " "
@@ -1004,7 +1004,7 @@ class TransformManager11 extends TransformManager {
     if (mode != MODE_NAVIGATION)
       return "";
     return "# navigation state;\nnavigate 0 center "
-        + Escape.escape(getNavigationCenter()) + ";\nnavigate 0 translate "
+        + Escape.escapePt(getNavigationCenter()) + ";\nnavigate 0 translate "
         + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + ";\nset navigationDepth "
         + getNavigationDepthPercent() + ";\nset navigationSlab "

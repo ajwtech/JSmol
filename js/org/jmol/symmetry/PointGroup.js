@@ -530,7 +530,7 @@ var anyImproperAxis = (type.equalsIgnoreCase ("Sn"));
 sb.append ("set perspectivedepth off;\n");
 var m = "_" + modelIndex + "_";
 if (!haveType) sb.append ("draw pg0").append (m).append ("* delete;draw pgva").append (m).append ("* delete;draw pgvp").append (m).append ("* delete;");
-if (!haveType || type.equalsIgnoreCase ("Ci")) sb.append ("draw pg0").append (m).append (this.haveInversionCenter ? "inv " : " ").append (org.jmol.util.Escape.escape (this.center)).append (this.haveInversionCenter ? "\"i\";\n" : ";\n");
+if (!haveType || type.equalsIgnoreCase ("Ci")) sb.append ("draw pg0").append (m).append (this.haveInversionCenter ? "inv " : " ").append (org.jmol.util.Escape.escapePt (this.center)).append (this.haveInversionCenter ? "\"i\";\n" : ";\n");
 var offset = 0.1;
 for (var i = 2; i < org.jmol.symmetry.PointGroup.maxAxis; i++) {
 if (i == 14) offset = 0.1;
@@ -542,27 +542,27 @@ if (index > 0 && j + 1 != index) continue ;op = this.axes[i][j];
 v.set (op.normalOrAxis);
 v.add (this.center);
 if (op.type == 2) scale = -scale;
-sb.append ("draw pgva").append (m).append (label).append ("_").append (j + 1).append (" width 0.05 scale ").append (scale).append (" ").append (org.jmol.util.Escape.escape (v));
+sb.append ("draw pgva").append (m).append (label).append ("_").append (j + 1).append (" width 0.05 scale ").append (scale).append (" ").append (org.jmol.util.Escape.escapePt (v));
 v.scaleAdd (-2, op.normalOrAxis, v);
 var isPA = (this.principalAxis != null && op.index == this.principalAxis.index);
-sb.append (org.jmol.util.Escape.escape (v)).append ("\"").append (label).append (isPA ? "*" : "").append ("\" color ").append (isPA ? "red" : op.type == 2 ? "blue" : "yellow").append (";\n");
+sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).append (isPA ? "*" : "").append ("\" color ").append (isPA ? "red" : op.type == 2 ? "blue" : "yellow").append (";\n");
 }
 }
 if (!haveType || type.equalsIgnoreCase ("Cs")) for (var j = 0; j < this.nAxes[0]; j++) {
 if (index > 0 && j + 1 != index) continue ;op = this.axes[0][j];
-sb.append ("draw pgvp").append (m).append (j + 1).append ("disk scale ").append (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escape (this.center));
+sb.append ("draw pgvp").append (m).append (j + 1).append ("disk scale ").append (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escapePt (this.center));
 v.set (op.normalOrAxis);
 v.add (this.center);
-sb.append (org.jmol.util.Escape.escape (v)).append (" color translucent yellow;\n");
+sb.append (org.jmol.util.Escape.escapePt (v)).append (" color translucent yellow;\n");
 v.set (op.normalOrAxis);
 v.add (this.center);
-sb.append ("draw pgvp").append (m).append (j + 1).append ("ring width 0.05 scale ").append (scaleFactor * this.radius * 2).append (" arc ").append (org.jmol.util.Escape.escape (v));
+sb.append ("draw pgvp").append (m).append (j + 1).append ("ring width 0.05 scale ").append (scaleFactor * this.radius * 2).append (" arc ").append (org.jmol.util.Escape.escapePt (v));
 v.scaleAdd (-2, op.normalOrAxis, v);
-sb.append (org.jmol.util.Escape.escape (v));
+sb.append (org.jmol.util.Escape.escapePt (v));
 v.x += 0.011;
 v.y += 0.012;
 v.z += 0.013;
-sb.append (org.jmol.util.Escape.escape (v)).append ("{0 360 0.5} color ").append (this.principalPlane != null && op.index == this.principalPlane.index ? "red" : "blue").append (";\n");
+sb.append (org.jmol.util.Escape.escapePt (v)).append ("{0 360 0.5} color ").append (this.principalPlane != null && op.index == this.principalPlane.index ? "red" : "blue").append (";\n");
 }
 sb.append ("# name=").append (this.name);
 sb.append (", nCi=").append (this.haveInversionCenter ? 1 : 0);
@@ -581,7 +581,7 @@ return this.drawInfo;
 var nTotal = 1;
 var ctype = (this.haveInversionCenter ? "Ci" : "center");
 if (this.haveInversionCenter) nTotal++;
-if (this.info == null) sb.append ("\n\n").append (this.name).append ("\t").append (ctype).append ("\t").append (org.jmol.util.Escape.escape (this.center));
+if (this.info == null) sb.append ("\n\n").append (this.name).append ("\t").append (ctype).append ("\t").append (org.jmol.util.Escape.escapePt (this.center));
  else this.info.put (ctype, this.center);
 for (var i = org.jmol.symmetry.PointGroup.maxAxis; --i >= 0; ) {
 if (this.nAxes[i] > 0) {

@@ -324,9 +324,9 @@ return org.jmol.util.TextFormat.sprintf ("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5
 });
 Clazz.defineMethod (c$, "draw", 
 function (prefix, id, ptCenter, scale) {
-var strV = " VECTOR " + org.jmol.util.Escape.escape (ptCenter) + " ";
+var strV = " VECTOR " + org.jmol.util.Escape.escapePt (ptCenter) + " ";
 if (scale == 0) scale = 1;
-return "draw " + prefix + "x" + id + strV + org.jmol.util.Escape.escape (this.getVector (0, scale)) + " color red\n" + "draw " + prefix + "y" + id + strV + org.jmol.util.Escape.escape (this.getVector (1, scale)) + " color green\n" + "draw " + prefix + "z" + id + strV + org.jmol.util.Escape.escape (this.getVector (2, scale)) + " color blue\n";
+return "draw " + prefix + "x" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (0, scale)) + " color red\n" + "draw " + prefix + "y" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (1, scale)) + " color green\n" + "draw " + prefix + "z" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (2, scale)) + " color blue\n";
 }, "~S,~S,javax.vecmath.Point3f,~N");
 Clazz.overrideMethod (c$, "toString", 
 function () {

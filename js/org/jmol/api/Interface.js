@@ -15,7 +15,7 @@ try {
 var x = Class.forName (name);
 return (x == null ? null : x.newInstance ());
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Interface.java Error creating instance for " + name + ": \n" + e.getMessage ());
 return null;
 } else {

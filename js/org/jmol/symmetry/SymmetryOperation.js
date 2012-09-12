@@ -585,42 +585,42 @@ if (pitch1 == 0) {
 pt1.set (ipt);
 vtemp.scale (3);
 ptemp.scaleAdd (-1, vtemp, pa1);
-draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escape (pa1)).append (org.jmol.util.Escape.escape (ptemp)).append (" color red");
+draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
 }scale = p0.distance (pt1);
-draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escape (pt1)).append (org.jmol.util.Escape.escape (ptinv)).append (" color red");
-draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escape (pt1)).append (org.jmol.util.Escape.escape (p0)).append (" color red");
+draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color red");
+draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (p0)).append (" color red");
 } else if (pitch1 == 0) {
 var isSpecial = (pt00.distance (p0) < 0.2);
 if (!isSpecial) {
-draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escape (pt00)).append (org.jmol.util.Escape.escape (pa1)).append (" color red");
-draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escape (p0)).append (org.jmol.util.Escape.escape (pa1)).append (" color red");
+draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
+draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escapePt (p0)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
 }vtemp.scale (3);
 ptemp.scaleAdd (-1, vtemp, pa1);
-draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escape (pa1)).append (org.jmol.util.Escape.escape (ptemp)).append (" color red");
+draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
 pt1.set (pa1);
 if (pitch1 == 0 && pt00.distance (p0) < 0.2) pt1.scaleAdd (0.5, pt1, vtemp);
 } else {
 color = "orange";
-draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escape (pt00)).append (org.jmol.util.Escape.escape (pa1)).append (" color red");
+draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
 ptemp.set (pa1);
 ptemp.add (vtemp);
-draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escape (p0)).append (org.jmol.util.Escape.escape (ptemp)).append (" color red");
+draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escapePt (p0)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
 pt1.scaleAdd (0.5, vtemp, pa1);
 }ptemp.set (pt1);
 ptemp.add (vtemp);
 if (haveinversion && pitch1 != 0) {
-draw1.append (drawid).append ("rotRotLine1").append (org.jmol.util.Escape.escape (pt1)).append (org.jmol.util.Escape.escape (ptinv)).append (" color red");
-draw1.append (drawid).append ("rotRotLine2").append (org.jmol.util.Escape.escape (pt1)).append (org.jmol.util.Escape.escape (p0)).append (" color red");
-}draw1.append (drawid).append ("rotRotArrow arrow width 0.10 scale " + scale + " arc ").append (org.jmol.util.Escape.escape (pt1)).append (org.jmol.util.Escape.escape (ptemp));
+draw1.append (drawid).append ("rotRotLine1").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color red");
+draw1.append (drawid).append ("rotRotLine2").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (p0)).append (" color red");
+}draw1.append (drawid).append ("rotRotArrow arrow width 0.10 scale " + scale + " arc ").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptemp));
 if (haveinversion) ptemp.set (ptinv);
  else ptemp.set (pt00);
 if (ptemp.distance (p0) < 0.1) ptemp.set (Math.random (), Math.random (), Math.random ());
-draw1.append (org.jmol.util.Escape.escape (ptemp));
+draw1.append (org.jmol.util.Escape.escapePt (ptemp));
 ptemp.set (0, ang, 0);
-draw1.append (org.jmol.util.Escape.escape (ptemp)).append (" color red");
-draw1.append (drawid).append ("rotVector1 vector diameter 0.1 ").append (org.jmol.util.Escape.escape (pa1)).append (org.jmol.util.Escape.escape (vtemp)).append ("color ").append (color);
+draw1.append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
+draw1.append (drawid).append ("rotVector1 vector diameter 0.1 ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (vtemp)).append ("color ").append (color);
 }if (ismirrorplane) {
-if (pt00.distance (pt0) > 0.2) draw1.append (drawid).append ("planeVector arrow ").append (org.jmol.util.Escape.escape (pt00)).append (org.jmol.util.Escape.escape (pt0)).append (" color indigo");
+if (pt00.distance (pt0) > 0.2) draw1.append (drawid).append ("planeVector arrow ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pt0)).append (" color indigo");
 if (trans != null) {
 ptemp.scaleAdd (-1, p0, p1);
 ptemp.add (pt0);
@@ -641,17 +641,17 @@ v.add (uc.getCanonicalCopy (1.05));
 org.jmol.util.TriangleData.intersectPlane (plane, v, 3);
 for (var i = v.size (); --i >= 0; ) {
 var pts = v.get (i);
-draw1.append (drawid).append ("planep").append (i).append (org.jmol.util.Escape.escape (pts[0])).append (org.jmol.util.Escape.escape (pts[1]));
-if (pts.length == 3) draw1.append (org.jmol.util.Escape.escape (pts[2]));
+draw1.append (drawid).append ("planep").append (i).append (org.jmol.util.Escape.escapePt (pts[0])).append (org.jmol.util.Escape.escapePt (pts[1]));
+if (pts.length == 3) draw1.append (org.jmol.util.Escape.escapePt (pts[2]));
 draw1.append (" color translucent ").append (color);
 }
 if (v.size () == 0) {
 ptemp.set (pa1);
 ptemp.add (ax1);
-draw1.append (drawid).append ("planeCircle scale 2.0 circle ").append (org.jmol.util.Escape.escape (pa1)).append (org.jmol.util.Escape.escape (ptemp)).append (" color translucent ").append (color).append (" mesh fill");
+draw1.append (drawid).append ("planeCircle scale 2.0 circle ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color translucent ").append (color).append (" mesh fill");
 }}if (haveinversion) {
-draw1.append (drawid).append ("invPoint diameter 0.4 ").append (org.jmol.util.Escape.escape (ipt));
-draw1.append (drawid).append ("invArrow arrow ").append (org.jmol.util.Escape.escape (pt00)).append (org.jmol.util.Escape.escape (ptinv)).append (" color indigo");
+draw1.append (drawid).append ("invPoint diameter 0.4 ").append (org.jmol.util.Escape.escapePt (ipt));
+draw1.append (drawid).append ("invArrow arrow ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color indigo");
 if (!isinversion) {
 ptemp.set (ptinv);
 ptemp.add (pt00);
@@ -667,16 +667,16 @@ ptemp.sub (pt03);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "invFrameZ", 0.15, ptinv, ptemp, "translucent blue");
 }}if (trans != null) {
 if (pt0 == null) pt0 =  new javax.vecmath.Point3f (pt00);
-draw1.append (drawid).append ("transVector vector ").append (org.jmol.util.Escape.escape (pt0)).append (org.jmol.util.Escape.escape (trans));
-}draw1.append ("\nvar pt00 = " + org.jmol.util.Escape.escape (pt00));
-draw1.append ("\nvar p0 = " + org.jmol.util.Escape.escape (p0));
+draw1.append (drawid).append ("transVector vector ").append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (trans));
+}draw1.append ("\nvar pt00 = " + org.jmol.util.Escape.escapePt (pt00));
+draw1.append ("\nvar p0 = " + org.jmol.util.Escape.escapePt (p0));
 draw1.append ("\nif (within(0.2,p0).length == 0) {");
 draw1.append ("\nvar set2 = within(0.2,p0.uxyz.xyz)");
 draw1.append ("\nif (set2) {");
 draw1.append (drawid).append ("cellOffsetVector arrow @p0 @set2 color grey");
-draw1.append (drawid).append ("offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escape (v01)).append ("*0.9} color red");
-draw1.append (drawid).append ("offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escape (v02)).append ("*0.9} color green");
-draw1.append (drawid).append ("offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escape (v03)).append ("*0.9} color purple");
+draw1.append (drawid).append ("offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escapePt (v01)).append ("*0.9} color red");
+draw1.append (drawid).append ("offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escapePt (v02)).append ("*0.9} color green");
+draw1.append (drawid).append ("offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append (org.jmol.util.Escape.escapePt (v03)).append ("*0.9} color purple");
 draw1.append ("\n}}\n");
 cmds = draw1.toString ();
 draw1 = null;
@@ -715,7 +715,7 @@ return [xyz, xyzOriginal, info1, cmds, org.jmol.symmetry.SymmetryOperation.appro
 }, $fz.isPrivate = true, $fz), "org.jmol.symmetry.SymmetryOperation,~S,org.jmol.api.SymmetryInterface,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
 c$.drawLine = Clazz.defineMethod (c$, "drawLine", 
 ($fz = function (s, id, diameter, pt0, pt1, color) {
-s.append (id).append (" diameter ").append (diameter).append (org.jmol.util.Escape.escape (pt0)).append (org.jmol.util.Escape.escape (pt1)).append (" color ").append (color);
+s.append (id).append (" diameter ").append (diameter).append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (pt1)).append (" color ").append (color);
 }, $fz.isPrivate = true, $fz), "StringBuffer,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
 c$.fcoord = Clazz.defineMethod (c$, "fcoord", 
 function (p) {

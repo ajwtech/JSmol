@@ -61,9 +61,9 @@ return ;
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var temp =  new java.util.Hashtable ();
-if (this.atomFormats != null) for (var i = this.viewer.getAtomCount (); --i >= 0; ) if (this.atomFormats[i] != null) org.jmol.shape.Shape.setStateInfo (temp, i, "set hoverLabel " + org.jmol.util.Escape.escape (this.atomFormats[i]));
+if (this.atomFormats != null) for (var i = this.viewer.getAtomCount (); --i >= 0; ) if (this.atomFormats[i] != null) org.jmol.shape.Shape.setStateInfo (temp, i, "set hoverLabel " + org.jmol.util.Escape.escapeStr (this.atomFormats[i]));
 
-return "\n  hover " + org.jmol.util.Escape.escape ((this.labelFormat == null ? "" : this.labelFormat)) + ";\n" + org.jmol.shape.Shape.getShapeCommands (temp, null);
+return "\n  hover " + org.jmol.util.Escape.escapeStr ((this.labelFormat == null ? "" : this.labelFormat)) + ";\n" + org.jmol.shape.Shape.getShapeCommands (temp, null);
 });
 Clazz.defineStatics (c$,
 "FONTFACE", "SansSerif",

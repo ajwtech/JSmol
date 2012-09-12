@@ -220,7 +220,7 @@ function (a1) {
 try {
 return (this.x == a1.x && this.y == a1.y && this.z == a1.z && this.angle == a1.angle);
 } catch (e2) {
-if (Clazz.instanceOf (e2, NullPointerException)) {
+if (Clazz.exceptionOf (e2, NullPointerException)) {
 return false;
 } else {
 throw e2;
@@ -233,12 +233,12 @@ try {
 var a2 = o1;
 return (this.x == a2.x && this.y == a2.y && this.z == a2.z && this.angle == a2.angle);
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, NullPointerException)) {
+if (Clazz.exceptionOf (e$$, NullPointerException)) {
 var e2 = e$$;
 {
 return false;
 }
-} else if (Clazz.instanceOf (e$$, ClassCastException)) {
+} else if (Clazz.exceptionOf (e$$, ClassCastException)) {
 var e1 = e$$;
 {
 return false;
@@ -275,7 +275,7 @@ function () {
 try {
 return Clazz.superCall (this, javax.vecmath.AxisAngle4f, "clone", []);
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 throw  new InternalError ();
 } else {
 throw e;

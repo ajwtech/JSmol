@@ -72,7 +72,7 @@ function (t1) {
 try {
 return (this.x == t1.x && this.y == t1.y && this.z == t1.z && this.w == t1.w);
 } catch (e2) {
-if (Clazz.instanceOf (e2, NullPointerException)) {
+if (Clazz.exceptionOf (e2, NullPointerException)) {
 return false;
 } else {
 throw e2;
@@ -85,12 +85,12 @@ try {
 var t2 = t1;
 return (this.x == t2.x && this.y == t2.y && this.z == t2.z && this.w == t2.w);
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, NullPointerException)) {
+if (Clazz.exceptionOf (e$$, NullPointerException)) {
 var e2 = e$$;
 {
 return false;
 }
-} else if (Clazz.instanceOf (e$$, ClassCastException)) {
+} else if (Clazz.exceptionOf (e$$, ClassCastException)) {
 var e1 = e$$;
 {
 return false;
@@ -109,7 +109,7 @@ function () {
 try {
 return Clazz.superCall (this, javax.vecmath.Tuple4b, "clone", []);
 } catch (e) {
-if (Clazz.instanceOf (e, CloneNotSupportedException)) {
+if (Clazz.exceptionOf (e, CloneNotSupportedException)) {
 throw  new InternalError ();
 } else {
 throw e;

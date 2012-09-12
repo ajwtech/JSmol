@@ -105,7 +105,7 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 var t = e.next ();
 s.append (t.getState ());
-if (t.hidden) s.append ("  set echo ID ").append (org.jmol.util.Escape.escape (t.target)).append (" hidden;\n");
+if (t.hidden) s.append ("  set echo ID ").append (org.jmol.util.Escape.escapeStr (t.target)).append (" hidden;\n");
 }
 return s.toString ();
 });

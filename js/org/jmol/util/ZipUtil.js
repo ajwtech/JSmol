@@ -9,7 +9,7 @@ is.mark (5);
 is.read (abMagic, 0, 4);
 is.reset ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -25,7 +25,7 @@ var abMagic = org.jmol.util.ZipUtil.getStreamBytes (is, 55);
 is.reset ();
 return (abMagic[51] == ('P').charCodeAt (0) && abMagic[52] == ('N').charCodeAt (0) && abMagic[53] == ('G').charCodeAt (0) && abMagic[54] == ('J').charCodeAt (0));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -91,7 +91,7 @@ str =  String.instantialize (bytes);
 fileData.put (name0 + "|" + name, str);
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -139,7 +139,7 @@ return ret.toString ();
 }return  String.instantialize (bytes);
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -161,7 +161,7 @@ if (org.jmol.util.ZipUtil.isZipFile (bytes) && ++listPtr < list.length) return o
 return bytes;
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -176,7 +176,7 @@ try {
 s = org.jmol.util.ZipUtil.getZipDirectoryOrErrorAndClose (bis, false);
 bis.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (e.getMessage ());
 } else {
 throw e;
@@ -193,7 +193,7 @@ try {
 s = org.jmol.util.ZipUtil.getZipDirectoryOrErrorAndClose (bis, addManifest);
 bis.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (e.getMessage ());
 } else {
 throw e;
@@ -258,7 +258,7 @@ is.mark (5);
 is.read (abMagic, 0, 4);
 is.reset ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -276,7 +276,7 @@ var s = org.jmol.util.ZipUtil.getZipEntryAsString (is);
 is.close ();
 return s;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return "";
 } else {
 throw e;
@@ -292,7 +292,7 @@ is =  new java.io.BufferedInputStream ( new java.util.zip.GZIPInputStream (is));
 } while (org.jmol.util.ZipUtil.isGzip (is));
 return is;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return null;
 } else {
 throw e;
@@ -326,11 +326,11 @@ cache.put (fileName + "|" + name, bytes);
 }
 zis.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 try {
 zis.close ();
 } catch (e1) {
-if (Clazz.instanceOf (e1, java.io.IOException)) {
+if (Clazz.exceptionOf (e1, java.io.IOException)) {
 } else {
 throw e1;
 }

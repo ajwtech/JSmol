@@ -26,7 +26,7 @@ return (this.mads == null ? 0 : this.mads[atomIndex]);
 Clazz.defineMethod (c$, "setSize", 
 function (size, bsSelected) {
 if (size == 0) this.setSize (null, bsSelected);
- else this.setSize ( new org.jmol.atomdata.RadiusData (size, org.jmol.atomdata.RadiusData.RadiusData.EnumType.SCREEN, null), bsSelected);
+ else this.setSize ( new org.jmol.atomdata.RadiusData (size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
 }, "~N,java.util.BitSet");
 Clazz.defineMethod (c$, "setSize", 
 function (rd, bsSelected) {

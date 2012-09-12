@@ -251,7 +251,7 @@ return ;
 }if (!(Clazz.instanceOf (value, java.io.BufferedReader))) try {
 value =  new java.io.BufferedReader ( new java.io.InputStreamReader (value, "ISO-8859-1"));
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.UnsupportedEncodingException)) {
+if (Clazz.exceptionOf (e, java.io.UnsupportedEncodingException)) {
 } else {
 throw e;
 }
@@ -514,7 +514,7 @@ if (imesh.connections != null) cmd += " connect " + org.jmol.util.Escape.escape 
 cmd = org.jmol.util.TextFormat.trim (cmd, ";");
 if (imesh.linkedMesh != null) cmd += " LINK";
 org.jmol.shape.Shape.appendCmd (sb, cmd);
-var id = this.myType + " ID " + org.jmol.util.Escape.escape (imesh.thisID);
+var id = this.myType + " ID " + org.jmol.util.Escape.escapeStr (imesh.thisID);
 if (imesh.jvxlData.thisSet >= 0) org.jmol.shape.Shape.appendCmd (sb, id + " set " + (imesh.jvxlData.thisSet + 1));
 if (imesh.mat4 != null) org.jmol.shape.Shape.appendCmd (sb, id + " move " + org.jmol.util.Escape.matrixToScript (imesh.mat4));
 if (imesh.scale3d != 0) org.jmol.shape.Shape.appendCmd (sb, id + " scale3d " + imesh.scale3d);
@@ -532,7 +532,7 @@ org.jmol.shape.Shape.appendCmd (sb, this.getColorCommand (this.myType, imesh.col
 org.jmol.shape.Shape.appendCmd (sb, "color isosurface phase " + org.jmol.shape.Shape.encodeColor (imesh.jvxlData.minColorIndex) + " " + org.jmol.shape.Shape.encodeColor (imesh.jvxlData.maxColorIndex));
 }if (imesh.vertexColorMap != null) for (var entry, $entry = imesh.vertexColorMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var bs = entry.getValue ();
-if (!bs.isEmpty ()) org.jmol.shape.Shape.appendCmd (sb, "color " + this.myType + " " + org.jmol.util.Escape.escape (bs, true) + " " + entry.getKey ());
+if (!bs.isEmpty ()) org.jmol.shape.Shape.appendCmd (sb, "color " + this.myType + " " + org.jmol.util.Escape.escapeBs (bs, true) + " " + entry.getKey ());
 }
 }}, $fz.isPrivate = true, $fz), "StringBuffer,~N");
 Clazz.defineMethod (c$, "getScriptBitSets", 
@@ -868,7 +868,7 @@ this.thisMesh.dataType = this.sg.getParams ().dataType;
 this.thisMesh.scale3d = this.sg.getParams ().scale3d;
 if (script != null) {
 if ((script.charAt (0)).charCodeAt (0) == (' ').charCodeAt (0)) {
-script = this.myType + " ID " + org.jmol.util.Escape.escape (this.thisMesh.thisID) + script;
+script = this.myType + " ID " + org.jmol.util.Escape.escapeStr (this.thisMesh.thisID) + script;
 pt = script.indexOf ("; isosurface map");
 }}if (pt > 0 && this.scriptAppendix.length > 0) this.thisMesh.scriptCommand = script.substring (0, pt) + this.scriptAppendix + script.substring (pt);
  else this.thisMesh.scriptCommand = script + this.scriptAppendix;
@@ -960,7 +960,7 @@ x <<= 1;
 y <<= 1;
 }this.viewer.hoverOn (x, y, s, null, null);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

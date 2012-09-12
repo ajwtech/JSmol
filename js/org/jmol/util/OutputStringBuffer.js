@@ -24,7 +24,7 @@ this.nBytes += s.length;
 try {
 this.bw.write (s);
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -40,7 +40,7 @@ function () {
 if (this.bw != null) try {
 this.bw.flush ();
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }
@@ -56,7 +56,7 @@ this.nBytes += 1;
 try {
 this.bw.write (c.charCodeAt (0));
 } catch (e) {
-if (Clazz.instanceOf (e, java.io.IOException)) {
+if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
 throw e;
 }

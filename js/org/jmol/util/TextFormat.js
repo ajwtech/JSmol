@@ -193,7 +193,7 @@ if (!Float.isNaN (floatT)) strLabel += org.jmol.util.TextFormat.format (floatT, 
  else if (!Double.isNaN (doubleT)) strLabel += org.jmol.util.TextFormat.format (doubleT, width, precision, alignLeft, zeroPad, true);
 if (doOne) break;
 } catch (ioobe) {
-if (Clazz.instanceOf (ioobe, IndexOutOfBoundsException)) {
+if (Clazz.exceptionOf (ioobe, IndexOutOfBoundsException)) {
 ich = ichPercent;
 break;
 } else {

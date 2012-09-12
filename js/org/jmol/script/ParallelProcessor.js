@@ -41,7 +41,7 @@ while (this.counter > 0) {
 try {
 this.lock.wait ();
 } catch (e) {
-if (Clazz.instanceOf (e, InterruptedException)) {
+if (Clazz.exceptionOf (e, InterruptedException)) {
 } else {
 throw e;
 }
@@ -57,7 +57,7 @@ try {
 for (var i = 0; i < vShapeManagers.size (); i++) this.viewer.mergeShapes (vShapeManagers.get (i).getShapes ());
 
 } catch (e) {
-if (Clazz.instanceOf (e, Error)) {
+if (Clazz.exceptionOf (e, Error)) {
 throw e;
 } else {
 throw e;
@@ -109,12 +109,12 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Running process
 this.b$["org.jmol.script.ParallelProcessor"].viewer.eval (this.process.context, this.shapeManager);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Process " + this.process.processName + " complete");
 }} catch (e$$) {
-if (Clazz.instanceOf (e$$, Exception)) {
+if (Clazz.exceptionOf (e$$, Exception)) {
 var e = e$$;
 {
 if (this.b$["org.jmol.script.ParallelProcessor"].tok != 364558) e.printStackTrace ();
 }
-} else if (Clazz.instanceOf (e$$, Error)) {
+} else if (Clazz.exceptionOf (e$$, Error)) {
 var er = e$$;
 {
 this.b$["org.jmol.script.ParallelProcessor"].clearShapeManager (er);

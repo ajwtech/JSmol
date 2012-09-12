@@ -6,6 +6,12 @@ this.type = null;
 this.type2 = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumVdw", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (pt, type, type2) {
+this.pt = pt;
+this.type = type;
+this.type2 = type2;
+}, $fz.isPrivate = true, $fz), "~N,~S,~S");
 Clazz.defineMethod (c$, "getVdwLabel", 
 function () {
 return (this.type == null ? this.type2 : this.type);

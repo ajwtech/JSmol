@@ -350,7 +350,7 @@ var bs =  new org.jmol.modelset.Bond.BondSet ();
 for (var i = this.bondCount; --i >= 0; ) if (this.bonds[i].mad != 0 && (this.bonds[i].shapeVisibilityFlags & org.jmol.modelset.Bond.myVisibilityFlag) == 0) bs.set (i);
 
 if (bs.isEmpty ()) this.haveHiddenBonds = false;
- else commands.append ("  hide ").append (org.jmol.util.Escape.escape (bs, false)).append (";\n");
+ else commands.append ("  hide ").append (org.jmol.util.Escape.escapeBs (bs, false)).append (";\n");
 }this.viewer.setModelVisibility ();
 if (withProteinStructure) commands.append (this.getProteinStructureState (null, isAll, false, 0));
 this.viewer.getShapeState (commands, isAll, 2147483647);
@@ -363,9 +363,9 @@ break;
 for (var i = 0; i < this.modelCount; i++) {
 var fcmd = "  frame " + this.getModelNumberDotted (i);
 var s = this.getModelAuxiliaryInfo (i, "modelID");
-if (s != null && !s.equals (this.getModelAuxiliaryInfo (i, "modelID0"))) commands.append (fcmd).append ("; frame ID ").append (org.jmol.util.Escape.escape (s)).append (";\n");
+if (s != null && !s.equals (this.getModelAuxiliaryInfo (i, "modelID0"))) commands.append (fcmd).append ("; frame ID ").append (org.jmol.util.Escape.escapeStr (s)).append (";\n");
 var t = this.frameTitles[i];
-if (t != null && t.length > 0) commands.append (fcmd).append ("; frame title ").append (org.jmol.util.Escape.escape (t)).append (";\n");
+if (t != null && t.length > 0) commands.append (fcmd).append ("; frame title ").append (org.jmol.util.Escape.escapeStr (t)).append (";\n");
 if (needOrientations && this.models[i].orientation != null && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; ").append (this.models[i].orientation.getMoveToText (false)).append (";\n");
 if (this.models[i].frameDelay != 0 && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; frame delay ").append (this.models[i].frameDelay / 1000).append (";\n");
 if (this.models[i].unitCell != null) {
@@ -377,9 +377,9 @@ for (var i = 0; i < this.modelCount; i++) {
 var symmetry = this.getUnitCell (i);
 if (symmetry == null) continue ;commands.append ("  frame ").append (this.getModelNumberDotted (i));
 var pt = symmetry.getFractionalOffset ();
-if (pt != null) commands.append ("; set unitcell ").append (org.jmol.util.Escape.escape (pt));
+if (pt != null) commands.append ("; set unitcell ").append (org.jmol.util.Escape.escapePt (pt));
 pt = symmetry.getUnitCellMultiplier ();
-if (pt != null) commands.append ("; set unitcell ").append (org.jmol.util.Escape.escape (pt));
+if (pt != null) commands.append ("; set unitcell ").append (org.jmol.util.Escape.escapePt (pt));
 commands.append (";\n");
 }
 this.viewer.getShapeState (commands, isAll, 32);

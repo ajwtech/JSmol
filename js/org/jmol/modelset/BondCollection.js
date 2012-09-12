@@ -490,7 +490,7 @@ this.removeUnnecessaryBonds (bond.atom2, false);
 bsAtoms.set (bond.getAtomIndex1 ());
 bsAtoms.set (bond.getAtomIndex2 ());
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Exception in seBondOrder: " + e.getMessage ());
 } else {
 throw e;

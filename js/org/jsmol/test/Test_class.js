@@ -10,7 +10,7 @@ function () {
 try {
 var x =  new org.jsmol.test.LimitedLineReader (null, 1000);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 } else {
 throw e;

@@ -66,11 +66,11 @@ return -2147483648;
 });
 Clazz.defineMethod (c$, "getChainID", 
 function () {
-return String.fromCharCode (0);
+return '\0';
 });
 Clazz.defineMethod (c$, "getAlternateLocationID", 
 function () {
-return String.fromCharCode (0);
+return '\0';
 });
 Clazz.defineMethod (c$, "getGroup3", 
 function () {
@@ -82,5 +82,5 @@ return -2147483648;
 });
 Clazz.defineMethod (c$, "getInsertionCode", 
 function () {
-return String.fromCharCode (0);
+return '\0';
 });

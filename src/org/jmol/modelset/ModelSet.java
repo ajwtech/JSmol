@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-07-15 19:16:54 -0500 (Sun, 15 Jul 2012) $
- * $Revision: 17359 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -608,7 +608,7 @@ import javax.vecmath.Vector3f;
       if (bs.isEmpty())
         haveHiddenBonds = false;
       else
-        commands.append("  hide ").append(Escape.escape(bs, false)).append(
+        commands.append("  hide ").append(Escape.escapeBs(bs, false)).append(
             ";\n");
     }
 
@@ -634,12 +634,12 @@ import javax.vecmath.Vector3f;
         String fcmd = "  frame " + getModelNumberDotted(i);
         String s = (String) getModelAuxiliaryInfo(i, "modelID");
         if (s != null && !s.equals(getModelAuxiliaryInfo(i, "modelID0")))
-          commands.append(fcmd).append("; frame ID ").append(Escape.escape(s))
+          commands.append(fcmd).append("; frame ID ").append(Escape.escapeStr(s))
               .append(";\n");
         String t = frameTitles[i];
         if (t != null && t.length() > 0)
           commands.append(fcmd).append("; frame title ").append(
-              Escape.escape(t)).append(";\n");
+              Escape.escapeStr(t)).append(";\n");
         if (needOrientations && models[i].orientation != null
             && !isTrajectorySubFrame(i))
           commands.append(fcmd).append("; ").append(
@@ -663,10 +663,10 @@ import javax.vecmath.Vector3f;
           commands.append("  frame ").append(getModelNumberDotted(i));
           Point3f pt = symmetry.getFractionalOffset();
           if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escape(pt));
+            commands.append("; set unitcell ").append(Escape.escapePt(pt));
           pt = symmetry.getUnitCellMultiplier();
           if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escape(pt));
+            commands.append("; set unitcell ").append(Escape.escapePt(pt));
           commands.append(";\n");
         }
         viewer.getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);

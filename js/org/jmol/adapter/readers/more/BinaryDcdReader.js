@@ -105,7 +105,7 @@ trajectoryStep[n] = pt;
 }}
 return true;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return false;
 } else {
 throw e;

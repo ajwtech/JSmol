@@ -323,7 +323,7 @@ i = s.indexOf (" ");
 if (i >= 0) s = s.substring (0, i);
 version += Integer.parseInt (s);
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 } else {
 throw e;
 }
@@ -1010,15 +1010,15 @@ var b =  new StringBuffer ();
 org.jmol.viewer.StateManager.appendCmd (b, "set allowEmbeddedScripts false");
 if (this.allowEmbeddedScripts) this.setParameterValue ("allowEmbeddedScripts", true);
 org.jmol.viewer.StateManager.appendCmd (b, "set appendNew " + this.appendNew);
-org.jmol.viewer.StateManager.appendCmd (b, "set appletProxy " + org.jmol.util.Escape.escape (this.appletProxy));
+org.jmol.viewer.StateManager.appendCmd (b, "set appletProxy " + org.jmol.util.Escape.escapeStr (this.appletProxy));
 org.jmol.viewer.StateManager.appendCmd (b, "set applySymmetryToBonds " + this.applySymmetryToBonds);
-if (this.atomTypes.length > 0) org.jmol.viewer.StateManager.appendCmd (b, "set atomTypes " + org.jmol.util.Escape.escape (this.atomTypes));
+if (this.atomTypes.length > 0) org.jmol.viewer.StateManager.appendCmd (b, "set atomTypes " + org.jmol.util.Escape.escapeStr (this.atomTypes));
 org.jmol.viewer.StateManager.appendCmd (b, "set autoBond " + this.autoBond);
 if (this.axesOrientationRasmol) org.jmol.viewer.StateManager.appendCmd (b, "set axesOrientationRasmol true");
 org.jmol.viewer.StateManager.appendCmd (b, "set bondRadiusMilliAngstroms " + this.bondRadiusMilliAngstroms);
 org.jmol.viewer.StateManager.appendCmd (b, "set bondTolerance " + this.bondTolerance);
-org.jmol.viewer.StateManager.appendCmd (b, "set defaultLattice " + org.jmol.util.Escape.escape (this.ptDefaultLattice));
-org.jmol.viewer.StateManager.appendCmd (b, "set defaultLoadFilter " + org.jmol.util.Escape.escape (this.defaultLoadFilter));
+org.jmol.viewer.StateManager.appendCmd (b, "set defaultLattice " + org.jmol.util.Escape.escapePt (this.ptDefaultLattice));
+org.jmol.viewer.StateManager.appendCmd (b, "set defaultLoadFilter " + org.jmol.util.Escape.escapeStr (this.defaultLoadFilter));
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultLoadScript \"\"");
 if (this.defaultLoadScript.length > 0) this.setParameterValue ("defaultLoadScript", this.defaultLoadScript);
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultStructureDssp " + this.defaultStructureDSSP);
@@ -1026,14 +1026,14 @@ var c = this.b$["org.jmol.viewer.StateManager"].viewer.getDefaultVdwTypeNameOrDa
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultVDW " + c);
 if (c.equals ("User")) org.jmol.viewer.StateManager.appendCmd (b, this.b$["org.jmol.viewer.StateManager"].viewer.getDefaultVdwTypeNameOrData (2147483647, null));
 org.jmol.viewer.StateManager.appendCmd (b, "set forceAutoBond " + this.forceAutoBond);
-org.jmol.viewer.StateManager.appendCmd (b, "#set defaultDirectory " + org.jmol.util.Escape.escape (this.defaultDirectory));
-org.jmol.viewer.StateManager.appendCmd (b, "#set loadFormat " + org.jmol.util.Escape.escape (this.loadFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set loadLigandFormat " + org.jmol.util.Escape.escape (this.loadLigandFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set smilesUrlFormat " + org.jmol.util.Escape.escape (this.smilesUrlFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set nihResolverFormat " + org.jmol.util.Escape.escape (this.nihResolverFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set pubChemFormat " + org.jmol.util.Escape.escape (this.pubChemFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set edsUrlFormat " + org.jmol.util.Escape.escape (this.edsUrlFormat));
-org.jmol.viewer.StateManager.appendCmd (b, "#set edsUrlCutoff " + org.jmol.util.Escape.escape (this.edsUrlCutoff));
+org.jmol.viewer.StateManager.appendCmd (b, "#set defaultDirectory " + org.jmol.util.Escape.escapeStr (this.defaultDirectory));
+org.jmol.viewer.StateManager.appendCmd (b, "#set loadFormat " + org.jmol.util.Escape.escapeStr (this.loadFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set loadLigandFormat " + org.jmol.util.Escape.escapeStr (this.loadLigandFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set smilesUrlFormat " + org.jmol.util.Escape.escapeStr (this.smilesUrlFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set nihResolverFormat " + org.jmol.util.Escape.escapeStr (this.nihResolverFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set pubChemFormat " + org.jmol.util.Escape.escapeStr (this.pubChemFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set edsUrlFormat " + org.jmol.util.Escape.escapeStr (this.edsUrlFormat));
+org.jmol.viewer.StateManager.appendCmd (b, "#set edsUrlCutoff " + org.jmol.util.Escape.escapeStr (this.edsUrlCutoff));
 org.jmol.viewer.StateManager.appendCmd (b, "set legacyAutoBonding " + this.legacyAutoBonding);
 org.jmol.viewer.StateManager.appendCmd (b, "set minBondDistance " + this.minBondDistance);
 org.jmol.viewer.StateManager.appendCmd (b, "set minimizationCriterion  " + this.minimizationCriterion);
@@ -1067,7 +1067,7 @@ org.jmol.viewer.StateManager.appendCmd (d, "stateVersion = " + this.getParameter
 org.jmol.viewer.StateManager.appendCmd (d, "background " + org.jmol.util.Escape.escapeColor (this.objColors[0]));
 for (var e = 1; e < 8; e++) if (this.objColors[e] != 0) org.jmol.viewer.StateManager.appendCmd (d, org.jmol.viewer.StateManager.getObjectNameFromId (e) + "Color = \"" + org.jmol.util.Escape.escapeColor (this.objColors[e]) + '"');
 
-if (this.backgroundImageFileName != null) org.jmol.viewer.StateManager.appendCmd (d, "background IMAGE /*file*/" + org.jmol.util.Escape.escape (this.backgroundImageFileName));
+if (this.backgroundImageFileName != null) org.jmol.viewer.StateManager.appendCmd (d, "background IMAGE /*file*/" + org.jmol.util.Escape.escapeStr (this.backgroundImageFileName));
 d.append (this.getSpecularState ());
 org.jmol.viewer.StateManager.appendCmd (d, "statusReporting  = " + this.statusReporting);
 if (a != null) d.append ("}\n\n");
@@ -1232,7 +1232,7 @@ while (c.hasNext ()) {
 d = c.next ();
 if ((d.charAt (0)).charCodeAt (0) != ('@').charCodeAt (0) && (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0)) {
 var h = this.htNonbooleanParameterValues.get (d);
-if (Clazz.instanceOf (h, String)) h = this.chop (org.jmol.util.Escape.escape (h));
+if (Clazz.instanceOf (h, String)) h = this.chop (org.jmol.util.Escape.escapeStr (h));
 e[f++] = (d.indexOf ("_") == 0 ? d + " = " : "set " + d + " ") + h;
 }}
 c = this.htUserVariables.keySet ().iterator ();
@@ -1241,7 +1241,7 @@ d = c.next ();
 if (a == null || d.indexOf (a) == 0) {
 var h = this.htUserVariables.get (d);
 var i = h.asString ();
-e[f++] = d + " " + (d.startsWith ("@") ? "" : "= ") + (h.tok == 4 ? this.chop (org.jmol.util.Escape.escape (i)) : i);
+e[f++] = d + " " + (d.startsWith ("@") ? "" : "= ") + (h.tok == 4 ? this.chop (org.jmol.util.Escape.escapeStr (i)) : i);
 }}
 java.util.Arrays.sort (e, 0, f);
 for (var h = 0; h < f; h++) if (e[h] != null) org.jmol.viewer.StateManager.appendCmd (b, e[h]);

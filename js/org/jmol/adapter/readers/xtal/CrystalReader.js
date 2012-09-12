@@ -129,10 +129,10 @@ Clazz.defineMethod (c$, "setDirect",
 var isBohr = (this.line.indexOf ("(BOHR") >= 0);
 this.directLatticeVectors = this.read3Vectors (isBohr);
 if (org.jmol.util.Logger.debugging) {
-this.addJmolScript ("draw va vector {0 0 0} " + org.jmol.util.Escape.escape (this.directLatticeVectors[0]) + " color red");
+this.addJmolScript ("draw va vector {0 0 0} " + org.jmol.util.Escape.escapePt (this.directLatticeVectors[0]) + " color red");
 if (!this.isPolymer) {
-this.addJmolScript ("draw vb vector {0 0 0} " + org.jmol.util.Escape.escape (this.directLatticeVectors[1]) + " color green");
-if (!this.isSlab) this.addJmolScript ("draw vc vector {0 0 0} " + org.jmol.util.Escape.escape (this.directLatticeVectors[2]) + " color blue");
+this.addJmolScript ("draw vb vector {0 0 0} " + org.jmol.util.Escape.escapePt (this.directLatticeVectors[1]) + " color green");
+if (!this.isSlab) this.addJmolScript ("draw vc vector {0 0 0} " + org.jmol.util.Escape.escapePt (this.directLatticeVectors[2]) + " color blue");
 }}var a =  new javax.vecmath.Vector3f ();
 var b =  new javax.vecmath.Vector3f ();
 if (this.isPrimitive) {

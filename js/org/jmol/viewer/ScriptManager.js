@@ -76,7 +76,7 @@ Thread.sleep (100);
 if (((n++) % 10) == 0) if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.info ("...scriptManager waiting for queue: " + this.scriptQueue.size () + " thread=" + Thread.currentThread ().getName ());
 }} catch (e) {
-if (Clazz.instanceOf (e, InterruptedException)) {
+if (Clazz.exceptionOf (e, InterruptedException)) {
 } else {
 throw e;
 }
@@ -148,7 +148,7 @@ while (this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () != 0) {
 if (!this.runNextScript ()) try {
 Thread.sleep (100);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (this + " Exception " + e.getMessage ());
 break;
 } else {
@@ -209,13 +209,13 @@ if (b != null) {
 b.set (5, Integer.$valueOf (0));
 this.b$["org.jmol.viewer.ScriptManager"].startScriptQueue (true);
 }}}} catch (e$$) {
-if (Clazz.instanceOf (e$$, InterruptedException)) {
+if (Clazz.exceptionOf (e$$, InterruptedException)) {
 var ie = e$$;
 {
 org.jmol.util.Logger.warn ("CommandWatcher InterruptedException! " + this);
 break;
 }
-} else if (Clazz.instanceOf (e$$, Exception)) {
+} else if (Clazz.exceptionOf (e$$, Exception)) {
 var ie = e$$;
 {
 var b = "script processing ERROR:\n\n" + ie.toString ();

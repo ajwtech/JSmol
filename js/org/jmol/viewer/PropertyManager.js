@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "$.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "$.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "PropertyManager");
 c$.getPropertyNumber = Clazz.defineMethod (c$, "getPropertyNumber", 
 function (infoType) {
@@ -44,7 +44,7 @@ var args =  new Array (names.length);
 propertyName = names[0];
 var n;
 for (var i = 1; i < names.length; i++) {
-if ((n = org.jmol.util.Parser.parseInt (names[i])) != -2147483648) args[i] =  new org.jmol.script.ScriptVariable (2, n);
+if ((n = org.jmol.util.Parser.parseInt (names[i])) != -2147483648) args[i] =  new org.jmol.script.ScriptVariableInt (n);
  else args[i] =  new org.jmol.script.ScriptVariable (4, names[i]);
 }
 return org.jmol.viewer.PropertyManager.extractProperty (org.jmol.viewer.PropertyManager.getProperty (viewer, null, propertyName, propertyValue), args, 1);

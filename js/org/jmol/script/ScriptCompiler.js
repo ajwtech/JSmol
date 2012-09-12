@@ -638,7 +638,7 @@ if (org.jmol.script.Token.tokAttr (this.tokCommand, 20480)) this.isEndOfCommand 
 var ident = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 var iident = org.jmol.util.Parser.parseInt (ident);
 if (iident == -2147483648 || Math.abs (iident) < 1000) this.addTokenToPrefix ( new org.jmol.script.Token (1073741824, ident));
- else this.addTokenToPrefix ( new org.jmol.script.Token (2, iident));
+ else this.addTokenToPrefix (org.jmol.script.Token.intToken (iident));
 return 2;
 }switch (this.tokCommand) {
 case 135271426:
@@ -731,7 +731,7 @@ this.addTokenToPrefix (org.jmol.script.Token.tokenMinus);
 this.addTokenToPrefix ( new org.jmol.script.Token (5, seqcode, "seqcode"));
 return 2;
 } catch (nfe) {
-if (Clazz.instanceOf (nfe, NumberFormatException)) {
+if (Clazz.exceptionOf (nfe, NumberFormatException)) {
 return this.ERROR (9, "" + ch);
 } else {
 throw nfe;
@@ -1697,7 +1697,7 @@ try {
 var val = Integer.parseInt (this.script.substring (this.ichToken, ichT));
 return val;
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 } else {
 throw e;
 }

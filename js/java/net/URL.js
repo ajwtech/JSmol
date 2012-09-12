@@ -121,12 +121,12 @@ if (this.ref == null) {
 this.ref = context.ref;
 }}handler.parseURL (this, spec, start, limit);
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, java.net.MalformedURLException)) {
+if (Clazz.exceptionOf (e$$, java.net.MalformedURLException)) {
 var e = e$$;
 {
 throw e;
 }
-} else if (Clazz.instanceOf (e$$, Exception)) {
+} else if (Clazz.exceptionOf (e$$, Exception)) {
 var e = e$$;
 {
 var exception =  new java.net.MalformedURLException (e.getMessage ());

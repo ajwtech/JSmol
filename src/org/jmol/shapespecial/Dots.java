@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-10 20:34:48 -0500 (Mon, 10 Sep 2012) $
+ * $Revision: 17550 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -32,6 +32,7 @@ import org.jmol.util.FastBitSet;
 import org.jmol.util.Logger;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.modelset.Atom;
 
@@ -178,7 +179,7 @@ public class Dots extends AtomShape {
   @Override
   protected void setSize(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
-      rd = new RadiusData(0, RadiusData.EnumType.ABSOLUTE, null);
+      rd = new RadiusData(0, EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 

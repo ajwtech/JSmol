@@ -63,7 +63,7 @@ this.readLine ();
 str += org.jmol.jvxl.data.JvxlCoder.jvxlUncompressString (this.line);
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Error reading " + type + " data " + e);
 throw  new NullPointerException ();
 } else {
@@ -98,7 +98,7 @@ if (param1 == -1) {
 try {
 this.params.thePlane =  new javax.vecmath.Point4f (this.parseFloat (), this.parseFloat (), this.parseFloat (), this.parseFloat ());
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
 this.params.thePlane =  new javax.vecmath.Point4f (0, 0, 1, 0);
 } else {

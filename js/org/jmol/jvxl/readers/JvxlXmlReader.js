@@ -67,7 +67,7 @@ var bs = org.jmol.jvxl.data.JvxlCoder.jvxlDecodeBitSet (this.xr.getXmlData ("jvx
 this.jvxlData.vertexColorMap.put (color, bs);
 }
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (e.toString ());
 return false;
 } else {
@@ -172,7 +172,7 @@ org.jmol.util.Logger.info ("JVXL read: mapLattice " + this.params.mapLattice);
 }if (this.params.scale3d == 0) this.params.scale3d = this.parseFloat (org.jmol.util.XmlReader.getXmlAttrib (data, "scale3d"));
 if (Float.isNaN (this.params.scale3d)) this.params.scale3d = 0;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (this.params.thePlane == null) {
 org.jmol.util.Logger.error ("JVXL Error reading plane definition -- setting to 0 0 1 0  (z=0)");
 this.params.thePlane =  new javax.vecmath.Point4f (0, 0, 1, 0);
@@ -299,7 +299,7 @@ var data = this.xr.getXmlData ("jvxlColorData", null, true, false);
 this.jvxlData.isJvxlPrecisionColor = org.jmol.util.XmlReader.getXmlAttrib (data, "encoding").endsWith ("2");
 str = org.jmol.jvxl.data.JvxlCoder.jvxlUncompressString (org.jmol.util.XmlReader.getXmlAttrib (data, "data"));
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Error reading " + type + " data " + e);
 throw  new NullPointerException ();
 } else {

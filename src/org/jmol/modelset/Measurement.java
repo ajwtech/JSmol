@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-07-15 19:16:54 -0500 (Sun, 15 Jul 2012) $
- * $Revision: 17359 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -27,6 +27,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.TickInfo;
 
@@ -456,7 +457,7 @@ public class Measurement {
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
-            + Escape.escape(getAtom(i))
+            + Escape.escapePt(getAtom(i))
         : asBitSet ? "(({" + atomIndex + "}))"
         : viewer.getAtomInfo(atomIndex));
   }
@@ -510,7 +511,7 @@ public class Measurement {
   }
 
   public boolean isInRange(RadiusData radiusData, float value) {
-    if (radiusData.factorType == RadiusData.EnumType.FACTOR) {
+    if (radiusData.factorType == EnumType.FACTOR) {
       Atom atom1 = (Atom) getAtom(1);
       Atom atom2 = (Atom) getAtom(2);
       float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)

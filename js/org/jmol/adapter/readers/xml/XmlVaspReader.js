@@ -158,7 +158,7 @@ break;
 try {
 this.parent.applySymmetryAndSetTrajectory ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

@@ -82,15 +82,15 @@ pt_b_prime.add (n);
 theta = org.jmol.util.Measure.computeTorsion (a, pt_a_prime, pt_b_prime, b, true);
 if (Float.isNaN (theta) || r.length () < 0.0001) theta = dq.getThetaDirected (n);
 if (tokType == 135266305) return  new Float (theta);
-if (tokType == 135176) return "draw ID \"" + id + "\" VECTOR " + org.jmol.util.Escape.escape (pt_a_prime) + " " + org.jmol.util.Escape.escape (n) + " color " + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-if (tokType == 1746538509) return "measure " + org.jmol.util.Escape.escape (a) + org.jmol.util.Escape.escape (pt_a_prime) + org.jmol.util.Escape.escape (pt_b_prime) + org.jmol.util.Escape.escape (b);
+if (tokType == 135176) return "draw ID \"" + id + "\" VECTOR " + org.jmol.util.Escape.escapePt (pt_a_prime) + " " + org.jmol.util.Escape.escapePt (n) + " color " + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
+if (tokType == 1746538509) return "measure " + org.jmol.util.Escape.escapePt (a) + org.jmol.util.Escape.escapePt (pt_a_prime) + org.jmol.util.Escape.escapePt (pt_b_prime) + org.jmol.util.Escape.escapePt (b);
 var residuesPerTurn = Math.abs (theta == 0 ? 0 : 360 / theta);
 var pitch = Math.abs (v_dot_n == 1.4E-45 ? 0 : n.length () * (theta == 0 ? 1 : 360 / theta));
 switch (tokType) {
 case 135266306:
 return [pt_a_prime, n, r,  new javax.vecmath.Point3f (theta, pitch, residuesPerTurn)];
 case 1073742001:
-return [org.jmol.util.Escape.escape (pt_a_prime), org.jmol.util.Escape.escape (n), org.jmol.util.Escape.escape (r), org.jmol.util.Escape.escape ( new javax.vecmath.Point3f (theta, pitch, residuesPerTurn))];
+return [org.jmol.util.Escape.escapePt (pt_a_prime), org.jmol.util.Escape.escapePt (n), org.jmol.util.Escape.escapePt (r), org.jmol.util.Escape.escapePt ( new javax.vecmath.Point3f (theta, pitch, residuesPerTurn))];
 default:
 return null;
 }

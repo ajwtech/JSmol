@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -133,8 +133,8 @@ public class Hover extends TextShape {
     if (atomFormats != null)
       for (int i = viewer.getAtomCount(); --i >= 0;)
         if (atomFormats[i] != null)
-          setStateInfo(temp, i, "set hoverLabel " + Escape.escape(atomFormats[i]));
-    return "\n  hover " + Escape.escape((labelFormat == null ? "" : labelFormat)) 
+          setStateInfo(temp, i, "set hoverLabel " + Escape.escapeStr(atomFormats[i]));
+    return "\n  hover " + Escape.escapeStr((labelFormat == null ? "" : labelFormat)) 
     + ";\n" + getShapeCommands(temp, null);
   }
 }

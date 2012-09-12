@@ -195,7 +195,7 @@ var s =  new StringBuffer ();
 if (this.text == null || this.isLabelOrHover || this.target.equals ("error")) return "";
 var isImage = (this.image != null);
 var strOff = null;
-var echoCmd = "set echo ID " + org.jmol.util.Escape.escape (this.target);
+var echoCmd = "set echo ID " + org.jmol.util.Escape.escapeStr (this.target);
 switch (this.valign) {
 case 0:
 if (this.movableXPercent == 2147483647 || this.movableYPercent == 2147483647) {
@@ -203,7 +203,7 @@ strOff = (this.movableXPercent == 2147483647 ? this.movableX + " " : this.movabl
 } else {
 strOff = "[" + this.movableXPercent + " " + this.movableYPercent + "%]";
 }case 4:
-if (strOff == null) strOff = org.jmol.util.Escape.escape (this.xyz);
+if (strOff == null) strOff = org.jmol.util.Escape.escapePt (this.xyz);
 s.append ("  ").append (echoCmd).append (" ").append (strOff);
 if (this.align != 1) s.append (";  ").append (echoCmd).append (" ").append (org.jmol.shape.Object2d.hAlignNames[this.align]);
 break;
@@ -213,10 +213,10 @@ s.append ("  set echo ").append (org.jmol.shape.Object2d.vAlignNames[this.valign
 if (this.valign == 0 && this.movableZPercent != 2147483647) s.append (";  ").append (echoCmd).append (" depth ").append (this.movableZPercent);
 if (isImage) s.append ("; ").append (echoCmd).append (" IMAGE /*file*/");
  else s.append ("; echo ");
-s.append (org.jmol.util.Escape.escape (this.text));
+s.append (org.jmol.util.Escape.escapeStr (this.text));
 s.append (";\n");
 if (isImage && this.imageScale != 1) s.append ("  ").append (echoCmd).append (" scale ").append (this.imageScale).append (";\n");
-if (this.script != null) s.append ("  ").append (echoCmd).append (" script ").append (org.jmol.util.Escape.escape (this.script)).append (";\n");
+if (this.script != null) s.append ("  ").append (echoCmd).append (" script ").append (org.jmol.util.Escape.escapeStr (this.script)).append (";\n");
 if (this.modelIndex >= 0) s.append ("  ").append (echoCmd).append (" model ").append (this.viewer.getModelNumberDotted (this.modelIndex)).append (";\n");
 s.append ("  " + org.jmol.shape.Shape.getFontCommand ("echo", this.font));
 if (this.scalePixelsPerMicron > 0) s.append (" " + (10000 / this.scalePixelsPerMicron));

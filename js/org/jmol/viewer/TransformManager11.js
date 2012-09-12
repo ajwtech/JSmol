@@ -478,7 +478,7 @@ if (sleepTime > 0) {
 try {
 Thread.sleep (sleepTime);
 } catch (ie) {
-if (Clazz.instanceOf (ie, InterruptedException)) {
+if (Clazz.exceptionOf (ie, InterruptedException)) {
 return ;
 } else {
 throw ie;
@@ -491,7 +491,7 @@ if (sleepTime > 0) {
 try {
 Thread.sleep (sleepTime);
 } catch (ie) {
-if (Clazz.instanceOf (ie, InterruptedException)) {
+if (Clazz.exceptionOf (ie, InterruptedException)) {
 } else {
 throw ie;
 }
@@ -556,7 +556,7 @@ if (sleepTime > 0) {
 try {
 Thread.sleep (sleepTime);
 } catch (ie) {
-if (Clazz.instanceOf (ie, InterruptedException)) {
+if (Clazz.exceptionOf (ie, InterruptedException)) {
 return ;
 } else {
 throw ie;
@@ -645,12 +645,12 @@ return ((XorY).charCodeAt (0) == ('X').charCodeAt (0) ? (this.navigationOffset.x
 Clazz.overrideMethod (c$, "getNavigationText", 
 function (addComments) {
 this.getNavigationOffset ();
-return (addComments ? " /* navigation center, translation, depth */ " : " ") + org.jmol.util.Escape.escape (this.navigationCenter) + " " + this.getNavigationOffsetPercent ('X') + " " + this.getNavigationOffsetPercent ('Y') + " " + this.getNavigationDepthPercent ();
+return (addComments ? " /* navigation center, translation, depth */ " : " ") + org.jmol.util.Escape.escapePt (this.navigationCenter) + " " + this.getNavigationOffsetPercent ('X') + " " + this.getNavigationOffsetPercent ('Y') + " " + this.getNavigationDepthPercent ();
 }, "~B");
 Clazz.overrideMethod (c$, "getNavigationState", 
 function () {
 if (this.mode != 1) return "";
-return "# navigation state;\nnavigate 0 center " + org.jmol.util.Escape.escape (this.getNavigationCenter ()) + ";\nnavigate 0 translate " + this.getNavigationOffsetPercent ('X') + " " + this.getNavigationOffsetPercent ('Y') + ";\nset navigationDepth " + this.getNavigationDepthPercent () + ";\nset navigationSlab " + this.getNavigationSlabOffsetPercent () + ";\n\n";
+return "# navigation state;\nnavigate 0 center " + org.jmol.util.Escape.escapePt (this.getNavigationCenter ()) + ";\nnavigate 0 translate " + this.getNavigationOffsetPercent ('X') + " " + this.getNavigationOffsetPercent ('Y') + ";\nset navigationDepth " + this.getNavigationDepthPercent () + ";\nset navigationSlab " + this.getNavigationSlabOffsetPercent () + ";\n\n";
 });
 Clazz.defineStatics (c$,
 "NAV_MODE_IGNORE", -2,

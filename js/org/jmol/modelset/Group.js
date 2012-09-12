@@ -231,6 +231,14 @@ return org.jmol.modelset.Group.getSeqcodeString (this.seqcode);
 });
 c$.getSeqcode = Clazz.defineMethod (c$, "getSeqcode", 
 function (sequenceNumber, insertionCode) {
+return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode.charAt (0));
+}, "~N,~S");
+c$.getSeqcode = Clazz.defineMethod (c$, "getSeqcode", 
+function (sequenceNumber, insertionCode) {
+return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode);
+}, "~N,~N");
+c$.getSeqcode2 = Clazz.defineMethod (c$, "getSeqcode2", 
+function (sequenceNumber, insertionCode) {
 if (sequenceNumber == -2147483648) return sequenceNumber;
 if (!(((insertionCode).charCodeAt (0) >= ('A').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('Z').charCodeAt (0)) || ((insertionCode).charCodeAt (0) >= ('a').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('z').charCodeAt (0)) || ((insertionCode).charCodeAt (0) >= ('0').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('9').charCodeAt (0)) || (insertionCode).charCodeAt (0) == ('?').charCodeAt (0) || (insertionCode).charCodeAt (0) == ('*').charCodeAt (0))) {
 if ((insertionCode).charCodeAt (0) != (' ').charCodeAt (0) && (insertionCode).charCodeAt (0) != ('\0').charCodeAt (0)) org.jmol.util.Logger.warn ("unrecognized insertionCode:" + insertionCode);

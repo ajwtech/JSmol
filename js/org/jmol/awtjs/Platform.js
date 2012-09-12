@@ -9,7 +9,7 @@ function (viewer, display) {
 try {
 java.net.URL.setURLStreamHandlerFactory ( new org.jmol.awtjs.AjaxURLStreamHandlerFactory ());
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }

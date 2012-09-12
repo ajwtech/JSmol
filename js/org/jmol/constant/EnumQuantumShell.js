@@ -7,6 +7,13 @@ this.id = 0;
 this.idSpherical = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.constant, "EnumQuantumShell", Enum);
+Clazz.makeConstructor (c$, 
+($fz = function (tag, tag2, id, idSpherical) {
+this.tag = tag;
+this.tag2 = tag2;
+this.id = id;
+this.idSpherical = idSpherical;
+}, $fz.isPrivate = true, $fz), "~S,~S,~N,~N");
 c$.getNewDfCoefMap = Clazz.defineMethod (c$, "getNewDfCoefMap", 
 function () {
 return [ Clazz.newArray (1, 0),  Clazz.newArray (3, 0),  Clazz.newArray (4, 0),  Clazz.newArray (5, 0),  Clazz.newArray (6, 0),  Clazz.newArray (7, 0),  Clazz.newArray (10, 0)];

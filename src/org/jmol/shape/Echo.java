@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -196,7 +196,7 @@ public class Echo extends TextShape {
       Text t = e.next();
       s.append(t.getState());
       if (t.hidden)
-        s.append("  set echo ID ").append(Escape.escape(t.target)).append(" hidden;\n");
+        s.append("  set echo ID ").append(Escape.escapeStr(t.target)).append(" hidden;\n");
     }
     return s.toString();
   }

@@ -40,8 +40,23 @@ Clazz.instantialize (this, arguments);
 }, org.jsmol.test.JSTest, "TestInner");
 Clazz.defineMethod (c$, "say", 
 function (a) {
+var b = '@';
+var c = 2 + (b).charCodeAt (0);
+var d = 2;
+var e = "3" + b;
+var f = String.fromCharCode (((b).charCodeAt (0) + d));
+System.out.println ("x,x1,x2=" + c + "," + e + "," + f);
+this.checkMap ('K');
 this.b$["org.jsmol.test.JSTest"].sayHello (a);
 }, "~S");
+Clazz.defineMethod (c$, "checkMap", 
+function (a) {
+return "OK-checkMap-" + a;
+}, "~N");
+Clazz.defineMethod (c$, "checkMap", 
+function (a) {
+return "OK-checkMap-" + a;
+}, "~B");
 c$ = Clazz.p0p ();
 };
 c$.pt2 = c$.prototype.pt2 =  new javax.vecmath.Point3f (2, 3, 4);

@@ -62,7 +62,7 @@ org.jmol.util.Logger.warn ("CIF ERROR ? end of file; data missing: " + key);
 this.data.put (key, value);
 }}}
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -70,7 +70,7 @@ throw e;
 try {
 if (this.br != null) this.br.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -87,7 +87,7 @@ if (this.line.startsWith ("#")) this.fileHeader.append (this.line).append ('\n')
  else this.isHeader = false;
 }return this.line;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 return null;
 } else {
 throw e;

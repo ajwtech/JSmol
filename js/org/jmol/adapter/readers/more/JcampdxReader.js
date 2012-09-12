@@ -25,14 +25,14 @@ org.jmol.util.Logger.warn ("REVERSE keyword ignored");
 this.reverseModels = false;
 }this.selectedModel = this.desiredModelNumber;
 this.desiredModelNumber = -2147483648;
-this.peakFilePath = org.jmol.util.Escape.escape (this.filePath);
+this.peakFilePath = org.jmol.util.Escape.escapeStr (this.filePath);
 this.htParams.remove ("modelNumber");
 if (this.htParams.containsKey ("zipSet")) {
 this.peakIndex = this.htParams.get ("peakIndex");
 if (this.peakIndex == null) {
 this.peakIndex =  Clazz.newArray (1, 0);
 this.htParams.put ("peakIndex", this.peakIndex);
-}if (!this.htParams.containsKey ("subFileName")) this.peakFilePath = org.jmol.util.Escape.escape (org.jmol.util.TextFormat.split (this.filePath, '|')[0]);
+}if (!this.htParams.containsKey ("subFileName")) this.peakFilePath = org.jmol.util.Escape.escapeStr (org.jmol.util.TextFormat.split (this.filePath, '|')[0]);
 } else {
 this.peakIndex =  Clazz.newArray (1, 0);
 }if (!this.checkFilter ("NOSYNC")) this.addJmolScript ("sync on");

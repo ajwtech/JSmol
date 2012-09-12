@@ -69,8 +69,9 @@ this.loadShape (32);
 Clazz.defineMethod (c$, "loadShape", 
 function (shapeID) {
 if (this.shapes == null) return null;
-if (this.shapes[shapeID] != null) return this.shapes[shapeID];
-if (shapeID == 2 || shapeID == 3 || shapeID == 4) return null;
+if (this.shapes[shapeID] != null) {
+return this.shapes[shapeID];
+}if (shapeID == 2 || shapeID == 3 || shapeID == 4) return null;
 var className = org.jmol.viewer.JmolConstants.getShapeClassName (shapeID, false);
 try {
 var shapeClass = Class.forName (className);
@@ -80,7 +81,7 @@ shape.initializeShape (this.viewer, this.gdata, this.modelSet, shapeID);
 this.viewer.setShapeErrorState (-1, null);
 return this.shapes[shapeID] = shape;
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Could not instantiate shape:" + className, e);
 return null;
 } else {

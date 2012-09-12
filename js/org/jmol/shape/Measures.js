@@ -379,7 +379,7 @@ for (var i = 1; i <= count; i++) {
 var atomInfo =  new java.util.Hashtable ();
 var atomIndex = m.getAtomIndex (i);
 atomInfo.put ("_ipt", Integer.$valueOf (atomIndex));
-atomInfo.put ("coord", org.jmol.util.Escape.escape (m.getAtom (i)));
+atomInfo.put ("coord", org.jmol.util.Escape.escapePt (m.getAtom (i)));
 atomInfo.put ("atomno", Integer.$valueOf (atomIndex < 0 ? -1 : this.atoms[atomIndex].getAtomNumber ()));
 atomInfo.put ("info", (atomIndex < 0 ? "<point>" : this.atoms[atomIndex].getInfo ()));
 atomsInfo.add (atomInfo);
@@ -423,7 +423,7 @@ if (m.isHidden ()) {
 nHidden++;
 bs.set (i);
 }if (this.bsColixSet != null && this.bsColixSet.get (i)) org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommand ("measure", m.getColix ()));
-if (m.getStrFormat () != null) org.jmol.shape.Shape.setStateInfo (temp, i, "measure " + org.jmol.util.Escape.escape (m.getStrFormat ()));
+if (m.getStrFormat () != null) org.jmol.shape.Shape.setStateInfo (temp, i, "measure " + org.jmol.util.Escape.escapeStr (m.getStrFormat ()));
 }
 if (nHidden > 0) if (nHidden == this.measurementCount) org.jmol.shape.Shape.appendCmd (commands, "measures off; # lines and numbers off");
  else for (var i = 0; i < this.measurementCount; i++) if (bs.get (i)) org.jmol.shape.Shape.setStateInfo (temp, i, "measure off");

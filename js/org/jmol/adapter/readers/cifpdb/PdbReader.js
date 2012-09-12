@@ -355,7 +355,7 @@ m4.set (mat);
 if (m4.equals (mIdent)) biomts.add (0, m4);
  else biomts.add (m4);
 continue ;}} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 this.vBiomts = null;
 this.vBiomolecules = null;
 return ;
@@ -814,7 +814,7 @@ org.jmol.util.Logger.info (nGroups + " TLS groups read");
 this.readLine ();
 break;
 }}} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (this.line + "\nError in TLS parser: ");
 e.printStackTrace ();
 tlsGroups = null;

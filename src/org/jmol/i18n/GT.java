@@ -37,9 +37,6 @@ public class GT {
   public GT(String la) {
   }
   
-  private GT() {
-  }
-  
   public static String getLanguage() {
   	return "en_US";
   }
@@ -58,48 +55,42 @@ public class GT {
   	return string;
   }
 
-  private static GT getTextWrapper;
-
-  private static GT getTextWrapper() {
-    return (getTextWrapper == null ? getTextWrapper = new GT() : getTextWrapper);
-  }
-
   public static String _(String string, String item) {
-    return getTextWrapper().getString(string, new Object[] { item });
+    return getString(string, new Object[] { item });
   }
 
   public static String _(String string, int item) {
-    return getTextWrapper().getString(string,
+    return getString(string,
         new Object[] { Integer.valueOf(item) });
   }
 
   public static String _(String string, Object[] objects) {
-    return getTextWrapper().getString(string, objects);
+    return getString(string, objects);
   }
 
   //forced translations
   
   public static String _(String string, boolean t) {
-    return _(string, (Object[]) null, t);
+    return string;
   }
 
   public static String _(String string,
                          String item, boolean t) {
-    return _(string, new Object[] { item });
+    return getString(string, new Object[] { item });
   }
 
   public static String _(String string,
                          int item, boolean t) {
-    return _(string, new Object[] { Integer.valueOf(item) });
+    return getString(string, new Object[] { Integer.valueOf(item) });
   }
 
   public static synchronized String _(String string,
                                       Object[] objects, boolean t) {
-    String str = (objects == null ? _(string) : _(string, objects));
-    return str;
+    return (objects == null ? string : getString(string, objects));
   }
 
-  private String getString(String string, Object[] objects) {
+  private static String getString(String string, Object[] objects) {
+  	System.out.println("TESTING GT "  + string);
       return MessageFormat.format(string, objects);
   }
 

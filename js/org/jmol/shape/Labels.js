@@ -363,7 +363,7 @@ var temp =  new java.util.Hashtable ();
 var temp2 =  new java.util.Hashtable ();
 var temp3 =  new java.util.Hashtable ();
 for (var i = this.bsSizeSet.nextSetBit (0); i >= 0; i = this.bsSizeSet.nextSetBit (i + 1)) {
-org.jmol.shape.Shape.setStateInfo (temp, i, "label " + org.jmol.util.Escape.escape (this.formats[i]));
+org.jmol.shape.Shape.setStateInfo (temp, i, "label " + org.jmol.util.Escape.escapeStr (this.formats[i]));
 if (this.bsColixSet != null && this.bsColixSet.get (i)) org.jmol.shape.Shape.setStateInfo (temp2, i, this.getColorCommand ("label", this.paletteIDs[i], this.colixes[i]));
 if (this.bsBgColixSet != null && this.bsBgColixSet.get (i)) org.jmol.shape.Shape.setStateInfo (temp2, i, "background label " + org.jmol.shape.Shape.encodeColor (this.bgcolixes[i]));
 var text = this.getLabel (i);

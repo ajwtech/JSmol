@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2012-08-25 03:49:00 -0500 (Sat, 25 Aug 2012) $
- * $Revision: 17472 $
+ * $Author: hansonr $
+ * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
+ * $Revision: 17556 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -842,7 +842,7 @@ public class AtomSetCollection {
   public Point3f ptSupercell;
   public void setSupercell(Point3f pt) {
     ptSupercell = pt;
-    Logger.info("Using supercell " + Escape.escape(pt));
+    Logger.info("Using supercell " + Escape.escapePt(pt));
   }
   
   public float[] fmatSupercell;

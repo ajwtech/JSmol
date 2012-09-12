@@ -40,12 +40,12 @@ sb.append (";\n");
 }, $fz.isPrivate = true, $fz), "StringBuffer,~N");
 c$.addTickInfo = Clazz.defineMethod (c$, "addTickInfo", 
 function (sb, tickInfo, addFirst) {
-sb.append (" ticks ").append (tickInfo.type).append (" ").append (org.jmol.util.Escape.escape (tickInfo.ticks));
+sb.append (" ticks ").append (tickInfo.type).append (" ").append (org.jmol.util.Escape.escapePt (tickInfo.ticks));
 var isUnitCell = (tickInfo.scale != null && Float.isNaN (tickInfo.scale.x));
 if (isUnitCell) sb.append (" UNITCELL");
-if (tickInfo.tickLabelFormats != null) sb.append (" format ").append (org.jmol.util.Escape.escape (tickInfo.tickLabelFormats, false));
-if (!isUnitCell && tickInfo.scale != null) sb.append (" scale ").append (org.jmol.util.Escape.escape (tickInfo.scale));
+if (tickInfo.tickLabelFormats != null) sb.append (" format ").append (org.jmol.util.Escape.escapeStrA (tickInfo.tickLabelFormats, false));
+if (!isUnitCell && tickInfo.scale != null) sb.append (" scale ").append (org.jmol.util.Escape.escapePt (tickInfo.scale));
 if (addFirst && !Float.isNaN (tickInfo.first) && tickInfo.first != 0) sb.append (" first ").append (tickInfo.first);
-if (tickInfo.reference != null) sb.append (" point ").append (org.jmol.util.Escape.escape (tickInfo.reference));
+if (tickInfo.reference != null) sb.append (" point ").append (org.jmol.util.Escape.escapePt (tickInfo.reference));
 }, "StringBuffer,org.jmol.modelset.TickInfo,~B");
 });

@@ -365,7 +365,7 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("measure created
 }return ;
 }if (!m.addPoint (currentAtom.index)) break;
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 break;
 } else {
 throw e;
@@ -670,7 +670,7 @@ if (pt > index) {
 try {
 order = Integer.parseInt (pattern.substring (index, pt));
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 order = -1;
 } else {
 throw e;
@@ -821,7 +821,7 @@ while (pt < len && Character.isDigit (pattern.charAt (pt))) pt++;
 try {
 ret[0] = Integer.parseInt (pattern.substring (index, pt));
 } catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
 ret[0] = -2147483648;
 } else {
 throw e;

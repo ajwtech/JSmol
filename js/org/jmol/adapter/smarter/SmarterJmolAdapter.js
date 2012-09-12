@@ -23,7 +23,7 @@ if (Clazz.instanceOf (ret, String)) {
 try {
 bufferedReader.close ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -35,7 +35,7 @@ throw e;
 try {
 bufferedReader.close ();
 } catch (ex) {
-if (Clazz.instanceOf (ex, Exception)) {
+if (Clazz.exceptionOf (ex, Exception)) {
 } else {
 throw ex;
 }
@@ -63,7 +63,7 @@ return atomSetCollection;
 try {
 br.close ();
 } catch (ex) {
-if (Clazz.instanceOf (ex, Exception)) {
+if (Clazz.exceptionOf (ex, Exception)) {
 } else {
 throw ex;
 }
@@ -126,7 +126,7 @@ result = asc[0];
 try {
 result.finalizeTrajectory (htParams.get ("trajectorySteps"), htParams.get ("vibrationSteps"));
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 if (result.errorMessage == null) result.errorMessage = e.getMessage ();
 } else {
 throw e;
@@ -255,14 +255,14 @@ return result.errorMessage;
 if (selectedFile > 0 && selectedFile <= vCollections.size ()) return vCollections.get (selectedFile - 1);
 return result;
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, Exception)) {
+if (Clazz.exceptionOf (e$$, Exception)) {
 var e = e$$;
 {
 if (ignoreErrors) return null;
 org.jmol.util.Logger.error (null, e);
 return "" + e;
 }
-} else if (Clazz.instanceOf (e$$, Error)) {
+} else if (Clazz.exceptionOf (e$$, Error)) {
 var er = e$$;
 {
 org.jmol.util.Logger.error (null, er);

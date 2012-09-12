@@ -269,7 +269,7 @@ this.current.time = -1;
 this.hoverWatcherThread.interrupt ();
 this.hoverWatcherThread = null;
 }} catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -479,7 +479,7 @@ this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"X\"");
 } else {
 var ptNew =  new javax.vecmath.Point3f (x, y, a.screenZ);
 this.viewer.unTransformPoint (ptNew, ptNew);
-this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"" + this.pickAtomAssignType + "\" " + org.jmol.util.Escape.escape (ptNew));
+this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"" + this.pickAtomAssignType + "\" " + org.jmol.util.Escape.escapePt (ptNew));
 }}}this.exitMeasurementMode ();
 return ;
 }this.dragAtomIndex = -1;
@@ -699,14 +699,14 @@ var nearestPoint = null;
 if (script.indexOf ("_ATOM") >= 0) {
 var iatom = this.findNearestAtom (x, y, null, true);
 script = org.jmol.util.TextFormat.simpleReplace (script, "_ATOM", "({" + (iatom >= 0 ? "" + iatom : "") + "})");
-if (iatom >= 0) script = org.jmol.util.TextFormat.simpleReplace (script, "_POINT", org.jmol.util.Escape.escape (this.viewer.getModelSet ().atoms[iatom]));
+if (iatom >= 0) script = org.jmol.util.TextFormat.simpleReplace (script, "_POINT", org.jmol.util.Escape.escapePt (this.viewer.getModelSet ().atoms[iatom]));
 }if (!this.drawMode && (script.indexOf ("_POINT") >= 0 || script.indexOf ("_OBJECT") >= 0 || script.indexOf ("_BOND") >= 0)) {
 var t = this.viewer.checkObjectClicked (x, y, action);
 if (t != null && (nearestPoint = t.get ("pt")) != null) {
 var isBond = t.get ("type").equals ("bond");
 if (isBond) script = org.jmol.util.TextFormat.simpleReplace (script, "_BOND", "[{" + t.get ("index") + "}]");
-script = org.jmol.util.TextFormat.simpleReplace (script, "_POINT", org.jmol.util.Escape.escape (nearestPoint));
-script = org.jmol.util.TextFormat.simpleReplace (script, "_OBJECT", org.jmol.util.Escape.escape (t));
+script = org.jmol.util.TextFormat.simpleReplace (script, "_POINT", org.jmol.util.Escape.escapePt (nearestPoint));
+script = org.jmol.util.TextFormat.simpleReplace (script, "_OBJECT", org.jmol.util.Escape.escapeMap (t));
 }script = org.jmol.util.TextFormat.simpleReplace (script, "_BOND", "[{}]");
 script = org.jmol.util.TextFormat.simpleReplace (script, "_OBJECT", "{}");
 }script = org.jmol.util.TextFormat.simpleReplace (script, "_POINT", "{}");
@@ -880,7 +880,7 @@ function () {
 try {
 this.viewer.hoverOff ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1042,7 +1042,7 @@ if (ptClicked == null) {
 this.viewer.script ("zoomTo (atomindex=" + atomIndex + ")");
 this.viewer.setStatusAtomPicked (atomIndex, null);
 } else {
-this.viewer.script ("zoomTo " + org.jmol.util.Escape.escape (ptClicked));
+this.viewer.script ("zoomTo " + org.jmol.util.Escape.escapePt (ptClicked));
 }return ;
 case 5:
 case 6:
@@ -1192,7 +1192,7 @@ try {
 if (this.eval == null) this.eval =  new org.jmol.script.ScriptEvaluator (this.viewer);
 return this.viewer.getAtomBitSet (this.eval, script);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
@@ -1259,12 +1259,12 @@ if (d >= 0) {
 this.b$["org.jmol.viewer.ActionManager"].hoverOn (d);
 }}}}}
 } catch (e$$) {
-if (Clazz.instanceOf (e$$, InterruptedException)) {
+if (Clazz.exceptionOf (e$$, InterruptedException)) {
 var ie = e$$;
 {
 org.jmol.util.Logger.debug ("Hover interrupted");
 }
-} else if (Clazz.instanceOf (e$$, Exception)) {
+} else if (Clazz.exceptionOf (e$$, Exception)) {
 var ie = e$$;
 {
 org.jmol.util.Logger.debug ("Hover Exception: " + ie);

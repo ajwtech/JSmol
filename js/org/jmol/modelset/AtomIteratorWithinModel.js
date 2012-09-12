@@ -48,7 +48,7 @@ if (this.isVdw) {
 this.radiusData = rd;
 this.atoms = modelSet.atoms;
 this.viewer = modelSet.viewer;
-distance = (rd.factorType === org.jmol.atomdata.RadiusData.RadiusData.EnumType.OFFSET ? 5 + rd.value : 5 * rd.value);
+distance = (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.OFFSET ? 5 + rd.value : 5 * rd.value);
 this.vdw1 = this.atoms[atomIndex].getVanderwaalsRadiusFloat (this.viewer, rd.vdwType);
 }this.checkGreater = (this.isGreaterOnly && atomIndex != 2147483647);
 this.set (center, distance);

@@ -103,7 +103,7 @@ if (len > 0) end = ".\n";
 }i = i2 - 1;
 }
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 return "";
 } else {

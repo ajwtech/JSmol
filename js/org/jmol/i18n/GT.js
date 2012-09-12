@@ -4,9 +4,6 @@ c$ = Clazz.declareType (org.jmol.i18n, "GT");
 Clazz.makeConstructor (c$, 
 function (la) {
 }, "~S");
-Clazz.makeConstructor (c$, 
-($fz = function () {
-}, $fz.isPrivate = true, $fz));
 c$.getLanguage = Clazz.defineMethod (c$, "getLanguage", 
 function () {
 return "en_US";
@@ -25,43 +22,37 @@ c$._ = Clazz.defineMethod (c$, "_",
 function (string) {
 return string;
 }, "~S");
-c$.getTextWrapper = Clazz.defineMethod (c$, "getTextWrapper", 
-($fz = function () {
-return (org.jmol.i18n.GT.$getTextWrapper == null ? ($t$ = org.jmol.i18n.GT.$getTextWrapper =  new org.jmol.i18n.GT (), org.jmol.i18n.GT.prototype.$getTextWrapper = org.jmol.i18n.GT.$getTextWrapper, $t$) : org.jmol.i18n.GT.$getTextWrapper);
-}, $fz.isPrivate = true, $fz));
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, item) {
-return org.jmol.i18n.GT.getTextWrapper ().getString (string, [item]);
+return org.jmol.i18n.GT.getString (string, [item]);
 }, "~S,~S");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, item) {
-return org.jmol.i18n.GT.getTextWrapper ().getString (string, [Integer.$valueOf (item)]);
+return org.jmol.i18n.GT.getString (string, [Integer.$valueOf (item)]);
 }, "~S,~N");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, objects) {
-return org.jmol.i18n.GT.getTextWrapper ().getString (string, objects);
+return org.jmol.i18n.GT.getString (string, objects);
 }, "~S,~A");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, t) {
-return org.jmol.i18n.GT._ (string, Clazz.castNullAs ("Array"), t);
+return string;
 }, "~S,~B");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, item, t) {
-return org.jmol.i18n.GT._ (string, [item]);
+return org.jmol.i18n.GT.getString (string, [item]);
 }, "~S,~S,~B");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, item, t) {
-return org.jmol.i18n.GT._ (string, [Integer.$valueOf (item)]);
+return org.jmol.i18n.GT.getString (string, [Integer.$valueOf (item)]);
 }, "~S,~N,~B");
 c$._ = Clazz.defineMethod (c$, "_", 
 function (string, objects, t) {
-var str = (objects == null ? org.jmol.i18n.GT._ (string) : org.jmol.i18n.GT._ (string, objects));
-return str;
+return (objects == null ? string : org.jmol.i18n.GT.getString (string, objects));
 }, "~S,~A,~B");
-Clazz.defineMethod (c$, "getString", 
+c$.getString = Clazz.defineMethod (c$, "getString", 
 ($fz = function (string, objects) {
+System.out.println ("TESTING GT " + string);
 return java.text.MessageFormat.format (string, objects);
 }, $fz.isPrivate = true, $fz), "~S,~A");
-Clazz.defineStatics (c$,
-"$getTextWrapper", null);
 });

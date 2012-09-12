@@ -22,7 +22,7 @@ if (!this.parent.doGetVibration (++this.vibrationNumber)) return ;
 try {
 this.atomSetCollection.cloneLastAtomSet ();
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
 this.atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e.getMessage ();
 this.vibrationNumber = 0;

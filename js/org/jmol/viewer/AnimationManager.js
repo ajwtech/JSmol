@@ -349,12 +349,12 @@ c = b - (System.currentTimeMillis () - a);
 if (c > 0) Thread.sleep (c);
 }
 } catch (ie) {
-if (Clazz.instanceOf (ie, InterruptedException)) {
+if (Clazz.exceptionOf (ie, InterruptedException)) {
 org.jmol.util.Logger.debug ("animation thread interrupted!");
 try {
 this.b$["org.jmol.viewer.AnimationManager"].setAnimationOn (false);
 } catch (e) {
-if (Clazz.instanceOf (e, Exception)) {
+if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
