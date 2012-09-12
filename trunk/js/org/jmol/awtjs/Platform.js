@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["org.jmol.api.ApiPlatform"], "org.jmol.awtjs.Platform", ["java.net.URL", "org.jmol.api.Interface", "org.jmol.awtjs.AjaxURLStreamHandlerFactory", "$.Display", "$.FileAdapter", "$.Font", "$.Image", "$.JmolFile", "$.Mouse"], function () {
+Clazz.load (["org.jmol.api.ApiPlatform"], "org.jmol.awtjs.Platform", ["java.net.URL", "org.jmol.api.Interface", "org.jmol.awtjs.AjaxURLStreamHandlerFactory", "$.Display", "$.Font", "$.Image", "$.JmolFile", "$.JmolFileAdapter", "$.Mouse"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileAdapter = null;
 Clazz.instantialize (this, arguments);
@@ -156,7 +156,7 @@ return true;
 });
 Clazz.overrideMethod (c$, "getFileAdapter", 
 function () {
-return (this.fileAdapter == null ? this.fileAdapter =  new org.jmol.awtjs.FileAdapter () : this.fileAdapter);
+return (this.fileAdapter == null ? this.fileAdapter =  new org.jmol.awtjs.JmolFileAdapter () : this.fileAdapter);
 });
 Clazz.overrideMethod (c$, "newFile", 
 function (name) {

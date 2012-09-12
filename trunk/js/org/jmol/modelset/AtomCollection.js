@@ -1371,7 +1371,6 @@ if (i == 0 && itype == _120) n120_atom0++;
 }
 
 n = ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180];
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("lcaoCartoon type is " + n);
 if (z == null) {
 switch (n) {
 default:

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["java.net.URLStreamHandler"], "org.jmol.awtjs.AjaxURLStreamHandler", null, function () {
+Clazz.load (["java.net.URLStreamHandler"], "org.jmol.awtjs.AjaxURLStreamHandler", ["org.jmol.awtjs.JmolURLConnection"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.protocol = null;
 Clazz.instantialize (this, arguments);
@@ -11,6 +11,6 @@ this.protocol = protocol;
 }, "~S");
 Clazz.defineMethod (c$, "openConnection", 
 function (url) {
-return null;
+return  new org.jmol.awtjs.JmolURLConnection (url);
 }, "java.net.URL");
 });

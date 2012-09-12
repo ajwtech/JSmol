@@ -5,7 +5,7 @@ import java.net.URL;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
@@ -203,10 +203,10 @@ public class Platform implements ApiPlatform {
 		return true;
 	}
 
-  private FileAdapter fileAdapter;
+  private JmolFileAdapter fileAdapter;
 
-  public FileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null  ? fileAdapter = new FileAdapter() : fileAdapter);
+  public JmolFileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
   }
 
 	@Override
