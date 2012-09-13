@@ -90,7 +90,7 @@ public class GT {
   }
 
   private static String getString(String string, Object[] objects) {
-  	System.out.println("TESTING GT "  + string);
+  	//System.out.println("TESTING GT "  + string);
       return MessageFormat.format(string, objects);
   }
 
