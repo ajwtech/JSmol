@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -90,8 +90,8 @@ function loadJ2SLibZJS (path, cb) {
 	}
 	document.getElementsByTagName ("HEAD")[0].appendChild (sxr);
 };
-if (navigator.userAgent.toLowerCase ().indexOf ("gecko") != -1) {
-	loadJ2SLibZJS("chrome://java2script/content/j2slib.js");
+if (false && navigator.userAgent.toLowerCase ().indexOf ("gecko") != -1) {
+	//loadJ2SLibZJS("chrome://java2script/content/j2slib.js");
 	window.setTimeout (function () {
 		if (window["j2s.addon.loaded"]) return; // Loaded by Firefox addon!
 		var o = window["j2s.lib"];
