@@ -28,8 +28,8 @@ public class Platform implements ApiPlatform {
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
-		} catch (Exception e) {
-		  // maybe is already created	
+		} catch (Throwable e) {
+		  // that's fine -- already created	
 		}
 	}
 
