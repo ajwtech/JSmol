@@ -1,0 +1,26 @@
+<project name="JSmol" default="fromJmol" basedir=".">
+ 
+  <target name="fromJmol" id="fromJmol">
+    <copy todir="src/org/jmol" >
+      <fileset dir="../Jmol/src/org/jmol">
+        <include name="**/*.java" />
+        <exclude name="**/applet/*"/>
+        <exclude name="**/awt/*"/>
+        <exclude name="**/console/*"/>
+      	<exclude name="**/export/**/*"/>
+      	<exclude name="**/g3d/*"/>
+      	<exclude name="**/i18n/*"/>
+      	<exclude name="**/minimize/**/*"/>
+      	<exclude name="**/modelkit/*"/>
+        <exclude name="**/multitouch/**/*"/>
+        <exclude name="**/quantum/*"/>
+        <exclude name="**/popup/*"/>
+      	<exclude name="**/render/*"/>
+      	<exclude name="**/renderbio/*"/>
+	  	<exclude name="**/renderspecial/*"/>
+  		<exclude name="**/rendersurface/*"/>
+      </fileset>
+    </copy>
+  </target>
+	
+</project>

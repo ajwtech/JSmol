@@ -1,0 +1,22 @@
+<project name="JSmol" default="toJs" basedir=".">
+ 
+  <target name="toJs" id="toJs">
+  	<delete dir="js/java/**/*.js" />
+  	<delete dir="js/javax/**/*.js" />
+  	<delete dir="js/org/**/*.js" />
+    <copy todir="js" >
+      <fileset dir="bin">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+  	<delete dir="jslocal/java/**/*.js" />
+  	<delete dir="jslocal/javax/**/*.js" />
+  	<delete dir="jslocal/org/**/*.js" />
+    <copy todir="jslocal" >
+      <fileset dir="bin">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+  </target>
+  	
+</project>
