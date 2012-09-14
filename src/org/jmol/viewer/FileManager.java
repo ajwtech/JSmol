@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-12 13:11:19 -0500 (Wed, 12 Sep 2012) $
- * $Revision: 17558 $
+ * $Date: 2012-09-13 22:02:37 -0500 (Thu, 13 Sep 2012) $
+ * $Revision: 17562 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -617,7 +617,7 @@ public class FileManager {
         : new BufferedInputStream(new ByteArrayInputStream(bytes)));
     if (t instanceof String)
       return t;
-    if (t instanceof StringBuffer) // from JavaScript org.jmol.awtjs.JmolURLConnection.getStringBuffer()
+    if (t instanceof StringBuffer) // JavaScript from org.jmol.awtjs.JmolURLConnection.doAjax(URL)
       return getBufferedReaderForString(((StringBuffer) t).toString());
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
