@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2012-09-12 06:45:51 -0500 (Wed, 12 Sep 2012) $
- * $Revision: 17557 $
+ * $Date: 2012-09-13 07:02:41 -0500 (Thu, 13 Sep 2012) $
+ * $Revision: 17559 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -2078,7 +2078,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return ch == ' ' || ch == '\t';
   }
 
-  boolean eol(String ch) {
+  @SuppressWarnings("unused")
+  private boolean eol(String ch) {
     // for JavaScript
     return eol2(ch.charAt(0));  
   }

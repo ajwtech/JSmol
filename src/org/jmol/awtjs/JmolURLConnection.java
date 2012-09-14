@@ -1,6 +1,5 @@
 package org.jmol.awtjs;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -17,7 +16,6 @@ public class JmolURLConnection extends URLConnection {
 		super(url);
 	}
 
-	Object dataIn = "";
 	byte[] bytesOut;
 	String postOut = "";
 
@@ -54,13 +52,8 @@ public class JmolURLConnection extends URLConnection {
   	//     type = "application/x-www-form-urlencoded";
   }
 
-	@Override
-	public InputStream getInputStream() throws IOException {
-		dataIn = doAjax();
-		return new ByteArrayInputStream(
-				dataIn instanceof String ? ((String) dataIn).getBytes()
-				: dataIn instanceof byte[] ? (byte[]) dataIn 
-				: null);
+	public Object getStringBuffer() {
+		return doAjax();
 	}
 
 }
