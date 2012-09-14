@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-13 11:14:50 -0500 (Thu, 13 Sep 2012) $
+ * $Revision: 17560 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -224,10 +224,6 @@ public class Colix {
     argbsGreyscale = a;
   }
 
-  public final static int getArgb1(short colix) {
-    return argbs[colix & OPAQUE_MASK];
-  }
-
   public final static int getArgbGreyscale(short colix) {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
@@ -373,7 +369,7 @@ public class Colix {
   }
 
   public static int getArgb(short colix) {
-    return getArgb1(colix);
+    return argbs[colix & OPAQUE_MASK];
   }
 
   public final static boolean isColixColorInherited(short colix) {

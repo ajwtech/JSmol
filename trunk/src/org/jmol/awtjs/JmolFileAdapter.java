@@ -29,7 +29,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 				else
 					conn.outputBytes(outputBytes);
 			}
-			return new BufferedInputStream(conn.getInputStream());
+			return conn.getStringBuffer();
 		} catch (IOException e) {
 			return e.getMessage();
 		}
