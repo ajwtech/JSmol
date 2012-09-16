@@ -58,13 +58,7 @@ public class JSmol {
 	}
 
 	void sayHello(String s) {
-		/**
-		 * @j2sNative alert("Hello, JavaScript -- " + s);
-		 */
-		{
 			System.out.println("Hello Java -- " + s);
-		}
-
 	}
 
 }

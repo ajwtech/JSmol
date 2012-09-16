@@ -70,15 +70,29 @@ public class JSTest extends JSmol {
 			String x1 = "3" + a;
 			char x2 = (char) (a + y);
       System.out.println("x,x1,x2=" + x + "," + x1 + "," + x2);			
-			checkMap('K');
+			sayHello(checkMap('K'));
+			sayHello(myTest("test"));
+			sayHello(checkMap((String) getObj("string")));
+			sayHello(checkMap((Boolean) getObj("boolean")));
+//			sayHello(checkMap(true));
 			sayHello(msg);
 		}
-		
+		String myTest(String s) { 
+			return s; 
+		}
 		String checkMap(char c) {
-			return "OK-checkMap-" + c;
+			return "OK-checkMapchar-" + c;
+		}
+		String checkMap(String s) {
+			return "OK-checkMapchar-" + s;
 		}
 		String checkMap(boolean b) {
-			return "OK-checkMap-" + b;
+			return "OK-checkMapbool-" + b;
+		}
+		Object getObj(String type) {
+			if (type.equalsIgnoreCase("string"))
+				return "testing";
+			return Boolean.TRUE;
 		}
 	}
 
