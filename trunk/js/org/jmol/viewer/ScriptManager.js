@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Boolean", "$.Thread", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Thread", "org.jmol.util.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.queueThreads = null;
@@ -43,7 +43,7 @@ this.clearQueue ();
 this.viewer.haltScriptExecution ();
 }if (this.commandWatcherThread == null && this.useCommandWatcherThread) this.startCommandWatcher (true);
 if (this.commandWatcherThread != null && strScript.indexOf ("/*SPLIT*/") >= 0) {
-var scripts = org.jmol.util.TextFormat.split (strScript, "/*SPLIT*/");
+var scripts = org.jmol.util.TextFormat.splitChars (strScript, "/*SPLIT*/");
 for (var i = 0; i < scripts.length; i++) this.addScript (returnType, scripts[i], statusList, isScriptFile, isQuiet);
 
 return "split into " + scripts.length + " sections for processing";
@@ -52,8 +52,8 @@ var scriptItem =  new java.util.ArrayList ();
 scriptItem.add (strScript);
 scriptItem.add (statusList);
 scriptItem.add (returnType);
-scriptItem.add (isScriptFile ? Boolean.TRUE : Boolean.FALSE);
-scriptItem.add (isQuiet ? Boolean.TRUE : Boolean.FALSE);
+scriptItem.add (isScriptFile ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+scriptItem.add (isQuiet ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
 scriptItem.add (Integer.$valueOf (useCommandThread ? -1 : 1));
 this.scriptQueue.add (scriptItem);
 this.startScriptQueue (false);

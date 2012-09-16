@@ -814,13 +814,13 @@ case 2:
 this.getToken ();
 var val = this.theToken.intValue;
 if (val < 0 || val > 9) return this.error (8);
-chain = String.fromCharCode ((('0').charCodeAt (0) + val));
+chain = String.fromCharCode ((48 + val));
 break;
 default:
 var strChain = "" + this.getToken ().value;
 if (strChain.length != 1) return this.error (8);
 chain = strChain.charAt (0);
-if ((chain).charCodeAt (0) == ('?').charCodeAt (0)) return true;
+if (chain.charCodeAt (0) == 63) return true;
 break;
 }
 return this.generateResidueSpecCode ( new org.jmol.script.Token (1048609, chain.charCodeAt (0), "spec_chain"));

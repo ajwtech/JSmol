@@ -125,7 +125,7 @@ return this.viewer.getModelAdapter ().getFileTypeName (org.jmol.viewer.FileManag
 return (br)[0];
 }return null;
 }, "~S");
-c$.getInputStreamForStringBuffer = Clazz.defineMethod (c$, "getInputStreamForStringBuffer", 
+c$.getBISForStringBuffer = Clazz.defineMethod (c$, "getBISForStringBuffer", 
 function (t) {
 return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream ((t).toString ().getBytes ()));
 }, "~O");
@@ -136,7 +136,7 @@ return  new java.io.BufferedReader ( new java.io.StringReader (string));
 Clazz.defineMethod (c$, "getZipDirectoryAsString", 
 ($fz = function (fileName) {
 var t = this.getBufferedInputStreamOrErrorMessageFromName (fileName, fileName, false, false, null);
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getInputStreamForStringBuffer (t);
+if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
 return org.jmol.util.ZipUtil.getZipDirectoryAsStringAndClose (t);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "createAtomSetCollectionFromFile", 
@@ -403,12 +403,12 @@ return org.jmol.viewer.FileManager.getBufferedReaderForString (s);
 }}if (bytes == null) bytes = this.getCachedPngjBytes (name);
 var fullName = name;
 if (name.indexOf ("|") >= 0) {
-subFileList = org.jmol.util.TextFormat.split (name, "|");
+subFileList = org.jmol.util.TextFormat.splitChars (name, "|");
 if (bytes == null) org.jmol.util.Logger.info ("FileManager opening " + name);
 name = subFileList[0];
 }var t = (bytes == null ? this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, true, false, null) :  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (bytes)));
 if (Clazz.instanceOf (t, String)) return t;
-if (Clazz.instanceOf (t, StringBuffer)) return org.jmol.viewer.FileManager.getInputStreamForStringBuffer (t);
+if (Clazz.instanceOf (t, StringBuffer)) return org.jmol.viewer.FileManager.getBufferedReaderForString ((t).toString ());
 try {
 var bis = t;
 if (org.jmol.util.ZipUtil.isGzip (bis)) {
@@ -439,7 +439,7 @@ throw ioe;
 Clazz.defineMethod (c$, "getZipDirectory", 
 function (fileName, addManifest) {
 var t = this.getBufferedInputStreamOrErrorMessageFromName (fileName, fileName, false, false, null);
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getInputStreamForStringBuffer (t);
+if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
 return org.jmol.util.ZipUtil.getZipDirectoryAndClose (t, addManifest);
 }, "~S,~B");
 Clazz.defineMethod (c$, "getObjectAsSections", 
@@ -458,7 +458,7 @@ fileData.put (name0, name0 + "\n");
 return name0;
 }var fullName = name;
 if (name.indexOf ("|") >= 0) {
-subFileList = org.jmol.util.TextFormat.split (name, "|");
+subFileList = org.jmol.util.TextFormat.splitChars (name, "|");
 name = subFileList[0];
 }var bis = null;
 try {
@@ -466,7 +466,7 @@ var t = this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, false
 if (Clazz.instanceOf (t, String)) {
 fileData.put (name0, t + "\n");
 return name0;
-}if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getInputStreamForStringBuffer (t);
+}if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
 bis = t;
 if (org.jmol.util.CompoundDocument.isCompoundDocument (bis)) {
 var doc =  new org.jmol.util.CompoundDocument (bis);
@@ -526,12 +526,12 @@ if (name == null) return null;
 var fullName = name;
 var subFileList = null;
 if (name.indexOf ("|") >= 0) {
-subFileList = org.jmol.util.TextFormat.split (name, "|");
+subFileList = org.jmol.util.TextFormat.splitChars (name, "|");
 name = subFileList[0];
 allowZip = true;
 }var t = this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, false, false, null);
 if (Clazz.instanceOf (t, String)) return "Error:" + t;
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getInputStreamForStringBuffer (t);
+if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
 try {
 var bis = t;
 var bytes = (os != null || subFileList == null || subFileList.length <= 1 || !allowZip || !org.jmol.util.ZipUtil.isZipFile (bis) && !org.jmol.util.ZipUtil.isPngZipStream (bis) ? org.jmol.viewer.FileManager.getStreamAsBytes (bis, os) : org.jmol.util.ZipUtil.getZipFileContentsAsBytes (bis, subFileList, 1));
@@ -760,8 +760,8 @@ c$.addDirectory = Clazz.defineMethod (c$, "addDirectory",
 if (defaultDirectory.length == 0) return name;
 var ch = (name.length > 0 ? name.charAt (0) : ' ');
 var s = defaultDirectory.toLowerCase ();
-if ((s.endsWith (".zip") || s.endsWith (".tar")) && (ch).charCodeAt (0) != ('|').charCodeAt (0) && (ch).charCodeAt (0) != ('/').charCodeAt (0)) defaultDirectory += "|";
-return defaultDirectory + ((ch).charCodeAt (0) == ('/').charCodeAt (0) || (ch).charCodeAt (0) == ('/').charCodeAt (0) || ((ch = defaultDirectory.charAt (defaultDirectory.length - 1))).charCodeAt (0) == ('|').charCodeAt (0) || (ch).charCodeAt (0) == ('/').charCodeAt (0) ? "" : "/") + name;
+if ((s.endsWith (".zip") || s.endsWith (".tar")) && ch.charCodeAt (0) != 124 && ch.charCodeAt (0) != 47) defaultDirectory += "|";
+return defaultDirectory + (ch.charCodeAt (0) == 47 || ch.charCodeAt (0) == 47 || ((ch = defaultDirectory.charAt (defaultDirectory.length - 1))).charCodeAt (0) == 124 || ch.charCodeAt (0) == 47 ? "" : "/") + name;
 }, $fz.isPrivate = true, $fz), "~S,~S");
 Clazz.defineMethod (c$, "getDefaultDirectory", 
 function (name) {
@@ -874,8 +874,8 @@ for (var ipt = 0; ipt < org.jmol.viewer.FileManager.scriptFilePrefixes.length; i
 var tag = org.jmol.viewer.FileManager.scriptFilePrefixes[ipt];
 var i = -1;
 while ((i = script.indexOf (tag, i + 1)) >= 0) {
-var s = org.jmol.util.Parser.getNextQuotedString (script, i);
-if (s.indexOf ("::") >= 0) s = org.jmol.util.TextFormat.split (s, "::")[1];
+var s = org.jmol.util.Parser.getQuotedStringAt (script, i);
+if (s.indexOf ("::") >= 0) s = org.jmol.util.TextFormat.splitChars (s, "::")[1];
 fileList.add (s);
 }
 }
@@ -995,7 +995,7 @@ var fname = fileNamesAndByteArrays.get (i);
 var bytes = null;
 if (fname.indexOf ("file:/") == 0) {
 fname = fname.substring (5);
-if (fname.length > 2 && (fname.charAt (2)).charCodeAt (0) == (':').charCodeAt (0)) fname = fname.substring (1);
+if (fname.length > 2 && (fname.charAt (2)).charCodeAt (0) == 58) fname = fname.substring (1);
 } else if (fname.indexOf ("cache://") == 0) {
 var data = this.cacheGet (fname, false);
 fname = fname.substring (8);
@@ -1052,7 +1052,7 @@ Clazz.defineMethod (c$, "postByteArray",
 ($fz = function (outFileName, bytes) {
 var ret = this.getBufferedInputStreamOrErrorMessageFromName (outFileName, null, false, false, bytes);
 if (Clazz.instanceOf (ret, String)) return ret;
-if (Clazz.instanceOf (ret, StringBuffer)) ret = org.jmol.viewer.FileManager.getInputStreamForStringBuffer (ret);
+if (Clazz.instanceOf (ret, StringBuffer)) ret = org.jmol.viewer.FileManager.getBISForStringBuffer (ret);
 try {
 ret = org.jmol.viewer.FileManager.getStreamAsBytes (ret, null);
 } catch (e) {
@@ -1163,7 +1163,7 @@ var sceneScript =  new StringBuffer ("###scene.spt###" + " Jmol " + org.jmol.api
 for (var i = 1; i < scenes.length; i++) {
 scenes[i - 1] = org.jmol.util.TextFormat.trim (scenes[i - 1], "\t\n\r ");
 var pt =  Clazz.newArray (1, 0);
-iScene = org.jmol.util.Parser.parseInt (scenes[i], pt);
+iScene = org.jmol.util.Parser.parseIntNext (scenes[i], pt);
 if (iScene == -2147483648) return "bad scene ID: " + iScene;
 scenes[i] = scenes[i].substring (pt[0]);
 list.add (Integer.$valueOf (iScene));
@@ -1287,7 +1287,7 @@ this.reader = b;
 var c = this.fullPathNameIn;
 var d = null;
 if (c.indexOf ("|") >= 0 && !c.endsWith (".zip")) {
-d = org.jmol.util.TextFormat.split (c, "|");
+d = org.jmol.util.TextFormat.splitChars (c, "|");
 c = d[0];
 }if (d != null) this.htParams.put ("subFileList", d);
 var e = b;
@@ -1363,14 +1363,14 @@ var c = this.fullPathNamesIn[a];
 var d = null;
 this.htParams.remove ("subFileList");
 if (c.indexOf ("|") >= 0) {
-d = org.jmol.util.TextFormat.split (c, "|");
+d = org.jmol.util.TextFormat.splitChars (c, "|");
 c = d[0];
 }var e = this.b$["org.jmol.viewer.FileManager"].getUnzippedBufferedReaderOrErrorMessageFromName (c, null, true, b, false, true);
 if (Clazz.instanceOf (e, java.util.zip.ZipInputStream)) {
 if (d != null) this.htParams.put ("subFileList", d);
 var f = this.b$["org.jmol.viewer.FileManager"].getZipDirectory (c, true);
 e = this.b$["org.jmol.viewer.FileManager"].getBufferedInputStreamOrErrorMessageFromName (c, this.fullPathNamesIn[a], false, false, null);
-var g = (Clazz.instanceOf (e, StringBuffer) ? org.jmol.viewer.FileManager.getInputStreamForStringBuffer (e) : e);
+var g = (Clazz.instanceOf (e, StringBuffer) ? org.jmol.viewer.FileManager.getBISForStringBuffer (e) : e);
 e = this.b$["org.jmol.viewer.FileManager"].viewer.getModelAdapter ().getAtomSetCollectionOrBufferedReaderFromZip (g, c, f, this.htParams, true, b);
 }if (Clazz.instanceOf (e, java.io.BufferedInputStream)) return  new org.jmol.util.BinaryDocument (e);
 if (Clazz.instanceOf (e, java.io.BufferedReader) || Clazz.instanceOf (e, org.jmol.util.BinaryDocument)) {

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.more.ForceFieldReader"], "org.jmol.adapter.readers.more.MdTopReader", ["java.lang.Boolean", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.adapter.readers.more.ForceFieldReader"], "org.jmol.adapter.readers.more.MdTopReader", ["java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nAtoms = 0;
 this.atomCount = 0;
@@ -77,11 +77,11 @@ return vdata.toArray ( new Array (vdata.size ()));
 Clazz.defineMethod (c$, "getPointers", 
 ($fz = function () {
 var tokens = this.getDataBlock ();
-this.atomCount = this.parseInt (tokens[0]);
-var isPeriodic = ((tokens[27].charAt (0)).charCodeAt (0) != ('0').charCodeAt (0));
+this.atomCount = this.parseIntStr (tokens[0]);
+var isPeriodic = ((tokens[27].charAt (0)).charCodeAt (0) != 48);
 if (isPeriodic) {
 org.jmol.util.Logger.info ("Periodic type: " + tokens[27]);
-this.htParams.put ("isPeriodic", Boolean.TRUE);
+this.htParams.put ("isPeriodic", org.jmol.api.JmolAdapter.TRUE);
 }org.jmol.util.Logger.info ("Total number of atoms read=" + this.atomCount);
 this.htParams.put ("templateAtomCount", Integer.$valueOf (this.atomCount));
 for (var i = 0; i < this.atomCount; i++) this.atomSetCollection.addAtom ( new org.jmol.adapter.smarter.Atom ());
@@ -96,7 +96,7 @@ Clazz.defineMethod (c$, "getCharges",
 var data = this.getDataBlock ();
 if (data.length != this.atomCount) return ;
 var atoms = this.atomSetCollection.getAtoms ();
-for (var i = this.atomCount; --i >= 0; ) atoms[i].partialCharge = this.parseFloat (data[i]);
+for (var i = this.atomCount; --i >= 0; ) atoms[i].partialCharge = this.parseFloatStr (data[i]);
 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getResiduePointers", 
@@ -107,7 +107,7 @@ var pt1 = this.atomCount;
 var pt2;
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = resPtrs.length; --i >= 0; ) {
-var ptr = pt2 = this.parseInt (resPtrs[i]) - 1;
+var ptr = pt2 = this.parseIntStr (resPtrs[i]) - 1;
 while (ptr < pt1) {
 if (this.group3s != null) atoms[ptr].group3 = this.group3s[i];
 atoms[ptr++].sequenceNumber = i + 1;

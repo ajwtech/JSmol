@@ -45,14 +45,14 @@ this.atom =  new org.jmol.adapter.smarter.Atom ();
 this.atom.elementSymbol = atts.get ("Components");
 this.atom.atomName = atts.get ("ID");
 this.atom.atomSerial = ++this.iAtom;
-if (this.iChain >= 0) this.atom.chainID = String.fromCharCode (((this.iChain - 1) % 26 + ('A').charCodeAt (0)));
+if (this.iChain >= 0) this.atom.chainID = String.fromCharCode (((this.iChain - 1) % 26 + 65));
 this.atom.group3 = "UNK";
 if (this.iGroup == 0) this.iGroup = 1;
 this.atom.sequenceNumber = this.iGroup;
 var xyz = atts.get ("XYZ");
 if (xyz != null) {
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (xyz.$replace (',', ' '));
-this.atom.set (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (xyz.$replace (',', ' '));
+this.atom.set (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
 }var isBackbone = "1".equals (atts.get ("IsBackboneAtom"));
 if (isBackbone) this.bsBackbone.set (this.iAtom);
 return ;

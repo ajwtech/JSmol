@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.api");
-Clazz.load (["org.jmol.constant.EnumQuantumShell"], "org.jmol.api.JmolAdapter", ["java.util.Hashtable", "org.jmol.api.JmolViewer", "org.jmol.modelset.Group", "org.jmol.util.Elements", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.constant.EnumQuantumShell", "org.jmol.viewer.JmolConstants"], "org.jmol.api.JmolAdapter", ["java.util.Hashtable", "org.jmol.api.JmolViewer", "org.jmol.modelset.Group", "org.jmol.util.Elements"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.adapterName = null;
 Clazz.instantialize (this, arguments);
@@ -77,25 +77,27 @@ function (atomSetCollection) {
 }, "~O");
 c$.canonizeAlphaDigit = Clazz.defineMethod (c$, "canonizeAlphaDigit", 
 function (ch) {
-if (((ch).charCodeAt (0) >= ('A').charCodeAt (0) && (ch).charCodeAt (0) <= ('Z').charCodeAt (0)) || ((ch).charCodeAt (0) >= ('a').charCodeAt (0) && (ch).charCodeAt (0) <= ('z').charCodeAt (0)) || ((ch).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0))) return ch;
+if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9')) return ch;
 return '\0';
-}, "~N");
+}, "~S");
 c$.canonizeChainID = Clazz.defineMethod (c$, "canonizeChainID", 
 function (chainID) {
 return org.jmol.api.JmolAdapter.canonizeAlphaDigit (chainID);
-}, "~N");
+}, "~S");
 c$.canonizeInsertionCode = Clazz.defineMethod (c$, "canonizeInsertionCode", 
 function (insertionCode) {
 return org.jmol.api.JmolAdapter.canonizeAlphaDigit (insertionCode);
-}, "~N");
+}, "~S");
 c$.canonizeAlternateLocationID = Clazz.defineMethod (c$, "canonizeAlternateLocationID", 
 function (altLoc) {
 return org.jmol.api.JmolAdapter.canonizeAlphaDigit (altLoc);
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "specialLoad", 
 function (name, type) {
 return null;
 }, "~S,~S");
+c$.FALSE = c$.prototype.FALSE = org.jmol.viewer.JmolConstants.FALSE;
+c$.TRUE = c$.prototype.TRUE = org.jmol.viewer.JmolConstants.TRUE;
 Clazz.defineStatics (c$,
 "ORDER_COVALENT_SINGLE", 1,
 "ORDER_COVALENT_DOUBLE", 2,

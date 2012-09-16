@@ -234,7 +234,7 @@ if (this.defaultColix != 0 || this.defaultPaletteID != 0) this.setColix (i, this
 if (this.defaultBgcolix != 0) this.setBgcolix (i, this.defaultBgcolix);
 if (this.defaultFontId != this.zeroFontId) this.setFont (i, this.defaultFontId);
 }, $fz.isPrivate = true, $fz), "~A,~S,~N");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if (property.equals ("offsets")) return this.offsets;
 if (property.equals ("defaultState")) return this.getDefaultState ();

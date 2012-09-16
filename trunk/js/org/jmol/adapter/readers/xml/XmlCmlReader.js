@@ -77,7 +77,7 @@ this.getDictRefValue (atts);
 this.state = 4;
 if (atts.containsKey ("spaceGroup")) {
 this.localSpaceGroupName = atts.get ("spaceGroup");
-for (var i = 0; i < this.localSpaceGroupName.length; i++) if ((this.localSpaceGroupName.charAt (i)).charCodeAt (0) == ('_').charCodeAt (0)) this.localSpaceGroupName = this.localSpaceGroupName.substring (0, i) + this.localSpaceGroupName.substring ((i--) + 1);
+for (var i = 0; i < this.localSpaceGroupName.length; i++) if ((this.localSpaceGroupName.charAt (i)).charCodeAt (0) == 95) this.localSpaceGroupName = this.localSpaceGroupName.substring (0, i) + this.localSpaceGroupName.substring ((i--) + 1);
 
 }} else if (name.equals ("cellParameter")) {
 if (atts.containsKey ("parameterType")) {
@@ -128,23 +128,23 @@ for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].atomName = this.toke
 }if (atts.containsKey ("x3")) {
 coords3D = true;
 this.breakOutAtomTokens (atts.get ("x3"));
-for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].x = this.parseFloat (this.tokens[i]);
+for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].x = this.parseFloatStr (this.tokens[i]);
 
 }if (atts.containsKey ("y3")) {
 this.breakOutAtomTokens (atts.get ("y3"));
-for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].y = this.parseFloat (this.tokens[i]);
+for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].y = this.parseFloatStr (this.tokens[i]);
 
 }if (atts.containsKey ("z3")) {
 this.breakOutAtomTokens (atts.get ("z3"));
-for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].z = this.parseFloat (this.tokens[i]);
+for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].z = this.parseFloatStr (this.tokens[i]);
 
 }if (atts.containsKey ("x2")) {
 this.breakOutAtomTokens (atts.get ("x2"));
-for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].x = this.parseFloat (this.tokens[i]);
+for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].x = this.parseFloatStr (this.tokens[i]);
 
 }if (atts.containsKey ("y2")) {
 this.breakOutAtomTokens (atts.get ("y2"));
-for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].y = this.parseFloat (this.tokens[i]);
+for (var i = this.tokenCount; --i >= 0; ) this.atomArray[i].y = this.parseFloatStr (this.tokens[i]);
 
 }if (atts.containsKey ("elementType")) {
 this.breakOutAtomTokens (atts.get ("elementType"));
@@ -184,16 +184,16 @@ this.checkedSerial = true;
 }if (this.isSerial) this.atom.atomSerial = org.jmol.util.Parser.parseInt (id.substring (1));
 if (atts.containsKey ("xFract") && (this.parent.iHaveUnitCell || !atts.containsKey ("x3"))) {
 this.parent.setFractionalCoordinates (true);
-this.atom.set (this.parseFloat (atts.get ("xFract")), this.parseFloat (atts.get ("yFract")), this.parseFloat (atts.get ("zFract")));
+this.atom.set (this.parseFloatStr (atts.get ("xFract")), this.parseFloatStr (atts.get ("yFract")), this.parseFloatStr (atts.get ("zFract")));
 } else if (atts.containsKey ("x3")) {
-this.atom.set (this.parseFloat (atts.get ("x3")), this.parseFloat (atts.get ("y3")), this.parseFloat (atts.get ("z3")));
+this.atom.set (this.parseFloatStr (atts.get ("x3")), this.parseFloatStr (atts.get ("y3")), this.parseFloatStr (atts.get ("z3")));
 } else if (atts.containsKey ("x2")) {
-this.atom.set (this.parseFloat (atts.get ("x2")), this.parseFloat (atts.get ("y2")), 0);
+this.atom.set (this.parseFloatStr (atts.get ("x2")), this.parseFloatStr (atts.get ("y2")), 0);
 }if (atts.containsKey ("elementType")) {
 var sym = atts.get ("elementType");
-if (atts.containsKey ("isotope")) this.atom.elementNumber = ((this.parseInt (atts.get ("isotope")) << 7) + org.jmol.api.JmolAdapter.getElementNumber (sym));
+if (atts.containsKey ("isotope")) this.atom.elementNumber = ((this.parseIntStr (atts.get ("isotope")) << 7) + org.jmol.api.JmolAdapter.getElementNumber (sym));
 this.atom.elementSymbol = sym;
-}if (atts.containsKey ("formalCharge")) this.atom.formalCharge = this.parseInt (atts.get ("formalCharge"));
+}if (atts.containsKey ("formalCharge")) this.atom.formalCharge = this.parseIntStr (atts.get ("formalCharge"));
 }break;
 case 11:
 if (atts.containsKey ("builtin")) {
@@ -253,15 +253,15 @@ this.embeddedCrystal = false;
 } else {
 this.state = 0;
 }} else if (name.equals ("cellParameter") && this.keepChars) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.chars);
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.chars);
 this.setKeepChars (false);
 if (tokens.length != 3 || this.cellParameterType == null) {
 } else if (this.cellParameterType.equals ("length")) {
-for (var i = 0; i < 3; i++) this.parent.setUnitCellItem (i, this.parseFloat (tokens[i]));
+for (var i = 0; i < 3; i++) this.parent.setUnitCellItem (i, this.parseFloatStr (tokens[i]));
 
 break;
 } else if (this.cellParameterType.equals ("angle")) {
-for (var i = 0; i < 3; i++) this.parent.setUnitCellItem (i + 3, this.parseFloat (tokens[i]));
+for (var i = 0; i < 3; i++) this.parent.setUnitCellItem (i + 3, this.parseFloatStr (tokens[i]));
 
 break;
 }org.jmol.util.Logger.error ("bad cellParameter information: parameterType=" + this.cellParameterType + " data=" + this.chars);
@@ -329,7 +329,7 @@ case 9:
 if (name.equals ("scalar")) {
 this.state = 8;
 if ("jmol:charge".equals (this.scalarDictRef)) {
-this.atom.partialCharge = this.parseFloat (this.chars);
+this.atom.partialCharge = this.parseFloatStr (this.chars);
 } else if (this.scalarDictRef != null && "_atom_site_label".equals (this.scalarDictValue)) {
 if (this.atomIdNames == null) this.atomIdNames =  new java.util.Properties ();
 this.atomIdNames.put (this.atom.atomName, this.chars);
@@ -339,9 +339,9 @@ this.scalarDictRef = null;
 break;
 case 13:
 this.state = 8;
-if (this.scalarDictValue.equals ("x3")) this.atom.x = this.parseFloat (this.chars);
- else if (this.scalarDictValue.equals ("y3")) this.atom.y = this.parseFloat (this.chars);
- else if (this.scalarDictValue.equals ("z3")) this.atom.z = this.parseFloat (this.chars);
+if (this.scalarDictValue.equals ("x3")) this.atom.x = this.parseFloatStr (this.chars);
+ else if (this.scalarDictValue.equals ("y3")) this.atom.y = this.parseFloatStr (this.chars);
+ else if (this.scalarDictValue.equals ("z3")) this.atom.z = this.parseFloatStr (this.chars);
  else if (this.scalarDictValue.equals ("elementType")) this.atom.elementSymbol = this.chars;
 this.setKeepChars (false);
 break;
@@ -363,7 +363,7 @@ break;
 Clazz.defineMethod (c$, "checkUnitCellItem", 
 ($fz = function (tags, value) {
 for (var i = tags.length; --i >= 0; ) if (value.equals (tags[i])) {
-this.parent.setUnitCellItem (i, this.parseFloat (this.chars));
+this.parent.setUnitCellItem (i, this.parseFloatStr (this.chars));
 return ;
 }
 }, $fz.isPrivate = true, $fz), "~A,~S");
@@ -376,7 +376,7 @@ if (this.isSerial) this.atomSetCollection.addAtomWithMappedSerialNumber (atom);
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "parseBondToken", 
 function (str) {
-var floatOrder = this.parseFloat (str);
+var floatOrder = this.parseFloatStr (str);
 if (Float.isNaN (floatOrder) && str.length >= 1) {
 str = str.toUpperCase ();
 switch (str.charAt (0)) {
@@ -391,7 +391,7 @@ return 515;
 case 'P':
 return 66;
 }
-return this.parseInt (str);
+return this.parseIntStr (str);
 }if (floatOrder == 1.5) return 515;
 if (floatOrder == 2) return 2;
 if (floatOrder == 3) return 3;

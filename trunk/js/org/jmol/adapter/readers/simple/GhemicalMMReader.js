@@ -31,11 +31,11 @@ function () {
 });
 Clazz.defineMethod (c$, "processAtoms", 
 function () {
-var atomCount = this.parseInt (this.line, 6);
+var atomCount = this.parseIntAt (this.line, 6);
 for (var i = 0; i < atomCount; ++i) {
 if (this.atomSetCollection.getAtomCount () != i) throw  new Exception ("GhemicalMMReader error #1");
 this.readLine ();
-var atomIndex = this.parseInt (this.line);
+var atomIndex = this.parseIntStr (this.line);
 if (atomIndex != i) throw  new Exception ("bad atom index in !Atomsexpected: " + i + " saw:" + atomIndex);
 var elementNumber = this.parseInt ();
 var atom = this.atomSetCollection.addNewAtom ();
@@ -44,10 +44,10 @@ atom.elementNumber = elementNumber;
 });
 Clazz.defineMethod (c$, "processBonds", 
 function () {
-var bondCount = this.parseInt (this.line, 6);
+var bondCount = this.parseIntAt (this.line, 6);
 for (var i = 0; i < bondCount; ++i) {
 this.readLine ();
-var atomIndex1 = this.parseInt (this.line);
+var atomIndex1 = this.parseIntStr (this.line);
 var atomIndex2 = this.parseInt ();
 var orderCode = this.parseToken ();
 var order = 0;
@@ -74,7 +74,7 @@ var atoms = this.atomSetCollection.getAtoms ();
 var atomCount = this.atomSetCollection.getAtomCount ();
 for (var i = 0; i < atomCount; ++i) {
 this.readLine ();
-var atomIndex = this.parseInt (this.line);
+var atomIndex = this.parseIntStr (this.line);
 if (atomIndex != i) throw  new Exception ("bad atom index in !Coordexpected: " + i + " saw:" + atomIndex);
 this.setAtomCoord (atoms[i], this.parseFloat () * 10, this.parseFloat () * 10, this.parseFloat () * 10);
 }
@@ -85,7 +85,7 @@ var atoms = this.atomSetCollection.getAtoms ();
 var atomCount = this.atomSetCollection.getAtomCount ();
 for (var i = 0; i < atomCount; ++i) {
 this.readLine ();
-var atomIndex = this.parseInt (this.line);
+var atomIndex = this.parseIntStr (this.line);
 if (atomIndex != i) throw  new Exception ("bad atom index in !Chargesexpected: " + i + " saw:" + atomIndex);
 atoms[i].partialCharge = this.parseFloat ();
 }

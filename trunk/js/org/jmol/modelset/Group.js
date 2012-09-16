@@ -236,15 +236,15 @@ return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode.charAt
 c$.getSeqcode = Clazz.defineMethod (c$, "getSeqcode", 
 function (sequenceNumber, insertionCode) {
 return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode);
-}, "~N,~N");
+}, "~N,~S");
 c$.getSeqcode2 = Clazz.defineMethod (c$, "getSeqcode2", 
 function (sequenceNumber, insertionCode) {
 if (sequenceNumber == -2147483648) return sequenceNumber;
-if (!(((insertionCode).charCodeAt (0) >= ('A').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('Z').charCodeAt (0)) || ((insertionCode).charCodeAt (0) >= ('a').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('z').charCodeAt (0)) || ((insertionCode).charCodeAt (0) >= ('0').charCodeAt (0) && (insertionCode).charCodeAt (0) <= ('9').charCodeAt (0)) || (insertionCode).charCodeAt (0) == ('?').charCodeAt (0) || (insertionCode).charCodeAt (0) == ('*').charCodeAt (0))) {
-if ((insertionCode).charCodeAt (0) != (' ').charCodeAt (0) && (insertionCode).charCodeAt (0) != ('\0').charCodeAt (0)) org.jmol.util.Logger.warn ("unrecognized insertionCode:" + insertionCode);
+if (!((insertionCode >= 'A' && insertionCode <= 'Z') || (insertionCode >= 'a' && insertionCode <= 'z') || (insertionCode >= '0' && insertionCode <= '9') || insertionCode.charCodeAt (0) == 63 || insertionCode.charCodeAt (0) == 42)) {
+if (insertionCode.charCodeAt (0) != 32 && insertionCode.charCodeAt (0) != 0) org.jmol.util.Logger.warn ("unrecognized insertionCode:" + insertionCode);
 insertionCode = '\0';
-}return ((sequenceNumber == 2147483647 ? 0 : (sequenceNumber << 8) | 128)) + (insertionCode).charCodeAt (0);
-}, "~N,~N");
+}return ((sequenceNumber == 2147483647 ? 0 : (sequenceNumber << 8) | 128)) + insertionCode.charCodeAt (0);
+}, "~N,~S");
 c$.getSeqcodeString = Clazz.defineMethod (c$, "getSeqcodeString", 
 function (seqcode) {
 if (seqcode == -2147483648) return null;
@@ -336,7 +336,7 @@ return null;
 Clazz.defineMethod (c$, "getQuaternion", 
 function (qType) {
 return null;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getQuaternionFrame", 
 function (atoms) {
 if (this.lastAtomIndex - this.firstAtomIndex < 3) return null;
@@ -361,7 +361,7 @@ case 1073742001:
 return [];
 }
 return "";
-}, "~N,~N,~N");
+}, "~N,~S,~N");
 Clazz.defineMethod (c$, "isWithinStructure", 
 function (type) {
 return false;

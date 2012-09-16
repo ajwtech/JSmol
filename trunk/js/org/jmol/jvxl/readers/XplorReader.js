@@ -15,14 +15,14 @@ this.nSurfaces = 1;
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 this.jvxlFileHeaderBuffer =  new StringBuffer ();
-var nLines = this.parseInt (this.getLine ());
+var nLines = this.parseIntStr (this.getLine ());
 for (var i = nLines; --i >= 0; ) {
 this.line = this.br.readLine ().trim ();
 org.jmol.util.Logger.info ("XplorReader: " + this.line);
 this.jvxlFileHeaderBuffer.append ("# ").append (this.line).append ('\n');
 }
 this.jvxlFileHeaderBuffer.append ("Xplor data\nJmol " + org.jmol.viewer.Viewer.getJmolVersion () + '\n');
-this.na = this.parseInt (this.getLine ());
+this.na = this.parseIntStr (this.getLine ());
 this.nxyzStart[0] = this.parseInt ();
 this.nx = this.parseInt () - this.nxyzStart[0] + 1;
 this.nb = this.parseInt ();
@@ -31,7 +31,7 @@ this.ny = this.parseInt () - this.nxyzStart[1] + 1;
 this.nc = this.parseInt ();
 this.nxyzStart[2] = this.parseInt ();
 this.nz = this.parseInt () - this.nxyzStart[2] + 1;
-this.a = this.parseFloat (this.getLine ());
+this.a = this.parseFloatStr (this.getLine ());
 this.b = this.parseFloat ();
 this.c = this.parseFloat ();
 this.alpha = this.parseFloat ();
@@ -60,7 +60,7 @@ this.linePt = 0;
 if ((this.nRead % this.nBlock) == 0) {
 this.readLine ();
 }}if (this.line == null) return 0;
-var val = this.parseFloat (this.line.substring (this.linePt, this.linePt + 12));
+var val = this.parseFloatStr (this.line.substring (this.linePt, this.linePt + 12));
 this.linePt += 12;
 this.nRead++;
 return val;

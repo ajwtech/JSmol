@@ -29,7 +29,7 @@ if (bioShape.monomers[j].getGroupIndex () == groupIndex && bioShape.monomers[j].
 }
 return 0;
 }, "org.jmol.modelset.Group");
-Clazz.overrideMethod (c$, "setShapeSize", 
+Clazz.overrideMethod (c$, "setShapeSizeRD", 
 function (size, rd, bsSelected) {
 var mad = size;
 this.initialize ();

@@ -185,7 +185,7 @@ return (i < 0 || this.ellipsoids == null || i >= this.ellipsoids.length ? null :
 Clazz.defineMethod (c$, "getQuaternion", 
 function (i, qtype) {
 return (i < 0 ? null : this.atoms[i].group.getQuaternion (qtype));
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "getHelixData", 
 function (bs, tokType) {
 var iAtom = bs.nextSetBit (0);
@@ -521,7 +521,7 @@ return this.vibrationVectors[atomIndex].y;
 default:
 return this.vibrationVectors[atomIndex].z;
 }
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "getVibrationVector", 
 function (atomIndex, forceNew) {
 var v = (this.vibrationVectors == null ? null : this.vibrationVectors[atomIndex]);
@@ -648,7 +648,7 @@ var atomIndex = org.jmol.util.Parser.parseInt (tokens[0]) - 1;
 if (atomIndex < 0 || atomIndex >= this.atomCount) continue ;var atom = this.atoms[atomIndex];
 n++;
 var pt = tokens.length - 1;
-var x = org.jmol.util.Parser.parseFloat (tokens[pt]);
+var x = org.jmol.util.Parser.parseFloatStr (tokens[pt]);
 switch (type) {
 case 14:
 fData[atomIndex] = x;
@@ -708,9 +708,9 @@ var nData = org.jmol.util.Parser.parseInt (data.substring (0, lines[0] - 1));
 for (var i = 1; i <= nData; i++) {
 var tokens = org.jmol.util.Parser.getTokens (org.jmol.util.Parser.parseTrimmed (data.substring (lines[i], lines[i + 1])));
 var atomIndex = org.jmol.util.Parser.parseInt (tokens[0]) - 1;
-var x = org.jmol.util.Parser.parseFloat (tokens[3]);
-var y = org.jmol.util.Parser.parseFloat (tokens[4]);
-var z = org.jmol.util.Parser.parseFloat (tokens[5]);
+var x = org.jmol.util.Parser.parseFloatStr (tokens[3]);
+var y = org.jmol.util.Parser.parseFloatStr (tokens[4]);
+var z = org.jmol.util.Parser.parseFloatStr (tokens[5]);
 if (isVibrationVectors) {
 this.setAtomVibrationVector (atomIndex, x, y, z);
 } else {
@@ -1094,13 +1094,13 @@ return (n < 0 ? 0 : n);
 }, "org.jmol.modelset.Atom");
 Clazz.defineMethod (c$, "getHybridizationAndAxes", 
 function (atomIndex, atomicNumber, z, x, lcaoTypeRaw, hybridizationCompatible, doAlignZ) {
-var lcaoType = (lcaoTypeRaw.length > 0 && (lcaoTypeRaw.charAt (0)).charCodeAt (0) == ('-').charCodeAt (0) ? lcaoTypeRaw.substring (1) : lcaoTypeRaw);
+var lcaoType = (lcaoTypeRaw.length > 0 && (lcaoTypeRaw.charAt (0)).charCodeAt (0) == 45 ? lcaoTypeRaw.substring (1) : lcaoTypeRaw);
 if (lcaoTypeRaw.indexOf ("d") >= 0 && !lcaoTypeRaw.equals ("sp3d")) return this.getHybridizationAndAxesD (atomIndex, z, x, lcaoType);
 var atom = this.atoms[atomIndex];
 if (atomicNumber == 0) atomicNumber = atom.getElementNumber ();
 var attached = this.getAttached (atom, 4, hybridizationCompatible);
 var nAttached = attached.length;
-var pt = (lcaoType.charAt (lcaoType.length - 1)).charCodeAt (0) - ('a').charCodeAt (0);
+var pt = (lcaoType.charAt (lcaoType.length - 1)).charCodeAt (0) - 97;
 if (pt < 0 || pt > 6) pt = 0;
 var vTemp =  new javax.vecmath.Vector3f ();
 z.set (0, 0, 0);
@@ -1344,7 +1344,7 @@ if (lcaoType.startsWith ("sp3d2")) lcaoType = "d2sp3" + (lcaoType.length == 5 ? 
 if (lcaoType.startsWith ("sp3d")) lcaoType = "dsp3" + (lcaoType.length == 4 ? "a" : lcaoType.substring (4));
 if (lcaoType.equals ("d2sp3") || lcaoType.equals ("dsp3")) lcaoType += "a";
 var isTrigonal = lcaoType.startsWith ("dsp3");
-var pt = (lcaoType.charAt (lcaoType.length - 1)).charCodeAt (0) - ('a').charCodeAt (0);
+var pt = (lcaoType.charAt (lcaoType.length - 1)).charCodeAt (0) - 97;
 if (z != null && (!isTrigonal && (pt > 5 || !lcaoType.startsWith ("d2sp3")) || isTrigonal && pt > 4)) return null;
 var atom = this.atoms[atomIndex];
 var attached = this.getAttached (atom, 6, true);
@@ -1527,7 +1527,7 @@ var modelLast = -1;
 var n = 0;
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 id = this.atoms[i].getChainID ();
-s = ((id).charCodeAt (0) == ('\0').charCodeAt (0) ? " " : "" + id);
+s = (id.charCodeAt (0) == 0 ? " " : "" + id);
 switch (tok) {
 case 1087373316:
 break;
@@ -1769,11 +1769,11 @@ throw nfe;
 }
 }
 var insertionCode = ' ';
-if (pt < len && (identifier.charAt (pt)).charCodeAt (0) == ('^').charCodeAt (0)) if (++pt < len) insertionCode = identifier.charAt (pt);
+if (pt < len && (identifier.charAt (pt)).charCodeAt (0) == 94) if (++pt < len) insertionCode = identifier.charAt (pt);
 var seqcode = org.jmol.modelset.Group.getSeqcode (seqNumber, insertionCode);
 var bsInsert = this.getSeqcodeBits (seqcode, false);
 if (bsInsert == null) {
-if ((insertionCode).charCodeAt (0) != (' ').charCodeAt (0)) bsInsert = this.getSeqcodeBits (Character.toUpperCase (identifier.charAt (pt)).charCodeAt (0), false);
+if (insertionCode.charCodeAt (0) != 32) bsInsert = this.getSeqcodeBits (Character.toUpperCase (identifier.charAt (pt)).charCodeAt (0), false);
 if (bsInsert == null) return null;
 pt++;
 }bs.and (bsInsert);
@@ -1833,7 +1833,7 @@ break;
 default:
 for (var i = this.atomCount; --i >= 0; ) {
 var atomSeqcode = this.atoms[i].getSeqcode ();
-if (seqcode == atomSeqcode || !haveSeqNumber && seqcode == org.jmol.modelset.Group.getInsertionCodeValue (atomSeqcode) || (insCode).charCodeAt (0) == ('*').charCodeAt (0) && seqNum == org.jmol.modelset.Group.getSequenceNumber (atomSeqcode)) {
+if (seqcode == atomSeqcode || !haveSeqNumber && seqcode == org.jmol.modelset.Group.getInsertionCodeValue (atomSeqcode) || insCode.charCodeAt (0) == 42 && seqNum == org.jmol.modelset.Group.getSequenceNumber (atomSeqcode)) {
 bs.set (i);
 isEmpty = false;
 }}
@@ -1848,14 +1848,14 @@ var bs =  new java.util.BitSet ();
 var bsDone =  new java.util.BitSet (this.atomCount);
 for (var i = bsDone.nextClearBit (0); i < this.atomCount; i = bsDone.nextClearBit (i + 1)) {
 var chain = this.atoms[i].getChain ();
-if ((chainId).charCodeAt (0) == ((caseSensitive ? chain.chainID : Character.toUpperCase (chain.chainID))).charCodeAt (0)) {
+if (chainId.charCodeAt (0) == ((caseSensitive ? chain.chainID : Character.toUpperCase (chain.chainID))).charCodeAt (0)) {
 chain.setAtomBitSet (bs);
 bsDone.or (bs);
 } else {
 chain.setAtomBitSet (bsDone);
 }}
 return bs;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getAtomIndices", 
 function (bs) {
 var n = 0;

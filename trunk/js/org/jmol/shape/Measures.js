@@ -36,7 +36,7 @@ function () {
 Clazz.superCall (this, org.jmol.shape.Measures, "initShape", []);
 this.font3d = this.gdata.getFont3D (15);
 });
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
 this.mad = size;
 }, "~N,java.util.BitSet");
@@ -187,7 +187,7 @@ indices[i + 1] = -2 - i;
 }}
 return  new org.jmol.modelset.Measurement (this.modelSet, indices, points, this.tickInfo == null ? this.defaultTickInfo : this.tickInfo);
 }, $fz.isPrivate = true, $fz), "java.util.List");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if ("pending".equals (property)) return this.measurementPending;
 if ("count".equals (property)) return Integer.$valueOf (this.measurementCount);

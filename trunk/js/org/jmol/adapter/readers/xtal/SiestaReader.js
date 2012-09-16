@@ -40,9 +40,9 @@ while (this.readLine () != null && this.line.indexOf ("%endblock Atomic") < 0) {
 var tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[4];
-var x = this.parseFloat (tokens[0]);
-var y = this.parseFloat (tokens[1]);
-var z = this.parseFloat (tokens[2]);
+var x = this.parseFloatStr (tokens[0]);
+var y = this.parseFloatStr (tokens[1]);
+var z = this.parseFloatStr (tokens[2]);
 this.setAtomCoord (atom, x, y, z);
 }
 this.noAtoms = this.atomSetCollection.getAtomCount ();
@@ -63,9 +63,9 @@ for (var i = 0; i < this.noAtoms; i++) {
 var tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[4];
-var x = this.parseFloat (tokens[0]);
-var y = this.parseFloat (tokens[1]);
-var z = this.parseFloat (tokens[2]);
+var x = this.parseFloatStr (tokens[0]);
+var y = this.parseFloatStr (tokens[1]);
+var z = this.parseFloatStr (tokens[2]);
 atom.set (x, y, z);
 this.readLine ();
 }

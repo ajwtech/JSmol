@@ -23,7 +23,7 @@ if (this.line != null && this.line.length == 0) {
 this.readLine ();
 }if (this.line != null && this.line.length > 0) {
 var atom = this.atomSetCollection.addNewAtom ();
-this.parseInt (this.line);
+this.parseIntStr (this.line);
 atom.atomName = this.parseToken ();
 if (atom.atomName != null) {
 var carCount = 1;
@@ -32,7 +32,7 @@ var c1 = atom.atomName.charAt (0);
 var c2 = atom.atomName.charAt (1);
 if (Character.isUpperCase (c1) && Character.isLowerCase (c2) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (c1, c2)) {
 carCount = 2;
-}if (((c1).charCodeAt (0) == ('C').charCodeAt (0)) && ((c2).charCodeAt (0) == ('L').charCodeAt (0))) {
+}if ((c1.charCodeAt (0) == 67) && (c2.charCodeAt (0) == 76)) {
 carCount = 2;
 }}atom.elementSymbol = atom.atomName.substring (0, carCount);
 }this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());

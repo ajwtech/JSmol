@@ -43,7 +43,7 @@ return ;
 }}, "~S,~S,~S,java.util.Map");
 Clazz.defineMethod (c$, "parseBondToken", 
 function (str) {
-var floatOrder = this.parseFloat (str);
+var floatOrder = this.parseFloatStr (str);
 if (Float.isNaN (floatOrder) && str.length >= 1) {
 str = str.toUpperCase ();
 switch (str.charAt (0)) {
@@ -56,7 +56,7 @@ return 3;
 case 'A':
 return 515;
 }
-return this.parseInt (str);
+return this.parseIntStr (str);
 }if (floatOrder == 1.5) return 515;
 if (floatOrder == 2) return 2;
 if (floatOrder == 3) return 3;
@@ -64,7 +64,7 @@ return 1;
 }, "~S");
 Clazz.overrideMethod (c$, "processEndElement", 
 function (uri, localName, qName) {
-if (this.chars != null && this.chars.length > 0 && (this.chars.charAt (this.chars.length - 1)).charCodeAt (0) == ('\n').charCodeAt (0)) this.chars = this.chars.substring (0, this.chars.length - 1);
+if (this.chars != null && this.chars.length > 0 && (this.chars.charAt (this.chars.length - 1)).charCodeAt (0) == 10) this.chars = this.chars.substring (0, this.chars.length - 1);
 if ("molecule".equals (localName)) {
 this.elementContext = 0;
 return ;
@@ -90,18 +90,18 @@ this.setKeepChars (false);
 }return ;
 }if (this.atom != null && this.elementContext == 2) {
 if ("x".equals (localName)) {
-this.atom.x = this.parseFloat (this.chars);
+this.atom.x = this.parseFloatStr (this.chars);
 } else if ("y".equals (localName)) {
-this.atom.y = this.parseFloat (this.chars);
+this.atom.y = this.parseFloatStr (this.chars);
 return ;
 } else if ("z".equals (localName)) {
-this.atom.z = this.parseFloat (this.chars);
+this.atom.z = this.parseFloatStr (this.chars);
 return ;
 } else if ("atsym".equals (localName)) {
 this.atom.elementSymbol = this.chars;
 return ;
 } else if ("formalchg".equals (localName)) {
-this.atom.formalCharge = this.parseInt (this.chars);
+this.atom.formalCharge = this.parseIntStr (this.chars);
 } else if ("atomkey".equals (localName)) {
 this.atom.atomName = this.chars;
 }this.setKeepChars (false);
@@ -113,7 +113,7 @@ if (this.atomName1 == null) this.atomName1 = this.chars;
 this.setKeepChars (false);
 }return ;
 }if (this.elementContext == 4) {
-this.trans[this.ptTrans++] = this.parseFloat (this.chars);
+this.trans[this.ptTrans++] = this.parseFloatStr (this.chars);
 this.setKeepChars (false);
 return ;
 }}, "~S,~S,~S");

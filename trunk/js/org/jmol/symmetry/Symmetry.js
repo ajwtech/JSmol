@@ -265,7 +265,7 @@ return this.unitCell.getUnitCellVectors ();
 Clazz.overrideMethod (c$, "getUnitCell", 
 function (points) {
 var sym =  new org.jmol.symmetry.Symmetry ();
-sym.unitCell =  new org.jmol.symmetry.UnitCell (points);
+sym.unitCell =  new org.jmol.symmetry.UnitCell (points, false);
 return sym;
 }, "~A");
 Clazz.overrideMethod (c$, "isSupercell", 

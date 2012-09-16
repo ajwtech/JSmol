@@ -48,7 +48,7 @@ ich = org.jmol.modelset.LabelToken.setToken (viewer, strFormat, lt, cch, chAtom.
 }
 if (ich < cch) tokens[i++] =  new org.jmol.modelset.LabelToken (strFormat.substring (ich));
 return tokens;
-}, "org.jmol.viewer.Viewer,~S,~N,java.util.Map");
+}, "org.jmol.viewer.Viewer,~S,~S,java.util.Map");
 c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
 function (viewer, atom, strFormat) {
 if (strFormat == null || strFormat.length == 0) return null;
@@ -58,19 +58,19 @@ return org.jmol.modelset.LabelToken.formatLabel (viewer, atom, tokens, '\0', nul
 c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
 function (viewer, atom, tokens, chAtom, indices) {
 if (atom == null) return null;
-var strLabel = ((chAtom).charCodeAt (0) > ('0').charCodeAt (0) ? null :  new StringBuffer ());
+var strLabel = (chAtom > '0' ? null :  new StringBuffer ());
 if (tokens != null) for (var i = 0; i < tokens.length; i++) {
 var t = tokens[i];
 if (t == null) break;
-if ((chAtom).charCodeAt (0) > ('0').charCodeAt (0) && (t.ch1).charCodeAt (0) != (chAtom).charCodeAt (0)) continue ;if (t.tok <= 0 || t.key != null) {
+if (chAtom > '0' && t.ch1.charCodeAt (0) != chAtom.charCodeAt (0)) continue ;if (t.tok <= 0 || t.key != null) {
 if (strLabel != null) {
 strLabel.append (t.text);
-if ((t.ch1).charCodeAt (0) != ('\0').charCodeAt (0)) strLabel.append (t.ch1);
+if (t.ch1.charCodeAt (0) != 0) strLabel.append (t.ch1);
 }} else {
 org.jmol.modelset.LabelToken.appendAtomTokenValue (viewer, atom, t, strLabel, indices);
 }}
 return (strLabel == null ? null : strLabel.toString ().intern ());
-}, "org.jmol.viewer.Viewer,org.jmol.modelset.Atom,~A,~N,~A");
+}, "org.jmol.viewer.Viewer,org.jmol.modelset.Atom,~A,~S,~A");
 c$.getBondLabelValues = Clazz.defineMethod (c$, "getBondLabelValues", 
 function () {
 var htValues =  new java.util.Hashtable ();
@@ -103,7 +103,7 @@ var tokens = org.jmol.modelset.LabelToken.compile (viewer, label, '\1', htValues
 org.jmol.modelset.LabelToken.setValues (tokens, htValues);
 var atoms = measurement.modelSet.atoms;
 var indices = measurement.getCountPlusIndices ();
-for (var i = indices[0]; i >= 1; --i) if (indices[i] >= 0) org.jmol.modelset.LabelToken.formatLabel (viewer, atoms[indices[i]], tokens, String.fromCharCode ((('0').charCodeAt (0) + i)), null);
+for (var i = indices[0]; i >= 1; --i) if (indices[i] >= 0) org.jmol.modelset.LabelToken.formatLabel (viewer, atoms[indices[i]], tokens, String.fromCharCode ((48 + i)), null);
 
 label = org.jmol.modelset.LabelToken.getLabel (tokens);
 return (label == null ? "" : label);
@@ -131,25 +131,25 @@ c$.setToken = Clazz.defineMethod (c$, "setToken",
 ($fz = function (viewer, strFormat, lt, cch, chAtom, htValues) {
 var ich = lt.pt + 1;
 var ch;
-if ((strFormat.charAt (ich)).charCodeAt (0) == ('-').charCodeAt (0)) {
+if ((strFormat.charAt (ich)).charCodeAt (0) == 45) {
 lt.alignLeft = true;
 ++ich;
-}if (ich < cch && (strFormat.charAt (ich)).charCodeAt (0) == ('0').charCodeAt (0)) {
+}if (ich < cch && (strFormat.charAt (ich)).charCodeAt (0) == 48) {
 lt.zeroPad = true;
 ++ich;
 }while (ich < cch && Character.isDigit (ch = strFormat.charAt (ich))) {
-lt.width = (10 * lt.width) + ((ch).charCodeAt (0) - ('0').charCodeAt (0));
+lt.width = (10 * lt.width) + (ch.charCodeAt (0) - 48);
 ++ich;
 }
 lt.precision = 2147483647;
 var isNegative = false;
-if (ich < cch && (strFormat.charAt (ich)).charCodeAt (0) == ('.').charCodeAt (0)) {
+if (ich < cch && (strFormat.charAt (ich)).charCodeAt (0) == 46) {
 ++ich;
-if (ich < cch && ((ch = strFormat.charAt (ich))).charCodeAt (0) == ('-').charCodeAt (0)) {
+if (ich < cch && ((ch = strFormat.charAt (ich))).charCodeAt (0) == 45) {
 isNegative = true;
 ++ich;
 }if (ich < cch && Character.isDigit (ch = strFormat.charAt (ich))) {
-lt.precision = (ch).charCodeAt (0) - ('0').charCodeAt (0);
+lt.precision = ch.charCodeAt (0) - 48;
 if (isNegative) lt.precision = -1 - lt.precision;
 ++ich;
 }}if (ich < cch && htValues != null) {
@@ -205,10 +205,10 @@ ich++;
 lt.tok = org.jmol.modelset.LabelToken.labelTokenIds[i];
 }}
 lt.text = strFormat.substring (lt.pt, ich);
-if (ich < cch && chAtom != ('\0').charCodeAt (0) && Character.isDigit (ch = strFormat.charAt (ich))) {
+if (ich < cch && chAtom != 0 && Character.isDigit (ch = strFormat.charAt (ich))) {
 ich++;
 lt.ch1 = ch;
-if ((ch).charCodeAt (0) != chAtom && chAtom != ('\1').charCodeAt (0)) lt.tok = 0;
+if (ch.charCodeAt (0) != chAtom && chAtom != 1) lt.tok = 0;
 }return ich;
 }, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~S,org.jmol.modelset.LabelToken,~N,~N,java.util.Map");
 c$.appendAtomTokenValue = Clazz.defineMethod (c$, "appendAtomTokenValue", 

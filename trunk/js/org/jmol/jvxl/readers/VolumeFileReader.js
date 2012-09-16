@@ -114,7 +114,7 @@ Clazz.defineMethod (c$, "readVoxelVector",
 function (voxelVectorIndex) {
 this.readLine ();
 var voxelVector = this.volumetricVectors[voxelVectorIndex];
-if ((this.voxelCounts[voxelVectorIndex] = this.parseInt (this.line)) == -2147483648) this.next[0] = this.line.indexOf (" ");
+if ((this.voxelCounts[voxelVectorIndex] = this.parseIntStr (this.line)) == -2147483648) this.next[0] = this.line.indexOf (" ");
 voxelVector.set (this.parseFloat (), this.parseFloat (), this.parseFloat ());
 if (this.isAnisotropic) this.setVectorAnisotropy (voxelVector);
 }, "~N");
@@ -286,7 +286,7 @@ Clazz.defineMethod (c$, "nextVoxel",
 function () {
 var voxelValue = this.parseFloat ();
 if (Float.isNaN (voxelValue)) {
-while (this.readLine () != null && Float.isNaN (voxelValue = this.parseFloat (this.line))) {
+while (this.readLine () != null && Float.isNaN (voxelValue = this.parseFloatStr (this.line))) {
 }
 if (this.line == null) {
 if (!this.endOfData) org.jmol.util.Logger.warn ("end of file reading cube voxel data? nBytes=" + this.nBytes + " nDataPoints=" + this.nDataPoints + " (line):" + this.line);
@@ -314,10 +314,10 @@ var ich = 0;
 var ichMax = str.length;
 var ch;
 while (ich < ichMax) {
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == (' ').charCodeAt (0) || (ch).charCodeAt (0) == ('\t').charCodeAt (0))) ++ich;
+while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9)) ++ich;
 
 if (ich < ichMax) ++count;
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) != (' ').charCodeAt (0) && (ch).charCodeAt (0) != ('\t').charCodeAt (0))) ++ich;
+while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) != 32 && ch.charCodeAt (0) != 9)) ++ich;
 
 }
 return count;

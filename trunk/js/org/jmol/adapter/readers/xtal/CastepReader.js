@@ -28,7 +28,7 @@ this.abc =  new Array (3);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 if (this.filter != null) {
-if (this.checkFilter ("CHARGE=")) {
+if (this.checkFilterKey ("CHARGE=")) {
 this.chargeType = this.filter.substring (this.filter.indexOf ("CHARGE=") + 7);
 if (this.chargeType.length > 4) this.chargeType = this.chargeType.substring (0, 4);
 }this.filter = this.filter.$replace ('(', '{').$replace (')', '}');
@@ -55,19 +55,19 @@ num = 1;
 denom = 1;
 break;
 case '/':
-num = this.parseFloat (s.substring (ipt, i));
+num = this.parseFloatStr (s.substring (ipt, i));
 ipt = i + 1;
 denom = 0;
 break;
 case ',':
 case ' ':
 case '}':
-if ((c).charCodeAt (0) == ('}').charCodeAt (0)) this.desiredQ = s.substring (0, i + 1);
- else if (((c).charCodeAt (0) == (' ').charCodeAt (0)) != useSpace) break;
+if (c.charCodeAt (0) == 125) this.desiredQ = s.substring (0, i + 1);
+ else if ((c.charCodeAt (0) == 32) != useSpace) break;
 if (denom == 0) {
-denom = this.parseFloat (s.substring (ipt, i));
+denom = this.parseFloatStr (s.substring (ipt, i));
 } else {
-num = this.parseFloat (s.substring (ipt, i));
+num = this.parseFloatStr (s.substring (ipt, i));
 }num /= denom;
 switch (xyz++) {
 case 0:
@@ -81,7 +81,7 @@ this.desiredQpt.z = num;
 break;
 }
 denom = 1;
-if ((c).charCodeAt (0) == ('}').charCodeAt (0)) i = s.length;
+if (c.charCodeAt (0) == 125) i = s.length;
 ipt = i + 1;
 break;
 }
@@ -154,7 +154,7 @@ this.tokens = this.getTokens ();
 atom.elementSymbol = this.tokens[1];
 atom.atomName = this.tokens[1] + this.tokens[2];
 this.atomSetCollection.addAtomWithMappedName (atom);
-this.setAtomCoord (atom, this.parseFloat (this.tokens[3]), this.parseFloat (this.tokens[4]), this.parseFloat (this.tokens[5]));
+this.setAtomCoord (atom, this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]), this.parseFloatStr (this.tokens[5]));
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readPhononTrajectories", 
@@ -173,7 +173,7 @@ while (this.line != null && this.line.contains ("<-- R")) {
 this.tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = this.tokens[0];
-this.setAtomCoord (atom, this.parseFloat (this.tokens[2]) * 0.5291772, this.parseFloat (this.tokens[3]) * 0.5291772, this.parseFloat (this.tokens[4]) * 0.5291772);
+this.setAtomCoord (atom, this.parseFloatStr (this.tokens[2]) * 0.5291772, this.parseFloatStr (this.tokens[3]) * 0.5291772, this.parseFloatStr (this.tokens[4]) * 0.5291772);
 this.readLine ();
 }
 this.applySymmetryAndSetTrajectory ();
@@ -209,17 +209,17 @@ Clazz.defineMethod (c$, "readLatticeAbc",
 if (this.tokenizeCastepCell () == 0) return ;
 var factor = this.readLengthUnit (this.tokens[0]);
 if (this.tokens.length >= 3) {
-this.a = this.parseFloat (this.tokens[0]) * factor;
-this.b = this.parseFloat (this.tokens[1]) * factor;
-this.c = this.parseFloat (this.tokens[2]) * factor;
+this.a = this.parseFloatStr (this.tokens[0]) * factor;
+this.b = this.parseFloatStr (this.tokens[1]) * factor;
+this.c = this.parseFloatStr (this.tokens[2]) * factor;
 } else {
 org.jmol.util.Logger.warn ("error reading a,b,c in %BLOCK LATTICE_ABC in CASTEP .cell file");
 return ;
 }if (this.tokenizeCastepCell () == 0) return ;
 if (this.tokens.length >= 3) {
-this.alpha = this.parseFloat (this.tokens[0]);
-this.beta = this.parseFloat (this.tokens[1]);
-this.gamma = this.parseFloat (this.tokens[2]);
+this.alpha = this.parseFloatStr (this.tokens[0]);
+this.beta = this.parseFloatStr (this.tokens[1]);
+this.gamma = this.parseFloatStr (this.tokens[2]);
 } else {
 org.jmol.util.Logger.warn ("error reading alpha,beta,gamma in %BLOCK LATTICE_ABC in CASTEP .cell file");
 }}, $fz.isPrivate = true, $fz));
@@ -232,9 +232,9 @@ var y;
 var z;
 for (var i = 0; i < 3; i++) {
 if (this.tokens.length >= 3) {
-x = this.parseFloat (this.tokens[0]) * factor;
-y = this.parseFloat (this.tokens[1]) * factor;
-z = this.parseFloat (this.tokens[2]) * factor;
+x = this.parseFloatStr (this.tokens[0]) * factor;
+y = this.parseFloatStr (this.tokens[1]) * factor;
+z = this.parseFloatStr (this.tokens[2]) * factor;
 this.abc[i] =  new javax.vecmath.Vector3f (x, y, z);
 } else {
 org.jmol.util.Logger.warn ("error reading coordinates of lattice vector " + Integer.toString (i + 1) + " in %BLOCK LATTICE_CART in CASTEP .cell file");
@@ -280,7 +280,7 @@ atom.elementSymbol = this.tokens[0].substring (0, pt);
 atom.atomName = this.tokens[0];
 } else {
 atom.elementSymbol = this.tokens[0];
-}atom.set (this.parseFloat (this.tokens[1]), this.parseFloat (this.tokens[2]), this.parseFloat (this.tokens[3]));
+}atom.set (this.parseFloatStr (this.tokens[1]), this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]));
 atom.scale (factor);
 } else {
 org.jmol.util.Logger.warn ("cannot read line with CASTEP atom data: " + this.line);
@@ -314,7 +314,7 @@ while (this.readLine ().indexOf ('=') < 0) this.getOutputEllipsoid (atoms[this.r
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readOutputAtomIndex", 
 ($fz = function () {
-this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line);
+this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
 return this.atomSetCollection.getAtomIndexFromName (this.tokens[0] + this.tokens[1]);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getOutputEllipsoid", 
@@ -354,7 +354,7 @@ if (spins != null) for (var i = 0; i < spins.length; i++) spins[i] = "0";
 
 while (this.readLine () != null && this.line.indexOf ('=') < 0) {
 var index = this.readOutputAtomIndex ();
-var charge = this.parseFloat (this.tokens[haveSpin ? this.tokens.length - 2 : this.tokens.length - 1]);
+var charge = this.parseFloatStr (this.tokens[haveSpin ? this.tokens.length - 2 : this.tokens.length - 1]);
 atoms[index].partialCharge = charge;
 if (haveSpin) spins[index] = this.tokens[this.tokens.length - 1];
 }
@@ -374,9 +374,9 @@ this.setFractionalCoordinates (true);
 while (this.readLine () != null && this.line.indexOf ("END") < 0) {
 this.tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloat (this.tokens[1]), this.parseFloat (this.tokens[2]), this.parseFloat (this.tokens[3]));
+this.setAtomCoord (atom, this.parseFloatStr (this.tokens[1]), this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]));
 atom.elementSymbol = this.tokens[4];
-atom.bfactor = this.parseFloat (this.tokens[5]);
+atom.bfactor = this.parseFloatStr (this.tokens[5]);
 }
 this.atomCount = this.atomSetCollection.getAtomCount ();
 this.atomPts =  new Array (this.atomCount);
@@ -388,7 +388,7 @@ Clazz.defineMethod (c$, "readPhononFrequencies",
 ($fz = function () {
 this.tokens = this.getTokens ();
 var v =  new javax.vecmath.Vector3f ();
-var qvec =  new javax.vecmath.Vector3f (this.parseFloat (this.tokens[2]), this.parseFloat (this.tokens[3]), this.parseFloat (this.tokens[4]));
+var qvec =  new javax.vecmath.Vector3f (this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]));
 var fcoord = this.getFractionalCoord (qvec);
 var qtoks = "{" + this.tokens[2] + " " + this.tokens[3] + " " + this.tokens[4] + "}";
 if (fcoord == null) fcoord = qtoks;
@@ -397,11 +397,11 @@ var isOK = false;
 var isSecond = (this.tokens[1].equals (this.lastQPt));
 this.qpt2 = (isSecond ? this.qpt2 + 1 : 1);
 this.lastQPt = this.tokens[1];
-if (this.filter != null && this.checkFilter ("Q=")) {
+if (this.filter != null && this.checkFilterKey ("Q=")) {
 if (this.desiredQpt != null) {
 v.sub (this.desiredQpt, qvec);
 if (v.length () < 0.001) fcoord = this.desiredQ;
-}isOK = (this.checkFilter ("Q=" + fcoord + "." + this.qpt2 + ";") || this.checkFilter ("Q=" + this.lastQPt + "." + this.qpt2 + ";") || !isSecond && this.checkFilter ("Q=" + fcoord + ";") || !isSecond && this.checkFilter ("Q=" + this.lastQPt + ";"));
+}isOK = (this.checkFilterKey ("Q=" + fcoord + "." + this.qpt2 + ";") || this.checkFilterKey ("Q=" + this.lastQPt + "." + this.qpt2 + ";") || !isSecond && this.checkFilterKey ("Q=" + fcoord + ";") || !isSecond && this.checkFilterKey ("Q=" + this.lastQPt + ";"));
 if (!isOK) return ;
 }var isGammaPoint = (qvec.length () == 0);
 var nx = 1;
@@ -428,7 +428,7 @@ if (isGammaPoint) qvec = null;
 var freqs =  new java.util.ArrayList ();
 while (this.readLine () != null && this.line.indexOf ("Phonon") < 0) {
 this.tokens = this.getTokens ();
-freqs.add (Float.$valueOf (this.parseFloat (this.tokens[1])));
+freqs.add (Float.$valueOf (this.parseFloatStr (this.tokens[1])));
 }
 this.readLine ();
 var frequencyCount = freqs.size ();

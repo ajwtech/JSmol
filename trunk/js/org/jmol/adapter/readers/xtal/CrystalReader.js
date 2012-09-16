@@ -32,8 +32,8 @@ this.ptOriginShift =  new javax.vecmath.Point3f ();
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 this.doProcessLines = false;
-this.inputOnly = this.checkFilter ("INPUT");
-this.isPrimitive = !this.inputOnly && !this.checkFilter ("CONV");
+this.inputOnly = this.checkFilterKey ("INPUT");
+this.isPrimitive = !this.inputOnly && !this.checkFilterKey ("CONV");
 this.addVibrations = new Boolean (this.addVibrations & (!this.inputOnly && this.isPrimitive)).valueOf ();
 this.getLastConventional = (!this.isPrimitive && this.desiredModelNumber == 0);
 this.setFractionalCoordinates (this.readHeader ());
@@ -167,7 +167,7 @@ return true;
 Clazz.defineMethod (c$, "fraction", 
 ($fz = function (f) {
 var ab = org.jmol.util.TextFormat.split (f, '/');
-return (ab.length == 2 ? this.parseFloat (ab[0]) / this.parseFloat (ab[1]) : 0);
+return (ab.length == 2 ? this.parseFloatStr (ab[0]) / this.parseFloatStr (ab[1]) : 0);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "readGradient", 
 ($fz = function () {
@@ -186,13 +186,13 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readVolumePrimCell", 
 ($fz = function () {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line);
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
 var volumePrim = tokens[7];
 if (tokens[9].length > 7) {
 this.line = org.jmol.util.TextFormat.simpleReplace (this.line, "DENSITY", "DENSITY ");
 }var densityPrim = tokens[10];
-this.atomSetCollection.setAtomSetModelProperty ("volumePrimitive", org.jmol.util.TextFormat.formatDecimal (this.parseFloat (volumePrim), 3));
-this.atomSetCollection.setAtomSetModelProperty ("densityPrimitive", org.jmol.util.TextFormat.formatDecimal (this.parseFloat (densityPrim), 3));
+this.atomSetCollection.setAtomSetModelProperty ("volumePrimitive", org.jmol.util.TextFormat.formatDecimal (this.parseFloatStr (volumePrim), 3));
+this.atomSetCollection.setAtomSetModelProperty ("densityPrimitive", org.jmol.util.TextFormat.formatDecimal (this.parseFloatStr (densityPrim), 3));
 return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readSpins", 
@@ -218,7 +218,7 @@ if (this.vInputCoords != null) this.processInputCoords ();
 var s =  new Array (this.atomCount);
 for (var i = 0; i < this.atomCount; i++) s[i] = "0";
 
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (data);
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (data);
 for (var i = 0; i < this.atomCount; i++, pt += dp) {
 var iConv = this.getAtomIndexFromPrimitiveIndex (i);
 if (iConv >= 0) s[iConv] = tokens[pt];
@@ -273,17 +273,17 @@ Clazz.defineMethod (c$, "readCellParams",
 var f = (this.line.indexOf ("(BOHR") >= 0 ? 0.5291772 : 1);
 if (isNewSet) this.newAtomSet ();
 if (this.isPolymer && !this.isPrimitive) {
-this.setUnitCell (this.parseFloat (this.line.substring (this.line.indexOf ("CELL") + 4)) * f, -1, -1, 90, 90, 90);
+this.setUnitCell (this.parseFloatStr (this.line.substring (this.line.indexOf ("CELL") + 4)) * f, -1, -1, 90, 90, 90);
 } else {
 this.discardLinesUntilContains ("GAMMA");
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 if (this.isSlab) {
-if (this.isPrimitive) this.setUnitCell (this.parseFloat (tokens[0]) * f, this.parseFloat (tokens[1]) * f, -1, this.parseFloat (tokens[3]), this.parseFloat (tokens[4]), this.parseFloat (tokens[5]));
- else this.setUnitCell (this.parseFloat (tokens[0]) * f, this.parseFloat (tokens[1]) * f, -1, 90, 90, this.parseFloat (tokens[2]));
+if (this.isPrimitive) this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
+ else this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, -1, 90, 90, this.parseFloatStr (tokens[2]));
 } else if (this.isPolymer) {
-this.setUnitCell (this.parseFloat (tokens[0]) * f, -1, -1, this.parseFloat (tokens[3]), this.parseFloat (tokens[4]), this.parseFloat (tokens[5]));
+this.setUnitCell (this.parseFloatStr (tokens[0]) * f, -1, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 } else {
-this.setUnitCell (this.parseFloat (tokens[0]) * f, this.parseFloat (tokens[1]) * f, this.parseFloat (tokens[2]) * f, this.parseFloat (tokens[3]), this.parseFloat (tokens[4]), this.parseFloat (tokens[5]));
+this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, this.parseFloatStr (tokens[2]) * f, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 }}}, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "readPrimitiveMapping", 
 ($fz = function () {
@@ -297,7 +297,7 @@ for (var i = 0; i < n; i++) indexToPrimitive[i] = -1;
 
 this.readLines (3);
 while (this.readLine () != null && this.line.indexOf (" NOT IRREDUCIBLE") >= 0) {
-bsInputAtomsIgnore.set (this.parseInt (this.line.substring (21, 25)) - 1);
+bsInputAtomsIgnore.set (this.parseIntStr (this.line.substring (21, 25)) - 1);
 this.readLine ();
 }
 this.readLines (3);
@@ -305,7 +305,7 @@ var iPrim = 0;
 var nPrim = 0;
 while (this.readLine () != null && this.line.indexOf ("NUMBER") < 0) {
 if (this.line.length == 0) continue ;nPrim++;
-var iAtom = this.parseInt (this.line.substring (4, 8)) - 1;
+var iAtom = this.parseIntStr (this.line.substring (4, 8)) - 1;
 if (indexToPrimitive[iAtom] < 0) {
 indexToPrimitive[iAtom] = iPrim++;
 }}
@@ -317,7 +317,7 @@ this.primitiveToIndex =  Clazz.newArray (nPrim, 0);
 for (var i = 0; i < nPrim; i++) this.primitiveToIndex[i] = -1;
 
 for (var i = this.atomCount; --i >= 0; ) {
-iPrim = indexToPrimitive[this.parseInt (this.vInputCoords.get (i).substring (0, 4)) - 1];
+iPrim = indexToPrimitive[this.parseIntStr (this.vInputCoords.get (i).substring (0, 4)) - 1];
 if (iPrim >= 0) this.primitiveToIndex[iPrim] = i;
 }
 return true;
@@ -340,9 +340,9 @@ var pt = (this.isProperties ? 1 : 2);
 atom.elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (this.getAtomicNumber (tokens[pt++]));
 atom.atomName = this.getAtomName (tokens[pt++]);
 if (this.isProperties) pt++;
-var x = this.parseFloat (tokens[pt++]);
-var y = this.parseFloat (tokens[pt++]);
-var z = this.parseFloat (tokens[pt]);
+var x = this.parseFloatStr (tokens[pt++]);
+var y = this.parseFloatStr (tokens[pt++]);
+var z = this.parseFloatStr (tokens[pt]);
 if (this.haveCharges) atom.partialCharge = this.atomSetCollection.getAtom (i++).partialCharge;
 if (this.iHaveFractionalCoordinates && !this.isProperties) {
 if (x < 0 && (this.isPolymer || this.isSlab || doNormalizePrimitive)) x += 1;
@@ -361,7 +361,7 @@ return atomName;
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getAtomicNumber", 
 ($fz = function (token) {
-var atomicNumber = this.parseInt (token);
+var atomicNumber = this.parseIntStr (token);
 while (atomicNumber >= 100) atomicNumber -= 100;
 
 return atomicNumber;
@@ -379,7 +379,7 @@ Clazz.defineMethod (c$, "processInputCoords",
 this.atomCount = this.vInputCoords.size ();
 for (var i = 0; i < this.atomCount; i++) {
 var atom = this.atomSetCollection.addNewAtom ();
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.vInputCoords.get (i));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.vInputCoords.get (i));
 var atomicNumber;
 var offset;
 if (tokens.length == 7) {
@@ -388,9 +388,9 @@ offset = 2;
 } else {
 atomicNumber = this.getAtomicNumber (tokens[1]);
 offset = 0;
-}var x = this.parseFloat (tokens[2 + offset]) + this.ptOriginShift.x;
-var y = this.parseFloat (tokens[3 + offset]) + this.ptOriginShift.y;
-var z = this.parseFloat (tokens[4 + offset]) + this.ptOriginShift.z;
+}var x = this.parseFloatStr (tokens[2 + offset]) + this.ptOriginShift.x;
+var y = this.parseFloatStr (tokens[3 + offset]) + this.ptOriginShift.y;
+var z = this.parseFloatStr (tokens[4 + offset]) + this.ptOriginShift.z;
 this.setAtomCoord (atom, x, y, z);
 atom.elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (atomicNumber);
 }
@@ -425,9 +425,9 @@ this.readLines (3);
 var atoms = this.atomSetCollection.getAtoms ();
 var i0 = this.atomSetCollection.getLastAtomSetAtomIndex ();
 var iPrim = 0;
-while (this.readLine () != null && this.line.length > 3) if ((this.line.charAt (3)).charCodeAt (0) != (' ').charCodeAt (0)) {
+while (this.readLine () != null && this.line.length > 3) if ((this.line.charAt (3)).charCodeAt (0) != 32) {
 var iConv = this.getAtomIndexFromPrimitiveIndex (iPrim);
-if (iConv >= 0) atoms[i0 + iConv].partialCharge = this.parseFloat (this.line.substring (9, 11)) - this.parseFloat (this.line.substring (12, 18));
+if (iConv >= 0) atoms[i0 + iConv].partialCharge = this.parseFloatStr (this.line.substring (9, 11)) - this.parseFloatStr (this.line.substring (12, 18));
 iPrim++;
 }
 return true;
@@ -437,7 +437,7 @@ Clazz.defineMethod (c$, "readTotalAtomicCharges",
 var data =  new StringBuffer ();
 while (this.readLine () != null && this.line.indexOf ("T") < 0) data.append (this.line);
 
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (data.toString ());
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (data.toString ());
 var charges =  Clazz.newArray (tokens.length, 0);
 if (this.nuclearCharges == null) this.nuclearCharges = charges;
 if (this.atomSetCollection.getAtomCount () == 0) return true;
@@ -446,7 +446,7 @@ var i0 = this.atomSetCollection.getLastAtomSetAtomIndex ();
 for (var i = 0; i < charges.length; i++) {
 var iConv = this.getAtomIndexFromPrimitiveIndex (i);
 if (iConv >= 0) {
-charges[i] = this.parseFloat (tokens[i]);
+charges[i] = this.parseFloatStr (tokens[i]);
 atoms[i0 + iConv].partialCharge = this.nuclearCharges[i] - charges[i];
 }}
 return true;
@@ -457,7 +457,7 @@ return (this.primitiveToIndex == null ? iPrim : this.primitiveToIndex[iPrim]);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "readFragments", 
 ($fz = function () {
-var numAtomsFrag = this.parseInt (this.line.substring (39, 44));
+var numAtomsFrag = this.parseIntStr (this.line.substring (39, 44));
 if (numAtomsFrag < 0) return true;
 this.atomFrag =  Clazz.newArray (numAtomsFrag, 0);
 var Sfrag = "";
@@ -465,8 +465,8 @@ while (this.readLine () != null && this.line.indexOf ("(") >= 0) Sfrag += this.l
 
 Sfrag = org.jmol.util.TextFormat.simpleReplace (Sfrag, "(", " ");
 Sfrag = org.jmol.util.TextFormat.simpleReplace (Sfrag, ")", " ");
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (Sfrag);
-for (var i = 0, pos = 0; i < numAtomsFrag; i++, pos += 3) this.atomFrag[i] = this.getAtomIndexFromPrimitiveIndex (this.parseInt (tokens[pos]) - 1);
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (Sfrag);
+for (var i = 0, pos = 0; i < numAtomsFrag; i++, pos += 3) this.atomFrag[i] = this.getAtomIndexFromPrimitiveIndex (this.parseIntStr (tokens[pos]) - 1);
 
 java.util.Arrays.sort (this.atomFrag);
 return true;
@@ -480,8 +480,8 @@ this.readLine ();
 var vData =  new java.util.ArrayList ();
 var freqAtomCount = this.atomCount;
 while (this.readLine () != null && this.line.length > 0) {
-var i0 = this.parseInt (this.line.substring (1, 5));
-var i1 = this.parseInt (this.line.substring (6, 10));
+var i0 = this.parseIntStr (this.line.substring (1, 5));
+var i1 = this.parseIntStr (this.line.substring (6, 10));
 var irrep = (this.isLongMode ? this.line.substring (48, 51) : this.line.substring (49, 52)).trim ();
 var intens = (!haveIntensities ? "not available" : (this.isLongMode ? this.line.substring (53, 61) : this.line.substring (59, 69).$replace (')', ' ')).trim ());
 var irActivity = (this.isLongMode ? "A" : this.line.substring (55, 58).trim ());
@@ -494,11 +494,11 @@ this.discardLinesUntilContains (this.isLongMode ? "LO MODES FOR IRREP" : this.is
 this.readLine ();
 var lastAtomCount = -1;
 while (this.readLine () != null && this.line.startsWith (" FREQ(CM**-1)")) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (15));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (15));
 var frequencies =  Clazz.newArray (tokens.length, 0);
 var frequencyCount = frequencies.length;
 for (var i = 0; i < frequencyCount; i++) {
-frequencies[i] = this.parseFloat (tokens[i]);
+frequencies[i] = this.parseFloatStr (tokens[i]);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ((this.vibrationNumber + i) + " frequency=" + frequencies[i]);
 }
 var ignore =  Clazz.newArray (frequencyCount, false);
@@ -534,9 +534,9 @@ this.readLines (6);
 var atoms = this.atomSetCollection.getAtoms ();
 while (this.readLine () != null && this.line.startsWith (" *** ATOM")) {
 var tokens = this.getTokens ();
-var index = this.parseInt (tokens[3]) - 1;
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLines (3));
-atoms[index].setEllipsoid (org.jmol.util.Eigen.getEllipsoid (this.directLatticeVectors, [this.parseFloat (tokens[1]), this.parseFloat (tokens[3]), this.parseFloat (tokens[5])], false));
+var index = this.parseIntStr (tokens[3]) - 1;
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLines (3));
+atoms[index].setEllipsoid (org.jmol.util.Eigen.getEllipsoid (this.directLatticeVectors, [this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[5])], false));
 this.readLine ();
 }
 return true;

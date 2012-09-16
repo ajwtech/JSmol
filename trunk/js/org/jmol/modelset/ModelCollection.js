@@ -134,11 +134,11 @@ return this.modelCount < 1 ? "" : modelIndex >= 0 ? this.modelNames[modelIndex] 
 }, "~N");
 Clazz.defineMethod (c$, "getModelTitle", 
 function (modelIndex) {
-return this.getModelAuxiliaryInfo (modelIndex, "title");
+return this.getModelAuxiliaryInfoValue (modelIndex, "title");
 }, "~N");
 Clazz.defineMethod (c$, "getModelFileName", 
 function (modelIndex) {
-return this.getModelAuxiliaryInfo (modelIndex, "fileName");
+return this.getModelAuxiliaryInfoValue (modelIndex, "fileName");
 }, "~N");
 Clazz.defineMethod (c$, "setFrameTitle", 
 function (bsFrames, title) {
@@ -467,14 +467,14 @@ function (modelIndex) {
 var htFull =  new java.util.Hashtable ();
 var ok = false;
 for (var i = this.modelCount; --i >= 0; ) if (modelIndex < 0 || i == modelIndex) {
-var ht = this.getModelAuxiliaryInfo (i, "hetNames");
+var ht = this.getModelAuxiliaryInfoValue (i, "hetNames");
 if (ht == null) continue ;ok = true;
 for (var entry, $entry = ht.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 htFull.put (key, entry.getValue ());
 }
 }
-return (ok ? htFull : this.getModelSetAuxiliaryInfo ("hetNames"));
+return (ok ? htFull : this.getModelSetAuxiliaryInfoValue ("hetNames"));
 }, "~N");
 Clazz.defineMethod (c$, "getModelSetProperties", 
 function () {
@@ -488,14 +488,17 @@ Clazz.defineMethod (c$, "getModelSetProperty",
 function (propertyName) {
 return (this.modelSetProperties == null ? null : this.modelSetProperties.getProperty (propertyName));
 }, "~S");
-Clazz.defineMethod (c$, "getModelSetAuxiliaryInfo", 
+Clazz.defineMethod (c$, "getModelSetAuxiliaryInfoValue", 
 function (keyName) {
 return (this.modelSetAuxiliaryInfo == null ? null : this.modelSetAuxiliaryInfo.get (keyName));
 }, "~S");
 Clazz.defineMethod (c$, "getModelSetAuxiliaryInfoBoolean", 
 function (keyName) {
-return (this.modelSetAuxiliaryInfo != null && this.modelSetAuxiliaryInfo.containsKey (keyName) && (this.modelSetAuxiliaryInfo.get (keyName)).booleanValue ());
-}, "~S");
+if (this.modelSetAuxiliaryInfo == null || !this.modelSetAuxiliaryInfo.containsKey (keyName)) return false;
+var o = this.modelSetAuxiliaryInfo.get (keyName);
+{
+return o.valueOf();
+}}, "~S");
 Clazz.defineMethod (c$, "getMergeTrajectoryCount", 
 function (isTrajectory) {
 if (this.trajectorySteps == null) {
@@ -610,7 +613,7 @@ Clazz.defineMethod (c$, "setModelAuxiliaryInfo",
 function (modelIndex, key, value) {
 this.models[modelIndex].auxiliaryInfo.put (key, value);
 }, "~N,~O,~O");
-Clazz.defineMethod (c$, "getModelAuxiliaryInfo", 
+Clazz.defineMethod (c$, "getModelAuxiliaryInfoValue", 
 function (modelIndex, key) {
 if (modelIndex < 0) {
 return null;
@@ -630,7 +633,7 @@ return (info.get (keyName)).intValue ();
 }, "~N,~S");
 Clazz.defineMethod (c$, "getModelAtomProperty", 
 function (atom, text) {
-var data = this.getModelAuxiliaryInfo (atom.modelIndex, text);
+var data = this.getModelAuxiliaryInfoValue (atom.modelIndex, text);
 if (!(Clazz.instanceOf (data, Array))) return "";
 var sdata = data;
 var iatom = atom.index - this.models[atom.modelIndex].firstAtomIndex;
@@ -642,7 +645,7 @@ return this.models[modelIndex].nInsertions;
 }, "~N");
 Clazz.defineMethod (c$, "getModelFileType", 
 function (modelIndex) {
-return this.getModelAuxiliaryInfo (modelIndex, "fileType");
+return this.getModelAuxiliaryInfoValue (modelIndex, "fileType");
 }, "~N");
 c$.modelFileNumberFromFloat = Clazz.defineMethod (c$, "modelFileNumberFromFloat", 
 function (fDotM) {
@@ -754,7 +757,7 @@ v.add (q);
 i = g.lastAtomIndex;
 }
 return v.toArray ( new Array (v.size ()));
-}, "java.util.BitSet,~N,~N");
+}, "java.util.BitSet,~N,~S");
 Clazz.defineMethod (c$, "getPdbAtomData", 
 function (bs, sb) {
 if (this.atomCount == 0 || bs.nextSetBit (0) < 0) return "";
@@ -858,7 +861,7 @@ atomLast = a;
 }sb.append (pdbCONECT.toString ());
 if (isDraw) return sb.toString ();
 bsSelected.and (bsAtoms);
-if (isPDB) sb.append ("\n\n" + this.getProteinStructureState (bsWritten, false, (ctype).charCodeAt (0) == ('R').charCodeAt (0), 1));
+if (isPDB) sb.append ("\n\n" + this.getProteinStructureState (bsWritten, false, ctype.charCodeAt (0) == 82, 1));
 return sb.toString ();
 }, "~N,~S,java.util.BitSet,~A,org.jmol.util.OutputStringBuffer");
 Clazz.defineMethod (c$, "isJmolDataFrame", 
@@ -927,7 +930,7 @@ Clazz.defineMethod (c$, "getFileHeader",
 function (modelIndex) {
 if (modelIndex < 0) return "";
 if (this.models[modelIndex].isBioModel) return this.models[modelIndex].getFullPDBHeader ();
-var info = this.getModelAuxiliaryInfo (modelIndex, "fileHeader");
+var info = this.getModelAuxiliaryInfoValue (modelIndex, "fileHeader");
 if (info == null) info = this.modelSetName;
 if (info != null) return info;
 return "no header information found";
@@ -970,14 +973,14 @@ if (reslist.length != 0 && resnolast != resnofirst) reslist += "-" + resnolast;
 chain = '\1';
 resnofirst = resno;
 }model = "/" + this.getModelNumberDotted (atom.modelIndex);
-if ((chainlast).charCodeAt (0) != ('\0').charCodeAt (0) && (chain).charCodeAt (0) != (chainlast).charCodeAt (0)) reslist += ":" + chainlast + model;
-if ((chain).charCodeAt (0) == ('\1').charCodeAt (0)) reslist += " " + resno;
+if (chainlast.charCodeAt (0) != 0 && chain.charCodeAt (0) != chainlast.charCodeAt (0)) reslist += ":" + chainlast + model;
+if (chain.charCodeAt (0) == 1) reslist += " " + resno;
 resnolast = resno;
 chainlast = atom.getChainID ();
 names += sep + atom.getGroup3 (false);
 sep = "-";
 }
-reslist += (resnofirst == resnolast ? "" : "-" + resnolast) + ((chainlast).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : ":" + chainlast) + model;
+reslist += (resnofirst == resnolast ? "" : "-" + resnolast) + (chainlast.charCodeAt (0) == 0 ? "" : ":" + chainlast) + model;
 ligand.put ("groupNames", names);
 ligand.put ("residueList", reslist.substring (1));
 }
@@ -1007,7 +1010,7 @@ var s = this.getModelTitle (i);
 if (s != null) model.put ("title", s);
 s = this.getModelFileName (i);
 if (s != null) model.put ("file", s);
-s = this.getModelAuxiliaryInfo (i, "modelID");
+s = this.getModelAuxiliaryInfoValue (i, "modelID");
 if (s != null) model.put ("id", s);
 model.put ("vibrationVectors", Boolean.$valueOf (this.modelHasVibrationVectors (i)));
 model.put ("atomCount", Integer.$valueOf (this.models[i].atomCount));
@@ -1018,7 +1021,7 @@ model.put ("polymerCount", Integer.$valueOf (this.models[i].getBioPolymerCount (
 model.put ("chainCount", Integer.$valueOf (this.getChainCountInModel (i, true)));
 if (this.models[i].properties != null) {
 model.put ("modelProperties", this.models[i].properties);
-}var energy = this.getModelAuxiliaryInfo (i, "Energy");
+}var energy = this.getModelAuxiliaryInfoValue (i, "Energy");
 if (energy != null) {
 model.put ("energy", energy);
 }model.put ("atomCount", Integer.$valueOf (this.models[i].atomCount));
@@ -1029,29 +1032,29 @@ return info;
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "getAltLocIndexInModel", 
 function (modelIndex, alternateLocationID) {
-if ((alternateLocationID).charCodeAt (0) == ('\0').charCodeAt (0)) {
+if (alternateLocationID.charCodeAt (0) == 0) {
 return 0;
 }var altLocList = this.getAltLocListInModel (modelIndex);
 if (altLocList.length == 0) {
 return 0;
 }return altLocList.indexOf (alternateLocationID) + 1;
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "getInsertionCodeIndexInModel", 
 function (modelIndex, insertionCode) {
-if ((insertionCode).charCodeAt (0) == ('\0').charCodeAt (0)) return 0;
+if (insertionCode.charCodeAt (0) == 0) return 0;
 var codeList = this.getInsertionListInModel (modelIndex);
 if (codeList.length == 0) return 0;
 return codeList.indexOf (insertionCode) + 1;
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "getAltLocListInModel", 
 function (modelIndex) {
 if (modelIndex < 0) return "";
-var str = this.getModelAuxiliaryInfo (modelIndex, "altLocs");
+var str = this.getModelAuxiliaryInfoValue (modelIndex, "altLocs");
 return (str == null ? "" : str);
 }, "~N");
 Clazz.defineMethod (c$, "getInsertionListInModel", 
 ($fz = function (modelIndex) {
-var str = this.getModelAuxiliaryInfo (modelIndex, "insertionCodes");
+var str = this.getModelAuxiliaryInfoValue (modelIndex, "insertionCodes");
 return (str == null ? "" : str);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "getModelSymmetryCount", 
@@ -1159,8 +1162,8 @@ return null;
 Clazz.defineMethod (c$, "getModelDipole", 
 function (modelIndex) {
 if (modelIndex < 0) return null;
-var dipole = this.getModelAuxiliaryInfo (modelIndex, "dipole");
-if (dipole == null) dipole = this.getModelAuxiliaryInfo (modelIndex, "DIPOLE_VEC");
+var dipole = this.getModelAuxiliaryInfoValue (modelIndex, "dipole");
+if (dipole == null) dipole = this.getModelAuxiliaryInfoValue (modelIndex, "DIPOLE_VEC");
 return dipole;
 }, "~N");
 Clazz.defineMethod (c$, "calculateMolecularDipole", 
@@ -1528,7 +1531,7 @@ c$.getAtomResidueInfo = Clazz.defineMethod (c$, "getAtomResidueInfo",
 ($fz = function (info, atom) {
 info.append ("[").append (atom.getGroup3 (false)).append ("]").append (atom.getSeqcodeString ()).append (":");
 var id = atom.getChainID ();
-info.append ((id).charCodeAt (0) == ('\0').charCodeAt (0) ? " " : "" + id);
+info.append (id.charCodeAt (0) == 0 ? " " : "" + id);
 }, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.modelset.Atom");
 Clazz.defineMethod (c$, "getBasePairBits", 
 ($fz = function (specInfo) {
@@ -1634,7 +1637,7 @@ atomA = this.atoms[iA];
 if (atomA.isDeleted ()) continue ;}for (var iB = (isBonds ? m : bsB.nextSetBit (0)); iB >= 0; iB = (isBonds ? iB - 1 : bsB.nextSetBit (iB + 1))) {
 if (!isBonds) {
 if (iB == iA) continue ;atomB = this.atoms[iB];
-if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted ()) continue ;if ((atomA.alternateLocationID).charCodeAt (0) != (atomB.alternateLocationID).charCodeAt (0) && (atomA.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0) && (atomB.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0)) continue ;bondAB = atomA.getBond (atomB);
+if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted ()) continue ;if (atomA.alternateLocationID.charCodeAt (0) != atomB.alternateLocationID.charCodeAt (0) && atomA.alternateLocationID.charCodeAt (0) != 0 && atomB.alternateLocationID.charCodeAt (0) != 0) continue ;bondAB = atomA.getBond (atomB);
 }if (bondAB == null && (identifyOnly || modifyOnly) || bondAB != null && createOnly) continue ;var distanceSquared = atomA.distanceSquared (atomB);
 if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
 dAB = atomA.distance (atomB);
@@ -1913,9 +1916,9 @@ sb.append ("\n <property name=\"").append (propertyName).append ("\" value=").ap
 }
 sb.append ("\n</properties>");
 }for (var i = 0; i < this.modelCount; ++i) {
-sb.append ("\n<model index=\"").append (i).append ("\" n=\"").append (this.getModelNumberDotted (i)).append ("\" id=").append (org.jmol.util.Escape.escapeStr ("" + this.getModelAuxiliaryInfo (i, "modelID")));
+sb.append ("\n<model index=\"").append (i).append ("\" n=\"").append (this.getModelNumberDotted (i)).append ("\" id=").append (org.jmol.util.Escape.escapeStr ("" + this.getModelAuxiliaryInfoValue (i, "modelID")));
 var ib = this.getBaseModelIndex (i);
-if (ib != i) sb.append (" baseModelId=").append (org.jmol.util.Escape.escape (this.getModelAuxiliaryInfo (ib, "jdxModelID")));
+if (ib != i) sb.append (" baseModelId=").append (org.jmol.util.Escape.escape (this.getModelAuxiliaryInfoValue (ib, "jdxModelID")));
 sb.append (" name=").append (org.jmol.util.Escape.escapeStr (this.getModelName (i))).append (" title=").append (org.jmol.util.Escape.escapeStr (this.getModelTitle (i))).append (" hasVibrationVectors=\"").append (this.modelHasVibrationVectors (i)).append ("\" />");
 }
 sb.append ("\n</models>");
@@ -2159,7 +2162,7 @@ var sb =  new StringBuffer ();
 for (var i = 0; i < this.modelCount; ++i) {
 if (frames != null && !frames.get (i)) continue ;var s = "[\"" + this.getModelNumberDotted (i) + "\"] = ";
 sb.append ("\n\nfile").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelFileName (i)));
-var id = this.getModelAuxiliaryInfo (i, "modelID");
+var id = this.getModelAuxiliaryInfoValue (i, "modelID");
 if (id != null) sb.append ("\nid").append (s).append (org.jmol.util.Escape.escapeStr (id));
 sb.append ("\ntitle").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelTitle (i)));
 sb.append ("\nname").append (s).append (org.jmol.util.Escape.escapeStr (this.getModelName (i)));
@@ -2230,13 +2233,13 @@ info.put ("resname", atom.getGroup3 (false));
 var seqNum = atom.getSeqNumber ();
 var insCode = atom.getInsertionCode ();
 if (seqNum > 0) info.put ("resno", Integer.$valueOf (seqNum));
-if ((insCode).charCodeAt (0) != 0) info.put ("insertionCode", "" + insCode);
+if (insCode.charCodeAt (0) != 0) info.put ("insertionCode", "" + insCode);
 var chainID = atom.getChainID ();
 info.put ("name", this.getAtomName (i));
-info.put ("chain", ((chainID).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + chainID));
+info.put ("chain", (chainID.charCodeAt (0) == 0 ? "" : "" + chainID));
 info.put ("atomID", Integer.$valueOf (atom.atomID));
 info.put ("groupID", Integer.$valueOf (atom.getGroupID ()));
-if ((atom.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0)) info.put ("altLocation", "" + atom.alternateLocationID);
+if (atom.alternateLocationID.charCodeAt (0) != 0) info.put ("altLocation", "" + atom.alternateLocationID);
 info.put ("structure", Integer.$valueOf (atom.getProteinStructureType ().getId ()));
 info.put ("polymerLength", Integer.$valueOf (atom.getPolymerLength ()));
 info.put ("occupancy", Integer.$valueOf (atom.getOccupancy100 ()));
@@ -2348,7 +2351,7 @@ info =  new java.util.Hashtable ();
 info.put ("spaceGroupInfo", strOperations);
 info.put ("symmetryInfo", "");
 } else if (pt1 == null && drawID == null && symOp != 0) {
-info = this.getModelAuxiliaryInfo (modelIndex, "spaceGroupInfo");
+info = this.getModelAuxiliaryInfoValue (modelIndex, "spaceGroupInfo");
 }if (info != null) return info;
 info =  new java.util.Hashtable ();
 if (pt1 == null && drawID == null && symOp == 0) this.setModelAuxiliaryInfo (modelIndex, "spaceGroupInfo", info);
@@ -2463,8 +2466,8 @@ this.modelNumbersForAtomLabel = org.jmol.util.ArrayUtil.deleteElements (this.mod
 this.modelNames = org.jmol.util.ArrayUtil.deleteElements (this.modelNames, modelIndex, 1);
 this.frameTitles = org.jmol.util.ArrayUtil.deleteElements (this.frameTitles, modelIndex, 1);
 this.thisStateModel = -1;
-var group3Lists = this.getModelSetAuxiliaryInfo ("group3Lists");
-var group3Counts = this.getModelSetAuxiliaryInfo ("group3Counts");
+var group3Lists = this.getModelSetAuxiliaryInfoValue ("group3Lists");
+var group3Counts = this.getModelSetAuxiliaryInfoValue ("group3Counts");
 var ptm = modelIndex + 1;
 if (group3Lists != null && group3Lists[ptm] != null) {
 for (var i = Math.floor (group3Lists[ptm].length / 6); --i >= 0; ) if (group3Counts[ptm][i] > 0) {
@@ -2488,7 +2491,7 @@ function (modelIndex) {
 var sb =  new StringBuffer ();
 for (var m = 0; m < this.modelCount; m++) {
 if (modelIndex >= 0 && m != modelIndex) {
-continue ;}var moData = this.viewer.getModelAuxiliaryInfo (m, "moData");
+continue ;}var moData = this.viewer.getModelAuxiliaryInfoValue (m, "moData");
 if (moData == null) {
 continue ;}var mos = (moData.get ("mos"));
 var nOrb = (mos == null ? 0 : mos.size ());
@@ -2508,7 +2511,7 @@ type = "occupancy " + occ.floatValue () + " " + type;
 if (sym != null) {
 type += sym;
 }var energy = "" + mo.get ("energy");
-if (Float.isNaN (org.jmol.util.Parser.parseFloat (energy))) sb.append (org.jmol.util.TextFormat.sprintf ("model %-2s;  mo %-2i # %s\n", [this.getModelNumberDotted (m), Integer.$valueOf (i + 1), type]));
+if (Float.isNaN (org.jmol.util.Parser.parseFloatStr (energy))) sb.append (org.jmol.util.TextFormat.sprintf ("model %-2s;  mo %-2i # %s\n", [this.getModelNumberDotted (m), Integer.$valueOf (i + 1), type]));
  else sb.append (org.jmol.util.TextFormat.sprintf ("model %-2s;  mo %-2i # energy %-8.3f %s %s\n", [this.getModelNumberDotted (m), Integer.$valueOf (i + 1), mo.get ("energy"), units, type]));
 }
 }
@@ -2816,7 +2819,7 @@ if (isBaseModel) id = id.substring (0, id.length - 10);
 var errCode = -1;
 var fname = null;
 for (var i = 0; i < this.modelCount; i++) {
-var mid = this.getModelAuxiliaryInfo (i, "modelID");
+var mid = this.getModelAuxiliaryInfoValue (i, "modelID");
 if (mid == null && (mid = this.getModelTitle (i)) == null) continue ;if (haveFile) {
 fname = this.getModelFileName (i) + "#";
 mid = fname + mid;
@@ -2839,7 +2842,7 @@ break;
 default:
 return null;
 }
-var peaks = this.getModelAuxiliaryInfo (iModel, "jdxAtomSelect_" + type);
+var peaks = this.getModelAuxiliaryInfoValue (iModel, "jdxAtomSelect_" + type);
 if (peaks == null) return null;
 this.htPeaks = null;
 if (this.htPeaks == null) this.htPeaks =  new java.util.Hashtable ();
@@ -2864,8 +2867,8 @@ return this.getModelAtomBitSetIncludingDeleted (this.getBaseModelIndex (modelInd
 }, "~N");
 Clazz.defineMethod (c$, "getBaseModelIndex", 
 ($fz = function (modelIndex) {
-var baseModel = this.getModelAuxiliaryInfo (modelIndex, "jdxBaseModel");
-if (baseModel != null) for (var i = this.models.length; --i >= 0; ) if (baseModel.equals (this.getModelAuxiliaryInfo (i, "jdxModelID"))) return i;
+var baseModel = this.getModelAuxiliaryInfoValue (modelIndex, "jdxBaseModel");
+if (baseModel != null) for (var i = this.models.length; --i >= 0; ) if (baseModel.equals (this.getModelAuxiliaryInfoValue (i, "jdxModelID"))) return i;
 
 return modelIndex;
 }, $fz.isPrivate = true, $fz), "~N");

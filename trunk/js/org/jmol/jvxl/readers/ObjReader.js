@@ -24,12 +24,12 @@ var spt = null;
 var pymolMap =  Clazz.newArray (3, 0);
 var bsOK =  new java.util.BitSet ();
 while (this.readLine () != null) {
-if (this.line.length < 2 || (this.line.charAt (1)).charCodeAt (0) != (' ').charCodeAt (0)) {
+if (this.line.length < 2 || (this.line.charAt (1)).charCodeAt (0) != 32) {
 if (this.params.readAllData && this.line.startsWith ("usemtl")) color = org.jmol.util.ColorUtil.getArgbFromString ("[x" + this.line.substring (8) + "]");
 continue ;}switch (this.line.charAt (0)) {
 case 'v':
 this.next[0] = 2;
-pt.set (org.jmol.util.Parser.parseFloat (this.line, this.next), org.jmol.util.Parser.parseFloat (this.line, this.next), org.jmol.util.Parser.parseFloat (this.line, this.next));
+pt.set (org.jmol.util.Parser.parseFloatNext (this.line, this.next), org.jmol.util.Parser.parseFloatNext (this.line, this.next), org.jmol.util.Parser.parseFloatNext (this.line, this.next));
 var addHt = false;
 if (htPymol == null) {
 i = this.nVertices;

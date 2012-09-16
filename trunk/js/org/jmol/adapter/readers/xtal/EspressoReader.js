@@ -33,18 +33,18 @@ this.endFlag = true;
 });
 Clazz.defineMethod (c$, "readAparam", 
 ($fz = function () {
-this.aPar = this.parseFloat (this.getTokens ()[4]) * 0.5291772;
+this.aPar = this.parseFloatStr (this.getTokens ()[4]) * 0.5291772;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readCellParam", 
 ($fz = function (andAPar) {
 var i0 = (andAPar ? 0 : 3);
-if (andAPar && this.line.contains ("=")) this.aPar = this.parseFloat (this.line.substring (this.line.indexOf ("=") + 1)) * 0.5291772;
+if (andAPar && this.line.contains ("=")) this.aPar = this.parseFloatStr (this.line.substring (this.line.indexOf ("=") + 1)) * 0.5291772;
 this.cellParams =  Clazz.newArray (9, 0);
 for (var n = 0, i = 0; n < 3; n++) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
-this.cellParams[i++] = this.parseFloat (tokens[i0]) * this.aPar;
-this.cellParams[i++] = this.parseFloat (tokens[i0 + 1]) * this.aPar;
-this.cellParams[i++] = this.parseFloat (tokens[i0 + 2]) * this.aPar;
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
+this.cellParams[i++] = this.parseFloatStr (tokens[i0]) * this.aPar;
+this.cellParams[i++] = this.parseFloatStr (tokens[i0 + 1]) * this.aPar;
+this.cellParams[i++] = this.parseFloatStr (tokens[i0 + 2]) * this.aPar;
 }
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "newAtomSet", 
@@ -75,9 +75,9 @@ var tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[(isBohr || tokens.length == 4 || !firstStr ? 0 : 1)];
 var i1 = (isBohr || tokens.length == 4 || !firstStr ? 1 : tokens.length - 4);
-var x = this.parseFloat (tokens[i1++]);
-var y = this.parseFloat (tokens[i1++]);
-var z = this.parseFloat (tokens[i1++]);
+var x = this.parseFloatStr (tokens[i1++]);
+var y = this.parseFloatStr (tokens[i1++]);
+var z = this.parseFloatStr (tokens[i1++]);
 atom.set (x, y, z);
 if (isBohr) {
 atom.scale (0.5291772);
@@ -90,7 +90,7 @@ if (this.endFlag) this.discardLinesUntilContains ("Harris-Foulkes estimate");
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readEnergy", 
 ($fz = function () {
-this.totEnergy = Double.$valueOf (Double.parseDouble (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (this.line.indexOf ("=") + 1))[0]));
+this.totEnergy = Double.$valueOf (Double.parseDouble (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf ("=") + 1))[0]));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setEnergy", 
 ($fz = function () {

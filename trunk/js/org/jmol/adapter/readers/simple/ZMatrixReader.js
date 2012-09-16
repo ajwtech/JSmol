@@ -38,7 +38,7 @@ this.checkLineForScript ();
 return true;
 }if (this.line.indexOf ("#") >= 0) this.line = this.line.substring (0, this.line.indexOf ("#"));
 if (this.line.indexOf (":") >= 0) return true;
-this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line);
+this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
 if (this.tokens.length == 2) {
 this.getSymbolic ();
 return true;
@@ -64,7 +64,7 @@ Clazz.superCall (this, org.jmol.adapter.readers.simple.ZMatrixReader, "finalizeR
 Clazz.defineMethod (c$, "getSymbolic", 
 ($fz = function () {
 if (this.symbolicMap.containsKey (this.tokens[0])) return ;
-var f = this.parseFloat (this.tokens[1]);
+var f = this.parseFloatStr (this.tokens[1]);
 this.symbolicMap.put (this.tokens[0], Float.$valueOf (f));
 org.jmol.util.Logger.info ("symbolic " + this.tokens[0] + " = " + f);
 }, $fz.isPrivate = true, $fz));
@@ -149,7 +149,7 @@ return (isNeg ? -f : f);
 Clazz.defineMethod (c$, "getValue", 
 ($fz = function (i) {
 var f = this.getSymbolic (this.tokens[i]);
-if (Float.isNaN (f)) f = this.parseFloat (this.tokens[i]);
+if (Float.isNaN (f)) f = this.parseFloatStr (this.tokens[i]);
 if (Float.isNaN (f)) throw  new Exception ("Bad Z-matrix value: " + this.tokens[i]);
 return f;
 }, $fz.isPrivate = true, $fz), "~N");
@@ -157,7 +157,7 @@ Clazz.defineMethod (c$, "getAtomIndex",
 ($fz = function (i) {
 var name;
 if (i >= this.tokens.length || (name = this.tokens[i]).indexOf (".") >= 0 || !Character.isLetterOrDigit (name.charAt (0))) return -1;
-var ia = this.parseInt (name);
+var ia = this.parseIntStr (name);
 if (ia <= 0 || name.length != ("" + ia).length) {
 var I = this.atomMap.get (name);
 if (I == null) {

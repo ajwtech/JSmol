@@ -19,7 +19,7 @@ this.skipTo ("<" + name);
 if (this.line == null) return "";
 var i = this.line.indexOf ("<" + name) + name.length + 1;
 if (i == this.line.length) return this.line;
-if ((this.line.charAt (i)).charCodeAt (0) == (' ').charCodeAt (0) || (this.line.charAt (i)).charCodeAt (0) == ('>').charCodeAt (0)) return this.line;
+if ((this.line.charAt (i)).charCodeAt (0) == 32 || (this.line.charAt (i)).charCodeAt (0) == 62) return this.line;
 this.line = null;
 return this.toTag (name);
 }, "~S");
@@ -74,9 +74,9 @@ return data.substring (pt1, pt2);
 }var quoted = false;
 for (; pt1 < pt2; pt1++) {
 var ch;
-if (((ch = data.charAt (pt1))).charCodeAt (0) == ('"').charCodeAt (0)) quoted = !quoted;
- else if (quoted && (ch).charCodeAt (0) == ('\\').charCodeAt (0)) pt1++;
- else if (!quoted && ((ch).charCodeAt (0) == ('>').charCodeAt (0) || (ch).charCodeAt (0) == ('/').charCodeAt (0))) break;
+if (((ch = data.charAt (pt1))).charCodeAt (0) == 34) quoted = !quoted;
+ else if (quoted && ch.charCodeAt (0) == 92) pt1++;
+ else if (!quoted && (ch.charCodeAt (0) == 62 || ch.charCodeAt (0) == 47)) break;
 }
 if (pt1 >= pt2) return "";
 while (Character.isWhitespace (data.charAt (++pt1))) {
@@ -104,7 +104,7 @@ var ipt = next[0];
 if (ipt < 0 || (ipt = data.indexOf (what, next[0])) < 0) return -1;
 ipt += what.length;
 next[0] = ipt + offset;
-if (offset > 0 && ipt < data.length && (data.charAt (ipt)).charCodeAt (0) != ('=').charCodeAt (0)) return org.jmol.util.XmlReader.setNext (data, what, next, offset);
+if (offset > 0 && ipt < data.length && (data.charAt (ipt)).charCodeAt (0) != 61) return org.jmol.util.XmlReader.setNext (data, what, next, offset);
 return next[0];
 }, $fz.isPrivate = true, $fz), "~S,~S,~A,~N");
 Clazz.defineMethod (c$, "skipTo", 

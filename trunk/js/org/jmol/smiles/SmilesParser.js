@@ -47,7 +47,7 @@ if (strFlags.indexOf ("NOSTEREO") >= 0) this.flags |= 2;
 if (pattern.indexOf ("$") >= 0) pattern = this.parseVariables (pattern);
 if (this.isSmarts && pattern.indexOf ("[$") >= 0) pattern = this.parseVariableLength (pattern);
 if (pattern.indexOf ("||") >= 0) {
-var patterns = org.jmol.util.TextFormat.split (pattern, "||");
+var patterns = org.jmol.util.TextFormat.splitChars (pattern, "||");
 var toDo = "";
 search.subSearches =  new Array (patterns.length);
 for (var i = 0; i < patterns.length; i++) {
@@ -77,14 +77,14 @@ break;
 case '|':
 if (nParen > 0) {
 haveInternalOr = true;
-if ((pattern.charAt (i + 1)).charCodeAt (0) == ('|').charCodeAt (0)) {
+if ((pattern.charAt (i + 1)).charCodeAt (0) == 124) {
 pattern = pattern.substring (0, i) + pattern.substring (i + 1);
 len--;
 }}break;
 }
 }
 if (pattern.indexOf ("||") >= 0) {
-var patterns = org.jmol.util.TextFormat.split (pattern, "||");
+var patterns = org.jmol.util.TextFormat.splitChars (pattern, "||");
 for (var i = 0; i < patterns.length; i++) sout.append ("||").append (this.parseVariableLength (patterns[i]));
 
 } else {
@@ -99,10 +99,10 @@ var max = -2147483648;
 pt = org.jmol.smiles.SmilesParser.getDigits (pattern, pt + 2, ret);
 min = ret[0];
 if (min != -2147483648) {
-if ((org.jmol.smiles.SmilesParser.getChar (pattern, pt)).charCodeAt (0) == ('-').charCodeAt (0)) {
+if ((org.jmol.smiles.SmilesParser.getChar (pattern, pt)).charCodeAt (0) == 45) {
 pt = org.jmol.smiles.SmilesParser.getDigits (pattern, pt + 1, ret);
 max = ret[0];
-}}if ((org.jmol.smiles.SmilesParser.getChar (pattern, pt)).charCodeAt (0) != ('(').charCodeAt (0)) continue ;bracketed = org.jmol.smiles.SmilesParser.getSubPattern (pattern, pt0, '[');
+}}if ((org.jmol.smiles.SmilesParser.getChar (pattern, pt)).charCodeAt (0) != 40) continue ;bracketed = org.jmol.smiles.SmilesParser.getSubPattern (pattern, pt0, '[');
 if (!bracketed.endsWith (")")) continue ;var pt1 = pt0 + bracketed.length + 2;
 var repeat = org.jmol.smiles.SmilesParser.getSubPattern (pattern, pt, '(');
 var pt2 = pt;
@@ -164,7 +164,7 @@ molecule.setAtomArray ();
 for (var i = molecule.atomCount; --i >= 0; ) {
 var atom = molecule.patternAtoms[i];
 atom.setBondArray ();
-if (!this.isSmarts && (atom.bioType).charCodeAt (0) == ('\0').charCodeAt (0) && !atom.setHydrogenCount (molecule)) throw  new org.jmol.smiles.InvalidSmilesException ("unbracketed atoms must be one of: B, C, N, O, P, S, F, Cl, Br, I,");
+if (!this.isSmarts && atom.bioType.charCodeAt (0) == 0 && !atom.setHydrogenCount (molecule)) throw  new org.jmol.smiles.InvalidSmilesException ("unbracketed atoms must be one of: B, C, N, O, P, S, F, Cl, Br, I,");
 }
 if (this.isSmarts) for (var i = molecule.atomCount; --i >= 0; ) {
 var atom = molecule.patternAtoms[i];
@@ -185,7 +185,7 @@ var o = molecule.getNested (atom.iNested);
 if (Clazz.instanceOf (o, String)) {
 var s = o;
 if (s.startsWith ("select")) return ;
-if ((s.charAt (0)).charCodeAt (0) != ('~').charCodeAt (0) && (atom.bioType).charCodeAt (0) != ('\0').charCodeAt (0)) s = "~" + atom.bioType + "~" + s;
+if ((s.charAt (0)).charCodeAt (0) != 126 && atom.bioType.charCodeAt (0) != 0) s = "~" + atom.bioType + "~" + s;
 var search = this.getSearch (molecule, s, flags);
 if (search.atomCount > 0 && search.patternAtoms[0].selected) atom.selected = true;
 molecule.setNested (atom.iNested, search);
@@ -240,8 +240,8 @@ index = this.checkBioType (pattern, 0);
 }ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
 var haveOpen = this.checkBrace (molecule, ch, '{');
 if (haveOpen) ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++index);
-if ((ch).charCodeAt (0) == ('(').charCodeAt (0)) {
-var isMeasure = ((org.jmol.smiles.SmilesParser.getChar (pattern, index + 1)).charCodeAt (0) == ('.').charCodeAt (0));
+if (ch.charCodeAt (0) == 40) {
+var isMeasure = ((org.jmol.smiles.SmilesParser.getChar (pattern, index + 1)).charCodeAt (0) == 46);
 if (currentAtom == null) throw  new org.jmol.smiles.InvalidSmilesException ("No previous atom for " + (isMeasure ? "measure" : "branch"));
 var subString = org.jmol.smiles.SmilesParser.getSubPattern (pattern, index, '(');
 if (subString.startsWith (".")) {
@@ -254,7 +254,7 @@ this.parseSmiles (molecule, subString, currentAtom, true);
 this.branchLevel--;
 }index = subString.length + 2;
 ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
-if ((ch).charCodeAt (0) == ('}').charCodeAt (0) && this.checkBrace (molecule, ch, '}')) index++;
+if (ch.charCodeAt (0) == 125 && this.checkBrace (molecule, ch, '}')) index++;
 } else {
 pt = index;
 while (org.jmol.smiles.SmilesBond.isBondType (ch, this.isSmarts, this.isBioSequence)) ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++index);
@@ -263,17 +263,17 @@ bond = this.parseBond (molecule, null, pattern.substring (pt, index), null, curr
 if (haveOpen && bond.order != -1) index = pt;
 ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
 if (this.checkBrace (molecule, ch, '{')) ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++index);
-if ((ch).charCodeAt (0) == ('~').charCodeAt (0) && bond.order == 0) {
+if (ch.charCodeAt (0) == 126 && bond.order == 0) {
 index = this.checkBioType (pattern, index);
 ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
-}if ((ch).charCodeAt (0) == ('\0').charCodeAt (0) && bond.order == 0) return ;
-var isRing = (Character.isDigit (ch) || (ch).charCodeAt (0) == ('%').charCodeAt (0));
-var isAtom = (!isRing && ((ch).charCodeAt (0) == ('_').charCodeAt (0) || (ch).charCodeAt (0) == ('[').charCodeAt (0) || (ch).charCodeAt (0) == ('*').charCodeAt (0) || Character.isLetter (ch)));
+}if (ch.charCodeAt (0) == 0 && bond.order == 0) return ;
+var isRing = (Character.isDigit (ch) || ch.charCodeAt (0) == 37);
+var isAtom = (!isRing && (ch.charCodeAt (0) == 95 || ch.charCodeAt (0) == 91 || ch.charCodeAt (0) == 42 || Character.isLetter (ch)));
 if (isRing) {
 var ringNumber;
 switch (ch) {
 case '%':
-if ((org.jmol.smiles.SmilesParser.getChar (pattern, index + 1)).charCodeAt (0) == ('(').charCodeAt (0)) {
+if ((org.jmol.smiles.SmilesParser.getChar (pattern, index + 1)).charCodeAt (0) == 40) {
 var subPattern = org.jmol.smiles.SmilesParser.getSubPattern (pattern, index + 1, '(');
 org.jmol.smiles.SmilesParser.getDigits (subPattern, 0, ret);
 index += subPattern.length + 3;
@@ -284,7 +284,7 @@ if (ret[0] < 10) throw  new org.jmol.smiles.InvalidSmilesException ("Two digits 
 }ringNumber = ret[0];
 break;
 default:
-ringNumber = (ch).charCodeAt (0) - ('0').charCodeAt (0);
+ringNumber = ch.charCodeAt (0) - 48;
 index++;
 }
 this.parseRing (molecule, ringNumber, currentAtom, bond);
@@ -293,15 +293,15 @@ switch (ch) {
 case '[':
 case '_':
 var subPattern = org.jmol.smiles.SmilesParser.getSubPattern (pattern, index, ch);
-index += subPattern.length + ((ch).charCodeAt (0) == ('[').charCodeAt (0) ? 2 : 0);
-if (this.isBioSequence && (ch).charCodeAt (0) == ('[').charCodeAt (0) && subPattern.indexOf (".") < 0 && subPattern.indexOf ("_") < 0) subPattern += ".0";
-currentAtom = this.parseAtom (molecule, null, subPattern, currentAtom, bond, (ch).charCodeAt (0) == ('[').charCodeAt (0), false, isBranchAtom);
+index += subPattern.length + (ch.charCodeAt (0) == 91 ? 2 : 0);
+if (this.isBioSequence && ch.charCodeAt (0) == 91 && subPattern.indexOf (".") < 0 && subPattern.indexOf ("_") < 0) subPattern += ".0";
+currentAtom = this.parseAtom (molecule, null, subPattern, currentAtom, bond, ch.charCodeAt (0) == 91, false, isBranchAtom);
 if (bond.order != -1 && bond.order != 0) bond.set (null, currentAtom);
 break;
 default:
 var ch2 = (!this.isBioSequence && Character.isUpperCase (ch) ? org.jmol.smiles.SmilesParser.getChar (pattern, index + 1) : '\0');
-if ((ch).charCodeAt (0) != ('X').charCodeAt (0) || (ch2).charCodeAt (0) != ('x').charCodeAt (0)) if (!Character.isLowerCase (ch2) || org.jmol.util.Elements.elementNumberFromSymbol (pattern.substring (index, index + 2), true) == 0) ch2 = '\0';
-if ((ch2).charCodeAt (0) != ('\0').charCodeAt (0) && "NA CA BA PA SC AC".indexOf (pattern.substring (index, index + 2)) >= 0) {
+if (ch.charCodeAt (0) != 88 || ch2.charCodeAt (0) != 120) if (!Character.isLowerCase (ch2) || org.jmol.util.Elements.elementNumberFromSymbol (pattern.substring (index, index + 2), true) == 0) ch2 = '\0';
+if (ch2.charCodeAt (0) != 0 && "NA CA BA PA SC AC".indexOf (pattern.substring (index, index + 2)) >= 0) {
 ch2 = '\0';
 }var size = (Character.isUpperCase (ch) && Character.isLowerCase (ch2) ? 2 : 1);
 currentAtom = this.parseAtom (molecule, null, pattern.substring (index, index + size), currentAtom, bond, false, false, isBranchAtom);
@@ -310,19 +310,19 @@ index += size;
 } else {
 throw  new org.jmol.smiles.InvalidSmilesException ("Unexpected character: " + org.jmol.smiles.SmilesParser.getChar (pattern, index));
 }ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
-if ((ch).charCodeAt (0) == ('}').charCodeAt (0) && this.checkBrace (molecule, ch, '}')) index++;
+if (ch.charCodeAt (0) == 125 && this.checkBrace (molecule, ch, '}')) index++;
 }pattern = pattern.substring (index);
 isBranchAtom = false;
 }
 }, $fz.isPrivate = true, $fz), "org.jmol.smiles.SmilesSearch,~S,org.jmol.smiles.SmilesAtom,~B");
 Clazz.defineMethod (c$, "checkBioType", 
 ($fz = function (pattern, index) {
-this.isBioSequence = ((pattern.charAt (index)).charCodeAt (0) == ('~').charCodeAt (0));
+this.isBioSequence = ((pattern.charAt (index)).charCodeAt (0) == 126);
 if (this.isBioSequence) {
 index++;
 this.bioType = '*';
 var ch = org.jmol.smiles.SmilesParser.getChar (pattern, 2);
-if ((ch).charCodeAt (0) == ('~').charCodeAt (0) && (((ch = pattern.charAt (1))).charCodeAt (0) == ('*').charCodeAt (0) || Character.isLowerCase (ch))) {
+if (ch.charCodeAt (0) == 126 && (((ch = pattern.charAt (1))).charCodeAt (0) == 42 || Character.isLowerCase (ch))) {
 this.bioType = ch;
 index = 3;
 }}return index;
@@ -379,12 +379,12 @@ Clazz.defineMethod (c$, "checkBrace",
 ($fz = function (molecule, ch, type) {
 switch (ch) {
 case '{':
-if ((ch).charCodeAt (0) != (type).charCodeAt (0)) break;
+if (ch.charCodeAt (0) != type.charCodeAt (0)) break;
 this.braceCount++;
 molecule.top.haveSelected = true;
 return true;
 case '}':
-if ((ch).charCodeAt (0) != (type).charCodeAt (0)) break;
+if (ch.charCodeAt (0) != type.charCodeAt (0)) break;
 if (this.braceCount > 0) {
 this.braceCount--;
 return true;
@@ -393,7 +393,7 @@ default:
 return false;
 }
 throw  new org.jmol.smiles.InvalidSmilesException ("Unmatched '}'");
-}, $fz.isPrivate = true, $fz), "org.jmol.smiles.SmilesSearch,~N,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.smiles.SmilesSearch,~S,~S");
 Clazz.defineMethod (c$, "parseNested", 
 ($fz = function (molecule, pattern, prefix) {
 var index;
@@ -413,9 +413,9 @@ var index;
 var ipt = 0;
 var iptLast = -1;
 while ((index = pattern.indexOf ("$", ipt)) >= 0) {
-if ((org.jmol.smiles.SmilesParser.getChar (pattern, ipt + 1)).charCodeAt (0) == ('(').charCodeAt (0)) break;
+if ((org.jmol.smiles.SmilesParser.getChar (pattern, ipt + 1)).charCodeAt (0) == 40) break;
 ipt = org.jmol.smiles.SmilesParser.skipTo (pattern, index, '=');
-if (ipt <= index + 1 || (org.jmol.smiles.SmilesParser.getChar (pattern, ipt + 1)).charCodeAt (0) != ('\"').charCodeAt (0)) break;
+if (ipt <= index + 1 || (org.jmol.smiles.SmilesParser.getChar (pattern, ipt + 1)).charCodeAt (0) != 34) break;
 var key = pattern.substring (index, ipt);
 if (key.lastIndexOf ('$') > 0 || key.indexOf (']') > 0) throw  new org.jmol.smiles.InvalidSmilesException ("Invalid variable name: " + key);
 var s = org.jmol.smiles.SmilesParser.getSubPattern (pattern, ipt + 1, '\"');
@@ -439,9 +439,9 @@ if (this.isBioSequence && pattern.length == 1) pattern += ".0";
 var ch = pattern.charAt (0);
 var index = 0;
 var isNot = false;
-if (this.isSmarts && (ch).charCodeAt (0) == ('!').charCodeAt (0)) {
+if (this.isSmarts && ch.charCodeAt (0) == 33) {
 ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++index);
-if ((ch).charCodeAt (0) == ('\0').charCodeAt (0)) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '!'");
+if (ch.charCodeAt (0) == 0) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '!'");
 newAtom.not = isNot = true;
 }var hydrogenCount = -2147483648;
 var biopt = pattern.indexOf ('.');
@@ -459,20 +459,20 @@ name = name.substring (0, biopt);
 if (!name.equals ("*")) newAtom.setAtomName (name);
 ch = '\0';
 }newAtom.setBioAtom (this.bioType);
-while ((ch).charCodeAt (0) != ('\0').charCodeAt (0)) {
+while (ch.charCodeAt (0) != 0) {
 newAtom.setAtomName (this.isBioSequence ? "0" : "");
 if (Character.isDigit (ch)) {
 index = org.jmol.smiles.SmilesParser.getDigits (pattern, index, ret);
 var mass = ret[0];
 if (mass == -2147483648) throw  new org.jmol.smiles.InvalidSmilesException ("Non numeric atomic mass");
-if ((org.jmol.smiles.SmilesParser.getChar (pattern, index)).charCodeAt (0) == ('?').charCodeAt (0)) {
+if ((org.jmol.smiles.SmilesParser.getChar (pattern, index)).charCodeAt (0) == 63) {
 index++;
 mass = -mass;
 }newAtom.setAtomicMass (mass);
 } else {
 switch (ch) {
 case '"':
-var type = org.jmol.util.Parser.getNextQuotedString (pattern, index);
+var type = org.jmol.util.Parser.getQuotedStringAt (pattern, index);
 index += type.length + 2;
 newAtom.setAtomType (type);
 break;
@@ -508,8 +508,8 @@ var checkForPrimitive = (isBracketed && Character.isLetter (ch));
 if (checkForPrimitive) {
 if (!isNot && (isPrimitive ? atomSet : newAtom).hasSymbol) {
 mustBeSymbol = false;
-} else if ((ch).charCodeAt (0) == ('H').charCodeAt (0)) {
-mustBeSymbol = !Character.isDigit (nextChar) || (org.jmol.smiles.SmilesParser.getChar (pattern, index + 2)).charCodeAt (0) == ('?').charCodeAt (0);
+} else if (ch.charCodeAt (0) == 72) {
+mustBeSymbol = !Character.isDigit (nextChar) || (org.jmol.smiles.SmilesParser.getChar (pattern, index + 2)).charCodeAt (0) == 63;
 } else if ("DdhRrvXx".indexOf (ch) >= 0 && Character.isDigit (nextChar)) {
 mustBeSymbol = false;
 } else if (!symbol.equals ("A") && !symbol.equals ("Xx")) {
@@ -575,7 +575,7 @@ break;
 }
 }}
 }ch = org.jmol.smiles.SmilesParser.getChar (pattern, index);
-if (isNot && (ch).charCodeAt (0) != ('\0').charCodeAt (0)) throw  new org.jmol.smiles.InvalidSmilesException ("'!' may only involve one primitive.");
+if (isNot && ch.charCodeAt (0) != 0) throw  new org.jmol.smiles.InvalidSmilesException ("'!' may only involve one primitive.");
 }
 if (hydrogenCount == -2147483648 && isBracketed) hydrogenCount = -2147483647;
 newAtom.setExplicitHydrogenCount (hydrogenCount);
@@ -627,11 +627,11 @@ index = org.jmol.smiles.SmilesParser.getDigits (pattern, index, ret);
 count = ret[0];
 if (count == -2147483648) throw  new org.jmol.smiles.InvalidSmilesException ("Non numeric charge");
 } else {
-while (index < len && (pattern.charAt (index)).charCodeAt (0) == (ch).charCodeAt (0)) {
+while (index < len && (pattern.charAt (index)).charCodeAt (0) == ch.charCodeAt (0)) {
 index++;
 count++;
 }
-}}newAtom.setCharge ((ch).charCodeAt (0) == ('+').charCodeAt (0) ? count : -count);
+}}newAtom.setCharge (ch.charCodeAt (0) == 43 ? count : -count);
 return index;
 }, $fz.isPrivate = true, $fz), "~S,~N,org.jmol.smiles.SmilesAtom");
 Clazz.defineMethod (c$, "checkChirality", 
@@ -680,7 +680,7 @@ index = pt;
 }}if (order < 1 || stereoClass < 0) throw  new org.jmol.smiles.InvalidSmilesException ("Invalid stereochemistry descriptor");
 }newAtom.setChiralClass (stereoClass);
 newAtom.setChiralOrder (order);
-if ((org.jmol.smiles.SmilesParser.getChar (pattern, index)).charCodeAt (0) == ('?').charCodeAt (0)) {
+if ((org.jmol.smiles.SmilesParser.getChar (pattern, index)).charCodeAt (0) == 63) {
 org.jmol.util.Logger.info ("Ignoring '?' in stereochemistry");
 index++;
 }return index;
@@ -688,17 +688,17 @@ index++;
 Clazz.defineMethod (c$, "parseBond", 
 ($fz = function (molecule, bondSet, pattern, bond, currentAtom, isPrimitive, isBranchAtom) {
 var ch = org.jmol.smiles.SmilesParser.getChar (pattern, 0);
-if ((ch).charCodeAt (0) == ('.').charCodeAt (0)) {
+if (ch.charCodeAt (0) == 46) {
 if (bond != null || bondSet != null) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '.'");
-this.isBioSequence = ((org.jmol.smiles.SmilesParser.getChar (pattern, 1)).charCodeAt (0) == ('~').charCodeAt (0));
+this.isBioSequence = ((org.jmol.smiles.SmilesParser.getChar (pattern, 1)).charCodeAt (0) == 126);
 return  new org.jmol.smiles.SmilesBond (0, false);
-}if ((ch).charCodeAt (0) == ('+').charCodeAt (0) && bondSet != null) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '+'");
+}if (ch.charCodeAt (0) == 43 && bondSet != null) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '+'");
 var newBond = (bondSet == null ? (bond == null ?  new org.jmol.smiles.SmilesBond (currentAtom, null, (this.isBioSequence && currentAtom != null ? (isBranchAtom ? 112 : 96) : -1), false) : bond) : isPrimitive ? bondSet.addPrimitive () : bondSet.addBondOr ());
-if ((ch).charCodeAt (0) != ('\0').charCodeAt (0) && !this.checkLogic (molecule, pattern, null, newBond, currentAtom, isPrimitive, false)) {
-var isBondNot = ((ch).charCodeAt (0) == ('!').charCodeAt (0));
+if (ch.charCodeAt (0) != 0 && !this.checkLogic (molecule, pattern, null, newBond, currentAtom, isPrimitive, false)) {
+var isBondNot = (ch.charCodeAt (0) == 33);
 if (isBondNot) {
 ch = org.jmol.smiles.SmilesParser.getChar (pattern, 1);
-if ((ch).charCodeAt (0) == ('\0').charCodeAt (0) || (ch).charCodeAt (0) == ('!').charCodeAt (0)) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '!'");
+if (ch.charCodeAt (0) == 0 || ch.charCodeAt (0) == 33) throw  new org.jmol.smiles.InvalidSmilesException ("invalid '!'");
 }var bondType = org.jmol.smiles.SmilesBond.getBondTypeFromCode (ch);
 if (bondType == 65) molecule.top.needRingMemberships = true;
 if (currentAtom == null && bondType != 0) throw  new org.jmol.smiles.InvalidSmilesException ("Bond without a previous atom");
@@ -759,7 +759,7 @@ var sNew =  new StringBuffer ();
 for (var i = 0; i < len; ) {
 var ch = pattern.charAt (i++);
 sNew.append (ch);
-if ((ch).charCodeAt (0) != ('!').charCodeAt (0) && i < len) sNew.append ('&');
+if (ch.charCodeAt (0) != 33 && i < len) sNew.append ('&');
 }
 pattern = sNew.toString ();
 len = pattern.length;
@@ -800,14 +800,14 @@ var len = pattern.length;
 var pCount = 1;
 for (var pt = index + 1; pt < len; pt++) {
 var ch1 = pattern.charAt (pt);
-if ((ch1).charCodeAt (0) == (ch2).charCodeAt (0)) {
+if (ch1.charCodeAt (0) == ch2.charCodeAt (0)) {
 pCount--;
 if (pCount == 0) return pattern.substring (index + margin, pt + 1 - margin);
-} else if ((ch1).charCodeAt (0) == (ch).charCodeAt (0)) {
+} else if (ch1.charCodeAt (0) == ch.charCodeAt (0)) {
 pCount++;
 }}
 throw  new org.jmol.smiles.InvalidSmilesException ("Unmatched " + ch);
-}, $fz.isPrivate = true, $fz), "~S,~N,~N");
+}, $fz.isPrivate = true, $fz), "~S,~N,~S");
 c$.getChar = Clazz.defineMethod (c$, "getChar", 
 ($fz = function (pattern, i) {
 return (i < pattern.length ? pattern.charAt (i) : '\0');
@@ -833,10 +833,10 @@ c$.skipTo = Clazz.defineMethod (c$, "skipTo",
 ($fz = function (pattern, index, ch0) {
 var pt = index;
 var ch;
-while (((ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++pt))).charCodeAt (0) != (ch0).charCodeAt (0) && (ch).charCodeAt (0) != ('\0').charCodeAt (0)) {
+while (((ch = org.jmol.smiles.SmilesParser.getChar (pattern, ++pt))).charCodeAt (0) != ch0.charCodeAt (0) && ch.charCodeAt (0) != 0) {
 }
-return ((ch).charCodeAt (0) == ('\0').charCodeAt (0) ? -1 : pt);
-}, $fz.isPrivate = true, $fz), "~S,~N,~N");
+return (ch.charCodeAt (0) == 0 ? -1 : pt);
+}, $fz.isPrivate = true, $fz), "~S,~N,~S");
 c$.getRingPointer = Clazz.defineMethod (c$, "getRingPointer", 
 function (i) {
 return (i < 10 ? "" + i : i < 100 ? "%" + i : "%(" + i + ")");

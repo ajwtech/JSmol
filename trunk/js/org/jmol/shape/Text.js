@@ -240,7 +240,7 @@ if (str.indexOf ("<su") < 0) return this.font.stringWidth (str);
 var len = str.length;
 var s;
 for (var i = 0; i < len; i++) {
-if ((str.charAt (i)).charCodeAt (0) == ('<').charCodeAt (0)) {
+if ((str.charAt (i)).charCodeAt (0) == 60) {
 if (i + 4 < len && ((s = str.substring (i, i + 5)).equals ("<sub>") || s.equals ("<sup>"))) {
 i += 4;
 f = subscale;

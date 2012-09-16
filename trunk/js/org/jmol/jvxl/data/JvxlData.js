@@ -141,5 +141,5 @@ var chars = edgeData.toCharArray ();
 for (var i = 0, ipt = 0; i < vertexCount; i += vertexIncrement, ipt++) if (Float.isNaN (vertexValues[i])) chars[ipt] = isNaN;
 
 return String.copyValueOf (chars);
-}, "~S,~A,~N,~N,~N");
+}, "~S,~A,~N,~N,~S");
 });

@@ -75,15 +75,15 @@ var vB =  new javax.vecmath.Vector3f ();
 vA.sub (ptA, ptP);
 vB.sub (ptB, ptP);
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, false);
-}, "~N");
+}, "~S");
 Clazz.overrideMethod (c$, "getQuaternionFrameCenter", 
 function (qType) {
 return this.getAtomFromOffsetIndex (0);
-}, "~N");
+}, "~S");
 Clazz.overrideMethod (c$, "getHelixData", 
 function (tokType, qType, mStep) {
 return this.getHelixData2 (tokType, qType, mStep);
-}, "~N,~N,~N");
+}, "~N,~S,~N");
 Clazz.defineStatics (c$,
 "P", 0,
 "phosphorusOffsets", [0],

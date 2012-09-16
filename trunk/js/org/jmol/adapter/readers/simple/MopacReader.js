@@ -56,7 +56,7 @@ this.atomSetCollection.newAtomSet ();
 this.baseAtomIndex = this.atomSetCollection.getAtomCount ();
 var expectedAtomNumber = 0;
 while (this.readLine () != null) {
-var atomNumber = this.parseInt (this.line);
+var atomNumber = this.parseIntStr (this.line);
 if (atomNumber == -2147483648) break;
 ++expectedAtomNumber;
 if (atomNumber != expectedAtomNumber) throw  new Exception ("unexpected atom number in atomic charges");
@@ -77,7 +77,7 @@ this.baseAtomIndex = this.atomSetCollection.getAtomCount ();
 this.chargesFound = false;
 }var atoms = this.atomSetCollection.getAtoms ();
 while (this.readLine () != null) {
-var atomNumber = this.parseInt (this.line);
+var atomNumber = this.parseIntStr (this.line);
 if (atomNumber == -2147483648) break;
 ++expectedAtomNumber;
 if (atomNumber != expectedAtomNumber) throw  new Exception ("unexpected atom number in coordinates");
@@ -87,7 +87,7 @@ if (atom == null) {
 atom = this.atomSetCollection.addNewAtom ();
 }atom.atomSerial = atomNumber;
 this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
-var atno = this.parseInt (elementSymbol);
+var atno = this.parseIntStr (elementSymbol);
 if (atno != -2147483648) elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (atno);
 atom.elementSymbol = elementSymbol;
 }
@@ -122,8 +122,8 @@ var info =  new Array (this.vibrationNumber);
 if (this.line.indexOf ("DESCRIPTION") < 0) this.discardLinesUntilContains ("DESCRIPTION");
 while (this.discardLinesUntilContains ("VIBRATION") != null) {
 tokens = this.getTokens ();
-var freqNo = this.parseInt (tokens[1]);
-tokens[0] = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ())[1];
+var freqNo = this.parseIntStr (tokens[1]);
+tokens[0] = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ())[1];
 if (tokens[2].equals ("ATOM")) tokens[2] = null;
 info[freqNo - 1] = tokens;
 if (freqNo == this.vibrationNumber) break;

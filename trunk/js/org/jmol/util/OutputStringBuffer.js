@@ -62,5 +62,5 @@ throw e;
 }
 }
 }return this;
-}, "~N");
+}, "~S");
 });

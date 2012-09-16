@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.saved = null;
@@ -33,7 +33,7 @@ var list =  new Array (htVariables.size ());
 for (var entry, $entry = htVariables.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var $var = entry.getValue ();
-if ((withSites || !key.startsWith ("site_")) && (!definedOnly || (key.charAt (0)).charCodeAt (0) == ('@').charCodeAt (0))) list[n++] = key + ((key.charAt (0)).charCodeAt (0) == ('@').charCodeAt (0) ? " " + $var.asString () : " = " + org.jmol.viewer.StateManager.varClip (key, $var.escape (), nMax));
+if ((withSites || !key.startsWith ("site_")) && (!definedOnly || (key.charAt (0)).charCodeAt (0) == 64)) list[n++] = key + ((key.charAt (0)).charCodeAt (0) == 64 ? " " + $var.asString () : " = " + org.jmol.viewer.StateManager.varClip (key, $var.escape (), nMax));
 }
 java.util.Arrays.sort (list, 0, n);
 for (var i = 0; i < n; i++) if (list[i] != null) org.jmol.viewer.StateManager.appendCmd (sb, list[i]);
@@ -716,7 +716,7 @@ function () {
 var a = this.htUserVariables.keySet ().iterator ();
 while (a.hasNext ()) {
 var b = a.next ();
-if ((b.charAt (0)).charCodeAt (0) == ('@').charCodeAt (0) || b.startsWith ("site_")) a.remove ();
+if ((b.charAt (0)).charCodeAt (0) == 64 || b.startsWith ("site_")) a.remove ();
 }
 this.setPicked (-1);
 this.setParameterValue ("_atomhovered", -1);
@@ -1104,7 +1104,7 @@ if (!b.equalsIgnoreCase (this.measureDistanceUnits)) this.setParameterValue ("me
 }, "~S");
 Clazz.defineMethod (c$, "isJmolVariable", 
 function (a) {
-return (a.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0) || this.htNonbooleanParameterValues.containsKey (a = a.toLowerCase ()) || this.htBooleanParameterFlags.containsKey (a) || org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") >= 0;
+return (a.charAt (0)).charCodeAt (0) == 95 || this.htNonbooleanParameterValues.containsKey (a = a.toLowerCase ()) || this.htBooleanParameterFlags.containsKey (a) || org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") >= 0;
 }, "~S");
 Clazz.defineMethod (c$, "resetParameterStringValue", 
 ($fz = function (a, b) {
@@ -1114,7 +1114,7 @@ Clazz.defineMethod (c$, "setParameterValue",
 function (a, b) {
 a = a.toLowerCase ();
 if (this.htNonbooleanParameterValues.containsKey (a)) return ;
-this.htBooleanParameterFlags.put (a, b ? Boolean.TRUE : Boolean.FALSE);
+this.htBooleanParameterFlags.put (a, b ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
 }, "~S,~B");
 Clazz.defineMethod (c$, "setParameterValue", 
 function (a, b) {
@@ -1140,7 +1140,7 @@ function (a) {
 a = a.toLowerCase ();
 if (this.htBooleanParameterFlags.containsKey (a)) {
 this.htBooleanParameterFlags.remove (a);
-if (!this.htPropertyFlagsRemoved.containsKey (a)) this.htPropertyFlagsRemoved.put (a, Boolean.FALSE);
+if (!this.htPropertyFlagsRemoved.containsKey (a)) this.htPropertyFlagsRemoved.put (a, org.jmol.viewer.JmolConstants.FALSE);
 return ;
 }if (this.htNonbooleanParameterValues.containsKey (a)) this.htNonbooleanParameterValues.remove (a);
 }, "~S");
@@ -1190,7 +1190,7 @@ Clazz.defineMethod (c$, "getOrSetNewVariable",
 function (a, b) {
 if (a == null || a.length == 0) a = "x";
 var c = this.getParameter (a, true);
-return (c == null && b && (a.charAt (0)).charCodeAt (0) != ('_').charCodeAt (0) ? this.setUserVariable (a,  new org.jmol.script.ScriptVariable ()) : org.jmol.script.ScriptVariable.getVariable (c));
+return (c == null && b && (a.charAt (0)).charCodeAt (0) != 95 ? this.setUserVariable (a,  new org.jmol.script.ScriptVariable ()) : org.jmol.script.ScriptVariable.getVariable (c));
 }, "~S,~B");
 Clazz.defineMethod (c$, "getParameter", 
 function (a, b) {
@@ -1208,7 +1208,7 @@ var e = org.jmol.util.TextFormat.formatDecimal (c - d, 1) + "/" + org.jmol.util.
 this.htNonbooleanParameterValues.put ("_memory", e);
 }if (this.htNonbooleanParameterValues.containsKey (a)) return this.htNonbooleanParameterValues.get (a);
 if (this.htBooleanParameterFlags.containsKey (a)) return this.htBooleanParameterFlags.get (a);
-if (this.htPropertyFlagsRemoved.containsKey (a)) return Boolean.FALSE;
+if (this.htPropertyFlagsRemoved.containsKey (a)) return org.jmol.viewer.JmolConstants.FALSE;
 if (this.htUserVariables.containsKey (a)) {
 var c = this.htUserVariables.get (a);
 return (b ? c : org.jmol.script.ScriptVariable.oValue (c));
@@ -1230,7 +1230,7 @@ if (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0) e[f++] = (d.indexOf (
 c = this.htNonbooleanParameterValues.keySet ().iterator ();
 while (c.hasNext ()) {
 d = c.next ();
-if ((d.charAt (0)).charCodeAt (0) != ('@').charCodeAt (0) && (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0)) {
+if ((d.charAt (0)).charCodeAt (0) != 64 && (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0)) {
 var h = this.htNonbooleanParameterValues.get (d);
 if (Clazz.instanceOf (h, String)) h = this.chop (org.jmol.util.Escape.escapeStr (h));
 e[f++] = (d.indexOf ("_") == 0 ? d + " = " : "set " + d + " ") + h;
@@ -1257,7 +1257,7 @@ var c =  new StringBuilder ();
 var d = "\"\\\n    + \"";
 var e = 0;
 for (var f = 72; f < b; e = f, f += 72) {
-while ((a.charAt (f - 1)).charCodeAt (0) == ('\\').charCodeAt (0)) f++;
+while ((a.charAt (f - 1)).charCodeAt (0) == 92) f++;
 
 c.append ((e == 0 ? "" : d)).append (a.substring (e, f));
 }
@@ -1285,7 +1285,7 @@ while (f.hasNext ()) {
 g = f.next ();
 if (this.doReportProperty (g)) {
 var h = this.htNonbooleanParameterValues.get (g);
-if ((g.charAt (0)).charCodeAt (0) == ('=').charCodeAt (0)) {
+if ((g.charAt (0)).charCodeAt (0) == 61) {
 g = g.substring (1);
 } else {
 if (g.indexOf ("default") == 0) g = " set " + g;
@@ -1321,7 +1321,7 @@ return c.toString ();
 }, "StringBuffer");
 Clazz.defineMethod (c$, "doReportProperty", 
 ($fz = function (a) {
-return ((a.charAt (0)).charCodeAt (0) != ('_').charCodeAt (0) && org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") < 0);
+return ((a.charAt (0)).charCodeAt (0) != 95 && org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") < 0);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getVariableList", 
 function () {

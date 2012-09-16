@@ -30,7 +30,7 @@ switch (this.line.charAt (0)) {
 case '#':
 this.vertexMap.clear ();
 continue ;case 'f':
-color = org.jmol.util.ColorUtil.colorTriadToInt (this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+color = org.jmol.util.ColorUtil.colorTriadToInt (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 continue ;case 'p':
 if (this.line.equals ("pp 3")) {
 var i1 = this.getVertex ();
@@ -53,7 +53,7 @@ Clazz.defineMethod (c$, "getVertex",
 var i = this.vertexMap.get (this.readLine ());
 if (i == null) {
 var tokens = this.getTokens ();
-this.pt.set (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
+this.pt.set (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
 if (!Float.isNaN (this.params.scale)) this.pt.scale (this.params.scale);
 if (this.isAnisotropic) this.setVertexAnisotropy (this.pt);
 i = Integer.$valueOf (this.addVertexCopy (this.pt, 0, this.nVertices++));

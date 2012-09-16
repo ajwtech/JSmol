@@ -33,7 +33,7 @@ function () {
 this.readLine ();
 var n0;
 while (this.line != null) {
-if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == ('@').charCodeAt (0)) {
+if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == 64) {
 org.jmol.util.Logger.info (this.line);
 if (this.line.indexOf ("contact}") >= 0 || this.line.indexOf ("overlap}") >= 0 || this.line.indexOf ("H-bonds}") >= 0) {
 if (this.line.indexOf ("@dotlist") == 0) {
@@ -96,7 +96,7 @@ return -1;
 }
 }retColor[0] = this.getColor (tokens[0]);
 tokens = org.jmol.util.Parser.getTokens (tokens[i].$replace (',', ' '));
-var pt =  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloat (tokens[0]), org.jmol.util.Parser.parseFloat (tokens[1]), org.jmol.util.Parser.parseFloat (tokens[2]));
+var pt =  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloatStr (tokens[0]), org.jmol.util.Parser.parseFloatStr (tokens[1]), org.jmol.util.Parser.parseFloatStr (tokens[2]));
 if (this.isAnisotropic) this.setVertexAnisotropy (pt);
 return this.addVertexCopy (pt, value, this.nVertices++);
 }, $fz.isPrivate = true, $fz), "~S,~N,~A,~B");

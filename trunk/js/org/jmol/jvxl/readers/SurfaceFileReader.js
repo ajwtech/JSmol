@@ -49,42 +49,42 @@ Clazz.superCall (this, org.jmol.jvxl.readers.SurfaceFileReader, "discardTempData
 }, "~B");
 Clazz.defineMethod (c$, "getTokens", 
 function () {
-return org.jmol.util.Parser.getTokens (this.line, 0);
+return org.jmol.util.Parser.getTokensAt (this.line, 0);
 });
 Clazz.defineMethod (c$, "parseFloat", 
 function () {
-return org.jmol.util.Parser.parseFloat (this.line, this.next);
+return org.jmol.util.Parser.parseFloatNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "parseFloat", 
+Clazz.defineMethod (c$, "parseFloatStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseFloat (s, this.next);
+return org.jmol.util.Parser.parseFloatNext (s, this.next);
 }, "~S");
 Clazz.defineMethod (c$, "parseInt", 
 function () {
-return org.jmol.util.Parser.parseInt (this.line, this.next);
+return org.jmol.util.Parser.parseIntNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "parseInt", 
+Clazz.defineMethod (c$, "parseIntStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseInt (s, this.next);
+return org.jmol.util.Parser.parseIntNext (s, this.next);
 }, "~S");
 Clazz.defineMethod (c$, "parseIntNext", 
 function (s) {
-return org.jmol.util.Parser.parseInt (s, this.next);
+return org.jmol.util.Parser.parseIntNext (s, this.next);
 }, "~S");
-Clazz.defineMethod (c$, "parseFloatArray", 
+Clazz.defineMethod (c$, "parseFloatArrayStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseFloatArray (s, this.next);
+return org.jmol.util.Parser.parseFloatArrayNext (s, this.next);
 }, "~S");
 Clazz.defineMethod (c$, "parseFloatArray", 
 function () {
-return org.jmol.util.Parser.parseFloatArray (this.line, this.next);
+return org.jmol.util.Parser.parseFloatArrayNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "getNextQuotedString", 
+Clazz.defineMethod (c$, "getQuotedStringNext", 
 function () {
-return org.jmol.util.Parser.getNextQuotedString (this.line, this.next);
+return org.jmol.util.Parser.getQuotedStringNext (this.line, this.next);
 });
 Clazz.defineMethod (c$, "skipTo", 
 function (info, what) {

@@ -25,8 +25,8 @@ query = spec.substring (queryStart + 1, limit);
 if (limit > queryStart) limit = queryStart;
 spec = spec.substring (0, queryStart);
 }}var i = 0;
-var isUNCName = (start <= limit - 4) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 2)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 3)).charCodeAt (0) == ('/').charCodeAt (0));
-if (!isUNCName && (start <= limit - 2) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0))) {
+var isUNCName = (start <= limit - 4) && ((spec.charAt (start)).charCodeAt (0) == 47) && ((spec.charAt (start + 1)).charCodeAt (0) == 47) && ((spec.charAt (start + 2)).charCodeAt (0) == 47) && ((spec.charAt (start + 3)).charCodeAt (0) == 47);
+if (!isUNCName && (start <= limit - 2) && ((spec.charAt (start)).charCodeAt (0) == 47) && ((spec.charAt (start + 1)).charCodeAt (0) == 47)) {
 start += 2;
 i = spec.indexOf ('/', start);
 if (i < 0) {
@@ -40,7 +40,7 @@ host = authority.substring (ind + 1);
 } else {
 userInfo = null;
 }if (host != null) {
-if (host.length > 0 && ((host.charAt (0)).charCodeAt (0) == ('[').charCodeAt (0))) {
+if (host.length > 0 && ((host.charAt (0)).charCodeAt (0) == 91)) {
 throw  new IllegalArgumentException ("Invalid host: " + host);
 } else {
 ind = host.indexOf (':');
@@ -57,7 +57,7 @@ if (authority != null && authority.length > 0) path = "";
 }if (host == null) {
 host = "";
 }if (start < limit) {
-if ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) {
+if ((spec.charAt (start)).charCodeAt (0) == 47) {
 path = spec.substring (start, limit);
 } else if (path != null && path.length > 0) {
 isRelPath = true;

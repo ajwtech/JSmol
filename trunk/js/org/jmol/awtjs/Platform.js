@@ -9,10 +9,6 @@ function (viewer, display) {
 try {
 java.net.URL.setURLStreamHandlerFactory ( new org.jmol.awtjs.AjaxURLStreamHandlerFactory ());
 } catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
 }
 }, "org.jmol.api.JmolViewer,~O");
 Clazz.overrideMethod (c$, "convertPointFromScreen", 
@@ -25,10 +21,10 @@ org.jmol.awtjs.Display.getFullScreenDimensions (display, widthHeight);
 }, "~O,~A");
 Clazz.overrideMethod (c$, "getMenuPopup", 
 function (viewer, menuStructure, type) {
-var jmolpopup = org.jmol.api.Interface.getOptionInterface ((type).charCodeAt (0) == ('j').charCodeAt (0) ? "popup.JmolPopup" : "modelkit.ModelKitPopup");
+var jmolpopup = org.jmol.api.Interface.getOptionInterface (type.charCodeAt (0) == 106 ? "popup.JmolPopup" : "modelkit.ModelKitPopup");
 if (jmolpopup != null) jmolpopup.initialize (viewer, menuStructure);
 return jmolpopup;
-}, "org.jmol.viewer.Viewer,~S,~N");
+}, "org.jmol.viewer.Viewer,~S,~S");
 Clazz.overrideMethod (c$, "hasFocus", 
 function (display) {
 return org.jmol.awtjs.Display.hasFocus (display);

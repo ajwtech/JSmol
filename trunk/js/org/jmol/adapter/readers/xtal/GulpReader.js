@@ -23,7 +23,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.xtal, "GulpReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
-this.isPrimitive = !this.checkFilter ("CONV");
+this.isPrimitive = !this.checkFilterKey ("CONV");
 this.coordinatesArePrimitive = true;
 this.setFractionalCoordinates (this.readDimensionality ());
 });
@@ -62,7 +62,7 @@ Clazz.defineMethod (c$, "readDimensionality",
 ($fz = function () {
 this.discardLinesUntilContains ("Dimensionality");
 var tokens = this.getTokens ();
-switch (this.parseInt (tokens[2])) {
+switch (this.parseIntStr (tokens[2])) {
 case 0:
 this.isMolecular = true;
 this.isPrimitive = false;
@@ -145,8 +145,8 @@ return ;
 this.coordinatesArePrimitive = (i0 == 0);
 this.readLine ();
 while (this.readLine () != null && this.line.contains ("=")) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.$replace ('=', ' '));
-for (var i = i0; i < i0 + 4; i += 2) if (tokens.length > i + 1) this.setParameter (tokens[i], this.parseFloat (tokens[i + 1]));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.$replace ('=', ' '));
+for (var i = i0; i < i0 + 4; i += 2) if (tokens.length > i + 1) this.setParameter (tokens[i], this.parseFloatStr (tokens[i + 1]));
 
 }
 }, $fz.isPrivate = true, $fz), "~B");
@@ -154,7 +154,7 @@ Clazz.defineMethod (c$, "readFinalCell",
 ($fz = function () {
 this.discardLinesUntilContains (this.sep);
 var tokens;
-while (this.readLine () != null && (tokens = this.getTokens ()).length >= 2) this.setParameter (tokens[0], this.parseFloat (tokens[1]));
+while (this.readLine () != null && (tokens = this.getTokens ()).length >= 2) this.setParameter (tokens[0], this.parseFloatStr (tokens[1]));
 
 if (this.primitiveData != null) {
 this.scalePrimitiveData (0, this.a);
@@ -163,10 +163,10 @@ this.scalePrimitiveData (6, this.c);
 if (!this.coordinatesArePrimitive) while (this.readLine () != null && this.line.indexOf ("Final") < 0) if (this.line.indexOf ("Non-primitive lattice parameters") > 0) {
 this.readLine ();
 for (var i = 0; i < 2; i++) {
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ().$replace ('=', ' '));
-this.setParameter (tokens[0], this.parseFloat (tokens[1]));
-this.setParameter (tokens[2], this.parseFloat (tokens[3]));
-this.setParameter (tokens[4], this.parseFloat (tokens[5]));
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ().$replace ('=', ' '));
+this.setParameter (tokens[0], this.parseFloatStr (tokens[1]));
+this.setParameter (tokens[2], this.parseFloatStr (tokens[3]));
+this.setParameter (tokens[4], this.parseFloatStr (tokens[5]));
 }
 break;
 }
@@ -213,7 +213,7 @@ continue ;}this.line = this.line.$replace ('*', ' ');
 var tokens = this.getTokens ();
 if (!tokens[2].equals ("c")) continue ;var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[1];
-this.setAtomCoord (atom, this.parseFloat (tokens[3]), this.parseFloat (tokens[4]), this.parseFloat (tokens[5]));
+this.setAtomCoord (atom, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 }
 if (finalizeSymmetry) this.applySymmetryAndSetTrajectory ();
 }, $fz.isPrivate = true, $fz), "~B");
@@ -223,17 +223,17 @@ this.atomCharges =  new java.util.Hashtable ();
 this.discardLinesUntilContains (this.sep);
 this.discardLinesUntilContains (this.sep);
 var tokens;
-while ((tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ())).length > 5) {
+while ((tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ())).length > 5) {
 var species = tokens[0];
 var charge = this.atomCharges.get (species);
 var f = (charge == null ? 0 : charge.floatValue ());
-this.atomCharges.put (species, Float.$valueOf ((f + this.parseFloat (tokens[4]))));
+this.atomCharges.put (species, Float.$valueOf ((f + this.parseFloatStr (tokens[4]))));
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readEnergy", 
 ($fz = function () {
 if (this.line.indexOf ("=") < 0) this.discardLinesUntilContains ("=");
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (this.line.indexOf ("=")));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf ("=")));
 this.totEnergy = Double.$valueOf (Double.parseDouble (tokens[1]));
 this.energyUnits = tokens[2];
 this.discardLinesUntilContains (this.sep);

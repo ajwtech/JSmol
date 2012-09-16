@@ -100,7 +100,7 @@ c$.jvxlAppendCommandState = Clazz.defineMethod (c$, "jvxlAppendCommandState",
 if (cmd != null) org.jmol.util.XmlUtil.appendCdata (data, "jvxlIsosurfaceCommand", null, "\n" + (cmd.indexOf ("#") < 0 ? cmd : cmd.substring (0, cmd.indexOf ("#"))) + "\n");
 if (state != null) {
 if (state.indexOf ("** XML ** ") >= 0) {
-state = org.jmol.util.TextFormat.split (state, "** XML **")[1].trim ();
+state = org.jmol.util.TextFormat.splitChars (state, "** XML **")[1].trim ();
 org.jmol.util.XmlUtil.appendTag (data, "jvxlIsosurfaceState", "\n" + state + "\n");
 } else {
 org.jmol.util.XmlUtil.appendCdata (data, "jvxlIsosurfaceState", null, "\n" + state);
@@ -229,7 +229,7 @@ for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 var vertexIndexes = polygonIndexes[i];
 while (pt < nBuf && !Character.isDigit (c1 = fData.charAt (pt++))) {
 }
-type = (c1).charCodeAt (0) - 48;
+type = c1.charCodeAt (0) - 48;
 while (pt < nBuf && Character.isWhitespace (c1 = fData.charAt (pt++))) {
 }
 while (pt < nBuf && Character.isWhitespace (c2 = fData.charAt (pt++))) {
@@ -335,7 +335,7 @@ addPlus = true;
 list1.append (diff);
 addPlus = true;
 } else {
-list1.append (String.fromCharCode ((('\\').charCodeAt (0) + diff)));
+list1.append (String.fromCharCode ((92 + diff)));
 addPlus = false;
 }if (++p % 3 == 0) {
 list2.append (triangles[i][3]);
@@ -552,7 +552,7 @@ var ptr = 0;
 var isset = false;
 var next =  Clazz.newArray (1, 0);
 while (true) {
-dataCount = (nPrev++ < 0 ? dataCount : org.jmol.util.Parser.parseInt (data, next));
+dataCount = (nPrev++ < 0 ? dataCount : org.jmol.util.Parser.parseIntNext (data, next));
 if (dataCount == -2147483648) break;
 if (dataCount < 0) {
 nPrev = dataCount;
@@ -585,11 +585,11 @@ break;
 default:
 escaped = false;
 }
-if ((ch).charCodeAt (0) == (chLast).charCodeAt (0)) {
+if (ch.charCodeAt (0) == chLast.charCodeAt (0)) {
 ++nLast;
 ch = '\0';
 } else if (nLast > 0 || lastEscaped) {
-if (nLast < 4 && !lastEscaped || (chLast).charCodeAt (0) == (' ').charCodeAt (0) || (chLast).charCodeAt (0) == ('\t').charCodeAt (0)) {
+if (nLast < 4 && !lastEscaped || chLast.charCodeAt (0) == 32 || chLast.charCodeAt (0) == 9) {
 while (--nLast >= 0) dataOut.append (chLast);
 
 } else {
@@ -598,13 +598,13 @@ if (lastEscaped) lastEscaped = false;
 dataOut.append (nLast);
 dataOut.append (' ');
 }nLast = 0;
-}if ((ch).charCodeAt (0) != ('\0').charCodeAt (0)) {
+}if (ch.charCodeAt (0) != 0) {
 if (escaped) {
 lastEscaped = true;
 escaped = false;
 dataOut.append ('~');
 chLast = ch;
-(ch = String.fromCharCode ((ch).charCodeAt (0) - 1));
+(ch = String.fromCharCode (ch.charCodeAt (0) - 1));
 } else {
 chLast = ch;
 }dataOut.append (ch);
@@ -619,13 +619,13 @@ var chLast = '\0';
 var next =  Clazz.newArray (1, 0);
 for (var i = 0; i < data.length; i++) {
 var ch = data.charAt (i);
-if ((ch).charCodeAt (0) == ('~').charCodeAt (0)) {
+if (ch.charCodeAt (0) == 126) {
 next[0] = ++i;
 switch (ch = data.charAt (i)) {
 case ';':
 case '%':
 next[0]++;
-dataOut.append (chLast = String.fromCharCode (  ((ch = String.fromCharCode ((ch).charCodeAt (0) + 1))).charCodeAt (0)));
+dataOut.append (chLast = String.fromCharCode (  ((ch = String.fromCharCode (ch.charCodeAt (0) + 1))).charCodeAt (0)));
 case '1':
 case '2':
 case '3':
@@ -635,7 +635,7 @@ case '6':
 case '7':
 case '8':
 case '9':
-var nChar = org.jmol.util.Parser.parseInt (data, next);
+var nChar = org.jmol.util.Parser.parseIntNext (data, next);
 for (var c = 0; c < nChar; c++) dataOut.append (chLast);
 
 i = next[0];

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.modelsetbio.BioPolymer", ["java.lang.Float", "$.NullPointerException", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.modelset.LabelToken", "org.jmol.util.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.modelsetbio.BioPolymer", ["java.lang.Float", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.modelset.LabelToken", "org.jmol.util.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.monomers = null;
 this.model = null;
@@ -41,29 +41,6 @@ function (bs) {
 if (this.monomerCount == 0) return ;
 bs.set (this.monomers[0].firstAtomIndex, this.monomers[this.monomerCount - 1].lastAtomIndex + 1);
 }, "java.util.BitSet");
-c$.allocateBioPolymer = Clazz.defineMethod (c$, "allocateBioPolymer", 
-function (groups, firstGroupIndex, checkConnections) {
-var previous = null;
-var count = 0;
-for (var i = firstGroupIndex; i < groups.length; ++i) {
-var group = groups[i];
-var current;
-if (!(Clazz.instanceOf (group, org.jmol.modelsetbio.Monomer)) || (current = group).bioPolymer != null || previous != null && previous.getClass () !== current.getClass () || checkConnections && !current.isConnectedAfter (previous)) break;
-previous = current;
-count++;
-}
-if (count == 0) return null;
-var monomers =  new Array (count);
-for (var j = 0; j < count; ++j) monomers[j] = groups[firstGroupIndex + j];
-
-if (Clazz.instanceOf (previous, org.jmol.modelsetbio.AminoMonomer)) return  new org.jmol.modelsetbio.AminoPolymer (monomers);
-if (Clazz.instanceOf (previous, org.jmol.modelsetbio.AlphaMonomer)) return  new org.jmol.modelsetbio.AlphaPolymer (monomers);
-if (Clazz.instanceOf (previous, org.jmol.modelsetbio.NucleicMonomer)) return  new org.jmol.modelsetbio.NucleicPolymer (monomers);
-if (Clazz.instanceOf (previous, org.jmol.modelsetbio.PhosphorusMonomer)) return  new org.jmol.modelsetbio.PhosphorusPolymer (monomers);
-if (Clazz.instanceOf (previous, org.jmol.modelsetbio.CarbohydrateMonomer)) return  new org.jmol.modelsetbio.CarbohydratePolymer (monomers);
-org.jmol.util.Logger.error ("Polymer.allocatePolymer() ... no matching polymer for monomor " + previous);
-throw  new NullPointerException ();
-}, "~A,~N,~B");
 Clazz.defineMethod (c$, "clearStructures", 
 function () {
 for (var i = 0; i < this.monomerCount; i++) this.monomers[i].setStructure (null);
@@ -93,10 +70,10 @@ this.invalidLead = false;
 Clazz.defineMethod (c$, "getIndex", 
 function (chainID, seqcode) {
 var i;
-for (i = this.monomerCount; --i >= 0; ) if ((this.monomers[i].getChainID ()).charCodeAt (0) == (chainID).charCodeAt (0)) if (this.monomers[i].getSeqcode () == seqcode) break;
+for (i = this.monomerCount; --i >= 0; ) if ((this.monomers[i].getChainID ()).charCodeAt (0) == chainID.charCodeAt (0)) if (this.monomers[i].getSeqcode () == seqcode) break;
 
 return i;
-}, "~N,~N");
+}, "~S,~N");
 Clazz.defineMethod (c$, "getLeadPoint", 
 function (monomerIndex) {
 return this.monomers[monomerIndex].getLeadAtom ();
@@ -338,15 +315,15 @@ return false;
 });
 c$.getPdbData = Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, p, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
-var calcRamachandranStraightness = ((qtype).charCodeAt (0) == ('C').charCodeAt (0) || (qtype).charCodeAt (0) == ('P').charCodeAt (0));
-var isRamachandran = ((ctype).charCodeAt (0) == ('R').charCodeAt (0) || (ctype).charCodeAt (0) == ('S').charCodeAt (0) && calcRamachandranStraightness);
+var calcRamachandranStraightness = (qtype.charCodeAt (0) == 67 || qtype.charCodeAt (0) == 80);
+var isRamachandran = (ctype.charCodeAt (0) == 82 || ctype.charCodeAt (0) == 83 && calcRamachandranStraightness);
 if (isRamachandran && !p.calcPhiPsiAngles ()) return ;
 var isAmino = (Clazz.instanceOf (p, org.jmol.modelsetbio.AminoPolymer));
-var isRelativeAlias = ((ctype).charCodeAt (0) == ('r').charCodeAt (0));
-var quaternionStraightness = (!isRamachandran && (ctype).charCodeAt (0) == ('S').charCodeAt (0));
+var isRelativeAlias = (ctype.charCodeAt (0) == 114);
+var quaternionStraightness = (!isRamachandran && ctype.charCodeAt (0) == 83);
 if (derivType == 2 && isRelativeAlias) ctype = 'w';
 if (quaternionStraightness) derivType = 2;
-var useQuaternionStraightness = ((ctype).charCodeAt (0) == ('S').charCodeAt (0));
+var useQuaternionStraightness = (ctype.charCodeAt (0) == 83);
 var writeRamachandranStraightness = ("rcpCP".indexOf (qtype) >= 0);
 if (org.jmol.util.Logger.debugging && (quaternionStraightness || calcRamachandranStraightness)) {
 org.jmol.util.Logger.debug ("For straightness calculation: useQuaternionStraightness = " + useQuaternionStraightness + " and quaternionFrame = " + qtype);
@@ -373,15 +350,15 @@ break;
 }
 pdbATOM.append ("    Sym   q0_______ q1_______ q2_______ q3_______");
 pdbATOM.append ("  theta_  aaX_______ aaY_______ aaZ_______");
-if ((ctype).charCodeAt (0) != ('R').charCodeAt (0)) pdbATOM.append ("  centerX___ centerY___ centerZ___");
-if ((qtype).charCodeAt (0) == ('n').charCodeAt (0)) pdbATOM.append ("  NHX_______ NHY_______ NHZ_______");
+if (ctype.charCodeAt (0) != 82) pdbATOM.append ("  centerX___ centerY___ centerZ___");
+if (qtype.charCodeAt (0) == 110) pdbATOM.append ("  NHX_______ NHY_______ NHZ_______");
 pdbATOM.append ("\n\n");
-}var factor = ((ctype).charCodeAt (0) == ('R').charCodeAt (0) ? 1 : 10);
+}var factor = (ctype.charCodeAt (0) == 82 ? 1 : 10);
 bothEnds = false;
 for (var j = 0; j < (bothEnds ? 2 : 1); j++, factor *= -1) for (var i = 0; i < (mStep < 1 ? 1 : mStep); i++) org.jmol.modelsetbio.BioPolymer.getData (viewer, i, mStep, p, ctype, qtype, derivType, bsAtoms, bsSelected, isDraw, isRamachandran, calcRamachandranStraightness, useQuaternionStraightness, writeRamachandranStraightness, quaternionStraightness, factor, isAmino, isRelativeAlias, tokens, pdbATOM, pdbCONECT, bsWritten);
 
 
-}, "org.jmol.viewer.Viewer,org.jmol.modelsetbio.BioPolymer,~N,~N,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
 c$.getData = Clazz.defineMethod (c$, "getData", 
 ($fz = function (viewer, m0, mStep, p, ctype, qtype, derivType, bsAtoms, bsSelected, isDraw, isRamachandran, calcRamachandranStraightness, useQuaternionStraightness, writeRamachandranStraightness, quaternionStraightness, factor, isAmino, isRelativeAlias, tokens, pdbATOM, pdbCONECT, bsWritten) {
 var prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
@@ -407,7 +384,7 @@ if (bsAtoms == null || bsAtoms.get (monomer.leadAtomIndex)) {
 var a = monomer.getLeadAtom ();
 var id = monomer.getUniqueID ();
 if (isRamachandran) {
-if ((ctype).charCodeAt (0) == ('S').charCodeAt (0)) monomer.setGroupParameter (1112539148, NaN);
+if (ctype.charCodeAt (0) == 83) monomer.setGroupParameter (1112539148, NaN);
 x = monomer.getGroupParameter (1112539143);
 y = monomer.getGroupParameter (1112539144);
 z = monomer.getGroupParameter (1112539142);
@@ -417,7 +394,7 @@ if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) {
 if (bsAtoms != null) bsAtoms.clear (a.getIndex ());
 continue ;}var angledeg = (writeRamachandranStraightness ? p.calculateRamachandranHelixAngle (m, qtype) : 0);
 var straightness = (calcRamachandranStraightness || writeRamachandranStraightness ? org.jmol.modelsetbio.BioPolymer.getStraightness (Math.cos (angledeg / 2 / 180 * 3.141592653589793)) : 0);
-if ((ctype).charCodeAt (0) == ('S').charCodeAt (0)) {
+if (ctype.charCodeAt (0) == 83) {
 monomer.setGroupParameter (1112539148, straightness);
 continue ;}if (isDraw) {
 if (bsSelected != null && !bsSelected.get (a.getIndex ())) continue ;var aa = monomer;
@@ -504,7 +481,7 @@ if (isDraw) {
 if (bsSelected != null && !bsSelected.get (a.getIndex ())) continue ;var deg = Math.round ((Math.acos (w) * 360 / 3.141592653589793));
 if (derivType == 0) {
 pdbATOM.append (q.draw (prefix, id, ptCenter, 1));
-if ((qtype).charCodeAt (0) == ('n').charCodeAt (0) && isAmino) {
+if (qtype.charCodeAt (0) == 110 && isAmino) {
 var ptH = (monomer).getNitrogenHydrogenPoint ();
 if (ptH != null) pdbATOM.append ("draw ID \"").append (prefix).append ("nh").append (id).append ('\"').append (" width 0.1 ").append (org.jmol.util.Escape.escapePt (ptH)).append ('\n');
 }}if (derivType == 1) {
@@ -512,7 +489,7 @@ pdbATOM.append (monomer.getHelixData (135176, qtype, mStep)).append ('\n');
 continue ;}pt.set (x * 2, y * 2, z * 2);
 pdbATOM.append ("draw ID \"").append (prefix).append ("a").append (id).append ('\"').append (" VECTOR ").append (org.jmol.util.Escape.escapePt (ptCenter)).append (org.jmol.util.Escape.escapePt (pt)).append (" \">").append (String.valueOf (deg)).append ('\"').append (" color ").append (org.jmol.modelsetbio.BioPolymer.qColor[derivType]).append ('\n');
 continue ;}strExtra = q.getInfo () + org.jmol.util.TextFormat.sprintf ("  %10.5p %10.5p %10.5p", [ptCenter]);
-if ((qtype).charCodeAt (0) == ('n').charCodeAt (0) && isAmino) {
+if (qtype.charCodeAt (0) == 110 && isAmino) {
 strExtra += org.jmol.util.TextFormat.sprintf ("  %10.5p %10.5p %10.5p", [(monomer).getNitrogenHydrogenPoint ()]);
 } else if (derivType == 2 && !Float.isNaN (val1)) {
 strExtra += org.jmol.util.TextFormat.sprintf (" %10.5f %10.5f", [[val1, val2]]);
@@ -523,11 +500,11 @@ if (atomLast != null && atomLast.getPolymerIndexInModel () == a.getPolymerIndexI
 pdbCONECT.append ("CONECT").append (org.jmol.util.TextFormat.formatString ("%5i", "i", atomLast.getAtomNumber ())).append (org.jmol.util.TextFormat.formatString ("%5i", "i", a.getAtomNumber ())).append ('\n');
 }atomLast = a;
 }}
-}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~N,~N,org.jmol.modelsetbio.BioPolymer,~N,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~B,~B,~B,~N,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~N,~N,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~B,~B,~B,~N,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
 Clazz.defineMethod (c$, "calculateRamachandranHelixAngle", 
 function (m, qtype) {
 return NaN;
-}, "~N,~N");
+}, "~N,~S");
 c$.get3DStraightness = Clazz.defineMethod (c$, "get3DStraightness", 
 ($fz = function (id, dq, dqnext) {
 return dq.getNormal ().dot (dqnext.getNormal ());
@@ -564,7 +541,7 @@ return org.jmol.modelsetbio.AminoPolymer.calculateStructuresDssp (bioPolymers, b
 }, "~A,~N,java.util.List,~B,~B,~B");
 Clazz.defineMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
-}, "org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N");
+}, "org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~N");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (alphaOnly) {
 }, "~B");
@@ -577,7 +554,7 @@ function (structureList) {
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 return ;
-}, "org.jmol.viewer.Viewer,~N,~N,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
 Clazz.defineMethod (c$, "getType", 
 function () {
 return this.type;

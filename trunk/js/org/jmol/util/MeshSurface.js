@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.TextFormat"], function () {
+Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.spanningVectors = null;
 this.meshType = null;
@@ -180,7 +180,7 @@ return (this.bsSlabGhost != null && this.slabMeshType == 1073742018 ? "mesh" : n
 });
 c$.getSlabWithinRange = Clazz.defineMethod (c$, "getSlabWithinRange", 
 function (min, max) {
-return [Integer.$valueOf (1073742114), [Float.$valueOf (min), Float.$valueOf (max)], Boolean.FALSE, null];
+return [Integer.$valueOf (1073742114), [Float.$valueOf (min), Float.$valueOf (max)], org.jmol.viewer.JmolConstants.FALSE, null];
 }, "~N,~N");
 Clazz.defineMethod (c$, "resetSlab", 
 function () {
@@ -194,7 +194,7 @@ c$.getCapSlabObject = Clazz.defineMethod (c$, "getCapSlabObject",
 function (s, isCap) {
 try {
 if (s.indexOf ("array") == 0) {
-var pts = org.jmol.util.TextFormat.split (s.substring (6, s.length - 1), ",");
+var pts = org.jmol.util.TextFormat.splitChars (s.substring (6, s.length - 1), ",");
 return org.jmol.util.MeshSurface.getSlabObject (1679429641, [org.jmol.util.Escape.unescapePoint (pts[0]), org.jmol.util.Escape.unescapePoint (pts[1]), org.jmol.util.Escape.unescapePoint (pts[2]), org.jmol.util.Escape.unescapePoint (pts[3])], isCap, null);
 }var plane = org.jmol.util.Escape.unescapePoint (s);
 if (Clazz.instanceOf (plane, javax.vecmath.Point4f)) return org.jmol.util.MeshSurface.getSlabObject (135266319, plane, isCap, null);

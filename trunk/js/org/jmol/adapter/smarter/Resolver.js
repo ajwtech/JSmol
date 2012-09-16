@@ -64,12 +64,12 @@ if (readerName == null) errMsg = "unrecognized file format type " + type;
  else org.jmol.util.Logger.info ("The Resolver assumes " + readerName);
 } else {
 readerName = org.jmol.adapter.smarter.Resolver.determineAtomSetCollectionReader (bufferedReader, true);
-if ((readerName.charAt (0)).charCodeAt (0) == ('\n').charCodeAt (0)) {
+if ((readerName.charAt (0)).charCodeAt (0) == 10) {
 type = htParams.get ("defaultType");
 if (type != null) {
 type = org.jmol.adapter.smarter.Resolver.getReaderFromType (type);
 if (type != null) readerName = type;
-}}if ((readerName.charAt (0)).charCodeAt (0) == ('\n').charCodeAt (0)) errMsg = "unrecognized file format for file " + fullName + "\n" + readerName;
+}}if ((readerName.charAt (0)).charCodeAt (0) == 10) errMsg = "unrecognized file format for file " + fullName + "\n" + readerName;
  else if (readerName.equals ("spt")) errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
  else if (!fullName.equals ("ligand")) org.jmol.util.Logger.info ("The Resolver thinks " + readerName);
 }if (errMsg != null) {
@@ -407,7 +407,7 @@ c$.checkOdyssey = Clazz.defineMethod (c$, "checkOdyssey",
 var i;
 for (i = 0; i < lines.length; i++) if (!lines[i].startsWith ("C ") && lines[i].length != 0) break;
 
-if (i >= lines.length || (lines[i].charAt (0)).charCodeAt (0) != (' ').charCodeAt (0) || (i = i + 2) + 1 >= lines.length) return false;
+if (i >= lines.length || (lines[i].charAt (0)).charCodeAt (0) != 32 || (i = i + 2) + 1 >= lines.length) return false;
 try {
 var spin = Integer.parseInt (lines[i].substring (2).trim ());
 var charge = Integer.parseInt (lines[i].substring (0, 2).trim ());

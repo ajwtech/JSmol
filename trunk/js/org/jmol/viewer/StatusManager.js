@@ -60,8 +60,8 @@ statusRecordSet.add (msgRecord);
 }, $fz.isPrivate = true, $fz), "~S,~N,~O,~B");
 Clazz.defineMethod (c$, "getStatusChanged", 
 function (newStatusList) {
-var isRemove = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == ('-').charCodeAt (0));
-var isAdd = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == ('+').charCodeAt (0));
+var isRemove = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == 45);
+var isAdd = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == 43);
 var getList = false;
 if (isRemove) {
 this.statusList = org.jmol.util.TextFormat.simpleReplace (this.statusList, newStatusList.substring (1, newStatusList.length), "");

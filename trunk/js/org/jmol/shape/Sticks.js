@@ -19,7 +19,7 @@ Clazz.superCall (this, org.jmol.shape.Sticks, "initShape", []);
 this.myMask = 1023;
 this.reportAll = false;
 });
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
 if (size == 2147483647) {
 this.selectedBonds = org.jmol.util.BitSetUtil.copy (bsSelected);
@@ -98,7 +98,7 @@ return ;
 return ;
 }Clazz.superCall (this, org.jmol.shape.Sticks, "setProperty", [propertyName, value, bs]);
 }, "~S,~O,java.util.BitSet");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if (property.equals ("selectionState")) return (this.selectedBonds != null ? "select BONDS " + org.jmol.util.Escape.escape (this.selectedBonds) + "\n" : "");
 if (property.equals ("sets")) return [this.bsOrderSet, this.bsSizeSet, this.bsColixSet];

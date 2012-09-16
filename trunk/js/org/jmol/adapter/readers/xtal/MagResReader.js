@@ -26,7 +26,7 @@ Clazz.defineMethod (c$, "readCellParams",
 ($fz = function () {
 var tokens = this.getTokens ();
 this.cellParams =  Clazz.newArray (9, 0);
-for (var i = 0; i < 9; i++) this.cellParams[i] = this.parseFloat (tokens[i + 1]) * 0.5291772;
+for (var i = 0; i < 9; i++) this.cellParams[i] = this.parseFloatStr (tokens[i + 1]) * 0.5291772;
 
 this.addPrimitiveLatticeVector (0, this.cellParams, 0);
 this.addPrimitiveLatticeVector (1, this.cellParams, 3);
@@ -40,9 +40,9 @@ var tokens = this.getTokens ();
 this.atom = this.atomSetCollection.addNewAtom ();
 this.atom.elementSymbol = tokens[0];
 this.atom.atomName = tokens[0] + tokens[1];
-var x = this.parseFloat (tokens[3]) * f;
-var y = this.parseFloat (tokens[4]) * f;
-var z = this.parseFloat (tokens[5]) * f;
+var x = this.parseFloatStr (tokens[3]) * f;
+var y = this.parseFloatStr (tokens[4]) * f;
+var z = this.parseFloatStr (tokens[5]) * f;
 this.atom.set (x, y, z);
 this.setAtomCoord (this.atom);
 }, $fz.isPrivate = true, $fz));
@@ -57,7 +57,7 @@ this.fillFloatArray (s, 0, data);
 var f = 3;
 if (isJ) {
 this.discardLinesUntilContains ("Isotropic");
-var iso = this.parseFloat (this.getTokens ()[3]);
+var iso = this.parseFloatStr (this.getTokens ()[3]);
 if (Math.abs (iso) > this.maxIso) return ;
 f = 0.04;
 }var a =  Clazz.newArray (3, 3, 0);

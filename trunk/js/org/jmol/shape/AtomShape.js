@@ -23,12 +23,12 @@ Clazz.defineMethod (c$, "getSize",
 function (atomIndex) {
 return (this.mads == null ? 0 : this.mads[atomIndex]);
 }, "~N");
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
-if (size == 0) this.setSize (null, bsSelected);
- else this.setSize ( new org.jmol.atomdata.RadiusData (size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
+if (size == 0) this.setSizeRD (null, bsSelected);
+ else this.setSizeRD ( new org.jmol.atomdata.RadiusData (size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
 }, "~N,java.util.BitSet");
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 if (this.atoms == null) return ;
 this.isActive = true;

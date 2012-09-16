@@ -39,16 +39,16 @@ function () {
 Clazz.defineMethod (c$, "merge", 
 function (shape) {
 }, "org.jmol.shape.Shape");
-Clazz.defineMethod (c$, "setShapeSize", 
+Clazz.defineMethod (c$, "setShapeSizeRD", 
 function (size, rd, bsSelected) {
 this.setXmlProperty ("size", (rd == null ? Integer.$valueOf (size) : rd), bsSelected);
 if (rd == null) this.setSize (size, bsSelected);
- else this.setSize (rd, bsSelected);
+ else this.setSizeRD (rd, bsSelected);
 }, "~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
 Clazz.defineMethod (c$, "setSize", 
 function (size, bsSelected) {
 }, "~N,java.util.BitSet");
-Clazz.defineMethod (c$, "setSize", 
+Clazz.defineMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 }, "org.jmol.atomdata.RadiusData,java.util.BitSet");
 Clazz.defineMethod (c$, "setShapeProperty", 
@@ -77,7 +77,7 @@ return ;
 return ;
 }org.jmol.util.Logger.warn ("unassigned " + org.jmol.viewer.JmolConstants.shapeClassBases[this.shapeID] + " + shape setProperty:" + propertyName + ":" + value);
 }, "~S,~O,java.util.BitSet");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 return false;
 }, "~S,~A");

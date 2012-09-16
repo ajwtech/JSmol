@@ -7,7 +7,7 @@ Clazz.instantialize (this, arguments);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 this.atomSetCollection.newAtomSet ();
-if (!this.checkFilter ("NOCENTER")) this.doCentralize = true;
+if (!this.checkFilterKey ("NOCENTER")) this.doCentralize = true;
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -28,7 +28,7 @@ this.atomSetCollection.setAtomSetAuxiliaryInfo (key, value);
 if (this.line.indexOf ("TOTAL ENERGY") >= 0) {
 var tokens = this.getTokens ();
 this.energyWithUnits = " (" + tokens[3] + " " + tokens[4] + ")";
-this.atomSetCollection.setAtomSetEnergy (tokens[3], this.parseFloat (tokens[3]));
+this.atomSetCollection.setAtomSetEnergy (tokens[3], this.parseFloatStr (tokens[3]));
 }return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readCoordinates", 
@@ -42,10 +42,10 @@ var sym = null;
 this.setFractionalCoordinates (false);
 while (this.readLine () != null && this.line.length >= 50) {
 this.vAtoms.add (atom =  new org.jmol.adapter.smarter.Atom ());
-atom.x = this.parseFloat (this.line.substring (5, 18));
-atom.y = this.parseFloat (this.line.substring (21, 34));
-atom.z = this.parseFloat (this.line.substring (37, 50));
-if (this.line.length > 58 && (this.line.charAt (58)).charCodeAt (0) != (' ').charCodeAt (0)) {
+atom.x = this.parseFloatStr (this.line.substring (5, 18));
+atom.y = this.parseFloatStr (this.line.substring (21, 34));
+atom.z = this.parseFloatStr (this.line.substring (37, 50));
+if (this.line.length > 58 && (this.line.charAt (58)).charCodeAt (0) != 32) {
 switch (this.atomCount) {
 case 0:
 break;
@@ -56,13 +56,13 @@ case 2:
 this.setAtom (atom, 0, 1, 0, atom.x, atom.y, 3.4028235E38);
 break;
 default:
-this.setAtom (atom, this.parseInt (this.line.substring (54, 59)) - 1, this.parseInt (this.line.substring (60, 65)) - 1, this.parseInt (this.line.substring (66, 71)) - 1, atom.x, atom.y, atom.z);
+this.setAtom (atom, this.parseIntStr (this.line.substring (54, 59)) - 1, this.parseIntStr (this.line.substring (60, 65)) - 1, this.parseIntStr (this.line.substring (66, 71)) - 1, atom.x, atom.y, atom.z);
 }
 }sym = this.line.substring (1, 3).trim ();
 atom.elementSymbol = sym;
 if (!sym.equals ("Tv")) {
 this.atomCount++;
-if (this.line.length >= 84) atom.partialCharge = this.parseFloat (this.line.substring (76, 84));
+if (this.line.length >= 84) atom.partialCharge = this.parseFloatStr (this.line.substring (76, 84));
 if (org.jmol.api.JmolAdapter.getElementNumber (sym) != 0) this.atomSetCollection.addAtom (atom);
 this.setAtomCoord (atom);
 }}

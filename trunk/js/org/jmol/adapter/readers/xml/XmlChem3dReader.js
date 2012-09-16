@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xml");
-Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "java.util.ArrayList"], "org.jmol.adapter.readers.xml.XmlChem3dReader", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "org.jmol.adapter.smarter.Atom", "org.jmol.api.Interface", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "java.util.ArrayList"], "org.jmol.adapter.readers.xml.XmlChem3dReader", ["java.lang.Float", "java.util.Hashtable", "org.jmol.adapter.smarter.Atom", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.orbitals = null;
 this.moData = null;
@@ -37,38 +37,38 @@ this.atom.atomName = atts.get ("id");
 this.atom.elementSymbol = atts.get ("symbol");
 if (atts.containsKey ("cartCoords")) {
 var xyz = atts.get ("cartCoords");
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (xyz);
-this.atom.set (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (xyz);
+this.atom.set (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
 }return ;
 }if ("bond".equals (localName)) {
 var atom1 = atts.get ("bondAtom1");
 var atom2 = atts.get ("bondAtom2");
 var order = 1;
-if (atts.containsKey ("bondOrder")) order = this.parseInt (atts.get ("bondOrder"));
+if (atts.containsKey ("bondOrder")) order = this.parseIntStr (atts.get ("bondOrder"));
 this.atomSetCollection.addNewBond (atom1, atom2, order);
 return ;
 }if ("electronicStructureCalculation".equals (localName)) {
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (atts.get ("calcPartialCharges"));
-var tokens2 = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (atts.get ("calcAtoms"));
-for (var i = this.parseInt (tokens[0]); --i >= 0; ) this.atomSetCollection.mapPartialCharge (tokens2[i + 1], this.parseFloat (tokens[i + 1]));
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("calcPartialCharges"));
+var tokens2 = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("calcAtoms"));
+for (var i = this.parseIntStr (tokens[0]); --i >= 0; ) this.atomSetCollection.mapPartialCharge (tokens2[i + 1], this.parseFloatStr (tokens[i + 1]));
 
 }if ("gridData".equals (localName)) {
-var nPointsX = this.parseInt (atts.get ("gridDatXDim"));
-var nPointsY = this.parseInt (atts.get ("gridDatYDim"));
-var nPointsZ = this.parseInt (atts.get ("gridDatZDim"));
-var xStep = this.parseFloat (atts.get ("gridDatXSize")) / (nPointsX);
-var yStep = this.parseFloat (atts.get ("gridDatYSize")) / (nPointsY);
-var zStep = this.parseFloat (atts.get ("gridDatZSize")) / (nPointsZ);
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (atts.get ("gridDatOrigin"));
-var ox = this.parseFloat (tokens[0]);
-var oy = this.parseFloat (tokens[1]);
-var oz = this.parseFloat (tokens[2]);
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (atts.get ("gridDatData"));
+var nPointsX = this.parseIntStr (atts.get ("gridDatXDim"));
+var nPointsY = this.parseIntStr (atts.get ("gridDatYDim"));
+var nPointsZ = this.parseIntStr (atts.get ("gridDatZDim"));
+var xStep = this.parseFloatStr (atts.get ("gridDatXSize")) / (nPointsX);
+var yStep = this.parseFloatStr (atts.get ("gridDatYSize")) / (nPointsY);
+var zStep = this.parseFloatStr (atts.get ("gridDatZSize")) / (nPointsZ);
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("gridDatOrigin"));
+var ox = this.parseFloatStr (tokens[0]);
+var oy = this.parseFloatStr (tokens[1]);
+var oz = this.parseFloatStr (tokens[2]);
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("gridDatData"));
 var pt = 1;
 var voxelData =  Clazz.newArray (nPointsX, nPointsY, nPointsZ, 0);
 var sum = 0;
 for (var z = 0; z < nPointsZ; z++) for (var y = 0; y < nPointsY; y++) for (var x = 0; x < nPointsX; x++) {
-var f = this.parseFloat (tokens[pt++]);
+var f = this.parseFloatStr (tokens[pt++]);
 voxelData[x][y][z] = f;
 sum += f * f;
 }
@@ -90,7 +90,7 @@ vd.setVoxelData (voxelData);
 if (this.moData == null) {
 this.moData =  new java.util.Hashtable ();
 this.moData.put ("defaultCutoff", Float.$valueOf (0.01));
-this.moData.put ("haveVolumeData", Boolean.TRUE);
+this.moData.put ("haveVolumeData", org.jmol.api.JmolAdapter.TRUE);
 this.moData.put ("calculationType", "Chem3D");
 this.orbitals =  new java.util.ArrayList ();
 this.moData.put ("mos", this.orbitals);

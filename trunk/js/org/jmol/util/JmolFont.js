@@ -27,7 +27,6 @@ this.fontMetrics = apiPlatform.getFontMetrics (graphics, this.font);
 }, $fz.isPrivate = true, $fz), "org.jmol.api.ApiPlatform,~N,~N,~N,~N,~N,~O");
 c$.getFont3D = Clazz.defineMethod (c$, "getFont3D", 
 function (fontface, fontstyle, fontsize, fontsizeNominal, apiPlatform, graphicsForMetrics) {
-if (graphicsForMetrics == null) return null;
 if (fontsize > 0xFF) fontsize = 0xFF;
 var fontsizeX16 = (Math.round (fontsize)) << 4;
 var fontkey = ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));

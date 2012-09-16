@@ -1,13 +1,13 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser"], function () {
+Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.declareType (org.jmol.util, "TextFormat");
 Clazz.prepareFields (c$, function () {
 {
-org.jmol.util.TextFormat.useNumberLocalization[0] = Boolean.TRUE;
+org.jmol.util.TextFormat.useNumberLocalization[0] = org.jmol.viewer.JmolConstants.TRUE;
 }});
 c$.setUseNumberLocalization = Clazz.defineMethod (c$, "setUseNumberLocalization", 
 function (TF) {
-org.jmol.util.TextFormat.useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
+org.jmol.util.TextFormat.useNumberLocalization[0] = (TF ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
 }, "~B");
 c$.formatDecimal = Clazz.defineMethod (c$, "formatDecimal", 
 function (value, decimalDigits) {
@@ -28,7 +28,7 @@ d = value * 1e10;
 }var s = ("" + d).toUpperCase ();
 var i = s.indexOf ("E");
 n = org.jmol.util.Parser.parseInt (s.substring (i + 1)) + n;
-return (i < 0 ? "" + value : org.jmol.util.TextFormat.formatDecimal (org.jmol.util.Parser.parseFloat (s.substring (0, i)), decimalDigits - 1) + "E" + (n >= 0 ? "+" : "") + n);
+return (i < 0 ? "" + value : org.jmol.util.TextFormat.formatDecimal (org.jmol.util.Parser.parseFloatStr (s.substring (0, i)), decimalDigits - 1) + "E" + (n >= 0 ? "+" : "") + n);
 }if (decimalDigits >= org.jmol.util.TextFormat.formattingStrings.length) decimalDigits = org.jmol.util.TextFormat.formattingStrings.length - 1;
 var s1 = ("" + value).toUpperCase ();
 var isNeg = s1.startsWith ("-");
@@ -48,7 +48,7 @@ s1 = s1.substring (0, n + 1) + "." + s1.substring (n + 1);
 pt = s1.indexOf (".");
 }var len = s1.length;
 var pt2 = decimalDigits + pt + 1;
-if (pt2 < len && (s1.charAt (pt2)).charCodeAt (0) >= ('5').charCodeAt (0)) {
+if (pt2 < len && (s1.charAt (pt2)).charCodeAt (0) >= 53) {
 return org.jmol.util.TextFormat.formatDecimal (value + (isNeg ? -1 : 1) * org.jmol.util.TextFormat.formatAdds[decimalDigits], decimalDigits);
 }var sb =  new StringBuffer (s1.substring (0, (decimalDigits == 0 ? pt : ++pt)));
 for (var i = 0; i < decimalDigits; i++, pt++) {
@@ -56,7 +56,7 @@ if (pt < len) sb.append (s1.charAt (pt));
  else sb.append ('0');
 }
 s1 = (isNeg ? "-" : "") + sb;
-return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
+return (org.jmol.viewer.JmolConstants.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
 }, "~N,~N");
 c$.format = Clazz.defineMethod (c$, "format", 
 function (value, width, precision, alignLeft, zeroPad) {
@@ -74,7 +74,7 @@ if (precision != 2147483647 && precision > 0 && precision < len) value = value.s
  else if (precision < 0 && len + precision >= 0) value = value.substring (len + precision + 1);
 var padLength = width - value.length;
 if (padLength <= 0) return value;
-var isNeg = (zeroPad && !alignLeft && (value.charAt (0)).charCodeAt (0) == ('-').charCodeAt (0));
+var isNeg = (zeroPad && !alignLeft && (value.charAt (0)).charCodeAt (0) == 45);
 var padChar = (zeroPad ? '0' : ' ');
 var padChar0 = (isNeg ? '-' : padChar);
 var sb =  new StringBuffer ();
@@ -159,28 +159,28 @@ if (ichKey > ichPercent + 6) {
 strLabel += ('%').charCodeAt (0);
 continue ;}try {
 var alignLeft = false;
-if ((strFormat.charAt (ich)).charCodeAt (0) == ('-').charCodeAt (0)) {
+if ((strFormat.charAt (ich)).charCodeAt (0) == 45) {
 alignLeft = true;
 ++ich;
 }var zeroPad = false;
-if ((strFormat.charAt (ich)).charCodeAt (0) == ('0').charCodeAt (0)) {
+if ((strFormat.charAt (ich)).charCodeAt (0) == 48) {
 zeroPad = true;
 ++ich;
 }var ch;
 var width = 0;
-while (((ch = strFormat.charAt (ich))).charCodeAt (0) >= ('0').charCodeAt (0) && ((ch).charCodeAt (0) <= ('9').charCodeAt (0))) {
-width = (10 * width) + ((ch).charCodeAt (0) - ('0').charCodeAt (0));
+while (((ch = strFormat.charAt (ich))).charCodeAt (0) >= 48 && (ch <= '9')) {
+width = (10 * width) + (ch.charCodeAt (0) - 48);
 ++ich;
 }
 var precision = 2147483647;
 var isExponential = false;
-if ((strFormat.charAt (ich)).charCodeAt (0) == ('.').charCodeAt (0)) {
+if ((strFormat.charAt (ich)).charCodeAt (0) == 46) {
 ++ich;
-if (((ch = strFormat.charAt (ich))).charCodeAt (0) == ('-').charCodeAt (0)) {
+if (((ch = strFormat.charAt (ich))).charCodeAt (0) == 45) {
 isExponential = true;
 ++ich;
-}if (((ch = strFormat.charAt (ich))).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0)) {
-precision = (ch).charCodeAt (0) - ('0').charCodeAt (0);
+}if (((ch = strFormat.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+precision = ch.charCodeAt (0) - 48;
 ++ich;
 }if (isExponential) precision = -precision - (strT == null ? 1 : 0);
 }var st = strFormat.substring (ich, ich + len);
@@ -244,7 +244,7 @@ for (var i = 0; i < n; i++) sb.append (s);
 sb.append (f.substring (pt + 1));
 return sb.toString ();
 }, $fz.isPrivate = true, $fz), "~S,~N,~N");
-c$.split = Clazz.defineMethod (c$, "split", 
+c$.splitChars = Clazz.defineMethod (c$, "splitChars", 
 function (text, run) {
 if (text.length == 0) return  new Array (0);
 var n = 1;
@@ -284,7 +284,7 @@ if (str == null) return null;
 for (var i = strFrom.length; --i >= 0; ) str = str.$replace (strFrom.charAt (i), chTo);
 
 return str;
-}, "~S,~S,~N");
+}, "~S,~S,~S");
 c$.simpleReplace = Clazz.defineMethod (c$, "simpleReplace", 
 function (str, strFrom, strTo) {
 if (str == null || str.indexOf (strFrom) < 0 || strFrom.equals (strTo)) return str;
@@ -319,8 +319,8 @@ return str.substring (k, m + 1);
 }, "~S,~S");
 c$.split = Clazz.defineMethod (c$, "split", 
 function (text, ch) {
-return org.jmol.util.TextFormat.split (text, "" + ch);
-}, "~S,~N");
+return org.jmol.util.TextFormat.splitChars (text, "" + ch);
+}, "~S,~S");
 c$.lFill = Clazz.defineMethod (c$, "lFill", 
 function (s, s1, s2) {
 s.append (s2);
@@ -347,28 +347,28 @@ function (s, strWildcard, checkStar, allowInitialStar) {
 var ich = 0;
 var cchWildcard = strWildcard.length;
 var cchs = s.length;
-if (cchs == 0 || cchWildcard == 0) return (cchs == cchWildcard || cchWildcard == 1 && (strWildcard.charAt (0)).charCodeAt (0) == ('*').charCodeAt (0));
-var isStar0 = (checkStar && allowInitialStar ? (strWildcard.charAt (0)).charCodeAt (0) == ('*').charCodeAt (0) : false);
-if (isStar0 && (strWildcard.charAt (cchWildcard - 1)).charCodeAt (0) == ('*').charCodeAt (0)) return (cchWildcard < 3 || s.indexOf (strWildcard.substring (1, cchWildcard - 1)) >= 0);
+if (cchs == 0 || cchWildcard == 0) return (cchs == cchWildcard || cchWildcard == 1 && (strWildcard.charAt (0)).charCodeAt (0) == 42);
+var isStar0 = (checkStar && allowInitialStar ? (strWildcard.charAt (0)).charCodeAt (0) == 42 : false);
+if (isStar0 && (strWildcard.charAt (cchWildcard - 1)).charCodeAt (0) == 42) return (cchWildcard < 3 || s.indexOf (strWildcard.substring (1, cchWildcard - 1)) >= 0);
 var qqq = "????";
 while (qqq.length < s.length) qqq += qqq;
 
 if (checkStar) {
 if (allowInitialStar && isStar0) strWildcard = qqq + strWildcard.substring (1);
-if ((strWildcard.charAt (ich = strWildcard.length - 1)).charCodeAt (0) == ('*').charCodeAt (0)) strWildcard = strWildcard.substring (0, ich) + qqq;
+if ((strWildcard.charAt (ich = strWildcard.length - 1)).charCodeAt (0) == 42) strWildcard = strWildcard.substring (0, ich) + qqq;
 cchWildcard = strWildcard.length;
 }if (cchWildcard < cchs) return false;
 ich = 0;
 while (cchWildcard > cchs) {
-if (allowInitialStar && (strWildcard.charAt (ich)).charCodeAt (0) == ('?').charCodeAt (0)) {
+if (allowInitialStar && (strWildcard.charAt (ich)).charCodeAt (0) == 63) {
 ++ich;
-} else if ((strWildcard.charAt (ich + cchWildcard - 1)).charCodeAt (0) != ('?').charCodeAt (0)) {
+} else if ((strWildcard.charAt (ich + cchWildcard - 1)).charCodeAt (0) != 63) {
 return false;
 }--cchWildcard;
 }
 for (var i = cchs; --i >= 0; ) {
 var charWild = strWildcard.charAt (ich + i);
-if ((charWild).charCodeAt (0) == ('?').charCodeAt (0)) continue ;if ((charWild).charCodeAt (0) != (s.charAt (i)).charCodeAt (0) && ((charWild).charCodeAt (0) != ('\1').charCodeAt (0) || (s.charAt (i)).charCodeAt (0) != ('?').charCodeAt (0))) return false;
+if (charWild.charCodeAt (0) == 63) continue ;if (charWild.charCodeAt (0) != (s.charAt (i)).charCodeAt (0) && (charWild.charCodeAt (0) != 1 || (s.charAt (i)).charCodeAt (0) != 63)) return false;
 }
 return true;
 }, "~S,~S,~B,~B");
@@ -380,7 +380,7 @@ sb.append (s[i0++]);
 for (var i = i0; i < s.length; i++) sb.append (c).append (s[i]);
 
 return sb.toString ();
-}, "~A,~N,~N");
+}, "~A,~S,~N");
 c$.replaceQuotedStrings = Clazz.defineMethod (c$, "replaceQuotedStrings", 
 function (s, list, newList) {
 var n = list.size ();

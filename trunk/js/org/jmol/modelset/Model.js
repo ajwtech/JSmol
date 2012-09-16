@@ -119,7 +119,7 @@ return this.chains;
 });
 Clazz.defineMethod (c$, "getChainCount", 
 function (countWater) {
-if (this.chainCount > 1 && !countWater) for (var i = 0; i < this.chainCount; i++) if ((this.chains[i].chainID).charCodeAt (0) == ('\0').charCodeAt (0)) return this.chainCount - 1;
+if (this.chainCount > 1 && !countWater) for (var i = 0; i < this.chainCount; i++) if ((this.chains[i].chainID).charCodeAt (0) == 0) return this.chainCount - 1;
 
 return this.chainCount;
 }, "~B");
@@ -152,10 +152,10 @@ Clazz.defineMethod (c$, "getChain",
 function (chainID) {
 for (var i = this.chainCount; --i >= 0; ) {
 var chain = this.chains[i];
-if ((chain.chainID).charCodeAt (0) == (chainID).charCodeAt (0)) return chain;
+if (chain.chainID.charCodeAt (0) == chainID.charCodeAt (0)) return chain;
 }
 return null;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "fixIndices", 
 function (modelIndex, nAtomsDeleted, bsDeleted) {
 if (this.dataSourceFrame > modelIndex) this.dataSourceFrame--;
@@ -176,7 +176,7 @@ for (var i = 0; i < this.chainCount; ++i) this.chains[i].groups = org.jmol.util.
 });
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, type, ctype, isDraw, bsSelected, sb, tokens, pdbCONECT, bsWritten) {
-}, "org.jmol.viewer.Viewer,~S,~N,~B,java.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,java.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,java.util.BitSet");
 Clazz.defineMethod (c$, "getDefaultLargePDBRendering", 
 function (sb, maxAtoms) {
 }, "StringBuffer,~N");
@@ -224,7 +224,7 @@ function () {
 });
 Clazz.defineMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
-}, "org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N");
+}, "org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~N");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (asDSSP, doReport, dsspIgnoreHydrogen, setStructure, includeAlpha) {
 return "";
@@ -245,10 +245,10 @@ return 0;
 }, "org.jmol.modelset.ModelSet,java.util.BitSet,java.util.BitSet");
 Clazz.defineMethod (c$, "calculateStraightness", 
 function (viewer, ctype, qtype, mStep) {
-}, "org.jmol.viewer.Viewer,~N,~N,~N");
+}, "org.jmol.viewer.Viewer,~S,~S,~N");
 Clazz.defineMethod (c$, "selectSeqcodeRange", 
 function (seqcodeA, seqcodeB, chainID, bs, caseSensitive) {
-}, "~N,~N,~N,java.util.BitSet,~B");
+}, "~N,~N,~S,java.util.BitSet,~B");
 Clazz.defineMethod (c$, "setConformation", 
 function (bsConformation) {
 }, "java.util.BitSet");

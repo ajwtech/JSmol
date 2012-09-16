@@ -13,14 +13,14 @@ this.cartesianOffset =  new javax.vecmath.Point3f ();
 this.fractionalOffset =  new javax.vecmath.Point3f ();
 });
 Clazz.makeConstructor (c$, 
-function (points) {
+function (points, ignored) {
 Clazz.superConstructor (this, org.jmol.symmetry.UnitCell, []);
 var parameters = [-1, 0, 0, 0, 0, 0, points[1].x, points[1].y, points[1].z, points[2].x, points[2].y, points[2].z, points[3].x, points[3].y, points[3].z];
 this.set (parameters);
 this.allFractionalRelative = true;
 this.calcUnitcellVertices ();
 this.setCartesianOffset (points[0]);
-}, "~A");
+}, "~A,~B");
 Clazz.makeConstructor (c$, 
 function (notionalUnitcell) {
 Clazz.superConstructor (this, org.jmol.symmetry.UnitCell, [notionalUnitcell]);

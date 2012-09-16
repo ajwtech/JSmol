@@ -83,7 +83,7 @@ if (this.currentBgTranslucentLevel != 0) text.setTranslucent (this.currentBgTran
 return ;
 }}Clazz.superCall (this, org.jmol.shape.Echo, "setProperty", [propertyName, value, null]);
 }, "~S,~O,java.util.BitSet");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "checkID") {
 var key = (data[0]).toUpperCase ();
@@ -96,7 +96,7 @@ data[1] = id;
 return true;
 }}
 return false;
-}return Clazz.superCall (this, org.jmol.shape.Echo, "getProperty", [property, data]);
+}return Clazz.superCall (this, org.jmol.shape.Echo, "getPropertyData", [property, data]);
 }, "~S,~A");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {

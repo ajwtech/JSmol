@@ -42,13 +42,13 @@ var ch;
 var chars64 = strBase64.toCharArray ();
 var len64 = chars64.length;
 if (len64 == 0) return  Clazz.newArray (0, 0);
-for (var i = len64; --i >= 0; ) nBytes += ((ch = (chars64[i]).charCodeAt (0) & 0x7F) == ('A').charCodeAt (0) || org.jmol.util.Base64.decode64[ch] > 0 ? 3 : 0);
+for (var i = len64; --i >= 0; ) nBytes += ((ch = (chars64[i]).charCodeAt (0) & 0x7F) == 65 || org.jmol.util.Base64.decode64[ch] > 0 ? 3 : 0);
 
 nBytes = nBytes >> 2;
 var bytes =  Clazz.newArray (nBytes, 0);
 var offset = 18;
 for (var i = 0, pt = 0, b = 0; i < len64; i++) {
-if (org.jmol.util.Base64.decode64[ch = (chars64[i]).charCodeAt (0) & 0x7F] > 0 || ch == ('A').charCodeAt (0) || ch == ('=').charCodeAt (0)) {
+if (org.jmol.util.Base64.decode64[ch = (chars64[i]).charCodeAt (0) & 0x7F] > 0 || ch == 65 || ch == 61) {
 b |= org.jmol.util.Base64.decode64[ch] << offset;
 offset -= 6;
 if (offset < 0) {

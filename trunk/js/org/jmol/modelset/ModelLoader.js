@@ -86,7 +86,7 @@ this.modelSet.g3d = this.viewer.getGraphicsData ();
 this.modelSet.modelSetTypeName = name;
 this.modelSet.isXYZ = (name === "xyz");
 this.modelSet.modelSetAuxiliaryInfo = info;
-this.modelSet.modelSetProperties = this.modelSet.getModelSetAuxiliaryInfo ("properties");
+this.modelSet.modelSetProperties = this.modelSet.getModelSetAuxiliaryInfoValue ("properties");
 this.isPDB = this.modelSet.isPDB = this.modelSet.getModelSetAuxiliaryInfoBoolean ("isPDB");
 if (this.isPDB) {
 try {
@@ -100,15 +100,15 @@ org.jmol.util.Logger.error ("developer error: org.jmol.modelsetbio.Resolver coul
 throw e;
 }
 }
-}this.jmolData = this.modelSet.getModelSetAuxiliaryInfo ("jmolData");
-this.fileHeader = this.modelSet.getModelSetAuxiliaryInfo ("fileHeader");
-this.modelSet.trajectorySteps = this.modelSet.getModelSetAuxiliaryInfo ("trajectorySteps");
+}this.jmolData = this.modelSet.getModelSetAuxiliaryInfoValue ("jmolData");
+this.fileHeader = this.modelSet.getModelSetAuxiliaryInfoValue ("fileHeader");
+this.modelSet.trajectorySteps = this.modelSet.getModelSetAuxiliaryInfoValue ("trajectorySteps");
 this.isTrajectory = (this.modelSet.trajectorySteps != null);
 if (this.isTrajectory) {
 info.remove ("trajectorySteps");
 this.modelSet.vibrationSteps = info.get ("vibrationSteps");
 info.remove ("vibrationSteps");
-}this.doAddHydrogens = (this.jbr != null && !this.isTrajectory && this.modelSet.getModelSetAuxiliaryInfo ("pdbNoHydrogens") == null && this.viewer.getBooleanProperty ("pdbAddHydrogens"));
+}this.doAddHydrogens = (this.jbr != null && !this.isTrajectory && this.modelSet.getModelSetAuxiliaryInfoValue ("pdbNoHydrogens") == null && this.viewer.getBooleanProperty ("pdbAddHydrogens"));
 if (info != null) info.remove ("pdbNoHydrogens");
 this.noAutoBond = this.modelSet.getModelSetAuxiliaryInfoBoolean ("noAutoBond");
 this.is2D = this.modelSet.getModelSetAuxiliaryInfoBoolean ("is2D");
@@ -185,7 +185,7 @@ this.setModelNameNumberProperties (0, -1, "", 1, null, null, null);
 if (this.adapterModelCount > 0) {
 org.jmol.util.Logger.info ("ModelSet: haveSymmetry:" + this.modelSet.someModelsHaveSymmetry + " haveUnitcells:" + this.someModelsHaveUnitcells + " haveFractionalCoord:" + this.modelSet.someModelsHaveFractionalCoordinates);
 org.jmol.util.Logger.info (this.adapterModelCount + " model" + (this.modelSet.modelCount == 1 ? "" : "s") + " in this collection. Use getProperty \"modelInfo\" or" + " getProperty \"auxiliaryInfo\" to inspect them.");
-}var q = this.modelSet.getModelSetAuxiliaryInfo ("defaultOrientationQuaternion");
+}var q = this.modelSet.getModelSetAuxiliaryInfoValue ("defaultOrientationQuaternion");
 if (q != null) {
 org.jmol.util.Logger.info ("defaultOrientationQuaternion = " + q);
 org.jmol.util.Logger.info ("Use \"set autoLoadOrientation TRUE\" before loading or \"restore orientation DEFAULT\" after loading to view this orientation.");
@@ -231,7 +231,7 @@ for (var i = this.baseModelIndex; i < modelCount; i++) if (models[i].isBioModel)
 
 if (sb.length () == 0) return ;
 sb.append ("select *;");
-var script = this.modelSet.getModelSetAuxiliaryInfo ("jmolscript");
+var script = this.modelSet.getModelSetAuxiliaryInfoValue ("jmolscript");
 if (script == null) script = "";
 sb.append (script);
 this.modelSet.modelSetAuxiliaryInfo.put ("jmolscript", sb.toString ());
@@ -244,7 +244,7 @@ var modelCount = this.modelSet.modelCount;
 var models = this.modelSet.models;
 for (var i = this.baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
 modelAtomCount = models[i].bsAtoms.cardinality ();
-var atomProperties = this.modelSet.getModelAuxiliaryInfo (i, "atomProperties");
+var atomProperties = this.modelSet.getModelAuxiliaryInfoValue (i, "atomProperties");
 if (atomProperties == null) continue ;for (var entry, $entry = atomProperties.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var value = entry.getValue ();
@@ -323,12 +323,12 @@ this.viewer.setStringProperty ("_fileType", modelAuxiliaryInfo.get ("fileType"))
 if (modelName == null) modelName = (this.jmolData != null && this.jmolData.indexOf (";") > 2 ? this.jmolData.substring (this.jmolData.indexOf (":") + 2, this.jmolData.indexOf (";")) : this.appendNew ? "" + (modelNumber % 1000000) : "");
 var isPDBModel = this.setModelNameNumberProperties (ipt, iTrajectory, modelName, modelNumber, modelProperties, modelAuxiliaryInfo, this.jmolData);
 if (isPDBModel) {
-this.group3Lists[ipt + 1] = org.jmol.viewer.JmolConstants.group3List;
-this.group3Counts[ipt + 1] =  Clazz.newArray (org.jmol.viewer.JmolConstants.group3Count + 10, 0);
+this.group3Lists[ipt + 1] = org.jmol.viewer.JmolConstants.getGroup3List ();
+this.group3Counts[ipt + 1] =  Clazz.newArray (org.jmol.viewer.JmolConstants.getGroup3Count () + 10, 0);
 if (this.group3Lists[0] == null) {
-this.group3Lists[0] = org.jmol.viewer.JmolConstants.group3List;
-this.group3Counts[0] =  Clazz.newArray (org.jmol.viewer.JmolConstants.group3Count + 10, 0);
-}}if (this.modelSet.getModelAuxiliaryInfo (ipt, "periodicOriginXyz") != null) this.modelSet.someModelsHaveSymmetry = true;
+this.group3Lists[0] = org.jmol.viewer.JmolConstants.getGroup3List ();
+this.group3Counts[0] =  Clazz.newArray (org.jmol.viewer.JmolConstants.getGroup3Count () + 10, 0);
+}}if (this.modelSet.getModelAuxiliaryInfoValue (ipt, "periodicOriginXyz") != null) this.modelSet.someModelsHaveSymmetry = true;
 }
 var m = this.modelSet.models[this.baseModelIndex];
 this.viewer.setSmilesString (this.modelSet.modelSetAuxiliaryInfo.get ("smilesString"));
@@ -358,7 +358,7 @@ this.structuresDefinedInFile.set (i);
 }, $fz.isPrivate = true, $fz), "org.jmol.api.JmolAdapter,~O");
 Clazz.defineMethod (c$, "setModelNameNumberProperties", 
 ($fz = function (modelIndex, trajectoryBaseIndex, modelName, modelNumber, modelProperties, modelAuxiliaryInfo, jmolData) {
-var modelIsPDB = (modelAuxiliaryInfo != null && Boolean.TRUE.equals (modelAuxiliaryInfo.get ("isPDB")));
+var modelIsPDB = (modelAuxiliaryInfo != null && org.jmol.viewer.JmolConstants.TRUE.equals (modelAuxiliaryInfo.get ("isPDB")));
 if (this.appendNew) {
 this.modelSet.models[modelIndex] = (modelIsPDB ? this.jbr.getBioModel (this.modelSet, modelIndex, trajectoryBaseIndex, jmolData, modelProperties, modelAuxiliaryInfo) :  new org.jmol.modelset.Model (this.modelSet, modelIndex, trajectoryBaseIndex, jmolData, modelProperties, modelAuxiliaryInfo));
 this.modelSet.modelNumbers[modelIndex] = modelNumber;
@@ -370,16 +370,16 @@ if (atomInfo != null) this.modelSet.setModelAuxiliaryInfo (modelIndex, "PDB_CONE
 var atoms = this.modelSet.atoms;
 models[modelIndex].bsAtoms.set (atoms.length + 1);
 models[modelIndex].bsAtoms.clear (atoms.length + 1);
-var codes = this.modelSet.getModelAuxiliaryInfo (modelIndex, "altLocs");
+var codes = this.modelSet.getModelAuxiliaryInfoValue (modelIndex, "altLocs");
 models[modelIndex].setNAltLocs (codes == null ? 0 : codes.length);
 if (codes != null) {
 var altlocs = codes.toCharArray ();
 java.util.Arrays.sort (altlocs);
 codes = String.valueOf (altlocs);
 this.modelSet.setModelAuxiliaryInfo (modelIndex, "altLocs", codes);
-}codes = this.modelSet.getModelAuxiliaryInfo (modelIndex, "insertionCodes");
+}codes = this.modelSet.getModelAuxiliaryInfoValue (modelIndex, "insertionCodes");
 models[modelIndex].setNInsertions (codes == null ? 0 : codes.length);
-var isModelKit = (this.modelSet.modelSetName != null && this.modelSet.modelSetName.startsWith ("Jmol Model Kit") || modelName.startsWith ("Jmol Model Kit") || "Jme".equals (this.modelSet.getModelAuxiliaryInfo (modelIndex, "fileType")));
+var isModelKit = (this.modelSet.modelSetName != null && this.modelSet.modelSetName.startsWith ("Jmol Model Kit") || modelName.startsWith ("Jmol Model Kit") || "Jme".equals (this.modelSet.getModelAuxiliaryInfoValue (modelIndex, "fileType")));
 models[modelIndex].isModelKit = isModelKit;
 return modelIsPDB;
 }, $fz.isPrivate = true, $fz), "~N,~N,~S,~N,java.util.Properties,java.util.Map,~S");
@@ -431,7 +431,7 @@ this.modelSet.setModelAuxiliaryInfo (i, "modelName", modelNames[i]);
 this.modelSet.setModelAuxiliaryInfo (i, "modelNumber", Integer.$valueOf (modelNumbers[i] % 1000000));
 this.modelSet.setModelAuxiliaryInfo (i, "modelFileNumber", Integer.$valueOf (this.modelSet.modelFileNumbers[i]));
 this.modelSet.setModelAuxiliaryInfo (i, "modelNumberDotted", this.modelSet.getModelNumberDotted (i));
-var codes = this.modelSet.getModelAuxiliaryInfo (i, "altLocs");
+var codes = this.modelSet.getModelAuxiliaryInfoValue (i, "altLocs");
 if (codes != null) {
 org.jmol.util.Logger.info ("model " + this.modelSet.getModelNumberDotted (i) + " alternative locations: " + codes);
 }}
@@ -495,17 +495,17 @@ if (isPDB && specialAtomID == 2 && "CA".equalsIgnoreCase (group3)) specialAtomID
 }var atom = this.modelSet.addAtom (this.currentModelIndex, this.nullGroup, atomicAndIsotopeNumber, atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY, vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid, isHetero, specialAtomID, atomSymmetry);
 atom.setAltLoc (alternateLocationID);
 this.htAtomMap.put (atomUid, atom);
-}, $fz.isPrivate = true, $fz), "~B,java.util.BitSet,~N,~O,~N,~S,~N,~N,~A,~N,~N,~N,~N,~N,~B,~N,~S,~N,~N,~N,~N,~N");
+}, $fz.isPrivate = true, $fz), "~B,java.util.BitSet,~N,~O,~N,~S,~N,~N,~A,~N,~N,~N,~N,~N,~B,~N,~S,~N,~N,~N,~S,~N");
 Clazz.defineMethod (c$, "checkNewGroup", 
 ($fz = function (adapter, chainID, group3, groupSequenceNumber, groupInsertionCode, addH) {
 var group3i = (group3 == null ? null : group3.intern ());
-if ((chainID).charCodeAt (0) != (this.currentChainID).charCodeAt (0)) {
+if (chainID.charCodeAt (0) != this.currentChainID.charCodeAt (0)) {
 this.currentChainID = chainID;
 this.currentChain = this.getOrAllocateChain (this.currentModel, chainID);
 this.currentGroupInsertionCode = '\uFFFF';
 this.currentGroupSequenceNumber = -1;
 this.currentGroup3 = "xxxx";
-}if (groupSequenceNumber != this.currentGroupSequenceNumber || (groupInsertionCode).charCodeAt (0) != (this.currentGroupInsertionCode).charCodeAt (0) || group3i !== this.currentGroup3) {
+}if (groupSequenceNumber != this.currentGroupSequenceNumber || groupInsertionCode.charCodeAt (0) != this.currentGroupInsertionCode.charCodeAt (0) || group3i !== this.currentGroup3) {
 if (this.groupCount > 0 && addH) {
 this.jbr.addImplicitHydrogenAtoms (adapter, this.groupCount - 1);
 this.jbr.setHaveHsAlready (false);
@@ -523,14 +523,14 @@ this.chainOf[this.groupCount] = this.currentChain;
 this.group3Of[this.groupCount] = group3;
 this.seqcodes[this.groupCount] = org.jmol.modelset.Group.getSeqcode (groupSequenceNumber, groupInsertionCode);
 ++this.groupCount;
-}}, $fz.isPrivate = true, $fz), "org.jmol.api.JmolAdapter,~N,~S,~N,~N,~B");
+}}, $fz.isPrivate = true, $fz), "org.jmol.api.JmolAdapter,~S,~S,~N,~S,~B");
 Clazz.defineMethod (c$, "getOrAllocateChain", 
 ($fz = function (model, chainID) {
 var chain = model.getChain (chainID);
 if (chain != null) return chain;
 if (model.chainCount == model.chains.length) model.chains = org.jmol.util.ArrayUtil.doubleLength (model.chains);
 return model.chains[model.chainCount++] =  new org.jmol.modelset.Chain (model, chainID);
-}, $fz.isPrivate = true, $fz), "org.jmol.modelset.Model,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.modelset.Model,~S");
 Clazz.defineMethod (c$, "iterateOverAllNewBonds", 
 ($fz = function (adapter, atomSetCollection) {
 var iterBond = adapter.getBondIterator (atomSetCollection);
@@ -602,7 +602,7 @@ return ;
 this.structuresDefinedInFile.set (i);
 models[i].addSecondaryStructure (type, structureID, serialID, strandCount, startChainID, startSeqCode, endChainID, endSeqCode);
 }
-}, $fz.isPrivate = true, $fz), "~N,org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N,~N,~N");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~S,~N,~S");
 Clazz.defineMethod (c$, "initializeUnitCellAndSymmetry", 
 ($fz = function () {
 if (this.someModelsHaveUnitcells) {
@@ -645,7 +645,7 @@ for (var i = list.length; --i >= 0; ) if (list[i] != null) c.toSupercell (list[i
 }}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "initializeBonding", 
 ($fz = function () {
-var bsExclude = (this.modelSet.getModelSetAuxiliaryInfo ("someModelsHaveCONECT") == null ? null :  new java.util.BitSet ());
+var bsExclude = (this.modelSet.getModelSetAuxiliaryInfoValue ("someModelsHaveCONECT") == null ? null :  new java.util.BitSet ());
 if (bsExclude != null) this.modelSet.setPdbConectBonding (this.baseAtomIndex, this.baseModelIndex, bsExclude);
 var atomIndex = this.baseAtomIndex;
 var modelAtomCount = 0;
