@@ -54,12 +54,8 @@ this.set (x, y, z);
 }, "~N,~N,~N,~N,~N,~N,java.util.BitSet,~N,~N,~N,~B");
 Clazz.defineMethod (c$, "setAltLoc", 
 function (altLoc) {
-this.alternateLocationID = altLoc.charAt (0);
-}, "~S");
-Clazz.defineMethod (c$, "setAltLoc", 
-function (altLoc) {
 this.alternateLocationID = altLoc;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "setShapeVisibilityFlags", 
 function (flag) {
 this.shapeVisibilityFlags = flag;
@@ -250,10 +246,10 @@ return this.alternateLocationID;
 });
 Clazz.defineMethod (c$, "isAlternateLocationMatch", 
 function (strPattern) {
-if (strPattern == null) return ((this.alternateLocationID).charCodeAt (0) == ('\0').charCodeAt (0));
+if (strPattern == null) return (this.alternateLocationID.charCodeAt (0) == 0);
 if (strPattern.length != 1) return false;
 var ch = strPattern.charAt (0);
-return ((ch).charCodeAt (0) == ('*').charCodeAt (0) || (ch).charCodeAt (0) == ('?').charCodeAt (0) && (this.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0) || (this.alternateLocationID).charCodeAt (0) == (ch).charCodeAt (0));
+return (ch.charCodeAt (0) == 42 || ch.charCodeAt (0) == 63 && this.alternateLocationID.charCodeAt (0) != 0 || this.alternateLocationID.charCodeAt (0) == ch.charCodeAt (0));
 }, "~S");
 Clazz.defineMethod (c$, "isHetero", 
 function () {
@@ -521,13 +517,13 @@ return (this.group.chain.model.modelSet.getMoleculeIndex (this.index, inModel) +
 Clazz.defineMethod (c$, "getFractionalCoord", 
 ($fz = function (ch, asAbsolute) {
 var pt = this.getFractionalCoord (asAbsolute);
-return ((ch).charCodeAt (0) == ('X').charCodeAt (0) ? pt.x : (ch).charCodeAt (0) == ('Y').charCodeAt (0) ? pt.y : pt.z);
-}, $fz.isPrivate = true, $fz), "~N,~B");
+return (ch.charCodeAt (0) == 88 ? pt.x : ch.charCodeAt (0) == 89 ? pt.y : pt.z);
+}, $fz.isPrivate = true, $fz), "~S,~B");
 Clazz.defineMethod (c$, "getFractionalUnitCoord", 
 ($fz = function (ch) {
 var pt = this.getFractionalUnitCoord (false);
-return ((ch).charCodeAt (0) == ('X').charCodeAt (0) ? pt.x : (ch).charCodeAt (0) == ('Y').charCodeAt (0) ? pt.y : pt.z);
-}, $fz.isPrivate = true, $fz), "~N");
+return (ch.charCodeAt (0) == 88 ? pt.x : ch.charCodeAt (0) == 89 ? pt.y : pt.z);
+}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getFractionalCoord", 
 ($fz = function (asAbsolute) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
@@ -628,7 +624,7 @@ if (useChimeFormat) {
 var group3 = this.getGroup3 (true);
 var chainID = this.getChainID ();
 var pt = this.getFractionalCoord (true);
-return "Atom: " + (group3 == null ? this.getElementSymbol () : this.getAtomName ()) + " " + this.getAtomNumber () + (group3 != null && group3.length > 0 ? (this.isHetero () ? " Hetero: " : " Group: ") + group3 + " " + this.getResno () + ((chainID).charCodeAt (0) != 0 && (chainID).charCodeAt (0) != (' ').charCodeAt (0) ? " Chain: " + chainID : "") : "") + " Model: " + this.getModelNumber () + " Coordinates: " + this.x + " " + this.y + " " + this.z + (pt == null ? "" : " Fractional: " + pt.x + " " + pt.y + " " + pt.z);
+return "Atom: " + (group3 == null ? this.getElementSymbol () : this.getAtomName ()) + " " + this.getAtomNumber () + (group3 != null && group3.length > 0 ? (this.isHetero () ? " Hetero: " : " Group: ") + group3 + " " + this.getResno () + (chainID.charCodeAt (0) != 0 && chainID.charCodeAt (0) != 32 ? " Chain: " + chainID : "") : "") + " Model: " + this.getModelNumber () + " Coordinates: " + this.x + " " + this.y + " " + this.z + (pt == null ? "" : " Fractional: " + pt.x + " " + pt.y + " " + pt.z);
 }return this.getIdentityXYZ (true);
 }, "~B");
 Clazz.defineMethod (c$, "getIdentityXYZ", 
@@ -647,7 +643,7 @@ info.append ("]");
 var seqcodeString = this.getSeqcodeString ();
 if (seqcodeString != null) info.append (seqcodeString);
 var chainID = this.getChainID ();
-if ((chainID).charCodeAt (0) != 0 && (chainID).charCodeAt (0) != (' ').charCodeAt (0)) {
+if (chainID.charCodeAt (0) != 0 && chainID.charCodeAt (0) != 32) {
 info.append (":");
 info.append (chainID);
 }if (!allInfo) return info.toString ();
@@ -657,7 +653,7 @@ if (info.length () == 0) {
 info.append (this.getElementSymbol (false));
 info.append (" ");
 info.append (this.getAtomNumber ());
-}if ((this.alternateLocationID).charCodeAt (0) != 0) {
+}if (this.alternateLocationID.charCodeAt (0) != 0) {
 info.append ("%");
 info.append (this.alternateLocationID);
 }if (this.group.chain.model.modelSet.getModelCount () > 1) {
@@ -675,8 +671,8 @@ return (allowNull || group3 != null && group3.length > 0 ? group3 : "UNK");
 Clazz.overrideMethod (c$, "getGroup1", 
 function (c0) {
 var c = this.group.getGroup1 ();
-return ((c).charCodeAt (0) != ('\0').charCodeAt (0) ? "" + c : (c0).charCodeAt (0) != ('\0').charCodeAt (0) ? "" + c0 : "");
-}, "~N");
+return (c.charCodeAt (0) != 0 ? "" + c : c0.charCodeAt (0) != 0 ? "" + c0 : "");
+}, "~S");
 Clazz.overrideMethod (c$, "isProtein", 
 function () {
 return this.group.isProtein ();
@@ -759,7 +755,7 @@ return this.group.chain.model.modelSet.getVibrationVector (this.index, false);
 Clazz.defineMethod (c$, "getVibrationCoord", 
 function (ch) {
 return this.group.chain.model.modelSet.getVibrationCoord (this.index, ch);
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getPolymerLength", 
 function () {
 return this.group.getBioPolymerLength ();
@@ -1045,14 +1041,14 @@ var ch;
 switch (tokWhat) {
 case 1087373315:
 ch = atom.getAlternateLocationID ();
-return ((ch).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + ch);
+return (ch.charCodeAt (0) == 0 ? "" : "" + ch);
 case 1087375362:
 return atom.getAtomName ();
 case 1087375361:
 return atom.getAtomType ();
 case 1087373316:
 ch = atom.getChainID ();
-return ((ch).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + ch);
+return (ch.charCodeAt (0) == 0 ? "" : "" + ch);
 case 1087373320:
 return atom.getGroup1 ('?');
 case 1087373319:
@@ -1065,7 +1061,7 @@ case 1087373321:
 return atom.getIdentity (true);
 case 1087373322:
 ch = atom.getInsertionCode ();
-return ((ch).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + ch);
+return (ch.charCodeAt (0) == 0 ? "" : "" + ch);
 case 1826248715:
 case 1288701960:
 var s = atom.group.chain.model.modelSet.getAtomLabel (atom.getIndex ());

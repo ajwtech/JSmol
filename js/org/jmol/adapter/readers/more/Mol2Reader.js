@@ -19,7 +19,7 @@ if (!this.processMolecule ()) {
 return true;
 }this.continuing = !this.isLastModel (this.modelNumber);
 return false;
-}if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == ('#').charCodeAt (0)) {
+}if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == 35) {
 this.checkLineForScript ();
 }return true;
 });
@@ -33,13 +33,13 @@ return false;
 this.chainID = String.fromCharCode ( (64));
 this.readLine ();
 this.line += " 0 0 0 0 0 0";
-this.atomCount = this.parseInt (this.line);
+this.atomCount = this.parseIntStr (this.line);
 var bondCount = this.parseInt ();
 var resCount = this.parseInt ();
 this.readLine ();
 this.readLine ();
-if (this.readLine () != null && (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != ('@').charCodeAt (0))) {
-if (this.readLine () != null && this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) != ('@').charCodeAt (0)) {
+if (this.readLine () != null && (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != 64)) {
+if (this.readLine () != null && this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) != 64) {
 if (this.line.indexOf ("jmolscript:") >= 0) {
 this.checkLineForScript ();
 if (this.line.equals ("#")) {
@@ -70,20 +70,20 @@ if (atomCount == 0) return ;
 var i0 = this.atomSetCollection.getAtomCount ();
 for (var i = 0; i < atomCount; ++i) {
 var atom = this.atomSetCollection.addNewAtom ();
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 var atomType = tokens[5];
 atom.atomName = tokens[1] + '\0' + atomType;
-atom.set (this.parseFloat (tokens[2]), this.parseFloat (tokens[3]), this.parseFloat (tokens[4]));
+atom.set (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 if (tokens.length > 6) {
-atom.sequenceNumber = this.parseInt (tokens[6]);
+atom.sequenceNumber = this.parseIntStr (tokens[6]);
 if (atom.sequenceNumber < this.lastSequenceNumber) {
-if ((this.chainID).charCodeAt (0) == ('Z').charCodeAt (0)) this.chainID = String.fromCharCode ( (96));
+if (this.chainID.charCodeAt (0) == 90) this.chainID = String.fromCharCode ( (96));
 (this.chainID = String.fromCharCode (($c$ = this.chainID).charCodeAt (0) + 1), $c$);
 }this.lastSequenceNumber = atom.sequenceNumber;
 atom.chainID = this.chainID;
 }if (tokens.length > 7) atom.group3 = tokens[7];
 if (tokens.length > 8) {
-atom.partialCharge = this.parseFloat (tokens[8]);
+atom.partialCharge = this.parseFloatStr (tokens[8]);
 if (atom.partialCharge == Math.round (atom.partialCharge)) atom.formalCharge = Math.round (atom.partialCharge);
 }}
 var atoms = this.atomSetCollection.getAtoms ();
@@ -118,10 +118,10 @@ for (var i = this.atomSetCollection.getAtomCount (); --i >= i0; ) atoms[i].group
 Clazz.defineMethod (c$, "readBonds", 
 ($fz = function (bondCount) {
 for (var i = 0; i < bondCount; ++i) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
-var atomIndex1 = this.parseInt (tokens[1]);
-var atomIndex2 = this.parseInt (tokens[2]);
-var order = this.parseInt (tokens[3]);
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
+var atomIndex1 = this.parseIntStr (tokens[1]);
+var atomIndex2 = this.parseIntStr (tokens[2]);
+var order = this.parseIntStr (tokens[3]);
 if (order == -2147483648) order = (tokens[3].equals ("ar") ? 515 : tokens[3].equals ("am") ? 1 : 17);
 this.atomSetCollection.addBond ( new org.jmol.adapter.smarter.Bond (this.nAtoms + atomIndex1 - 1, this.nAtoms + atomIndex2 - 1, order));
 }
@@ -145,7 +145,7 @@ if (name === "") name = " P1";
 name = name.substring (1);
 this.setSpaceGroupName (name);
 if (this.ignoreFileUnitCell) return ;
-for (var i = 0; i < 6; i++) this.setUnitCellItem (i, this.parseFloat (tokens[i]));
+for (var i = 0; i < 6; i++) this.setUnitCellItem (i, this.parseFloatStr (tokens[i]));
 
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = 0; i < this.atomCount; ++i) this.setAtomCoord (atoms[this.nAtoms + i]);

@@ -189,7 +189,7 @@ return false;
 if (formalChargeA != 0) {
 var formalChargeB = atomB.getFormalCharge ();
 if ((formalChargeA < 0 && formalChargeB < 0) || (formalChargeA > 0 && formalChargeB > 0)) return false;
-}if ((atomA.alternateLocationID).charCodeAt (0) != (atomB.alternateLocationID).charCodeAt (0) && (atomA.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0) && (atomB.alternateLocationID).charCodeAt (0) != ('\0').charCodeAt (0)) return false;
+}if (atomA.alternateLocationID.charCodeAt (0) != atomB.alternateLocationID.charCodeAt (0) && atomA.alternateLocationID.charCodeAt (0) != 0 && atomB.alternateLocationID.charCodeAt (0) != 0) return false;
 this.getOrAddBond (atomA, atomB, order, mad, bsBonds, 0, false);
 return true;
 }, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,java.util.BitSet");
@@ -458,7 +458,7 @@ return bs;
 }, "~N,~O");
 Clazz.defineMethod (c$, "setBondOrder", 
 function (bondIndex, type) {
-var bondOrder = (type).charCodeAt (0) - ('0').charCodeAt (0);
+var bondOrder = type.charCodeAt (0) - 48;
 var bond = this.bonds[bondIndex];
 switch (type) {
 case '0':
@@ -468,7 +468,7 @@ case '3':
 break;
 case 'p':
 case 'm':
-bondOrder = (org.jmol.util.JmolEdge.getBondOrderNumberFromOrder (bond.getCovalentOrder ()).charAt (0)).charCodeAt (0) - ('0').charCodeAt (0) + ((type).charCodeAt (0) == ('p').charCodeAt (0) ? 1 : -1);
+bondOrder = (org.jmol.util.JmolEdge.getBondOrderNumberFromOrder (bond.getCovalentOrder ()).charAt (0)).charCodeAt (0) - 48 + (type.charCodeAt (0) == 112 ? 1 : -1);
 if (bondOrder > 3) bondOrder = 1;
  else if (bondOrder < 0) bondOrder = 3;
 break;
@@ -497,7 +497,7 @@ throw e;
 }
 }
 return bsAtoms;
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "removeUnnecessaryBonds", 
 function (atom, deleteAtom) {
 var bs =  new java.util.BitSet ();

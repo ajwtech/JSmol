@@ -8,14 +8,14 @@ if (strColor == null || (len = strColor.length) == 0) return 0;
 var red;
 var grn;
 var blu;
-if ((strColor.charAt (0)).charCodeAt (0) == ('[').charCodeAt (0) && (strColor.charAt (len - 1)).charCodeAt (0) == (']').charCodeAt (0)) {
+if ((strColor.charAt (0)).charCodeAt (0) == 91 && (strColor.charAt (len - 1)).charCodeAt (0) == 93) {
 var check;
 if (strColor.indexOf (",") >= 0) {
-var tokens = org.jmol.util.TextFormat.split (strColor.substring (1, strColor.length - 1), ",");
+var tokens = org.jmol.util.TextFormat.splitChars (strColor.substring (1, strColor.length - 1), ",");
 if (tokens.length != 3) return 0;
-red = org.jmol.util.Parser.parseFloat (tokens[0]);
-grn = org.jmol.util.Parser.parseFloat (tokens[1]);
-blu = org.jmol.util.Parser.parseFloat (tokens[2]);
+red = org.jmol.util.Parser.parseFloatStr (tokens[0]);
+grn = org.jmol.util.Parser.parseFloatStr (tokens[1]);
+blu = org.jmol.util.Parser.parseFloatStr (tokens[2]);
 return org.jmol.util.ColorUtil.colorTriadToInt (red, grn, blu);
 }switch (len) {
 case 9:
@@ -30,7 +30,7 @@ return 0;
 if (strColor.indexOf (check) != 1) return 0;
 strColor = "#" + strColor.substring (len - 7, len - 1);
 len = 7;
-}if (len == 7 && (strColor.charAt (0)).charCodeAt (0) == ('#').charCodeAt (0)) {
+}if (len == 7 && (strColor.charAt (0)).charCodeAt (0) == 35) {
 try {
 red = Integer.parseInt (strColor.substring (1, 3), 16);
 grn = Integer.parseInt (strColor.substring (3, 5), 16);

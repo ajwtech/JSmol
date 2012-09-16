@@ -1,7 +1,6 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["java.net.URLConnection"], "org.jmol.awtjs.JmolURLConnection", ["java.io.ByteArrayInputStream"], function () {
+Clazz.load (["java.net.URLConnection"], "org.jmol.awtjs.JmolURLConnection", null, function () {
 c$ = Clazz.decorateAsClass (function () {
-this.dataIn = "";
 this.bytesOut = null;
 this.postOut = "";
 Clazz.instantialize (this, arguments);
@@ -21,9 +20,8 @@ Clazz.defineMethod (c$, "outputString",
 function (post) {
 this.postOut = post;
 }, "~S");
-Clazz.overrideMethod (c$, "getInputStream", 
+Clazz.defineMethod (c$, "getStringBuffer", 
 function () {
-this.dataIn = this.doAjax ();
-return  new java.io.ByteArrayInputStream (Clazz.instanceOf (this.dataIn, String) ? (this.dataIn).getBytes () : Clazz.instanceOf (this.dataIn, Array) ? this.dataIn : null);
+return this.doAjax ();
 });
 });

@@ -18,14 +18,14 @@ this.jvxlFileHeaderBuffer.append ("see http://apbs.sourceforge.net\n");
 var atomLine = this.readLine ();
 var tokens = org.jmol.util.Parser.getTokens (atomLine);
 if (tokens.length >= 4) {
-this.volumetricOrigin.set (this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+this.volumetricOrigin.set (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 }org.jmol.jvxl.readers.VolumeFileReader.checkAtomLine (this.isXLowToHigh, this.isAngstroms, tokens[0], atomLine, this.jvxlFileHeaderBuffer);
 this.readVoxelVector (0);
 this.readVoxelVector (1);
 this.readVoxelVector (2);
 this.readLine ();
 tokens = this.getTokens ();
-for (var i = 0; i < 3; i++) this.voxelCounts[i] = this.parseInt (tokens[i + 5]);
+for (var i = 0; i < 3; i++) this.voxelCounts[i] = this.parseIntStr (tokens[i + 5]);
 
 this.readLine ();
 });

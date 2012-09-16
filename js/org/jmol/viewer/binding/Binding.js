@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.StringBuffer", "java.util.ArrayList", "$.Arrays", "org.jmol.util.Escape", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.name = null;
 this.bindings = null;
@@ -26,7 +26,7 @@ this.addBinding (mouseAction + "\t" + jmolAction, [mouseAction, jmolAction]);
 }, "~N,~N");
 Clazz.defineMethod (c$, "bind", 
 function (mouseAction, name) {
-this.addBinding (mouseAction + "\t", Boolean.TRUE);
+this.addBinding (mouseAction + "\t", org.jmol.viewer.JmolConstants.TRUE);
 this.addBinding (mouseAction + "\t" + name, [org.jmol.viewer.binding.Binding.getMouseActionName (mouseAction, false), name]);
 }, "~N,~S");
 Clazz.defineMethod (c$, "unbind", 

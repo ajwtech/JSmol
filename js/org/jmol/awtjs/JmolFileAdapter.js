@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["org.jmol.api.JmolFileAdapterInterface"], "org.jmol.awtjs.JmolFileAdapter", ["java.io.BufferedInputStream", "java.net.UnknownServiceException"], function () {
+Clazz.load (["org.jmol.api.JmolFileAdapterInterface"], "org.jmol.awtjs.JmolFileAdapter", ["java.net.UnknownServiceException"], function () {
 c$ = Clazz.declareType (org.jmol.awtjs, "JmolFileAdapter", null, org.jmol.api.JmolFileAdapterInterface);
 Clazz.overrideMethod (c$, "getBufferedFileInputStream", 
 function (name) {
@@ -21,7 +21,7 @@ var type = null;
 if (type != null) {
 if (outputBytes == null) conn.outputString (post);
  else conn.outputBytes (outputBytes);
-}return  new java.io.BufferedInputStream (conn.getInputStream ());
+}return conn.getStringBuffer ();
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
 return e.getMessage ();

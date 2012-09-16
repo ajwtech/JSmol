@@ -158,11 +158,11 @@ Clazz.defineMethod (c$, "getMyInfo",
 function () {
 var info = Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getGroupInfo", [this.groupIndex]);
 var chainID = this.chain.chainID;
-info.put ("chain", ((chainID).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + chainID));
+info.put ("chain", (chainID.charCodeAt (0) == 0 ? "" : "" + chainID));
 var seqNum = this.getSeqNumber ();
 var insCode = this.getInsertionCode ();
 if (seqNum > 0) info.put ("sequenceNumber", Integer.$valueOf (seqNum));
-if ((insCode).charCodeAt (0) != 0) info.put ("insertionCode", "" + insCode);
+if (insCode.charCodeAt (0) != 0) info.put ("insertionCode", "" + insCode);
 var f = this.getGroupParameter (1112539143);
 if (!Float.isNaN (f)) info.put ("phi",  new Float (f));
 f = this.getGroupParameter (1112539144);
@@ -189,10 +189,10 @@ var ch = '\0';
 for (var i = this.firstAtomIndex; i <= this.lastAtomIndex; i++) {
 var atom = atoms[i];
 var altloc = atom.getAlternateLocationID ();
-if ((altloc).charCodeAt (0) == ('\0').charCodeAt (0)) continue ;if (conformationIndex >= 0 && (altloc).charCodeAt (0) != (ch).charCodeAt (0)) {
+if (altloc.charCodeAt (0) == 0) continue ;if (conformationIndex >= 0 && altloc.charCodeAt (0) != ch.charCodeAt (0)) {
 ch = altloc;
 conformationIndex--;
-}if (conformationIndex < 0 && (altloc).charCodeAt (0) != (ch).charCodeAt (0)) bsConformation.clear (i);
+}if (conformationIndex < 0 && altloc.charCodeAt (0) != ch.charCodeAt (0)) bsConformation.clear (i);
 }
 }, "~A,java.util.BitSet,~N");
 Clazz.defineMethod (c$, "updateOffsetsForAlternativeLocations", 
@@ -229,7 +229,7 @@ return true;
 Clazz.defineMethod (c$, "getQuaternionFrameCenter", 
 function (qtype) {
 return null;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getHelixData2", 
 function (tokType, qType, mStep) {
 var iPrev = this.monomerIndex - mStep;
@@ -241,14 +241,14 @@ var a = (mStep < 1 ?  new javax.vecmath.Point3f (0, 0, 0) : prev.getQuaternionFr
 var b = this.getQuaternionFrameCenter (qType);
 if (a == null || b == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
 return org.jmol.util.Measure.computeHelicalAxis (tokType == 135176 ? "helixaxis" + this.getUniqueID () : null, tokType, a, b, q2.div (q1));
-}, "~N,~N,~N");
+}, "~N,~S,~N");
 Clazz.defineMethod (c$, "getUniqueID", 
 function () {
 var cid = this.getChainID ();
 var a = this.getLeadAtom ();
-var id = (a == null ? "" : "_" + a.getModelIndex ()) + "_" + this.getResno () + ((cid).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : "" + cid);
+var id = (a == null ? "" : "_" + a.getModelIndex ()) + "_" + this.getResno () + (cid.charCodeAt (0) == 0 ? "" : "" + cid);
 cid = (a == null ? '\0' : this.getLeadAtom ().getAlternateLocationID ());
-if ((cid).charCodeAt (0) != ('\0').charCodeAt (0)) id += (cid).charCodeAt (0);
+if (cid.charCodeAt (0) != 0) id += (cid).charCodeAt (0);
 return id;
 });
 Clazz.overrideMethod (c$, "isCrossLinked", 

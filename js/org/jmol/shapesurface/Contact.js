@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw"], "org.jmol.shapesurface.Contact", ["java.lang.Boolean", "$.Double", "$.Float", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.atomdata.AtomData", "org.jmol.constant.EnumHBondType", "org.jmol.jvxl.data.MeshData", "$.VolumeData", "org.jmol.script.Token", "org.jmol.util.BitSetUtil", "$.ColorUtil", "$.ContactPair", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface"], function () {
+Clazz.load (["org.jmol.shapesurface.Isosurface", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw"], "org.jmol.shapesurface.Contact", ["java.lang.Double", "$.Float", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.atomdata.AtomData", "org.jmol.constant.EnumHBondType", "org.jmol.jvxl.data.MeshData", "$.VolumeData", "org.jmol.script.Token", "org.jmol.util.BitSetUtil", "$.ColorUtil", "$.ContactPair", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atoms = null;
 this.atomCount = 0;
@@ -102,7 +102,7 @@ params.colorDensity = colorDensity;
 params.bsSelected = bs;
 params.bsSolvent = bsB;
 this.sg.setParameter ("parameters", parameters);
-Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["nci", Boolean.TRUE, null]);
+Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["nci", org.jmol.viewer.JmolConstants.TRUE, null]);
 break;
 case 1073742136:
 case 3145756:
@@ -356,7 +356,7 @@ params.bsSelected = bs1;
 params.bsSolvent = null;
 }params.volumeData = volumeData;
 Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["sasurface", Float.$valueOf (sasurfaceRadius), null]);
-Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["map", Boolean.TRUE, null]);
+Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["map", org.jmol.viewer.JmolConstants.TRUE, null]);
 if (cp == null) {
 params.atomRadiusData = rdB;
 params.bsIgnore = org.jmol.util.BitSetUtil.copyInvert (bs2, this.atomCount);
@@ -389,7 +389,7 @@ params.volumeData = volumeData;
 params.colorDensity = isColorDensity;
 if (isColorDensity) Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["cutoffRange", [-5.0, 0], null]);
 Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["sasurface", Float.$valueOf (0), null]);
-Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["map", Boolean.TRUE, null]);
+Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["map", org.jmol.viewer.JmolConstants.TRUE, null]);
 params.volumeData = volumeData;
 Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["sasurface", Float.$valueOf (0), null]);
 if (displayType != 4106) iSlab0 = -100;

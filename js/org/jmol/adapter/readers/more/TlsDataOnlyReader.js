@@ -20,7 +20,7 @@ var ranges = null;
 var range = null;
 tlsGroups =  new java.util.ArrayList ();
 while (this.readLine () != null) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.$replace ('\'', ' '));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.$replace ('\'', ' '));
 if (tokens.length == 0) continue ;if (tokens[0].equals ("TLS")) {
 tlsGroup =  new java.util.Hashtable ();
 ranges =  new java.util.ArrayList ();
@@ -33,7 +33,7 @@ var chain1 = tokens[1].charAt (0);
 var chain2 = tokens[3].charAt (0);
 var res1 = org.jmol.util.Parser.parseInt (tokens[2]);
 var res2 = org.jmol.util.Parser.parseInt (tokens[4]);
-if ((chain1).charCodeAt (0) == (chain2).charCodeAt (0)) {
+if (chain1.charCodeAt (0) == chain2.charCodeAt (0)) {
 range.put ("chains", "" + chain1 + chain2);
 if (res1 <= res2) {
 range.put ("residues", [res1, res2]);
@@ -45,22 +45,22 @@ this.tlsAddError (" TLS group chains are different (range ignored)");
 }} else if (tokens[0].equals ("ORIGIN")) {
 var origin =  new javax.vecmath.Point3f ();
 tlsGroup.put ("origin", origin);
-origin.set (this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+origin.set (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 if (Float.isNaN (origin.x) || Float.isNaN (origin.y) || Float.isNaN (origin.z)) {
 origin.set (NaN, NaN, NaN);
 this.tlsAddError ("invalid origin: " + this.line);
 }} else if (tokens[0].equals ("T") || tokens[0].equals ("L") || tokens[0].equals ("S")) {
 var tensorType = tokens[0].charAt (0);
-var nn = ((tensorType).charCodeAt (0) == ('S').charCodeAt (0) ? org.jmol.adapter.readers.more.TlsDataOnlyReader.Snn : org.jmol.adapter.readers.more.TlsDataOnlyReader.TLnn);
+var nn = (tensorType.charCodeAt (0) == 83 ? org.jmol.adapter.readers.more.TlsDataOnlyReader.Snn : org.jmol.adapter.readers.more.TlsDataOnlyReader.TLnn);
 var tensor =  Clazz.newArray (3, 3, 0);
 tlsGroup.put ("t" + tensorType, tensor);
 for (var i = 1; i < tokens.length; i++) {
-var ti = (nn[i].charAt (0)).charCodeAt (0) - ('1').charCodeAt (0);
-var tj = (nn[i].charAt (1)).charCodeAt (0) - ('1').charCodeAt (0);
-tensor[ti][tj] = this.parseFloat (tokens[++i]);
+var ti = (nn[i].charAt (0)).charCodeAt (0) - 49;
+var tj = (nn[i].charAt (1)).charCodeAt (0) - 49;
+tensor[ti][tj] = this.parseFloatStr (tokens[++i]);
 if (ti < tj) tensor[tj][ti] = tensor[ti][tj];
 }
-if ((tensorType).charCodeAt (0) == ('S').charCodeAt (0)) tensor[0][0] = -tensor[0][0];
+if (tensorType.charCodeAt (0) == 83) tensor[0][0] = -tensor[0][0];
 for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) if (Float.isNaN (tensor[i][j])) {
 this.tlsAddError ("invalid tensor: " + org.jmol.util.Escape.escapeArray (tensor));
 }

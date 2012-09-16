@@ -78,23 +78,23 @@ break;
 });
 c$.isValidElementSymbol = Clazz.defineMethod (c$, "isValidElementSymbol", 
 function (ch) {
-return (ch).charCodeAt (0) >= ('A').charCodeAt (0) && (ch).charCodeAt (0) <= ('Z').charCodeAt (0) && org.jmol.adapter.smarter.Atom.elementCharMasks[(ch).charCodeAt (0) - ('A').charCodeAt (0)] < 0;
-}, "~N");
+return ch >= 'A' && ch <= 'Z' && org.jmol.adapter.smarter.Atom.elementCharMasks[ch.charCodeAt (0) - 65] < 0;
+}, "~S");
 c$.isValidElementSymbol = Clazz.defineMethod (c$, "isValidElementSymbol", 
 function (chFirst, chSecond) {
-if ((chFirst).charCodeAt (0) < ('A').charCodeAt (0) || (chFirst).charCodeAt (0) > ('Z').charCodeAt (0) || (chSecond).charCodeAt (0) < ('a').charCodeAt (0) || (chSecond).charCodeAt (0) > ('z').charCodeAt (0)) return false;
-return ((org.jmol.adapter.smarter.Atom.elementCharMasks[(chFirst).charCodeAt (0) - ('A').charCodeAt (0)] >> ((chSecond).charCodeAt (0) - ('a').charCodeAt (0))) & 1) != 0;
-}, "~N,~N");
+if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z') return false;
+return ((org.jmol.adapter.smarter.Atom.elementCharMasks[chFirst.charCodeAt (0) - 65] >> (chSecond.charCodeAt (0) - 97)) & 1) != 0;
+}, "~S,~S");
 c$.isValidElementSymbolNoCaseSecondChar = Clazz.defineMethod (c$, "isValidElementSymbolNoCaseSecondChar", 
 function (chFirst, chSecond) {
-if ((chSecond).charCodeAt (0) >= ('A').charCodeAt (0) && (chSecond).charCodeAt (0) <= ('Z').charCodeAt (0)) chSecond = String.fromCharCode ((chSecond).charCodeAt (0) + (32));
-if ((chFirst).charCodeAt (0) < ('A').charCodeAt (0) || (chFirst).charCodeAt (0) > ('Z').charCodeAt (0) || (chSecond).charCodeAt (0) < ('a').charCodeAt (0) || (chSecond).charCodeAt (0) > ('z').charCodeAt (0)) return false;
-return ((org.jmol.adapter.smarter.Atom.elementCharMasks[(chFirst).charCodeAt (0) - ('A').charCodeAt (0)] >> ((chSecond).charCodeAt (0) - ('a').charCodeAt (0))) & 1) != 0;
-}, "~N,~N");
+if (chSecond >= 'A' && chSecond <= 'Z') chSecond = String.fromCharCode ((chSecond).charCodeAt (0) + (32));
+if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z') return false;
+return ((org.jmol.adapter.smarter.Atom.elementCharMasks[chFirst.charCodeAt (0) - 65] >> (chSecond.charCodeAt (0) - 97)) & 1) != 0;
+}, "~S,~S");
 c$.isValidFirstSymbolChar = Clazz.defineMethod (c$, "isValidFirstSymbolChar", 
 function (ch) {
-return (ch).charCodeAt (0) >= ('A').charCodeAt (0) && (ch).charCodeAt (0) <= ('Z').charCodeAt (0) && org.jmol.adapter.smarter.Atom.elementCharMasks[(ch).charCodeAt (0) - ('A').charCodeAt (0)] != 0;
-}, "~N");
+return ch >= 'A' && ch <= 'Z' && org.jmol.adapter.smarter.Atom.elementCharMasks[ch.charCodeAt (0) - 65] != 0;
+}, "~S");
 c$.isValidElementSymbolNoCaseSecondChar = Clazz.defineMethod (c$, "isValidElementSymbolNoCaseSecondChar", 
 function (str) {
 if (str == null) return false;

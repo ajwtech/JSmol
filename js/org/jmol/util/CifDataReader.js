@@ -115,7 +115,7 @@ this.ich = 0;
 Clazz.defineMethod (c$, "setStringNextLine", 
 ($fz = function () {
 this.setString (this.readLine ());
-if (this.line == null || this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != (';').charCodeAt (0)) return this.line;
+if (this.line == null || this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != 59) return this.line;
 this.ich = 1;
 var str = '\1' + this.line.substring (1) + '\n';
 while (this.readLine () != null) {
@@ -131,28 +131,28 @@ Clazz.defineMethod (c$, "hasMoreTokens",
 ($fz = function () {
 if (this.str == null) return false;
 var ch = '#';
-while (this.ich < this.cch && (((ch = this.str.charAt (this.ich))).charCodeAt (0) == (' ').charCodeAt (0) || (ch).charCodeAt (0) == ('\t').charCodeAt (0))) ++this.ich;
+while (this.ich < this.cch && (((ch = this.str.charAt (this.ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9)) ++this.ich;
 
-return (this.ich < this.cch && (ch).charCodeAt (0) != ('#').charCodeAt (0));
+return (this.ich < this.cch && ch.charCodeAt (0) != 35);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "nextToken", 
 ($fz = function () {
 if (this.ich == this.cch) return null;
 var ichStart = this.ich;
 var ch = this.str.charAt (ichStart);
-if ((ch).charCodeAt (0) != ('\'').charCodeAt (0) && (ch).charCodeAt (0) != ('"').charCodeAt (0) && (ch).charCodeAt (0) != ('\1').charCodeAt (0)) {
+if (ch.charCodeAt (0) != 39 && ch.charCodeAt (0) != 34 && ch.charCodeAt (0) != 1) {
 this.wasUnQuoted = true;
-while (this.ich < this.cch && ((ch = this.str.charAt (this.ich))).charCodeAt (0) != (' ').charCodeAt (0) && (ch).charCodeAt (0) != ('\t').charCodeAt (0)) ++this.ich;
+while (this.ich < this.cch && ((ch = this.str.charAt (this.ich))).charCodeAt (0) != 32 && ch.charCodeAt (0) != 9) ++this.ich;
 
-if (this.ich == ichStart + 1) if ((this.str.charAt (ichStart)).charCodeAt (0) == ('.').charCodeAt (0) || (this.str.charAt (ichStart)).charCodeAt (0) == ('?').charCodeAt (0)) return "\0";
+if (this.ich == ichStart + 1) if ((this.str.charAt (ichStart)).charCodeAt (0) == 46 || (this.str.charAt (ichStart)).charCodeAt (0) == 63) return "\0";
 return this.str.substring (ichStart, this.ich);
 }this.wasUnQuoted = false;
 var chOpeningQuote = ch;
 var previousCharacterWasQuote = false;
 while (++this.ich < this.cch) {
 ch = this.str.charAt (this.ich);
-if (previousCharacterWasQuote && ((ch).charCodeAt (0) == (' ').charCodeAt (0) || (ch).charCodeAt (0) == ('\t').charCodeAt (0))) break;
-previousCharacterWasQuote = ((ch).charCodeAt (0) == (chOpeningQuote).charCodeAt (0));
+if (previousCharacterWasQuote && (ch.charCodeAt (0) == 32 || ch.charCodeAt (0) == 9)) break;
+previousCharacterWasQuote = (ch.charCodeAt (0) == chOpeningQuote.charCodeAt (0));
 }
 if (this.ich == this.cch) {
 if (previousCharacterWasQuote) return this.str.substring (ichStart + 1, this.ich - 1);
@@ -164,7 +164,7 @@ Clazz.defineMethod (c$, "getNextDataToken",
 function () {
 var str = this.peekToken ();
 if (str == null) return null;
-if (this.wasUnQuoted) if ((str.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0) || str.startsWith ("loop_") || str.startsWith ("data_") || str.startsWith ("stop_") || str.startsWith ("global_")) return null;
+if (this.wasUnQuoted) if ((str.charAt (0)).charCodeAt (0) == 95 || str.startsWith ("loop_") || str.startsWith ("data_") || str.startsWith ("stop_") || str.startsWith ("global_")) return null;
 return this.getTokenPeeked ();
 });
 Clazz.defineMethod (c$, "peekToken", 
@@ -196,7 +196,7 @@ Clazz.defineMethod (c$, "getCifLoopData",
 ($fz = function () {
 var str;
 var keyWords =  new java.util.ArrayList ();
-while ((str = this.peekToken ()) != null && (str.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) {
+while ((str = this.peekToken ()) != null && (str.charAt (0)).charCodeAt (0) == 95) {
 str = this.getTokenPeeked ();
 keyWords.add (str);
 this.data.put (str,  new java.util.ArrayList ());

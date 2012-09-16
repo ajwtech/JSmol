@@ -37,11 +37,11 @@ function () {
 while (this.ichCurrent < this.cchBuf) {
 var ichBeginningOfLine = this.ichCurrent;
 var ch = String.fromCharCode (0);
-while (this.ichCurrent < this.cchBuf && ((ch = this.buf[this.ichCurrent++])).charCodeAt (0) != ('\r').charCodeAt (0) && (ch).charCodeAt (0) != ('\n').charCodeAt (0)) {
+while (this.ichCurrent < this.cchBuf && ((ch = this.buf[this.ichCurrent++])).charCodeAt (0) != 13 && ch.charCodeAt (0) != 10) {
 }
-if ((ch).charCodeAt (0) == ('\r').charCodeAt (0) && this.ichCurrent < this.cchBuf && (this.buf[this.ichCurrent]).charCodeAt (0) == ('\n').charCodeAt (0)) ++this.ichCurrent;
+if (ch.charCodeAt (0) == 13 && this.ichCurrent < this.cchBuf && (this.buf[this.ichCurrent]).charCodeAt (0) == 10) ++this.ichCurrent;
 var cchLine = this.ichCurrent - ichBeginningOfLine;
-if ((this.buf[ichBeginningOfLine]).charCodeAt (0) == ('#').charCodeAt (0)) continue ;var sb =  new StringBuffer (cchLine);
+if ((this.buf[ichBeginningOfLine]).charCodeAt (0) == 35) continue ;var sb =  new StringBuffer (cchLine);
 sb.append (this.buf, ichBeginningOfLine, cchLine);
 return sb.toString ();
 }

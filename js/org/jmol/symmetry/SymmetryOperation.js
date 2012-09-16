@@ -194,7 +194,7 @@ isDecimal = true;
 decimalMultiplier = 1;
 continue ;case '0':
 if (!isDecimal && (isDenominator || !allowScaling)) continue ;default:
-var ich = (ch).charCodeAt (0) - ('0').charCodeAt (0);
+var ich = ch.charCodeAt (0) - 48;
 if (isDecimal && ich >= 0 && ich <= 9) {
 decimalMultiplier /= 10;
 if (iValue < 0) isNegative = true;
@@ -233,7 +233,7 @@ if (row[0] != 0) term += (row[0] < 0 ? "-" : "+") + "x";
 if (row[1] != 0) term += (row[1] < 0 ? "-" : "+") + "y";
 if (row[2] != 0) term += (row[2] < 0 ? "-" : "+") + "z";
 term += org.jmol.symmetry.SymmetryOperation.xyzFraction ((is12ths ? row[3] : row[3] * 12), allPositive, halfOrLess);
-if (term.length > 0 && (term.charAt (0)).charCodeAt (0) == ('+').charCodeAt (0)) term = term.substring (1);
+if (term.length > 0 && (term.charAt (0)).charCodeAt (0) == 43) term = term.substring (1);
 str += "," + term;
 }
 return str.substring (1);
@@ -286,7 +286,7 @@ while (n12ths < 0) n12ths += 12;
 } else if (halfOrLess && n12ths > 6) {
 n12ths -= 12;
 }var s = org.jmol.symmetry.SymmetryOperation.twelfthsOf (n12ths);
-return ((s.charAt (0)).charCodeAt (0) == ('0').charCodeAt (0) ? "" : n12ths > 0 ? "+" + s : s);
+return ((s.charAt (0)).charCodeAt (0) == 48 ? "" : n12ths > 0 ? "+" + s : s);
 }, $fz.isPrivate = true, $fz), "~N,~B,~B");
 Clazz.defineMethod (c$, "setOffset", 
 ($fz = function (atoms, atomIndex, count) {

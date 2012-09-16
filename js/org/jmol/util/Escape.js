@@ -75,7 +75,7 @@ c$.unicode = Clazz.defineMethod (c$, "unicode",
 ($fz = function (c) {
 var s = "0000" + Integer.toHexString (c.charCodeAt (0));
 return "\\u" + s.substring (s.length - 4);
-}, $fz.isPrivate = true, $fz), "~N");
+}, $fz.isPrivate = true, $fz), "~S");
 c$.escapeVar = Clazz.defineMethod (c$, "escapeVar", 
 function (list) {
 if (list == null) return org.jmol.util.Escape.escapeStr ("");
@@ -196,7 +196,7 @@ return (Float.isNaN (f) ? org.jmol.util.Escape.escapeStr (s) : s);
 }, $fz.isPrivate = true, $fz), "~S");
 c$.unescapePointOrBitsetOrMatrixOrArray = Clazz.defineMethod (c$, "unescapePointOrBitsetOrMatrixOrArray", 
 function (s) {
-if ((s.charAt (0)).charCodeAt (0) == ('{').charCodeAt (0)) return org.jmol.util.Escape.unescapePoint (s);
+if ((s.charAt (0)).charCodeAt (0) == 123) return org.jmol.util.Escape.unescapePoint (s);
 if ((org.jmol.util.Escape.isStringArray (s) || s.startsWith ("[{") && s.indexOf ("[{") == s.lastIndexOf ("[{")) && s.indexOf (',') < 0 && s.indexOf ('.') < 0 && s.indexOf ('-') < 0) return org.jmol.util.Escape.unescapeBitset (s);
 if (s.startsWith ("[[")) return org.jmol.util.Escape.unescapeMatrix (s);
 return s;
@@ -209,15 +209,15 @@ c$.unescapePoint = Clazz.defineMethod (c$, "unescapePoint",
 function (strPoint) {
 if (strPoint == null || strPoint.length == 0) return strPoint;
 var str = strPoint.$replace ('\n', ' ').trim ();
-if ((str.charAt (0)).charCodeAt (0) != ('{').charCodeAt (0) || (str.charAt (str.length - 1)).charCodeAt (0) != ('}').charCodeAt (0)) return strPoint;
+if ((str.charAt (0)).charCodeAt (0) != 123 || (str.charAt (str.length - 1)).charCodeAt (0) != 125) return strPoint;
 var points =  Clazz.newArray (5, 0);
 var nPoints = 0;
 str = str.substring (1, str.length - 1);
 var next =  Clazz.newArray (1, 0);
 for (; nPoints < 5; nPoints++) {
-points[nPoints] = org.jmol.util.Parser.parseFloat (str, next);
+points[nPoints] = org.jmol.util.Parser.parseFloatNext (str, next);
 if (Float.isNaN (points[nPoints])) {
-if (next[0] >= str.length || (str.charAt (next[0])).charCodeAt (0) != (',').charCodeAt (0)) break;
+if (next[0] >= str.length || (str.charAt (next[0])).charCodeAt (0) != 44) break;
 next[0]++;
 nPoints--;
 }}
@@ -229,9 +229,9 @@ c$.unescapeBitset = Clazz.defineMethod (c$, "unescapeBitset",
 function (str) {
 var ch;
 var len;
-if (str == null || (len = (str = str.trim ()).length) < 4 || str.equalsIgnoreCase ("({null})") || ((ch = str.charAt (0))).charCodeAt (0) != ('(').charCodeAt (0) && (ch).charCodeAt (0) != ('[').charCodeAt (0) || (str.charAt (len - 1)).charCodeAt (0) != (((ch).charCodeAt (0) == ('(').charCodeAt (0) ? ')' : ']')).charCodeAt (0) || (str.charAt (1)).charCodeAt (0) != ('{').charCodeAt (0) || str.indexOf ('}') != len - 2) return null;
+if (str == null || (len = (str = str.trim ()).length) < 4 || str.equalsIgnoreCase ("({null})") || ((ch = str.charAt (0))).charCodeAt (0) != 40 && ch.charCodeAt (0) != 91 || (str.charAt (len - 1)).charCodeAt (0) != ((ch.charCodeAt (0) == 40 ? ')' : ']')).charCodeAt (0) || (str.charAt (1)).charCodeAt (0) != 123 || str.indexOf ('}') != len - 2) return null;
 len -= 2;
-for (var i = len; --i >= 2; ) if (!Character.isDigit (ch = str.charAt (i)) && (ch).charCodeAt (0) != (' ').charCodeAt (0) && (ch).charCodeAt (0) != ('\t').charCodeAt (0) && (ch).charCodeAt (0) != (':').charCodeAt (0)) return null;
+for (var i = len; --i >= 2; ) if (!Character.isDigit (ch = str.charAt (i)) && ch.charCodeAt (0) != 32 && ch.charCodeAt (0) != 9 && ch.charCodeAt (0) != 58) return null;
 
 var lastN = len;
 while (Character.isDigit (str.charAt (--lastN))) {
@@ -270,7 +270,7 @@ break;
 default:
 if (Character.isDigit (ch)) {
 if (iThis < 0) iThis = 0;
-iThis = (iThis << 3) + (iThis << 1) + ((ch).charCodeAt (0) - ('0').charCodeAt (0));
+iThis = (iThis << 3) + (iThis << 1) + (ch.charCodeAt (0) - 48);
 }}
 }
 return (iPrev >= 0 ? null : bs);
@@ -285,11 +285,11 @@ str = str.substring (2, str.length - 2).$replace ('[', ' ').$replace (']', ' ').
 var next =  Clazz.newArray (1, 0);
 var nPoints = 0;
 for (; nPoints < 16; nPoints++) {
-points[nPoints] = org.jmol.util.Parser.parseFloat (str, next);
+points[nPoints] = org.jmol.util.Parser.parseFloatNext (str, next);
 if (Float.isNaN (points[nPoints])) {
 break;
 }}
-if (!Float.isNaN (org.jmol.util.Parser.parseFloat (str, next))) return strMatrix;
+if (!Float.isNaN (org.jmol.util.Parser.parseFloatNext (str, next))) return strMatrix;
 if (nPoints == 9) return  new javax.vecmath.Matrix3f (points);
 if (nPoints == 16) return  new javax.vecmath.Matrix4f (points);
 return strMatrix;
@@ -593,7 +593,7 @@ c$.escapeXml = Clazz.defineMethod (c$, "escapeXml",
 function (value) {
 if (Clazz.instanceOf (value, String)) return org.jmol.util.XmlUtil.wrapCdata (value.toString ());
 var s = "" + value;
-if (s.length == 0 || (s.charAt (0)).charCodeAt (0) != ('[').charCodeAt (0)) return s;
+if (s.length == 0 || (s.charAt (0)).charCodeAt (0) != 91) return s;
 return org.jmol.util.XmlUtil.wrapCdata (org.jmol.util.Escape.toReadable (null, value));
 }, "~O");
 c$.unescapeUnicode = Clazz.defineMethod (c$, "unescapeUnicode", 
@@ -603,7 +603,7 @@ var sb =  new StringBuilder (ichMax);
 var ich = 0;
 while (ich < ichMax) {
 var ch = s.charAt (ich++);
-if ((ch).charCodeAt (0) == ('\\').charCodeAt (0) && ich < ichMax) {
+if (ch.charCodeAt (0) == 92 && ich < ichMax) {
 ch = s.charAt (ich++);
 switch (ch) {
 case 'u':
@@ -625,11 +625,11 @@ return sb.toString ();
 }, "~S");
 c$.getHexitValue = Clazz.defineMethod (c$, "getHexitValue", 
 function (ch) {
-if ((ch).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0)) return (ch).charCodeAt (0) - ('0').charCodeAt (0);
- else if ((ch).charCodeAt (0) >= ('a').charCodeAt (0) && (ch).charCodeAt (0) <= ('f').charCodeAt (0)) return 10 + (ch).charCodeAt (0) - ('a').charCodeAt (0);
- else if ((ch).charCodeAt (0) >= ('A').charCodeAt (0) && (ch).charCodeAt (0) <= ('F').charCodeAt (0)) return 10 + (ch).charCodeAt (0) - ('A').charCodeAt (0);
+if (ch >= '0' && ch <= '9') return ch.charCodeAt (0) - 48;
+ else if (ch >= 'a' && ch <= 'f') return 10 + ch.charCodeAt (0) - 97;
+ else if (ch >= 'A' && ch <= 'F') return 10 + ch.charCodeAt (0) - 65;
  else return -1;
-}, "~N");
+}, "~S");
 c$.unescapeStringArray = Clazz.defineMethod (c$, "unescapeStringArray", 
 function (data) {
 if (data == null || !data.startsWith ("[") || !data.endsWith ("]")) return null;
@@ -637,10 +637,10 @@ var v =  new java.util.ArrayList ();
 var next =  Clazz.newArray (1, 0);
 next[0] = 1;
 while (next[0] < data.length) {
-var s = org.jmol.util.Parser.getNextQuotedString (data, next);
+var s = org.jmol.util.Parser.getQuotedStringNext (data, next);
 if (s == null) return null;
 v.add (s);
-while (next[0] < data.length && (data.charAt (next[0])).charCodeAt (0) != ('"').charCodeAt (0)) next[0]++;
+while (next[0] < data.length && (data.charAt (next[0])).charCodeAt (0) != 34) next[0]++;
 
 }
 return v.toArray ( new Array (v.size ()));

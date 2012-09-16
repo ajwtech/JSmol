@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "$.Collections", "$.Properties", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "$.Collections", "$.Properties", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileTypeName = null;
 this.collectionName = null;
@@ -112,11 +112,11 @@ this.atomSetCollectionAuxiliaryInfo.remove (org.jmol.adapter.smarter.AtomSetColl
 }, "~N");
 Clazz.defineMethod (c$, "setGlobalBoolean", 
 function (globalIndex) {
-this.setAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex], Boolean.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex], org.jmol.api.JmolAdapter.TRUE);
 }, "~N");
 Clazz.defineMethod (c$, "getGlobalBoolean", 
 function (globalIndex) {
-return (this.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex]) === Boolean.TRUE);
+return (this.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex]) === org.jmol.api.JmolAdapter.TRUE);
 }, "~N");
 Clazz.defineMethod (c$, "getAtomCount", 
 function () {
@@ -188,12 +188,12 @@ this.construct ("Array", null);
 var n = 0;
 for (var i = 0; i < array.length; i++) if (array[i].atomCount > 0) this.appendAtomSetCollection (n++, array[i]);
 
-if (n > 1) this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
+if (n > 1) this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", org.jmol.api.JmolAdapter.TRUE);
 }, "~A");
 Clazz.makeConstructor (c$, 
 function (list) {
 this.construct ("Array", null);
-this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", org.jmol.api.JmolAdapter.TRUE);
 this.appendAtomSetCollection (list);
 }, "java.util.List");
 Clazz.defineMethod (c$, "appendAtomSetCollection", 
@@ -252,12 +252,12 @@ for (var bondNum = 0; bondNum < collection.bondCount; bondNum++) {
 var bond = collection.bonds[bondNum];
 this.addNewBond (bond.atomIndex1 + existingAtomsCount, bond.atomIndex2 + existingAtomsCount, bond.order);
 }
-for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (Boolean.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
+for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (org.jmol.api.JmolAdapter.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
 
 }, "~N,org.jmol.adapter.smarter.AtomSetCollection");
 Clazz.defineMethod (c$, "setNoAutoBond", 
 function () {
-this.setAtomSetCollectionAuxiliaryInfo ("noAutoBond", Boolean.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo ("noAutoBond", org.jmol.api.JmolAdapter.TRUE);
 });
 Clazz.defineMethod (c$, "freeze", 
 function (reverseModels) {
@@ -266,8 +266,8 @@ if (this.trajectoryStepCount > 1) this.finalizeTrajectory ();
 this.getList (true);
 this.getList (false);
 for (var i = 0; i < this.atomSetCount; i++) {
-this.setAtomSetAuxiliaryInfo ("initialAtomCount", Integer.$valueOf (this.atomSetAtomCounts[i]), i);
-this.setAtomSetAuxiliaryInfo ("initialBondCount", Integer.$valueOf (this.atomSetBondCounts[i]), i);
+this.setAtomSetAuxiliaryInfoForSet ("initialAtomCount", Integer.$valueOf (this.atomSetAtomCounts[i]), i);
+this.setAtomSetAuxiliaryInfoForSet ("initialBondCount", Integer.$valueOf (this.atomSetBondCounts[i]), i);
 }
 }, "~B");
 Clazz.defineMethod (c$, "reverseAtomSets", 
@@ -306,7 +306,7 @@ this.bonds[i].atomIndex1 = newIndex[this.bonds[i].atomIndex1];
 this.bonds[i].atomIndex2 = newIndex[this.bonds[i].atomIndex2];
 }
 for (var i = 0; i < this.atomSetCount; i++) {
-var conect = this.getAtomSetAuxiliaryInfo (i, "PDB_CONECT_firstAtom_count_max");
+var conect = this.getAtomSetAuxiliaryInfoValue (i, "PDB_CONECT_firstAtom_count_max");
 if (conect == null) continue ;conect[0] = newIndex[conect[0]];
 conect[1] = this.atomSetAtomCounts[i];
 }
@@ -345,7 +345,7 @@ for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (a, i,
 Clazz.defineMethod (c$, "getList", 
 ($fz = function (isAltLoc) {
 var i;
-for (i = this.atomCount; --i >= 0; ) if (this.atoms[i] != null && ((isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode)).charCodeAt (0) != ('\0').charCodeAt (0)) break;
+for (i = this.atomCount; --i >= 0; ) if (this.atoms[i] != null && ((isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode)).charCodeAt (0) != 0) break;
 
 if (i < 0) return ;
 var lists =  new Array (this.atomSetCount);
@@ -354,10 +354,10 @@ for (i = 0; i < this.atomSetCount; i++) lists[i] = "";
 var pt;
 for (i = 0; i < this.atomCount; i++) {
 if (this.atoms[i] == null) continue ;var id = (isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode);
-if ((id).charCodeAt (0) != ('\0').charCodeAt (0) && lists[pt = this.atoms[i].atomSetIndex].indexOf (id) < 0) lists[pt] += (id).charCodeAt (0);
+if (id.charCodeAt (0) != 0 && lists[pt = this.atoms[i].atomSetIndex].indexOf (id) < 0) lists[pt] += (id).charCodeAt (0);
 }
 var type = (isAltLoc ? "altLocs" : "insertionCodes");
-for (i = 0; i < this.atomSetCount; i++) if (lists[i].length > 0) this.setAtomSetAuxiliaryInfo (type, lists[i], i);
+for (i = 0; i < this.atomSetCount; i++) if (lists[i].length > 0) this.setAtomSetAuxiliaryInfoForSet (type, lists[i], i);
 
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "finish", 
@@ -544,9 +544,9 @@ Clazz.defineMethod (c$, "connectAllBad",
 ($fz = function (maxSerial) {
 var firstAtom = this.connectNextAtomIndex;
 for (var i = this.connectNextAtomSet; i < this.atomSetCount; i++) {
-this.setAtomSetAuxiliaryInfo ("PDB_CONECT_firstAtom_count_max", [firstAtom, this.atomSetAtomCounts[i], maxSerial], i);
+this.setAtomSetAuxiliaryInfoForSet ("PDB_CONECT_firstAtom_count_max", [firstAtom, this.atomSetAtomCounts[i], maxSerial], i);
 if (this.vConnect != null) {
-this.setAtomSetAuxiliaryInfo ("PDB_CONECT_bonds", this.vConnect, i);
+this.setAtomSetAuxiliaryInfoForSet ("PDB_CONECT_bonds", this.vConnect, i);
 this.setGlobalBoolean (3);
 }firstAtom += this.atomSetAtomCounts[i];
 }
@@ -564,7 +564,7 @@ return ;
 if (this.vConnect == null) return ;
 var firstAtom = this.connectNextAtomIndex;
 for (var i = this.connectNextAtomSet; i < this.atomSetCount; i++) {
-this.setAtomSetAuxiliaryInfo ("PDB_CONECT_bonds", this.vConnect, i);
+this.setAtomSetAuxiliaryInfoForSet ("PDB_CONECT_bonds", this.vConnect, i);
 this.setGlobalBoolean (3);
 firstAtom += this.atomSetAtomCounts[i];
 }
@@ -718,7 +718,7 @@ var iAtomFirst = this.getLastAtomSetAtomIndex ();
 for (var i = iAtomFirst; i < this.atomCount; i++) this.symmetry.toCartesian (this.atoms[i], true);
 
 this.symmetry = null;
-this.setNotionalUnitCell ([0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z, pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z], null, this.getAtomSetAuxiliaryInfo (this.currentAtomSetIndex, "unitCellOffset"));
+this.setNotionalUnitCell ([0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z, pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z], null, this.getAtomSetAuxiliaryInfoValue (this.currentAtomSetIndex, "unitCellOffset"));
 this.setAtomSetSpaceGroupName ("P1");
 this.getSymmetry ().setSpaceGroup (this.doNormalize);
 this.symmetry.addSpaceGroupOperation ("x,y,z", 0);
@@ -892,13 +892,13 @@ this.setAtomSetAuxiliaryInfo ("unitCellTranslations", this.unitCellTranslations)
 this.symmetry.setSpaceGroup (null);
 this.notionalUnitCell =  Clazz.newArray (6, 0);
 this.coordinatesAreFractional = false;
-this.setAtomSetAuxiliaryInfo ("hasSymmetry", Boolean.TRUE);
+this.setAtomSetAuxiliaryInfo ("hasSymmetry", org.jmol.api.JmolAdapter.TRUE);
 this.setGlobalBoolean (1);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "finalizeSymmetry", 
 ($fz = function (iAtomFirst, noSymmetryCount) {
 this.symmetry.setFinalOperations (this.atoms, iAtomFirst, noSymmetryCount, this.doNormalize);
-var name = this.getAtomSetAuxiliaryInfo (this.currentAtomSetIndex, "spaceGroup");
+var name = this.getAtomSetAuxiliaryInfoValue (this.currentAtomSetIndex, "spaceGroup");
 if (name == null || name.equals ("unspecified!")) this.setAtomSetSpaceGroupName (this.symmetry.getSpaceGroupName ());
 }, $fz.isPrivate = true, $fz), "~N,~N");
 Clazz.defineMethod (c$, "setSymmetryOps", 
@@ -1061,7 +1061,7 @@ this.finalizeSymmetry (iAtomFirst, noSymmetryCount);
 this.setSymmetryOps ();
 }this.symmetry = null;
 this.coordinatesAreFractional = false;
-this.setAtomSetAuxiliaryInfo ("hasSymmetry", Boolean.TRUE);
+this.setAtomSetAuxiliaryInfo ("hasSymmetry", org.jmol.api.JmolAdapter.TRUE);
 this.setGlobalBoolean (1);
 }, "java.util.List,~A,~B,~S");
 Clazz.defineMethod (c$, "mapMostRecentAtomName", 
@@ -1237,7 +1237,7 @@ function (atomSetName) {
 if (this.isTrajectory) {
 this.setTrajectoryName (atomSetName);
 return ;
-}this.setAtomSetAuxiliaryInfo ("name", atomSetName, this.currentAtomSetIndex);
+}this.setAtomSetAuxiliaryInfoForSet ("name", atomSetName, this.currentAtomSetIndex);
 if (!this.allowMultiple) this.setCollectionName (atomSetName);
 }, "~S");
 Clazz.defineMethod (c$, "setTrajectoryName", 
@@ -1251,7 +1251,7 @@ this.trajectoryNames.set (this.trajectoryStepCount - 1, name);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "setAtomSetNames", 
 function (atomSetName, n) {
-for (var idx = this.currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) this.setAtomSetAuxiliaryInfo ("name", atomSetName, idx);
+for (var idx = this.currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) this.setAtomSetAuxiliaryInfoForSet ("name", atomSetName, idx);
 
 }, "~S,~N");
 Clazz.defineMethod (c$, "setAtomSetNumber", 
@@ -1264,25 +1264,25 @@ this.atomSetNumbers[index] = atomSetNumber;
 }, "~N,~N");
 Clazz.defineMethod (c$, "setAtomSetModelProperty", 
 function (key, value) {
-this.setAtomSetModelProperty (key, value, this.currentAtomSetIndex);
+this.setAtomSetModelPropertyForSet (key, value, this.currentAtomSetIndex);
 }, "~S,~S");
-Clazz.defineMethod (c$, "setAtomSetModelProperty", 
+Clazz.defineMethod (c$, "setAtomSetModelPropertyForSet", 
 function (key, value, atomSetIndex) {
-var p = this.getAtomSetAuxiliaryInfo (atomSetIndex, "modelProperties");
-if (p == null) this.setAtomSetAuxiliaryInfo ("modelProperties", p =  new java.util.Properties (), atomSetIndex);
+var p = this.getAtomSetAuxiliaryInfoValue (atomSetIndex, "modelProperties");
+if (p == null) this.setAtomSetAuxiliaryInfoForSet ("modelProperties", p =  new java.util.Properties (), atomSetIndex);
 p.put (key, value);
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "setAtomSetAtomProperty", 
 function (key, data, atomSetIndex) {
 if (!data.endsWith ("\n")) data += "\n";
 if (atomSetIndex < 0) atomSetIndex = this.currentAtomSetIndex;
-var p = this.getAtomSetAuxiliaryInfo (atomSetIndex, "atomProperties");
-if (p == null) this.setAtomSetAuxiliaryInfo ("atomProperties", p =  new java.util.Hashtable (), atomSetIndex);
+var p = this.getAtomSetAuxiliaryInfoValue (atomSetIndex, "atomProperties");
+if (p == null) this.setAtomSetAuxiliaryInfoForSet ("atomProperties", p =  new java.util.Hashtable (), atomSetIndex);
 p.put (key, data);
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "appendAtomProperties", 
 ($fz = function (nTimes) {
-var p = this.getAtomSetAuxiliaryInfo (this.currentAtomSetIndex, "atomProperties");
+var p = this.getAtomSetAuxiliaryInfoValue (this.currentAtomSetIndex, "atomProperties");
 if (p == null) {
 return ;
 }for (var entry, $entry = p.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
@@ -1294,25 +1294,25 @@ for (var i = nTimes; --i >= 0; ) s.append (data);
 p.put (key, s.toString ());
 }
 }, $fz.isPrivate = true, $fz), "~N");
-Clazz.defineMethod (c$, "setAtomSetAuxiliaryInfo", 
-function (key, value) {
-this.setAtomSetAuxiliaryInfo (key, value, this.currentAtomSetIndex);
-}, "~S,~O");
 Clazz.defineMethod (c$, "setAtomSetPartialCharges", 
 function (auxKey) {
 if (!this.atomSetAuxiliaryInfo[this.currentAtomSetIndex].containsKey (auxKey)) {
 return false;
-}var atomData = this.getAtomSetAuxiliaryInfo (this.currentAtomSetIndex, auxKey);
+}var atomData = this.getAtomSetAuxiliaryInfoValue (this.currentAtomSetIndex, auxKey);
 for (var i = atomData.size (); --i >= 0; ) {
 this.atoms[i].partialCharge = atomData.get (i).floatValue ();
 }
 return true;
 }, "~S");
-Clazz.defineMethod (c$, "getAtomSetAuxiliaryInfo", 
+Clazz.defineMethod (c$, "getAtomSetAuxiliaryInfoValue", 
 function (index, key) {
 return this.atomSetAuxiliaryInfo[index].get (key);
 }, "~N,~S");
 Clazz.defineMethod (c$, "setAtomSetAuxiliaryInfo", 
+function (key, value) {
+this.setAtomSetAuxiliaryInfoForSet (key, value, this.currentAtomSetIndex);
+}, "~S,~O");
+Clazz.defineMethod (c$, "setAtomSetAuxiliaryInfoForSet", 
 function (key, value, atomSetIndex) {
 if (atomSetIndex < 0) return ;
 if (this.atomSetAuxiliaryInfo[atomSetIndex] == null) this.atomSetAuxiliaryInfo[atomSetIndex] =  new java.util.Hashtable ();
@@ -1321,7 +1321,7 @@ if (value == null) this.atomSetAuxiliaryInfo[atomSetIndex].remove (key);
 }, "~S,~O,~N");
 Clazz.defineMethod (c$, "setAtomSetPropertyForSets", 
 function (key, value, n) {
-for (var idx = this.currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) this.setAtomSetModelProperty (key, value, idx);
+for (var idx = this.currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) this.setAtomSetModelPropertyForSet (key, value, idx);
 
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "cloneLastAtomSetProperties", 
@@ -1330,8 +1330,8 @@ this.cloneAtomSetProperties (this.currentAtomSetIndex - 1);
 });
 Clazz.defineMethod (c$, "cloneAtomSetProperties", 
 function (index) {
-var p = this.getAtomSetAuxiliaryInfo (index, "modelProperties");
-if (p != null) this.setAtomSetAuxiliaryInfo ("modelProperties", p.clone (), this.currentAtomSetIndex);
+var p = this.getAtomSetAuxiliaryInfoValue (index, "modelProperties");
+if (p != null) this.setAtomSetAuxiliaryInfoForSet ("modelProperties", p.clone (), this.currentAtomSetIndex);
 }, "~N");
 Clazz.defineMethod (c$, "getAtomSetNumber", 
 function (atomSetIndex) {
@@ -1341,7 +1341,7 @@ Clazz.defineMethod (c$, "getAtomSetName",
 function (atomSetIndex) {
 if (this.trajectoryNames != null && atomSetIndex < this.trajectoryNames.size ()) return this.trajectoryNames.get (atomSetIndex);
 if (atomSetIndex >= this.atomSetCount) atomSetIndex = this.atomSetCount - 1;
-return this.getAtomSetAuxiliaryInfo (atomSetIndex, "name");
+return this.getAtomSetAuxiliaryInfoValue (atomSetIndex, "name");
 }, "~N");
 Clazz.defineMethod (c$, "getAtomSetAuxiliaryInfo", 
 function (atomSetIndex) {

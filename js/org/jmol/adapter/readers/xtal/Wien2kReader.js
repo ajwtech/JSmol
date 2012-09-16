@@ -21,11 +21,11 @@ this.continuing = false;
 Clazz.defineMethod (c$, "readUnitCell", 
 ($fz = function () {
 this.readLine ();
-this.isrhombohedral = (((this.latticeCode = this.line.charAt (0))).charCodeAt (0) == ('R').charCodeAt (0));
+this.isrhombohedral = (((this.latticeCode = this.line.charAt (0))).charCodeAt (0) == 82);
 if (this.line.startsWith ("CYZ")) this.latticeCode = 'A';
  else if (this.line.startsWith ("CXZ")) this.latticeCode = 'B';
  else if (this.line.startsWith ("B")) this.latticeCode = 'I';
-if ((this.latticeCode).charCodeAt (0) != ('R').charCodeAt (0) && (this.latticeCode).charCodeAt (0) != ('H').charCodeAt (0)) this.atomSetCollection.setLatticeParameter (this.latticeCode.charCodeAt (0));
+if (this.latticeCode.charCodeAt (0) != 82 && this.latticeCode.charCodeAt (0) != 72) this.atomSetCollection.setLatticeParameter (this.latticeCode.charCodeAt (0));
 if (this.line.length > 32) {
 var name = this.line.substring (32).trim ();
 if (name.indexOf (" ") >= 0) name = name.substring (name.indexOf (" ") + 1);
@@ -33,13 +33,13 @@ if (name.indexOf ("_") >= 0) name = name.substring (name.indexOf ("_") + 1);
 this.setSpaceGroupName (name);
 }var factor = (this.readLine ().toLowerCase ().indexOf ("ang") >= 0 ? 1 : 0.5291772);
 this.readLine ();
-var a = this.parseFloat (this.line.substring (0, 10)) * factor;
-var b = this.parseFloat (this.line.substring (10, 20)) * factor;
-var c = this.parseFloat (this.line.substring (20, 30)) * factor;
+var a = this.parseFloatStr (this.line.substring (0, 10)) * factor;
+var b = this.parseFloatStr (this.line.substring (10, 20)) * factor;
+var c = this.parseFloatStr (this.line.substring (20, 30)) * factor;
 var l = this.line.length;
-var alpha = (l >= 40 ? this.parseFloat (this.line.substring (30, 40)) : 0);
-var beta = (l >= 50 ? this.parseFloat (this.line.substring (40, 50)) : 0);
-var gamma = (l >= 60 ? this.parseFloat (this.line.substring (50, 60)) : 0);
+var alpha = (l >= 40 ? this.parseFloatStr (this.line.substring (30, 40)) : 0);
+var beta = (l >= 50 ? this.parseFloatStr (this.line.substring (40, 50)) : 0);
+var gamma = (l >= 60 ? this.parseFloatStr (this.line.substring (50, 60)) : 0);
 if (this.isrhombohedral) {
 var ar = Math.sqrt (a * a / 3 + c * c / 9);
 alpha = beta = gamma = (Math.acos ((2 * c * c - 3 * a * a) / (2 * c * c + 6 * a * a)) * 180 / 3.141592653589793);
@@ -55,7 +55,7 @@ this.readLine ();
 while (this.line != null && (this.line.indexOf ("ATOM") == 0 || !this.doSymmetry && this.line.indexOf (":") == 8)) {
 var thisAtom = this.atomSetCollection.getAtomCount ();
 this.addAtom ();
-if (this.readLine ().indexOf ("MULT=") == 10) for (var i = this.parseInt (this.line.substring (15, 18)); --i >= 0; ) {
+if (this.readLine ().indexOf ("MULT=") == 10) for (var i = this.parseIntStr (this.line.substring (15, 18)); --i >= 0; ) {
 this.readLine ();
 if (!this.doSymmetry) this.addAtom ();
 }
@@ -75,16 +75,16 @@ while (this.readLine () != null && this.line.indexOf ("ATOM") < 0 && this.line.i
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addAtom", 
 ($fz = function () {
-var a = this.parseFloat (this.line.substring (12, 22));
-var b = this.parseFloat (this.line.substring (25, 35));
-var c = this.parseFloat (this.line.substring (38, 48));
+var a = this.parseFloatStr (this.line.substring (12, 22));
+var b = this.parseFloatStr (this.line.substring (25, 35));
+var c = this.parseFloatStr (this.line.substring (38, 48));
 var atom = this.atomSetCollection.addNewAtom ();
 this.setAtomCoord (atom, a, b, c);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readSymmetry", 
 ($fz = function () {
 if (this.line.indexOf ("SYMMETRY") < 0) return ;
-var n = this.parseInt (this.line.substring (0, 4).trim ());
+var n = this.parseIntStr (this.line.substring (0, 4).trim ());
 for (var i = n; --i >= 0; ) {
 var xyz = this.getJones () + "," + this.getJones () + "," + this.getJones ();
 if (this.doSymmetry) this.setSymmetryOperator (xyz);
@@ -95,10 +95,10 @@ Clazz.defineMethod (c$, "getJones",
 ($fz = function () {
 this.readLine ();
 var xyz = "";
-var trans = this.parseFloat (this.line.substring (6));
+var trans = this.parseFloatStr (this.line.substring (6));
 for (var i = 0; i < 6; i++) {
-if ((this.line.charAt (i)).charCodeAt (0) == ('-').charCodeAt (0)) xyz += "-";
-if ((this.line.charAt (++i)).charCodeAt (0) == ('1').charCodeAt (0)) {
+if ((this.line.charAt (i)).charCodeAt (0) == 45) xyz += "-";
+if ((this.line.charAt (++i)).charCodeAt (0) == 49) {
 xyz += (" x y z".charAt (i)).charCodeAt (0);
 if (trans > 0) xyz += "+";
 if (trans != 0) xyz += trans;

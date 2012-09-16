@@ -23,7 +23,7 @@ Clazz.overrideMethod (c$, "initializeReader",
 function () {
 this.setSpaceGroupName ("P1");
 this.setFractionalCoordinates (true);
-this.inputOnly = this.checkFilter ("INPUT");
+this.inputOnly = this.checkFilterKey ("INPUT");
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -62,7 +62,7 @@ var elementList = "";
 while (this.readLine () != null && this.line.indexOf ("VRHFIN") < 0) {
 var pt = (this.line.contains ("_") ? 2 : 1);
 if (pt == 2) this.line = this.line.$replace ("_", " ");
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (this.line.indexOf (":") + 1));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf (":") + 1));
 var sym = tokens[pt];
 var key = ";" + sym + ";";
 if (elementList.indexOf (key) >= 0) continue ;elementList += key;
@@ -72,9 +72,9 @@ this.elementNames.add (sym);
 Clazz.defineMethod (c$, "readAtomCountAndSetNames", 
 ($fz = function () {
 var numofElement =  Clazz.newArray (100, 0);
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (this.line.indexOf ("=") + 1));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf ("=") + 1));
 this.atomCount = 0;
-for (var i = 0; i < tokens.length; i++) this.atomCount += (numofElement[i] = this.parseInt (tokens[i].trim ()));
+for (var i = 0; i < tokens.length; i++) this.atomCount += (numofElement[i] = this.parseIntStr (tokens[i].trim ()));
 
 this.atomNames =  new Array (this.atomCount);
 var nElements = this.elementNames.size ();
@@ -110,9 +110,9 @@ while (this.readLine () != null && this.line.length > 10) {
 var atom = this.atomSetCollection.addNewAtom ();
 var tokens = this.getTokens ();
 atom.atomName = this.atomNames[counter++];
-var x = this.parseFloat (tokens[0]);
-var y = this.parseFloat (tokens[1]);
-var z = this.parseFloat (tokens[2]);
+var x = this.parseFloatStr (tokens[0]);
+var y = this.parseFloatStr (tokens[1]);
+var z = this.parseFloatStr (tokens[2]);
 this.setAtomCoord (atom, x, y, z);
 }
 this.atomSetCollection.setAtomSetName ("Initial Coordinates");
@@ -125,9 +125,9 @@ while (this.readLine () != null && this.line.indexOf ("----------") < 0) {
 var atom = this.atomSetCollection.addNewAtom ();
 var tokens = this.getTokens ();
 atom.atomName = this.atomNames[counter];
-var x = this.parseFloat (tokens[0]);
-var y = this.parseFloat (tokens[1]);
-var z = this.parseFloat (tokens[2]);
+var x = this.parseFloatStr (tokens[0]);
+var y = this.parseFloatStr (tokens[1]);
+var z = this.parseFloatStr (tokens[2]);
 this.setAtomCoord (atom, x, y, z);
 counter++;
 }
@@ -135,10 +135,10 @@ counter++;
 Clazz.defineMethod (c$, "readEnergy", 
 ($fz = function () {
 this.readLine ();
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.gibbsEnergy = Double.$valueOf (Double.parseDouble (tokens[4]));
 this.readLine ();
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 var enthalpy = Double.parseDouble (tokens[3]);
 this.gibbsEntropy = Double.$valueOf (enthalpy - this.gibbsEnergy.doubleValue ());
 }, $fz.isPrivate = true, $fz));
@@ -156,13 +156,13 @@ Clazz.defineMethod (c$, "readMdyn",
 ($fz = function () {
 var tokens = this.getTokens ();
 this.readLine ();
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.electronEne = Double.$valueOf (Double.parseDouble (tokens[4]));
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.kinEne = Double.$valueOf (Double.parseDouble (tokens[4]));
-this.temp = this.parseFloat (tokens[6]);
+this.temp = this.parseFloatStr (tokens[6]);
 this.readLines (3);
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.totEne = Double.$valueOf (Double.parseDouble (tokens[4]));
 this.setAtomSetInfoMd ();
 }, $fz.isPrivate = true, $fz));

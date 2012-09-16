@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.BioPolymer", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Resolver", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bioPolymerCount = 0;
 this.bioPolymers = null;
@@ -20,7 +20,7 @@ Clazz.overrideMethod (c$, "addSecondaryStructure",
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
 for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].addSecondaryStructure (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode);
 
-}, "org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N");
+}, "org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~N");
 Clazz.overrideMethod (c$, "calculateStructures", 
 function (asDSSP, doReport, dsspIgnoreHydrogen, setStructure, includeAlpha) {
 if (this.bioPolymerCount == 0 || !setStructure && !asDSSP) return "";
@@ -120,7 +120,7 @@ Clazz.overrideMethod (c$, "calculateStraightness",
 function (viewer, ctype, qtype, mStep) {
 for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, 2, null, null, false, false, false, null, null, null,  new java.util.BitSet ());
 
-}, "org.jmol.viewer.Viewer,~N,~N,~N");
+}, "org.jmol.viewer.Viewer,~S,~S,~N");
 Clazz.overrideMethod (c$, "getPolymerPointsAndVectors", 
 function (bs, vList, isTraceAlpha, sheetSmoothing) {
 var last = 2147483646;
@@ -167,10 +167,10 @@ while ((j = sequence.indexOf (specInfo, ++j)) >= 0) this.bioPolymers[ip].getPoly
 Clazz.overrideMethod (c$, "selectSeqcodeRange", 
 function (seqcodeA, seqcodeB, chainID, bs, caseSensitive) {
 var ch;
-for (var i = this.chainCount; --i >= 0; ) if ((chainID).charCodeAt (0) == ((ch = this.chains[i].chainID)).charCodeAt (0) || (chainID).charCodeAt (0) == ('\t').charCodeAt (0) || !caseSensitive && (chainID).charCodeAt (0) == (Character.toUpperCase (ch)).charCodeAt (0)) for (var index = 0; index >= 0; ) index = this.chains[i].selectSeqcodeRange (index, seqcodeA, seqcodeB, bs);
+for (var i = this.chainCount; --i >= 0; ) if (chainID.charCodeAt (0) == ((ch = this.chains[i].chainID)).charCodeAt (0) || chainID.charCodeAt (0) == 9 || !caseSensitive && chainID.charCodeAt (0) == (Character.toUpperCase (ch)).charCodeAt (0)) for (var index = 0; index >= 0; ) index = this.chains[i].selectSeqcodeRange (index, seqcodeA, seqcodeB, bs);
 
 
-}, "~N,~N,~N,java.util.BitSet,~B");
+}, "~N,~N,~S,java.util.BitSet,~B");
 Clazz.overrideMethod (c$, "getRasmolHydrogenBonds", 
 function (bsA, bsB, vHBonds, nucleicOnly, nMax, dsspIgnoreHydrogens, bsHBonds) {
 var doAdd = (vHBonds == null);
@@ -235,7 +235,7 @@ for (var i = baseGroupIndex; i < groupCount; ++i) {
 var g = groups[i];
 var model = g.getModel ();
 if (!model.isBioModel || !(Clazz.instanceOf (g, org.jmol.modelsetbio.Monomer))) continue ;var doCheck = checkPolymerConnections && !this.modelSet.isJmolDataFrame (this.modelSet.atoms[g.firstAtomIndex].modelIndex);
-var bp = ((g).getBioPolymer () == null ? org.jmol.modelsetbio.BioPolymer.allocateBioPolymer (groups, i, doCheck) : null);
+var bp = ((g).getBioPolymer () == null ? org.jmol.modelsetbio.Resolver.allocateBioPolymer (groups, i, doCheck) : null);
 if (bp == null || bp.monomerCount == 0) continue ;(model).addBioPolymer (bp);
 i += bp.monomerCount - 1;
 }
@@ -272,7 +272,7 @@ var models = this.modelSet.getModels ();
 var modelCount = this.modelSet.getModelCount ();
 var atomCount = this.modelSet.getAtomCount ();
 var atoms = this.modelSet.atoms;
-sb.append ("\nMolecule name ....... " + this.modelSet.getModelSetAuxiliaryInfo ("COMPND"));
+sb.append ("\nMolecule name ....... " + this.modelSet.getModelSetAuxiliaryInfoValue ("COMPND"));
 sb.append ("\nSecondary Structure . PDB Data Records");
 sb.append ("\nBrookhaven Code ..... " + this.modelSet.modelSetName);
 for (var i = modelCount; --i >= 0; ) n += models[i].getChainCount (false);
@@ -423,7 +423,7 @@ sb.append ("\n");
 }}
 bs = null;
 }if (id == 0 || bsAtoms != null && needPhiPsi && (Float.isNaN (atoms[i].getGroupParameter (1112539143)) || Float.isNaN (atoms[i].getGroupParameter (1112539144)))) continue ;}var ch = atoms[i].getChainID ();
-if ((ch).charCodeAt (0) == 0) ch = ' ';
+if (ch.charCodeAt (0) == 0) ch = ' ';
 if (bs == null) {
 bs =  new java.util.BitSet ();
 res1 = atoms[i].getResno ();
@@ -468,21 +468,21 @@ return info;
 Clazz.overrideMethod (c$, "getPdbData", 
 function (viewer, type, ctype, isDraw, bsSelected, sb, tokens, pdbCONECT, bsWritten) {
 var bothEnds = false;
-var qtype = ((ctype).charCodeAt (0) != ('R').charCodeAt (0) ? 'r' : type.length > 13 && type.indexOf ("ramachandran ") >= 0 ? type.charAt (13) : 'R');
-if ((qtype).charCodeAt (0) == ('r').charCodeAt (0)) qtype = viewer.getQuaternionFrame ();
+var qtype = (ctype.charCodeAt (0) != 82 ? 'r' : type.length > 13 && type.indexOf ("ramachandran ") >= 0 ? type.charAt (13) : 'R');
+if (qtype.charCodeAt (0) == 114) qtype = viewer.getQuaternionFrame ();
 var mStep = viewer.getHelixStep ();
 var derivType = (type.indexOf ("diff") < 0 ? 0 : type.indexOf ("2") < 0 ? 1 : 2);
 if (!isDraw) {
 sb.append ("REMARK   6 Jmol PDB-encoded data: " + type + ";");
-if ((ctype).charCodeAt (0) != ('R').charCodeAt (0)) {
+if (ctype.charCodeAt (0) != 82) {
 sb.append ("  quaternionFrame = \"" + qtype + "\"");
 bothEnds = true;
 }sb.append ("\nREMARK   6 Jmol Version ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append ('\n');
-if ((ctype).charCodeAt (0) == ('R').charCodeAt (0)) sb.append ("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
+if (ctype.charCodeAt (0) == 82) sb.append ("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
  else sb.append ("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
 }for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, derivType, this.bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, pdbCONECT, bsWritten);
 
-}, "org.jmol.viewer.Viewer,~S,~N,~B,java.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,java.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,java.util.BitSet");
 Clazz.defineStatics (c$,
 "pdbRecords", ["ATOM  ", "MODEL ", "HETATM"]);
 });

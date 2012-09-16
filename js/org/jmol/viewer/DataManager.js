@@ -50,7 +50,7 @@ var strData = null;
 if (field == -2147483648 && (strData = org.jmol.util.Parser.getTokens (stringData)).length > 1) field = 0;
 if (field == -2147483648) {
 bs = data[2];
-org.jmol.util.Parser.setSelectedFloats (org.jmol.util.Parser.parseFloat (stringData), bs, f);
+org.jmol.util.Parser.setSelectedFloats (org.jmol.util.Parser.parseFloatStr (stringData), bs, f);
 } else if (field == 0 || field == 2147483647) {
 bs = data[2];
 if (floatData != null) {
@@ -59,7 +59,7 @@ if (floatData.length == bs.cardinality ()) for (var i = bs.nextSetBit (0), pt = 
  else for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) f[i] = floatData[i];
 
 } else {
-org.jmol.util.Parser.parseFloatArray (strData == null ? org.jmol.util.Parser.getTokens (stringData) : strData, bs, f);
+org.jmol.util.Parser.parseFloatArrayBsData (strData == null ? org.jmol.util.Parser.getTokens (stringData) : strData, bs, f);
 }} else if (matchField <= 0) {
 bs = data[2];
 org.jmol.util.Parser.parseFloatArrayFromMatchAndField (stringData, bs, 0, 0, null, field, fieldColumnCount, f, 1);

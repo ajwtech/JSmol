@@ -22,9 +22,8 @@ this.sayHello (" EnumTest.ONCE = " + org.jsmol.test.EnumTest.ONCE + "; TT.A = " 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "sayHello", 
 function (s) {
-{
-alert("Hello, JavaScript -- " + s);
-}}, "~S");
+System.out.println ("Hello Java -- " + s);
+}, "~S");
 Clazz.pu$h ();
 c$ = Clazz.declareType (org.jsmol.test.JSmol, "TT", Enum);
 Clazz.defineEnumConstant (c$, "A", 0, []);

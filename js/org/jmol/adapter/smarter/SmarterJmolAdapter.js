@@ -41,7 +41,7 @@ throw ex;
 }
 }
 bufferedReader = null;
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 }, "~S,~S,java.io.BufferedReader,java.util.Map");
@@ -69,7 +69,7 @@ throw ex;
 }
 }
 br = null;
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 }, "org.jmol.adapter.smarter.AtomSetCollectionReader");
@@ -97,7 +97,7 @@ if (!(Clazz.instanceOf (ret, org.jmol.adapter.smarter.AtomSetCollection))) retur
 atomsets[i] = ret;
 if (atomsets[i].errorMessage != null) return atomsets[i].errorMessage;
 }} catch (e) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 }
@@ -116,7 +116,7 @@ if (!(Clazz.instanceOf (ret, org.jmol.adapter.smarter.AtomSetCollection))) retur
 asc[i] = ret;
 if (asc[i].errorMessage != null) return asc[i].errorMessage;
 } catch (e) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 }
@@ -127,7 +127,7 @@ try {
 result.finalizeTrajectory (htParams.get ("trajectorySteps"), htParams.get ("vibrationSteps"));
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-if (result.errorMessage == null) result.errorMessage = e.getMessage ();
+if (result.errorMessage == null) result.errorMessage = "" + e;
 } else {
 throw e;
 }
@@ -259,7 +259,7 @@ if (Clazz.exceptionOf (e$$, Exception)) {
 var e = e$$;
 {
 if (ignoreErrors) return null;
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 } else if (Clazz.exceptionOf (e$$, Error)) {
@@ -286,7 +286,7 @@ var asc = ret;
 if (asc.errorMessage != null) return asc.errorMessage;
 return asc;
 } catch (e) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.error ("" + e);
 return "" + e;
 }
 }, "~O,java.util.Map");

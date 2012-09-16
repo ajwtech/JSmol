@@ -109,12 +109,12 @@ this.title = value;
 } else {
 var nLine = 1;
 var lines = value;
-for (var i = lines.length; --i >= 0; ) if ((lines.charAt (i)).charCodeAt (0) == ('|').charCodeAt (0)) nLine++;
+for (var i = lines.length; --i >= 0; ) if ((lines.charAt (i)).charCodeAt (0) == 124) nLine++;
 
 this.title =  new Array (nLine);
 nLine = 0;
 var i0 = -1;
-for (var i = 0; i < lines.length; i++) if ((lines.charAt (i)).charCodeAt (0) == ('|').charCodeAt (0)) {
+for (var i = 0; i < lines.length; i++) if ((lines.charAt (i)).charCodeAt (0) == 124) {
 this.title[nLine++] = lines.substring (i0 + 1, i);
 i0 = i;
 }
@@ -239,7 +239,7 @@ default:
 m.setTokenProperty (tokProp, bProp);
 }
 }, $fz.isPrivate = true, $fz), "org.jmol.shape.Mesh,~N,~B,~B");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "getNames") {
 var map = data[0];
@@ -273,7 +273,7 @@ if (index == 2147483647) data[2] =  new javax.vecmath.Point3f (m.index + 1, this
 return true;
 }return false;
 }, "~S,~A");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 var m;
 if (property === "count") {

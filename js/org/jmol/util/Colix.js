@@ -51,10 +51,6 @@ for (var i = org.jmol.util.Colix.argbs.length; --i >= 4; ) a[i] = org.jmol.util.
 
 ($t$ = org.jmol.util.Colix.argbsGreyscale = a, org.jmol.util.Colix.prototype.argbsGreyscale = org.jmol.util.Colix.argbsGreyscale, $t$);
 }, $fz.isPrivate = true, $fz));
-c$.getArgb1 = Clazz.defineMethod (c$, "getArgb1", 
-function (colix) {
-return org.jmol.util.Colix.argbs[colix & -30721];
-}, "~N");
 c$.getArgbGreyscale = Clazz.defineMethod (c$, "getArgbGreyscale", 
 function (colix) {
 if (org.jmol.util.Colix.argbsGreyscale == null) org.jmol.util.Colix.calcArgbsGreyscale ();
@@ -114,7 +110,7 @@ return (colix > 0 && (colix & 2047) == 2047);
 }, "~N");
 c$.getArgb = Clazz.defineMethod (c$, "getArgb", 
 function (colix) {
-return org.jmol.util.Colix.getArgb1 (colix);
+return org.jmol.util.Colix.argbs[colix & -30721];
 }, "~N");
 c$.isColixColorInherited = Clazz.defineMethod (c$, "isColixColorInherited", 
 function (colix) {

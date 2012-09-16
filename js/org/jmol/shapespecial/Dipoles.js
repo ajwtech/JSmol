@@ -221,7 +221,7 @@ return ;
 }
 org.jmol.util.Logger.error ("Unkown dipole property! " + org.jmol.script.Token.nameOf (tok));
 }, $fz.isPrivate = true, $fz), "~N,org.jmol.shapespecial.Dipole,~N,~N");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "getNames") {
 }if (property === "checkID") {
@@ -236,7 +236,7 @@ return true;
 return false;
 }return false;
 }, "~S,~A");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if (property.equals ("list")) {
 return this.getShapeState ();

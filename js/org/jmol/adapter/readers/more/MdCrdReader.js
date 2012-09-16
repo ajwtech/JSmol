@@ -39,7 +39,7 @@ this.ptFloat = 0;
 this.lenLine = this.line.length;
 }
 this.ptFloat += 8;
-return this.parseFloat (this.line.substring (this.ptFloat - 8, this.ptFloat));
+return this.parseFloatStr (this.line.substring (this.ptFloat - 8, this.ptFloat));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getPoint", 
 ($fz = function () {

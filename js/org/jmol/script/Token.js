@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.util.Hashtable"], "org.jmol.script.Token", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.script.Token", ["java.util.ArrayList", "$.Arrays", "org.jmol.util.ArrayUtil", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tok = 0;
 this.value = null;
@@ -86,11 +86,11 @@ var isMultiCharacter = (s != null && s.length > 1);
 for (var entry, $entry = org.jmol.script.Token.tokenMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var name = entry.getKey ();
 var token = entry.getValue ();
-if ((token.tok & 4096) != 0 && (s == null || name.indexOf (s) == 0) && (isMultiCharacter || (token.value).equals (name))) htSet.put (name, Boolean.TRUE);
+if ((token.tok & 4096) != 0 && (s == null || name.indexOf (s) == 0) && (isMultiCharacter || (token.value).equals (name))) htSet.put (name, org.jmol.viewer.JmolConstants.TRUE);
 }
 for (var entry, $entry = htSet.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var name = entry.getKey ();
-if ((name.charAt (name.length - 1)).charCodeAt (0) != ('s').charCodeAt (0) || !htSet.containsKey (name.substring (0, name.length - 1))) cmds += (nCmds++ == 0 ? "" : ";") + name;
+if ((name.charAt (name.length - 1)).charCodeAt (0) != 115 || !htSet.containsKey (name.substring (0, name.length - 1))) cmds += (nCmds++ == 0 ? "" : ";") + name;
 }
 return cmds;
 }, "~S");
@@ -101,7 +101,7 @@ var v =  new java.util.ArrayList ();
 var isAll = (type.length == 0);
 for (var entry, $entry = org.jmol.script.Token.tokenMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var name = entry.getKey ();
-if ((name.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) continue ;var token = entry.getValue ();
+if ((name.charAt (0)).charCodeAt (0) == 95) continue ;var token = entry.getValue ();
 if (org.jmol.script.Token.tokAttr (token.tok, 1078984704) && (isAll || name.toLowerCase ().startsWith (type))) {
 if (isAll || !(token.value).toLowerCase ().startsWith (type)) token =  new org.jmol.script.Token (token.tok, name);
 v.add (token);

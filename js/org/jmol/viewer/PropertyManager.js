@@ -39,7 +39,7 @@ c$.getModelProperty = Clazz.defineMethod (c$, "getModelProperty",
 function (viewer, propertyName, propertyValue) {
 propertyName = propertyName.$replace (']', ' ').$replace ('[', ' ').$replace ('.', ' ');
 propertyName = org.jmol.util.TextFormat.simpleReplace (propertyName, "  ", " ");
-var names = org.jmol.util.TextFormat.split (org.jmol.util.TextFormat.trim (propertyName, " "), " ");
+var names = org.jmol.util.TextFormat.splitChars (org.jmol.util.TextFormat.trim (propertyName, " "), " ");
 var args =  new Array (names.length);
 propertyName = names[0];
 var n;
@@ -246,7 +246,7 @@ for (var i = 0; i < 38; i++) {
 var paramType = org.jmol.viewer.PropertyManager.getParamType (i);
 var paramDefault = org.jmol.viewer.PropertyManager.getDefaultParam (i);
 var name = org.jmol.viewer.PropertyManager.getPropertyName (i);
-data[i] = ((name.charAt (0)).charCodeAt (0) == ('X').charCodeAt (0) ? "" : name + (paramType !== "" ? " " + org.jmol.viewer.PropertyManager.getParamType (i) + (paramDefault !== "" ? " #default: " + org.jmol.viewer.PropertyManager.getDefaultParam (i) : "") : ""));
+data[i] = ((name.charAt (0)).charCodeAt (0) == 88 ? "" : name + (paramType !== "" ? " " + org.jmol.viewer.PropertyManager.getParamType (i) + (paramDefault !== "" ? " #default: " + org.jmol.viewer.PropertyManager.getDefaultParam (i) : "") : ""));
 }
 java.util.Arrays.sort (data);
 var info =  new StringBuffer ("getProperty ERROR\n" + infoType + "?\nOptions include:\n");

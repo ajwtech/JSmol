@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBinary = false;
 this.atomSetCollection = null;
@@ -177,7 +177,7 @@ if (this.doCentralize) this.atomSetCollection.centralize ();
 Clazz.defineMethod (c$, "setIsPDB", 
 function () {
 this.atomSetCollection.setGlobalBoolean (4);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", Boolean.TRUE);
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", org.jmol.api.JmolAdapter.TRUE);
 if (this.htParams.get ("pdbNoHydrogens") != null) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("pdbNoHydrogens", this.htParams.get ("pdbNoHydrogens"));
 });
 Clazz.defineMethod (c$, "setPdb", 
@@ -196,8 +196,8 @@ var name = this.atomSetCollection.getFileTypeName ();
 var fileType = name;
 if (fileType.indexOf ("(") >= 0) fileType = fileType.substring (0, fileType.indexOf ("("));
 for (var i = this.atomSetCollection.getAtomSetCount (); --i >= 0; ) {
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("fileName", this.filePath, i);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("fileType", fileType, i);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("fileName", this.filePath, i);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("fileType", fileType, i);
 }
 this.atomSetCollection.freeze (this.reverseModels);
 if (this.atomSetCollection.errorMessage != null) return this.atomSetCollection.errorMessage + "\nfor file " + this.filePath + "\ntype " + name;
@@ -321,7 +321,7 @@ this.atomSetCollection.newAtomSet ();
 this.atomSetCollection.setCollectionName ("<collection of " + (this.atomSetCollection.getCurrentAtomSetIndex () + 1) + " models>");
 } else {
 this.atomSetCollection.setCollectionName (name);
-}this.atomSetCollection.setAtomSetAuxiliaryInfo ("name", name, Math.max (0, this.atomSetCollection.getCurrentAtomSetIndex ()));
+}this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("name", name, Math.max (0, this.atomSetCollection.getCurrentAtomSetIndex ()));
 }, "~S");
 Clazz.defineMethod (c$, "cloneLastAtomSet", 
 function (atomCount, pts) {
@@ -434,29 +434,29 @@ filter0 = this.htParams.get ("filter");
 this.bsFilter = null;
 }if (filter0 != null) filter0 = filter0.toUpperCase ();
 this.filter = filter0;
-this.doSetOrientation = !this.checkFilter ("NOORIENT");
-this.doCentralize = (!this.checkFilter ("NOCENTER") && this.checkFilter ("CENTER"));
-this.addVibrations = !this.checkFilter ("NOVIB");
-this.readMolecularOrbitals = !this.checkFilter ("NOMO");
-this.useAltNames = this.checkFilter ("ALTNAME");
-this.reverseModels = this.checkFilter ("REVERSEMODELS");
-if (this.checkFilter ("NAME=")) {
+this.doSetOrientation = !this.checkFilterKey ("NOORIENT");
+this.doCentralize = (!this.checkFilterKey ("NOCENTER") && this.checkFilterKey ("CENTER"));
+this.addVibrations = !this.checkFilterKey ("NOVIB");
+this.readMolecularOrbitals = !this.checkFilterKey ("NOMO");
+this.useAltNames = this.checkFilterKey ("ALTNAME");
+this.reverseModels = this.checkFilterKey ("REVERSEMODELS");
+if (this.checkFilterKey ("NAME=")) {
 this.nameRequired = this.filter.substring (this.filter.indexOf ("NAME=") + 5);
-if (this.nameRequired.startsWith ("'")) this.nameRequired = org.jmol.util.TextFormat.split (this.nameRequired, "'")[1];
- else if (this.nameRequired.startsWith ("\"")) this.nameRequired = org.jmol.util.TextFormat.split (this.nameRequired, "\"")[1];
+if (this.nameRequired.startsWith ("'")) this.nameRequired = org.jmol.util.TextFormat.splitChars (this.nameRequired, "'")[1];
+ else if (this.nameRequired.startsWith ("\"")) this.nameRequired = org.jmol.util.TextFormat.splitChars (this.nameRequired, "\"")[1];
 filter0 = this.filter = org.jmol.util.TextFormat.simpleReplace (this.filter, this.nameRequired, "");
 filter0 = this.filter = org.jmol.util.TextFormat.simpleReplace (this.filter, "NAME=", "");
 }if (this.filter == null) return ;
-this.filterAtomType = this.checkFilter ("*.") || this.checkFilter ("!.");
-this.filterElement = this.checkFilter ("_");
-this.filterHetero = this.checkFilter ("HETATM");
-this.filterGroup3 = this.checkFilter ("[");
-this.filterChain = this.checkFilter (":");
-this.filterAltLoc = this.checkFilter ("%");
-this.filterEveryNth = this.checkFilter ("/=");
-if (this.filterEveryNth) this.filterN = this.parseInt (this.filter.substring (this.filter.indexOf ("/=") + 2));
+this.filterAtomType = this.checkFilterKey ("*.") || this.checkFilterKey ("!.");
+this.filterElement = this.checkFilterKey ("_");
+this.filterHetero = this.checkFilterKey ("HETATM");
+this.filterGroup3 = this.checkFilterKey ("[");
+this.filterChain = this.checkFilterKey (":");
+this.filterAltLoc = this.checkFilterKey ("%");
+this.filterEveryNth = this.checkFilterKey ("/=");
+if (this.filterEveryNth) this.filterN = this.parseIntStr (this.filter.substring (this.filter.indexOf ("/=") + 2));
 if (this.filterN == -2147483648) this.filterEveryNth = false;
-this.haveAtomFilter = this.filterAtomType || this.filterElement || this.filterGroup3 || this.filterChain || this.filterAltLoc || this.filterHetero || this.filterEveryNth || this.checkFilter ("/=");
+this.haveAtomFilter = this.filterAtomType || this.filterElement || this.filterGroup3 || this.filterChain || this.filterAltLoc || this.filterHetero || this.filterEveryNth || this.checkFilterKey ("/=");
 if (this.bsFilter == null) {
 this.bsFilter =  new java.util.BitSet ();
 this.htParams.put ("bsFilter", this.bsFilter);
@@ -469,7 +469,7 @@ if ((ipt = this.filter.indexOf ("|")) >= 0) {
 this.filter1 = this.filter.substring (0, ipt).trim () + ";";
 this.filter2 = ";" + this.filter.substring (ipt).trim ();
 }}}}, "~S");
-Clazz.defineMethod (c$, "checkFilter", 
+Clazz.defineMethod (c$, "checkFilterKey", 
 function (key) {
 return (this.filter != null && this.filter.indexOf (key) >= 0);
 }, "~S");
@@ -484,7 +484,7 @@ return isOK;
 }, "org.jmol.adapter.smarter.Atom,~N");
 Clazz.defineMethod (c$, "checkFilter", 
 ($fz = function (atom, f) {
-return (!this.filterGroup3 || atom.group3 == null || !this.filterReject (f, "[", atom.group3.toUpperCase () + "]")) && (!this.filterAtomType || atom.atomName == null || !this.filterReject (f, ".", atom.atomName.toUpperCase () + ";")) && (!this.filterElement || atom.elementSymbol == null || !this.filterReject (f, "_", atom.elementSymbol.toUpperCase () + ";")) && (!this.filterChain || (atom.chainID).charCodeAt (0) == ('\0').charCodeAt (0) || !this.filterReject (f, ":", "" + atom.chainID)) && (!this.filterAltLoc || (atom.alternateLocationID).charCodeAt (0) == ('\0').charCodeAt (0) || !this.filterReject (f, "%", "" + atom.alternateLocationID)) && (!this.filterHetero || !this.filterReject (f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
+return (!this.filterGroup3 || atom.group3 == null || !this.filterReject (f, "[", atom.group3.toUpperCase () + "]")) && (!this.filterAtomType || atom.atomName == null || !this.filterReject (f, ".", atom.atomName.toUpperCase () + ";")) && (!this.filterElement || atom.elementSymbol == null || !this.filterReject (f, "_", atom.elementSymbol.toUpperCase () + ";")) && (!this.filterChain || atom.chainID.charCodeAt (0) == 0 || !this.filterReject (f, ":", "" + atom.chainID)) && (!this.filterAltLoc || atom.alternateLocationID.charCodeAt (0) == 0 || !this.filterReject (f, "%", "" + atom.alternateLocationID)) && (!this.filterHetero || !this.filterReject (f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,~S");
 Clazz.defineMethod (c$, "filterReject", 
 ($fz = function (f, code, atomCode) {
@@ -492,8 +492,8 @@ return (f.indexOf (code) >= 0 && (f.indexOf ("!" + code) >= 0 ? f.indexOf (code 
 }, $fz.isPrivate = true, $fz), "~S,~S,~S");
 Clazz.defineMethod (c$, "set2D", 
 function () {
-this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("is2D", Boolean.TRUE);
-if (!this.checkFilter ("NOMIN")) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("doMinimize", Boolean.TRUE);
+this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("is2D", org.jmol.api.JmolAdapter.TRUE);
+if (!this.checkFilterKey ("NOMIN")) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("doMinimize", org.jmol.api.JmolAdapter.TRUE);
 });
 Clazz.defineMethod (c$, "doGetVibration", 
 function (vibrationNumber) {
@@ -543,7 +543,7 @@ for (var entry, $entry = htSites.entrySet ().iterator (); $entry.hasNext () && (
 var name = entry.getKey ();
 var htSite = entry.getValue ();
 var ch;
-for (var i = name.length; --i >= 0; ) if (!Character.isLetterOrDigit (ch = name.charAt (i)) && (ch).charCodeAt (0) != ('\'').charCodeAt (0)) name = name.substring (0, i) + "_" + name.substring (i + 1);
+for (var i = name.length; --i >= 0; ) if (!Character.isLetterOrDigit (ch = name.charAt (i)) && ch.charCodeAt (0) != 39) name = name.substring (0, i) + "_" + name.substring (i + 1);
 
 var groups = htSite.get ("groups");
 if (groups.length == 0) continue ;this.addSiteScript ("@site_" + name + " " + groups);
@@ -604,7 +604,7 @@ Clazz.defineMethod (c$, "fillDataBlock",
 function (data, minLineLen) {
 var nLines = data.length;
 for (var i = 0; i < nLines; i++) {
-data[i] = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.discardLinesUntilNonBlank ());
+data[i] = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.discardLinesUntilNonBlank ());
 if (data[i].length < minLineLen) --i;
 }
 }, "~A,~N");
@@ -616,7 +616,7 @@ for (var i = 0; i < data.length; i++) {
 while (tokens != null && pt >= tokens.length) {
 if (s == null) s = this.readLine ();
 if (width == 0) {
-tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (s);
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (s);
 } else {
 tokens =  new Array (Math.floor (s.length / width));
 for (var j = 0; j < tokens.length; j++) tokens[j] = s.substring (j * width, (j + 1) * width);
@@ -625,7 +625,7 @@ for (var j = 0; j < tokens.length; j++) tokens[j] = s.substring (j * width, (j +
 pt = 0;
 }
 if (tokens == null) break;
-data[i] = this.parseFloat (tokens[pt++]);
+data[i] = this.parseFloatStr (tokens[pt++]);
 }
 return data;
 }, "~S,~N,~A");
@@ -645,10 +645,10 @@ var dataPt = values.length - (isWide ? nFreq * 3 : nFreq) - 1;
 for (var j = 0, jj = 0; jj < nFreq; jj++) {
 ++dataPt;
 var x = values[dataPt];
-if ((x.charAt (0)).charCodeAt (0) == (')').charCodeAt (0)) x = x.substring (1);
-var vx = this.parseFloat (x);
-var vy = this.parseFloat (isWide ? values[++dataPt] : valuesY[dataPt]);
-var vz = this.parseFloat (isWide ? values[++dataPt] : valuesZ[dataPt]);
+if ((x.charAt (0)).charCodeAt (0) == 41) x = x.substring (1);
+var vx = this.parseFloatStr (x);
+var vy = this.parseFloatStr (isWide ? values[++dataPt] : valuesY[dataPt]);
+var vz = this.parseFloatStr (isWide ? values[++dataPt] : valuesZ[dataPt]);
 if (ignore[jj]) continue ;var iAtom = (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
 if (iAtom < 0) continue ;if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("atom " + iAtom + " vib" + j + ": " + vx + " " + vy + " " + vz);
 this.atomSetCollection.addVibrationVector (iAtom0 + modelAtomCount * j++ + iAtom, vx, vy, vz, withSymmetry);
@@ -769,86 +769,86 @@ for (var i = 0, pt = 0; i < nFields; i++, pt += width) fields[i] = sinfo.substri
 
 return fields;
 }, "~S,~N,~N");
-Clazz.defineMethod (c$, "parseStringInfestedFloatArray", 
-function (s, data) {
-org.jmol.util.Parser.parseStringInfestedFloatArray (s, null, data);
-}, "~S,~A");
 Clazz.defineMethod (c$, "getTokens", 
 function () {
 return org.jmol.util.Parser.getTokens (this.line);
 });
+Clazz.defineMethod (c$, "parseStringInfestedFloatArray", 
+function (s, data) {
+org.jmol.util.Parser.parseStringInfestedFloatArray (s, null, data);
+}, "~S,~A");
 c$.getTokensFloat = Clazz.defineMethod (c$, "getTokensFloat", 
 function (s, f, n) {
 if (f == null) f =  Clazz.newArray (n, 0);
-org.jmol.util.Parser.parseFloatArray (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (s), f, n);
+org.jmol.util.Parser.parseFloatArrayDataN (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (s), f, n);
 return f;
 }, "~S,~A,~N");
-c$.getTokens = Clazz.defineMethod (c$, "getTokens", 
+c$.getTokensStr = Clazz.defineMethod (c$, "getTokensStr", 
 function (s) {
 return org.jmol.util.Parser.getTokens (s);
 }, "~S");
-c$.getTokens = Clazz.defineMethod (c$, "getTokens", 
+c$.getTokensAt = Clazz.defineMethod (c$, "getTokensAt", 
 function (s, iStart) {
-return org.jmol.util.Parser.getTokens (s, iStart);
+return org.jmol.util.Parser.getTokensAt (s, iStart);
 }, "~S,~N");
 Clazz.defineMethod (c$, "parseFloat", 
 function () {
-return org.jmol.util.Parser.parseFloat (this.line, this.next);
+return org.jmol.util.Parser.parseFloatNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "parseFloat", 
+Clazz.defineMethod (c$, "parseFloatStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseFloat (s, this.next);
+return org.jmol.util.Parser.parseFloatNext (s, this.next);
 }, "~S");
-Clazz.defineMethod (c$, "parseFloat", 
+Clazz.defineMethod (c$, "parseFloatRange", 
 function (s, iStart, iEnd) {
 this.next[0] = iStart;
-return org.jmol.util.Parser.parseFloat (s, iEnd, this.next);
+return org.jmol.util.Parser.parseFloatRange (s, iEnd, this.next);
 }, "~S,~N,~N");
 Clazz.defineMethod (c$, "parseInt", 
 function () {
-return org.jmol.util.Parser.parseInt (this.line, this.next);
+return org.jmol.util.Parser.parseIntNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "parseInt", 
+Clazz.defineMethod (c$, "parseIntStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseInt (s, this.next);
+return org.jmol.util.Parser.parseIntNext (s, this.next);
 }, "~S");
-Clazz.defineMethod (c$, "parseInt", 
+Clazz.defineMethod (c$, "parseIntAt", 
 function (s, iStart) {
 this.next[0] = iStart;
-return org.jmol.util.Parser.parseInt (s, this.next);
+return org.jmol.util.Parser.parseIntNext (s, this.next);
 }, "~S,~N");
-Clazz.defineMethod (c$, "parseInt", 
+Clazz.defineMethod (c$, "parseIntRange", 
 function (s, iStart, iEnd) {
 this.next[0] = iStart;
-return org.jmol.util.Parser.parseInt (s, iEnd, this.next);
+return org.jmol.util.Parser.parseIntRange (s, iEnd, this.next);
 }, "~S,~N,~N");
 Clazz.defineMethod (c$, "parseToken", 
 function () {
-return org.jmol.util.Parser.parseToken (this.line, this.next);
+return org.jmol.util.Parser.parseTokenNext (this.line, this.next);
 });
-Clazz.defineMethod (c$, "parseToken", 
+Clazz.defineMethod (c$, "parseTokenStr", 
 function (s) {
 this.next[0] = 0;
-return org.jmol.util.Parser.parseToken (s, this.next);
+return org.jmol.util.Parser.parseTokenNext (s, this.next);
 }, "~S");
 Clazz.defineMethod (c$, "parseTokenNext", 
 function (s) {
-return org.jmol.util.Parser.parseToken (s, this.next);
+return org.jmol.util.Parser.parseTokenNext (s, this.next);
 }, "~S");
-Clazz.defineMethod (c$, "parseToken", 
+Clazz.defineMethod (c$, "parseTokenRange", 
 function (s, iStart, iEnd) {
 this.next[0] = iStart;
-return org.jmol.util.Parser.parseToken (s, iEnd, this.next);
+return org.jmol.util.Parser.parseTokenRange (s, iEnd, this.next);
 }, "~S,~N,~N");
-c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
+c$.parseTrimmedAt = Clazz.defineMethod (c$, "parseTrimmedAt", 
 function (s, iStart) {
-return org.jmol.util.Parser.parseTrimmed (s, iStart);
+return org.jmol.util.Parser.parseTrimmedAt (s, iStart);
 }, "~S,~N");
-c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
+c$.parseTrimmedRange = Clazz.defineMethod (c$, "parseTrimmedRange", 
 function (s, iStart, iEnd) {
-return org.jmol.util.Parser.parseTrimmed (s, iStart, iEnd);
+return org.jmol.util.Parser.parseTrimmedRange (s, iStart, iEnd);
 }, "~S,~N,~N");
 c$.getFortranFormatLengths = Clazz.defineMethod (c$, "getFortranFormatLengths", 
 function (s) {
@@ -877,8 +877,8 @@ factor = -1;
 continue ;}
 var isDigit = Character.isDigit (ch);
 if (isDigit) {
-if (inN) n = n * 10 + (ch).charCodeAt (0) - ('0').charCodeAt (0);
- else if (inCount) c = c * 10 + (ch).charCodeAt (0) - ('0').charCodeAt (0);
+if (inN) n = n * 10 + ch.charCodeAt (0) - 48;
+ else if (inCount) c = c * 10 + ch.charCodeAt (0) - 48;
 } else if (Character.isLetter (ch)) {
 n = 0;
 inN = true;
@@ -894,7 +894,7 @@ function (isBohr) {
 var vectors =  new Array (3);
 var f =  Clazz.newArray (3, 0);
 for (var i = 0; i < 3; i++) {
-if (i > 0 || Float.isNaN (this.parseFloat (this.line))) {
+if (i > 0 || Float.isNaN (this.parseFloatStr (this.line))) {
 this.readLine ();
 if (i == 0 && this.line != null) {
 i = -1;
@@ -906,7 +906,7 @@ return vectors;
 }, "~B");
 Clazz.defineMethod (c$, "setElementAndIsotope", 
 function (atom, str) {
-var isotope = this.parseInt (str);
+var isotope = this.parseIntStr (str);
 if (isotope == -2147483648) {
 atom.elementSymbol = str;
 } else {

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedInputStream", "java.lang.StringBuffer", "java.util.Hashtable", "$.Properties", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["java.io.BufferedInputStream", "java.lang.Boolean", "$.StringBuffer", "java.util.Properties", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "JmolConstants");
 c$.embedScript = Clazz.defineMethod (c$, "embedScript", 
 function (s) {
@@ -9,8 +9,17 @@ c$.getSpecialAtomName = Clazz.defineMethod (c$, "getSpecialAtomName",
 function (atomID) {
 return org.jmol.viewer.JmolConstants.specialAtomNames[atomID];
 }, "~N");
+c$.getSpecialAtomNames = Clazz.defineMethod (c$, "getSpecialAtomNames", 
+($fz = function () {
+($t$ = org.jmol.viewer.JmolConstants.htSpecialAtoms =  new java.util.Hashtable (), org.jmol.viewer.JmolConstants.prototype.htSpecialAtoms = org.jmol.viewer.JmolConstants.htSpecialAtoms, $t$);
+for (var i = org.jmol.viewer.JmolConstants.specialAtomNames.length; --i >= 0; ) {
+var specialAtomName = org.jmol.viewer.JmolConstants.specialAtomNames[i];
+if (specialAtomName != null) org.jmol.viewer.JmolConstants.htSpecialAtoms.put (specialAtomName, Integer.$valueOf (i));
+}
+}, $fz.isPrivate = true, $fz));
 c$.lookupSpecialAtomID = Clazz.defineMethod (c$, "lookupSpecialAtomID", 
 function (atomName) {
+if (org.jmol.viewer.JmolConstants.htSpecialAtoms == null) org.jmol.viewer.JmolConstants.getSpecialAtomNames ();
 var boxedAtomID = org.jmol.viewer.JmolConstants.htSpecialAtoms.get (atomName);
 if (boxedAtomID != null) return (boxedAtomID.intValue ());
 return 0;
@@ -41,15 +50,15 @@ var id = res + ch0;
 isSp2 = ("ARGN;ASNN;ASNO;ASPO;GLNN;GLNO;GLUO;HISN;HISC;PHECTRPC;TRPN;TYRC".indexOf (id) >= 0);
 if ("LYSN".indexOf (id) >= 0) {
 ret[1] = 1;
-} else if ((ch0).charCodeAt (0) == ('O').charCodeAt (0) && (ch1).charCodeAt (0) == ('X').charCodeAt (0)) {
+} else if (ch0.charCodeAt (0) == 79 && ch1.charCodeAt (0) == 88) {
 ret[1] = -1;
 }}break;
 case 1:
 case 2:
-if (name.length > 2 && (name.charAt (2)).charCodeAt (0) == ('\'').charCodeAt (0)) return false;
+if (name.length > 2 && (name.charAt (2)).charCodeAt (0) == 39) return false;
 switch (ch0) {
 case 'C':
-if ((ch1).charCodeAt (0) == ('7').charCodeAt (0)) return false;
+if (ch1.charCodeAt (0) == 55) return false;
 break;
 case 'N':
 switch (ch1) {
@@ -113,7 +122,7 @@ case '5':
 target = "H5''@H5'";
 break;
 }
-if ((target.charAt (0)).charCodeAt (0) != ('H').charCodeAt (0) && source.compareTo (target) > 0) {
+if ((target.charAt (0)).charCodeAt (0) != 72 && source.compareTo (target) > 0) {
 s = target;
 target = source;
 source = s;
@@ -126,13 +135,15 @@ function (group3) {
 return (group3 != null && ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]".indexOf ("[" + group3.toUpperCase () + "]") >= 0);
 }, "~S");
 c$.getGroup3List = Clazz.defineMethod (c$, "getGroup3List", 
-($fz = function () {
+function () {
+if (org.jmol.viewer.JmolConstants.group3List != null) return org.jmol.viewer.JmolConstants.group3List;
 var s =  new StringBuffer ();
 for (var i = 1; i < 42; i++) s.append (",[").append ((org.jmol.viewer.JmolConstants.predefinedGroup3Names[i] + "   ").substring (0, 3) + "]");
 
 s.append (",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]");
-return s.toString ();
-}, $fz.isPrivate = true, $fz));
+($t$ = org.jmol.viewer.JmolConstants.group3Count = Math.floor (s.length () / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
+return ($t$ = org.jmol.viewer.JmolConstants.group3List = s.toString (), org.jmol.viewer.JmolConstants.prototype.group3List = org.jmol.viewer.JmolConstants.group3List, $t$);
+});
 c$.isHetero = Clazz.defineMethod (c$, "isHetero", 
 function (group3) {
 return org.jmol.viewer.JmolConstants.getGroup3Pt (group3) >= 42;
@@ -152,6 +163,12 @@ break;
 var pt = org.jmol.viewer.JmolConstants.group3List.indexOf (sb.toString ());
 return (pt < 0 ? 2147483647 : Math.floor (pt / 6) + 1);
 }, $fz.isPrivate = true, $fz), "~S");
+c$.getGroup3Count = Clazz.defineMethod (c$, "getGroup3Count", 
+function () {
+if (org.jmol.viewer.JmolConstants.group3Count > 0) return org.jmol.viewer.JmolConstants.group3Count;
+org.jmol.viewer.JmolConstants.getGroup3List ();
+return ($t$ = org.jmol.viewer.JmolConstants.group3Count = Math.floor (org.jmol.viewer.JmolConstants.group3List.length / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
+});
 c$.isShapeSecondary = Clazz.defineMethod (c$, "isShapeSecondary", 
 function (i) {
 return i >= 9 && i < 16;
@@ -243,6 +260,8 @@ c$.getShapeVisibilityFlag = Clazz.defineMethod (c$, "getShapeVisibilityFlag",
 function (shapeID) {
 return (4 << shapeID);
 }, "~N");
+c$.FALSE = c$.prototype.FALSE = Boolean.$valueOf (false);
+c$.TRUE = c$.prototype.TRUE = Boolean.$valueOf (true);
 Clazz.defineStatics (c$,
 "copyright", "(C) 2012 Jmol Development",
 "version", null,
@@ -404,14 +423,8 @@ Clazz.defineStatics (c$,
 "ATOMID_O2_PRIME", 79,
 "ATOMID_H3T_TERMINUS", 88,
 "ATOMID_HO3_PRIME", 89,
-"ATOMID_HO5_PRIME", 90);
-c$.htSpecialAtoms = c$.prototype.htSpecialAtoms =  new java.util.Hashtable ();
-{
-for (var i = org.jmol.viewer.JmolConstants.specialAtomNames.length; --i >= 0; ) {
-var specialAtomName = org.jmol.viewer.JmolConstants.specialAtomNames[i];
-if (specialAtomName != null) org.jmol.viewer.JmolConstants.htSpecialAtoms.put (specialAtomName, Integer.$valueOf (i));
-}
-}Clazz.defineStatics (c$,
+"ATOMID_HO5_PRIME", 90,
+"htSpecialAtoms", null,
 "GROUPID_ARGININE", 2,
 "GROUPID_ASPARAGINE", 3,
 "GROUPID_ASPARTATE", 4,
@@ -435,10 +448,9 @@ if (specialAtomName != null) org.jmol.viewer.JmolConstants.htSpecialAtoms.put (s
 "pdbBondInfo", ["", "N N CA HA C O CB HB?", "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CD D NE HE CZ NH1 NH1 HH11@HH12 NH2 HH21@HH22", "N N CA HA C O CB B CG OD1 ND2 HD21@HD22", "N N CA HA C O CB B CG OD1", "N N CA HA C O CB B SG HG", "N N CA HA C O CB B CG G CD OE1 NE2 HE21@HE22", "N N CA HA C O CB B CG G CD OE1", "N N CA HA2@HA3 C O", "N N CA HA C O CB B CG CD2 ND1 CE1 ND1 HD1 CD2 HD2 CE1 HE1 NE2 HE2", "N N CA HA C O CB HB CG1 HG12@HG13 CG2 HG2? CD1 HD1?", "N N CA HA C O CB HB2@HB3 CG HG CD1 HD1? CD2 HD2?", "N N CA HA C O CB B CG G CD HD2@HD3 CE HE3@HE2 NZ HZ?", "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CE HE?", "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 CD2 HD2 CE1 CZ CE1 HE1 CE2 HE2 CZ HZ", "N H CA HA C O CB B CG G CD HD2@HD3", "N N CA HA C O CB B OG HG", "N N CA HA C O CB HB OG1 HG1 CG2 HG2?", "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 NE1 HE1 CE3 CZ3 CE3 HE3 CZ2 CH2 CZ2 HZ2 CZ3 HZ3 CH2 HH2", "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 CD2 HD2 CE1 CZ CE1 HE1 CE2 HE2 OH HH", "N N CA HA C O CB HB CG1 HG1? CG2 HG2?", "CA HA C O CB HB2@HB1 C H", "CA HA C O CB HB1 CB HB2 CG HG1 CG HG2", "", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2", "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", "P OP1 C5' H5'@H5'' C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6", "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2"],
 "pdbHydrogenCount", [0, 6, 16, 7, 6, 6, 9, 8, 4, 9, 12, 12, 14, 10, 10, 8, 6, 8, 11, 10, 10, 3, 5, 0, 13, 13, 13, -1, 12, 12, 13, 13, 13, 14, 12, 12],
 "argbsShapely", [0xFFFF00FF, 0xFF00007C, 0xFFFF7C70, 0xFF8CFF8C, 0xFFA00042, 0xFFFFFF70, 0xFFFF4C4C, 0xFF660000, 0xFFFFFFFF, 0xFF7070FF, 0xFF004C00, 0xFF455E45, 0xFF4747B8, 0xFF534C52, 0xFFB8A042, 0xFF525252, 0xFFFF7042, 0xFFB84C00, 0xFF4F4600, 0xFF8C704C, 0xFFFF8CFF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF7070, 0xFFFF8C4B, 0xFFA0A0FF, 0xFFA0FFA0, 0xFFFF8080, 0xFF80FFFF, 0xFFFF7070, 0xFFFF8C4B, 0xFFA0A0FF, 0xFFA0FFA0, 0xFFFF8080, 0xFF80FFFF, 0xFFFF7070, 0xFFFF8C4B, 0xFFA0A0FF, 0xFFA0FFA0, 0xFFFF8080, 0xFF80FFFF],
-"allCarbohydrates", ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]");
-c$.group3List = c$.prototype.group3List = org.jmol.viewer.JmolConstants.getGroup3List ();
-c$.group3Count = c$.prototype.group3Count = Math.floor (org.jmol.viewer.JmolConstants.group3List.length / 6);
-Clazz.defineStatics (c$,
+"allCarbohydrates", ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]",
+"group3List", null,
+"group3Count", 0,
 "predefinedGroup1Names", ['\0', 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'A', 'G', '?', 'G', 'C', 'A', 'T', 'U', 'I', 'G', 'C', 'A', 'T', 'U', 'I', 'G', 'C', 'A', 'T', 'U', 'I', 'I'],
 "predefinedVariable", ["@_1H _H & !(_2H,_3H)", "@_12C _C & !(_13C,_14C)", "@_14N _N & !(_15N)", "@water _g>=42 & _g<45, oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))", "@solvent water, (_g>=45 & _g<48)", "@ligand !(_g<46,protein,nucleic,water)", "@turn structure=1", "@sheet structure=2", "@helix structure=3", "@helix310 substructure=7", "@helixalpha substructure=8", "@helixpi substructure=9", "@bonded bondcount>0"],
 "predefinedStatic", ["@amino _g>0 & _g<=23", "@acidic asp,glu", "@basic arg,his,lys", "@charged acidic,basic", "@negative acidic", "@positive basic", "@neutral amino&!(acidic,basic)", "@polar amino&!hydrophobic", "@cyclic his,phe,pro,trp,tyr", "@acyclic amino&!cyclic", "@aliphatic ala,gly,ile,leu,val", "@aromatic his,phe,trp,tyr", "@cystine within(group, (cys.sg or cyx.sg) and connected(cys.sg or cyx.sg))", "@buried ala,cys,ile,leu,met,phe,trp,val", "@surface amino&!buried", "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val", "@mainchain backbone", "@small ala,gly,ser", "@medium asn,asp,cys,pro,thr,val", "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr", "@c nucleic & ([C] or [DC] or within(group,_a=42))", "@g nucleic & ([G] or [DG] or within(group,_a=43))", "@cg c,g", "@a nucleic & ([A] or [DA] or within(group,_a=44))", "@t nucleic & ([T] or [DT] or within(group,_a=45 | _a=49))", "@at a,t", "@i nucleic & ([I] or [DI] or within(group,_a=46) & !g)", "@u nucleic & ([U] or [DU] or within(group,_a=47) & !t)", "@tu nucleic & within(group,_a=48)", "@ions _g>=46&_g<48", "@alpha _a=2", "@backbone (protein,nucleic) & (_a>0 & _a<14 || _a>=64) | _H & protein & connected(*.N)", "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=13)", "@sidechain (protein,nucleic) & !backbone", "@base nucleic & !backbone", "@dynamic_flatring search('[a]')"],

@@ -34,11 +34,11 @@ var ch0 = atomType.charAt (0);
 var ch1 = atomType.charAt (1);
 var isXx = (Character.isUpperCase (ch0) && Character.isLowerCase (ch1));
 if (" IM IP sz az sy ay ayt ".indexOf (atomType) >= 0) {
-if ((ch0).charCodeAt (0) == ('I').charCodeAt (0)) {
+if (ch0.charCodeAt (0) == 73) {
 elementSymbol = atom.atomName.substring (0, 2);
 if (!Character.isLowerCase (elementSymbol.charAt (1))) elementSymbol = elementSymbol.substring (0, 1);
 } else {
-elementSymbol = ((ch0).charCodeAt (0) == ('s').charCodeAt (0) ? "Si" : "Al");
+elementSymbol = (ch0.charCodeAt (0) == 115 ? "Si" : "Al");
 }} else if (nChar == 2 && isXx) {
 } else if (Character.isLetter (ch0) && !Character.isLetter (ch1)) {
 elementSymbol = "" + Character.toUpperCase (ch0);
@@ -74,12 +74,12 @@ if (atomType != null && atomType.length == 1) return atomType;
 var len = XX.length;
 var ch1 = ' ';
 i = 0;
-while (i < len && ((ch1 = XX.charAt (i++))).charCodeAt (0) <= ('9').charCodeAt (0)) {
+while (i < len && ((ch1 = XX.charAt (i++))).charCodeAt (0) <= 57) {
 }
 var ch2 = (i < len ? XX.charAt (i) : ' ');
 var full = group3 + "." + ch1 + ch2;
 if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf (full) >= 0) return "Ca";
-if (XX.indexOf ("'") > 0 || XX.indexOf ("*") >= 0 || "HCNO".indexOf (ch1) >= 0 && (ch2).charCodeAt (0) <= ('H').charCodeAt (0) || XX.startsWith ("CM")) return "" + ch1;
+if (XX.indexOf ("'") > 0 || XX.indexOf ("*") >= 0 || "HCNO".indexOf (ch1) >= 0 && ch2 <= 'H' || XX.startsWith ("CM")) return "" + ch1;
 if (isHetero && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch1, ch2)) return ("" + ch1 + ch2).trim ();
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch1)) return "" + ch1;
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch2)) return "" + ch2;

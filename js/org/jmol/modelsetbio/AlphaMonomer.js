@@ -113,11 +113,11 @@ case 'P':
 case 'q':
 return null;
 }
-}, "~N");
+}, "~S");
 Clazz.overrideMethod (c$, "getHelixData", 
 function (tokType, qType, mStep) {
 return this.getHelixData2 (tokType, qType, mStep);
-}, "~N,~N,~N");
+}, "~N,~S,~N");
 Clazz.overrideMethod (c$, "getQuaternion", 
 function (qType) {
 var vA =  new javax.vecmath.Vector3f ();
@@ -142,7 +142,7 @@ vB.sub (ptCaPrev, ptCa);
 break;
 }
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, vC, false);
-}, "~N");
+}, "~S");
 Clazz.defineStatics (c$,
 "alphaOffsets", [0]);
 });

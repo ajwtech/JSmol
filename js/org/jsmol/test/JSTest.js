@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jsmol.test");
-Clazz.load (["org.jsmol.test.JSmol", "javax.vecmath.Point3f"], "org.jsmol.test.JSTest", ["org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jsmol.test.JSmol", "javax.vecmath.Point3f"], "org.jsmol.test.JSTest", ["java.lang.Boolean", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jsmol.test.JSTest.TestInner")) {
 org.jsmol.test.JSTest.$JSTest$TestInner$ ();
@@ -41,22 +41,38 @@ Clazz.instantialize (this, arguments);
 Clazz.defineMethod (c$, "say", 
 function (a) {
 var b = '@';
-var c = 2 + (b).charCodeAt (0);
+var c = 2 + b.charCodeAt (0);
 var d = 2;
 var e = "3" + b;
-var f = String.fromCharCode (((b).charCodeAt (0) + d));
+var f = String.fromCharCode ((b.charCodeAt (0) + d));
 System.out.println ("x,x1,x2=" + c + "," + e + "," + f);
-this.checkMap ('K');
+this.b$["org.jsmol.test.JSTest"].sayHello (this.checkMap ('K'));
+this.b$["org.jsmol.test.JSTest"].sayHello (this.myTest ("test"));
+this.b$["org.jsmol.test.JSTest"].sayHello (this.checkMap (this.getObj ("string")));
+this.b$["org.jsmol.test.JSTest"].sayHello (this.checkMap ((this.getObj ("boolean")).booleanValue ()));
 this.b$["org.jsmol.test.JSTest"].sayHello (a);
+}, "~S");
+Clazz.defineMethod (c$, "myTest", 
+function (a) {
+return a;
 }, "~S");
 Clazz.defineMethod (c$, "checkMap", 
 function (a) {
-return "OK-checkMap-" + a;
-}, "~N");
+return "OK-checkMapchar-" + a;
+}, "~S");
 Clazz.defineMethod (c$, "checkMap", 
 function (a) {
-return "OK-checkMap-" + a;
+return "OK-checkMapchar-" + a;
+}, "~S");
+Clazz.defineMethod (c$, "checkMap", 
+function (a) {
+return "OK-checkMapbool-" + a;
 }, "~B");
+Clazz.defineMethod (c$, "getObj", 
+function (a) {
+if (a.equalsIgnoreCase ("string")) return "testing";
+return Boolean.TRUE;
+}, "~S");
 c$ = Clazz.p0p ();
 };
 c$.pt2 = c$.prototype.pt2 =  new javax.vecmath.Point3f (2, 3, 4);

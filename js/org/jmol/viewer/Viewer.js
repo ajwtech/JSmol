@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ParallelProcessor", "$.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TimeoutThread", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ParallelProcessor", "$.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TimeoutThread", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$display = null;
 this.gdata = null;
@@ -561,7 +561,7 @@ return this.transformManager.getNavigationOffset ();
 Clazz.defineMethod (c$, "getNavigationOffsetPercent", 
 function (XorY) {
 return this.transformManager.getNavigationOffsetPercent (XorY);
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "isNavigating", 
 function () {
 return this.transformManager.isNavigating ();
@@ -736,7 +736,7 @@ this.rotateY (angleDegrees * 0.017453292);
 }, "~N");
 Clazz.defineMethod (c$, "translate", 
 function (xyz, x, type, bsAtoms) {
-var xy = ((type).charCodeAt (0) == ('\0').charCodeAt (0) ? Math.round (x) : (type).charCodeAt (0) == ('%').charCodeAt (0) ? this.transformManager.percentToPixels (xyz, x) : this.transformManager.angstromsToPixels (x * ((type).charCodeAt (0) == ('n').charCodeAt (0) ? 10 : 1)));
+var xy = (type.charCodeAt (0) == 0 ? Math.round (x) : type.charCodeAt (0) == 37 ? this.transformManager.percentToPixels (xyz, x) : this.transformManager.angstromsToPixels (x * (type.charCodeAt (0) == 110 ? 10 : 1)));
 if (bsAtoms != null) {
 if (xy == 0) return ;
 this.transformManager.setSelectedTranslation (bsAtoms, xyz, xy);
@@ -744,22 +744,22 @@ this.transformManager.setSelectedTranslation (bsAtoms, xyz, xy);
 switch (xyz) {
 case 'X':
 case 'x':
-if ((type).charCodeAt (0) == ('\0').charCodeAt (0)) this.transformManager.translateToPercent ('x', x);
+if (type.charCodeAt (0) == 0) this.transformManager.translateToPercent ('x', x);
  else this.transformManager.translateXYBy (xy, 0);
 break;
 case 'Y':
 case 'y':
-if ((type).charCodeAt (0) == ('\0').charCodeAt (0)) this.transformManager.translateToPercent ('y', x);
+if (type.charCodeAt (0) == 0) this.transformManager.translateToPercent ('y', x);
  else this.transformManager.translateXYBy (0, xy);
 break;
 case 'Z':
 case 'z':
-if ((type).charCodeAt (0) == ('\0').charCodeAt (0)) this.transformManager.translateToPercent ('z', x);
+if (type.charCodeAt (0) == 0) this.transformManager.translateToPercent ('z', x);
  else this.transformManager.translateZBy (xy);
 break;
 }
 }this.refresh (1, "Viewer:translate()");
-}, "~N,~N,~N,java.util.BitSet");
+}, "~S,~N,~S,java.util.BitSet");
 Clazz.defineMethod (c$, "getTranslationXPercent", 
 function () {
 return this.transformManager.getTranslationXPercent ();
@@ -1247,7 +1247,7 @@ this.noneSelected = noneSelected;
 }, "~B");
 Clazz.defineMethod (c$, "getNoneSelected", 
 function () {
-return (this.noneSelected ? Boolean.TRUE : Boolean.FALSE);
+return (this.noneSelected ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
 });
 Clazz.overrideMethod (c$, "clearSelection", 
 function () {
@@ -1369,14 +1369,14 @@ if (htParams == null) htParams =  new java.util.Hashtable ();
 htParams.put ("viewer", this);
 if (this.global.atomTypes.length > 0) htParams.put ("atomTypes", this.global.atomTypes);
 if (!htParams.containsKey ("lattice")) htParams.put ("lattice", this.global.getDefaultLattice ());
-if (this.global.applySymmetryToBonds) htParams.put ("applySymmetryToBonds", Boolean.TRUE);
-if (this.global.pdbGetHeader) htParams.put ("getHeader", Boolean.TRUE);
-if (this.global.pdbSequential) htParams.put ("isSequential", Boolean.TRUE);
+if (this.global.applySymmetryToBonds) htParams.put ("applySymmetryToBonds", org.jmol.viewer.JmolConstants.TRUE);
+if (this.global.pdbGetHeader) htParams.put ("getHeader", org.jmol.viewer.JmolConstants.TRUE);
+if (this.global.pdbSequential) htParams.put ("isSequential", org.jmol.viewer.JmolConstants.TRUE);
 htParams.put ("stateScriptVersionInt", Integer.$valueOf (this.stateScriptVersionInt));
 if (!htParams.containsKey ("filter")) {
 var filter = this.getDefaultLoadFilter ();
 if (filter.length > 0) htParams.put ("filter", filter);
-}if (isAppend && !this.global.appendNew && this.getAtomCount () > 0) htParams.put ("merging", Boolean.TRUE);
+}if (isAppend && !this.global.appendNew && this.getAtomCount () > 0) htParams.put ("merging", org.jmol.viewer.JmolConstants.TRUE);
 return htParams;
 }, $fz.isPrivate = true, $fz), "java.util.Map,~B");
 Clazz.defineMethod (c$, "openFileAsynchronously", 
@@ -1494,7 +1494,7 @@ if (Clazz.instanceOf (entry.getValue (), Boolean)) e.remove ();
 }return null;
 }id = id.toUpperCase ();
 if (this.ligandModelSet == null) this.ligandModelSet =  new java.util.Hashtable ();
-this.ligandModelSet.put (id, Boolean.TRUE);
+this.ligandModelSet.put (id, org.jmol.viewer.JmolConstants.TRUE);
 if (this.ligandModels == null) this.ligandModels =  new java.util.Hashtable ();
 var model = this.ligandModels.get (id);
 var data;
@@ -1513,7 +1513,7 @@ if (!isError) this.ligandModels.put (id + "_data", model);
 data = model;
 if (data.length != 0) {
 var htParams =  new java.util.Hashtable ();
-htParams.put ("modelOnly", Boolean.TRUE);
+htParams.put ("modelOnly", org.jmol.viewer.JmolConstants.TRUE);
 model = this.getModelAdapter ().getAtomSetCollectionReader ("ligand", null, org.jmol.viewer.FileManager.getBufferedReaderForString (data), htParams);
 isError = (Clazz.instanceOf (model, String));
 if (!isError) {
@@ -1522,7 +1522,7 @@ isError = (Clazz.instanceOf (model, String));
 if (fname != null && !isError) this.scriptEcho (this.getModelAdapter ().getAtomSetCollectionAuxiliaryInfo (model).get ("modelLoadNote"));
 }}}if (isError) {
 this.scriptEcho (model.toString ());
-this.ligandModels.put (id, Boolean.FALSE);
+this.ligandModels.put (id, org.jmol.viewer.JmolConstants.FALSE);
 return null;
 }return model;
 }, "~S");
@@ -1567,7 +1567,7 @@ return this.loadInlineScript (strModel, this.global.inlineNewlineChar, false, nu
 Clazz.defineMethod (c$, "loadInline", 
 function (strModel, newLine) {
 return this.loadInlineScript (strModel, newLine, false, null);
-}, "~S,~N");
+}, "~S,~S");
 Clazz.defineMethod (c$, "loadInline", 
 function (strModel, isAppend) {
 return this.loadInlineScript (strModel, '\0', isAppend, null);
@@ -1595,7 +1595,7 @@ if (strModel.startsWith ("LOAD files")) {
 this.script (strModel);
 return null;
 }strModel = this.fixInlineString (strModel, newLine);
-if ((newLine).charCodeAt (0) != 0) org.jmol.util.Logger.info ("loading model inline, " + strModel.length + " bytes, with newLine character " + (newLine).charCodeAt (0) + " isAppend=" + isAppend);
+if (newLine.charCodeAt (0) != 0) org.jmol.util.Logger.info ("loading model inline, " + strModel.length + " bytes, with newLine character " + (newLine).charCodeAt (0) + " isAppend=" + isAppend);
 org.jmol.util.Logger.debug (strModel);
 var datasep = this.getDataSeparator ();
 var i;
@@ -1614,7 +1614,7 @@ pt0 = pt + datasep.length;
 }
 return this.openStringsInline (strModels, htParams, isAppend);
 }return this.openStringInline (strModel, htParams, isAppend);
-}, $fz.isPrivate = true, $fz), "~S,~N,~B,java.util.Map");
+}, $fz.isPrivate = true, $fz), "~S,~S,~B,java.util.Map");
 Clazz.defineMethod (c$, "fixInlineString", 
 function (strModel, newLine) {
 var i;
@@ -1622,16 +1622,16 @@ if (strModel.indexOf ("\\/n") >= 0) {
 strModel = org.jmol.util.TextFormat.simpleReplace (strModel, "\n", "");
 strModel = org.jmol.util.TextFormat.simpleReplace (strModel, "\\/n", "\n");
 newLine = String.fromCharCode ( 0);
-}if ((newLine).charCodeAt (0) != 0 && (newLine).charCodeAt (0) != ('\n').charCodeAt (0)) {
+}if (newLine.charCodeAt (0) != 0 && newLine.charCodeAt (0) != 10) {
 var repEmpty = (strModel.indexOf ('\n') >= 0);
 var len = strModel.length;
-for (i = 0; i < len && (strModel.charAt (i)).charCodeAt (0) == (' ').charCodeAt (0); ++i) {
+for (i = 0; i < len && (strModel.charAt (i)).charCodeAt (0) == 32; ++i) {
 }
-if (i < len && (strModel.charAt (i)).charCodeAt (0) == (newLine).charCodeAt (0)) strModel = strModel.substring (i + 1);
+if (i < len && (strModel.charAt (i)).charCodeAt (0) == newLine.charCodeAt (0)) strModel = strModel.substring (i + 1);
 if (repEmpty) strModel = org.jmol.util.TextFormat.simpleReplace (strModel, "" + newLine, "");
  else strModel = strModel.$replace (newLine, '\n');
 }return strModel;
-}, "~S,~N");
+}, "~S,~S");
 Clazz.defineMethod (c$, "openStringInline", 
 ($fz = function (strModel, htParams, isAppend) {
 var br =  new java.io.BufferedReader ( new java.io.StringReader (strModel));
@@ -1684,7 +1684,7 @@ try {
 var bsNew =  new java.util.BitSet ();
 this.modelSet = this.modelManager.createModelSet (fullPathName, fileName, loadScript, atomSetCollection, bsNew, isAppend);
 if (bsNew.cardinality () > 0) {
-var jmolScript = this.modelSet.getModelSetAuxiliaryInfo ("jmolscript");
+var jmolScript = this.modelSet.getModelSetAuxiliaryInfoValue ("jmolscript");
 if (this.modelSet.getModelSetAuxiliaryInfoBoolean ("doMinimize")) this.minimize (2147483647, 0, bsNew, null, 0, true, true, true);
  else this.addHydrogens (bsNew, false, true);
 if (jmolScript != null) this.modelSet.getModelSetAuxiliaryInfo ().put ("jmolscript", jmolScript);
@@ -2001,7 +2001,7 @@ return this.modelSet.getModelSetProperty (strProp);
 }, "~S");
 Clazz.defineMethod (c$, "getModelSetAuxiliaryInfo", 
 function (strKey) {
-return this.modelSet.getModelSetAuxiliaryInfo (strKey);
+return this.modelSet.getModelSetAuxiliaryInfoValue (strKey);
 }, "~S");
 Clazz.overrideMethod (c$, "getModelSetPathName", 
 function () {
@@ -2170,13 +2170,13 @@ Clazz.defineMethod (c$, "getModelFileInfoAll",
 function () {
 return this.modelSet.getModelFileInfo (null);
 });
-Clazz.defineMethod (c$, "getModelAuxiliaryInfo", 
+Clazz.overrideMethod (c$, "getModelAuxiliaryInfo", 
 function (modelIndex) {
 return this.modelSet.getModelAuxiliaryInfo (modelIndex);
 }, "~N");
-Clazz.defineMethod (c$, "getModelAuxiliaryInfo", 
+Clazz.overrideMethod (c$, "getModelAuxiliaryInfoValue", 
 function (modelIndex, keyName) {
-return this.modelSet.getModelAuxiliaryInfo (modelIndex, keyName);
+return this.modelSet.getModelAuxiliaryInfoValue (modelIndex, keyName);
 }, "~N,~S");
 Clazz.defineMethod (c$, "getModelNumberIndex", 
 function (modelNumber, useModelNumber, doSetTrajectory) {
@@ -3141,8 +3141,8 @@ return this.evalStringQuiet (strScript, true, true);
 Clazz.defineMethod (c$, "evalStringQuiet", 
 function (strScript, isQuiet, allowSyncScript) {
 if (allowSyncScript && this.statusManager.syncingScripts && strScript.indexOf ("#NOSYNC;") < 0) this.syncScript (strScript + " #NOSYNC;", null, 0);
-if (this.$eval.isExecutionPaused () && (strScript.charAt (0)).charCodeAt (0) != ('!').charCodeAt (0)) strScript = '!' + org.jmol.util.TextFormat.trim (strScript, "\n\r\t ");
-var isInterrupt = (strScript.length > 0 && (strScript.charAt (0)).charCodeAt (0) == ('!').charCodeAt (0));
+if (this.$eval.isExecutionPaused () && (strScript.charAt (0)).charCodeAt (0) != 33) strScript = '!' + org.jmol.util.TextFormat.trim (strScript, "\n\r\t ");
+var isInterrupt = (strScript.length > 0 && (strScript.charAt (0)).charCodeAt (0) == 33);
 if (isInterrupt) strScript = strScript.substring (1);
 var msg = this.checkScriptExecution (strScript, isInterrupt);
 if (msg != null) return msg;
@@ -3351,8 +3351,8 @@ return fileName;
 }, "~S");
 c$.isDatabaseCode = Clazz.defineMethod (c$, "isDatabaseCode", 
 function (ch) {
-return ((ch).charCodeAt (0) == ('$').charCodeAt (0) || (ch).charCodeAt (0) == ('=').charCodeAt (0) || (ch).charCodeAt (0) == (':').charCodeAt (0));
-}, "~N");
+return (ch.charCodeAt (0) == 36 || ch.charCodeAt (0) == 61 || ch.charCodeAt (0) == 58);
+}, "~S");
 c$.hasDatabasePrefix = Clazz.defineMethod (c$, "hasDatabasePrefix", 
 function (fileName) {
 return (fileName.length != 0 && org.jmol.viewer.Viewer.isDatabaseCode (fileName.charAt (0)));
@@ -3367,7 +3367,7 @@ case '#':
 if (name.startsWith ("==")) {
 f = f.substring (1);
 type = '#';
-}var s = ((type).charCodeAt (0) == ('=').charCodeAt (0) ? this.global.loadFormat : this.global.loadLigandFormat);
+}var s = (type.charCodeAt (0) == 61 ? this.global.loadFormat : this.global.loadLigandFormat);
 if (f.indexOf (".") > 0 && s.indexOf ("%FILE.") >= 0) s = s.substring (0, s.indexOf ("%FILE") + 5);
 return org.jmol.util.TextFormat.formatString (s, "FILE", f);
 case ':':
@@ -3429,7 +3429,7 @@ var strCutoff = org.jmol.viewer.FileManager.fixFileNameVariables (this.global.ed
 return [server, strCutoff];
 }
 return name.substring (1);
-}, "~S,~N,~B");
+}, "~S,~S,~B");
 Clazz.defineMethod (c$, "getElectronDensityLoadInfo", 
 function () {
 return [this.global.edsUrlFormat, this.global.edsUrlCutoff, this.global.edsUrlOptions];
@@ -3745,7 +3745,7 @@ this.modelkitPopup = this.apiPlatform.getMenuPopup (this, null, type);
 if (this.modelkitPopup != null) this.modelkitPopup.show (x, y);
 break;
 }
-}, "~N,~N,~N");
+}, "~N,~N,~S");
 Clazz.defineMethod (c$, "getMenu", 
 function (type) {
 this.getPopupMenu ();
@@ -3809,9 +3809,9 @@ this.sendJSpecViewModelChange (modelIndex);
 }, "~N");
 Clazz.defineMethod (c$, "sendJSpecViewModelChange", 
 ($fz = function (modelIndex) {
-var syncMode = ("sync on".equals (this.modelSet.getModelSetAuxiliaryInfo ("jmolscript")) ? 1 : this.statusManager.getSyncMode ());
+var syncMode = ("sync on".equals (this.modelSet.getModelSetAuxiliaryInfoValue ("jmolscript")) ? 1 : this.statusManager.getSyncMode ());
 if (syncMode != 1) return ;
-var peak = this.getModelAuxiliaryInfo (modelIndex, "jdxModelSelect");
+var peak = this.getModelAuxiliaryInfoValue (modelIndex, "jdxModelSelect");
 if (peak != null) this.sendJSpecView (peak);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "scriptEcho", 
@@ -3938,7 +3938,7 @@ Clazz.defineMethod (c$, "showConsole",
 function (showConsole) {
 if (!this.haveDisplay) return ;
 try {
-if (this.appConsole == null) this.getProperty ("DATA_API", "getAppConsole", Boolean.TRUE);
+if (this.appConsole == null) this.getProperty ("DATA_API", "getAppConsole", org.jmol.viewer.JmolConstants.TRUE);
 this.appConsole.setVisible (showConsole);
 } catch (e) {
 }
@@ -4006,7 +4006,7 @@ return false;
 Clazz.defineMethod (c$, "setStringProperty", 
 function (key, value) {
 if (value == null) return ;
-if ((key.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) {
+if ((key.charAt (0)).charCodeAt (0) == 95) {
 this.global.setParameterValue (key, value);
 return ;
 }var tok = org.jmol.script.Token.getTokFromName (key);
@@ -4018,7 +4018,7 @@ case 553648128:
 this.setIntProperty (key, tok, org.jmol.script.ScriptVariable.iValue (org.jmol.script.ScriptVariable.getVariable (value)));
 break;
 case 570425344:
-this.setFloatProperty (key, tok, org.jmol.util.Parser.parseFloat (value));
+this.setFloatProperty (key, tok, org.jmol.util.Parser.parseFloatStr (value));
 break;
 default:
 this.setStringProperty (key, tok, value);
@@ -4171,7 +4171,7 @@ this.global.setParameterValue (key, value);
 Clazz.defineMethod (c$, "setFloatProperty", 
 function (key, value) {
 if (Float.isNaN (value)) return ;
-if ((key.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) {
+if ((key.charAt (0)).charCodeAt (0) == 95) {
 this.global.setParameterValue (key, value);
 return ;
 }var tok = org.jmol.script.Token.getTokFromName (key);
@@ -4336,7 +4336,7 @@ this.global.setParameterValue (key, value);
 Clazz.defineMethod (c$, "setIntProperty", 
 function (key, value) {
 if (value == -2147483648) return ;
-if ((key.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) {
+if ((key.charAt (0)).charCodeAt (0) == 95) {
 this.global.setParameterValue (key, value);
 return ;
 }var tok = org.jmol.script.Token.getTokFromName (key);
@@ -4510,7 +4510,7 @@ return (value < min ? min : value > max ? max : value);
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
 Clazz.defineMethod (c$, "setBooleanProperty", 
 function (key, value) {
-if ((key.charAt (0)).charCodeAt (0) == ('_').charCodeAt (0)) {
+if ((key.charAt (0)).charCodeAt (0) == 95) {
 this.global.setParameterValue (key, value);
 return ;
 }var tok = org.jmol.script.Token.getTokFromName (key);
@@ -5790,7 +5790,7 @@ throw e;
 return this.appConsole;
 case 100:
 if (this.appConsole == null && paramInfo != null && (paramInfo).booleanValue ()) {
-this.getProperty ("DATA_API", "getAppConsole", Boolean.TRUE);
+this.getProperty ("DATA_API", "getAppConsole", org.jmol.viewer.JmolConstants.TRUE);
 this.scriptEditor = (this.appConsole == null ? null : this.appConsole.getScriptEditor ());
 }return this.scriptEditor;
 case 120:
@@ -5821,7 +5821,7 @@ if (file_text == null) file_text = [null, null];
 if (file_text[1] == null) file_text[1] = "<no data>";
 var filename = file_text[0];
 var msg = file_text[1];
-var scriptEditor = this.getProperty ("DATA_API", "getScriptEditor", Boolean.TRUE);
+var scriptEditor = this.getProperty ("DATA_API", "getScriptEditor", org.jmol.viewer.JmolConstants.TRUE);
 if (scriptEditor == null) return ;
 if (msg != null) {
 scriptEditor.setFilename (filename);
@@ -6255,9 +6255,9 @@ this.showUrl (this.setLoadFormat ("_" + smiles, '2', false));
 Clazz.defineMethod (c$, "getChemicalInfo", 
 function (smiles, type, info) {
 var s = this.setLoadFormat ("_" + smiles, type, false);
-if ((type).charCodeAt (0) == ('/').charCodeAt (0)) s += org.jmol.util.TextFormat.simpleReplace (info, " ", "%20");
+if (type.charCodeAt (0) == 47) s += org.jmol.util.TextFormat.simpleReplace (info, " ", "%20");
 return this.getFileAsString (s, 2147483647, false, false);
-}, "~S,~N,~S");
+}, "~S,~S,~S");
 Clazz.defineMethod (c$, "addCommand", 
 function (command) {
 if (this.autoExit || !this.haveDisplay || !this.getPreserveState ()) return ;
@@ -6472,23 +6472,23 @@ return ;
 var key = tokens[1];
 switch (tokens.length) {
 case 3:
-if (key.equals ("zoomByFactor")) this.zoomByFactor (org.jmol.util.Parser.parseFloat (tokens[2]), 2147483647, 2147483647);
+if (key.equals ("zoomByFactor")) this.zoomByFactor (org.jmol.util.Parser.parseFloatStr (tokens[2]), 2147483647, 2147483647);
  else if (key.equals ("zoomBy")) this.zoomBy (org.jmol.util.Parser.parseInt (tokens[2]));
  else if (key.equals ("rotateZBy")) this.rotateZBy (org.jmol.util.Parser.parseInt (tokens[2]), 2147483647, 2147483647);
 break;
 case 4:
-if (key.equals ("rotateXYBy")) this.rotateXYBy (org.jmol.util.Parser.parseFloat (tokens[2]), org.jmol.util.Parser.parseFloat (tokens[3]));
+if (key.equals ("rotateXYBy")) this.rotateXYBy (org.jmol.util.Parser.parseFloatStr (tokens[2]), org.jmol.util.Parser.parseFloatStr (tokens[3]));
  else if (key.equals ("translateXYBy")) this.translateXYBy (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]));
- else if (key.equals ("rotateMolecule")) this.rotateSelected (org.jmol.util.Parser.parseFloat (tokens[2]), org.jmol.util.Parser.parseFloat (tokens[3]), null);
+ else if (key.equals ("rotateMolecule")) this.rotateSelected (org.jmol.util.Parser.parseFloatStr (tokens[2]), org.jmol.util.Parser.parseFloatStr (tokens[3]), null);
 break;
 case 5:
-if (key.equals ("spinXYBy")) this.spinXYBy (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseFloat (tokens[4]));
- else if (key.equals ("zoomByFactor")) this.zoomByFactor (org.jmol.util.Parser.parseFloat (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseInt (tokens[4]));
+if (key.equals ("spinXYBy")) this.spinXYBy (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseFloatStr (tokens[4]));
+ else if (key.equals ("zoomByFactor")) this.zoomByFactor (org.jmol.util.Parser.parseFloatStr (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseInt (tokens[4]));
  else if (key.equals ("rotateZBy")) this.rotateZBy (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseInt (tokens[4]));
- else if (key.equals ("rotateArcBall")) this.rotateArcBall (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseFloat (tokens[4]));
+ else if (key.equals ("rotateArcBall")) this.rotateArcBall (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseFloatStr (tokens[4]));
 break;
 case 7:
-if (key.equals ("centerAt")) this.centerAt (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]),  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloat (tokens[4]), org.jmol.util.Parser.parseFloat (tokens[5]), org.jmol.util.Parser.parseFloat (tokens[6])));
+if (key.equals ("centerAt")) this.centerAt (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]),  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloatStr (tokens[4]), org.jmol.util.Parser.parseFloatStr (tokens[5]), org.jmol.util.Parser.parseFloatStr (tokens[6])));
 }
 if (disableSend) this.setSyncDriver (4);
 }, "~S,~S,~N");
@@ -7207,8 +7207,8 @@ list2.add (0, list1.remove (0));
 s = this.actionStatesRedo.get (0);
 if (type == 4165 && list2.size () == 1) {
 var pt = [1];
-type = org.jmol.util.Parser.parseInt (s, pt);
-taintedAtom = org.jmol.util.Parser.parseInt (s, pt);
+type = org.jmol.util.Parser.parseIntNext (s, pt);
+taintedAtom = org.jmol.util.Parser.parseIntNext (s, pt);
 this.undoMoveAction (taintedAtom, type, false);
 }if (this.modelSet.getModels ()[modelIndex].isModelkit () || s.indexOf ("zap ") < 0) {
 if (org.jmol.util.Logger.debugging) this.log (s);
@@ -7246,7 +7246,7 @@ Clazz.defineMethod (c$, "assignBond",
 function (bondIndex, type) {
 try {
 var bsAtoms = this.modelSet.setBondOrder (bondIndex, type);
-if (bsAtoms == null || (type).charCodeAt (0) == ('0').charCodeAt (0)) this.refresh (3, "setBondOrder");
+if (bsAtoms == null || type.charCodeAt (0) == 48) this.refresh (3, "setBondOrder");
  else this.addHydrogens (bsAtoms, false, true);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
@@ -7255,7 +7255,7 @@ org.jmol.util.Logger.error ("assignBond failed");
 throw e;
 }
 }
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "assignAtom", 
 function (atomIndex, pt, type) {
 if (type.equals ("X")) this.setRotateBondIndex (-1);
@@ -7584,7 +7584,7 @@ if (script0 == null) return "no such file: " + sceneFile;
 sceneFile = org.jmol.util.TextFormat.simpleReplace (sceneFile, ".spt", "");
 var fileRoot = sceneFile;
 var fileExt = type.toLowerCase ();
-var scenes = org.jmol.util.TextFormat.split (script0, "pause scene ");
+var scenes = org.jmol.util.TextFormat.splitChars (script0, "pause scene ");
 var htScenes =  new java.util.Hashtable ();
 var list =  new java.util.ArrayList ();
 var script = org.jmol.viewer.FileManager.getSceneScript (scenes, htScenes, list);

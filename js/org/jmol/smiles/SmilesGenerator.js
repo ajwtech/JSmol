@@ -59,7 +59,7 @@ end = null;
 len = 0;
 if (bioStructureName.length > 0) {
 var id = a.getChainID ();
-if ((id).charCodeAt (0) != ('\0').charCodeAt (0)) {
+if (id.charCodeAt (0) != 0) {
 s = "//* chain " + id + " " + bioStructureName + " " + a.getResno () + " *// ";
 len = s.length;
 sb.append (s);
@@ -125,7 +125,7 @@ var chChain = a.getChainID ();
 sb.append (a.getGroup3 (false));
 if (!atomName.equals (".0")) sb.append (atomName).append ("#").append (a.getElementNumber ());
 sb.append ("//* ").append (a.getResno ());
-if ((chChain).charCodeAt (0) != ('\0').charCodeAt (0)) sb.append (":").append (chChain);
+if (chChain.charCodeAt (0) != 0) sb.append (":").append (chChain);
 sb.append (" *//");
 } else {
 sb.append (org.jmol.util.Elements.elementNameFromNumber (a.getElementNumber ()));
@@ -211,7 +211,7 @@ var atomA = atom12[j];
 var bb = atomA.getEdges ();
 for (var b = 0; b < bb.length; b++) {
 if (bb[b].getCovalentOrder () != 1) continue ;edges[j][edgeCount++] = bb[b];
-if ((this.getBondStereochemistry (bb[b], atomA)).charCodeAt (0) != ('\0').charCodeAt (0)) {
+if ((this.getBondStereochemistry (bb[b], atomA)).charCodeAt (0) != 0) {
 b0 = bb[b];
 i0 = j;
 }}
@@ -228,8 +228,8 @@ if (b1 == null || b1 === b0) continue ;var bi = b1.index;
 var a1 = b1.getOtherAtom (atom12[j]);
 if (a1 == null) continue ;var c1 = this.getBondStereochemistry (b1, atom12[j]);
 var isOpposite = org.jmol.smiles.SmilesSearch.isDiaxial (atom12[i0], atom12[j], a0, a1, this.vTemp, 0);
-if ((c1).charCodeAt (0) == ('\0').charCodeAt (0) || ((c1).charCodeAt (0) != (c0).charCodeAt (0)) == isOpposite) {
-var isUp = ((c0).charCodeAt (0) == ('\\').charCodeAt (0) && isOpposite || (c0).charCodeAt (0) == ('/').charCodeAt (0) && !isOpposite);
+if (c1.charCodeAt (0) == 0 || (c1.charCodeAt (0) != c0.charCodeAt (0)) == isOpposite) {
+var isUp = (c0.charCodeAt (0) == 92 && isOpposite || c0.charCodeAt (0) == 47 && !isOpposite);
 if (isUp == (b1.getAtomIndex1 () != a1.getIndex ())) this.bsBondsUp.set (bi);
  else this.bsBondsDn.set (bi);
 } else {
@@ -330,8 +330,8 @@ var index2 = (orderNext == 2 ? atomNext.getIndex () : -1);
 if (nH > 1 || isAromatic || index2 < 0 || org.jmol.smiles.SmilesSearch.isRingBond (this.ringSets, atomIndex, index2)) {
 nSp2Atoms = -1;
 }if (nSp2Atoms < 0) sp2Atoms = null;
-if (strBond != null || (chBond).charCodeAt (0) != ('\0').charCodeAt (0)) {
-if ((chBond).charCodeAt (0) != ('\0').charCodeAt (0)) strBond = "" + chBond;
+if (strBond != null || chBond.charCodeAt (0) != 0) {
+if (chBond.charCodeAt (0) != 0) strBond = "" + chBond;
 sb.append (strBond);
 }var atat = null;
 if (!allowBranches && (v.size () == 5 || v.size () == 6)) atat = this.sortInorganic (atom, v);
@@ -342,7 +342,7 @@ var s = this.getRingCache (atomIndex, a.getIndex (), this.htRings);
 strBond = org.jmol.smiles.SmilesBond.getBondOrderString (bond.order);
 if (!deferStereo) {
 chBond = this.getBondStereochemistry (bond, atom);
-if ((chBond).charCodeAt (0) != ('\0').charCodeAt (0)) strBond = "" + chBond;
+if (chBond.charCodeAt (0) != 0) strBond = "" + chBond;
 }sMore.append (strBond);
 sMore.append (s);
 if (stereoFlag < 7) stereo[stereoFlag++] = a;

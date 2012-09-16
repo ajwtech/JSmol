@@ -20,17 +20,17 @@ if (this.line.indexOf ("Fermi Energy:") >= 0) {
 this.isBXSF = true;
 beginKey = "BEGIN_BANDGRID_3D";
 if (needCutoff) {
-this.params.cutoff = this.parseFloat (this.getTokens ()[2]);
+this.params.cutoff = this.parseFloatStr (this.getTokens ()[2]);
 needCutoff = false;
 }}continue ;}
 if (needCutoff) this.params.cutoff = 0.05;
-if (this.isBXSF) this.nSurfaces = this.parseInt (this.readLine ());
-this.voxelCounts[0] = this.parseInt (this.readLine ());
+if (this.isBXSF) this.nSurfaces = this.parseIntStr (this.readLine ());
+this.voxelCounts[0] = this.parseIntStr (this.readLine ());
 this.voxelCounts[1] = this.parseInt ();
 this.voxelCounts[2] = this.parseInt ();
-this.volumetricOrigin.set (this.parseFloat (this.readLine ()), this.parseFloat (), this.parseFloat ());
+this.volumetricOrigin.set (this.parseFloatStr (this.readLine ()), this.parseFloat (), this.parseFloat ());
 for (var i = 0; i < 3; ++i) {
-this.volumetricVectors[i].set (this.parseFloat (this.readLine ()), this.parseFloat (), this.parseFloat ());
+this.volumetricVectors[i].set (this.parseFloatStr (this.readLine ()), this.parseFloat (), this.parseFloat ());
 this.volumetricVectors[i].scale (1.0 / (this.voxelCounts[i] - 1));
 }
 if (this.isBXSF) {

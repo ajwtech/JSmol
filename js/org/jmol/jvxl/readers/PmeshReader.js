@@ -39,7 +39,7 @@ this.br.read (buf);
 if (( String.instantialize (buf)).startsWith ("PM\u0001\u0000")) {
 this.br.close ();
 this.binarydoc =  new org.jmol.util.BinaryDocument ();
-this.binarydoc.setStream (this.sg.getAtomDataServer ().getBufferedInputStream (fileName), ((buf[4]).charCodeAt (0) == ('\0').charCodeAt (0)));
+this.binarydoc.setStream (this.sg.getAtomDataServer ().getBufferedInputStream (fileName), ((buf[4]).charCodeAt (0) == 0));
 return true;
 }this.br.reset ();
 } catch (e) {
@@ -163,11 +163,11 @@ return this.tokens[this.iToken++];
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getInt", 
 ($fz = function () {
-return (this.isBinary ? this.binarydoc.readInt () : this.parseInt (this.nextToken ()));
+return (this.isBinary ? this.binarydoc.readInt () : this.parseIntStr (this.nextToken ()));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getFloat", 
 ($fz = function () {
-return (this.isBinary ? this.binarydoc.readFloat () : this.parseFloat (this.nextToken ()));
+return (this.isBinary ? this.binarydoc.readFloat () : this.parseFloatStr (this.nextToken ()));
 }, $fz.isPrivate = true, $fz));
 c$.PMESH_BINARY_MAGIC_NUMBER = c$.prototype.PMESH_BINARY_MAGIC_NUMBER = "PM\u0001\u0000";
 });

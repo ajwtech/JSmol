@@ -18,12 +18,12 @@ while (this.readLine () != null && this.line.indexOf (".") < 0) {
 }
 for (var i = 0; i < 3; ++i) {
 var voxelVector = this.volumetricVectors[i];
-voxelVector.set (this.parseFloat (this.line), this.parseFloat (), this.parseFloat ());
+voxelVector.set (this.parseFloatStr (this.line), this.parseFloat (), this.parseFloat ());
 this.readLine ();
 }
-this.nSurfaces = this.parseInt (this.readLine ());
+this.nSurfaces = this.parseIntStr (this.readLine ());
 this.readLine ();
-this.voxelCounts[0] = (this.nPointsX = this.parseInt (this.line)) + 1;
+this.voxelCounts[0] = (this.nPointsX = this.parseIntStr (this.line)) + 1;
 this.voxelCounts[1] = (this.nPointsY = this.parseInt ()) + 1;
 this.voxelCounts[2] = (this.nPointsZ = this.parseInt ()) + 1;
 this.nFilePoints = (this.nPointsX++) * (this.nPointsY++) * (this.nPointsZ++);
@@ -50,7 +50,7 @@ for (var j = 0; j < this.nSkip; j++) for (var i = 0; i < this.nFilePoints; i++) 
 
 this.nSkip = 0;
 }for (var i = 0; i < this.nFilePoints; i++) {
-var x = this.parseInt (this.line) - 1;
+var x = this.parseIntStr (this.line) - 1;
 var y = this.parseInt () - 1;
 var z = this.parseInt () - 1;
 if (this.nSkip > 0) this.skipPoints (this.nSkip);

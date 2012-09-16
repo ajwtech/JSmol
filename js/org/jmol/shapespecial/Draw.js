@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmeshes = null;
 this.thisMesh = null;
@@ -286,7 +286,7 @@ m.index = i;
 this.htObjects.put (m.thisID.toUpperCase (), m);
 }
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "getCenter") {
 var id = data[0];
@@ -299,7 +299,7 @@ var id = data[0];
 var index = (data[1]).intValue ();
 data[2] = this.getSpinAxis (id, index);
 return (data[2] != null);
-}return Clazz.superCall (this, org.jmol.shapespecial.Draw, "getProperty", [property, data]);
+}return Clazz.superCall (this, org.jmol.shapespecial.Draw, "getPropertyData", [property, data]);
 }, "~S,~A");
 Clazz.defineMethod (c$, "getProperty", 
 function (property, index) {
@@ -782,7 +782,7 @@ if (this.gdata.isDisplayAntialiased ()) {
 x <<= 1;
 y <<= 1;
 }var s = (this.pickedMesh.title == null ? this.pickedMesh.thisID : this.pickedMesh.title[0]);
-if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == ('>').charCodeAt (0)) s = s.substring (1);
+if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == 62) s = s.substring (1);
 this.viewer.hoverOn (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
 }, "~N,~N,java.util.BitSet");
@@ -1012,7 +1012,7 @@ var V =  new java.util.ArrayList ();
 for (var i = 0; i < this.meshCount; i++) {
 var mesh = this.dmeshes[i];
 if (mesh.vertexCount == 0) continue ;var info =  new java.util.Hashtable ();
-info.put ("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
+info.put ("fixed", mesh.ptCenters == null ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
 info.put ("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
 info.put ("drawType", mesh.drawType.$$name);
 if (mesh.diameter > 0) info.put ("diameter", Integer.$valueOf (mesh.diameter));

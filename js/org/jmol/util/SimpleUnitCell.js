@@ -56,9 +56,9 @@ this.c = parameters[2];
 this.alpha = parameters[3];
 this.beta = parameters[4];
 this.gamma = parameters[5];
-this.na = Math.max (1, parameters.length >= 25 ? Math.round (parameters[22]) : 1);
-this.nb = Math.max (1, parameters.length >= 25 ? Math.round (parameters[23]) : 1);
-this.nc = Math.max (1, parameters.length >= 25 ? Math.round (parameters[24]) : 1);
+this.na = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[22]) ? Math.round (parameters[22]) : 1);
+this.nb = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[23]) ? Math.round (parameters[23]) : 1);
+this.nc = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[24]) ? Math.round (parameters[24]) : 1);
 if (this.a <= 0) {
 var va =  new javax.vecmath.Vector3f (parameters[6], parameters[7], parameters[8]);
 var vb =  new javax.vecmath.Vector3f (parameters[9], parameters[10], parameters[11]);

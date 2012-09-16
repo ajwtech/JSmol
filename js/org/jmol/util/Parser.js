@@ -3,13 +3,13 @@ Clazz.load (null, "org.jmol.util.Parser", ["java.lang.Float", "org.jmol.util.Log
 c$ = Clazz.declareType (org.jmol.util, "Parser");
 c$.parseStringInfestedFloatArray = Clazz.defineMethod (c$, "parseStringInfestedFloatArray", 
 function (str, bs, data) {
-return org.jmol.util.Parser.parseFloatArray (org.jmol.util.Parser.getTokens (str), bs, data);
+return org.jmol.util.Parser.parseFloatArrayBsData (org.jmol.util.Parser.getTokens (str), bs, data);
 }, "~S,java.util.BitSet,~A");
 c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
 function (str) {
-return org.jmol.util.Parser.parseFloatArray (str,  Clazz.newArray (1, 0));
+return org.jmol.util.Parser.parseFloatArrayNext (str,  Clazz.newArray (1, 0));
 }, "~S");
-c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
+c$.parseFloatArrayNext = Clazz.defineMethod (c$, "parseFloatArrayNext", 
 function (str, next) {
 var pt = next[0];
 if (pt < 0) return  Clazz.newArray (0, 0);
@@ -22,12 +22,12 @@ if (pt < 0) pt = str.length;
 next[0] += pt + 1;
 var tokens = org.jmol.util.Parser.getTokens (str);
 var f =  Clazz.newArray (tokens.length, 0);
-var n = org.jmol.util.Parser.parseFloatArray (tokens, null, f);
+var n = org.jmol.util.Parser.parseFloatArrayBsData (tokens, null, f);
 for (var i = n; i < f.length; i++) f[i] = NaN;
 
 return f;
 }, "~S,~A");
-c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
+c$.parseFloatArrayBsData = Clazz.defineMethod (c$, "parseFloatArrayBsData", 
 function (tokens, bs, data) {
 var len = data.length;
 var nTokens = tokens.length;
@@ -36,7 +36,7 @@ var max = 0;
 var haveBitSet = (bs != null);
 for (var i = (haveBitSet ? bs.nextSetBit (0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit (i + 1) : i + 1)) {
 var f;
-while (Float.isNaN (f = org.jmol.util.Parser.parseFloat (tokens[n++])) && n < nTokens) {
+while (Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (tokens[n++])) && n < nTokens) {
 }
 if (!Float.isNaN (f)) data[(max = i)] = f;
 if (n == nTokens) break;
@@ -59,7 +59,7 @@ var nLines = lines.length;
 var data =  Clazz.newArray (nLines, 0);
 for (var iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
 var tokens = org.jmol.util.Parser.getTokens (str.substring (pt, lines[iLine]));
-org.jmol.util.Parser.parseFloatArray (tokens, data[iLine] =  Clazz.newArray (tokens.length, 0));
+org.jmol.util.Parser.parseFloatArrayData (tokens, data[iLine] =  Clazz.newArray (tokens.length, 0));
 }
 return data;
 }, "~S");
@@ -79,7 +79,7 @@ var iX = 0;
 var iY = 0;
 for (var iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
 tokens = org.jmol.util.Parser.getTokens (str.substring (pt, lines[iLine]));
-if (tokens.length < nZ) continue ;org.jmol.util.Parser.parseFloatArray (tokens, data[iX][iY] =  Clazz.newArray (tokens.length, 0));
+if (tokens.length < nZ) continue ;org.jmol.util.Parser.parseFloatArrayData (tokens, data[iX][iY] =  Clazz.newArray (tokens.length, 0));
 if (++iY == nY) {
 iX++;
 iY = 0;
@@ -118,8 +118,8 @@ var line = str.substring (pt, lines[iLine]).trim ();
 pt = lines[iLine];
 var tokens = (fieldColumnCount <= 0 ? org.jmol.util.Parser.getTokens (line) : null);
 if (fieldColumnCount <= 0) {
-if (tokens.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloat (tokens[field - 1]))) continue ;} else {
-if (line.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloat (line.substring (field - 1, field + fieldColumnCount - 1)))) continue ;}var iData;
+if (tokens.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (tokens[field - 1]))) continue ;} else {
+if (line.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (line.substring (field - 1, field + fieldColumnCount - 1)))) continue ;}var iData;
 if (isMatch) {
 iData = org.jmol.util.Parser.parseInt (tokens == null ? line.substring (fieldMatch - 1, fieldMatch + fieldMatchColumnCount - 1) : tokens[fieldMatch - 1]);
 if (iData == -2147483648 || iData < 0 || iData >= len || (iData = matchData[iData]) < 0) continue ;if (haveBitSet) bs.set (iData);
@@ -132,18 +132,18 @@ iData = i;
 }
 return data;
 }, "~S,java.util.BitSet,~N,~N,~A,~N,~N,~A,~N");
-c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
+c$.parseFloatArrayData = Clazz.defineMethod (c$, "parseFloatArrayData", 
 function (tokens, data) {
-org.jmol.util.Parser.parseFloatArray (tokens, data, data.length);
+org.jmol.util.Parser.parseFloatArrayDataN (tokens, data, data.length);
 }, "~A,~A");
-c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
+c$.parseFloatArrayDataN = Clazz.defineMethod (c$, "parseFloatArrayDataN", 
 function (tokens, data, nData) {
-for (var i = nData; --i >= 0; ) data[i] = (i >= tokens.length ? NaN : org.jmol.util.Parser.parseFloat (tokens[i]));
+for (var i = nData; --i >= 0; ) data[i] = (i >= tokens.length ? NaN : org.jmol.util.Parser.parseFloatStr (tokens[i]));
 
 }, "~A,~A,~N");
-c$.parseFloat = Clazz.defineMethod (c$, "parseFloat", 
+c$.parseFloatStr = Clazz.defineMethod (c$, "parseFloatStr", 
 function (str) {
-return org.jmol.util.Parser.parseFloat (str, [0]);
+return org.jmol.util.Parser.parseFloatNext (str, [0]);
 }, "~S");
 c$.parseFloatStrict = Clazz.defineMethod (c$, "parseFloatStrict", 
 function (str) {
@@ -153,25 +153,25 @@ return org.jmol.util.Parser.parseFloatChecked (str, cch, [0], true);
 }, "~S");
 c$.parseInt = Clazz.defineMethod (c$, "parseInt", 
 function (str) {
-return org.jmol.util.Parser.parseInt (str, [0]);
+return org.jmol.util.Parser.parseIntNext (str, [0]);
 }, "~S");
 c$.getTokens = Clazz.defineMethod (c$, "getTokens", 
 function (line) {
-return org.jmol.util.Parser.getTokens (line, 0);
+return org.jmol.util.Parser.getTokensAt (line, 0);
 }, "~S");
 c$.parseToken = Clazz.defineMethod (c$, "parseToken", 
 function (str) {
-return org.jmol.util.Parser.parseToken (str, [0]);
+return org.jmol.util.Parser.parseTokenNext (str, [0]);
 }, "~S");
 c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
 function (str) {
-return org.jmol.util.Parser.parseTrimmed (str, 0, str.length);
+return org.jmol.util.Parser.parseTrimmedRange (str, 0, str.length);
 }, "~S");
-c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
+c$.parseTrimmedAt = Clazz.defineMethod (c$, "parseTrimmedAt", 
 function (str, ichStart) {
-return org.jmol.util.Parser.parseTrimmed (str, ichStart, str.length);
+return org.jmol.util.Parser.parseTrimmedRange (str, ichStart, str.length);
 }, "~S,~N");
-c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
+c$.parseTrimmedRange = Clazz.defineMethod (c$, "parseTrimmedRange", 
 function (str, ichStart, ichMax) {
 var cch = str.length;
 if (ichMax < cch) cch = ichMax;
@@ -181,21 +181,21 @@ return org.jmol.util.Parser.parseTrimmedChecked (str, ichStart, cch);
 c$.markLines = Clazz.defineMethod (c$, "markLines", 
 function (data, eol) {
 var nLines = 0;
-for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == (eol).charCodeAt (0)) nLines++;
+for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == eol.charCodeAt (0)) nLines++;
 
 var lines =  Clazz.newArray (nLines + 1, 0);
 lines[nLines--] = data.length;
-for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == (eol).charCodeAt (0)) lines[nLines--] = i + 1;
+for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == eol.charCodeAt (0)) lines[nLines--] = i + 1;
 
 return lines;
-}, "~S,~N");
-c$.parseFloat = Clazz.defineMethod (c$, "parseFloat", 
+}, "~S,~S");
+c$.parseFloatNext = Clazz.defineMethod (c$, "parseFloatNext", 
 function (str, next) {
 var cch = str.length;
 if (next[0] < 0 || next[0] >= cch) return NaN;
 return org.jmol.util.Parser.parseFloatChecked (str, cch, next, false);
 }, "~S,~A");
-c$.parseFloat = Clazz.defineMethod (c$, "parseFloat", 
+c$.parseFloatRange = Clazz.defineMethod (c$, "parseFloatRange", 
 function (str, ichMax, next) {
 var cch = str.length;
 if (ichMax > cch) ichMax = cch;
@@ -211,32 +211,32 @@ if (isStrict && str.indexOf ('\n') != str.lastIndexOf ('\n')) return NaN;
 while (ich < ichMax && org.jmol.util.Parser.isWhiteSpace (str, ich)) ++ich;
 
 var negative = false;
-if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == ('-').charCodeAt (0)) {
+if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == 45) {
 ++ich;
 negative = true;
 }var ch = String.fromCharCode (0);
-while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0)) {
-value = value * 10 + ((ch).charCodeAt (0) - ('0').charCodeAt (0));
+while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+value = value * 10 + (ch.charCodeAt (0) - 48);
 ++ich;
 digitSeen = true;
 }
 var isDecimal = false;
-if ((ch).charCodeAt (0) == ('.').charCodeAt (0)) {
+if (ch.charCodeAt (0) == 46) {
 isDecimal = true;
 var iscale = 0;
-while (++ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0)) {
-if (iscale < org.jmol.util.Parser.decimalScale.length) value += ((ch).charCodeAt (0) - ('0').charCodeAt (0)) * org.jmol.util.Parser.decimalScale[iscale];
+while (++ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+if (iscale < org.jmol.util.Parser.decimalScale.length) value += (ch.charCodeAt (0) - 48) * org.jmol.util.Parser.decimalScale[iscale];
 ++iscale;
 digitSeen = true;
 }
 }var isExponent = false;
 if (!digitSeen) value = NaN;
  else if (negative) value = -value;
-if (ich < ichMax && ((ch).charCodeAt (0) == ('E').charCodeAt (0) || (ch).charCodeAt (0) == ('e').charCodeAt (0) || (ch).charCodeAt (0) == ('D').charCodeAt (0))) {
+if (ich < ichMax && (ch.charCodeAt (0) == 69 || ch.charCodeAt (0) == 101 || ch.charCodeAt (0) == 68)) {
 isExponent = true;
 if (++ich >= ichMax) return NaN;
 ch = str.charAt (ich);
-if (((ch).charCodeAt (0) == ('+').charCodeAt (0)) && (++ich >= ichMax)) return NaN;
+if ((ch.charCodeAt (0) == 43) && (++ich >= ichMax)) return NaN;
 next[0] = ich;
 var exponent = org.jmol.util.Parser.parseIntChecked (str, ichMax, next);
 if (exponent == -2147483648) return NaN;
@@ -251,17 +251,17 @@ return (!isStrict || (!isExponent || isDecimal) && org.jmol.util.Parser.checkTra
 c$.checkTrailingText = Clazz.defineMethod (c$, "checkTrailingText", 
 ($fz = function (str, ich, ichMax) {
 var ch;
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == (' ').charCodeAt (0) || (ch).charCodeAt (0) == ('\t').charCodeAt (0) || (ch).charCodeAt (0) == ('\n').charCodeAt (0) || (ch).charCodeAt (0) == (';').charCodeAt (0))) ++ich;
+while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9 || ch.charCodeAt (0) == 10 || ch.charCodeAt (0) == 59)) ++ich;
 
 return (ich == ichMax);
 }, $fz.isPrivate = true, $fz), "~S,~N,~N");
-c$.parseInt = Clazz.defineMethod (c$, "parseInt", 
+c$.parseIntNext = Clazz.defineMethod (c$, "parseIntNext", 
 function (str, next) {
 var cch = str.length;
 if (next[0] < 0 || next[0] >= cch) return -2147483648;
 return org.jmol.util.Parser.parseIntChecked (str, cch, next);
 }, "~S,~A");
-c$.parseInt = Clazz.defineMethod (c$, "parseInt", 
+c$.parseIntRange = Clazz.defineMethod (c$, "parseIntRange", 
 function (str, ichMax, next) {
 var cch = str.length;
 if (ichMax > cch) ichMax = cch;
@@ -278,11 +278,11 @@ var ch;
 while (ich < ichMax && org.jmol.util.Parser.isWhiteSpace (str, ich)) ++ich;
 
 var negative = false;
-if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == ('-').charCodeAt (0)) {
+if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == 45) {
 negative = true;
 ++ich;
-}while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= ('0').charCodeAt (0) && (ch).charCodeAt (0) <= ('9').charCodeAt (0)) {
-value = value * 10 + ((ch).charCodeAt (0) - ('0').charCodeAt (0));
+}while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+value = value * 10 + (ch.charCodeAt (0) - 48);
 digitSeen = true;
 ++ich;
 }
@@ -291,7 +291,7 @@ if (!digitSeen) value = -2147483648;
 next[0] = ich;
 return value;
 }, $fz.isPrivate = true, $fz), "~S,~N,~A");
-c$.getTokens = Clazz.defineMethod (c$, "getTokens", 
+c$.getTokensAt = Clazz.defineMethod (c$, "getTokensAt", 
 function (line, ich) {
 if (line == null) return null;
 var cchLine = line.length;
@@ -320,13 +320,13 @@ do {
 }
 }return tokenCount;
 }, $fz.isPrivate = true, $fz), "~S,~N");
-c$.parseToken = Clazz.defineMethod (c$, "parseToken", 
+c$.parseTokenNext = Clazz.defineMethod (c$, "parseTokenNext", 
 function (str, next) {
 var cch = str.length;
 if (next[0] < 0 || next[0] >= cch) return null;
 return org.jmol.util.Parser.parseTokenChecked (str, cch, next);
 }, "~S,~A");
-c$.parseToken = Clazz.defineMethod (c$, "parseToken", 
+c$.parseTokenRange = Clazz.defineMethod (c$, "parseTokenRange", 
 function (str, ichMax, next) {
 var cch = str.length;
 if (ichMax > cch) ichMax = cch;
@@ -366,12 +366,12 @@ sep = " ";
 }}
 return str;
 }, "~A,~N,~N");
-c$.getNextQuotedString = Clazz.defineMethod (c$, "getNextQuotedString", 
+c$.getQuotedStringAt = Clazz.defineMethod (c$, "getQuotedStringAt", 
 function (line, ipt0) {
 var next = [ipt0];
-return org.jmol.util.Parser.getNextQuotedString (line, next);
+return org.jmol.util.Parser.getQuotedStringNext (line, next);
 }, "~S,~N");
-c$.getNextQuotedString = Clazz.defineMethod (c$, "getNextQuotedString", 
+c$.getQuotedStringNext = Clazz.defineMethod (c$, "getQuotedStringNext", 
 function (line, next) {
 var value = line;
 var i = next[0];
@@ -379,7 +379,7 @@ if (i < 0 || (i = value.indexOf ("\"", i)) < 0) return "";
 next[0] = ++i;
 value = value.substring (i);
 i = -1;
-while (++i < value.length && (value.charAt (i)).charCodeAt (0) != ('"').charCodeAt (0)) if ((value.charAt (i)).charCodeAt (0) == ('\\').charCodeAt (0)) i++;
+while (++i < value.length && (value.charAt (i)).charCodeAt (0) != 34) if ((value.charAt (i)).charCodeAt (0) == 92) i++;
 
 next[0] += i + 1;
 return value.substring (0, i);
@@ -387,7 +387,7 @@ return value.substring (0, i);
 c$.isWhiteSpace = Clazz.defineMethod (c$, "isWhiteSpace", 
 ($fz = function (str, ich) {
 var ch;
-return (ich >= 0 && (((ch = str.charAt (ich))).charCodeAt (0) == (' ').charCodeAt (0) || (ch).charCodeAt (0) == ('\t').charCodeAt (0) || (ch).charCodeAt (0) == ('\n').charCodeAt (0)));
+return (ich >= 0 && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9 || ch.charCodeAt (0) == 10));
 }, $fz.isPrivate = true, $fz), "~S,~N");
 c$.isOneOf = Clazz.defineMethod (c$, "isOneOf", 
 function (key, semiList) {
@@ -396,7 +396,7 @@ return key.indexOf (";") < 0 && (';' + semiList + ';').indexOf (';' + key + ';')
 c$.getQuotedAttribute = Clazz.defineMethod (c$, "getQuotedAttribute", 
 function (info, name) {
 var i = info.indexOf (name + "=");
-return (i < 0 ? null : org.jmol.util.Parser.getNextQuotedString (info, i));
+return (i < 0 ? null : org.jmol.util.Parser.getQuotedStringAt (info, i));
 }, "~S,~S");
 Clazz.defineStatics (c$,
 "decimalScale", [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001],

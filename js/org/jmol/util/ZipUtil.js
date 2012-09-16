@@ -23,7 +23,7 @@ try {
 is.mark (56);
 var abMagic = org.jmol.util.ZipUtil.getStreamBytes (is, 55);
 is.reset ();
-return (abMagic[51] == ('P').charCodeAt (0) && abMagic[52] == ('N').charCodeAt (0) && abMagic[53] == ('G').charCodeAt (0) && abMagic[54] == ('J').charCodeAt (0));
+return (abMagic[51] == 80 && abMagic[52] == 78 && abMagic[53] == 71 && abMagic[54] == 74);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -41,10 +41,10 @@ try {
 data = org.jmol.util.ZipUtil.getStreamBytes (bis, 74);
 bis.reset ();
 var pt = 0;
-for (var i = 64, f = 1; --i > 54; f *= 10) pt += (data[i] - ('0').charCodeAt (0)) * f;
+for (var i = 64, f = 1; --i > 54; f *= 10) pt += (data[i] - 48) * f;
 
 var n = 0;
-for (var i = 74, f = 1; --i > 64; f *= 10) n += (data[i] - ('0').charCodeAt (0)) * f;
+for (var i = 74, f = 1; --i > 64; f *= 10) n += (data[i] - 48) * f;
 
 while (pt > 0) pt -= bis.skip (pt);
 
@@ -57,7 +57,7 @@ return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (data
 }, "java.io.BufferedInputStream");
 c$.isZipFile = Clazz.defineMethod (c$, "isZipFile", 
 function (bytes) {
-return (bytes.length >= 4 && bytes[0] == ('P').charCodeAt (0) && bytes[1] == ('K').charCodeAt (0) && bytes[2] == ('\3').charCodeAt (0) && bytes[3] == ('\4').charCodeAt (0));
+return (bytes.length >= 4 && bytes[0] == 80 && bytes[1] == 75 && bytes[2] == 3 && bytes[3] == 4);
 }, "~A");
 c$.getStream = Clazz.defineMethod (c$, "getStream", 
 function (is) {

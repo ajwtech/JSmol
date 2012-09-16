@@ -267,10 +267,10 @@ Clazz.defineMethod (c$, "setPdbConectBonding",
 function (baseAtomIndex, baseModelIndex, bsExclude) {
 var mad = this.viewer.getMadBond ();
 for (var i = baseModelIndex; i < this.modelCount; i++) {
-var vConnect = this.getModelAuxiliaryInfo (i, "PDB_CONECT_bonds");
+var vConnect = this.getModelAuxiliaryInfoValue (i, "PDB_CONECT_bonds");
 if (vConnect == null) continue ;var nConnect = vConnect.size ();
 this.setModelAuxiliaryInfo (i, "initialBondCount", Integer.$valueOf (nConnect));
-var atomInfo = this.getModelAuxiliaryInfo (i, "PDB_CONECT_firstAtom_count_max");
+var atomInfo = this.getModelAuxiliaryInfoValue (i, "PDB_CONECT_firstAtom_count_max");
 var firstAtom = atomInfo[0] + baseAtomIndex;
 var atomMax = firstAtom + atomInfo[1];
 var max = atomInfo[2];
@@ -362,8 +362,8 @@ break;
 }
 for (var i = 0; i < this.modelCount; i++) {
 var fcmd = "  frame " + this.getModelNumberDotted (i);
-var s = this.getModelAuxiliaryInfo (i, "modelID");
-if (s != null && !s.equals (this.getModelAuxiliaryInfo (i, "modelID0"))) commands.append (fcmd).append ("; frame ID ").append (org.jmol.util.Escape.escapeStr (s)).append (";\n");
+var s = this.getModelAuxiliaryInfoValue (i, "modelID");
+if (s != null && !s.equals (this.getModelAuxiliaryInfoValue (i, "modelID0"))) commands.append (fcmd).append ("; frame ID ").append (org.jmol.util.Escape.escapeStr (s)).append (";\n");
 var t = this.frameTitles[i];
 if (t != null && t.length > 0) commands.append (fcmd).append ("; frame title ").append (org.jmol.util.Escape.escapeStr (t)).append (";\n");
 if (needOrientations && this.models[i].orientation != null && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; ").append (this.models[i].orientation.getMoveToText (false)).append (";\n");
@@ -476,7 +476,7 @@ Clazz.superCall (this, org.jmol.modelset.ModelSet, "setAtomProperty", [bs, tok, 
 Clazz.defineMethod (c$, "getFileData", 
 function (modelIndex) {
 if (modelIndex < 0) return "";
-var fileData = this.getModelAuxiliaryInfo (modelIndex, "fileData");
+var fileData = this.getModelAuxiliaryInfoValue (modelIndex, "fileData");
 if (fileData != null) return fileData;
 if (!this.getModelAuxiliaryInfoBoolean (modelIndex, "isCIF")) return this.getPDBHeader (modelIndex);
 fileData = this.viewer.getCifData (modelIndex);

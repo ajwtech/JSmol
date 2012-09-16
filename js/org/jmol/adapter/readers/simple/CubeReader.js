@@ -30,8 +30,8 @@ Clazz.defineMethod (c$, "readAtomCountAndOrigin",
 this.readLine ();
 this.isAngstroms = (this.line.indexOf ("ANGSTROMS") >= 0);
 var tokens = this.getTokens ();
-if ((tokens[0].charAt (0)).charCodeAt (0) == ('+').charCodeAt (0)) tokens[0] = tokens[0].substring (1);
-this.atomCount = Math.abs (this.parseInt (tokens[0]));
+if ((tokens[0].charAt (0)).charCodeAt (0) == 43) tokens[0] = tokens[0].substring (1);
+this.atomCount = Math.abs (this.parseIntStr (tokens[0]));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtoms", 
 ($fz = function () {
@@ -39,7 +39,7 @@ var f = (this.isAngstroms ? 1 : 0.5291772);
 for (var i = 0; i < this.atomCount; ++i) {
 this.readLine ();
 var atom = this.atomSetCollection.addNewAtom ();
-atom.elementNumber = this.parseInt (this.line);
+atom.elementNumber = this.parseIntStr (this.line);
 this.parseFloat ();
 this.setAtomCoord (atom, this.parseFloat () * f, this.parseFloat () * f, this.parseFloat () * f);
 }

@@ -640,8 +640,8 @@ Clazz.overrideMethod (c$, "getNavigationOffsetPercent",
 function (XorY) {
 this.getNavigationOffset ();
 if (this.width == 0 || this.height == 0) return 0;
-return ((XorY).charCodeAt (0) == ('X').charCodeAt (0) ? (this.navigationOffset.x - this.width / 2) * 100 / this.width : (this.navigationOffset.y - this.getNavPtHeight ()) * 100 / this.height);
-}, "~N");
+return (XorY.charCodeAt (0) == 88 ? (this.navigationOffset.x - this.width / 2) * 100 / this.width : (this.navigationOffset.y - this.getNavPtHeight ()) * 100 / this.height);
+}, "~S");
 Clazz.overrideMethod (c$, "getNavigationText", 
 function (addComments) {
 this.getNavigationOffset ();

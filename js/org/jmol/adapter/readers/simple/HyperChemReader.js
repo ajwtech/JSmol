@@ -7,7 +7,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.simple, "HyperChemReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
-if (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) == (';').charCodeAt (0)) return true;
+if (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) == 59) return true;
 if (this.line.startsWith ("mol ")) {
 if (!this.doGetModel (++this.modelNumber, null)) return this.checkLastModel ();
 this.processMol ();
@@ -31,13 +31,13 @@ this.baseAtomIndex = this.atomSetCollection.getAtomCount ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getMolName", 
 ($fz = function () {
-this.parseToken (this.line);
+this.parseTokenStr (this.line);
 this.parseToken ();
 return this.parseToken ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processAtom", 
 ($fz = function () {
-var fileAtomNumber = this.parseInt (this.line, 5);
+var fileAtomNumber = this.parseIntAt (this.line, 5);
 if (fileAtomNumber - 1 != this.atomIndex) {
 throw  new Exception ("bad atom number sequence ... expected:" + (this.atomIndex + 1) + " found:" + fileAtomNumber);
 }var atom = this.atomSetCollection.addNewAtom ();

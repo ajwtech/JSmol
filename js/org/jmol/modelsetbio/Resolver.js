@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.BitSet", "$.Hashtable", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AminoMonomer", "$.BioModel", "$.CarbohydrateMonomer", "$.NucleicMonomer", "$.PhosphorusMonomer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.BitSet", "$.Hashtable", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelLoader = null;
 this.modelSet = null;
@@ -102,9 +102,9 @@ bondInfo = this.modelSet.viewer.getPdbBondInfo (group3);
 } else {
 bondInfo = this.getLigandBondInfo (adapter, model, group3);
 }if (bondInfo == null) return ;
-this.htGroupBonds.put (group3, Boolean.TRUE);
+this.htGroupBonds.put (group3, org.jmol.viewer.JmolConstants.TRUE);
 for (var i = 0; i < bondInfo.length; i++) {
-if (bondInfo[i] == null) continue ;if ((bondInfo[i][1].charAt (0)).charCodeAt (0) == ('H').charCodeAt (0)) this.htBondMap.put (group3 + "." + bondInfo[i][0], bondInfo[i][1]);
+if (bondInfo[i] == null) continue ;if ((bondInfo[i][1].charAt (0)).charCodeAt (0) == 72) this.htBondMap.put (group3 + "." + bondInfo[i][0], bondInfo[i][1]);
  else this.htBondMap.put (group3 + ":" + bondInfo[i][0] + ":" + bondInfo[i][1], bondInfo[i][2]);
 }
 }, "org.jmol.api.JmolAdapter,~S,~O");
@@ -119,8 +119,8 @@ var bondInfo =  new Array (dataIn.length * 2);
 var n = 0;
 for (var i = 0; i < dataIn.length; i++) {
 var b = dataIn[i];
-if ((b[0].charAt (0)).charCodeAt (0) != ('H').charCodeAt (0)) bondInfo[n++] = [b[0], b[1], b[2], b[1].startsWith ("H") ? "0" : "1"];
-if ((b[1].charAt (0)).charCodeAt (0) != ('H').charCodeAt (0)) bondInfo[n++] = [b[1], b[0], b[2], b[0].startsWith ("H") ? "0" : "1"];
+if ((b[0].charAt (0)).charCodeAt (0) != 72) bondInfo[n++] = [b[0], b[1], b[2], b[1].startsWith ("H") ? "0" : "1"];
+if ((b[1].charAt (0)).charCodeAt (0) != 72) bondInfo[n++] = [b[1], b[0], b[2], b[0].startsWith ("H") ? "0" : "1"];
 }
 java.util.Arrays.sort (bondInfo, Clazz.innerTypeInstance (org.jmol.modelsetbio.Resolver.BondSorter, this, null));
 var t;
@@ -154,7 +154,7 @@ bondInfo[pt + 1] = null;
 }
 }
 for (var i = 0; i < n; i++) {
-if ((t = bondInfo[i]) != null && (t[1].charAt (0)).charCodeAt (0) != ('H').charCodeAt (0) && t[0].compareTo (t[1]) > 0) {
+if ((t = bondInfo[i]) != null && (t[1].charAt (0)).charCodeAt (0) != 72 && t[0].compareTo (t[1]) > 0) {
 bondInfo[i] = null;
 continue ;}if (t != null) org.jmol.util.Logger.info (" ligand " + group3 + ": " + bondInfo[i][0] + " - " + bondInfo[i][1] + " order " + bondInfo[i][2]);
 }
@@ -291,16 +291,16 @@ if (n1.compareTo (n2) > 0) key.append (n2).append (":").append (n1);
  else key.append (n1).append (":").append (n2);
 var skey = key.toString ();
 var type = this.htBondMap.get (skey);
-if (type == null) continue ;htKeysUsed.put (skey, Boolean.TRUE);
+if (type == null) continue ;htKeysUsed.put (skey, org.jmol.viewer.JmolConstants.TRUE);
 bonds[i].setOrder (Integer.$valueOf (type).intValue ());
 }
 for (var key, $key = this.htBondMap.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {
 if (htKeysUsed.get (key) != null) continue ;if (key.indexOf (":") < 0) {
-htKeysUsed.put (key, Boolean.TRUE);
+htKeysUsed.put (key, org.jmol.viewer.JmolConstants.TRUE);
 continue ;}var value = this.htBondMap.get (key);
 org.jmol.util.Logger.info ("bond " + key + " was not used; order=" + value);
 if (this.htBondMap.get (key).equals ("1")) {
-htKeysUsed.put (key, Boolean.TRUE);
+htKeysUsed.put (key, org.jmol.viewer.JmolConstants.TRUE);
 continue ;}}
 var htKeysBad =  new java.util.Hashtable ();
 for (var key, $key = this.htBondMap.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {
@@ -319,7 +319,7 @@ Clazz.defineMethod (c$, "setHydrogen",
 ($fz = function (iTo, iAtom, name, pt) {
 if (!this.bsAddedHydrogens.get (iAtom)) return ;
 var atoms = this.modelSet.atoms;
-if (this.lastSetH == -2147483648 || atoms[iAtom].modelIndex != atoms[this.lastSetH].modelIndex) this.maxSerial = (this.modelSet.getModelAuxiliaryInfo (atoms[this.lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
+if (this.lastSetH == -2147483648 || atoms[iAtom].modelIndex != atoms[this.lastSetH].modelIndex) this.maxSerial = (this.modelSet.getModelAuxiliaryInfoValue (atoms[this.lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
 this.bsAddedHydrogens.clear (iAtom);
 this.modelSet.setAtomName (iAtom, name);
 atoms[iAtom].set (pt);
@@ -340,6 +340,29 @@ newData[iAtom] = lastData;
 }
 return org.jmol.util.TextFormat.join (newData, '\n', 0);
 }, "java.util.BitSet,~S");
+c$.allocateBioPolymer = Clazz.defineMethod (c$, "allocateBioPolymer", 
+function (groups, firstGroupIndex, checkConnections) {
+var previous = null;
+var count = 0;
+for (var i = firstGroupIndex; i < groups.length; ++i) {
+var group = groups[i];
+var current;
+if (!(Clazz.instanceOf (group, org.jmol.modelsetbio.Monomer)) || (current = group).bioPolymer != null || previous != null && previous.getClass () !== current.getClass () || checkConnections && !current.isConnectedAfter (previous)) break;
+previous = current;
+count++;
+}
+if (count == 0) return null;
+var monomers =  new Array (count);
+for (var j = 0; j < count; ++j) monomers[j] = groups[firstGroupIndex + j];
+
+if (Clazz.instanceOf (previous, org.jmol.modelsetbio.AminoMonomer)) return  new org.jmol.modelsetbio.AminoPolymer (monomers);
+if (Clazz.instanceOf (previous, org.jmol.modelsetbio.AlphaMonomer)) return  new org.jmol.modelsetbio.AlphaPolymer (monomers);
+if (Clazz.instanceOf (previous, org.jmol.modelsetbio.NucleicMonomer)) return  new org.jmol.modelsetbio.NucleicPolymer (monomers);
+if (Clazz.instanceOf (previous, org.jmol.modelsetbio.PhosphorusMonomer)) return  new org.jmol.modelsetbio.PhosphorusPolymer (monomers);
+if (Clazz.instanceOf (previous, org.jmol.modelsetbio.CarbohydrateMonomer)) return  new org.jmol.modelsetbio.CarbohydratePolymer (monomers);
+org.jmol.util.Logger.error ("Polymer.allocatePolymer() ... no matching polymer for monomor " + previous);
+throw  new NullPointerException ();
+}, "~A,~N,~B");
 c$.$Resolver$BondSorter$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

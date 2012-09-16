@@ -53,7 +53,7 @@ this.gibbsEnergy = null;
 return ;
 }if ("i".equals (localName)) {
 var s = atts.get ("name");
-if ((s.charAt (0)).charCodeAt (0) != ('e').charCodeAt (0)) return ;
+if ((s.charAt (0)).charCodeAt (0) != 101) return ;
 this.isE_wo_entrp = s.equals ("e_wo_entrp");
 this.isE_fr_energy = s.equals ("e_fr_energy");
 this.keepChars = (this.isE_wo_entrp || this.isE_fr_energy);
@@ -68,7 +68,7 @@ this.atomSetCollection.newAtomSet ();
 if (this.enthalpy != null) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("enthalpy", Double.$valueOf (this.enthalpy));
 }if (this.gibbsEnergy != null) {
-this.atomSetCollection.setAtomSetEnergy ("" + this.gibbsEnergy, this.parseFloat (this.gibbsEnergy));
+this.atomSetCollection.setAtomSetEnergy ("" + this.gibbsEnergy, this.parseFloatStr (this.gibbsEnergy));
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("gibbsEnergy", Double.$valueOf (this.gibbsEnergy));
 }if (this.enthalpy != null && this.gibbsEnergy != null) this.atomSetCollection.setAtomSetName ("Enthalpy = " + this.enthalpy + " eV Gibbs Energy = " + this.gibbsEnergy + " eV");
 return ;
@@ -112,7 +112,7 @@ this.atomNames[this.iAtom++] = this.atomName + this.chars.trim ();
 this.atomName = null;
 }}break;
 }if ("atoms".equals (localName)) {
-this.atomCount = this.parseInt (this.chars);
+this.atomCount = this.parseIntStr (this.chars);
 this.atomNames =  new Array (this.atomCount);
 this.atomSyms =  new Array (this.atomCount);
 this.iAtom = 0;

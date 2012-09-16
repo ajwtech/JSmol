@@ -26,10 +26,10 @@ Clazz.defineMethod (c$, "readCellParam",
 ($fz = function () {
 this.unitCellData =  Clazz.newArray (9, 0);
 for (var n = 0, i = 0; n < 3; n++) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
-this.unitCellData[i++] = this.parseFloat (!this.geomOpt ? tokens[0] : tokens[4]) * 0.5291772;
-this.unitCellData[i++] = this.parseFloat (!this.geomOpt ? tokens[1] : tokens[5]) * 0.5291772;
-this.unitCellData[i++] = this.parseFloat (!this.geomOpt ? tokens[2] : tokens[6]) * 0.5291772;
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
+this.unitCellData[i++] = this.parseFloatStr (!this.geomOpt ? tokens[0] : tokens[4]) * 0.5291772;
+this.unitCellData[i++] = this.parseFloatStr (!this.geomOpt ? tokens[1] : tokens[5]) * 0.5291772;
+this.unitCellData[i++] = this.parseFloatStr (!this.geomOpt ? tokens[2] : tokens[6]) * 0.5291772;
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "newAtomSet", 
@@ -54,9 +54,9 @@ var tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = !this.geomOpt ? tokens[0] : tokens[1];
 var factor = (!this.geomOpt ? 0.5291772 : 1.00);
-var x = this.parseFloat (!this.geomOpt ? tokens[1] : tokens[2]) * factor;
-var y = this.parseFloat (!this.geomOpt ? tokens[2] : tokens[3]) * factor;
-var z = this.parseFloat (!this.geomOpt ? tokens[3] : tokens[4]) * factor;
+var x = this.parseFloatStr (!this.geomOpt ? tokens[1] : tokens[2]) * factor;
+var y = this.parseFloatStr (!this.geomOpt ? tokens[2] : tokens[3]) * factor;
+var z = this.parseFloatStr (!this.geomOpt ? tokens[3] : tokens[4]) * factor;
 atom.set (x, y, z);
 this.setAtomCoord (atom);
 }
@@ -64,7 +64,7 @@ this.setAtomCoord (atom);
 Clazz.defineMethod (c$, "readEnergy", 
 ($fz = function () {
 this.readLine ();
-if (this.line.contains ("Ef")) this.totE = Double.$valueOf (Double.parseDouble (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line.substring (this.line.indexOf ("Ef") + 1, this.line.indexOf ("Ha")))[1]));
+if (this.line.contains ("Ef")) this.totE = Double.$valueOf (Double.parseDouble (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf ("Ef") + 1, this.line.indexOf ("Ha")))[1]));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setEnergy", 
 ($fz = function () {
@@ -76,12 +76,12 @@ Clazz.defineMethod (c$, "readFreq",
 ($fz = function () {
 var lastAtomCount = 0;
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
-while (this.readLine () != null && (this.line.charAt (1)).charCodeAt (0) == (' ').charCodeAt (0)) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.line);
+while (this.readLine () != null && (this.line.charAt (1)).charCodeAt (0) == 32) {
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
 var frequencyCount = Math.floor (tokens.length / 2);
 var frequencies =  Clazz.newArray (frequencyCount, 0);
 for (var i = 1, n = 0; i < tokens.length; i += 2, n++) {
-frequencies[n] = this.parseFloat (tokens[i]);
+frequencies[n] = this.parseFloatStr (tokens[i]);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ((this.vibrationNumber + n) + " frequency=" + frequencies[n]);
 }
 var ignore =  Clazz.newArray (frequencyCount, false);

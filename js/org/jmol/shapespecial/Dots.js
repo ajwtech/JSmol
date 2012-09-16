@@ -99,7 +99,7 @@ this.bsIgnore = null;
 this.isActive = false;
 if (this.ec == null) this.ec =  new org.jmol.geodesic.EnvelopeCalculation (this.viewer, this.atomCount, this.mads);
 });
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 if (rd == null) rd =  new org.jmol.atomdata.RadiusData (0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null);
 if (this.bsSelected != null) bsSelected = this.bsSelected;

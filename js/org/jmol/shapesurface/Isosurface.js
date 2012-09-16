@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isomeshes = null;
 this.thisMesh = null;
@@ -84,7 +84,7 @@ if (this.thisMesh != null) {
 if (this.thisMesh.vertexSource == null) {
 var colix = (!this.thisMesh.isColorSolid ? 0 : this.thisMesh.colix);
 this.setProperty ("init", null, null);
-this.setProperty ("map", Boolean.FALSE, null);
+this.setProperty ("map", org.jmol.viewer.JmolConstants.FALSE, null);
 this.setProperty ("property",  Clazz.newArray (this.viewer.getAtomCount (), 0), null);
 if (colix != 0) {
 this.thisMesh.colorCommand = "color isosurface " + org.jmol.util.Colix.getHexCode (colix);
@@ -235,7 +235,7 @@ this.thisMesh.initialize (this.thisMesh.lighting, null, null);
 return ;
 }}if ("map" === propertyName) {
 if (this.sg != null) this.sg.getParams ().isMapped = true;
-this.setProperty ("squareData", Boolean.FALSE, null);
+this.setProperty ("squareData", org.jmol.viewer.JmolConstants.FALSE, null);
 if (this.thisMesh == null || this.thisMesh.vertexCount == 0) return ;
 }if ("deleteVdw" === propertyName) {
 for (var i = this.meshCount; --i >= 0; ) if (this.isomeshes[i].bsVdw != null && (bs == null || bs.intersects (this.isomeshes[i].bsVdw))) this.deleteMesh (i);
@@ -315,7 +315,7 @@ this.explicitID = false;
 this.scriptAppendix = "";
 var script = (Clazz.instanceOf (value, String) ? value : null);
 var pt = (script == null ? -1 : script.indexOf ("# ID="));
-this.actualID = (pt >= 0 ? org.jmol.util.Parser.getNextQuotedString (script, pt) : null);
+this.actualID = (pt >= 0 ? org.jmol.util.Parser.getQuotedStringAt (script, pt) : null);
 this.setPropertySuper ("thisID", "+PREVIOUS_MESH+", null);
 if (script != null && !(this.iHaveBitSets = this.getScriptBitSets (script, null))) this.sg.setParameter ("select", bs);
 this.initializeIsosurface ();
@@ -362,7 +362,7 @@ this.thisMesh = this.currentMesh;
 this.jvxlData = (this.thisMesh == null ? null : this.thisMesh.jvxlData);
 if (this.sg != null) this.sg.setJvxlData (this.jvxlData);
 }, $fz.isPrivate = true, $fz), "~S,~O,java.util.BitSet");
-Clazz.defineMethod (c$, "getProperty", 
+Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "colorEncoder") {
 var mesh = this.getMesh (data[0]);
@@ -407,7 +407,7 @@ m.mat4.get (v);
 p.add (v);
 }data[2] = p;
 return true;
-}}return Clazz.superCall (this, org.jmol.shapesurface.Isosurface, "getProperty", [property, data]);
+}}return Clazz.superCall (this, org.jmol.shapesurface.Isosurface, "getPropertyData", [property, data]);
 }, "~S,~A");
 Clazz.defineMethod (c$, "getProperty", 
 function (property, index) {
@@ -520,7 +520,7 @@ if (imesh.mat4 != null) org.jmol.shape.Shape.appendCmd (sb, id + " move " + org.
 if (imesh.scale3d != 0) org.jmol.shape.Shape.appendCmd (sb, id + " scale3d " + imesh.scale3d);
 if (imesh.jvxlData.slabValue != -2147483648) org.jmol.shape.Shape.appendCmd (sb, id + " slab " + imesh.jvxlData.slabValue);
 if (imesh.slabOptions != null) org.jmol.shape.Shape.appendCmd (sb, imesh.slabOptions.toString ());
-if ((cmd.charAt (0)).charCodeAt (0) != ('#').charCodeAt (0)) {
+if ((cmd.charAt (0)).charCodeAt (0) != 35) {
 if (this.allowMesh) org.jmol.shape.Shape.appendCmd (sb, imesh.getState (this.myType));
 if (!imesh.isColorSolid && org.jmol.util.Colix.isColixTranslucent (imesh.colix)) org.jmol.shape.Shape.appendCmd (sb, "color " + this.myType + " " + org.jmol.shape.Shape.getTranslucentLabel (imesh.colix));
 if (imesh.colorCommand != null) {
@@ -572,9 +572,9 @@ if (bsCmd == null) this.viewer.setTrajectory (bs);
 Clazz.defineMethod (c$, "getCapSlabInfo", 
 function (script) {
 var i = script.indexOf ("# SLAB=");
-if (i >= 0) this.sg.setParameter ("slab", org.jmol.util.MeshSurface.getCapSlabObject (org.jmol.util.Parser.getNextQuotedString (script, i), false));
+if (i >= 0) this.sg.setParameter ("slab", org.jmol.util.MeshSurface.getCapSlabObject (org.jmol.util.Parser.getQuotedStringAt (script, i), false));
 i = script.indexOf ("# CAP=");
-if (i >= 0) this.sg.setParameter ("slab", org.jmol.util.MeshSurface.getCapSlabObject (org.jmol.util.Parser.getNextQuotedString (script, i), true));
+if (i >= 0) this.sg.setParameter ("slab", org.jmol.util.MeshSurface.getCapSlabObject (org.jmol.util.Parser.getQuotedStringAt (script, i), true));
 }, "~S");
 Clazz.defineMethod (c$, "initializeIsosurface", 
 ($fz = function () {
@@ -638,7 +638,7 @@ var rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
 this.defaultColix = org.jmol.util.Colix.getColix (this.sg.getColor (1));
 var colixNeg = org.jmol.util.Colix.getColix (this.sg.getColor (-1));
 var y =  new javax.vecmath.Vector3f ();
-var isReverse = (lcaoCartoon.length > 0 && (lcaoCartoon.charAt (0)).charCodeAt (0) == ('-').charCodeAt (0));
+var isReverse = (lcaoCartoon.length > 0 && (lcaoCartoon.charAt (0)).charCodeAt (0) == 45);
 if (isReverse) lcaoCartoon = lcaoCartoon.substring (1);
 var sense = (isReverse ? -1 : 1);
 y.cross (z, x);
@@ -867,12 +867,12 @@ return ;
 this.thisMesh.dataType = this.sg.getParams ().dataType;
 this.thisMesh.scale3d = this.sg.getParams ().scale3d;
 if (script != null) {
-if ((script.charAt (0)).charCodeAt (0) == (' ').charCodeAt (0)) {
+if ((script.charAt (0)).charCodeAt (0) == 32) {
 script = this.myType + " ID " + org.jmol.util.Escape.escapeStr (this.thisMesh.thisID) + script;
 pt = script.indexOf ("; isosurface map");
 }}if (pt > 0 && this.scriptAppendix.length > 0) this.thisMesh.scriptCommand = script.substring (0, pt) + this.scriptAppendix + script.substring (pt);
  else this.thisMesh.scriptCommand = script + this.scriptAppendix;
-if (!this.explicitID && script != null && (pt = script.indexOf ("# ID=")) >= 0) this.thisMesh.thisID = org.jmol.util.Parser.getNextQuotedString (script, pt);
+if (!this.explicitID && script != null && (pt = script.indexOf ("# ID=")) >= 0) this.thisMesh.thisID = org.jmol.util.Parser.getQuotedStringAt (script, pt);
 }, "~S");
 Clazz.overrideMethod (c$, "addRequiredFile", 
 function (fileName) {

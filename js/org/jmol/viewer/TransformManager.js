@@ -522,7 +522,7 @@ case 'z':
 return Math.round ((percent / 100 * this.screenPixelCount));
 }
 return 0;
-}, "~N,~N");
+}, "~S,~N");
 Clazz.defineMethod (c$, "angstromsToPixels", 
 function (distance) {
 return Math.round ((this.scalePixelsPerAngstrom * distance));
@@ -548,7 +548,7 @@ case 'z':
 if (this.mode == 1) this.setNavigationDepthPercent (0, percent);
 return ;
 }
-}, "~N,~N");
+}, "~S,~N");
 Clazz.defineMethod (c$, "getTranslationXPercent", 
 function () {
 return (this.fixedTranslation.x - this.width / 2) * 100 / this.width;
@@ -1605,7 +1605,7 @@ return NaN;
 Clazz.defineMethod (c$, "getNavigationOffsetPercent", 
 function (XorY) {
 return 0;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "setNavigationSlabOffsetPercent", 
 function (offset) {
 this.viewer.getGlobalSettings ().setParameterValue ("navigationSlab", offset);
@@ -1643,7 +1643,7 @@ case 'z':
 this.ptOffset.z += xy;
 break;
 }
-}, "java.util.BitSet,~N,~N");
+}, "java.util.BitSet,~S,~N");
 c$.$TransformManager$MotionThread$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

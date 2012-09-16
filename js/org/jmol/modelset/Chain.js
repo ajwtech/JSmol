@@ -20,7 +20,7 @@ Clazz.makeConstructor (c$,
 function (model, chainID) {
 this.model = model;
 this.chainID = chainID;
-}, "org.jmol.modelset.Model,~N");
+}, "org.jmol.modelset.Model,~S");
 Clazz.defineMethod (c$, "getGroup", 
 function (groupIndex) {
 return this.groups[groupIndex];

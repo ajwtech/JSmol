@@ -44,7 +44,7 @@ org.jmol.util.Logger.warn ("cannot read line with FHI-aims lattice vector: " + t
 } else if (this.nLatticeVectors == 3) {
 org.jmol.util.Logger.warn ("more than 3 FHI-aims lattice vectors found with line: " + this.line);
 } else {
-this.addPrimitiveLatticeVector (this.nLatticeVectors++, [this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3])], 0);
+this.addPrimitiveLatticeVector (this.nLatticeVectors++, [this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3])], 0);
 this.setFractionalCoordinates (this.nLatticeVectors == 3);
 }}, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "readAtom", 
@@ -54,7 +54,7 @@ org.jmol.util.Logger.warn ("cannot read line with FHI-aims line: " + this.line);
 return ;
 }if (this.isFractional != isFractional) this.setFractionalCoordinates (this.isFractional = isFractional);
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+this.setAtomCoord (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 atom.elementSymbol = tokens[4];
 }, $fz.isPrivate = true, $fz), "~A,~B");
 Clazz.defineMethod (c$, "readMultipole", 
@@ -62,13 +62,13 @@ Clazz.defineMethod (c$, "readMultipole",
 if (tokens.length < 6) {
 org.jmol.util.Logger.warn ("cannot read line with FHI-aims atom data: " + this.line);
 return ;
-}var order = this.parseInt (tokens[4]);
+}var order = this.parseIntStr (tokens[4]);
 if (order > 0) {
 org.jmol.util.Logger.warn ("multipole line ignored since only monopoles are currently supported: " + this.line);
 return ;
 }if (this.isFractional) this.setFractionalCoordinates (this.isFractional = false);
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
-atom.partialCharge = this.parseFloat (tokens[5]);
+this.setAtomCoord (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
+atom.partialCharge = this.parseFloatStr (tokens[5]);
 }, $fz.isPrivate = true, $fz), "~A");
 });

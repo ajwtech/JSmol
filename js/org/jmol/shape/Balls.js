@@ -1,7 +1,7 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.AtomShape"], "org.jmol.shape.Balls", ["java.util.BitSet", "$.Hashtable", "org.jmol.constant.EnumPalette", "org.jmol.util.Colix"], function () {
 c$ = Clazz.declareType (org.jmol.shape, "Balls", org.jmol.shape.AtomShape);
-Clazz.defineMethod (c$, "setSize", 
+Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 this.isActive = true;
 if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();

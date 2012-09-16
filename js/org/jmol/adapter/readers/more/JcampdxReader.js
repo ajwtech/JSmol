@@ -35,7 +35,7 @@ this.htParams.put ("peakIndex", this.peakIndex);
 }if (!this.htParams.containsKey ("subFileName")) this.peakFilePath = org.jmol.util.Escape.escapeStr (org.jmol.util.TextFormat.split (this.filePath, '|')[0]);
 } else {
 this.peakIndex =  Clazz.newArray (1, 0);
-}if (!this.checkFilter ("NOSYNC")) this.addJmolScript ("sync on");
+}if (!this.checkFilterKey ("NOSYNC")) this.addJmolScript ("sync on");
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -53,7 +53,7 @@ Clazz.superCall (this, org.jmol.adapter.readers.more.JcampdxReader, "finalizeRea
 });
 Clazz.defineMethod (c$, "findModelById", 
 ($fz = function (modelID) {
-for (var i = this.atomSetCollection.getAtomSetCount (); --i >= 0; ) if (modelID.equals (this.atomSetCollection.getAtomSetAuxiliaryInfo (i, "modelID"))) return i;
+for (var i = this.atomSetCollection.getAtomSetCount (); --i >= 0; ) if (modelID.equals (this.atomSetCollection.getAtomSetAuxiliaryInfoValue (i, "modelID"))) return i;
 
 return -1;
 }, $fz.isPrivate = true, $fz), "~S");
@@ -85,7 +85,7 @@ if (isFirst && n == model0 + 2) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("modelID", this.modelID);
 return ;
 }for (var pt = 0, i = model0; ++i < n; ) {
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("modelID", this.modelID + "." + (++pt), i);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("modelID", this.modelID + "." + (++pt), i);
 }
 }, $fz.isPrivate = true, $fz), "~N,~B");
 c$.getAttribute = Clazz.defineMethod (c$, "getAttribute", 
@@ -104,7 +104,7 @@ return null;
 }this.modelIdList += key;
 var baseModel = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "baseModel");
 var modelType = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "type").toLowerCase ();
-var vibScale = org.jmol.util.Parser.parseFloat (org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "vibrationScale"));
+var vibScale = org.jmol.util.Parser.parseFloatStr (org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "vibrationScale"));
 if (modelType.equals ("xyzvib")) modelType = "xyz";
  else if (modelType.length == 0) modelType = null;
 var sb =  new StringBuffer ();
@@ -124,8 +124,8 @@ if (baseModel.length == 0) baseModel = this.lastModel;
 if (baseModel.length != 0) {
 var ibase = this.findModelById (baseModel);
 if (ibase >= 0) {
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("jdxModelID", baseModel, ibase);
-for (var i = a.getAtomSetCount (); --i >= 0; ) a.setAtomSetAuxiliaryInfo ("jdxBaseModel", baseModel, i);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("jdxModelID", baseModel, ibase);
+for (var i = a.getAtomSetCount (); --i >= 0; ) a.setAtomSetAuxiliaryInfoForSet ("jdxBaseModel", baseModel, i);
 
 if (a.getBondCount () == 0) this.setBonding (a, ibase);
 }}if (!Float.isNaN (vibScale)) {
@@ -189,13 +189,13 @@ var key = "jdxAtomSelect_" + org.jmol.adapter.readers.more.JcampdxReader.getAttr
 bsModels.set (i);
 var s;
 if (org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "atoms").length != 0) {
-var peaks = this.atomSetCollection.getAtomSetAuxiliaryInfo (i, key);
-if (peaks == null) this.atomSetCollection.setAtomSetAuxiliaryInfo (key, peaks =  new java.util.ArrayList (), i);
+var peaks = this.atomSetCollection.getAtomSetAuxiliaryInfoValue (i, key);
+if (peaks == null) this.atomSetCollection.setAtomSetAuxiliaryInfoForSet (key, peaks =  new java.util.ArrayList (), i);
 peaks.add (this.line);
 s = type + ": ";
-} else if (this.atomSetCollection.getAtomSetAuxiliaryInfo (i, "jdxModelSelect") == null) {
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("name", title, i);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("jdxModelSelect", this.line, i);
+} else if (this.atomSetCollection.getAtomSetAuxiliaryInfoValue (i, "jdxModelSelect") == null) {
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("name", title, i);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("jdxModelSelect", this.line, i);
 s = "model: ";
 } else {
 s = "ignored: ";
@@ -203,7 +203,7 @@ s = "ignored: ";
 }
 n = this.atomSetCollection.getAtomSetCount ();
 for (var i = n; --i >= 0; ) {
-this.modelID = this.atomSetCollection.getAtomSetAuxiliaryInfo (i, "modelID");
+this.modelID = this.atomSetCollection.getAtomSetAuxiliaryInfoValue (i, "modelID");
 if (havePeaks && !bsModels.get (i) && this.modelID.indexOf (".") >= 0) {
 this.atomSetCollection.removeAtomSet (i);
 n--;
@@ -214,16 +214,16 @@ if (this.allTypes != null) this.appendLoadNote (this.allTypes);
 if (this.selectedModel == 0) this.selectedModel = n - 1;
 for (var i = this.atomSetCollection.getAtomSetCount (); --i >= 0; ) if (i + 1 != this.selectedModel) this.atomSetCollection.removeAtomSet (i);
 
-if (n > 0) this.appendLoadNote (this.atomSetCollection.getAtomSetAuxiliaryInfo (0, "name"));
+if (n > 0) this.appendLoadNote (this.atomSetCollection.getAtomSetAuxiliaryInfoValue (0, "name"));
 }for (var i = this.atomSetCollection.getAtomSetCount (); --i >= 0; ) this.atomSetCollection.setAtomSetNumber (i, i + 1);
 
 this.atomSetCollection.centralize ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addType", 
 ($fz = function (imodel, type) {
-var types = this.addType (this.atomSetCollection.getAtomSetAuxiliaryInfo (imodel, "spectrumTypes"), type);
+var types = this.addType (this.atomSetCollection.getAtomSetAuxiliaryInfoValue (imodel, "spectrumTypes"), type);
 if (types == null) return ;
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("spectrumTypes", types, imodel);
+this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("spectrumTypes", types, imodel);
 var s = this.addType (this.allTypes, type);
 if (s != null) this.allTypes = s;
 }, $fz.isPrivate = true, $fz), "~N,~S");

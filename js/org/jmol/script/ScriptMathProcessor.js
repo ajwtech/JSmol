@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
+Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.PropertyManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isSyntaxCheck = false;
 this.wasSyntaxCheck = false;
@@ -83,7 +83,7 @@ Clazz.defineMethod (c$, "putIf",
 ($fz = function (c) {
 if (++this.ifPt >= this.ifStack.length) this.ifStack = org.jmol.util.ArrayUtil.doubleLength (this.ifStack);
 this.ifStack[this.ifPt] = c;
-}, $fz.isPrivate = true, $fz), "~N");
+}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "addXVar", 
 function (x) {
 this.putX (x);
@@ -131,7 +131,7 @@ return this.wasX = true;
 }, "org.jmol.script.ScriptVariable");
 Clazz.defineMethod (c$, "addXBool", 
 ($fz = function (x) {
-this.putX (org.jmol.script.ScriptVariable.getVariable (x ? Boolean.TRUE : Boolean.FALSE));
+this.putX (org.jmol.script.ScriptVariable.getVariable (x ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
 return this.wasX = true;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "addXInt", 
@@ -156,14 +156,14 @@ function (op, allowMathFunc) {
 if (this.logMessages) {
 org.jmol.util.Logger.info ("addOp entry\naddOp: " + op);
 }var tok0 = (this.oPt >= 0 ? this.oStack[this.oPt].tok : 0);
-this.skipping = (this.ifPt >= 0 && ((this.ifStack[this.ifPt]).charCodeAt (0) == ('F').charCodeAt (0) || (this.ifStack[this.ifPt]).charCodeAt (0) == ('X').charCodeAt (0)));
+this.skipping = (this.ifPt >= 0 && ((this.ifStack[this.ifPt]).charCodeAt (0) == 70 || (this.ifStack[this.ifPt]).charCodeAt (0) == 88));
 if (this.skipping) {
 switch (op.tok) {
 case 269484048:
 this.putOp (op);
 return true;
 case 269484066:
-if (tok0 != 269484066 || (this.ifStack[this.ifPt]).charCodeAt (0) == ('X').charCodeAt (0)) return true;
+if (tok0 != 269484066 || (this.ifStack[this.ifPt]).charCodeAt (0) == 88) return true;
 this.ifStack[this.ifPt] = 'T';
 this.wasX = false;
 this.skipping = false;
@@ -295,7 +295,7 @@ this.oPt--;
 }this.oPt--;
 if (this.oPt < 0) return true;
 if (org.jmol.script.ScriptMathProcessor.isOpFunc (this.oStack[this.oPt]) && !this.evaluateFunction (0)) return false;
-this.skipping = (this.ifPt >= 0 && (this.ifStack[this.ifPt]).charCodeAt (0) == ('X').charCodeAt (0));
+this.skipping = (this.ifPt >= 0 && (this.ifStack[this.ifPt]).charCodeAt (0) == 88);
 return true;
 case 269484080:
 this.wasX = false;
@@ -1153,9 +1153,9 @@ var bs = this.viewer.getModelUndeletedAtomsBitSet (i);
 bs.and (bsSelected);
 s += org.jmol.util.Escape.escape (bs);
 }
-}return this.addXObj (org.jmol.util.TextFormat.split (s, sArg));
+}return this.addXObj (org.jmol.util.TextFormat.splitChars (s, sArg));
 case 1276117506:
-if (s.length > 0 && (s.charAt (s.length - 1)).charCodeAt (0) == ('\n').charCodeAt (0)) s = s.substring (0, s.length - 1);
+if (s.length > 0 && (s.charAt (s.length - 1)).charCodeAt (0) == 10) s = s.substring (0, s.length - 1);
 return this.addXStr (org.jmol.util.TextFormat.simpleReplace (s, "\n", sArg));
 case 1276117510:
 if (s != null) return this.addXStr (org.jmol.util.TextFormat.trim (s, sArg));
@@ -1215,9 +1215,9 @@ var alist2 = x2.getList ();
 if (x1.tok == 7) {
 len = alist1.size ();
 } else {
-sList1 = (org.jmol.util.TextFormat.split (x1.value, "\n"));
+sList1 = (org.jmol.util.TextFormat.splitChars (x1.value, "\n"));
 list1 =  Clazz.newArray (len = sList1.length, 0);
-org.jmol.util.Parser.parseFloatArray (sList1, list1);
+org.jmol.util.Parser.parseFloatArrayData (sList1, list1);
 }if (isAll) {
 var sum = 0;
 if (x1.tok == 7) {
@@ -1233,9 +1233,9 @@ scalar = x2;
 } else if (x2.tok == 7) {
 len = Math.min (len, alist2.size ());
 } else {
-sList2 = org.jmol.util.TextFormat.split (x2.value, "\n");
+sList2 = org.jmol.util.TextFormat.splitChars (x2.value, "\n");
 list2 =  Clazz.newArray (sList2.length, 0);
-org.jmol.util.Parser.parseFloatArray (sList2, list2);
+org.jmol.util.Parser.parseFloatArrayData (sList2, list2);
 len = Math.min (list1.length, list2.length);
 }var token = null;
 switch (tok) {

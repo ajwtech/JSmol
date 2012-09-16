@@ -11,19 +11,19 @@ this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-var n1 = this.parseInt (this.readLine ());
+var n1 = this.parseIntStr (this.readLine ());
 var n2 = this.parseInt ();
-this.nPointsX = this.parseInt (this.readLine ());
+this.nPointsX = this.parseIntStr (this.readLine ());
 this.nPointsY = this.parseInt ();
 this.nPointsZ = this.parseInt ();
 this.jvxlFileHeaderBuffer.append ("Plt formatted data (" + n1 + "," + n2 + ") " + this.nPointsX + " x " + this.nPointsY + " x " + this.nPointsZ + " \nJmol " + org.jmol.viewer.Viewer.getJmolVersion () + '\n');
 this.volumetricOrigin.set (0, 0, 0);
-var xmin = this.parseFloat (this.readLine ().substring (0, 12));
-var xmax = this.parseFloat (this.line.substring (12, 24));
-var ymin = this.parseFloat (this.line.substring (24, 36));
-var ymax = this.parseFloat (this.line.substring (36, 48));
-var zmin = this.parseFloat (this.line.substring (48, 60));
-var zmax = this.parseFloat (this.line.substring (60, 72));
+var xmin = this.parseFloatStr (this.readLine ().substring (0, 12));
+var xmax = this.parseFloatStr (this.line.substring (12, 24));
+var ymin = this.parseFloatStr (this.line.substring (24, 36));
+var ymax = this.parseFloatStr (this.line.substring (36, 48));
+var zmin = this.parseFloatStr (this.line.substring (48, 60));
+var zmax = this.parseFloatStr (this.line.substring (60, 72));
 this.volumetricOrigin.set (xmin, ymin, zmin);
 this.voxelCounts[0] = this.nPointsX;
 this.voxelCounts[1] = this.nPointsY;

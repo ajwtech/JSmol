@@ -149,7 +149,7 @@ pt.add (mNext.getNitrogenAtom ());
 pt.scale (0.5);
 return pt;
 }
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getQuaternion", 
 function (qType) {
 var ptC = this.getCarbonylCarbonAtom ();
@@ -192,7 +192,7 @@ default:
 return null;
 }
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, vC, false);
-}, "~N");
+}, "~S");
 Clazz.overrideMethod (c$, "isWithinStructure", 
 function (type) {
 var s = this.getStructure ();

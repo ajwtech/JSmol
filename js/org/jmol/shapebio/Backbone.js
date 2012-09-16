@@ -20,7 +20,7 @@ this.bsSelected = value;
 return ;
 }Clazz.superCall (this, org.jmol.shapebio.Backbone, "setProperty", [propertyName, value, bsSelected]);
 }, "~S,~O,java.util.BitSet");
-Clazz.overrideMethod (c$, "setShapeSize", 
+Clazz.overrideMethod (c$, "setShapeSizeRD", 
 function (size, rd, bsSelected) {
 var mad = size;
 this.initialize ();

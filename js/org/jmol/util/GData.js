@@ -103,7 +103,7 @@ return bgcolixes;
 Clazz.overrideMethod (c$, "getColorArgbOrGray", 
 function (colix) {
 if (colix < 0) colix = this.changeableColixMap[colix & 2047];
-return (this.inGreyscaleMode ? org.jmol.util.Colix.getArgbGreyscale (colix) : org.jmol.util.Colix.getArgb1 (colix));
+return (this.inGreyscaleMode ? org.jmol.util.Colix.getArgbGreyscale (colix) : org.jmol.util.Colix.getArgb (colix));
 }, "~N");
 Clazz.defineMethod (c$, "getShades", 
 function (colix) {

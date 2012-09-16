@@ -9,7 +9,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.molxyz, "MolReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
-this.is2D = this.checkFilter ("2D");
+this.is2D = this.checkFilterKey ("2D");
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -38,10 +38,10 @@ while (this.readLine () != null && this.line.indexOf ("$$$$") != 0) {
 if (this.line.toUpperCase ().contains ("_PARTIAL_CHARGES")) {
 try {
 var atoms = this.atomSetCollection.getAtoms ();
-for (var i = this.parseInt (this.readLine ()); --i >= 0; ) {
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.readLine ());
-var atomIndex = this.parseInt (tokens[0]) + atom0 - 1;
-var partialCharge = this.parseFloat (tokens[1]);
+for (var i = this.parseIntStr (this.readLine ()); --i >= 0; ) {
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
+var atomIndex = this.parseIntStr (tokens[0]) + atom0 - 1;
+var partialCharge = this.parseFloatStr (tokens[1]);
 if (!Float.isNaN (partialCharge)) atoms[atomIndex].partialCharge = partialCharge;
 }
 } catch (e) {
@@ -89,8 +89,8 @@ this.is2D = (this.dimension.equals ("2D"));
 this.discardLinesUntilContains ("COUNTS");
 tokens = this.getTokens ();
 }if (this.line == null) return ;
-var atomCount = (this.isV3000 ? this.parseInt (tokens[3]) : this.parseInt (this.line, 0, 3));
-var bondCount = (this.isV3000 ? this.parseInt (tokens[4]) : this.parseInt (this.line, 3, 6));
+var atomCount = (this.isV3000 ? this.parseIntStr (tokens[3]) : this.parseIntRange (this.line, 0, 3));
+var bondCount = (this.isV3000 ? this.parseIntStr (tokens[4]) : this.parseIntRange (this.line, 3, 6));
 var atom0 = this.atomSetCollection.getAtomCount ();
 this.readAtoms (atomCount);
 this.readBonds (atom0, bondCount);
@@ -112,13 +112,13 @@ if (this.isV3000) {
 this.checkLineContinuation ();
 var tokens = this.getTokens ();
 elementSymbol = tokens[3];
-x = this.parseFloat (tokens[4]);
-y = this.parseFloat (tokens[5]);
-z = this.parseFloat (tokens[6]);
+x = this.parseFloatStr (tokens[4]);
+y = this.parseFloatStr (tokens[5]);
+z = this.parseFloatStr (tokens[6]);
 for (var j = 7; j < tokens.length; j++) {
 var s = tokens[j].toUpperCase ();
-if (s.startsWith ("CHG=")) charge = this.parseInt (tokens[j].substring (4));
- else if (s.startsWith ("MASS=")) isotope = this.parseInt (tokens[j].substring (5));
+if (s.startsWith ("CHG=")) charge = this.parseIntStr (tokens[j].substring (4));
+ else if (s.startsWith ("MASS=")) isotope = this.parseIntStr (tokens[j].substring (5));
 }
 if (isotope > 1 && elementSymbol.equals ("H")) isotope = 1 - isotope;
 } else {
@@ -126,13 +126,13 @@ if (this.line.length > 34) {
 elementSymbol = this.line.substring (31, 34).trim ();
 } else {
 elementSymbol = this.line.substring (31).trim ();
-}x = this.parseFloat (this.line, 0, 10);
-y = this.parseFloat (this.line, 10, 20);
-z = this.parseFloat (this.line, 20, 30);
+}x = this.parseFloatRange (this.line, 0, 10);
+y = this.parseFloatRange (this.line, 10, 20);
+z = this.parseFloatRange (this.line, 20, 30);
 if (this.line.length >= 39) {
-var code = this.parseInt (this.line, 36, 39);
+var code = this.parseIntRange (this.line, 36, 39);
 if (code >= 1 && code <= 7) charge = 4 - code;
-code = this.parseInt (this.line, 34, 36);
+code = this.parseIntRange (this.line, 34, 36);
 if (code != 0 && code >= -3 && code <= 4) {
 isotope = org.jmol.api.JmolAdapter.getNaturalIsotope (org.jmol.api.JmolAdapter.getElementNumber (elementSymbol));
 switch (isotope) {
@@ -183,20 +183,20 @@ var stereo = 0;
 if (this.isV3000) {
 this.checkLineContinuation ();
 var tokens = this.getTokens ();
-order = this.parseInt (tokens[3]);
-atomIndex1 = this.parseInt (tokens[4]);
-atomIndex2 = this.parseInt (tokens[5]);
+order = this.parseIntStr (tokens[3]);
+atomIndex1 = this.parseIntStr (tokens[4]);
+atomIndex2 = this.parseIntStr (tokens[5]);
 for (var j = 6; j < tokens.length; j++) {
 var s = tokens[j].toUpperCase ();
 if (s.startsWith ("CFG=")) {
-stereo = this.parseInt (tokens[j].substring (4));
+stereo = this.parseIntStr (tokens[j].substring (4));
 break;
 }}
 } else {
-atomIndex1 = this.parseInt (this.line, 0, 3);
-atomIndex2 = this.parseInt (this.line, 3, 6);
-order = this.parseInt (this.line, 6, 9);
-if (this.is2D && order == 1 && this.line.length >= 12) stereo = this.parseInt (this.line.substring (9, 12));
+atomIndex1 = this.parseIntRange (this.line, 0, 3);
+atomIndex2 = this.parseIntRange (this.line, 3, 6);
+order = this.parseIntRange (this.line, 6, 9);
+if (this.is2D && order == 1 && this.line.length >= 12) stereo = this.parseIntStr (this.line.substring (9, 12));
 }switch (order) {
 case 0:
 case -10:

@@ -199,7 +199,7 @@ Clazz.defineMethod (c$, "countStereo",
 s = org.jmol.util.TextFormat.simpleReplace (s, "@@", "@");
 var i = s.lastIndexOf ('@') + 1;
 var n = 0;
-for (; --i >= 0; ) if ((s.charAt (i)).charCodeAt (0) == ('@').charCodeAt (0)) n++;
+for (; --i >= 0; ) if ((s.charAt (i)).charCodeAt (0) == 64) n++;
 
 return n;
 }, $fz.isPrivate = true, $fz), "~S");

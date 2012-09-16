@@ -155,7 +155,7 @@ return (this.getAtomFromOffsetIndex (this.$isPurine ? 11 : 4));
 Clazz.overrideMethod (c$, "getHelixData", 
 function (tokType, qType, mStep) {
 return this.getHelixData2 (tokType, qType, mStep);
-}, "~N,~N,~N");
+}, "~N,~S,~N");
 Clazz.overrideMethod (c$, "getQuaternionFrameCenter", 
 function (qType) {
 switch (qType) {
@@ -179,7 +179,7 @@ case 'n':
 default:
 return this.getN0 ();
 }
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getQuaternion", 
 function (qType) {
 var ptA = null;
@@ -246,7 +246,7 @@ var vB =  new javax.vecmath.Vector3f (ptB);
 vB.sub (ptNorP);
 if (reverseY) vB.scale (-1);
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, yBased);
-}, "~N");
+}, "~S");
 Clazz.overrideMethod (c$, "isCrossLinked", 
 function (g) {
 if (!(Clazz.instanceOf (g, org.jmol.modelsetbio.NucleicMonomer)) || this.$isPurine == g.isPurine ()) return false;

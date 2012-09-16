@@ -752,7 +752,7 @@ if (fileType == null) fileType = org.jmol.util.SurfaceFileTyper.determineSurface
 if (fileType != null && fileType.startsWith ("UPPSALA")) {
 var fname = this.params.fileName;
 fname = fname.substring (0, fname.indexOf ("/", 10));
-fname += org.jmol.util.Parser.getNextQuotedString (fileType, fileType.indexOf ("A HREF") + 1);
+fname += org.jmol.util.Parser.getQuotedStringAt (fileType, fileType.indexOf ("A HREF") + 1);
 this.params.fileName = fname;
 value = this.atomDataServer.getBufferedInputStream (fname);
 if (value == null) {

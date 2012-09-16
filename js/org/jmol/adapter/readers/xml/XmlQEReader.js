@@ -55,7 +55,7 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("xmlqe: end " + 
 while (true) {
 if (!this.parent.doProcessLines) break;
 if ("NUMBER_OF_ATOMS".equals (localName)) {
-this.atomCount = this.parseInt (this.chars);
+this.atomCount = this.parseIntStr (this.chars);
 break;
 }if ("CELL_DIMENSIONS".equals (localName)) {
 this.parent.setFractionalCoordinates (true);

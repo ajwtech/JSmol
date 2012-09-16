@@ -91,9 +91,9 @@ c$.isBondType = Clazz.defineMethod (c$, "isBondType",
 function (ch, isSearch, isBioSequence) {
 if ("-=#:/\\.+!,&;@~^'".indexOf (ch) < 0) return false;
 if (!isSearch && "-=#:/\\.~^'".indexOf (ch) < 0) throw  new org.jmol.smiles.InvalidSmilesException ("SMARTS bond type " + ch + " not allowed in SMILES");
-if (isBioSequence && (ch).charCodeAt (0) == ('~').charCodeAt (0)) return false;
+if (isBioSequence && ch.charCodeAt (0) == 126) return false;
 return true;
-}, "~N,~B,~B");
+}, "~S,~B,~B");
 c$.getBondTypeFromCode = Clazz.defineMethod (c$, "getBondTypeFromCode", 
 function (code) {
 switch (code) {
@@ -123,7 +123,7 @@ case '+':
 return 96;
 }
 return -1;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "getAtom1", 
 function () {
 return this.atom1;

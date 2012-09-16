@@ -59,12 +59,12 @@ return ("B, C, N, O, P, S, F, Cl, Br, I,".indexOf (xx + ",") >= 0);
 }, "~S");
 Clazz.defineMethod (c$, "setBioAtom", 
 function (bioType) {
-this.isBioAtom = ((bioType).charCodeAt (0) != ('\0').charCodeAt (0));
+this.isBioAtom = (bioType.charCodeAt (0) != 0);
 this.bioType = bioType;
 if (this.parent != null) {
 this.parent.bioType = bioType;
 this.parent.isBioAtom = this.isBioAtom;
-}}, "~N");
+}}, "~S");
 Clazz.defineMethod (c$, "setAtomName", 
 function (name) {
 if (name == null) return ;
@@ -327,7 +327,7 @@ return this.residueName == null ? "" : this.residueName;
 Clazz.overrideMethod (c$, "getGroup1", 
 function (c0) {
 return this.residueChar == null ? "" : this.residueChar;
-}, "~N");
+}, "~S");
 Clazz.defineMethod (c$, "addBond", 
 function (bond) {
 if (this.bondCount >= this.bonds.length) {
@@ -469,19 +469,19 @@ return (count == valence ? sym : "[" + (isotopeNumber <= 0 ? "" : "" + isotopeNu
 }, "~N,~N,~N,~N,~N,~B,~S");
 Clazz.overrideMethod (c$, "isDna", 
 function () {
-return (this.bioType).charCodeAt (0) == ('d').charCodeAt (0);
+return this.bioType.charCodeAt (0) == 100;
 });
 Clazz.overrideMethod (c$, "isRna", 
 function () {
-return (this.bioType).charCodeAt (0) == ('r').charCodeAt (0);
+return this.bioType.charCodeAt (0) == 114;
 });
 Clazz.overrideMethod (c$, "isNucleic", 
 function () {
-return (this.bioType).charCodeAt (0) == ('n').charCodeAt (0) || (this.bioType).charCodeAt (0) == ('r').charCodeAt (0) || (this.bioType).charCodeAt (0) == ('d').charCodeAt (0);
+return this.bioType.charCodeAt (0) == 110 || this.bioType.charCodeAt (0) == 114 || this.bioType.charCodeAt (0) == 100;
 });
 Clazz.overrideMethod (c$, "isProtein", 
 function () {
-return (this.bioType).charCodeAt (0) == ('p').charCodeAt (0);
+return this.bioType.charCodeAt (0) == 112;
 });
 Clazz.overrideMethod (c$, "isPurine", 
 function () {

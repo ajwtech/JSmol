@@ -25,8 +25,8 @@ if (atts.containsKey ("label")) this.atom.atomName = atts.get ("label");
  else this.atom.atomName = atts.get ("id");
 if (atts.containsKey ("xyz")) {
 var xyz = atts.get ("xyz");
-var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (xyz);
-this.atom.set (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (xyz);
+this.atom.set (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
 }if (atts.containsKey ("element")) {
 this.atom.elementSymbol = atts.get ("element");
 }return ;
@@ -38,10 +38,10 @@ if (atts.containsKey ("order")) order = this.parseBondToken (atts.get ("order"))
 this.atomSetCollection.addNewBond (atom1, atom2, order);
 return ;
 }if ("boundary".equals (localName)) {
-var boxDim = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (atts.get ("box"));
-var x = this.parseFloat (boxDim[0]);
-var y = this.parseFloat (boxDim[1]);
-var z = this.parseFloat (boxDim[2]);
+var boxDim = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("box"));
+var x = this.parseFloatStr (boxDim[0]);
+var y = this.parseFloatStr (boxDim[1]);
+var z = this.parseFloatStr (boxDim[2]);
 this.parent.setUnitCellItem (0, x);
 this.parent.setUnitCellItem (1, y);
 this.parent.setUnitCellItem (2, z);
@@ -79,7 +79,7 @@ return 3;
 case 'a':
 return 515;
 }
-return this.parseInt (str);
+return this.parseIntStr (str);
 }return 1;
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.overrideMethod (c$, "processEndElement", 

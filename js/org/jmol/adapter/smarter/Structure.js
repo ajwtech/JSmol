@@ -46,5 +46,5 @@ this.startInsertionCode = startInsertionCode;
 this.endChainID = endChainID;
 this.endSequenceNumber = endSequenceNumber;
 this.endInsertionCode = endInsertionCode;
-}, "~N,org.jmol.constant.EnumStructure,org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N,~N,~N");
+}, "~N,org.jmol.constant.EnumStructure,org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~S,~N,~S");
 });

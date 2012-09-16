@@ -52,7 +52,6 @@ return (objects == null ? string : org.jmol.i18n.GT.getString (string, objects))
 }, "~S,~A,~B");
 c$.getString = Clazz.defineMethod (c$, "getString", 
 ($fz = function (string, objects) {
-System.out.println ("TESTING GT " + string);
 return java.text.MessageFormat.format (string, objects);
 }, $fz.isPrivate = true, $fz), "~S,~A");
 });

@@ -45,7 +45,7 @@ Clazz.defineMethod (c$, "getShapeProperty",
 function (shapeID, propertyName, data) {
 if (this.shapes == null || this.shapes[shapeID] == null) return false;
 this.viewer.setShapeErrorState (shapeID, "get " + propertyName);
-var result = this.shapes[shapeID].getProperty (propertyName, data);
+var result = this.shapes[shapeID].getPropertyData (propertyName, data);
 this.viewer.setShapeErrorState (-1, null);
 return result;
 }, "~N,~S,~A");
@@ -69,9 +69,8 @@ this.loadShape (32);
 Clazz.defineMethod (c$, "loadShape", 
 function (shapeID) {
 if (this.shapes == null) return null;
-if (this.shapes[shapeID] != null) {
-return this.shapes[shapeID];
-}if (shapeID == 2 || shapeID == 3 || shapeID == 4) return null;
+if (this.shapes[shapeID] != null) return this.shapes[shapeID];
+if (shapeID == 2 || shapeID == 3 || shapeID == 4) return null;
 var className = org.jmol.viewer.JmolConstants.getShapeClassName (shapeID, false);
 try {
 var shapeClass = Class.forName (className);
@@ -112,7 +111,7 @@ if (rd != null && rd.value != 0 && rd.vdwType === org.jmol.constant.EnumVdw.TEMP
 this.viewer.setShapeErrorState (shapeID, "set size");
 if (rd != null && rd.value != 0 || rd == null && size != 0) this.loadShape (shapeID);
 if (this.shapes[shapeID] != null) {
-this.shapes[shapeID].setShapeSize (size, rd, bsSelected);
+this.shapes[shapeID].setShapeSizeRD (size, rd, bsSelected);
 }this.viewer.setShapeErrorState (-1, null);
 }, "~N,~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
 Clazz.defineMethod (c$, "setLabel", 
@@ -239,7 +238,7 @@ function (bsAllAtoms) {
 if (this.shapes == null) return ;
 for (var i = 0; i < this.shapes.length; ++i) if (this.shapes[i] != null && this.shapes[i].isBioShape) {
 this.shapes[i].setModelSet (this.modelSet);
-this.shapes[i].setShapeSize (0, null, bsAllAtoms);
+this.shapes[i].setShapeSizeRD (0, null, bsAllAtoms);
 this.shapes[i].setShapeProperty ("color", org.jmol.constant.EnumPalette.NONE, bsAllAtoms);
 }
 }, "java.util.BitSet");

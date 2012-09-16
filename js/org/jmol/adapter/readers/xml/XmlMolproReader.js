@@ -50,9 +50,9 @@ if (localName.equals ("normalCoordinate")) {
 if (!this.keepChars) return ;
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 var baseAtomIndex = this.atomSetCollection.getLastAtomSetAtomIndex ();
-this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokens (this.chars);
+this.tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.chars);
 for (var offset = this.tokens.length - atomCount * 3, i = 0; i < atomCount; i++) {
-this.atomSetCollection.addVibrationVector (i + baseAtomIndex, this.parseFloat (this.tokens[offset++]), this.parseFloat (this.tokens[offset++]), this.parseFloat (this.tokens[offset++]));
+this.atomSetCollection.addVibrationVector (i + baseAtomIndex, this.parseFloatStr (this.tokens[offset++]), this.parseFloatStr (this.tokens[offset++]), this.parseFloatStr (this.tokens[offset++]));
 }
 }}, "~S");
 Clazz.overrideMethod (c$, "getHandler", 

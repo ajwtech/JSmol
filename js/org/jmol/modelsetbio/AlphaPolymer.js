@@ -13,14 +13,14 @@ return pt;
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 org.jmol.modelsetbio.BioPolymer.getPdbData (viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-}, "org.jmol.viewer.Viewer,~N,~N,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
 Clazz.defineMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
 var indexStart;
 var indexEnd;
 if ((indexStart = this.getIndex (startChainID, startSeqcode)) == -1 || (indexEnd = this.getIndex (endChainID, endSeqcode)) == -1) return ;
 this.addSecondaryStructure (type, structureID, serialID, strandCount, indexStart, indexEnd);
-}, "org.jmol.constant.EnumStructure,~S,~N,~N,~N,~N,~N,~N");
+}, "org.jmol.constant.EnumStructure,~S,~N,~N,~S,~N,~S,~N");
 Clazz.defineMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, indexStart, indexEnd) {
 if (indexEnd < indexStart) {

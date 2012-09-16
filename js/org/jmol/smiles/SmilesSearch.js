@@ -324,7 +324,7 @@ var bs = this.bsFound.clone ();
 if (newPatternAtom.notBondedIndex >= 0) {
 var pa = this.patternAtoms[newPatternAtom.notBondedIndex];
 var a = this.jmolAtoms[pa.getMatchingAtom ()];
-if ((pa.bioType).charCodeAt (0) == ('\0').charCodeAt (0)) {
+if (pa.bioType.charCodeAt (0) == 0) {
 jmolBonds = a.getEdges ();
 for (var k = 0; k < jmolBonds.length; k++) bs.set (jmolBonds[k].getOtherAtom (a).getIndex ());
 

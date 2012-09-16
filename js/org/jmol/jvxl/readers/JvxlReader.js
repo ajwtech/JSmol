@@ -16,18 +16,18 @@ if (this.readLine () == null || this.line.length == 0) this.line = "Line 2";
 this.jvxlFileHeaderBuffer.append (this.line).append ('\n');
 this.jvxlFileHeaderBuffer.append (this.skipComments (false));
 var atomLine = this.line;
-var tokens = org.jmol.util.Parser.getTokens (atomLine, 0);
+var tokens = org.jmol.util.Parser.getTokensAt (atomLine, 0);
 this.isXLowToHigh = false;
 this.negativeAtomCount = true;
 this.atomCount = 0;
 if (tokens[0] === "-0") {
-} else if ((tokens[0].charAt (0)).charCodeAt (0) == ('+').charCodeAt (0)) {
+} else if ((tokens[0].charAt (0)).charCodeAt (0) == 43) {
 this.isXLowToHigh = true;
-this.atomCount = this.parseInt (tokens[0].substring (1));
+this.atomCount = this.parseIntStr (tokens[0].substring (1));
 } else {
-this.atomCount = -this.parseInt (tokens[0]);
+this.atomCount = -this.parseIntStr (tokens[0]);
 }if (this.atomCount == -2147483648) return ;
-this.volumetricOrigin.set (this.parseFloat (tokens[1]), this.parseFloat (tokens[2]), this.parseFloat (tokens[3]));
+this.volumetricOrigin.set (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 this.isAngstroms = org.jmol.jvxl.readers.VolumeFileReader.checkAtomLine (this.isXLowToHigh, this.isAngstroms, null, atomLine, this.jvxlFileHeaderBuffer);
 if (!this.isAngstroms) this.volumetricOrigin.scale (0.5291772);
 this.readVoxelVector (0);
@@ -37,7 +37,7 @@ this.skipComments (true);
 for (var i = 0; i < this.atomCount; ++i) this.jvxlFileHeaderBuffer.append (this.readLine () + "\n");
 
 org.jmol.util.Logger.info ("Reading extra JVXL information line: " + this.line);
-this.nSurfaces = this.parseInt (this.line);
+this.nSurfaces = this.parseIntStr (this.line);
 if (!(this.isJvxl = (this.nSurfaces < 0))) return ;
 this.nSurfaces = -this.nSurfaces;
 org.jmol.util.Logger.info ("jvxl file surfaces: " + this.nSurfaces);
@@ -88,7 +88,7 @@ Clazz.defineMethod (c$, "jvxlReadDefinitionLine",
 var comment = this.skipComments (true);
 if (showMsg) org.jmol.util.Logger.info ("reading jvxl data set: " + comment + this.line);
 this.haveContourData = (comment.indexOf ("+contourlines") >= 0);
-this.jvxlCutoff = this.parseFloat (this.line);
+this.jvxlCutoff = this.parseFloatStr (this.line);
 org.jmol.util.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
 var param1 = this.parseInt ();
 var param2 = this.parseInt ();
@@ -113,10 +113,10 @@ this.params.thePlane = null;
 this.params.isContoured = (param3 != 0);
 var nContoursRead = this.parseInt ();
 if (nContoursRead == -2147483648) {
-if ((this.line.charAt (this.next[0])).charCodeAt (0) == ('[').charCodeAt (0)) {
+if ((this.line.charAt (this.next[0])).charCodeAt (0) == 91) {
 this.jvxlData.contourValues = this.params.contoursDiscrete = this.parseFloatArray ();
 org.jmol.util.Logger.info ("JVXL read: contourValues " + org.jmol.util.Escape.escapeArray (this.jvxlData.contourValues));
-this.jvxlData.contourColixes = this.params.contourColixes = org.jmol.util.Colix.getColixArray (this.getNextQuotedString ());
+this.jvxlData.contourColixes = this.params.contourColixes = org.jmol.util.Colix.getColixArray (this.getQuotedStringNext ());
 this.jvxlData.contourColors = org.jmol.util.Colix.getHexCodes (this.jvxlData.contourColixes);
 org.jmol.util.Logger.info ("JVXL read: contourColixes " + this.jvxlData.contourColors);
 this.params.nContours = this.jvxlData.contourValues.length;
@@ -178,7 +178,7 @@ if ($private != null) {
 return $private.apply (this, arguments);
 }
 var count = 0;
-var n = this.parseInt (str);
+var n = this.parseIntStr (str);
 while (n != -2147483648) {
 count += n;
 n = this.parseIntNext (str);

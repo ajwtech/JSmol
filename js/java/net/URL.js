@@ -74,18 +74,18 @@ if (sm != null) {
 this.checkSpecifyHandler (sm);
 }}try {
 limit = spec.length;
-while ((limit > 0) && ((spec.charAt (limit - 1)).charCodeAt (0) <= (' ').charCodeAt (0))) {
+while ((limit > 0) && ((spec.charAt (limit - 1)).charCodeAt (0) <= 32)) {
 limit--;
 }
-while ((start < limit) && ((spec.charAt (start)).charCodeAt (0) <= (' ').charCodeAt (0))) {
+while ((start < limit) && ((spec.charAt (start)).charCodeAt (0) <= 32)) {
 start++;
 }
 if (spec.regionMatches (true, start, "url:", 0, 4)) {
 start += 4;
-}if (start < spec.length && (spec.charAt (start)).charCodeAt (0) == ('#').charCodeAt (0)) {
+}if (start < spec.length && (spec.charAt (start)).charCodeAt (0) == 35) {
 aRef = true;
-}for (i = start; !aRef && (i < limit) && ((c = (spec.charAt (i)).charCodeAt (0)) != ('/').charCodeAt (0)); i++) {
-if (c == (':').charCodeAt (0)) {
+}for (i = start; !aRef && (i < limit) && ((c = (spec.charAt (i)).charCodeAt (0)) != 47); i++) {
+if (c == 58) {
 var s = spec.substring (start, i).toLowerCase ();
 if (this.isValidProtocol (s)) {
 newProtocol = s;
@@ -146,7 +146,7 @@ var c = protocol.charAt (0);
 if (!Character.isLetter (c)) return false;
 for (var i = 1; i < len; i++) {
 c = protocol.charAt (i);
-if (!Character.isLetterOrDigit (c) && (c).charCodeAt (0) != ('.').charCodeAt (0) && (c).charCodeAt (0) != ('+').charCodeAt (0) && (c).charCodeAt (0) != ('-').charCodeAt (0)) {
+if (!Character.isLetterOrDigit (c) && c.charCodeAt (0) != 46 && c.charCodeAt (0) != 43 && c.charCodeAt (0) != 45) {
 return false;
 }}
 return true;

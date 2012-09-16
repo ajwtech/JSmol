@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jmol.modelsetbio.AminoPolymer.Bridge")) {
 org.jmol.modelsetbio.AminoPolymer.$AminoPolymer$Bridge$ ();
@@ -61,7 +61,7 @@ case 'c':
 case 'C':
 return (psi - psiLast + phiNext - phi);
 }
-}, "~N,~N");
+}, "~N,~S");
 Clazz.defineMethod (c$, "calcRasmolHydrogenBonds", 
 function (polymer, bsA, bsB, vHBonds, nMaxPerResidue, min, checkDistances, dsspIgnoreHydrogens) {
 if (polymer == null) polymer = this;
@@ -266,7 +266,7 @@ org.jmol.modelsetbio.AminoPolymer.addHbond (vHBonds, this.monomers[i], this.mono
 var taglines;
 if (doReport) {
 taglines =  Clazz.newArray (this.monomerCount, '\0');
-this.setTag (taglines, bsNNN, String.fromCharCode ((('0').charCodeAt (0) + pitch)));
+this.setTag (taglines, bsNNN, String.fromCharCode ((48 + pitch)));
 this.setTag (taglines, bsStart, '>');
 this.setTag (taglines, bsStop, '<');
 this.setTag (taglines, bsX, 'X');
@@ -278,7 +278,7 @@ bsTurn.or (bsNNN);
 bsTurn.andNot (bsHelix);
 if (setStructure) this.setStructure (bsHelix, subtype);
 if (doReport) {
-this.setTag (labels, bsHelix, String.fromCharCode ((('D').charCodeAt (0) + pitch)));
+this.setTag (labels, bsHelix, String.fromCharCode ((68 + pitch)));
 return String.valueOf (taglines) + warning;
 }return "";
 }, $fz.isPrivate = true, $fz), "~N,~A,~N,org.jmol.constant.EnumStructure,~N,java.util.BitSet,java.util.BitSet,~A,~B,~B,java.util.List,java.util.BitSet");
@@ -331,7 +331,7 @@ var oxygen = (acceptor).getCarbonylOxygenAtom ();
 if (htTemp != null) {
 var key = nitrogen.index + " " + oxygen.index;
 if (htTemp.containsKey (key)) return ;
-htTemp.put (key, Boolean.TRUE);
+htTemp.put (key, org.jmol.viewer.JmolConstants.TRUE);
 }vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, type, iEnergy / 1000));
 }, $fz.isPrivate = true, $fz), "java.util.List,org.jmol.modelsetbio.Monomer,org.jmol.modelsetbio.Monomer,~N,~N,java.util.Map");
 c$.getSheetStructures = Clazz.defineMethod (c$, "getSheetStructures", 
@@ -422,11 +422,11 @@ Clazz.defineMethod (c$, "setTag",
 ($fz = function (tags, bs, ch) {
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) tags[i] = ch;
 
-}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet,~N");
+}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet,~S");
 Clazz.defineMethod (c$, "dumpSummary", 
 ($fz = function (labels) {
 var id = this.monomers[0].getLeadAtom ().getChainID ();
-var prefix = ((id).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : String.valueOf (id) + ":");
+var prefix = (id.charCodeAt (0) == 0 ? "" : String.valueOf (id) + ":");
 var sb =  new StringBuffer ();
 var lastChar = '\0';
 var insCode1 = '\0';
@@ -434,8 +434,8 @@ var insCode2 = '\0';
 var firstResno = -1;
 var lastResno = -1;
 for (var i = 0; i <= this.monomerCount; i++) {
-if (i == this.monomerCount || (labels[i]).charCodeAt (0) != (lastChar).charCodeAt (0)) {
-if ((lastChar).charCodeAt (0) != ('\0').charCodeAt (0)) sb.append ('\n').append (lastChar).append (" : ").append (prefix).append (firstResno).append ((insCode1).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : String.valueOf (insCode1)).append ("_").append (prefix).append (lastResno).append ((insCode2).charCodeAt (0) == ('\0').charCodeAt (0) ? "" : String.valueOf (insCode2));
+if (i == this.monomerCount || (labels[i]).charCodeAt (0) != lastChar.charCodeAt (0)) {
+if (lastChar.charCodeAt (0) != 0) sb.append ('\n').append (lastChar).append (" : ").append (prefix).append (firstResno).append (insCode1.charCodeAt (0) == 0 ? "" : String.valueOf (insCode1)).append ("_").append (prefix).append (lastResno).append (insCode2.charCodeAt (0) == 0 ? "" : String.valueOf (insCode2));
 if (i == this.monomerCount) break;
 lastChar = labels[i];
 firstResno = this.monomers[i].getResno ();
@@ -493,9 +493,9 @@ structureTags[i] = 'n';
 }if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ((0 + (this.monomers[0].getChainID ()).charCodeAt (0)) + " aminopolymer:" + i + " " + trailingResidue.getGroupParameter (1112539143) + "," + leadingResidue.getGroupParameter (1112539144) + " " + structureTags[i]);
 }
 for (var start = 0; start < this.monomerCount; ++start) {
-if ((structureTags[start]).charCodeAt (0) == ('4').charCodeAt (0)) {
+if ((structureTags[start]).charCodeAt (0) == 52) {
 var end;
-for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == ('4').charCodeAt (0); ++end) {
+for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == 52; ++end) {
 }
 end--;
 if (end >= start + 3) {
@@ -503,9 +503,9 @@ this.addSecondaryStructure (org.jmol.constant.EnumStructure.HELIX, null, 0, 0, s
 }start = end;
 }}
 for (var start = 0; start < this.monomerCount; ++start) {
-if ((structureTags[start]).charCodeAt (0) == ('3').charCodeAt (0)) {
+if ((structureTags[start]).charCodeAt (0) == 51) {
 var end;
-for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == ('3').charCodeAt (0); ++end) {
+for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == 51; ++end) {
 }
 end--;
 if (end >= start + 3) {
@@ -513,9 +513,9 @@ this.addSecondaryStructure (org.jmol.constant.EnumStructure.HELIX, null, 0, 0, s
 }start = end;
 }}
 for (var start = 0; start < this.monomerCount; ++start) {
-if ((structureTags[start]).charCodeAt (0) == ('s').charCodeAt (0)) {
+if ((structureTags[start]).charCodeAt (0) == 115) {
 var end;
-for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == ('s').charCodeAt (0); ++end) {
+for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == 115; ++end) {
 }
 end--;
 if (end >= start + 2) {
@@ -523,9 +523,9 @@ this.addSecondaryStructure (org.jmol.constant.EnumStructure.SHEET, null, 0, 0, s
 }start = end;
 }}
 for (var start = 0; start < this.monomerCount; ++start) {
-if ((structureTags[start]).charCodeAt (0) == ('t').charCodeAt (0)) {
+if ((structureTags[start]).charCodeAt (0) == 116) {
 var end;
-for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == ('t').charCodeAt (0); ++end) {
+for (end = start + 1; end < this.monomerCount && (structureTags[end]).charCodeAt (0) == 116; ++end) {
 }
 end--;
 if (end >= start + 2) {
@@ -576,7 +576,7 @@ this.addLadder (c);
 }, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,java.util.Map");
 Clazz.defineMethod (c$, "addLadder", 
 ($fz = function (a) {
-a.put (this.ladder, (this.isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
+a.put (this.ladder, (this.isAntiparallel ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
 }, $fz.isPrivate = true, $fz), "java.util.Map");
 Clazz.overrideMethod (c$, "toString", 
 function () {
