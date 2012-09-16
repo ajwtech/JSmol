@@ -1,4 +1,5 @@
-﻿
+//BH 9/10/2012 6:27:21 AM added java.net.URL... classes
+
 java.lang.Number=Number;
 if(Clazz.supportsNativeObject){
 for(var i=0;i<Clazz.extendedObjectMethods.length;i++){
@@ -2072,6 +2073,7 @@ return this.undeclaredThrowable;
 
 c$=$_T(java.io,"IOException",Exception);
 
+
 c$=$_T(java.io,"CharConversionException",java.io.IOException);
 
 c$=$_T(java.io,"EOFException",java.io.IOException);
@@ -2604,6 +2606,9 @@ return encodeURIComponent(arguments[0]);
 },"~S,~S");
 $_S(c$,
 "digits","0123456789ABCDEF");
+
+c$=$_T(java.net,"MalformedURLException",java.io.IOException);
+
 $_J("java.net");
 $_L(null,"java.net.URLDecoder",["java.lang.NullPointerException"],function(){
 c$=$_T(java.net,"URLDecoder");
@@ -2620,6 +2625,529 @@ return decodeURIComponent(arguments[0]);
 }return null;
 },"~S,~S");
 });
+
+Clazz.declarePackage ("java.net");
+Clazz.declareInterface (java.net, "URLStreamHandlerFactory");
+
+Clazz.declarePackage ("java.net");
+Clazz.load (null, "java.net.URLStreamHandler", ["java.lang.IllegalArgumentException", "$.SecurityException", "$.StringBuffer", "$.UnsupportedOperationException"], function () {
+c$ = Clazz.declareType (java.net, "URLStreamHandler");
+Clazz.defineMethod (c$, "openConnection",
+function (u, p) {
+throw  new UnsupportedOperationException ("Method not implemented.");
+}, "java.net.URL,java.net.Proxy");
+Clazz.defineMethod (c$, "parseURL",
+function (u, spec, start, limit) {
+var protocol = u.getProtocol ();
+var authority = u.getAuthority ();
+var userInfo = u.getUserInfo ();
+var host = u.getHost ();
+var port = u.getPort ();
+var path = u.getPath ();
+var query = u.getQuery ();
+var ref = u.getRef ();
+var isRelPath = false;
+var queryOnly = false;
+if (start < limit) {
+var queryStart = spec.indexOf ('?');
+queryOnly = queryStart == start;
+if ((queryStart != -1) && (queryStart < limit)) {
+query = spec.substring (queryStart + 1, limit);
+if (limit > queryStart) limit = queryStart;
+spec = spec.substring (0, queryStart);
+}}var i = 0;
+var isUNCName = (start <= limit - 4) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 2)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 3)).charCodeAt (0) == ('/').charCodeAt (0));
+if (!isUNCName && (start <= limit - 2) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0))) {
+start += 2;
+i = spec.indexOf ('/', start);
+if (i < 0) {
+i = spec.indexOf ('?', start);
+if (i < 0) i = limit;
+}host = authority = spec.substring (start, i);
+var ind = authority.indexOf ('@');
+if (ind != -1) {
+userInfo = authority.substring (0, ind);
+host = authority.substring (ind + 1);
+} else {
+userInfo = null;
+}if (host != null) {
+if (host.length > 0 && ((host.charAt (0)).charCodeAt (0) == ('[').charCodeAt (0))) {
+throw  new IllegalArgumentException ("Invalid host: " + host);
+} else {
+ind = host.indexOf (':');
+port = -1;
+if (ind >= 0) {
+if (host.length > (ind + 1)) {
+port = Integer.parseInt (host.substring (ind + 1));
+}host = host.substring (0, ind);
+}}} else {
+host = "";
+}if (port < -1) throw  new IllegalArgumentException ("Invalid port number :" + port);
+start = i;
+if (authority != null && authority.length > 0) path = "";
+}if (host == null) {
+host = "";
+}if (start < limit) {
+if ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) {
+path = spec.substring (start, limit);
+} else if (path != null && path.length > 0) {
+isRelPath = true;
+var ind = path.lastIndexOf ('/');
+var seperator = "";
+if (ind == -1 && authority != null) seperator = "/";
+path = path.substring (0, ind + 1) + seperator + spec.substring (start, limit);
+} else {
+var seperator = (authority != null) ? "/" : "";
+path = seperator + spec.substring (start, limit);
+}} else if (queryOnly && path != null) {
+var ind = path.lastIndexOf ('/');
+if (ind < 0) ind = 0;
+path = path.substring (0, ind) + "/";
+}if (path == null) path = "";
+if (isRelPath) {
+while ((i = path.indexOf ("/./")) >= 0) {
+path = path.substring (0, i) + path.substring (i + 2);
+}
+i = 0;
+while ((i = path.indexOf ("/../", i)) >= 0) {
+if (i > 0 && (limit = path.lastIndexOf ('/', i - 1)) >= 0 && (path.indexOf ("/../", limit) != 0)) {
+path = path.substring (0, limit) + path.substring (i + 3);
+i = 0;
+} else {
+i = i + 3;
+}}
+while (path.endsWith ("/..")) {
+i = path.indexOf ("/..");
+if ((limit = path.lastIndexOf ('/', i - 1)) >= 0) {
+path = path.substring (0, limit + 1);
+} else {
+break;
+}}
+if (path.startsWith ("./") && path.length > 2) path = path.substring (2);
+if (path.endsWith ("/.")) path = path.substring (0, path.length - 1);
+}this.setURL (u, protocol, host, port, authority, userInfo, path, query, ref);
+}, "java.net.URL,~S,~N,~N");
+Clazz.defineMethod (c$, "getDefaultPort",
+function () {
+return -1;
+});
+Clazz.defineMethod (c$, "equals",
+function (u1, u2) {
+var ref1 = u1.getRef ();
+var ref2 = u2.getRef ();
+return (ref1 === ref2 || (ref1 != null && ref1.equals (ref2))) && this.sameFile (u1, u2);
+}, "java.net.URL,java.net.URL");
+Clazz.defineMethod (c$, "hashCode",
+function (u) {
+var h = 0;
+var protocol = u.getProtocol ();
+if (protocol != null) h += protocol.hashCode ();
+h += u.toString ().hashCode ();
+var file = u.getFile ();
+if (file != null) h += file.hashCode ();
+if (u.getPort () == -1) h += this.getDefaultPort ();
+ else h += u.getPort ();
+var ref = u.getRef ();
+if (ref != null) h += ref.hashCode ();
+return h;
+}, "java.net.URL");
+Clazz.defineMethod (c$, "sameFile",
+function (u1, u2) {
+if (!((u1.getProtocol () === u2.getProtocol ()) || (u1.getProtocol () != null && u1.getProtocol ().equalsIgnoreCase (u2.getProtocol ())))) return false;
+if (!(u1.getFile () === u2.getFile () || (u1.getFile () != null && u1.getFile ().equals (u2.getFile ())))) return false;
+var port1;
+var port2;
+port1 = (u1.getPort () != -1) ? u1.getPort () : u1.handler.getDefaultPort ();
+port2 = (u2.getPort () != -1) ? u2.getPort () : u2.handler.getDefaultPort ();
+if (port1 != port2) return false;
+if (!this.hostsEqual (u1, u2)) return false;
+return true;
+}, "java.net.URL,java.net.URL");
+Clazz.defineMethod (c$, "hostsEqual",
+function (u1, u2) {
+if (u1.getHost () != null && u2.getHost () != null) return u1.getHost ().equalsIgnoreCase (u2.getHost ());
+ else return u1.getHost () == null && u2.getHost () == null;
+}, "java.net.URL,java.net.URL");
+Clazz.defineMethod (c$, "toExternalForm",
+function (u) {
+var len = u.getProtocol ().length + 1;
+if (u.getAuthority () != null && u.getAuthority ().length > 0) len += 2 + u.getAuthority ().length;
+if (u.getPath () != null) {
+len += u.getPath ().length;
+}if (u.getQuery () != null) {
+len += 1 + u.getQuery ().length;
+}if (u.getRef () != null) len += 1 + u.getRef ().length;
+var result =  new StringBuffer (len);
+result.append (u.getProtocol ());
+result.append (":");
+if (u.getAuthority () != null && u.getAuthority ().length > 0) {
+result.append ("//");
+result.append (u.getAuthority ());
+}if (u.getPath () != null) {
+result.append (u.getPath ());
+}if (u.getQuery () != null) {
+result.append ('?');
+result.append (u.getQuery ());
+}if (u.getRef () != null) {
+result.append ("#");
+result.append (u.getRef ());
+}return result.toString ();
+}, "java.net.URL");
+Clazz.defineMethod (c$, "setURL",
+function (u, protocol, host, port, authority, userInfo, path, query, ref) {
+if (this !== u.handler) {
+throw  new SecurityException ("handler for url different from this handler");
+}u.set (u.getProtocol (), host, port, authority, userInfo, path, query, ref);
+}, "java.net.URL,~S,~S,~N,~S,~S,~S,~S,~S");
+Clazz.defineMethod (c$, "setURL",
+function (u, protocol, host, port, file, ref) {
+var authority = null;
+var userInfo = null;
+if (host != null && host.length != 0) {
+authority = (port == -1) ? host : host + ":" + port;
+var at = host.lastIndexOf ('@');
+if (at != -1) {
+userInfo = host.substring (0, at);
+host = host.substring (at + 1);
+}}var path = null;
+var query = null;
+if (file != null) {
+var q = file.lastIndexOf ('?');
+if (q != -1) {
+query = file.substring (q + 1);
+path = file.substring (0, q);
+} else path = file;
+}this.setURL (u, protocol, host, port, authority, userInfo, path, query, ref);
+}, "java.net.URL,~S,~S,~N,~S,~S");
+});
+
+Clazz.declarePackage ("java.net");
+c$ = Clazz.decorateAsClass (function () {
+this.path = null;
+this.query = null;
+this.ref = null;
+Clazz.instantialize (this, arguments);
+}, java.net, "Parts");
+Clazz.makeConstructor (c$, 
+function (file) {
+var ind = file.indexOf ('#');
+this.ref = ind < 0 ? null : file.substring (ind + 1);
+file = ind < 0 ? file : file.substring (0, ind);
+var q = file.lastIndexOf ('?');
+if (q != -1) {
+this.query = file.substring (q + 1);
+this.path = file.substring (0, q);
+} else {
+this.path = file;
+}}, "~S");
+Clazz.defineMethod (c$, "getPath", 
+function () {
+return this.path;
+});
+Clazz.defineMethod (c$, "getQuery", 
+function () {
+return this.query;
+});
+Clazz.defineMethod (c$, "getRef", 
+function () {
+return this.ref;
+});
+
+Clazz.declarePackage ("java.net");
+Clazz.load (["java.util.Hashtable"], "java.net.URL", ["java.io.IOException", "java.lang.Character", "$.Error", "java.net.MalformedURLException", "$.Parts"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.protocol = null;
+this.host = null;
+this.port = -1;
+this.file = null;
+this.query = null;
+this.authority = null;
+this.path = null;
+this.userInfo = null;
+this.ref = null;
+this.handler = null;
+this.$hashCode = -1;
+Clazz.instantialize (this, arguments);
+}, java.net, "URL", null, java.io.Serializable);
+Clazz.makeConstructor (c$, 
+function (protocol, host, port, file) {
+this.construct (protocol, host, port, file, null);
+}, "~S,~S,~N,~S");
+Clazz.makeConstructor (c$, 
+function (protocol, host, file) {
+this.construct (protocol, host, -1, file);
+}, "~S,~S,~S");
+Clazz.makeConstructor (c$, 
+function (protocol, host, port, file, handler) {
+if (handler != null) {
+var sm = System.getSecurityManager ();
+if (sm != null) {
+this.checkSpecifyHandler (sm);
+}}protocol = protocol.toLowerCase ();
+this.protocol = protocol;
+if (host != null) {
+if (host.indexOf (':') >= 0 && !host.startsWith ("[")) {
+host = "[" + host + "]";
+}this.host = host;
+if (port < -1) {
+throw  new java.net.MalformedURLException ("Invalid port number :" + port);
+}this.port = port;
+this.authority = (port == -1) ? host : host + ":" + port;
+}var parts =  new java.net.Parts (file);
+this.path = parts.getPath ();
+this.query = parts.getQuery ();
+if (this.query != null) {
+this.file = this.path + "?" + this.query;
+} else {
+this.file = this.path;
+}this.ref = parts.getRef ();
+if (handler == null && (handler = java.net.URL.getURLStreamHandler (protocol)) == null) {
+throw  new java.net.MalformedURLException ("unknown protocol: " + protocol);
+}this.handler = handler;
+}, "~S,~S,~N,~S,java.net.URLStreamHandler");
+Clazz.makeConstructor (c$, 
+function (spec) {
+this.construct (null, spec);
+}, "~S");
+Clazz.makeConstructor (c$, 
+function (context, spec) {
+this.construct (context, spec, null);
+}, "java.net.URL,~S");
+Clazz.makeConstructor (c$, 
+function (context, spec, handler) {
+var original = spec;
+var i;
+var limit;
+var c;
+var start = 0;
+var newProtocol = null;
+var aRef = false;
+var isRelative = false;
+if (handler != null) {
+var sm = System.getSecurityManager ();
+if (sm != null) {
+this.checkSpecifyHandler (sm);
+}}try {
+limit = spec.length;
+while ((limit > 0) && ((spec.charAt (limit - 1)).charCodeAt (0) <= (' ').charCodeAt (0))) {
+limit--;
+}
+while ((start < limit) && ((spec.charAt (start)).charCodeAt (0) <= (' ').charCodeAt (0))) {
+start++;
+}
+if (spec.regionMatches (true, start, "url:", 0, 4)) {
+start += 4;
+}if (start < spec.length && (spec.charAt (start)).charCodeAt (0) == ('#').charCodeAt (0)) {
+aRef = true;
+}for (i = start; !aRef && (i < limit) && ((c = (spec.charAt (i)).charCodeAt (0)) != ('/').charCodeAt (0)); i++) {
+if (c == (':').charCodeAt (0)) {
+var s = spec.substring (start, i).toLowerCase ();
+if (this.isValidProtocol (s)) {
+newProtocol = s;
+start = i + 1;
+}break;
+}}
+this.protocol = newProtocol;
+if ((context != null) && ((newProtocol == null) || newProtocol.equalsIgnoreCase (context.protocol))) {
+if (handler == null) {
+handler = context.handler;
+}if (context.path != null && context.path.startsWith ("/")) newProtocol = null;
+if (newProtocol == null) {
+this.protocol = context.protocol;
+this.authority = context.authority;
+this.userInfo = context.userInfo;
+this.host = context.host;
+this.port = context.port;
+this.file = context.file;
+this.path = context.path;
+isRelative = true;
+}}if (this.protocol == null) {
+throw  new java.net.MalformedURLException ("no protocol: " + original);
+}if (handler == null && (handler = java.net.URL.getURLStreamHandler (this.protocol)) == null) {
+throw  new java.net.MalformedURLException ("unknown protocol: " + this.protocol);
+}this.handler = handler;
+i = spec.indexOf ('#', start);
+if (i >= 0) {
+this.ref = spec.substring (i + 1, limit);
+limit = i;
+}if (isRelative && start == limit) {
+this.query = context.query;
+if (this.ref == null) {
+this.ref = context.ref;
+}}
+//Clazz.alert(["corz URL ", handler])
+handler.parseURL (this, spec, start, limit);
+} catch (e$$) {
+if (Clazz.instanceOf (e$$, java.net.MalformedURLException)) {
+var e = e$$;
+{
+throw e;
+}
+} else if (Clazz.instanceOf (e$$, Exception)) {
+var e = e$$;
+{
+var exception =  new java.net.MalformedURLException (e.getMessage ());
+exception.initCause (e);
+throw exception;
+}
+} else {
+throw e$$;
+}
+}
+}, "java.net.URL,~S,java.net.URLStreamHandler");
+Clazz.defineMethod (c$, "isValidProtocol", 
+($fz = function (protocol) {
+var len = protocol.length;
+if (len < 1) return false;
+var c = protocol.charAt (0);
+if (!Character.isLetter (c)) return false;
+for (var i = 1; i < len; i++) {
+c = protocol.charAt (i);
+if (!Character.isLetterOrDigit (c) && (c).charCodeAt (0) != ('.').charCodeAt (0) && (c).charCodeAt (0) != ('+').charCodeAt (0) && (c).charCodeAt (0) != ('-').charCodeAt (0)) {
+return false;
+}}
+return true;
+}, $fz.isPrivate = true, $fz), "~S");
+Clazz.defineMethod (c$, "checkSpecifyHandler", 
+($fz = function (sm) {
+}, $fz.isPrivate = true, $fz), "SecurityManager");
+Clazz.defineMethod (c$, "set", 
+function (protocol, host, port, file, ref) {
+{
+this.protocol = protocol;
+this.host = host;
+this.authority = port == -1 ? host : host + ":" + port;
+this.port = port;
+this.file = file;
+this.ref = ref;
+this.$hashCode = -1;
+var q = file.lastIndexOf ('?');
+if (q != -1) {
+this.query = file.substring (q + 1);
+this.path = file.substring (0, q);
+} else this.path = file;
+}}, "~S,~S,~N,~S,~S");
+Clazz.defineMethod (c$, "set", 
+function (protocol, host, port, authority, userInfo, path, query, ref) {
+{
+this.protocol = protocol;
+this.host = host;
+this.port = port;
+this.file = query == null ? path : path + "?" + query;
+this.userInfo = userInfo;
+this.path = path;
+this.ref = ref;
+this.$hashCode = -1;
+this.query = query;
+this.authority = authority;
+}}, "~S,~S,~N,~S,~S,~S,~S,~S");
+Clazz.defineMethod (c$, "getQuery", 
+function () {
+return this.query;
+});
+Clazz.defineMethod (c$, "getPath", 
+function () {
+return this.path;
+});
+Clazz.defineMethod (c$, "getUserInfo", 
+function () {
+return this.userInfo;
+});
+Clazz.defineMethod (c$, "getAuthority", 
+function () {
+return this.authority;
+});
+Clazz.defineMethod (c$, "getPort", 
+function () {
+return this.port;
+});
+Clazz.defineMethod (c$, "getDefaultPort", 
+function () {
+return this.handler.getDefaultPort ();
+});
+Clazz.defineMethod (c$, "getProtocol", 
+function () {
+return this.protocol;
+});
+Clazz.defineMethod (c$, "getHost", 
+function () {
+return this.host;
+});
+Clazz.defineMethod (c$, "getFile", 
+function () {
+return this.file;
+});
+Clazz.defineMethod (c$, "getRef", 
+function () {
+return this.ref;
+});
+Clazz.overrideMethod (c$, "equals", 
+function (obj) {
+if (!(Clazz.instanceOf (obj, java.net.URL))) return false;
+var u2 = obj;
+return this.handler.equals (this, u2);
+}, "~O");
+Clazz.overrideMethod (c$, "hashCode", 
+function () {
+if (this.$hashCode != -1) return this.$hashCode;
+this.$hashCode = this.handler.hashCode (this);
+return this.$hashCode;
+});
+Clazz.defineMethod (c$, "sameFile", 
+function (other) {
+return this.handler.sameFile (this, other);
+}, "java.net.URL");
+Clazz.overrideMethod (c$, "toString", 
+function () {
+return this.toExternalForm ();
+});
+Clazz.defineMethod (c$, "toExternalForm", 
+function () {
+return this.handler.toExternalForm (this);
+});
+Clazz.defineMethod (c$, "openConnection", 
+function () {
+return this.handler.openConnection (this);
+});
+Clazz.defineMethod (c$, "openStream", 
+function () {
+return this.openConnection ().getInputStream ();
+});
+Clazz.defineMethod (c$, "getContent", 
+function () {
+return this.openConnection ().getContent ();
+});
+Clazz.defineMethod (c$, "getContent", 
+function (classes) {
+return this.openConnection ().getContent (classes);
+}, "~A");
+c$.setURLStreamHandlerFactory = Clazz.defineMethod (c$, "setURLStreamHandlerFactory", 
+function (fac) {
+{
+if (java.net.URL.factory != null) {
+throw  new Error ("factory already defined");
+}var security = System.getSecurityManager ();
+if (security != null) {
+security.checkSetFactory ();
+}java.net.URL.handlers.clear ();
+($t$ = java.net.URL.factory = fac, java.net.URL.prototype.factory = java.net.URL.factory, $t$);
+}}, "java.net.URLStreamHandlerFactory");
+c$.getURLStreamHandler = Clazz.defineMethod (c$, "getURLStreamHandler", 
+function (protocol) {
+var handler = java.net.URL.handlers.get (protocol);
+if (handler == null) {
+if (java.net.URL.factory != null) {
+handler = java.net.URL.factory.createURLStreamHandler (protocol);
+}}return handler;
+}, "~S");
+Clazz.defineStatics (c$,
+"factory", null);
+c$.handlers = c$.prototype.handlers =  new java.util.Hashtable ();
+c$.streamHandlerLock = c$.prototype.streamHandlerLock =  new JavaObject ();
+});
+
+
+
 Clazz.declarePackage("net.sf.j2s.ajax");
 c$=Clazz.decorateAsClass(function(){
 this.transport=null;
@@ -5496,3 +6024,4 @@ r.run();
 $_S(c$,
 "singleton",null);
 });
+

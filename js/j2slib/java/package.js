@@ -28,7 +28,11 @@ window["java.registered"] = false;
         "$.Method",
         
 		"java.net.URLEncoder",
-		"java.net.URLDecoder",
+		"$.URLDecoder",
+		"$.Parts",
+		"$.URL",
+		"$.URLStreamHandler",
+		"$.URLStreamHandlerFactory",
 
 		"net.sf.j2s.ajax.HttpRequest",
 		"$.ARunnable",
