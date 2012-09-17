@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.MolecularOrbital", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "org.jmol.constant.EnumQuantumShell", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.Escape", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.MolecularOrbital", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "org.jmol.constant.EnumQuantumShell", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.moTranslucency = null;
 this.moTranslucentLevel = null;
@@ -65,14 +65,14 @@ return ;
 }return ;
 }if ("cutoff" === propertyName) {
 this.thisModel.put ("moCutoff", value);
-this.thisModel.put ("moIsPositiveOnly", org.jmol.viewer.JmolConstants.FALSE);
+this.thisModel.put ("moIsPositiveOnly", Boolean.FALSE);
 return ;
 }if ("scale" === propertyName) {
 this.thisModel.put ("moScale", value);
 return ;
 }if ("cutoffPositive" === propertyName) {
 this.thisModel.put ("moCutoff", value);
-this.thisModel.put ("moIsPositiveOnly", org.jmol.viewer.JmolConstants.TRUE);
+this.thisModel.put ("moIsPositiveOnly", Boolean.TRUE);
 return ;
 }if ("resolution" === propertyName) {
 this.thisModel.put ("moResolution", value);
@@ -247,7 +247,7 @@ return true;
 Clazz.defineMethod (c$, "setOrbital", 
 ($fz = function (moNumber, linearCombination) {
 Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", ["reset", this.strID, null]);
-if (this.moDebug) Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", ["debug", org.jmol.viewer.JmolConstants.TRUE, null]);
+if (this.moDebug) Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", ["debug", Boolean.TRUE, null]);
 this.getSettings (this.strID);
 if (this.moScale != null) Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", ["scale", this.moScale, null]);
 if (this.moResolution != null) Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", ["resolution", this.moResolution, null]);

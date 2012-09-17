@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 22:08:29 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17505 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -41,9 +41,6 @@ import javax.vecmath.Vector3f;
 @J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
 public class JmolConstants {
 
-  public static final Boolean FALSE = Boolean.valueOf(false); // not BOOLEAN.FALSE here, for JavaScript
-  public static final Boolean TRUE = Boolean.valueOf(true); // not BOOLEAN.TRUE here, for JavaScript
-
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
   // draw constants --> org.jmol.shapespecial.draw.EnumCallback
@@ -70,7 +67,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-09-03 22:08:29 -0500 (Mon, 03 Sep 2012) $"
+        // $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do

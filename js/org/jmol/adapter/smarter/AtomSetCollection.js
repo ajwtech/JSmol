@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "$.Collections", "$.Properties", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "$.Collections", "$.Properties", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileTypeName = null;
 this.collectionName = null;
@@ -112,11 +112,11 @@ this.atomSetCollectionAuxiliaryInfo.remove (org.jmol.adapter.smarter.AtomSetColl
 }, "~N");
 Clazz.defineMethod (c$, "setGlobalBoolean", 
 function (globalIndex) {
-this.setAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex], org.jmol.api.JmolAdapter.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex], Boolean.TRUE);
 }, "~N");
 Clazz.defineMethod (c$, "getGlobalBoolean", 
 function (globalIndex) {
-return (this.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex]) === org.jmol.api.JmolAdapter.TRUE);
+return (this.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[globalIndex]) === Boolean.TRUE);
 }, "~N");
 Clazz.defineMethod (c$, "getAtomCount", 
 function () {
@@ -188,12 +188,12 @@ this.construct ("Array", null);
 var n = 0;
 for (var i = 0; i < array.length; i++) if (array[i].atomCount > 0) this.appendAtomSetCollection (n++, array[i]);
 
-if (n > 1) this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", org.jmol.api.JmolAdapter.TRUE);
+if (n > 1) this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
 }, "~A");
 Clazz.makeConstructor (c$, 
 function (list) {
 this.construct ("Array", null);
-this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", org.jmol.api.JmolAdapter.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
 this.appendAtomSetCollection (list);
 }, "java.util.List");
 Clazz.defineMethod (c$, "appendAtomSetCollection", 
@@ -252,12 +252,12 @@ for (var bondNum = 0; bondNum < collection.bondCount; bondNum++) {
 var bond = collection.bonds[bondNum];
 this.addNewBond (bond.atomIndex1 + existingAtomsCount, bond.atomIndex2 + existingAtomsCount, bond.order);
 }
-for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (org.jmol.api.JmolAdapter.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
+for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (Boolean.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
 
 }, "~N,org.jmol.adapter.smarter.AtomSetCollection");
 Clazz.defineMethod (c$, "setNoAutoBond", 
 function () {
-this.setAtomSetCollectionAuxiliaryInfo ("noAutoBond", org.jmol.api.JmolAdapter.TRUE);
+this.setAtomSetCollectionAuxiliaryInfo ("noAutoBond", Boolean.TRUE);
 });
 Clazz.defineMethod (c$, "freeze", 
 function (reverseModels) {
@@ -892,7 +892,7 @@ this.setAtomSetAuxiliaryInfo ("unitCellTranslations", this.unitCellTranslations)
 this.symmetry.setSpaceGroup (null);
 this.notionalUnitCell =  Clazz.newArray (6, 0);
 this.coordinatesAreFractional = false;
-this.setAtomSetAuxiliaryInfo ("hasSymmetry", org.jmol.api.JmolAdapter.TRUE);
+this.setAtomSetAuxiliaryInfo ("hasSymmetry", Boolean.TRUE);
 this.setGlobalBoolean (1);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "finalizeSymmetry", 
@@ -1061,7 +1061,7 @@ this.finalizeSymmetry (iAtomFirst, noSymmetryCount);
 this.setSymmetryOps ();
 }this.symmetry = null;
 this.coordinatesAreFractional = false;
-this.setAtomSetAuxiliaryInfo ("hasSymmetry", org.jmol.api.JmolAdapter.TRUE);
+this.setAtomSetAuxiliaryInfo ("hasSymmetry", Boolean.TRUE);
 this.setGlobalBoolean (1);
 }, "java.util.List,~A,~B,~S");
 Clazz.defineMethod (c$, "mapMostRecentAtomName", 

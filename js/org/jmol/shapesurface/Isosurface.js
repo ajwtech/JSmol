@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isomeshes = null;
 this.thisMesh = null;
@@ -84,7 +84,7 @@ if (this.thisMesh != null) {
 if (this.thisMesh.vertexSource == null) {
 var colix = (!this.thisMesh.isColorSolid ? 0 : this.thisMesh.colix);
 this.setProperty ("init", null, null);
-this.setProperty ("map", org.jmol.viewer.JmolConstants.FALSE, null);
+this.setProperty ("map", Boolean.FALSE, null);
 this.setProperty ("property",  Clazz.newArray (this.viewer.getAtomCount (), 0), null);
 if (colix != 0) {
 this.thisMesh.colorCommand = "color isosurface " + org.jmol.util.Colix.getHexCode (colix);
@@ -235,7 +235,7 @@ this.thisMesh.initialize (this.thisMesh.lighting, null, null);
 return ;
 }}if ("map" === propertyName) {
 if (this.sg != null) this.sg.getParams ().isMapped = true;
-this.setProperty ("squareData", org.jmol.viewer.JmolConstants.FALSE, null);
+this.setProperty ("squareData", Boolean.FALSE, null);
 if (this.thisMesh == null || this.thisMesh.vertexCount == 0) return ;
 }if ("deleteVdw" === propertyName) {
 for (var i = this.meshCount; --i >= 0; ) if (this.isomeshes[i].bsVdw != null && (bs == null || bs.intersects (this.isomeshes[i].bsVdw))) this.deleteMesh (i);

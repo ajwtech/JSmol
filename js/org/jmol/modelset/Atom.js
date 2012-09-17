@@ -232,13 +232,13 @@ function (n) {
 if (n < 0 || (n % 128) >= org.jmol.util.Elements.elementNumberMax || n > 32767) n = 0;
 this.atomicAndIsotopeNumber = n;
 }, "~N");
-Clazz.defineMethod (c$, "getElementSymbol", 
+Clazz.defineMethod (c$, "getElementSymbolIso", 
 function (withIsotope) {
 return org.jmol.util.Elements.elementSymbolFromNumber (withIsotope ? this.atomicAndIsotopeNumber : this.atomicAndIsotopeNumber % 128);
 }, "~B");
 Clazz.defineMethod (c$, "getElementSymbol", 
 function () {
-return this.getElementSymbol (true);
+return this.getElementSymbolIso (true);
 });
 Clazz.defineMethod (c$, "getAlternateLocationID", 
 function () {
@@ -516,15 +516,10 @@ return (this.group.chain.model.modelSet.getMoleculeIndex (this.index, inModel) +
 }, "~B");
 Clazz.defineMethod (c$, "getFractionalCoord", 
 ($fz = function (ch, asAbsolute) {
-var pt = this.getFractionalCoord (asAbsolute);
+var pt = this.getFractionalCoordPt (asAbsolute);
 return (ch.charCodeAt (0) == 88 ? pt.x : ch.charCodeAt (0) == 89 ? pt.y : pt.z);
 }, $fz.isPrivate = true, $fz), "~S,~B");
-Clazz.defineMethod (c$, "getFractionalUnitCoord", 
-($fz = function (ch) {
-var pt = this.getFractionalUnitCoord (false);
-return (ch.charCodeAt (0) == 88 ? pt.x : ch.charCodeAt (0) == 89 ? pt.y : pt.z);
-}, $fz.isPrivate = true, $fz), "~S");
-Clazz.defineMethod (c$, "getFractionalCoord", 
+Clazz.defineMethod (c$, "getFractionalCoordPt", 
 ($fz = function (asAbsolute) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c == null) return this;
@@ -533,6 +528,11 @@ c.toFractional (pt, asAbsolute);
 return pt;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "getFractionalUnitCoord", 
+($fz = function (ch) {
+var pt = this.getFractionalUnitCoordPt (false);
+return (ch.charCodeAt (0) == 88 ? pt.x : ch.charCodeAt (0) == 89 ? pt.y : pt.z);
+}, $fz.isPrivate = true, $fz), "~S");
+Clazz.defineMethod (c$, "getFractionalUnitCoordPt", 
 function (asCartesian) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c == null) return this;
@@ -581,9 +581,9 @@ if (c != null) c.toCartesian (this, asAbsolute);
 }, "~N,~N,~B");
 Clazz.defineMethod (c$, "setFractionalCoord", 
 function (ptNew, asAbsolute) {
-this.setFractionalCoord (this, ptNew, asAbsolute);
+this.setFractionalCoordPt (this, ptNew, asAbsolute);
 }, "javax.vecmath.Point3f,~B");
-Clazz.defineMethod (c$, "setFractionalCoord", 
+Clazz.defineMethod (c$, "setFractionalCoordPt", 
 function (pt, ptNew, asAbsolute) {
 pt.set (ptNew);
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
@@ -623,13 +623,13 @@ function (useChimeFormat) {
 if (useChimeFormat) {
 var group3 = this.getGroup3 (true);
 var chainID = this.getChainID ();
-var pt = this.getFractionalCoord (true);
+var pt = this.getFractionalCoordPt (true);
 return "Atom: " + (group3 == null ? this.getElementSymbol () : this.getAtomName ()) + " " + this.getAtomNumber () + (group3 != null && group3.length > 0 ? (this.isHetero () ? " Hetero: " : " Group: ") + group3 + " " + this.getResno () + (chainID.charCodeAt (0) != 0 && chainID.charCodeAt (0) != 32 ? " Chain: " + chainID : "") : "") + " Model: " + this.getModelNumber () + " Coordinates: " + this.x + " " + this.y + " " + this.z + (pt == null ? "" : " Fractional: " + pt.x + " " + pt.y + " " + pt.z);
 }return this.getIdentityXYZ (true);
 }, "~B");
 Clazz.defineMethod (c$, "getIdentityXYZ", 
 function (allInfo) {
-var pt = (this.group.chain.model.isJmolDataFrame ? this.getFractionalCoord (false) : this);
+var pt = (this.group.chain.model.isJmolDataFrame ? this.getFractionalCoordPt (false) : this);
 return this.getIdentity (allInfo) + " " + pt.x + " " + pt.y + " " + pt.z;
 }, "~B");
 Clazz.defineMethod (c$, "getIdentity", 
@@ -650,7 +650,7 @@ info.append (chainID);
 info.append (".");
 }info.append (this.getAtomName ());
 if (info.length () == 0) {
-info.append (this.getElementSymbol (false));
+info.append (this.getElementSymbolIso (false));
 info.append (" ");
 info.append (this.getAtomNumber ());
 }if (this.alternateLocationID.charCodeAt (0) != 0) {
@@ -1056,7 +1056,7 @@ return atom.getGroup1 ('\0');
 case 1087373318:
 return atom.getGroup3 (false);
 case 1087375365:
-return atom.getElementSymbol (true);
+return atom.getElementSymbolIso (true);
 case 1087373321:
 return atom.getIdentity (true);
 case 1087373322:
@@ -1076,7 +1076,7 @@ return atom.getStructureId ();
 case 1087373323:
 return viewer.getHybridizationAndAxes (atom.index, null, null, "d");
 case 1087375373:
-return atom.getElementSymbol (false);
+return atom.getElementSymbolIso (false);
 case 1089470478:
 return atom.getSymmetryOperatorList ();
 }
@@ -1086,11 +1086,11 @@ c$.atomPropertyTuple = Clazz.defineMethod (c$, "atomPropertyTuple",
 function (atom, tok) {
 switch (tok) {
 case 1146095627:
-return atom.getFractionalCoord (!atom.group.chain.model.isJmolDataFrame);
+return atom.getFractionalCoordPt (!atom.group.chain.model.isJmolDataFrame);
 case 1146095629:
-return atom.getFractionalCoord (false);
+return atom.getFractionalCoordPt (false);
 case 1146093582:
-return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoord (false) : atom.getFractionalUnitCoord (false));
+return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt (false) : atom.getFractionalUnitCoordPt (false));
 case 1146095628:
 return  new javax.vecmath.Point3f (atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight () - atom.screenY, atom.screenZ);
 case 1146095631:

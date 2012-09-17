@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 08:11:54 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17495 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -57,9 +57,6 @@ import org.jmol.viewer.JmolConstants;
  ****************************************************************/
 public abstract class JmolAdapter {
 
-  public final static Boolean FALSE = JmolConstants.FALSE;
-  public final static Boolean TRUE = JmolConstants.TRUE;
-  
   public final static short ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
   public final static short ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
   public final static short ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;

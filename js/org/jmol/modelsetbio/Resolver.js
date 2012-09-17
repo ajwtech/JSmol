@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.BitSet", "$.Hashtable", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.BitSet", "$.Hashtable", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelLoader = null;
 this.modelSet = null;
@@ -102,7 +102,7 @@ bondInfo = this.modelSet.viewer.getPdbBondInfo (group3);
 } else {
 bondInfo = this.getLigandBondInfo (adapter, model, group3);
 }if (bondInfo == null) return ;
-this.htGroupBonds.put (group3, org.jmol.viewer.JmolConstants.TRUE);
+this.htGroupBonds.put (group3, Boolean.TRUE);
 for (var i = 0; i < bondInfo.length; i++) {
 if (bondInfo[i] == null) continue ;if ((bondInfo[i][1].charAt (0)).charCodeAt (0) == 72) this.htBondMap.put (group3 + "." + bondInfo[i][0], bondInfo[i][1]);
  else this.htBondMap.put (group3 + ":" + bondInfo[i][0] + ":" + bondInfo[i][1], bondInfo[i][2]);
@@ -291,16 +291,16 @@ if (n1.compareTo (n2) > 0) key.append (n2).append (":").append (n1);
  else key.append (n1).append (":").append (n2);
 var skey = key.toString ();
 var type = this.htBondMap.get (skey);
-if (type == null) continue ;htKeysUsed.put (skey, org.jmol.viewer.JmolConstants.TRUE);
+if (type == null) continue ;htKeysUsed.put (skey, Boolean.TRUE);
 bonds[i].setOrder (Integer.$valueOf (type).intValue ());
 }
 for (var key, $key = this.htBondMap.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {
 if (htKeysUsed.get (key) != null) continue ;if (key.indexOf (":") < 0) {
-htKeysUsed.put (key, org.jmol.viewer.JmolConstants.TRUE);
+htKeysUsed.put (key, Boolean.TRUE);
 continue ;}var value = this.htBondMap.get (key);
 org.jmol.util.Logger.info ("bond " + key + " was not used; order=" + value);
 if (this.htBondMap.get (key).equals ("1")) {
-htKeysUsed.put (key, org.jmol.viewer.JmolConstants.TRUE);
+htKeysUsed.put (key, Boolean.TRUE);
 continue ;}}
 var htKeysBad =  new java.util.Hashtable ();
 for (var key, $key = this.htBondMap.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {

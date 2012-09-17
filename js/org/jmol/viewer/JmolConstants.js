@@ -260,8 +260,8 @@ c$.getShapeVisibilityFlag = Clazz.defineMethod (c$, "getShapeVisibilityFlag",
 function (shapeID) {
 return (4 << shapeID);
 }, "~N");
-c$.FALSE = c$.prototype.FALSE = Boolean.$valueOf (false);
-c$.TRUE = c$.prototype.TRUE = Boolean.$valueOf (true);
+c$.FALSE = c$.prototype.FALSE = Boolean.FALSE;
+c$.TRUE = c$.prototype.TRUE = Boolean.TRUE;
 Clazz.defineStatics (c$,
 "copyright", "(C) 2012 Jmol Development",
 "version", null,

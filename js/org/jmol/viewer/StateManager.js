@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.saved = null;
@@ -1114,7 +1114,7 @@ Clazz.defineMethod (c$, "setParameterValue",
 function (a, b) {
 a = a.toLowerCase ();
 if (this.htNonbooleanParameterValues.containsKey (a)) return ;
-this.htBooleanParameterFlags.put (a, b ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+this.htBooleanParameterFlags.put (a, b ? Boolean.TRUE : Boolean.FALSE);
 }, "~S,~B");
 Clazz.defineMethod (c$, "setParameterValue", 
 function (a, b) {
@@ -1140,7 +1140,7 @@ function (a) {
 a = a.toLowerCase ();
 if (this.htBooleanParameterFlags.containsKey (a)) {
 this.htBooleanParameterFlags.remove (a);
-if (!this.htPropertyFlagsRemoved.containsKey (a)) this.htPropertyFlagsRemoved.put (a, org.jmol.viewer.JmolConstants.FALSE);
+if (!this.htPropertyFlagsRemoved.containsKey (a)) this.htPropertyFlagsRemoved.put (a, Boolean.FALSE);
 return ;
 }if (this.htNonbooleanParameterValues.containsKey (a)) this.htNonbooleanParameterValues.remove (a);
 }, "~S");
@@ -1208,7 +1208,7 @@ var e = org.jmol.util.TextFormat.formatDecimal (c - d, 1) + "/" + org.jmol.util.
 this.htNonbooleanParameterValues.put ("_memory", e);
 }if (this.htNonbooleanParameterValues.containsKey (a)) return this.htNonbooleanParameterValues.get (a);
 if (this.htBooleanParameterFlags.containsKey (a)) return this.htBooleanParameterFlags.get (a);
-if (this.htPropertyFlagsRemoved.containsKey (a)) return org.jmol.viewer.JmolConstants.FALSE;
+if (this.htPropertyFlagsRemoved.containsKey (a)) return Boolean.FALSE;
 if (this.htUserVariables.containsKey (a)) {
 var c = this.htUserVariables.get (a);
 return (b ? c : org.jmol.script.ScriptVariable.oValue (c));

@@ -495,7 +495,7 @@ strExtra += org.jmol.util.TextFormat.sprintf ("  %10.5p %10.5p %10.5p", [(monome
 strExtra += org.jmol.util.TextFormat.sprintf (" %10.5f %10.5f", [[val1, val2]]);
 }}if (pdbATOM == null) continue ;bsWritten.set ((a.getGroup ()).leadAtomIndex);
 pdbATOM.append (org.jmol.modelset.LabelToken.formatLabel (viewer, a, tokens, '\0', null));
-pdbATOM.append (org.jmol.util.TextFormat.sprintf ("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", [a.getElementSymbol (false).toUpperCase (), strExtra, [x * factor, y * factor, z * factor, w * factor]]));
+pdbATOM.append (org.jmol.util.TextFormat.sprintf ("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", [a.getElementSymbolIso (false).toUpperCase (), strExtra, [x * factor, y * factor, z * factor, w * factor]]));
 if (atomLast != null && atomLast.getPolymerIndexInModel () == a.getPolymerIndexInModel ()) {
 pdbCONECT.append ("CONECT").append (org.jmol.util.TextFormat.formatString ("%5i", "i", atomLast.getAtomNumber ())).append (org.jmol.util.TextFormat.formatString ("%5i", "i", a.getAtomNumber ())).append ('\n');
 }atomLast = a;

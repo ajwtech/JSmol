@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.lang.Character", "$.Float", "java.util.BitSet", "$.Hashtable", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.BitSet", "$.Hashtable", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tokenizer = null;
 this.thisDataSetName = "";
@@ -459,7 +459,7 @@ this.htHetero = null;
 }}}
 if (this.isPDB) {
 this.setIsPDB ();
-}this.atomSetCollection.setAtomSetAuxiliaryInfo ("isCIF", org.jmol.api.JmolAdapter.TRUE);
+}this.atomSetCollection.setAtomSetAuxiliaryInfo ("isCIF", Boolean.TRUE);
 return true;
 }, "~B");
 Clazz.defineMethod (c$, "filterCIFAtom", 
@@ -911,8 +911,8 @@ if (this.nMolecular++ == this.atomSetCollection.getCurrentAtomSetIndex ()) {
 this.atomSetCollection.clearGlobalBoolean (0);
 this.atomSetCollection.clearGlobalBoolean (1);
 this.atomSetCollection.clearGlobalBoolean (2);
-}}if (this.bondTypes.size () > 0) this.atomSetCollection.setAtomSetAuxiliaryInfo ("hasBonds", org.jmol.api.JmolAdapter.TRUE);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("fileHasUnitCell", org.jmol.api.JmolAdapter.TRUE);
+}}if (this.bondTypes.size () > 0) this.atomSetCollection.setAtomSetAuxiliaryInfo ("hasBonds", Boolean.TRUE);
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("fileHasUnitCell", Boolean.TRUE);
 this.bondTypes.clear ();
 this.atomRadius = null;
 this.bsSets = null;

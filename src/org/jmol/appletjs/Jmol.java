@@ -210,6 +210,7 @@ public class Jmol implements JmolSyncInterface {
     fullName = htmlName + "__" + syncId + "__";
     System.out.println("Jmol applet " + fullName + " initializing");
     setLogging();
+  	viewerOptions.remove("debug");
 
     mayScript = true;
     JmolAppletRegistry.checkIn(fullName, this);
@@ -331,7 +332,7 @@ public class Jmol implements JmolSyncInterface {
 
   private String getValue(String propertyName, String defaultValue) {
     String stringValue = getParameter(propertyName);
-    System.out.println("getValue " + propertyName + " " + defaultValue);
+    System.out.println("getValue " + propertyName + " = " + stringValue);
     if (stringValue != null)
       return stringValue;
     return defaultValue;
@@ -972,6 +973,8 @@ public class Jmol implements JmolSyncInterface {
     	 *     o = o[tokens[i]]
     	 *   }
     	 *   return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+    	 * } catch (e) {
+    	 *	 System.out.println(callback + " failed");
     	 * }
     	 */
     	{

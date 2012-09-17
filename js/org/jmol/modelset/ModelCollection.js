@@ -790,7 +790,7 @@ var isHetero = a.isHetero ();
 if (!isBiomodel) tokens = (leftJustify ? org.jmol.modelset.LabelToken.compile (this.viewer, "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null) : org.jmol.modelset.LabelToken.compile (this.viewer, "HETATM%5.-5i  %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null));
  else if (isHetero) tokens = (leftJustify ? org.jmol.modelset.LabelToken.compile (this.viewer, "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null) : org.jmol.modelset.LabelToken.compile (this.viewer, "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null));
  else tokens = (leftJustify ? org.jmol.modelset.LabelToken.compile (this.viewer, "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null) : org.jmol.modelset.LabelToken.compile (this.viewer, "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z" + occTemp, '\0', null));
-var XX = a.getElementSymbol (false).toUpperCase ();
+var XX = a.getElementSymbolIso (false).toUpperCase ();
 sb.append (org.jmol.modelset.LabelToken.formatLabel (this.viewer, a, tokens, '\0', null)).append (XX.length == 1 ? " " + XX : XX.substring (0, 2)).append ("  \n");
 if (!showModels && (!isBiomodel || isHetero || isMultipleBondPDB)) {
 var bonds = a.getBonds ();
@@ -854,7 +854,7 @@ var z = (haveZ ? dataZ[n] : 0);
 if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) continue ;var a = this.atoms[i];
 sb.append (org.jmol.modelset.LabelToken.formatLabel (this.viewer, a, tokens, '\0', null));
 if (isPDB) bsWritten.set (i);
-sb.append (org.jmol.util.TextFormat.sprintf ("%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", [a.getElementSymbol (false).toUpperCase (), strExtra, [x, y, z, 0]]));
+sb.append (org.jmol.util.TextFormat.sprintf ("%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", [a.getElementSymbolIso (false).toUpperCase (), strExtra, [x, y, z, 0]]));
 if (atomLast != null && atomLast.getPolymerIndexInModel () == a.getPolymerIndexInModel ()) pdbCONECT.append ("CONECT").append (org.jmol.util.TextFormat.formatString ("%5i", "i", atomLast.getAtomNumber ())).append (org.jmol.util.TextFormat.formatString ("%5i", "i", a.getAtomNumber ())).append ('\n');
 atomLast = a;
 }
@@ -1466,7 +1466,7 @@ var iter = this.getSelectedAtomIterator (null, false, false, false, false);
 if (withinAllModels) {
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) for (var iModel = this.modelCount; --iModel >= 0; ) {
 if (!bsCheck.get (iModel)) continue ;if (distance < 0) {
-this.getAtomsWithin (distance, this.atoms[i].getFractionalUnitCoord (true), bsResult, -1);
+this.getAtomsWithin (distance, this.atoms[i].getFractionalUnitCoordPt (true), bsResult, -1);
 continue ;}this.setIteratorForAtom (iter, iModel, i, distance, rd);
 iter.addAtoms (bsResult);
 }
@@ -2078,7 +2078,7 @@ return bsBonds;
 }, $fz.isPrivate = true, $fz), "java.util.BitSet");
 Clazz.defineMethod (c$, "getAtomRecordMOL", 
 ($fz = function (mol, n, a, q, pTemp, asV3000, asChemDoodle) {
-if (this.models[a.modelIndex].isTrajectory) a.setFractionalCoord (this.ptTemp, this.trajectorySteps.get (a.modelIndex)[a.index - this.models[a.modelIndex].firstAtomIndex], true);
+if (this.models[a.modelIndex].isTrajectory) a.setFractionalCoordPt (this.ptTemp, this.trajectorySteps.get (a.modelIndex)[a.index - this.models[a.modelIndex].firstAtomIndex], true);
  else pTemp.set (a);
 if (q != null) q.transform (pTemp, pTemp);
 var elemNo = a.getElementNumber ();

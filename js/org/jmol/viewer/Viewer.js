@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ParallelProcessor", "$.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TimeoutThread", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ParallelProcessor", "$.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TimeoutThread", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$display = null;
 this.gdata = null;
@@ -1247,7 +1247,7 @@ this.noneSelected = noneSelected;
 }, "~B");
 Clazz.defineMethod (c$, "getNoneSelected", 
 function () {
-return (this.noneSelected ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+return (this.noneSelected ? Boolean.TRUE : Boolean.FALSE);
 });
 Clazz.overrideMethod (c$, "clearSelection", 
 function () {
@@ -1369,14 +1369,14 @@ if (htParams == null) htParams =  new java.util.Hashtable ();
 htParams.put ("viewer", this);
 if (this.global.atomTypes.length > 0) htParams.put ("atomTypes", this.global.atomTypes);
 if (!htParams.containsKey ("lattice")) htParams.put ("lattice", this.global.getDefaultLattice ());
-if (this.global.applySymmetryToBonds) htParams.put ("applySymmetryToBonds", org.jmol.viewer.JmolConstants.TRUE);
-if (this.global.pdbGetHeader) htParams.put ("getHeader", org.jmol.viewer.JmolConstants.TRUE);
-if (this.global.pdbSequential) htParams.put ("isSequential", org.jmol.viewer.JmolConstants.TRUE);
+if (this.global.applySymmetryToBonds) htParams.put ("applySymmetryToBonds", Boolean.TRUE);
+if (this.global.pdbGetHeader) htParams.put ("getHeader", Boolean.TRUE);
+if (this.global.pdbSequential) htParams.put ("isSequential", Boolean.TRUE);
 htParams.put ("stateScriptVersionInt", Integer.$valueOf (this.stateScriptVersionInt));
 if (!htParams.containsKey ("filter")) {
 var filter = this.getDefaultLoadFilter ();
 if (filter.length > 0) htParams.put ("filter", filter);
-}if (isAppend && !this.global.appendNew && this.getAtomCount () > 0) htParams.put ("merging", org.jmol.viewer.JmolConstants.TRUE);
+}if (isAppend && !this.global.appendNew && this.getAtomCount () > 0) htParams.put ("merging", Boolean.TRUE);
 return htParams;
 }, $fz.isPrivate = true, $fz), "java.util.Map,~B");
 Clazz.defineMethod (c$, "openFileAsynchronously", 
@@ -1494,7 +1494,7 @@ if (Clazz.instanceOf (entry.getValue (), Boolean)) e.remove ();
 }return null;
 }id = id.toUpperCase ();
 if (this.ligandModelSet == null) this.ligandModelSet =  new java.util.Hashtable ();
-this.ligandModelSet.put (id, org.jmol.viewer.JmolConstants.TRUE);
+this.ligandModelSet.put (id, Boolean.TRUE);
 if (this.ligandModels == null) this.ligandModels =  new java.util.Hashtable ();
 var model = this.ligandModels.get (id);
 var data;
@@ -1513,7 +1513,7 @@ if (!isError) this.ligandModels.put (id + "_data", model);
 data = model;
 if (data.length != 0) {
 var htParams =  new java.util.Hashtable ();
-htParams.put ("modelOnly", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("modelOnly", Boolean.TRUE);
 model = this.getModelAdapter ().getAtomSetCollectionReader ("ligand", null, org.jmol.viewer.FileManager.getBufferedReaderForString (data), htParams);
 isError = (Clazz.instanceOf (model, String));
 if (!isError) {
@@ -1522,7 +1522,7 @@ isError = (Clazz.instanceOf (model, String));
 if (fname != null && !isError) this.scriptEcho (this.getModelAdapter ().getAtomSetCollectionAuxiliaryInfo (model).get ("modelLoadNote"));
 }}}if (isError) {
 this.scriptEcho (model.toString ());
-this.ligandModels.put (id, org.jmol.viewer.JmolConstants.FALSE);
+this.ligandModels.put (id, Boolean.FALSE);
 return null;
 }return model;
 }, "~S");
@@ -3938,7 +3938,7 @@ Clazz.defineMethod (c$, "showConsole",
 function (showConsole) {
 if (!this.haveDisplay) return ;
 try {
-if (this.appConsole == null) this.getProperty ("DATA_API", "getAppConsole", org.jmol.viewer.JmolConstants.TRUE);
+if (this.appConsole == null) this.getProperty ("DATA_API", "getAppConsole", Boolean.TRUE);
 this.appConsole.setVisible (showConsole);
 } catch (e) {
 }
@@ -5790,7 +5790,7 @@ throw e;
 return this.appConsole;
 case 100:
 if (this.appConsole == null && paramInfo != null && (paramInfo).booleanValue ()) {
-this.getProperty ("DATA_API", "getAppConsole", org.jmol.viewer.JmolConstants.TRUE);
+this.getProperty ("DATA_API", "getAppConsole", Boolean.TRUE);
 this.scriptEditor = (this.appConsole == null ? null : this.appConsole.getScriptEditor ());
 }return this.scriptEditor;
 case 120:
@@ -5821,7 +5821,7 @@ if (file_text == null) file_text = [null, null];
 if (file_text[1] == null) file_text[1] = "<no data>";
 var filename = file_text[0];
 var msg = file_text[1];
-var scriptEditor = this.getProperty ("DATA_API", "getScriptEditor", org.jmol.viewer.JmolConstants.TRUE);
+var scriptEditor = this.getProperty ("DATA_API", "getScriptEditor", Boolean.TRUE);
 if (scriptEditor == null) return ;
 if (msg != null) {
 scriptEditor.setFilename (filename);

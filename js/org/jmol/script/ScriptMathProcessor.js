@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.PropertyManager"], function () {
+Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isSyntaxCheck = false;
 this.wasSyntaxCheck = false;
@@ -131,7 +131,7 @@ return this.wasX = true;
 }, "org.jmol.script.ScriptVariable");
 Clazz.defineMethod (c$, "addXBool", 
 ($fz = function (x) {
-this.putX (org.jmol.script.ScriptVariable.getVariable (x ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
+this.putX (org.jmol.script.ScriptVariable.getVariable (x ? Boolean.TRUE : Boolean.FALSE));
 return this.wasX = true;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "addXInt", 

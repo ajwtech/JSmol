@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-12 06:45:51 -0500 (Wed, 12 Sep 2012) $
- * $Revision: 17557 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1389,7 +1389,7 @@ public class Token {
       if ((token.tok & scriptCommand) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
-        htSet.put(name, JmolConstants.TRUE);
+        htSet.put(name, Boolean.TRUE);
     }
     for (Map.Entry<String, Boolean> entry : htSet.entrySet()) {
       String name = entry.getKey();
