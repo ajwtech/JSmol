@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jmol.modelsetbio.AminoPolymer.Bridge")) {
 org.jmol.modelsetbio.AminoPolymer.$AminoPolymer$Bridge$ ();
@@ -331,7 +331,7 @@ var oxygen = (acceptor).getCarbonylOxygenAtom ();
 if (htTemp != null) {
 var key = nitrogen.index + " " + oxygen.index;
 if (htTemp.containsKey (key)) return ;
-htTemp.put (key, org.jmol.viewer.JmolConstants.TRUE);
+htTemp.put (key, Boolean.TRUE);
 }vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, type, iEnergy / 1000));
 }, $fz.isPrivate = true, $fz), "java.util.List,org.jmol.modelsetbio.Monomer,org.jmol.modelsetbio.Monomer,~N,~N,java.util.Map");
 c$.getSheetStructures = Clazz.defineMethod (c$, "getSheetStructures", 
@@ -576,7 +576,7 @@ this.addLadder (c);
 }, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,java.util.Map");
 Clazz.defineMethod (c$, "addLadder", 
 ($fz = function (a) {
-a.put (this.ladder, (this.isAntiparallel ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
+a.put (this.ladder, (this.isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
 }, $fz.isPrivate = true, $fz), "java.util.Map");
 Clazz.overrideMethod (c$, "toString", 
 function () {

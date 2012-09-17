@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBinary = false;
 this.atomSetCollection = null;
@@ -177,7 +177,7 @@ if (this.doCentralize) this.atomSetCollection.centralize ();
 Clazz.defineMethod (c$, "setIsPDB", 
 function () {
 this.atomSetCollection.setGlobalBoolean (4);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", org.jmol.api.JmolAdapter.TRUE);
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", Boolean.TRUE);
 if (this.htParams.get ("pdbNoHydrogens") != null) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("pdbNoHydrogens", this.htParams.get ("pdbNoHydrogens"));
 });
 Clazz.defineMethod (c$, "setPdb", 
@@ -492,8 +492,8 @@ return (f.indexOf (code) >= 0 && (f.indexOf ("!" + code) >= 0 ? f.indexOf (code 
 }, $fz.isPrivate = true, $fz), "~S,~S,~S");
 Clazz.defineMethod (c$, "set2D", 
 function () {
-this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("is2D", org.jmol.api.JmolAdapter.TRUE);
-if (!this.checkFilterKey ("NOMIN")) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("doMinimize", org.jmol.api.JmolAdapter.TRUE);
+this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("is2D", Boolean.TRUE);
+if (!this.checkFilterKey ("NOMIN")) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("doMinimize", Boolean.TRUE);
 });
 Clazz.defineMethod (c$, "doGetVibration", 
 function (vibrationNumber) {

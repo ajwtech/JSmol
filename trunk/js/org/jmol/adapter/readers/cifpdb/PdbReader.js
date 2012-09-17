@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lineLength = 0;
 this.pdbHeader = null;
@@ -424,7 +424,7 @@ this.setAtomCoord (atom, this.parseFloatRange (this.line, 30, 38), this.parseFlo
 }this.setAdditionalAtomParameters (atom);
 if (this.haveMappedSerials) this.atomSetCollection.addAtomWithMappedSerialNumber (atom);
  else this.atomSetCollection.addAtom (atom);
-if (this.atomCount++ == 0) this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", org.jmol.api.JmolAdapter.TRUE);
+if (this.atomCount++ == 0) this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", Boolean.TRUE);
 if (atom.isHetero) {
 if (this.htHetero != null) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("hetNames", this.htHetero);
@@ -582,14 +582,14 @@ this.checkNotPDB ();
 this.haveMappedSerials = false;
 this.sbConect = null;
 this.atomSetCollection.newAtomSet ();
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", org.jmol.api.JmolAdapter.TRUE);
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", Boolean.TRUE);
 this.atomSetCollection.setAtomSetNumber (modelNumber);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "checkNotPDB", 
 ($fz = function () {
 var isPDB = (this.nRes == 0 || this.nUNK != this.nRes);
 this.atomSetCollection.setCheckSpecial (!isPDB);
-this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", isPDB ? org.jmol.api.JmolAdapter.TRUE : org.jmol.api.JmolAdapter.FALSE);
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
 this.nUNK = this.nRes = 0;
 this.currentGroup3 = null;
 }, $fz.isPrivate = true, $fz));
@@ -632,8 +632,8 @@ var elementWithCount;
 while ((elementWithCount = this.parseTokenNext (formula)) != null) {
 if (elementWithCount.length < 2) continue ;var chFirst = elementWithCount.charAt (0);
 var chSecond = elementWithCount.charAt (1);
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (chFirst, chSecond)) htElementsInGroup.put ("" + chFirst + chSecond, org.jmol.api.JmolAdapter.TRUE);
- else if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (chFirst)) htElementsInGroup.put ("" + chFirst, org.jmol.api.JmolAdapter.TRUE);
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (chFirst, chSecond)) htElementsInGroup.put ("" + chFirst + chSecond, Boolean.TRUE);
+ else if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (chFirst)) htElementsInGroup.put ("" + chFirst, Boolean.TRUE);
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "het", 

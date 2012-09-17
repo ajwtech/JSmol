@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Thread", "org.jmol.util.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Boolean", "$.Thread", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.queueThreads = null;
@@ -52,8 +52,8 @@ var scriptItem =  new java.util.ArrayList ();
 scriptItem.add (strScript);
 scriptItem.add (statusList);
 scriptItem.add (returnType);
-scriptItem.add (isScriptFile ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
-scriptItem.add (isQuiet ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+scriptItem.add (isScriptFile ? Boolean.TRUE : Boolean.FALSE);
+scriptItem.add (isQuiet ? Boolean.TRUE : Boolean.FALSE);
 scriptItem.add (Integer.$valueOf (useCommandThread ? -1 : 1));
 this.scriptQueue.add (scriptItem);
 this.startScriptQueue (false);

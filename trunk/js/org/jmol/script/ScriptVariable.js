@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Collections", "$.Hashtable", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Collections", "$.Hashtable", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 2147483647;
 this.flags = 2;
@@ -258,10 +258,10 @@ c$.oValue = Clazz.defineMethod (c$, "oValue",
 function (x) {
 switch (x == null ? 0 : x.tok) {
 case 1048589:
-return org.jmol.viewer.JmolConstants.TRUE;
+return Boolean.TRUE;
 case 0:
 case 1048588:
-return org.jmol.viewer.JmolConstants.FALSE;
+return Boolean.FALSE;
 case 2:
 return Integer.$valueOf (x.intValue);
 case 10:
@@ -419,7 +419,7 @@ case 6:
 if (map.containsKey (vx)) {
 sb.append (isEscaped ? "{}" : vx.myName == null ? "<circular reference>" : "<" + vx.myName + ">");
 break;
-}map.put (vx, org.jmol.viewer.JmolConstants.TRUE);
+}map.put (vx, Boolean.TRUE);
 var ht = vx.value;
 var keys = ht.keySet ().toArray ();
 java.util.Arrays.sort (keys);
@@ -448,7 +448,7 @@ case 7:
 if (map.containsKey (vx)) {
 sb.append (isEscaped ? "[]" : vx.myName == null ? "<circular reference>" : "<" + vx.myName + ">");
 break;
-}map.put (vx, org.jmol.viewer.JmolConstants.TRUE);
+}map.put (vx, Boolean.TRUE);
 if (isEscaped) sb.append ("[");
 var sx = vx.getList ();
 for (var i = 0; i < sx.size (); i++) {

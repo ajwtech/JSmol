@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.api");
-Clazz.load (["org.jmol.constant.EnumQuantumShell", "org.jmol.viewer.JmolConstants"], "org.jmol.api.JmolAdapter", ["java.util.Hashtable", "org.jmol.api.JmolViewer", "org.jmol.modelset.Group", "org.jmol.util.Elements"], function () {
+Clazz.load (["java.lang.Boolean", "org.jmol.constant.EnumQuantumShell"], "org.jmol.api.JmolAdapter", ["java.util.Hashtable", "org.jmol.api.JmolViewer", "org.jmol.modelset.Group", "org.jmol.util.Elements", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.adapterName = null;
 Clazz.instantialize (this, arguments);
@@ -96,8 +96,8 @@ Clazz.defineMethod (c$, "specialLoad",
 function (name, type) {
 return null;
 }, "~S,~S");
-c$.FALSE = c$.prototype.FALSE = org.jmol.viewer.JmolConstants.FALSE;
-c$.TRUE = c$.prototype.TRUE = org.jmol.viewer.JmolConstants.TRUE;
+c$.FALSE = c$.prototype.FALSE = Boolean.FALSE;
+c$.TRUE = c$.prototype.TRUE = Boolean.TRUE;
 Clazz.defineStatics (c$,
 "ORDER_COVALENT_SINGLE", 1,
 "ORDER_COVALENT_DOUBLE", 2,

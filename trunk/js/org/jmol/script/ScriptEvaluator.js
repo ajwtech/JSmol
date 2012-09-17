@@ -1499,7 +1499,7 @@ this.defineAtomSet ("# variable");
 Clazz.defineMethod (c$, "defineAtomSet", 
 ($fz = function (script) {
 if (script.indexOf ("#") == 0) {
-this.definedAtomSets.put (script, org.jmol.viewer.JmolConstants.TRUE);
+this.definedAtomSets.put (script, Boolean.TRUE);
 return ;
 }var sc = this.compiler.compile ("#predefine", script, true, false, false, false);
 if (sc.errorType != null) {
@@ -5553,7 +5553,7 @@ this.setShapeProperty (iShape, "delete", null);
 break;
 case 12294:
 case 1610625028:
-this.setShapeProperty (iShape, "hidden", tokCommand == 1610625028 ? org.jmol.viewer.JmolConstants.FALSE : org.jmol.viewer.JmolConstants.TRUE);
+this.setShapeProperty (iShape, "hidden", tokCommand == 1610625028 ? Boolean.FALSE : Boolean.TRUE);
 break;
 case 4148:
 s += this.getShapeProperty (iShape, "command") + "\n";
@@ -6184,7 +6184,7 @@ case 1048588:
 break;
 case 12294:
 case 1610625028:
-this.setShapeProperty (5, "display", this.theTok == 1610625028 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+this.setShapeProperty (5, "display", this.theTok == 1610625028 ? Boolean.TRUE : Boolean.FALSE);
 return ;
 default:
 strLabel = this.parameterAsString (index);
@@ -6216,7 +6216,7 @@ var atomCount0 = this.viewer.getAtomCount ();
 var loadScript =  new StringBuffer ("load");
 var nFiles = 1;
 var htParams =  new java.util.Hashtable ();
-if (this.isStateScript && this.forceNoAddHydrogens) htParams.put ("doNotAddHydrogens", org.jmol.viewer.JmolConstants.TRUE);
+if (this.isStateScript && this.forceNoAddHydrogens) htParams.put ("doNotAddHydrogens", Boolean.TRUE);
 var modelName = null;
 var filenames = null;
 var tempFileInfo = null;
@@ -6246,7 +6246,7 @@ isAppend = key.startsWith ("append");
 var strModel = (key.indexOf ("@") >= 0 ? "" + this.getParameter (key.substring (key.indexOf ("@") + 1), 4) : this.parameterAsString (++i));
 strModel = this.viewer.fixInlineString (strModel, this.viewer.getInlineChar ());
 htParams.put ("fileData", strModel);
-htParams.put ("isData", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("isData", Boolean.TRUE);
 loadScript.append ('\n');
 loadScript.append (strModel);
 if (key.indexOf ("@") < 0) {
@@ -6264,7 +6264,7 @@ i++;
 loadScript.append (" " + modelName);
 tokType = (tok == 1073741824 && org.jmol.util.Parser.isOneOf (modelName.toLowerCase (), "xyz;vxyz;vibration;temperature;occupancy;partialcharge") ? org.jmol.script.Token.getTokFromName (modelName) : 0);
 if (tokType != 0) {
-htParams.put ("atomDataOnly", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("atomDataOnly", Boolean.TRUE);
 htParams.put ("modelNumber", Integer.$valueOf (1));
 if (tokType == 4166) tokType = 1146095631;
 tempFileInfo = this.viewer.getFileInfo ();
@@ -6285,7 +6285,7 @@ case 536870926:
 case 1095766028:
 i++;
 loadScript.append (" " + modelName);
-if (tok == 536870926) htParams.put ("isTrajectory", org.jmol.viewer.JmolConstants.TRUE);
+if (tok == 536870926) htParams.put ("isTrajectory", Boolean.TRUE);
 if (this.isPoint3f (i)) {
 var pt = this.getPoint3f (i, false);
 i = this.iToken + 1;
@@ -6384,15 +6384,15 @@ htParams.put ("lattice", lattice);
 i = this.iToken + 1;
 sOptions += " {" + Math.round (lattice.x) + " " + Math.round (lattice.y) + " " + Math.round (lattice.z) + "}";
 if (this.tokAt (i) == 1073742080) {
-htParams.put ("packed", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("packed", Boolean.TRUE);
 sOptions += " PACKED";
 i++;
 }if (this.tokAt (i) == 1073741877) {
-htParams.put ("centroid", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("centroid", Boolean.TRUE);
 sOptions += " CENTROID";
 i++;
 if (this.tokAt (i) == 1073742080 && !htParams.containsKey ("packed")) {
-htParams.put ("packed", org.jmol.viewer.JmolConstants.TRUE);
+htParams.put ("packed", Boolean.TRUE);
 sOptions += " PACKED";
 i++;
 }}if (this.tokAt (i) == 1073742163) {
@@ -6454,7 +6454,7 @@ if (iGroup != -2147483648) htParams.put ("spaceGroupIndex", Integer.$valueOf (iG
 if (offset != null) {
 if (this.coordinatesAreFractional) {
 offset.set (this.fractionalPoint);
-htParams.put ("unitCellOffsetFractional", (this.coordinatesAreFractional ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
+htParams.put ("unitCellOffsetFractional", (this.coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
 sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z + "/1}";
 } else {
 sOptions += " offset " + org.jmol.util.Escape.escapePt (offset);
@@ -6620,10 +6620,10 @@ case 2:
 switch (this.getToken (1).tok) {
 case 0:
 case 1048589:
-this.setShapeProperty (6, "hideAll", org.jmol.viewer.JmolConstants.FALSE);
+this.setShapeProperty (6, "hideAll", Boolean.FALSE);
 return ;
 case 1048588:
-this.setShapeProperty (6, "hideAll", org.jmol.viewer.JmolConstants.TRUE);
+this.setShapeProperty (6, "hideAll", Boolean.TRUE);
 return ;
 case 1073742001:
 if (!this.isSyntaxCheck) this.showString (this.viewer.getMeasurementInfoAsString (), false);
@@ -6758,7 +6758,7 @@ case 8:
 case 1048583:
 if (this.theTok == 10 || this.theTok == 1048577) nBitSets++;
 if (atomIndex >= 0) this.error (22);
-this.expressionResult = org.jmol.viewer.JmolConstants.FALSE;
+this.expressionResult = Boolean.FALSE;
 value = this.centerParameter (i);
 if (Clazz.instanceOf (this.expressionResult, java.util.BitSet)) {
 value = bs = this.expressionResult;
@@ -8094,18 +8094,18 @@ i = this.iToken;
 key = "translucency";
 break;
 case 12291:
-value = org.jmol.viewer.JmolConstants.TRUE;
+value = Boolean.TRUE;
 this.checkLength (3);
 break;
 case 1095761933:
 value = Integer.$valueOf (this.intParameter (++i));
 break;
 case 1048589:
-value = org.jmol.viewer.JmolConstants.TRUE;
+value = Boolean.TRUE;
 break;
 case 1048588:
 key = "on";
-value = org.jmol.viewer.JmolConstants.FALSE;
+value = Boolean.FALSE;
 break;
 case 1073742138:
 value = Float.$valueOf (this.floatParameter (++i));
@@ -8415,11 +8415,11 @@ i = this.iToken;
 break;
 case 135267329:
 propertyName = "cross";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073742040:
 propertyName = "cross";
-propertyValue = org.jmol.viewer.JmolConstants.FALSE;
+propertyValue = Boolean.FALSE;
 break;
 case 1073742066:
 var v = this.floatParameter (++i);
@@ -9433,12 +9433,12 @@ case 1610625028:
 case 3145768:
 case 1048589:
 propertyName = "hidden";
-propertyValue = org.jmol.viewer.JmolConstants.FALSE;
+propertyValue = Boolean.FALSE;
 break;
 case 12294:
 case 3145770:
 propertyName = "hidden";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1095766028:
 var modelIndex = (this.isSyntaxCheck ? 0 : this.modelNumberParameter (pt++));
@@ -9566,12 +9566,12 @@ var TF = (this.statementLength == 2 || this.getToken (2).tok == 1048589);
 if (str.equals ("front") || str.equals ("group")) {
 if (!TF && this.tokAt (2) != 1048588) this.error (22);
 if (!TF) str = "front";
-propertyValue = (TF ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+propertyValue = (TF ? Boolean.TRUE : Boolean.FALSE);
 break;
 }if (str.equals ("atom")) {
 if (!TF && this.tokAt (2) != 1048588) this.error (22);
 str = "front";
-propertyValue = (TF ? org.jmol.viewer.JmolConstants.FALSE : org.jmol.viewer.JmolConstants.TRUE);
+propertyValue = (TF ? Boolean.FALSE : Boolean.TRUE);
 break;
 }return false;
 }
@@ -11165,11 +11165,11 @@ i = this.iToken;
 break;
 case 1073742028:
 propertyName = "fixed";
-propertyValue = org.jmol.viewer.JmolConstants.FALSE;
+propertyValue = Boolean.FALSE;
 break;
 case 1060869:
 propertyName = "fixed";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073742066:
 var pt = this.getPoint3f (++i, true);
@@ -11187,7 +11187,7 @@ swidth = propertyName + " " + propertyValue;
 break;
 case 1073741998:
 propertyName = "line";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073741908:
 propertyName = "curve";
@@ -11385,7 +11385,7 @@ i = this.iToken;
 continue ;case 1073741886:
 case 1073741948:
 propertyName = "collapsed";
-propertyValue = (this.theTok == 1073741886 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+propertyValue = (this.theTok == 1073741886 ? Boolean.TRUE : Boolean.FALSE);
 if (typeSeen) this.error (18);
 typeSeen = true;
 break;
@@ -11516,7 +11516,7 @@ i = this.iToken;
 break;
 case 1073741990:
 case 1073741989:
-intramolecular = (tok == 1073741989 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+intramolecular = (tok == 1073741989 ? Boolean.TRUE : Boolean.FALSE);
 sbCommand.append (" ").append (this.theToken.value);
 break;
 case 1073742020:
@@ -11995,7 +11995,7 @@ propertyValue = Float.$valueOf (this.floatParameter (i + 1));
 break;
 case 1073742156:
 propertyName = "squareData";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073742168:
 if (i + 1 < this.statementLength && this.tokAt (i + 1) == 4) {
@@ -12214,7 +12214,7 @@ this.getToken (i);
 if (this.theTok == 1073741824) str = this.parameterAsString (i);
 switch (this.theTok) {
 case 603979871:
-smoothing = (this.getToken (++i).tok == 1048589 ? org.jmol.viewer.JmolConstants.TRUE : this.theTok == 1048588 ? org.jmol.viewer.JmolConstants.FALSE : null);
+smoothing = (this.getToken (++i).tok == 1048589 ? Boolean.TRUE : this.theTok == 1048588 ? Boolean.FALSE : null);
 if (smoothing == null) this.error (22);
 continue ;case 553648149:
 smoothingPower = this.intParameter (++i);
@@ -12362,13 +12362,13 @@ this.addShapeProperty (propertyList, "sasurface", Float.$valueOf (0));
 sbCommand.append (" vdw");
 surfaceObjectSeen = true;
 }propertyName = "property";
-if (smoothing == null) smoothing = this.viewer.getIsosurfacePropertySmoothing (false) == 1 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE;
+if (smoothing == null) smoothing = this.viewer.getIsosurfacePropertySmoothing (false) == 1 ? Boolean.TRUE : Boolean.FALSE;
 this.addShapeProperty (propertyList, "propertySmoothing", smoothing);
 sbCommand.append (" isosurfacePropertySmoothing " + smoothing);
 if (smoothingPower == 2147483647) smoothingPower = this.viewer.getIsosurfacePropertySmoothing (true);
 this.addShapeProperty (propertyList, "propertySmoothingPower", Integer.$valueOf (smoothingPower));
-if (smoothing === org.jmol.viewer.JmolConstants.TRUE) sbCommand.append (" isosurfacePropertySmoothingPower " + smoothingPower);
-if (this.viewer.isRangeSelected ()) this.addShapeProperty (propertyList, "rangeSelected", org.jmol.viewer.JmolConstants.TRUE);
+if (smoothing === Boolean.TRUE) sbCommand.append (" isosurfacePropertySmoothingPower " + smoothingPower);
+if (this.viewer.isRangeSelected ()) this.addShapeProperty (propertyList, "rangeSelected", Boolean.TRUE);
 } else {
 propertyName = mepOrMlp;
 }str = this.parameterAsString (i);
@@ -12409,7 +12409,7 @@ modelIndex = this.modelNumberParameter (++i);
 sbCommand.append (" model " + modelIndex);
 if (modelIndex < 0) {
 propertyName = "fixed";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 }propertyName = "modelIndex";
 propertyValue = Integer.$valueOf (modelIndex);
@@ -12448,7 +12448,7 @@ idSeen = true;
 var isSign = (this.theTok == 1073742147);
 if (isSign) {
 sbCommand.append (" sign");
-this.addShapeProperty (propertyList, "sign", org.jmol.viewer.JmolConstants.TRUE);
+this.addShapeProperty (propertyList, "sign", Boolean.TRUE);
 } else {
 if (this.tokAt (i + 1) == 1073741914) {
 i++;
@@ -12705,7 +12705,7 @@ i = this.iToken;
 }break;
 case 1073741828:
 propertyName = "addHydrogens";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 sbCommand.append (" addHydrogens");
 break;
 case 1073741836:
@@ -12748,7 +12748,7 @@ sbCommand.append (" binary");
 continue ;case 1073741868:
 sbCommand.append (" blockData");
 propertyName = "blockData";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1074790451:
 case 554176565:
@@ -12831,17 +12831,17 @@ continue ;case 536870916:
 case 1073742041:
 sbCommand.append (" ").append (this.theToken.value);
 propertyName = "debug";
-propertyValue = (this.theTok == 536870916 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+propertyValue = (this.theTok == 536870916 ? Boolean.TRUE : Boolean.FALSE);
 break;
 case 1060869:
 sbCommand.append (" fixed");
 propertyName = "fixed";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073741962:
 sbCommand.append (" fullPlane");
 propertyName = "fullPlane";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 break;
 case 1073741966:
 case 1073741968:
@@ -12957,7 +12957,7 @@ case 1073741986:
 case 1073742100:
 sbCommand.append (" ").append (this.theToken.value);
 propertyName = "pocket";
-propertyValue = (this.theTok == 1073742100 ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+propertyValue = (this.theTok == 1073742100 ? Boolean.TRUE : Boolean.FALSE);
 break;
 case 1073742002:
 propertyName = "lobe";
@@ -12994,7 +12994,7 @@ plane = null;
 }} else if (!surfaceObjectSeen && !planeSeen) {
 this.error (22);
 }sbCommand.append ("; isosurface map");
-this.addShapeProperty (propertyList, "map", (surfaceObjectSeen ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE));
+this.addShapeProperty (propertyList, "map", (surfaceObjectSeen ? Boolean.TRUE : Boolean.FALSE));
 break;
 case 1073742014:
 propertyName = "maxset";
@@ -13015,7 +13015,7 @@ sbCommand.append (" radical ").append (org.jmol.util.Escape.escape (propertyValu
 break;
 case 1073742028:
 propertyName = "fixed";
-propertyValue = org.jmol.viewer.JmolConstants.FALSE;
+propertyValue = Boolean.FALSE;
 sbCommand.append (" modelBased");
 break;
 case 1073742030:
@@ -13065,7 +13065,7 @@ sbCommand.append (" resolution ").append (propertyValue);
 break;
 case 1073742124:
 propertyName = "reverseColor";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 sbCommand.append (" reversecolor");
 break;
 case 1073742146:
@@ -13081,7 +13081,7 @@ surfaceObjectSeen = true;
 break;
 case 1073742156:
 propertyName = "squareData";
-propertyValue = org.jmol.viewer.JmolConstants.TRUE;
+propertyValue = Boolean.TRUE;
 sbCommand.append (" squared");
 break;
 case 1073741983:
@@ -13255,7 +13255,7 @@ sbCommand =  new StringBuffer ("; isosurface map select " + org.jmol.util.Escape
 }}}}if (haveIntersection && !haveSlab) {
 if (!surfaceObjectSeen) this.addShapeProperty (propertyList, "sasurface", Float.$valueOf (0));
 if (!isMapped) {
-this.addShapeProperty (propertyList, "map", org.jmol.viewer.JmolConstants.TRUE);
+this.addShapeProperty (propertyList, "map", Boolean.TRUE);
 this.addShapeProperty (propertyList, "select", bs);
 this.addShapeProperty (propertyList, "sasurface", Float.$valueOf (0));
 }this.addShapeProperty (propertyList, "slab", this.getCapSlabObject (-100, false));

@@ -1,13 +1,13 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.util, "TextFormat");
 Clazz.prepareFields (c$, function () {
 {
-org.jmol.util.TextFormat.useNumberLocalization[0] = org.jmol.viewer.JmolConstants.TRUE;
+org.jmol.util.TextFormat.useNumberLocalization[0] = Boolean.TRUE;
 }});
 c$.setUseNumberLocalization = Clazz.defineMethod (c$, "setUseNumberLocalization", 
 function (TF) {
-org.jmol.util.TextFormat.useNumberLocalization[0] = (TF ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+org.jmol.util.TextFormat.useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
 }, "~B");
 c$.formatDecimal = Clazz.defineMethod (c$, "formatDecimal", 
 function (value, decimalDigits) {
@@ -56,7 +56,7 @@ if (pt < len) sb.append (s1.charAt (pt));
  else sb.append ('0');
 }
 s1 = (isNeg ? "-" : "") + sb;
-return (org.jmol.viewer.JmolConstants.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
+return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
 }, "~N,~N");
 c$.format = Clazz.defineMethod (c$, "format", 
 function (value, width, precision, alignLeft, zeroPad) {

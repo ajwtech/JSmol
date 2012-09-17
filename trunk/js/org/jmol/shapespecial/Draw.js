@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmeshes = null;
 this.thisMesh = null;
@@ -1012,7 +1012,7 @@ var V =  new java.util.ArrayList ();
 for (var i = 0; i < this.meshCount; i++) {
 var mesh = this.dmeshes[i];
 if (mesh.vertexCount == 0) continue ;var info =  new java.util.Hashtable ();
-info.put ("fixed", mesh.ptCenters == null ? org.jmol.viewer.JmolConstants.TRUE : org.jmol.viewer.JmolConstants.FALSE);
+info.put ("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
 info.put ("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
 info.put ("drawType", mesh.drawType.$$name);
 if (mesh.diameter > 0) info.put ("diameter", Integer.$valueOf (mesh.diameter));

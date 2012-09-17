@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
- * $Revision: 17556 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -144,7 +144,7 @@ public class Axes extends FontLineShape {
     if (property == "origin")
       return fixedOrigin;
     if (property == "axesTypeXY")
-      return (axisXY.z == 0 ? JmolConstants.FALSE : JmolConstants.TRUE);
+      return (axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
     return null;
   }
 

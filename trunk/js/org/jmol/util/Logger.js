@@ -1,12 +1,12 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.DefaultLogger"], "org.jmol.util.Logger", ["java.lang.Boolean", "$.Runtime", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.util.DefaultLogger"], "org.jmol.util.Logger", ["java.lang.Runtime"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Logger");
 c$.getProperty = Clazz.defineMethod (c$, "getProperty", 
 ($fz = function (level, defaultValue) {
 try {
-var property = System.getProperty ("jmol.logger." + level);
+var property = System.getProperty ("jmol.logger." + level, null);
 if (property != null) {
-return org.jmol.viewer.JmolConstants.TRUE.equals (Boolean.$valueOf (property));
+return (property.equalsIgnoreCase ("true"));
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {

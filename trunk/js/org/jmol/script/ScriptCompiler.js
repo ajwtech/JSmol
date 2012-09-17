@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ParallelProcessor", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ParallelProcessor", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -1010,7 +1010,7 @@ return 2;
 }if (this.nTokens == 1) {
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
 this.thisFunction = (this.tokCommand == 102436 ?  new org.jmol.script.ParallelProcessor (ident, this.tokCommand) :  new org.jmol.script.ScriptFunction (ident, this.tokCommand));
-this.htUserFunctions.put (ident, org.jmol.viewer.JmolConstants.TRUE);
+this.htUserFunctions.put (ident, Boolean.TRUE);
 this.flowContext.setFunction (this.thisFunction);
 break;
 }if (this.nTokens == 2) {

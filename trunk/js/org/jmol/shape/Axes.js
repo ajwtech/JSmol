@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.FontLineShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.StringBuffer", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.shape.FontLineShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "$.StringBuffer", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.axisXY = null;
 this.scale = 0;
@@ -87,7 +87,7 @@ Clazz.overrideMethod (c$, "getProperty",
 function (property, index) {
 if (property === "axisPoints") return this.axisPoints;
 if (property === "origin") return this.fixedOrigin;
-if (property === "axesTypeXY") return (this.axisXY.z == 0 ? org.jmol.viewer.JmolConstants.FALSE : org.jmol.viewer.JmolConstants.TRUE);
+if (property === "axesTypeXY") return (this.axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
 return null;
 }, "~S,~N");
 Clazz.defineMethod (c$, "setScale", 

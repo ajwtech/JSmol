@@ -61,6 +61,7 @@ this.syncId = this.getParameter ("syncId");
 this.fullName = this.htmlName + "__" + this.syncId + "__";
 System.out.println ("Jmol applet " + this.fullName + " initializing");
 this.setLogging ();
+this.viewerOptions.remove ("debug");
 this.mayScript = true;
 org.jmol.appletjs.JmolAppletRegistry.checkIn (this.fullName, this);
 this.initWindows ();
@@ -129,7 +130,7 @@ return (value.equalsIgnoreCase ("true") || value.equalsIgnoreCase ("on") || valu
 Clazz.defineMethod (c$, "getValue", 
 ($fz = function (propertyName, defaultValue) {
 var stringValue = this.getParameter (propertyName);
-System.out.println ("getValue " + propertyName + " " + defaultValue);
+System.out.println ("getValue " + propertyName + " = " + stringValue);
 if (stringValue != null) return stringValue;
 return defaultValue;
 }, $fz.isPrivate = true, $fz), "~S,~S");
@@ -271,6 +272,8 @@ for (i = 1; i < tokens.length; i++){
 o = o[tokens[i]]
 }
 return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+} catch (e) {
+System.out.println(callback + " failed");
 }
 }}return "";
 }, "~S,~S,~A");

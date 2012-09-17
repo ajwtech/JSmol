@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2012-09-13 07:02:41 -0500 (Thu, 13 Sep 2012) $
- * $Revision: 17559 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -1533,7 +1533,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
         thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
-        htUserFunctions.put(ident, JmolConstants.TRUE);
+        htUserFunctions.put(ident, Boolean.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
       }

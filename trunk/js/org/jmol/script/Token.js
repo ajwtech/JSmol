@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.util.Hashtable"], "org.jmol.script.Token", ["java.util.ArrayList", "$.Arrays", "org.jmol.util.ArrayUtil", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.script.Token", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tok = 0;
 this.value = null;
@@ -86,7 +86,7 @@ var isMultiCharacter = (s != null && s.length > 1);
 for (var entry, $entry = org.jmol.script.Token.tokenMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var name = entry.getKey ();
 var token = entry.getValue ();
-if ((token.tok & 4096) != 0 && (s == null || name.indexOf (s) == 0) && (isMultiCharacter || (token.value).equals (name))) htSet.put (name, org.jmol.viewer.JmolConstants.TRUE);
+if ((token.tok & 4096) != 0 && (s == null || name.indexOf (s) == 0) && (isMultiCharacter || (token.value).equals (name))) htSet.put (name, Boolean.TRUE);
 }
 for (var entry, $entry = htSet.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var name = entry.getKey ();

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xml");
-Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "java.util.ArrayList"], "org.jmol.adapter.readers.xml.XmlChem3dReader", ["java.lang.Float", "java.util.Hashtable", "org.jmol.adapter.smarter.Atom", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "java.util.ArrayList"], "org.jmol.adapter.readers.xml.XmlChem3dReader", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "org.jmol.adapter.smarter.Atom", "org.jmol.api.Interface", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.orbitals = null;
 this.moData = null;
@@ -90,7 +90,7 @@ vd.setVoxelData (voxelData);
 if (this.moData == null) {
 this.moData =  new java.util.Hashtable ();
 this.moData.put ("defaultCutoff", Float.$valueOf (0.01));
-this.moData.put ("haveVolumeData", org.jmol.api.JmolAdapter.TRUE);
+this.moData.put ("haveVolumeData", Boolean.TRUE);
 this.moData.put ("calculationType", "Chem3D");
 this.orbitals =  new java.util.ArrayList ();
 this.moData.put ("mos", this.orbitals);
