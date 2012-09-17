@@ -208,7 +208,7 @@ public class Jmol implements JmolSyncInterface {
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";
-    System.out.println("Jmol applet " + fullName + " initializing");
+    System.out.println("Jmol JavaScript applet " + fullName + " initializing");
     setLogging();
   	viewerOptions.remove("debug");
 
