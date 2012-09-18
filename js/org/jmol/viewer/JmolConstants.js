@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedInputStream", "java.lang.Boolean", "$.StringBuffer", "java.util.Properties", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["java.io.BufferedInputStream", "java.lang.StringBuffer", "java.util.Properties", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "JmolConstants");
 c$.embedScript = Clazz.defineMethod (c$, "embedScript", 
 function (s) {
@@ -260,8 +260,6 @@ c$.getShapeVisibilityFlag = Clazz.defineMethod (c$, "getShapeVisibilityFlag",
 function (shapeID) {
 return (4 << shapeID);
 }, "~N");
-c$.FALSE = c$.prototype.FALSE = Boolean.FALSE;
-c$.TRUE = c$.prototype.TRUE = Boolean.TRUE;
 Clazz.defineStatics (c$,
 "copyright", "(C) 2012 Jmol Development",
 "version", null,

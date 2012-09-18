@@ -29,16 +29,15 @@ function () {
 this.startCommandWatcher (false);
 });
 Clazz.defineMethod (c$, "addScript", 
-function (strScript) {
-return this.addScript ("string", strScript, "", false, false);
-}, "~S");
-Clazz.defineMethod (c$, "addScript", 
 function (strScript, isScriptFile, isQuiet) {
 return this.addScript ("String", strScript, "", isScriptFile, isQuiet);
 }, "~S,~B,~B");
 Clazz.defineMethod (c$, "addScript", 
-function (returnType, strScript, statusList, isScriptFile, isQuiet) {
-if (!this.viewer.usingScriptQueue ()) {
+($fz = function (returnType, strScript, statusList, isScriptFile, isQuiet) {
+{
+// from ScriptManager.addScript -- just run immediately
+return this.viewer.evalStringWaitStatus(returnType, strScript, statusList, isScriptFile, isQuiet, true);
+}if (!this.viewer.usingScriptQueue ()) {
 this.clearQueue ();
 this.viewer.haltScriptExecution ();
 }if (this.commandWatcherThread == null && this.useCommandWatcherThread) this.startCommandWatcher (true);
@@ -58,11 +57,7 @@ scriptItem.add (Integer.$valueOf (useCommandThread ? -1 : 1));
 this.scriptQueue.add (scriptItem);
 this.startScriptQueue (false);
 return "pending";
-}, "~S,~S,~S,~B,~B");
-Clazz.defineMethod (c$, "getScriptCount", 
-function () {
-return this.scriptQueue.size ();
-});
+}, $fz.isPrivate = true, $fz), "~S,~S,~S,~B,~B");
 Clazz.defineMethod (c$, "clearQueue", 
 function () {
 this.scriptQueue.clear ();

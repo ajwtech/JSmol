@@ -1,5 +1,8 @@
- // BH note: Boolean.TRUE and Boolean.FALSE return "undefined"
- // BH note: in java/core.z.js added Boolean.booleanValue = Boolean.prototype.booleanValue = Boolean.prototype.valueOf
+LoadClazz = function() {
+ // BH 9/18/2012 7:29:10 AM
+ // BH note that this implementation does NOT use all of the aspects of j2slib.src.js
+ // BH embedded in LoadClazz function for delayed, optional execution in JmolJSO
+ // BH changed alert to Clazz.alert in java.lang.Class.js *.ClassLoader.js, java.lang.thread.js
  // BH removed toString from innerFunctionNames due to infinite recursion
  // BH note: Logger.error(null, e) does not work -- get no constructor for (String) (TypeError)
  // BH added j2s.lib.console
@@ -14,6 +17,7 @@
  // BH added System.gc() at end
  // BH added Clazz.exceptionOf = updated
  // BH added String.getBytes() at end
+ 
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -56,6 +60,9 @@ if (window["Clazz"] == null) {
 /* static */
 Class = Clazz = function () {
 };
+
+ Clazz.debuggingBH = false;
+
 
 NullObject = function () {
 };
@@ -1288,7 +1295,7 @@ Clazz.defineMethod = function (clazzThis, funName, funBody, funParams) {
 		f$ = clazzThis.prototype[funName] = Clazz
 				.generateDelegatingMethod (clazzThis, funName);
 				
-		if (funName != "construct") 
+		if (funName != "construct" && Clazz.debuggingBH) 
 		System.out.println("delegating " + clazzThis.__CLASS_NAME__ + " " + funName + " " + funParams);
 		/*
 		 * Keep the class inheritance stacks
@@ -2033,7 +2040,7 @@ java.lang.ClassLoader = {
  * @create March 10, 2006
  *******/
 
-if (window["Clazz"] == null || window["Clazz"].unloadClass == null) {
+if (window["Clazz"] != null && window["Clazz"].unloadClass == null) {
 /**
  * Once ClassExt.js is part of Class.js.
  * In order to make the Class.js as small as possible, part of its content
@@ -2590,9 +2597,9 @@ Clazz.checkPrivateMethod = function (args) {
 	}
 	return null;
 };
-var $fz = null; // for private method declaration
+$fz = null; // for private method declaration
 //var cla$$ = null;
-var c$ = null;
+c$ = null;
 /*-# cla$$$tack -> cst  #-*/
 Clazz.cla$$$tack = new Array ();
 Clazz.pu$h = function () {
@@ -4153,7 +4160,7 @@ ClazzLoader.w3cFailedLoadingTest = function (script) {
 /*-# generatingW3CScriptOnCallback -> gWSC #-*/
 ClazzLoader.generatingW3CScriptOnCallback = function (path, forError) {
 	return function () {
-	if (forError)Clazz.alert("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
+	if (forError && Clazz.debuggingBH)Clazz.alert("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
 
 		if (ClazzLoader.isGecko && this.timeoutHandle != null) {
 			window.clearTimeout (this.timeoutHandle);
@@ -6771,5 +6778,5 @@ window.assert = function () {
 
 })(Clazz.Console);
 
-
+};
 
