@@ -2,9 +2,6 @@
 Clazz.load (["org.jmol.api.JmolStatusListener", "$.JmolSyncInterface", "java.util.Hashtable"], "org.jmol.appletjs.Jmol", ["java.lang.Boolean", "$.StringBuffer", "java.net.URL", "java.util.ArrayList", "org.jmol.appletjs.JmolAppletRegistry", "org.jmol.constant.EnumCallback", "org.jmol.i18n.GT", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.language = null;
-this.statusForm = null;
-this.statusText = null;
-this.statusTextarea = null;
 this.doTranslate = true;
 this.haveDocumentAccess = false;
 this.isStereoSlave = false;
@@ -19,6 +16,7 @@ this.viewer = null;
 this.b$ = null;
 this.viewerOptions = null;
 this.htParams = null;
+this.jmol = null;
 if (!Clazz.isClassDefined ("org.jmol.appletjs.Jmol.MyStatusListener")) {
 org.jmol.appletjs.Jmol.$Jmol$MyStatusListener$ ();
 }
@@ -56,10 +54,11 @@ return null;
 }, "~B");
 Clazz.defineMethod (c$, "init", 
 function () {
+this.jmol = this;
 this.htmlName = this.getParameter ("name");
 this.syncId = this.getParameter ("syncId");
 this.fullName = this.htmlName + "__" + this.syncId + "__";
-System.out.println ("Jmol applet " + this.fullName + " initializing");
+System.out.println ("Jmol JavaScript applet " + this.fullName + " initializing");
 this.setLogging ();
 this.viewerOptions.remove ("debug");
 this.mayScript = true;
@@ -81,34 +80,17 @@ this.viewer.pushHoldRepaint ();
 var emulate = this.getValueLowerCase ("emulate", "jmol");
 this.setStringProperty ("defaults", emulate.equals ("chime") ? "RasMol" : "Jmol");
 this.setStringProperty ("backgroundColor", this.getValue ("bgcolor", this.getValue ("boxbgcolor", "black")));
-this.viewer.setBooleanProperty ("frank", true);
+this.viewer.setBooleanProperty ("frank", false);
 this.loading = true;
 for (var item, $item = 0, $$item = org.jmol.constant.EnumCallback.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) {
-System.out.println ("callback " + item + "  " + item.name ());
 this.setValue (item.name () + "Callback", null);
 }
 this.loading = false;
 this.language = org.jmol.i18n.GT.getLanguage ();
 System.out.println ("language=" + this.language);
-var haveCallback = false;
-for (var item, $item = 0, $$item = org.jmol.constant.EnumCallback.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) {
-if (this.b$.get (item) != null) {
-haveCallback = true;
-break;
-}}
-if (haveCallback || this.statusForm != null || this.statusText != null) {
-if (!this.mayScript) org.jmol.util.Logger.warn ("MAYSCRIPT missing -- all applet JavaScript calls disabled");
-}if (this.b$.get (org.jmol.constant.EnumCallback.SCRIPT) == null && this.b$.get (org.jmol.constant.EnumCallback.ERROR) == null) if (this.b$.get (org.jmol.constant.EnumCallback.MESSAGE) != null || this.statusForm != null || this.statusText != null) {
-if (this.doTranslate && (this.getValue ("doTranslate", null) == null)) {
-this.doTranslate = false;
-org.jmol.util.Logger.warn ("Note -- Presence of message callback disables translation; to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
-}if (this.doTranslate) org.jmol.util.Logger.warn ("Note -- Automatic language translation may affect parsing of message callbacks messages; use scriptCallback or errorCallback to process errors");
-}if (!this.doTranslate) {
-org.jmol.i18n.GT.setDoTranslate (false);
-org.jmol.util.Logger.warn ("Note -- language translation disabled");
-}if (!this.getBooleanValue ("popupMenu", true)) this.viewer.getProperty ("DATA_API", "disablePopupMenu", null);
 var scriptParam = this.getValue ("script", "");
-if (scriptParam.length > 0) this.scriptProcessor (scriptParam, null, 2);
+if (scriptParam.length > 0) this.scriptProcessor (scriptParam, null, 1);
+this.jmolReady ();
 }this.viewer.popHoldRepaint ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setLogging", 
@@ -329,7 +311,7 @@ if (b != null) b[0] = this.b$["org.jmol.appletjs.Jmol"].htmlName;
 var f = (b == null || b[1] == null ? null : b[1].toString ());
 switch (a) {
 case org.jmol.constant.EnumCallback.APPLETREADY:
-b[3] = this;
+b[3] = this.b$["org.jmol.appletjs.Jmol"].jmol;
 break;
 case org.jmol.constant.EnumCallback.ERROR:
 case org.jmol.constant.EnumCallback.EVAL:
@@ -558,7 +540,7 @@ Clazz.superCall (this, org.jmol.appletjs.Jmol.MyStatusListener, "finalize", []);
 Clazz.defineMethod (c$, "showStatus", 
 ($fz = function (a) {
 try {
-System.out.println ("Jmol applet callback message test: " + a);
+System.out.println (a);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {

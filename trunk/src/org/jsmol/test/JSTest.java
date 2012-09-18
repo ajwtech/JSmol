@@ -23,9 +23,6 @@
  */
 package org.jsmol.test;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;

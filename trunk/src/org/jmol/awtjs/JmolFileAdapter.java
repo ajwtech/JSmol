@@ -22,13 +22,10 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 			String post) {
 		try {
 			JmolURLConnection conn = (JmolURLConnection) url.openConnection();
-			String type = null;
-			if (type != null) {
-				if (outputBytes == null)
-					conn.outputString(post);
-				else
-					conn.outputBytes(outputBytes);
-			}
+			if (outputBytes != null)
+				conn.outputBytes(outputBytes);
+			else if (post != null)
+				conn.outputString(post);
 			return conn.getStringBuffer();
 		} catch (IOException e) {
 			return e.getMessage();

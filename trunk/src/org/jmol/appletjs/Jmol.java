@@ -47,100 +47,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-/*
- * these are *required*:
+/**
+ * Java2Script rendition of Jmol using GLmol-based graphics
  * 
- * [param name="progressbar" value="true" /] [param name="progresscolor"
- * value="blue" /] [param name="boxmessage" value="your-favorite-message" /]
- * [param name="boxbgcolor" value="#112233" /] [param name="boxfgcolor"
- * value="#778899" /]
- * 
- * these are *optional*:
- * 
- * [param name="syncId" value="nnnnn" /]
- * 
- * determines the subset of applets *across pages* that are to be synchronized
- * (usually just a random number assigned in Jmol.js)
- * if this is fiddled with, it still should be a random number, not
- * one that is assigned statically for a given web page.
- * 
- * [param name="menuFile" value="myMenu.mnu" /]
- * 
- * optional file to load containing menu data in the format of Jmol.mnu (Jmol 11.3.15)
- * 
- * [param name="loadInline" value=" | do | it | this | way " /]
- * 
- * [param name="script" value="your-script" /]
- *  // this one flips the orientation and uses RasMol/Chime colors [param
- * name="emulate" value="chime" /]
- *  // this is *required* if you want the applet to be able to // call your
- * callbacks
- * 
- * mayscript="true" is required as an applet/object for any callback, eval, or text/textarea setting)
- *
- * To disable ALL access to JavaScript (as, for example, in a Wiki) 
- * remove the MAYSCRIPT tag or set MAYSCRIPT="false"
- * 
- * To set a maximum size for the applet if resizable:
- *
- * [param name="maximumSize" value="nnnn" /]
- * 
- * 
- * You can specify that the signed or unsign applet or application should
- * use an independent command thread (EXCEPT for scripts containing the "javascript" command)  
- * 
- * [param name="useCommandThread" value="true"]
- * 
- * You can specify a language (French in this case) using  
- * 
- * [param name="language" value="fr"]
- * 
- * You can check that it is set correctly using 
- * 
- * [param name="debug" value="true"]
- *  
- *  or
- *  
- * [param name="logLevel" value="5"]
- * 
- * and then checking the console for a message about MAYSCRIPT
- * 
- * In addition, you can turn off JUST EVAL, by setting on the web page
- * 
- * _jmol.noEval = true or Jmol._noEval = true
- * 
- * This allows callbacks but does not allow the script constructs: 
- * 
- *  script javascript:...
- *  javascript ...
- *  x = javascript(...) 
- *  
- * However, this can be overridden by adding an evalCallback function 
- * This MUST be defined along with applet loading using a <param> tag
- * Easiest way to do this is to define
- * 
- * jmolSetCallback("evalCallback", "whateverFunction")
- * 
- * prior to the jmolApplet() command
- * 
- * This is because the signed applet was having trouble finding _jmol in 
- * Protein Explorer
- * 
- * see JmolConstants for callback types.
- * 
- * The use of jmolButtons is fully deprecated and NOT recommended.
- * 
- * 
- * 
- * new for Jmol 11.9.11:
- * 
- * [param name="multiTouchSparshUI" value="true"]
- * [param name="multiTouchSparshUI-simulated" value="true"]
- * 
- * (signed applet only) loads the SparshUI client adapter
- *  requires JmolMultiTouchDriver.exe (HP TouchSmart computer only)
- *  Uses 127.0.0.1 port 5946 (client) and 5947 (device). 
- *  (see http://code.google.com/p/sparsh-ui/)
+ * @author Bob Hanson hansonr@stolaf.edu, Takanori Nakane, with the assistance of Jhou Renjian
  * 
  */
 
@@ -151,9 +61,9 @@ public class Jmol implements JmolSyncInterface {
   private final static int SCRIPT_NOWAIT = 2;
 
   private String language;
-  private String statusForm;
-  private String statusText;
-  private String statusTextarea;
+  //private String statusForm;
+  //private String statusText;
+  //private String statusTextarea;
 
   protected boolean doTranslate = true;
   protected boolean haveDocumentAccess;
@@ -171,6 +81,8 @@ public class Jmol implements JmolSyncInterface {
   
   private Map<String, Object>viewerOptions;
 	private Map<String, Object> htParams = new Hashtable<String, Object>();
+	
+	Jmol jmol;
 
   public Jmol(Map<String, Object>viewerOptions) {
   	if (viewerOptions == null)
@@ -205,6 +117,7 @@ public class Jmol implements JmolSyncInterface {
   //}
 
   public void init() {
+  	jmol = this;
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";
@@ -234,10 +147,9 @@ public class Jmol implements JmolSyncInterface {
 			setStringProperty("backgroundColor", getValue("bgcolor", getValue(
 					"boxbgcolor", "black")));
 
-			viewer.setBooleanProperty("frank", true);
+			viewer.setBooleanProperty("frank", false);
 			loading = true;
 			for (EnumCallback item : EnumCallback.values()) {
-				System.out.println("callback " + item + "  " + item.name());
 				setValue(item.name() + "Callback", null);
 			}
 			loading = false;
@@ -253,39 +165,39 @@ public class Jmol implements JmolSyncInterface {
 			language = GT.getLanguage();
 			System.out.println("language=" + language);
 
-			boolean haveCallback = false;
+			//boolean haveCallback = false;
 			// these are set by viewer.setStringProperty() from setValue
-			for (EnumCallback item : EnumCallback.values()) {
-				if (callbacks.get(item) != null) {
-					haveCallback = true;
-					break;
-				}
-			}
-			if (haveCallback || statusForm != null || statusText != null) {
-				if (!mayScript)
-					Logger
-							.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
-			}
-			if (callbacks.get(EnumCallback.SCRIPT) == null
-					&& callbacks.get(EnumCallback.ERROR) == null)
-				if (callbacks.get(EnumCallback.MESSAGE) != null || statusForm != null
-						|| statusText != null) {
-					if (doTranslate && (getValue("doTranslate", null) == null)) {
-						doTranslate = false;
-						Logger
-								.warn("Note -- Presence of message callback disables translation;"
-										+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
-					}
-					if (doTranslate)
-						Logger
-								.warn("Note -- Automatic language translation may affect parsing of message callbacks"
-										+ " messages; use scriptCallback or errorCallback to process errors");
-				}
+			//for (EnumCallback item : EnumCallback.values()) {
+			//	if (callbacks.get(item) != null) {
+			//		haveCallback = true;
+			//		break;
+			//	}
+			//}
+			//if (haveCallback || statusForm != null || statusText != null) {
+			//	if (!mayScript)
+			//		Logger
+			//				.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
+			//}
+			//if (callbacks.get(EnumCallback.SCRIPT) == null
+			//		&& callbacks.get(EnumCallback.ERROR) == null)
+			//	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
+			//			|| statusText != null */) {
+			//		if (doTranslate && (getValue("doTranslate", null) == null)) {
+			//			doTranslate = false;
+			//			Logger
+			//					.warn("Note -- Presence of message callback disables translation;"
+			//							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
+			//		}
+			//		if (doTranslate)
+			//			Logger
+			//					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
+			//							+ " messages; use scriptCallback or errorCallback to process errors");
+			//	}
 
-			if (!doTranslate) {
-				GT.setDoTranslate(false);
-				Logger.warn("Note -- language translation disabled");
-			}
+			//if (!doTranslate) {
+			//	GT.setDoTranslate(false);
+			//	Logger.warn("Note -- language translation disabled");
+			//}
 
 			//statusForm = getValue("StatusForm", null);
 			//statusText = getValue("StatusText", null); // text
@@ -297,12 +209,13 @@ public class Jmol implements JmolSyncInterface {
 			//}
 
 			// should the popupMenu be loaded ?
-			if (!getBooleanValue("popupMenu", true))
-				viewer.getProperty("DATA_API", "disablePopupMenu", null);
+			//if (!getBooleanValue("popupMenu", true))
+			//	viewer.getProperty("DATA_API", "disablePopupMenu", null);
 
 			String scriptParam = getValue("script", "");
 			if (scriptParam.length() > 0)
-				scriptProcessor(scriptParam, null, SCRIPT_NOWAIT);
+				scriptProcessor(scriptParam, null, SCRIPT_WAIT);
+			jmolReady();
 		}
 
 		// file dropping for the signed applet
@@ -546,7 +459,7 @@ public class Jmol implements JmolSyncInterface {
        //+ " " + strInfo);
       switch (type) {
       case APPLETREADY:
-        data[3] = this;
+        data[3] = jmol;
         break;
       case ERROR:
       case EVAL:
@@ -884,7 +797,7 @@ public class Jmol implements JmolSyncInterface {
 
     private void showStatus(String message) {
       try {
-        System.out.println("Jmol applet callback message test: " + message);
+        System.out.println(message);
         //appletWrapper.showStatus(TextFormat.simpleReplace(TextFormat.split(message, "\n")[0], "'", "\\'"));
         //sendJsTextStatus(message);
       } catch (Exception e) {
