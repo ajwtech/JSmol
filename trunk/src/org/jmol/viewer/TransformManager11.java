@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
- * $Revision: 17556 $
+ * $Date: 2012-09-22 10:48:44 -0500 (Sat, 22 Sep 2012) $
+ * $Revision: 17574 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -459,7 +459,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  protected void setNavigationOffsetRelative(boolean navigatingSurface) {
+  public void setNavigationOffsetRelative(boolean navigatingSurface) {
     if (navigatingSurface) {
       navigateSurface(Integer.MAX_VALUE);
       return;
@@ -631,7 +631,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navigate(float seconds, Point3f pt) {
+  public void navigate(float seconds, Point3f pt) {
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
       return;
@@ -660,7 +660,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void setNavigationDepthPercent(float timeSec, float percent) {
+  public void setNavigationDepthPercent(float timeSec, float percent) {
     if (timeSec > 0) {
       navigateTo(timeSec, null, Float.NaN, null, percent, Float.NaN, Float.NaN);
       return;
@@ -680,7 +680,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navTranslatePercent(float seconds, float x, float y) {
+  public void navTranslatePercent(float seconds, float x, float y) {
     // if either is Float.NaN, then the other is RELATIVE to current
     transformPoint(navigationCenter, navigationOffset);
     if (seconds >= 0) {
@@ -938,7 +938,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  float getNavigationDepthPercent() {
+  public float getNavigationDepthPercent() {
     return navigationDepth;
   }
 
@@ -980,7 +980,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  float getNavigationOffsetPercent(char XorY) {
+  public float getNavigationOffsetPercent(char XorY) {
     getNavigationOffset();
     if (width == 0 || height == 0)
       return 0;

@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2012-09-17 16:50:01 -0500 (Mon, 17 Sep 2012) $
- * $Revision: 17568 $
+ * $Date: 2012-09-22 10:48:44 -0500 (Sat, 22 Sep 2012) $
+ * $Revision: 17574 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -23,6 +23,7 @@
 
 package org.jmol.script;
 
+import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.JpegEncoder;
@@ -1532,7 +1533,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1) {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
+        thisFunction = (tokCommand == Token.parallel ? new ScriptParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
         htUserFunctions.put(ident, Boolean.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
@@ -1958,7 +1959,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         flowContext = new ScriptFlowContext(this, ct, pt, flowContext);
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = new ParallelProcessor("", tokCommand);
+        thisFunction = new ScriptParallelProcessor("", tokCommand);
         flowContext.setFunction(thisFunction);
         pushCount++;
         vPush.add(ct);
