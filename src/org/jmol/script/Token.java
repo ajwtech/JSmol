@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-17 16:50:01 -0500 (Mon, 17 Sep 2012) $
- * $Revision: 17568 $
+ * $Date: 2012-09-22 10:48:44 -0500 (Sat, 22 Sep 2012) $
+ * $Revision: 17574 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -38,7 +38,6 @@ import org.jmol.util.ArrayUtil;
 //import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 //import org.jmol.util.Measure;
-import org.jmol.viewer.JmolConstants;
 
 public class Token {
   public int tok;
@@ -297,7 +296,7 @@ public class Token {
   final static int casecmd      = 11 | flowCommand;
   final static int catchcmd     = 12 | flowCommand;
   final static int defaultcmd   = 13 | flowCommand;
-  final static int trycmd       = 14 | flowCommand | noArgs;
+  public final static int trycmd       = 14 | flowCommand | noArgs;
   
   final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;

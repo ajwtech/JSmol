@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-17 16:50:01 -0500 (Mon, 17 Sep 2012) $
- * $Revision: 17568 $
+ * $Date: 2012-09-19 12:32:45 -0500 (Wed, 19 Sep 2012) $
+ * $Revision: 17571 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1617,7 +1617,7 @@ public class AtomSetCollection {
     Vector3f[] vibrations = (vibrationSteps == null ? null : vibrationSteps
         .get(0));
     Vector3f v = new Vector3f();
-    if (vibrationSteps != null && vibrations.length < atomCount 
+    if (vibrationSteps != null && vibrations != null && vibrations.length < atomCount 
         || trajectory.length < atomCount) {
       errorMessage = "File cannot be loaded as a trajectory";
       return;
