@@ -1,6 +1,6 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2010-07-31 04:51:00 -0500 (Sat, 31 Jul 2010) $
+ * $Author: hansonr $
+ * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *

@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-08-25 18:42:13 -0500 (Sat, 25 Aug 2012) $
+ * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
