@@ -25,7 +25,6 @@ package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.util.Colix;

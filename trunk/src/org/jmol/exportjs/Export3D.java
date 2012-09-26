@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.export;
+package org.jmol.exportjs;
 
 import java.awt.Image;
 
@@ -32,7 +32,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
