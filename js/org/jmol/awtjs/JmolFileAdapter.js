@@ -17,11 +17,9 @@ Clazz.overrideMethod (c$, "getBufferedURLInputStream",
 function (url, outputBytes, post) {
 try {
 var conn = url.openConnection ();
-var type = null;
-if (type != null) {
-if (outputBytes == null) conn.outputString (post);
- else conn.outputBytes (outputBytes);
-}return conn.getStringBuffer ();
+if (outputBytes != null) conn.outputBytes (outputBytes);
+ else if (post != null) conn.outputString (post);
+return conn.getStringBuffer ();
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
 return e.getMessage ();

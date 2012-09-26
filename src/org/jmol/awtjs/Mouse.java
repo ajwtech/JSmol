@@ -23,29 +23,28 @@
  */
 package org.jmol.awtjs;
 
-import java.awt.Event;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.jmol.api.JmolMouseInterface;
+import org.jmol.api.Event;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
+import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
 
 /**
- * formerly org.jmol.viewer.MouseManager14
+ * JavaScript interface from JmolJSmol.js via handleOldJvm10Event (for now)
  * 
- * methods required by Jmol that access java.awt.event
- * 
- * private to org.jmol.awt
+ * J2SRequireImport is needed because we want to allow JavaScript access to java.awt.Event constant names
  * 
  */
 
+@J2SRequireImport({org.jmol.api.Event.class})
 class Mouse implements JmolMouseInterface {
 
   private Viewer viewer;
@@ -54,11 +53,6 @@ class Mouse implements JmolMouseInterface {
   Mouse(Viewer viewer, ActionManager actionManager) {
     this.viewer = viewer;
     this.actionManager = actionManager;
-    //Object display = viewer.getDisplay();
-    //display.addKeyListener(this);
-    //display.addMouseListener(this);
-    //display.addMouseMotionListener(this);
-    //display.addMouseWheelListener(this);
   }
 
   public void clear() {
@@ -67,16 +61,14 @@ class Mouse implements JmolMouseInterface {
 
   public void dispose() {
     actionManager.dispose();
-    //Component display = (Component) viewer.getDisplay();
-    //display.removeMouseListener(this);
-    //display.removeMouseMotionListener(this);
-    //display.removeMouseWheelListener(this);
-    //display.removeKeyListener(this);
   }
 
   public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
     switch (id) {
+    case -1: // JavaScript
+      mouseWheel(time, x, modifiers | Binding.WHEEL);
+      break;
     case Event.MOUSE_DOWN:
       xWhenPressed = x;
       yWhenPressed = y;
@@ -273,12 +265,6 @@ class Mouse implements JmolMouseInterface {
   private void mouseExited(long time, int x, int y) {
     actionManager.mouseExited(time, x, y);
   }
-/*
-  void setMouseMode() {
-    clearKeyBuffer();
-    actionManager.setMouseMode();
-  }
-*/
   /**
    * 
    * @param time

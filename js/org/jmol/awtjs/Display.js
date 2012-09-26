@@ -2,7 +2,10 @@
 c$ = Clazz.declareType (org.jmol.awtjs, "Display");
 c$.getFullScreenDimensions = Clazz.defineMethod (c$, "getFullScreenDimensions", 
 function (display, widthHeight) {
-}, "~O,~A");
+{
+widthHeight[0] = display.style.width;
+widthHeight[1] = display.style.height;
+}}, "~O,~A");
 c$.hasFocus = Clazz.defineMethod (c$, "hasFocus", 
 function (display) {
 return true;
@@ -12,6 +15,7 @@ function (display) {
 }, "~O");
 c$.repaint = Clazz.defineMethod (c$, "repaint", 
 function (display) {
+System.out.println ("repaint display");
 }, "~O");
 c$.renderScreenImage = Clazz.defineMethod (c$, "renderScreenImage", 
 function (viewer, g, size) {

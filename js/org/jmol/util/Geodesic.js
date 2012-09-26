@@ -18,10 +18,6 @@ c$.getVertexVectors = Clazz.defineMethod (c$, "getVertexVectors",
 function () {
 return org.jmol.util.Geodesic.vertexVectors;
 });
-c$.getVertexVectorsCount = Clazz.defineMethod (c$, "getVertexVectorsCount", 
-function () {
-return (org.jmol.util.Geodesic.vertexVectors == null ? 0 : org.jmol.util.Geodesic.vertexVectors.length);
-});
 c$.getVertexVector = Clazz.defineMethod (c$, "getVertexVector", 
 function (i) {
 return org.jmol.util.Geodesic.vertexVectors[i];

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["org.jmol.util.Rectangle"], "org.jmol.viewer.ActionManager", ["java.lang.Character", "$.Float", "$.Thread", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.i18n.GT", "org.jmol.modelset.MeasurementPending", "org.jmol.script.ScriptEvaluator", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Point3fi", "$.TextFormat", "org.jmol.viewer.binding.Binding", "$.DragBinding", "$.JmolBinding", "$.PfaatBinding", "$.RasmolBinding"], function () {
+Clazz.load (["org.jmol.util.Rectangle", "org.jmol.viewer.MouseState"], "org.jmol.viewer.ActionManager", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.i18n.GT", "org.jmol.modelset.MeasurementPending", "org.jmol.script.ScriptEvaluator", "org.jmol.thread.HoverWatcherThread", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Point3fi", "$.TextFormat", "org.jmol.viewer.binding.Binding", "$.DragBinding", "$.JmolBinding", "$.PfaatBinding", "$.RasmolBinding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.binding = null;
@@ -14,9 +14,6 @@ this.xyRange = 0;
 this.gestureSwipeFactor = 1.0;
 this.mouseDragFactor = 1.0;
 this.mouseWheelFactor = 1.15;
-if (!Clazz.isClassDefined ("org.jmol.viewer.ActionManager.Mouse")) {
-org.jmol.viewer.ActionManager.$ActionManager$Mouse$ ();
-}
 this.current = null;
 this.moved = null;
 this.clicked = null;
@@ -39,9 +36,6 @@ this.keyProcessing = false;
 this.isMultiTouchClient = false;
 this.isMultiTouchServer = false;
 this.haveSelection = false;
-if (!Clazz.isClassDefined ("org.jmol.viewer.ActionManager.HoverWatcher")) {
-org.jmol.viewer.ActionManager.$ActionManager$HoverWatcher$ ();
-}
 this.measurementQueued = null;
 this.pickingStyle = 0;
 this.atomPickingMode = 1;
@@ -64,11 +58,11 @@ org.jmol.viewer.ActionManager.$ActionManager$Gesture$ ();
 Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "ActionManager");
 Clazz.prepareFields (c$, function () {
-this.current = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Mouse, this, null, 0);
-this.moved = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Mouse, this, null, 1);
-this.clicked = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Mouse, this, null, 2);
-this.pressed = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Mouse, this, null, 3);
-this.dragged = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Mouse, this, null, 4);
+this.current =  new org.jmol.viewer.MouseState ();
+this.moved =  new org.jmol.viewer.MouseState ();
+this.clicked =  new org.jmol.viewer.MouseState ();
+this.pressed =  new org.jmol.viewer.MouseState ();
+this.dragged =  new org.jmol.viewer.MouseState ();
 this.rectRubber =  new org.jmol.util.Rectangle ();
 this.dragGesture = Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.Gesture, this, null, 20);
 });
@@ -260,9 +254,7 @@ try {
 if (isStart) {
 if (this.hoverWatcherThread != null) return ;
 this.current.time = -1;
-this.hoverWatcherThread =  new Thread (Clazz.innerTypeInstance (org.jmol.viewer.ActionManager.HoverWatcher, this, null));
-this.hoverWatcherThread.setName ("HoverWatcher");
-this.hoverWatcherThread.start ();
+this.hoverWatcherThread =  new org.jmol.thread.HoverWatcherThread (this, this.current, this.moved, this.viewer);
 } else {
 if (this.hoverWatcherThread == null) return ;
 this.current.time = -1;
@@ -353,7 +345,7 @@ if (!this.viewer.getMouseEnabled ()) return ;
 switch (action) {
 case 0:
 this.setCurrent (time, x, y, modifiers);
-this.moved.setCurrent (0);
+this.moved.setCurrent (this.current, 0);
 if (this.measurementPending != null || this.hoverActive) this.checkPointOrAtomClicked (x, y, 0, 0, time, false, 0);
  else if (this.isZoomArea (x)) this.checkMotionRotateZoom (org.jmol.viewer.binding.Binding.getMouseAction (1, 16), 0, 0, 0, false);
  else if (this.viewer.getCursor () == 5) this.viewer.setCursor (0);
@@ -366,8 +358,8 @@ return ;
 case 2:
 this.setMouseMode ();
 this.setCurrent (time, x, y, modifiers);
-this.clickedCount = (count > 1 ? count : this.clicked.check (x, y, modifiers, time, 700) ? this.clickedCount + 1 : 1);
-this.clicked.setCurrent (2);
+this.clickedCount = (count > 1 ? count : this.clicked.check (this.xyRange, x, y, modifiers, time, 700) ? this.clickedCount + 1 : 1);
+this.clicked.setCurrent (this.current, 2);
 this.viewer.setFocus ();
 if (this.atomPickingMode != 9 && this.isBound (org.jmol.viewer.binding.Binding.getMouseAction (-2147483648, modifiers), 23)) return ;
 this.checkPointOrAtomClicked (x, y, modifiers, this.clickedCount, time, false, 2);
@@ -377,7 +369,7 @@ this.setMouseMode ();
 var deltaX = x - this.dragged.x;
 var deltaY = y - this.dragged.y;
 this.setCurrent (time, x, y, modifiers);
-this.dragged.setCurrent (1);
+this.dragged.setCurrent (this.current, 1);
 if (this.atomPickingMode != 32) this.exitMeasurementMode ();
 action = org.jmol.viewer.binding.Binding.getMouseAction (this.pressedCount, modifiers);
 this.dragGesture.add (action, x, y, time);
@@ -386,9 +378,9 @@ return ;
 case 4:
 this.setMouseMode ();
 this.setCurrent (time, x, y, modifiers);
-this.pressedCount = (this.pressed.check (x, y, modifiers, time, 700) ? this.pressedCount + 1 : 1);
-this.pressed.setCurrent (4);
-this.dragged.setCurrent (4);
+this.pressedCount = (this.pressed.check (this.xyRange, x, y, modifiers, time, 700) ? this.pressedCount + 1 : 1);
+this.pressed.setCurrent (this.current, 4);
+this.dragged.setCurrent (this.current, 4);
 this.viewer.setFocus ();
 var isSelectAndDrag = this.isBound (org.jmol.viewer.binding.Binding.getMouseAction (-2147483648, modifiers), 23);
 action = org.jmol.viewer.binding.Binding.getMouseAction (this.pressedCount, modifiers);
@@ -446,7 +438,7 @@ return ;
 case 5:
 this.setCurrent (time, x, y, modifiers);
 this.viewer.spinXYBy (0, 0, 0);
-var dragRelease = !this.pressed.check (x, y, modifiers, time, 9223372036854775807);
+var dragRelease = !this.pressed.check (this.xyRange, x, y, modifiers, time, 9223372036854775807);
 this.viewer.setInMotion (false);
 this.viewer.setCursor (0);
 action = org.jmol.viewer.binding.Binding.getMouseAction (this.pressedCount, modifiers);
@@ -463,7 +455,7 @@ this.viewer.script ("assign connect " + this.measurementPending.getMeasurementSc
 this.exitMeasurementMode ();
 this.viewer.refresh (3, "bond dropped");
 } else {
-if (this.pressed.inRange (this.dragged.x, this.dragged.y)) {
+if (this.pressed.inRange (this.xyRange, this.dragged.x, this.dragged.y)) {
 var s = "assign atom ({" + this.dragAtomIndex + "}) \"" + this.pickAtomAssignType + "\"";
 if (this.isPickAtomAssignCharge) {
 s += ";{atomindex=" + this.dragAtomIndex + "}.label='%C'; ";
@@ -871,10 +863,12 @@ var measurementCount = this.measurementPending.getCount ();
 if (measurementCount >= 2 && measurementCount <= 4) this.viewer.script ("!measure " + this.measurementPending.getMeasurementScript (" ", true));
 this.exitMeasurementMode ();
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "hoverOn", 
-function (atomIndex) {
-this.viewer.hoverOn (atomIndex, org.jmol.viewer.binding.Binding.getMouseAction (this.clickedCount, this.moved.modifiers));
-}, "~N");
+Clazz.defineMethod (c$, "checkHover", 
+function () {
+if (!this.viewer.getInMotion () && !this.viewer.getSpinOn () && !this.viewer.getNavOn () && !this.viewer.checkObjectHovered (this.current.x, this.current.y)) {
+var atomIndex = this.viewer.findNearestAtomIndex (this.current.x, this.current.y);
+if (atomIndex >= 0) this.viewer.hoverOn (atomIndex, org.jmol.viewer.binding.Binding.getMouseAction (this.clickedCount, this.moved.modifiers));
+}});
 Clazz.defineMethod (c$, "hoverOff", 
 function () {
 try {
@@ -1199,83 +1193,6 @@ throw e;
 }
 return null;
 }, $fz.isPrivate = true, $fz), "~S");
-c$.$ActionManager$Mouse$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.x = -1000;
-this.y = -1000;
-this.modifiers = 0;
-this.time = -1;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.ActionManager, "Mouse");
-Clazz.makeConstructor (c$, 
-function (a) {
-}, "~N");
-Clazz.defineMethod (c$, "set", 
-function (a, b, c, d) {
-this.time = a;
-this.x = b;
-this.y = c;
-this.modifiers = d;
-}, "~N,~N,~N,~N");
-Clazz.defineMethod (c$, "setCurrent", 
-function (a) {
-this.time = this.b$["org.jmol.viewer.ActionManager"].current.time;
-this.x = this.b$["org.jmol.viewer.ActionManager"].current.x;
-this.y = this.b$["org.jmol.viewer.ActionManager"].current.y;
-this.modifiers = this.b$["org.jmol.viewer.ActionManager"].current.modifiers;
-}, "~N");
-Clazz.defineMethod (c$, "inRange", 
-function (a, b) {
-return (Math.abs (this.x - a) <= this.b$["org.jmol.viewer.ActionManager"].xyRange && Math.abs (this.y - b) <= this.b$["org.jmol.viewer.ActionManager"].xyRange);
-}, "~N,~N");
-Clazz.defineMethod (c$, "check", 
-function (a, b, c, d, e) {
-return (this.inRange (a, b) && this.modifiers == c && (d - this.time) < e);
-}, "~N,~N,~N,~N,~N");
-c$ = Clazz.p0p ();
-};
-c$.$ActionManager$HoverWatcher$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.ActionManager, "HoverWatcher", null, Runnable);
-Clazz.overrideMethod (c$, "run", 
-function () {
-Thread.currentThread ().setPriority (1);
-var a;
-try {
-while (Thread.currentThread ().equals (this.b$["org.jmol.viewer.ActionManager"].hoverWatcherThread) && (a = this.b$["org.jmol.viewer.ActionManager"].viewer.getHoverDelay ()) > 0) {
-Thread.sleep (a);
-if (this.b$["org.jmol.viewer.ActionManager"].current.x == this.b$["org.jmol.viewer.ActionManager"].moved.x && this.b$["org.jmol.viewer.ActionManager"].current.y == this.b$["org.jmol.viewer.ActionManager"].moved.y && this.b$["org.jmol.viewer.ActionManager"].current.time == this.b$["org.jmol.viewer.ActionManager"].moved.time) {
-var b = System.currentTimeMillis ();
-var c = (b - this.b$["org.jmol.viewer.ActionManager"].moved.time);
-if (c > a) {
-if (Thread.currentThread ().equals (this.b$["org.jmol.viewer.ActionManager"].hoverWatcherThread) && !this.b$["org.jmol.viewer.ActionManager"].viewer.getInMotion () && !this.b$["org.jmol.viewer.ActionManager"].viewer.getSpinOn () && !this.b$["org.jmol.viewer.ActionManager"].viewer.getNavOn () && !this.b$["org.jmol.viewer.ActionManager"].viewer.checkObjectHovered (this.b$["org.jmol.viewer.ActionManager"].current.x, this.b$["org.jmol.viewer.ActionManager"].current.y)) {
-var d = this.b$["org.jmol.viewer.ActionManager"].viewer.findNearestAtomIndex (this.b$["org.jmol.viewer.ActionManager"].current.x, this.b$["org.jmol.viewer.ActionManager"].current.y);
-if (d >= 0) {
-this.b$["org.jmol.viewer.ActionManager"].hoverOn (d);
-}}}}}
-} catch (e$$) {
-if (Clazz.exceptionOf (e$$, InterruptedException)) {
-var ie = e$$;
-{
-org.jmol.util.Logger.debug ("Hover interrupted");
-}
-} else if (Clazz.exceptionOf (e$$, Exception)) {
-var ie = e$$;
-{
-org.jmol.util.Logger.debug ("Hover Exception: " + ie);
-}
-} else {
-throw e$$;
-}
-}
-});
-c$ = Clazz.p0p ();
-};
 c$.$ActionManager$MotionPoint$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

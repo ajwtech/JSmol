@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ParallelProcessor", "$.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TimeoutThread", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.thread.ScriptParallelProcessor", "$.TimeoutThread", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$display = null;
 this.gdata = null;
@@ -40,7 +40,7 @@ this.viewerOptions = null;
 this.$isPreviewOnly = false;
 this.haveDisplay = false;
 this.autoExit = false;
-this.mustRender = true;
+this.mustRender = false;
 this.isPrintOnly = false;
 this.isSyntaxAndFileCheck = false;
 this.isSyntaxCheck = false;
@@ -216,20 +216,22 @@ if (info.containsKey ("debug") || this.commandOptions.indexOf ("-debug") >= 0) o
 this.$isSignedApplet = this.checkOption ("signedApplet", "-signed");
 this.$isApplet = this.$isSignedApplet || this.checkOption ("applet", "-applet");
 if (this.$isApplet && info.containsKey ("maximumSize")) this.setMaximumSize ((info.get ("maximumSize")).intValue ());
-this.isPrintOnly = this.checkOption ("printOnly", "-p");
-this.multiTouch = this.haveDisplay && this.checkOption ("multiTouch", "-multitouch");
-this.$noGraphicsAllowed = (this.$display == null && this.checkOption ("noGraphics", "-n"));
+this.access = (this.checkOption ("access:READSPT", "-r") ? org.jmol.viewer.Viewer.ACCESS.READSPT : this.checkOption ("access:NONE", "-R") ? org.jmol.viewer.Viewer.ACCESS.NONE : org.jmol.viewer.Viewer.ACCESS.ALL);
 this.$isPreviewOnly = info.containsKey ("previewOnly");
 if (this.$isPreviewOnly) info.remove ("previewOnly");
-this.access = (this.checkOption ("access:READSPT", "-r") ? org.jmol.viewer.Viewer.ACCESS.READSPT : this.checkOption ("access:NONE", "-R") ? org.jmol.viewer.Viewer.ACCESS.NONE : org.jmol.viewer.Viewer.ACCESS.ALL);
+this.isPrintOnly = this.checkOption ("printOnly", "-p");
+this.$noGraphicsAllowed = (this.$display == null && this.checkOption ("noGraphics", "-n"));
 o = info.get ("platform");
 if (o == null) o = (this.commandOptions.contains ("platform=") ? this.commandOptions.substring (this.commandOptions.indexOf ("platform=") + 9) : "org.jmol.awt.Platform");
 if (Clazz.instanceOf (o, String)) o = org.jmol.api.Interface.getInterface (o);
 this.apiPlatform = o;
-this.apiPlatform.setViewer (this, this.$display);
 this.haveDisplay = (!this.$noGraphicsAllowed && !this.isHeadless ());
-this.mustRender = this.haveDisplay;
-if (!this.haveDisplay) this.$display = null;
+if (this.haveDisplay) {
+this.mustRender = true;
+this.multiTouch = this.checkOption ("multiTouch", "-multitouch");
+} else {
+this.$display = null;
+}this.apiPlatform.setViewer (this, this.$display);
 o = info.get ("graphicsAdapter");
 if (o == null) o = org.jmol.api.Interface.getInterface ("org.jmol.g3d.Graphics3D");
 this.gdata = (o == null ?  new org.jmol.util.GData () : o);
@@ -1316,8 +1318,7 @@ this.mouse = null;
 }this.clearScriptQueue ();
 this.haltScriptExecution ();
 this.stopAnimationThreads ("setModeMouse NONE");
-this.scriptManager.startCommandWatcher (false);
-this.scriptManager.interruptQueueThreads ();
+this.scriptManager.clear ();
 this.gdata.destroy ();
 if (this.jmolpopup != null) this.jmolpopup.dispose ();
 if (this.modelkitPopup != null) this.modelkitPopup.dispose ();
@@ -2849,7 +2850,20 @@ if (this.repaintManager != null) this.repaintManager.popHoldRepaint (!why.equals
 }, "~S");
 Clazz.overrideMethod (c$, "refresh", 
 function (mode, strWhy) {
-if (mode == 6 && this.getInMotion ()) return ;
+{
+if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
+this.transformManager.finalizeTransformParameters();
+Jmol.refresh(this.htmlName, mode, strWhy,
+[this.transformManager.fixedRotationCenter,
+this.transformManager.getRotationQuaternion(),
+this.transformManager.xTranslationFraction,
+this.transformManager.yTranslationFraction,
+this.transformManager.modelRadius,
+this.transformManager.scalePixelsPerAngstrom,
+this.transformManager.zoomPercent
+]);
+}
+}if (mode == 7 || mode == 6 && this.getInMotion ()) return ;
 if (this.repaintManager == null || !this.refreshing) return ;
 if (mode > 0) this.repaintManager.refresh ();
 if (mode % 3 != 0 && this.statusManager.doSync ()) this.statusManager.setSync (mode == 2 ? strWhy : null);
@@ -3264,6 +3278,7 @@ var isOK = (isScriptFile ? this.$eval.compileScriptFile (strScript, isQuiet) : t
 var strErrorMessage = this.$eval.getErrorMessage ();
 var strErrorMessageUntranslated = this.$eval.getErrorMessageUntranslated ();
 this.setErrorMessage (strErrorMessage, strErrorMessageUntranslated);
+this.refresh (7, "script complete");
 if (isOK) {
 this.isScriptQueued = isQueued;
 if (!isQuiet) this.scriptStatus (null, strScript, -2 - (++this.scriptIndex), null);
@@ -7020,7 +7035,7 @@ Clazz.defineMethod (c$, "getExecutor",
 function () {
 if (this.executor != null || org.jmol.viewer.Viewer.nProcessors < 2) return this.executor;
 try {
-this.executor = org.jmol.script.ParallelProcessor.getExecutor ();
+this.executor = org.jmol.thread.ScriptParallelProcessor.getExecutor ();
 } catch (e$$) {
 if (Clazz.exceptionOf (e$$, Exception)) {
 var e = e$$;
@@ -7497,15 +7512,13 @@ Clazz.defineMethod (c$, "getBaseModelBitSet",
 function () {
 return this.modelSet.getBaseModelBitSet (this.getCurrentModelIndex ());
 });
+Clazz.defineMethod (c$, "getTimeouts", 
+function () {
+return this.timeouts;
+});
 Clazz.defineMethod (c$, "clearTimeouts", 
 function () {
-if (this.timeouts == null) return ;
-var e = this.timeouts.values ().iterator ();
-while (e.hasNext ()) {
-var t = e.next ();
-if (!t.script.equals ("exitJmol")) t.interrupt ();
-}
-this.timeouts.clear ();
+if (this.timeouts != null) org.jmol.thread.TimeoutThread.clear (this.timeouts);
 });
 Clazz.defineMethod (c$, "setTimeout", 
 function (name, mSec, script) {
@@ -7514,25 +7527,12 @@ this.clearTimeouts ();
 return ;
 }if (this.timeouts == null) {
 this.timeouts =  new java.util.Hashtable ();
-}if (mSec == 0) {
-var t = this.timeouts.get (name);
-if (t != null) {
-t.interrupt ();
-this.timeouts.remove (name);
-}return ;
-}var t = this.timeouts.get (name);
-if (t != null) {
-t.set (mSec, script);
-return ;
-}t =  new org.jmol.viewer.TimeoutThread (this, name, mSec, script);
-this.timeouts.put (name, t);
-t.start ();
+}org.jmol.thread.TimeoutThread.setTimeout (this, this.timeouts, name, mSec, script);
 }, "~S,~N,~S");
 Clazz.defineMethod (c$, "triggerTimeout", 
 function (name) {
-var t;
-if (!this.haveDisplay || this.timeouts == null || (t = this.timeouts.get (name)) == null) return ;
-t.trigger ();
+if (!this.haveDisplay || this.timeouts == null) return ;
+org.jmol.thread.TimeoutThread.trigger (this.timeouts, name);
 }, "~S");
 Clazz.defineMethod (c$, "clearTimeout", 
 function (name) {
@@ -7540,15 +7540,7 @@ this.setTimeout (name, 0, null);
 }, "~S");
 Clazz.defineMethod (c$, "showTimeout", 
 function (name) {
-if (!this.haveDisplay) return "";
-var sb =  new StringBuffer ();
-if (this.timeouts != null) {
-var e = this.timeouts.values ().iterator ();
-while (e.hasNext ()) {
-var t = e.next ();
-if (name == null || t.$name.equalsIgnoreCase (name)) sb.append (t.toString ()).append ("\n");
-}
-}return (sb.length () > 0 ? sb.toString () : "<no timeouts set>");
+return (this.haveDisplay ? org.jmol.thread.TimeoutThread.showTimeout (this.timeouts, name) : "");
 }, "~S");
 Clazz.defineMethod (c$, "calculatePartialCharges", 
 function (bsSelected) {

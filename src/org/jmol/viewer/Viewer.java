@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-22 10:48:44 -0500 (Sat, 22 Sep 2012) $
- * $Revision: 17574 $
+ * $Date: 2012-09-22 10:53:50 -0500 (Sat, 22 Sep 2012) $
+ * $Revision: 17575 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -369,6 +369,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   private void setOptions(Map<String, Object> info) {
     viewerOptions = info;
+    // could be a Component, or could be a JavaScript class
     display = info.get("display");
     // use allocateViewer
     if (Logger.debugging) {
@@ -395,15 +396,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isApplet && info.containsKey("maximumSize"))
       setMaximumSize(((Integer) info.get("maximumSize")).intValue());
 
-    isPrintOnly = checkOption("printOnly", "-p");
-    multiTouch = haveDisplay && checkOption("multiTouch", "-multitouch");
-    noGraphicsAllowed = (display == null && checkOption("noGraphics", "-n"));
+    access = (checkOption("access:READSPT", "-r") ? ACCESS.READSPT
+        : checkOption("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
     isPreviewOnly = info.containsKey("previewOnly");
     if (isPreviewOnly)
       info.remove("previewOnly"); // see FilePreviewPanel
-    access = (checkOption("access:READSPT", "-r") ? ACCESS.READSPT
-        : checkOption("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
-
+    isPrintOnly = checkOption("printOnly", "-p");
+    noGraphicsAllowed = (display == null && checkOption("noGraphics", "-n"));
     o = info.get("platform");
     if (o == null)
       o = (commandOptions.contains("platform=") ? commandOptions
@@ -413,12 +412,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (o instanceof String)
       o = Interface.getInterface((String) o);
     apiPlatform = (ApiPlatform) o;
+    haveDisplay = (!noGraphicsAllowed && !isHeadless());
+    if (haveDisplay) {
+      mustRender = true;
+      multiTouch = checkOption("multiTouch", "-multitouch");
+    } else {
+      display = null;
+    }
     apiPlatform.setViewer(this, display);
 
-    haveDisplay = (!noGraphicsAllowed && !isHeadless());
-    mustRender = haveDisplay;
-    if (!haveDisplay)
-      display = null;
     o = info.get("graphicsAdapter");
     if (o == null)
       o = Interface.getInterface("org.jmol.g3d.Graphics3D");
@@ -562,7 +564,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean haveDisplay = false;
   public boolean autoExit = false;
 
-  private boolean mustRender = true;
+  private boolean mustRender = false;
   private boolean isPrintOnly = false;
   private boolean isSyntaxAndFileCheck = false;
   private boolean isSyntaxCheck = false;
@@ -627,6 +629,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
                                      long time) {
+    // also used for JavaScript from jQuery
     return mouse.handleOldJvm10Event(id, x, y, modifiers, time);
   }
 
@@ -4044,17 +4047,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * Sequence is as follows:
    * 
-   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint() 2)
-   * Viewer.repaint() invokes display.repaint(), provided display is not null
-   * (headless) 3) The system responds with an invocation of
-   * Jmol.update(Graphics g), which we are routing through Jmol.paint(Graphics
-   * g). 4) Jmol.update invokes Viewer.setScreenDimension(size), which makes the
-   * necessary changes in parameters for any new window size. 5) Jmol.update
-   * invokes Viewer.renderScreenImage(g, size, rectClip) 6)
-   * Viewer.renderScreenImage checks object visibility, invokes render1 to do
+   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint() 
+   * 2) Viewer.repaint() invokes display.repaint(), provided display is not null
+   * (headless) 
+   * 3) The system responds with an invocation of Jmol.update(Graphics g), which we are routing through Jmol.paint(Graphics g). 
+   * 4) Jmol.update invokes Viewer.setScreenDimension(size), which makes the
+   * necessary changes in parameters for any new window size. 
+   * 5) Jmol.update invokes Viewer.renderScreenImage(g, size, rectClip) 
+   * 6) Viewer.renderScreenImage checks object visibility, invokes render1 to do
    * the actual creation of the image pixel map and send it to the screen, and
-   * then invokes repaintView() 7) Viewer.repaintView() invokes
-   * RepaintManager.repaintDone(), to clear the flags and then use notify() to
+   * then invokes repaintView() 
+   * 7) Viewer.repaintView() invokes RepaintManager.repaintDone(), to clear the flags and then use notify() to
    * release any threads holding on wait().
    * 
    * @param mode
@@ -4072,12 +4075,31 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(-1) is used in stateManager to force no repaint
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
     // refresh(6) is used to do no refresh if in motion
-    if (mode == 6 && getInMotion())
+    // refresh(7) is used to send JavaScript a "new orientation" command
+    //   for example, at the end of a script
+    /**
+     * @j2sNative
+     * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
+     *   this.transformManager.finalizeTransformParameters();
+     *   Jmol.refresh(this.htmlName, mode, strWhy, 
+     *    [this.transformManager.fixedRotationCenter, 
+     *     this.transformManager.getRotationQuaternion(),
+     *     this.transformManager.xTranslationFraction, 
+     *     this.transformManager.yTranslationFraction, 
+     *     this.transformManager.modelRadius, 
+     *     this.transformManager.scalePixelsPerAngstrom, 
+     *     this.transformManager.zoomPercent
+     *    ]);
+     * }
+     */
+    {}
+    if (mode == 7 || mode == 6 && getInMotion())
       return;
     if (repaintManager == null || !refreshing)
       return;
     if (mode > 0)
       repaintManager.refresh();
+    
     if (mode % 3 != 0 && statusManager.doSync())
       statusManager.setSync(mode == 2 ? strWhy : null);
   }
@@ -4671,6 +4693,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
     setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
+    refresh(7,"script complete");
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)

@@ -146,6 +146,7 @@ if (lighting == 1073741964) for (var i = this.normixCount; --i >= 0; ) this.norm
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "invertNormixes", 
 ($fz = function () {
+org.jmol.util.Normix.setInverseNormixes ();
 for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = org.jmol.util.Normix.getInverseNormix (this.normixes[i]);
 
 }, $fz.isPrivate = true, $fz));

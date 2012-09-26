@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Thread", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.constant.EnumStereoMode"], "org.jmol.viewer.TransformManager", ["java.lang.Float", "$.StringBuffer", "java.util.Date", "$.Hashtable", "javax.vecmath.Point4f", "org.jmol.util.Escape", "$.Logger", "$.Quaternion", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.constant.EnumStereoMode"], "org.jmol.viewer.TransformManager", ["java.lang.Float", "$.StringBuffer", "$.Thread", "java.util.Hashtable", "javax.vecmath.Point4f", "org.jmol.thread.MotionThread", "$.SpinThread", "$.VibrationThread", "org.jmol.util.Escape", "$.Quaternion", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.perspectiveModel = 11;
@@ -108,15 +108,9 @@ this.ptTest3 = null;
 this.aaTest1 = null;
 this.matrixTest = null;
 this.motion = null;
-if (!Clazz.isClassDefined ("org.jmol.viewer.TransformManager.MotionThread")) {
-org.jmol.viewer.TransformManager.$TransformManager$MotionThread$ ();
-}
 this.spinOn = false;
 this.navOn = false;
 this.spinThread = null;
-if (!Clazz.isClassDefined ("org.jmol.viewer.TransformManager.SpinThread")) {
-org.jmol.viewer.TransformManager.$TransformManager$SpinThread$ ();
-}
 this.vibrationOn = false;
 this.vibrationPeriod = 0;
 this.vibrationPeriodMs = 0;
@@ -124,9 +118,6 @@ this.vibrationAmplitude = 0;
 this.vibrationRadians = 0;
 this.vibrationScale = 0;
 this.vibrationThread = null;
-if (!Clazz.isClassDefined ("org.jmol.viewer.TransformManager.VibrationThread")) {
-org.jmol.viewer.TransformManager.$TransformManager$VibrationThread$ ();
-}
 this.stereoMode = null;
 this.stereoColors = null;
 this.stereoDegrees = NaN;
@@ -314,7 +305,7 @@ this.fixedTranslation.set (newCenterScreen.x, newCenterScreen.y, 0);
 Clazz.defineMethod (c$, "spinXYBy", 
 function (xDelta, yDelta, speed) {
 if (xDelta == 0 && yDelta == 0) {
-if (this.spinThread != null && this.spinThread.isGesture) this.clearSpin ();
+if (this.spinThread != null && this.spinThread.isGesture ()) this.clearSpin ();
 return ;
 }this.clearSpin ();
 var pt1 =  new javax.vecmath.Point3f (this.fixedRotationCenter);
@@ -1171,7 +1162,7 @@ return ;
 aaMoveTo.set (axis, (degrees / 57.29577951308232));
 matrixEnd.set (aaMoveTo);
 }}try {
-if (this.motion == null) this.motion = Clazz.innerTypeInstance (org.jmol.viewer.TransformManager.MotionThread, this, null);
+if (this.motion == null) this.motion =  new org.jmol.thread.MotionThread (this, this.viewer);
 var nSteps = this.motion.set (floatSecondsTotal, center, matrixEnd, zoom, xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
 if (nSteps <= 0 || this.viewer.waitForMoveTo ()) {
 this.motion.startMotion (false);
@@ -1384,12 +1375,11 @@ this.spinOn = spinOn;
 this.viewer.getGlobalSettings ().setParameterValue ("_spinning", spinOn);
 if (spinOn) {
 if (this.spinThread == null) {
-this.spinThread = Clazz.innerTypeInstance (org.jmol.viewer.TransformManager.SpinThread, this, null, endDegrees, endPositions, bsAtoms, false, isGesture);
+this.spinThread =  new org.jmol.thread.SpinThread (this, this.viewer, endDegrees, endPositions, bsAtoms, false, isGesture);
 if (bsAtoms == null) this.spinThread.start ();
  else this.spinThread.run ();
 }} else if (this.spinThread != null) {
-this.spinThread.isReset = true;
-this.spinThread.interrupt ();
+this.spinThread.reset ();
 this.spinThread = null;
 }}, $fz.isPrivate = true, $fz), "~B,~N,java.util.List,java.util.BitSet,~B");
 Clazz.defineMethod (c$, "setNavOn", 
@@ -1403,7 +1393,7 @@ if (navOn) {
 if (this.navX == 0 && this.navY == 0 && this.navZ == 0) this.navZ = 1;
 if (this.navFps == 0) this.navFps = 10;
 if (this.spinThread == null) {
-this.spinThread = Clazz.innerTypeInstance (org.jmol.viewer.TransformManager.SpinThread, this, null, 0, null, null, true, false);
+this.spinThread =  new org.jmol.thread.SpinThread (this, this.viewer, 0, null, null, true, false);
 this.spinThread.start ();
 }} else if (wasOn) {
 if (this.spinThread != null) {
@@ -1453,7 +1443,7 @@ return ;
 this.vibrationOn = false;
 return ;
 }if (this.vibrationThread == null) {
-this.vibrationThread = Clazz.innerTypeInstance (org.jmol.viewer.TransformManager.VibrationThread, this, null);
+this.vibrationThread =  new org.jmol.thread.VibrationThread (this, this.viewer);
 this.vibrationThread.start ();
 }this.vibrationOn = true;
 }, $fz.isPrivate = true, $fz), "~B");
@@ -1644,332 +1634,6 @@ this.ptOffset.z += xy;
 break;
 }
 }, "java.util.BitSet,~S,~N");
-c$.$TransformManager$MotionThread$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.aaStepCenter = null;
-this.aaStepNavCenter = null;
-this.aaStep = null;
-this.aaTotal = null;
-this.matrixStart = null;
-this.matrixStartInv = null;
-this.matrixStep = null;
-this.matrixEnd = null;
-this.center = null;
-this.zoom = 0;
-this.xTrans = 0;
-this.yTrans = 0;
-this.navCenter = null;
-this.xNav = 0;
-this.yNav = 0;
-this.navDepth = 0;
-this.ptMoveToCenter = null;
-this.startRotationRadius = 0;
-this.targetPixelScale = 0;
-this.totalSteps = 0;
-this.startPixelScale = 0;
-this.targetRotationRadius = 0;
-this.fps = 0;
-this.rotationRadiusDelta = 0;
-this.pixelScaleDelta = 0;
-this.zoomStart = 0;
-this.zoomDelta = 0;
-this.xTransStart = 0;
-this.xTransDelta = 0;
-this.yTransStart = 0;
-this.yTransDelta = 0;
-this.xNavTransStart = 0;
-this.xNavTransDelta = 0;
-this.yNavTransDelta = 0;
-this.yNavTransStart = 0;
-this.navDepthStart = 0;
-this.navDepthDelta = 0;
-this.targetTime = 0;
-this.frameTimeMillis = 0;
-this.iStep = 0;
-this.asThread = false;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.TransformManager, "MotionThread", Thread);
-Clazz.prepareFields (c$, function () {
-this.aaStepCenter =  new javax.vecmath.Vector3f ();
-this.aaStepNavCenter =  new javax.vecmath.Vector3f ();
-this.aaStep =  new javax.vecmath.AxisAngle4f ();
-this.aaTotal =  new javax.vecmath.AxisAngle4f ();
-this.matrixStart =  new javax.vecmath.Matrix3f ();
-this.matrixStartInv =  new javax.vecmath.Matrix3f ();
-this.matrixStep =  new javax.vecmath.Matrix3f ();
-this.matrixEnd =  new javax.vecmath.Matrix3f ();
-});
-Clazz.defineMethod (c$, "startMotion", 
-function (a) {
-this.asThread = a;
-if (a) this.start ();
- else this.run ();
-}, "~B");
-Clazz.overrideMethod (c$, "run", 
-function () {
-if (this.totalSteps > 0) this.b$["org.jmol.viewer.TransformManager"].viewer.setInMotion (true);
-try {
-if (this.totalSteps == 0 || this.startMotion ()) this.endMotion ();
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
-if (this.totalSteps > 0) this.b$["org.jmol.viewer.TransformManager"].viewer.setInMotion (false);
-this.b$["org.jmol.viewer.TransformManager"].motion = null;
-});
-Clazz.defineMethod (c$, "set", 
-function (a, b, c, d, e, f, g, h, i, j, k) {
-this.center = b;
-this.matrixEnd.set (c);
-this.zoom = d;
-this.xTrans = e;
-this.yTrans = f;
-this.navCenter = h;
-this.xNav = i;
-this.yNav = j;
-this.navDepth = k;
-this.ptMoveToCenter = (b == null ? this.b$["org.jmol.viewer.TransformManager"].fixedRotationCenter : b);
-this.startRotationRadius = this.b$["org.jmol.viewer.TransformManager"].modelRadius;
-this.targetRotationRadius = (b == null || Float.isNaN (g) ? this.b$["org.jmol.viewer.TransformManager"].modelRadius : g <= 0 ? this.b$["org.jmol.viewer.TransformManager"].viewer.calcRotationRadius (b) : g);
-this.startPixelScale = this.b$["org.jmol.viewer.TransformManager"].scaleDefaultPixelsPerAngstrom;
-this.targetPixelScale = (b == null ? this.startPixelScale : this.b$["org.jmol.viewer.TransformManager"].defaultScaleToScreen (this.targetRotationRadius));
-if (Float.isNaN (d)) d = this.b$["org.jmol.viewer.TransformManager"].zoomPercent;
-this.b$["org.jmol.viewer.TransformManager"].getRotation (this.matrixStart);
-this.matrixStartInv.invert (this.matrixStart);
-this.matrixStep.mul (this.matrixEnd, this.matrixStartInv);
-this.aaTotal.set (this.matrixStep);
-this.fps = 30;
-this.totalSteps = Math.round ((a * this.fps));
-if (this.totalSteps == 0) return 0;
-this.frameTimeMillis = Math.floor (1000 / this.fps);
-this.targetTime = System.currentTimeMillis ();
-this.zoomStart = this.b$["org.jmol.viewer.TransformManager"].zoomPercent;
-this.zoomDelta = d - this.zoomStart;
-this.xTransStart = this.b$["org.jmol.viewer.TransformManager"].getTranslationXPercent ();
-this.xTransDelta = e - this.xTransStart;
-this.yTransStart = this.b$["org.jmol.viewer.TransformManager"].getTranslationYPercent ();
-this.yTransDelta = f - this.yTransStart;
-this.aaStepCenter.set (this.ptMoveToCenter);
-this.aaStepCenter.sub (this.b$["org.jmol.viewer.TransformManager"].fixedRotationCenter);
-this.aaStepCenter.scale (1 / this.totalSteps);
-this.pixelScaleDelta = (this.targetPixelScale - this.startPixelScale);
-this.rotationRadiusDelta = (this.targetRotationRadius - this.startRotationRadius);
-if (h != null && this.b$["org.jmol.viewer.TransformManager"].mode == 1) {
-this.aaStepNavCenter.set (h);
-this.aaStepNavCenter.sub (this.b$["org.jmol.viewer.TransformManager"].navigationCenter);
-this.aaStepNavCenter.scale (1 / this.totalSteps);
-}var l = this.b$["org.jmol.viewer.TransformManager"].getNavigationOffsetPercent ('X');
-this.xNavTransDelta = i - l;
-this.yNavTransStart = this.b$["org.jmol.viewer.TransformManager"].getNavigationOffsetPercent ('Y');
-this.yNavTransDelta = j - this.yNavTransStart;
-var m = this.b$["org.jmol.viewer.TransformManager"].getNavigationDepthPercent ();
-this.navDepthDelta = k - m;
-return this.totalSteps;
-}, "~N,javax.vecmath.Point3f,javax.vecmath.Matrix3f,~N,~N,~N,~N,javax.vecmath.Point3f,~N,~N,~N");
-Clazz.defineMethod (c$, "startMotion", 
-function () {
-for (; this.iStep < this.totalSteps; ++this.iStep) {
-if (!Float.isNaN (this.matrixEnd.m00)) {
-this.b$["org.jmol.viewer.TransformManager"].getRotation (this.matrixStart);
-this.matrixStartInv.invert (this.matrixStart);
-this.matrixStep.mul (this.matrixEnd, this.matrixStartInv);
-this.aaTotal.set (this.matrixStep);
-this.aaStep.set (this.aaTotal);
-this.aaStep.angle /= (this.totalSteps - this.iStep);
-if (this.aaStep.angle == 0) this.matrixStep.setIdentity ();
- else this.matrixStep.set (this.aaStep);
-this.matrixStep.mul (this.matrixStart);
-}var a = this.iStep / (this.totalSteps - 1);
-this.b$["org.jmol.viewer.TransformManager"].modelRadius = this.startRotationRadius + this.rotationRadiusDelta * a;
-this.b$["org.jmol.viewer.TransformManager"].scaleDefaultPixelsPerAngstrom = this.startPixelScale + this.pixelScaleDelta * a;
-if (!Float.isNaN (this.xTrans)) {
-this.b$["org.jmol.viewer.TransformManager"].zoomToPercent (this.zoomStart + this.zoomDelta * a);
-this.b$["org.jmol.viewer.TransformManager"].translateToPercent ('x', this.xTransStart + this.xTransDelta * a);
-this.b$["org.jmol.viewer.TransformManager"].translateToPercent ('y', this.yTransStart + this.yTransDelta * a);
-}this.b$["org.jmol.viewer.TransformManager"].setRotation (this.matrixStep);
-if (this.center != null) this.b$["org.jmol.viewer.TransformManager"].fixedRotationCenter.add (this.aaStepCenter);
-if (this.navCenter != null && this.b$["org.jmol.viewer.TransformManager"].mode == 1) {
-var b =  new javax.vecmath.Point3f (this.b$["org.jmol.viewer.TransformManager"].navigationCenter);
-b.add (this.aaStepNavCenter);
-this.b$["org.jmol.viewer.TransformManager"].navigate (0, b);
-if (!Float.isNaN (this.xNav) && !Float.isNaN (this.yNav)) this.b$["org.jmol.viewer.TransformManager"].navTranslatePercent (0, this.xNavTransStart + this.xNavTransDelta * a, this.yNavTransStart + this.yNavTransDelta * a);
-if (!Float.isNaN (this.navDepth)) this.b$["org.jmol.viewer.TransformManager"].setNavigationDepthPercent (0, this.navDepthStart + this.navDepthDelta * a);
-}this.targetTime += this.frameTimeMillis;
-if (System.currentTimeMillis () < this.targetTime) {
-this.b$["org.jmol.viewer.TransformManager"].viewer.requestRepaintAndWait ();
-if (this.b$["org.jmol.viewer.TransformManager"].motion == null || !this.asThread && !this.b$["org.jmol.viewer.TransformManager"].viewer.isScriptExecuting ()) {
-return false;
-}var b = (this.targetTime - System.currentTimeMillis ());
-if (b > 0) {
-try {
-Thread.sleep (b);
-} catch (ie) {
-if (Clazz.exceptionOf (ie, InterruptedException)) {
-return false;
-} else {
-throw ie;
-}
-}
-}}}
-return true;
-});
-Clazz.defineMethod (c$, "endMotion", 
-function () {
-this.b$["org.jmol.viewer.TransformManager"].setRotationRadius (this.targetRotationRadius, true);
-this.b$["org.jmol.viewer.TransformManager"].scaleDefaultPixelsPerAngstrom = this.targetPixelScale;
-if (this.center != null) this.b$["org.jmol.viewer.TransformManager"].moveRotationCenter (this.center, !this.b$["org.jmol.viewer.TransformManager"].windowCentered);
-if (!Float.isNaN (this.xTrans)) {
-this.b$["org.jmol.viewer.TransformManager"].zoomToPercent (this.zoom);
-this.b$["org.jmol.viewer.TransformManager"].translateToPercent ('x', this.xTrans);
-this.b$["org.jmol.viewer.TransformManager"].translateToPercent ('y', this.yTrans);
-}this.b$["org.jmol.viewer.TransformManager"].setRotation (this.matrixEnd);
-if (this.navCenter != null && this.b$["org.jmol.viewer.TransformManager"].mode == 1) {
-this.b$["org.jmol.viewer.TransformManager"].navigationCenter.set (this.navCenter);
-if (!Float.isNaN (this.xNav) && !Float.isNaN (this.yNav)) this.b$["org.jmol.viewer.TransformManager"].navTranslatePercent (0, this.xNav, this.yNav);
-if (!Float.isNaN (this.navDepth)) this.b$["org.jmol.viewer.TransformManager"].setNavigationDepthPercent (0, this.navDepth);
-}});
-c$ = Clazz.p0p ();
-};
-c$.$TransformManager$SpinThread$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.endDegrees = 0;
-this.endPositions = null;
-this.nDegrees = 0;
-this.bsAtoms = null;
-this.isNav = false;
-this.isGesture = false;
-this.isReset = false;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.TransformManager, "SpinThread", Thread);
-Clazz.makeConstructor (c$, 
-function (a, b, c, d, e) {
-Clazz.superConstructor (this, org.jmol.viewer.TransformManager.SpinThread, []);
-this.setName ("SpinThread" +  new java.util.Date ());
-this.endDegrees = Math.abs (a);
-this.endPositions = b;
-this.bsAtoms = c;
-this.isNav = d;
-this.isGesture = e;
-}, "~N,java.util.List,java.util.BitSet,~B,~B");
-Clazz.overrideMethod (c$, "run", 
-function () {
-var a = (this.isNav ? this.b$["org.jmol.viewer.TransformManager"].navFps : this.b$["org.jmol.viewer.TransformManager"].spinFps);
-this.b$["org.jmol.viewer.TransformManager"].viewer.getGlobalSettings ().setParameterValue (this.isNav ? "_navigating" : "_spinning", true);
-var b = 0;
-var c = System.currentTimeMillis ();
-var d = 0;
-var e = false;
-while (!this.isInterrupted ()) {
-if (this.isNav && a != this.b$["org.jmol.viewer.TransformManager"].navFps) {
-a = this.b$["org.jmol.viewer.TransformManager"].navFps;
-b = 0;
-c = System.currentTimeMillis ();
-} else if (!this.isNav && a != this.b$["org.jmol.viewer.TransformManager"].spinFps && this.bsAtoms == null) {
-a = this.b$["org.jmol.viewer.TransformManager"].spinFps;
-b = 0;
-c = System.currentTimeMillis ();
-}if (a == 0 || !(this.isNav ? this.b$["org.jmol.viewer.TransformManager"].navOn : this.b$["org.jmol.viewer.TransformManager"].spinOn)) {
-this.b$["org.jmol.viewer.TransformManager"].setSpinOn (false);
-this.b$["org.jmol.viewer.TransformManager"].setNavOn (false);
-break;
-}var f = this.b$["org.jmol.viewer.TransformManager"].viewer.getNavigateSurface ();
-var g = (this.isNav ? (f || (this.b$["org.jmol.viewer.TransformManager"].navX != 0 || this.b$["org.jmol.viewer.TransformManager"].navY != 0)) || this.b$["org.jmol.viewer.TransformManager"].navZ != 0 : this.b$["org.jmol.viewer.TransformManager"].isSpinInternal && this.b$["org.jmol.viewer.TransformManager"].internalRotationAxis.angle != 0 || this.b$["org.jmol.viewer.TransformManager"].isSpinFixed && this.b$["org.jmol.viewer.TransformManager"].fixedRotationAxis.angle != 0 || !this.b$["org.jmol.viewer.TransformManager"].isSpinFixed && !this.b$["org.jmol.viewer.TransformManager"].isSpinInternal && (this.b$["org.jmol.viewer.TransformManager"].spinX != 0 || this.b$["org.jmol.viewer.TransformManager"].spinY != 0 || this.b$["org.jmol.viewer.TransformManager"].spinZ != 0));
-++b;
-var h = Math.round ((b * 1000 / a));
-var i = (System.currentTimeMillis () - c);
-var j = (h - i);
-if (j <= 0) {
-if (!e) org.jmol.util.Logger.info ("spinFPS is set too fast (" + a + ") -- can't keep up!");
-e = true;
-} else {
-var k = (this.bsAtoms == null && this.b$["org.jmol.viewer.TransformManager"].viewer.getInMotion ());
-if (k) {
-if (this.isGesture) break;
-j += 1000;
-}try {
-if (g && (this.b$["org.jmol.viewer.TransformManager"].spinOn || this.b$["org.jmol.viewer.TransformManager"].navOn) && !k) {
-if (this.isNav) {
-this.b$["org.jmol.viewer.TransformManager"].setNavigationOffsetRelative (f);
-} else if (this.b$["org.jmol.viewer.TransformManager"].isSpinInternal || this.b$["org.jmol.viewer.TransformManager"].isSpinFixed) {
-d = (this.b$["org.jmol.viewer.TransformManager"].isSpinInternal ? this.b$["org.jmol.viewer.TransformManager"].internalRotationAxis : this.b$["org.jmol.viewer.TransformManager"].fixedRotationAxis).angle / a;
-if (this.b$["org.jmol.viewer.TransformManager"].isSpinInternal) {
-this.b$["org.jmol.viewer.TransformManager"].rotateAxisAngleRadiansInternal (d, this.bsAtoms);
-} else {
-this.b$["org.jmol.viewer.TransformManager"].rotateAxisAngleRadiansFixed (d, this.bsAtoms);
-}this.nDegrees += Math.abs (d * 57.29577951308232);
-} else {
-if (this.b$["org.jmol.viewer.TransformManager"].spinX != 0) {
-this.b$["org.jmol.viewer.TransformManager"].rotateXRadians (this.b$["org.jmol.viewer.TransformManager"].spinX * 0.017453292 / a, null);
-}if (this.b$["org.jmol.viewer.TransformManager"].spinY != 0) {
-this.b$["org.jmol.viewer.TransformManager"].rotateYRadians (this.b$["org.jmol.viewer.TransformManager"].spinY * 0.017453292 / a, null);
-}if (this.b$["org.jmol.viewer.TransformManager"].spinZ != 0) {
-this.b$["org.jmol.viewer.TransformManager"].rotateZRadians (this.b$["org.jmol.viewer.TransformManager"].spinZ * 0.017453292 / a);
-}}while (!this.isInterrupted () && !this.b$["org.jmol.viewer.TransformManager"].viewer.getRefreshing ()) {
-Thread.sleep (10);
-}
-if (this.bsAtoms == null) this.b$["org.jmol.viewer.TransformManager"].viewer.refresh (1, "SpinThread:run()");
- else this.b$["org.jmol.viewer.TransformManager"].viewer.requestRepaintAndWait ();
-if (!this.isNav && this.nDegrees >= this.endDegrees - 0.001) this.b$["org.jmol.viewer.TransformManager"].setSpinOn (false);
-}Thread.sleep (j);
-if (this.isReset) break;
-} catch (e) {
-if (Clazz.exceptionOf (e, InterruptedException)) {
-break;
-} else {
-throw e;
-}
-}
-}}
-if (this.bsAtoms != null && this.endPositions != null) {
-this.b$["org.jmol.viewer.TransformManager"].viewer.setAtomCoord (this.bsAtoms, 1146095626, this.endPositions);
-this.bsAtoms = null;
-this.endPositions = null;
-}if (!this.isReset) this.b$["org.jmol.viewer.TransformManager"].setSpinOn (false);
-});
-c$ = Clazz.p0p ();
-};
-c$.$TransformManager$VibrationThread$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.TransformManager, "VibrationThread", Thread);
-Clazz.makeConstructor (c$, 
-function () {
-Clazz.superConstructor (this, org.jmol.viewer.TransformManager.VibrationThread, []);
-this.setName ("VibrationThread");
-});
-Clazz.overrideMethod (c$, "run", 
-function () {
-var a = System.currentTimeMillis ();
-var b = a;
-try {
-do {
-var c = System.currentTimeMillis ();
-var d = (c - b);
-var e = 33 - d;
-if (e > 0) Thread.sleep (e);
-b = c = System.currentTimeMillis ();
-d = (c - a);
-var f = (d % this.b$["org.jmol.viewer.TransformManager"].vibrationPeriodMs) / this.b$["org.jmol.viewer.TransformManager"].vibrationPeriodMs;
-this.b$["org.jmol.viewer.TransformManager"].setVibrationT (f);
-this.b$["org.jmol.viewer.TransformManager"].viewer.refresh (3, "VibrationThread:run()");
-} while (!this.isInterrupted ());
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
-});
-c$ = Clazz.p0p ();
-};
 Clazz.defineStatics (c$,
 "twoPI", 6.283185307179586,
 "degreesPerRadian", 57.29577951308232,

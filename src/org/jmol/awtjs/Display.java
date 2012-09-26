@@ -19,6 +19,12 @@ class Display {
 	 * 
 	 */
 	static void getFullScreenDimensions(Object display, int[] widthHeight) {
+		/**
+		 * @j2sNative
+		 * widthHeight[0] = display.style.width;
+		 * widthHeight[1] = display.style.height; 
+		 */
+		{}
 	}
 
 	static boolean hasFocus(Object display) {
@@ -29,6 +35,7 @@ class Display {
 	}
 
 	static void repaint(Object display) {
+		System.out.println("repaint display");
 	}
 
 	static void renderScreenImage(JmolViewer viewer, Object g, Object size) {
@@ -42,6 +49,7 @@ class Display {
 
 	public static String prompt(String label, String data, String[] list,
 			boolean asButtons) {
+		//TODO
 		return "null";
 	}
 
