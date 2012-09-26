@@ -175,7 +175,7 @@ strLabelPDB = this.viewer.getStandardLabelFormat (2);
 tokensPDB = org.jmol.modelset.LabelToken.compile (this.viewer, strLabelPDB, '\0', null);
 }strLabel = strLabelPDB;
 tokens = tokensPDB;
-}this.strings[atomIndex] = org.jmol.modelset.LabelToken.formatLabel (this.viewer, atom, tokens, '\0', null);
+}this.strings[atomIndex] = org.jmol.modelset.LabelToken.formatLabelAtomArray (this.viewer, atom, tokens, '\0', null);
 this.formats[atomIndex] = strLabel;
 this.bsSizeSet.set (atomIndex);
 if ((this.bsBgColixSet == null || !this.bsBgColixSet.get (atomIndex)) && this.defaultBgcolix != 0) this.setBgcolix (atomIndex, this.defaultBgcolix);
@@ -212,7 +212,7 @@ Clazz.defineMethod (c$, "setLabel",
 var atom = this.atoms[i];
 var tokens = temp[0];
 if (tokens == null) tokens = temp[0] = org.jmol.modelset.LabelToken.compile (this.viewer, strLabel, '\0', null);
-var label = (tokens == null ? null : org.jmol.modelset.LabelToken.formatLabel (this.viewer, atom, tokens, '\0', null));
+var label = (tokens == null ? null : org.jmol.modelset.LabelToken.formatLabelAtomArray (this.viewer, atom, tokens, '\0', null));
 atom.setShapeVisibility (this.myVisibilityFlag, label != null);
 if (this.strings == null || i >= this.strings.length) this.strings = org.jmol.util.ArrayUtil.ensureLength (this.strings, i + 1);
 if (this.formats == null || i >= this.formats.length) this.formats = org.jmol.util.ArrayUtil.ensureLength (this.formats, i + 1);

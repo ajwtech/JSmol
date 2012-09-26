@@ -86,7 +86,7 @@ var atom = atoms[this.baseAtomIndex + atomNumber - 1];
 if (atom == null) {
 atom = this.atomSetCollection.addNewAtom ();
 }atom.atomSerial = atomNumber;
-this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
+this.setAtomCoordXYZ (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
 var atno = this.parseIntStr (elementSymbol);
 if (atno != -2147483648) elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (atno);
 atom.elementSymbol = elementSymbol;

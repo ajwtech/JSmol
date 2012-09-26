@@ -15,10 +15,6 @@
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/quantum/*"/>
         <exclude name="**/popup/*"/>
-      	<exclude name="**/render/*"/>
-      	<exclude name="**/renderbio/*"/>
-	  	<exclude name="**/renderspecial/*"/>
-  		<exclude name="**/rendersurface/*"/>
       </fileset>
     </copy>
   </target>

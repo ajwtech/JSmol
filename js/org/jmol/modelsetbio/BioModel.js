@@ -234,7 +234,7 @@ var checkPolymerConnections = !this.modelSet.viewer.isPdbSequential ();
 for (var i = baseGroupIndex; i < groupCount; ++i) {
 var g = groups[i];
 var model = g.getModel ();
-if (!model.isBioModel || !(Clazz.instanceOf (g, org.jmol.modelsetbio.Monomer))) continue ;var doCheck = checkPolymerConnections && !this.modelSet.isJmolDataFrame (this.modelSet.atoms[g.firstAtomIndex].modelIndex);
+if (!model.isBioModel || !(Clazz.instanceOf (g, org.jmol.modelsetbio.Monomer))) continue ;var doCheck = checkPolymerConnections && !this.modelSet.isJmolDataFrameForModel (this.modelSet.atoms[g.firstAtomIndex].modelIndex);
 var bp = ((g).getBioPolymer () == null ? org.jmol.modelsetbio.Resolver.allocateBioPolymer (groups, i, doCheck) : null);
 if (bp == null || bp.monomerCount == 0) continue ;(model).addBioPolymer (bp);
 i += bp.monomerCount - 1;
@@ -279,10 +279,10 @@ for (var i = modelCount; --i >= 0; ) n += models[i].getChainCount (false);
 
 sb.append ("\nNumber of Chains .... " + n);
 n = 0;
-for (var i = modelCount; --i >= 0; ) n += models[i].getGroupCount (false);
+for (var i = modelCount; --i >= 0; ) n += models[i].getGroupCountHetero (false);
 
 nHetero = 0;
-for (var i = modelCount; --i >= 0; ) nHetero += models[i].getGroupCount (true);
+for (var i = modelCount; --i >= 0; ) nHetero += models[i].getGroupCountHetero (true);
 
 sb.append ("\nNumber of Groups .... " + n);
 if (nHetero > 0) sb.append (" (" + nHetero + ")");

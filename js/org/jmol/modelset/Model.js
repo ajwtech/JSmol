@@ -123,7 +123,7 @@ if (this.chainCount > 1 && !countWater) for (var i = 0; i < this.chainCount; i++
 
 return this.chainCount;
 }, "~B");
-Clazz.defineMethod (c$, "getGroupCount", 
+Clazz.defineMethod (c$, "getGroupCountHetero", 
 function (isHetero) {
 var n = 0;
 for (var i = this.chainCount; --i >= 0; ) for (var j = this.chains[i].groupCount; --j >= 0; ) if (this.chains[i].groups[j].isHetero () == isHetero) n++;
@@ -144,7 +144,7 @@ for (var i = this.chainCount; --i >= 0; ) this.groupCount += this.chains[i].getG
 
 }return this.groupCount;
 });
-Clazz.defineMethod (c$, "getChain", 
+Clazz.defineMethod (c$, "getChainAt", 
 function (i) {
 return (i < this.chainCount ? this.chains[i] : null);
 }, "~N");

@@ -37,8 +37,8 @@ var nParams = (params == null ? 0 : params.size ());
 for (var i = this.names.size (); --i >= 0; ) {
 var name = this.names.get (i).toLowerCase ();
 var $var = (i < this.nParameters && i < nParams ? params.get (i) : null);
-if ($var != null && $var.tok != 7) $var =  new org.jmol.script.ScriptVariable ($var);
-contextVariables.put (name, ($var == null ? ( new org.jmol.script.ScriptVariable (4, "")).setName (name) : $var));
+if ($var != null && $var.tok != 7) $var = org.jmol.script.ScriptVariable.newScriptVariableToken ($var);
+contextVariables.put (name, ($var == null ? org.jmol.script.ScriptVariable.newScriptVariableObj (4, "").setName (name) : $var));
 }
 contextVariables.put ("_retval",  new org.jmol.script.ScriptVariableInt (this.tok == 364558 ? 2147483647 : 0));
 }, "java.util.Map,java.util.List");

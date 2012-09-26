@@ -15,7 +15,7 @@ this.reset ();
 }, "~N,~N");
 Clazz.defineMethod (c$, "reset", 
 function () {
-this.eleRoot =  new org.jmol.bspt.Leaf (this);
+this.eleRoot =  new org.jmol.bspt.Leaf (this, null, 0);
 this.treeDepth = 1;
 });
 Clazz.defineMethod (c$, "addTuple", 

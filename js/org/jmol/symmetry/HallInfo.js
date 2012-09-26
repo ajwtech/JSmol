@@ -26,7 +26,7 @@ str = this.extractLatticeInfo (str);
 if (org.jmol.symmetry.HallTranslation.getLatticeIndex (this.latticeCode) == 0) return ;
 this.latticeExtension = org.jmol.symmetry.HallTranslation.getLatticeExtension (this.latticeCode, this.isCentrosymmetric);
 str = this.extractVectorInfo (str) + this.latticeExtension;
-org.jmol.util.Logger.info ("Hallinfo: " + hallSymbol + " " + str);
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("Hallinfo: " + hallSymbol + " " + str);
 var prevOrder = 0;
 var prevAxisType = '\0';
 this.primitiveHallSymbol = "P";

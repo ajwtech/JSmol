@@ -102,7 +102,7 @@ collectionName = collectionName.trim ();
 if (collectionName.length == 0) return ;
 this.collectionName = collectionName;
 }}, "~S");
-Clazz.defineMethod (c$, "getAtomSetCollectionAuxiliaryInfo", 
+Clazz.defineMethod (c$, "getAtomSetCollectionAuxiliaryInfoMap", 
 function () {
 return this.atomSetCollectionAuxiliaryInfo;
 });
@@ -174,29 +174,23 @@ function () {
 this.doFixPeriodic = true;
 });
 Clazz.makeConstructor (c$, 
-function (fileTypeName, atomSetCollectionReader) {
+function (fileTypeName, atomSetCollectionReader, array, list) {
 this.fileTypeName = fileTypeName;
 this.allowMultiple = (atomSetCollectionReader == null || atomSetCollectionReader.desiredVibrationNumber < 0);
 var p =  new java.util.Properties ();
 p.put ("PATH_KEY", ".PATH");
 p.put ("PATH_SEPARATOR", org.jmol.adapter.smarter.SmarterJmolAdapter.PATH_SEPARATOR);
 this.setAtomSetCollectionAuxiliaryInfo ("properties", p);
-}, "~S,org.jmol.adapter.smarter.AtomSetCollectionReader");
-Clazz.makeConstructor (c$, 
-function (array) {
-this.construct ("Array", null);
+if (array != null) {
 var n = 0;
 for (var i = 0; i < array.length; i++) if (array[i].atomCount > 0) this.appendAtomSetCollection (n++, array[i]);
 
 if (n > 1) this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
-}, "~A");
-Clazz.makeConstructor (c$, 
-function (list) {
-this.construct ("Array", null);
+} else if (list != null) {
 this.setAtomSetCollectionAuxiliaryInfo ("isMultiFile", Boolean.TRUE);
-this.appendAtomSetCollection (list);
-}, "java.util.List");
-Clazz.defineMethod (c$, "appendAtomSetCollection", 
+this.appendAtomSetCollectionList (list);
+}}, "~S,org.jmol.adapter.smarter.AtomSetCollectionReader,~A,java.util.List");
+Clazz.defineMethod (c$, "appendAtomSetCollectionList", 
 ($fz = function (list) {
 var n = list.size ();
 if (n == 0) {
@@ -204,7 +198,7 @@ this.errorMessage = "No file found!";
 return ;
 }for (var i = 0; i < n; i++) {
 var o = list.get (i);
-if (Clazz.instanceOf (o, java.util.List)) this.appendAtomSetCollection (o);
+if (Clazz.instanceOf (o, java.util.List)) this.appendAtomSetCollectionList (o);
  else this.appendAtomSetCollection (i, o);
 }
 }, $fz.isPrivate = true, $fz), "java.util.List");
@@ -250,7 +244,7 @@ this.atomSetNumbers[this.currentAtomSetIndex] = (collectionIndex < 0 ? this.curr
 }
 for (var bondNum = 0; bondNum < collection.bondCount; bondNum++) {
 var bond = collection.bonds[bondNum];
-this.addNewBond (bond.atomIndex1 + existingAtomsCount, bond.atomIndex2 + existingAtomsCount, bond.order);
+this.addNewBondWithOrder (bond.atomIndex1 + existingAtomsCount, bond.atomIndex2 + existingAtomsCount, bond.order);
 }
 for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (Boolean.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
 
@@ -272,14 +266,14 @@ this.setAtomSetAuxiliaryInfoForSet ("initialBondCount", Integer.$valueOf (this.a
 }, "~B");
 Clazz.defineMethod (c$, "reverseAtomSets", 
 ($fz = function () {
-this.reverse (this.atomSetAtomIndexes);
-this.reverse (this.atomSetNumbers);
-this.reverse (this.atomSetAtomCounts);
-this.reverse (this.atomSetBondCounts);
-org.jmol.adapter.smarter.AtomSetCollection.reverse (this.trajectorySteps);
-org.jmol.adapter.smarter.AtomSetCollection.reverse (this.trajectoryNames);
-org.jmol.adapter.smarter.AtomSetCollection.reverse (this.vibrationSteps);
-this.reverse (this.atomSetAuxiliaryInfo);
+this.reverseArray (this.atomSetAtomIndexes);
+this.reverseArray (this.atomSetNumbers);
+this.reverseArray (this.atomSetAtomCounts);
+this.reverseArray (this.atomSetBondCounts);
+org.jmol.adapter.smarter.AtomSetCollection.reverseList (this.trajectorySteps);
+org.jmol.adapter.smarter.AtomSetCollection.reverseList (this.trajectoryNames);
+org.jmol.adapter.smarter.AtomSetCollection.reverseList (this.vibrationSteps);
+this.reverseObject (this.atomSetAuxiliaryInfo);
 for (var i = 0; i < this.atomCount; i++) this.atoms[i].atomSetIndex = this.atomSetCount - 1 - this.atoms[i].atomSetIndex;
 
 for (var i = 0; i < this.structureCount; i++) if (this.structures[i].atomSetIndex >= 0) this.structures[i].atomSetIndex = this.atomSetCount - 1 - this.structures[i].atomSetIndex;
@@ -325,18 +319,18 @@ for (var i = this.atomSetCount; --i >= 0; ) for (var j = lists[i].size (); --j >
 
 
 }, $fz.isPrivate = true, $fz), "~A,~N");
-Clazz.defineMethod (c$, "reverse", 
+Clazz.defineMethod (c$, "reverseObject", 
 ($fz = function (o) {
 var n = this.atomSetCount;
 for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (o, i, n - 1 - i);
 
 }, $fz.isPrivate = true, $fz), "~A");
-c$.reverse = Clazz.defineMethod (c$, "reverse", 
+c$.reverseList = Clazz.defineMethod (c$, "reverseList", 
 ($fz = function (list) {
 if (list == null) return ;
 java.util.Collections.reverse (list);
 }, $fz.isPrivate = true, $fz), "java.util.List");
-Clazz.defineMethod (c$, "reverse", 
+Clazz.defineMethod (c$, "reverseArray", 
 ($fz = function (a) {
 var n = this.atomSetCount;
 for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (a, i, n - 1 - i);
@@ -422,7 +416,7 @@ for (var i = 0; i < this.bondCount; i++) this.bonds[i].atomSetIndex = this.atoms
 
 this.atomSetAuxiliaryInfo[--this.atomSetCount] = null;
 }, "~N");
-Clazz.defineMethod (c$, "removeAtomSet", 
+Clazz.defineMethod (c$, "removeCurrentAtomSet", 
 function () {
 if (this.currentAtomSetIndex < 0) return ;
 this.currentAtomSetIndex--;
@@ -449,14 +443,14 @@ this.cloneFirstAtomSet (0);
 var firstCount = this.atomSetAtomCounts[0];
 for (var bondNum = 0; bondNum < nBonds; bondNum++) {
 var bond = this.bonds[this.bondCount - nBonds];
-this.addNewBond (bond.atomIndex1 + firstCount, bond.atomIndex2 + firstCount, bond.order);
+this.addNewBondWithOrder (bond.atomIndex1 + firstCount, bond.atomIndex2 + firstCount, bond.order);
 }
 }, "~N");
 Clazz.defineMethod (c$, "cloneLastAtomSet", 
 function () {
-this.cloneLastAtomSet (0, null);
+this.cloneLastAtomSetFromPoints (0, null);
 });
-Clazz.defineMethod (c$, "cloneLastAtomSet", 
+Clazz.defineMethod (c$, "cloneLastAtomSetFromPoints", 
 function (atomCount, pts) {
 if (!this.allowMultiple) return ;
 var count = (atomCount > 0 ? atomCount : this.getLastAtomSetAtomCount ());
@@ -508,26 +502,26 @@ this.mapMostRecentAtomSerialNumber ();
 }, "org.jmol.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "addNewBond", 
 function (atomIndex1, atomIndex2) {
-return this.addNewBond (atomIndex1, atomIndex2, 1);
+return this.addNewBondWithOrder (atomIndex1, atomIndex2, 1);
 }, "~N,~N");
-Clazz.defineMethod (c$, "addNewBond", 
+Clazz.defineMethod (c$, "addNewSingleBondFromNames", 
 function (atomName1, atomName2) {
-return this.addNewBond (atomName1, atomName2, 1);
+return this.addNewBondFromNames (atomName1, atomName2, 1);
 }, "~S,~S");
-Clazz.defineMethod (c$, "addNewBond", 
+Clazz.defineMethod (c$, "addNewBondWithOrder", 
 function (atomIndex1, atomIndex2, order) {
 if (atomIndex1 < 0 || atomIndex1 >= this.atomCount || atomIndex2 < 0 || atomIndex2 >= this.atomCount) return null;
 var bond =  new org.jmol.adapter.smarter.Bond (atomIndex1, atomIndex2, order);
 this.addBond (bond);
 return bond;
 }, "~N,~N,~N");
-Clazz.defineMethod (c$, "addNewBond", 
+Clazz.defineMethod (c$, "addNewBondFromNames", 
 function (atomName1, atomName2, order) {
-return this.addNewBond (this.getAtomIndexFromName (atomName1), this.getAtomIndexFromName (atomName2), order);
+return this.addNewBondWithOrder (this.getAtomIndexFromName (atomName1), this.getAtomIndexFromName (atomName2), order);
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "addNewBondWithMappedSerialNumbers", 
 function (atomSerial1, atomSerial2, order) {
-return this.addNewBond (this.getAtomIndexFromSerial (atomSerial1), this.getAtomIndexFromSerial (atomSerial2), order);
+return this.addNewBondWithOrder (this.getAtomIndexFromSerial (atomSerial1), this.getAtomIndexFromSerial (atomSerial2), order);
 }, "~N,~N,~N");
 Clazz.defineMethod (c$, "addConnection", 
 function (is) {
@@ -597,7 +591,7 @@ var n = this.structureCount - i;
 for (; i < this.structureCount; i++) this.structures[i].strandCount = n;
 
 }}, "org.jmol.adapter.smarter.Structure");
-Clazz.defineMethod (c$, "addVibrationVector", 
+Clazz.defineMethod (c$, "addVibrationVectorWithSymmetry", 
 function (iatom, vx, vy, vz, withSymmetry) {
 if (!withSymmetry) {
 this.addVibrationVector (iatom, vx, vy, vz);
@@ -643,7 +637,7 @@ this.centroidPacked = centroidPacked;
 if (strSupercell != null) this.setSuperCell (strSupercell);
  else this.ptSupercell = ptSupercell;
 }, "~A,~B,~B,~B,~B,~S,javax.vecmath.Point3f");
-Clazz.defineMethod (c$, "setSupercell", 
+Clazz.defineMethod (c$, "setSupercellFromPoint", 
 function (pt) {
 this.ptSupercell = pt;
 org.jmol.util.Logger.info ("Using supercell " + org.jmol.util.Escape.escapePt (pt));
@@ -691,14 +685,14 @@ this.symmetry.setLattice (latt);
 }, "~N");
 Clazz.defineMethod (c$, "applySymmetry", 
 function () {
-this.applySymmetry (this.latticeCells[0], this.latticeCells[1], Math.abs (this.latticeCells[2]));
+this.applySymmetryLattice (this.latticeCells[0], this.latticeCells[1], Math.abs (this.latticeCells[2]));
 });
-Clazz.defineMethod (c$, "applySymmetry", 
+Clazz.defineMethod (c$, "applySymmetryUsing", 
 function (symmetry) {
 this.getSymmetry ().setSpaceGroup (symmetry);
-this.applySymmetry (this.latticeCells[0], this.latticeCells[1], Math.abs (this.latticeCells[2]));
+this.applySymmetryLattice (this.latticeCells[0], this.latticeCells[1], Math.abs (this.latticeCells[2]));
 }, "org.jmol.api.SymmetryInterface");
-Clazz.defineMethod (c$, "applySymmetry", 
+Clazz.defineMethod (c$, "applySymmetryLattice", 
 ($fz = function (maxX, maxY, maxZ) {
 if (!this.coordinatesAreFractional || !this.getSymmetry ().haveSpaceGroup ()) return ;
 if (this.fmatSupercell != null) {
@@ -937,7 +931,7 @@ var ptAtom =  new javax.vecmath.Point3f ();
 for (var iSym = 0; iSym < nOperations; iSym++) {
 if (isBaseCell && this.symmetry.getSpaceGroupXyz (iSym, true).equals ("x,y,z")) continue ;var pt0 = (this.checkSpecial ? pt : checkRange111 ? baseCount : 0);
 for (var i = iAtomFirst; i < atomMax; i++) {
-if (this.atoms[i].ignoreSymmetry) continue ;this.symmetry.newSpaceGroupPoint (iSym, this.atoms[i], ptAtom, transX, transY, transZ);
+if (this.atoms[i].ignoreSymmetry) continue ;if (this.bsAtoms != null && !this.bsAtoms.get (i)) continue ;this.symmetry.newSpaceGroupPoint (iSym, this.atoms[i], ptAtom, transX, transY, transZ);
 var special = null;
 var cartesian =  new javax.vecmath.Point3f (ptAtom);
 this.symmetry.toCartesian (cartesian, false);
@@ -990,7 +984,7 @@ var atom1 = this.atoms[bond.atomIndex1];
 var atom2 = this.atoms[bond.atomIndex2];
 if (atom1 == null || atom2 == null) continue ;var iAtom1 = atomMap[atom1.atomSite];
 var iAtom2 = atomMap[atom2.atomSite];
-if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBond (iAtom1, iAtom2, bond.order);
+if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBondWithOrder (iAtom1, iAtom2, bond.order);
 }
 }}
 return pt;
@@ -1024,11 +1018,12 @@ if (filter.indexOf ("!#") >= 0) {
 if (filter.indexOf ("!#" + (i + 1) + ";") >= 0) continue ;} else if (filter.indexOf ("#") >= 0 && filter.indexOf ("#" + (i + 1) + ";") < 0) {
 continue ;}var mat = biomts.get (i);
 for (var iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
-try {
+if (this.bsAtoms != null && !this.bsAtoms.get (iAtom)) continue ;try {
 var atomSite = this.atoms[iAtom].atomSite;
 var atom1;
 if (addBonds) atomMap[atomSite] = this.atomCount;
 atom1 = this.newCloneAtom (this.atoms[iAtom]);
+if (this.bsAtoms != null) this.bsAtoms.set (atom1.atomIndex);
 atom1.atomSite = atomSite;
 mat.transform (atom1);
 atom1.bsSymmetry = org.jmol.util.BitSetUtil.setBit (i);
@@ -1037,7 +1032,7 @@ for (var bondNum = this.bondIndex0; bondNum < this.bondCount0; bondNum++) {
 var bond = this.bonds[bondNum];
 var iAtom1 = atomMap[this.atoms[bond.atomIndex1].atomSite];
 var iAtom2 = atomMap[this.atoms[bond.atomIndex2].atomSite];
-if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBond (iAtom1, iAtom2, bond.order);
+if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBondWithOrder (iAtom1, iAtom2, bond.order);
 }
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
@@ -1171,7 +1166,7 @@ x += 1;
 }
 return x;
 }, $fz.isPrivate = true, $fz), "~N,~N");
-Clazz.defineMethod (c$, "finalizeTrajectory", 
+Clazz.defineMethod (c$, "finalizeTrajectoryAs", 
 function (trajectorySteps, vibrationSteps) {
 this.trajectorySteps = trajectorySteps;
 this.vibrationSteps = vibrationSteps;
@@ -1254,7 +1249,7 @@ function (atomSetName, n) {
 for (var idx = this.currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) this.setAtomSetAuxiliaryInfoForSet ("name", atomSetName, idx);
 
 }, "~S,~N");
-Clazz.defineMethod (c$, "setAtomSetNumber", 
+Clazz.defineMethod (c$, "setCurrentAtomSetNumber", 
 function (atomSetNumber) {
 this.setAtomSetNumber (this.currentAtomSetIndex + (this.isTrajectory ? this.trajectoryStepCount : 0), atomSetNumber);
 }, "~N");

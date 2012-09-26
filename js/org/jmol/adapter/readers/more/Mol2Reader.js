@@ -20,7 +20,7 @@ return true;
 }this.continuing = !this.isLastModel (this.modelNumber);
 return false;
 }if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == 35) {
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 }return true;
 });
 Clazz.defineMethod (c$, "processMolecule", 
@@ -41,7 +41,7 @@ this.readLine ();
 if (this.readLine () != null && (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != 64)) {
 if (this.readLine () != null && this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) != 64) {
 if (this.line.indexOf ("jmolscript:") >= 0) {
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 if (this.line.equals ("#")) {
 this.line = "";
 }}if (this.line.length != 0) {

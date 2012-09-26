@@ -29,7 +29,7 @@ if (this.bsOrderSet == null) this.bsOrderSet =  new java.util.BitSet ();
 this.bsOrderSet.or (bsSelected);
 return ;
 }if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
-var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIterator (this.myMask, bsSelected));
+var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bsSelected));
 var mad = size;
 while (iter.hasNext ()) {
 this.bsSizeSet.set (iter.nextIndex ());
@@ -53,7 +53,7 @@ return ;
 }if ("bondOrder" === propertyName) {
 if (this.bsOrderSet == null) this.bsOrderSet =  new java.util.BitSet ();
 var order = (value).shortValue ();
-var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIterator (65535, bs));
+var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (65535, bs));
 while (iter.hasNext ()) {
 this.bsOrderSet.set (iter.nextIndex ());
 iter.next ().setOrder (order);
@@ -65,7 +65,7 @@ var colix = org.jmol.util.Colix.getColix (value);
 var pal = (Clazz.instanceOf (value, org.jmol.constant.EnumPalette) ? value : null);
 if (pal === org.jmol.constant.EnumPalette.TYPE || pal === org.jmol.constant.EnumPalette.ENERGY) {
 var isEnergy = (pal === org.jmol.constant.EnumPalette.ENERGY);
-var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIterator (this.myMask, bs));
+var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bs));
 while (iter.hasNext ()) {
 this.bsColixSet.set (iter.nextIndex ());
 var bond = iter.next ();
@@ -77,7 +77,7 @@ bond.setColix (org.jmol.util.Colix.getColix (org.jmol.util.JmolEdge.getArgbHbond
 }}
 return ;
 }if (colix == 2 && pal !== org.jmol.constant.EnumPalette.CPK) return ;
-var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIterator (this.myMask, bs));
+var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bs));
 while (iter.hasNext ()) {
 var iBond = iter.nextIndex ();
 var bond = iter.next ();
@@ -88,7 +88,7 @@ return ;
 }if ("translucency" === propertyName) {
 if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
 var isTranslucent = ((value).equals ("translucent"));
-var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIterator (this.myMask, bs));
+var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bs));
 while (iter.hasNext ()) {
 this.bsColixSet.set (iter.nextIndex ());
 iter.next ().setTranslucent (isTranslucent, this.translucentLevel);

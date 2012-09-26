@@ -67,7 +67,7 @@ case 0:
 break;
 default:
 var chSecond = this.atomName.charAt (ichFirst + 1);
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (chFirst, chSecond)) {
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFirst, chSecond)) {
 this.elementSymbol = "" + chFirst + chSecond;
 break;
 }case 1:
@@ -80,12 +80,12 @@ c$.isValidElementSymbol = Clazz.defineMethod (c$, "isValidElementSymbol",
 function (ch) {
 return ch >= 'A' && ch <= 'Z' && org.jmol.adapter.smarter.Atom.elementCharMasks[ch.charCodeAt (0) - 65] < 0;
 }, "~S");
-c$.isValidElementSymbol = Clazz.defineMethod (c$, "isValidElementSymbol", 
+c$.isValidElementSymbol2 = Clazz.defineMethod (c$, "isValidElementSymbol2", 
 function (chFirst, chSecond) {
 if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z') return false;
 return ((org.jmol.adapter.smarter.Atom.elementCharMasks[chFirst.charCodeAt (0) - 65] >> (chSecond.charCodeAt (0) - 97)) & 1) != 0;
 }, "~S,~S");
-c$.isValidElementSymbolNoCaseSecondChar = Clazz.defineMethod (c$, "isValidElementSymbolNoCaseSecondChar", 
+c$.isValidElementSymbolNoCaseSecondChar2 = Clazz.defineMethod (c$, "isValidElementSymbolNoCaseSecondChar2", 
 function (chFirst, chSecond) {
 if (chSecond >= 'A' && chSecond <= 'Z') chSecond = String.fromCharCode ((chSecond).charCodeAt (0) + (32));
 if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z') return false;
@@ -104,7 +104,7 @@ var chFirst = str.charAt (0);
 if (length == 1) return org.jmol.adapter.smarter.Atom.isValidElementSymbol (chFirst);
 if (length > 2) return false;
 var chSecond = str.charAt (1);
-return org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (chFirst, chSecond);
+return org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFirst, chSecond);
 }, "~S");
 Clazz.defineMethod (c$, "scaleVector", 
 function (vibScale) {

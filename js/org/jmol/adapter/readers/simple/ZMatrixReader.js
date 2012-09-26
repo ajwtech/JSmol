@@ -34,7 +34,7 @@ this.cleanLine ();
 if (this.line.length <= 2) this.isHeader = false;
 if (this.line.startsWith ("#") || this.isMopac && this.isHeader) {
 if (this.line.startsWith ("#ZMATRIX")) this.isJmolZformat = this.line.toUpperCase ().indexOf ("GAUSSIAN") < 0 && !(this.isMopac = (this.line.toUpperCase ().indexOf ("MOPAC") >= 0));
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 return true;
 }if (this.line.indexOf ("#") >= 0) this.line = this.line.substring (0, this.line.indexOf ("#"));
 if (this.line.indexOf (":") >= 0) return true;

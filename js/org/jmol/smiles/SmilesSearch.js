@@ -326,7 +326,7 @@ var pa = this.patternAtoms[newPatternAtom.notBondedIndex];
 var a = this.jmolAtoms[pa.getMatchingAtom ()];
 if (pa.bioType.charCodeAt (0) == 0) {
 jmolBonds = a.getEdges ();
-for (var k = 0; k < jmolBonds.length; k++) bs.set (jmolBonds[k].getOtherAtom (a).getIndex ());
+for (var k = 0; k < jmolBonds.length; k++) bs.set (jmolBonds[k].getOtherAtomNode (a).getIndex ());
 
 } else {
 var ii = a.getOffsetResidueAtom ("0", 1);
@@ -823,7 +823,7 @@ var dir1 = 0;
 var bonds = dbAtom1.getEdges ();
 for (var k = bonds.length; --k >= 0; ) {
 var bond = bonds[k];
-var atom = bond.getOtherAtom (dbAtom1);
+var atom = bond.getOtherAtomNode (dbAtom1);
 if (atom === dbAtom2) continue ;atom.set (-1, (nBonds++ == 0) ? -1 : 1, 0);
 var mode = (bond.getAtomIndex2 () == dbAtom1.getIndex () ? nBonds : -nBonds);
 switch (bond.order) {
@@ -840,7 +840,7 @@ var atoms =  new Array (2);
 bonds = dbAtom2.getEdges ();
 for (var k = bonds.length; --k >= 0; ) {
 var bond = bonds[k];
-var atom = bond.getOtherAtom (dbAtom2);
+var atom = bond.getOtherAtomNode (dbAtom2);
 if (atom === dbAtom1) continue ;atoms[nBonds] = atom;
 atom.set (1, (nBonds++ == 0) ? 1 : -1, 0);
 var mode = (bond.getAtomIndex2 () == dbAtom2.getIndex () ? nBonds : -nBonds);
@@ -861,19 +861,19 @@ var bonds = dbAtom1.getEdges ();
 var dir = 0;
 for (var k = bonds.length; --k >= 0; ) {
 var bond = bonds[k];
-if (bond.getOtherAtom (dbAtom1) === dbAtom2) {
+if (bond.getOtherAtomNode (dbAtom1) === dbAtom2) {
 dir = (bond.order == 33 ? 1 : -1);
 break;
 }}
 for (var k = bonds.length; --k >= 0; ) {
 var bond = bonds[k];
-var atom = bond.getOtherAtom (dbAtom1);
+var atom = bond.getOtherAtomNode (dbAtom1);
 if (atom !== dbAtom2) atom.set (-1, 1, 0);
 }
 bonds = dbAtom2.getEdges ();
 for (var k = bonds.length; --k >= 0; ) {
 var bond = bonds[k];
-var atom = bond.getOtherAtom (dbAtom2);
+var atom = bond.getOtherAtomNode (dbAtom2);
 if (atom !== dbAtom1) atom.set (1, 1, -dir / 2.0);
 }
 }}, $fz.isPrivate = true, $fz), "org.jmol.smiles.SmilesAtom,org.jmol.smiles.SmilesAtom,~N");
@@ -948,12 +948,12 @@ var k;
 var bonds = atom.getEdges ();
 var b2 = (a2 == null ? null : a2.getEdges ());
 for (var i = 0; i < map.length; i++) {
-for (k = 0; k < bonds.length; k++) if (bonds[k].getOtherAtom (atom) === cAtoms[i]) break;
+for (k = 0; k < bonds.length; k++) if (bonds[k].getOtherAtomNode (atom) === cAtoms[i]) break;
 
 if (k < bonds.length) {
 map[i] = (k * 10 + 100) + i;
 } else if (a2 != null) {
-for (k = 0; k < b2.length; k++) if (b2[k].getOtherAtom (a2) === cAtoms[i]) break;
+for (k = 0; k < b2.length; k++) if (b2[k].getOtherAtomNode (a2) === cAtoms[i]) break;
 
 if (k < b2.length) map[i] = (k * 10 + 300) + i;
 }}

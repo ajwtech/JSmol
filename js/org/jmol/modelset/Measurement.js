@@ -58,11 +58,11 @@ Clazz.defineMethod (c$, "getString",
 function () {
 return this.strMeasurement;
 });
-Clazz.defineMethod (c$, "getString", 
+Clazz.defineMethod (c$, "getStringUsing", 
 function (viewer, strFormat, units) {
 this.viewer = viewer;
 this.value = this.getMeasurement ();
-this.formatMeasurement (strFormat, units, true);
+this.formatMeasurementAs (strFormat, units, true);
 if (strFormat == null) return this.getInfoAsString (units);
 return this.strMeasurement;
 }, "org.jmol.viewer.Viewer,~S,~S");
@@ -149,7 +149,7 @@ var indices = (m == null ? null : m.countPlusIndices);
 this.count = (indices == null ? 0 : indices[0]);
 if (this.count > 0) {
 System.arraycopy (indices, 0, this.countPlusIndices, 0, this.count + 1);
-this.$isTrajectory = modelSet.isTrajectory (this.countPlusIndices);
+this.$isTrajectory = modelSet.isTrajectoryMeasurement (this.countPlusIndices);
 }this.value = (Float.isNaN (value) || this.$isTrajectory ? this.getMeasurement () : value);
 this.formatMeasurement (null);
 }, "org.jmol.modelset.ModelSet,org.jmol.modelset.Measurement,~N,~N,~S,~N");
@@ -165,7 +165,7 @@ this.tickInfo = tickInfo;
 Clazz.defineMethod (c$, "refresh", 
 function () {
 this.value = this.getMeasurement ();
-this.$isTrajectory = this.modelSet.isTrajectory (this.countPlusIndices);
+this.$isTrajectory = this.modelSet.isTrajectoryMeasurement (this.countPlusIndices);
 this.formatMeasurement (null);
 });
 Clazz.defineMethod (c$, "getMeasurementScript", 
@@ -176,7 +176,7 @@ for (var i = 1; i <= this.count; i++) str += (i > 1 ? sep : " ") + this.getLabel
 
 return str;
 }, "~S,~B");
-Clazz.defineMethod (c$, "formatMeasurement", 
+Clazz.defineMethod (c$, "formatMeasurementAs", 
 function (strFormat, units, useDefault) {
 if (strFormat != null && strFormat.length == 0) strFormat = null;
 if (!useDefault && strFormat != null && strFormat.indexOf (this.countPlusIndices[0] + ":") != 0) return ;
@@ -276,9 +276,9 @@ return label;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "formatString", 
 ($fz = function (value, units, label) {
-return org.jmol.modelset.LabelToken.formatLabel (this.viewer, this, label, value, units);
+return org.jmol.modelset.LabelToken.formatLabelMeasure (this.viewer, this, label, value, units);
 }, $fz.isPrivate = true, $fz), "~N,~S,~S");
-Clazz.defineMethod (c$, "sameAs", 
+Clazz.defineMethod (c$, "sameAsPoints", 
 function (indices, points) {
 if (this.count != indices[0]) return false;
 var isSame = true;
@@ -292,14 +292,14 @@ switch (this.count) {
 default:
 return true;
 case 2:
-return this.sameAs (indices, points, 1, 2) && this.sameAs (indices, points, 2, 1);
+return this.sameAsIJ (indices, points, 1, 2) && this.sameAsIJ (indices, points, 2, 1);
 case 3:
-return this.sameAs (indices, points, 1, 3) && this.sameAs (indices, points, 2, 2) && this.sameAs (indices, points, 3, 1);
+return this.sameAsIJ (indices, points, 1, 3) && this.sameAsIJ (indices, points, 2, 2) && this.sameAsIJ (indices, points, 3, 1);
 case 4:
-return this.sameAs (indices, points, 1, 4) && this.sameAs (indices, points, 2, 3) && this.sameAs (indices, points, 3, 2) && this.sameAs (indices, points, 4, 1);
+return this.sameAsIJ (indices, points, 1, 4) && this.sameAsIJ (indices, points, 2, 3) && this.sameAsIJ (indices, points, 3, 2) && this.sameAsIJ (indices, points, 4, 1);
 }
 }, "~A,~A");
-Clazz.defineMethod (c$, "sameAs", 
+Clazz.defineMethod (c$, "sameAsIJ", 
 ($fz = function (atoms, points, i, j) {
 var ipt = this.countPlusIndices[i];
 var jpt = atoms[j];
@@ -307,7 +307,7 @@ return (ipt >= 0 || jpt >= 0 ? ipt == jpt : this.pts[-2 - ipt].distance (points[
 }, $fz.isPrivate = true, $fz), "~A,~A,~N,~N");
 Clazz.defineMethod (c$, "sameAs", 
 function (i, j) {
-return this.sameAs (this.countPlusIndices, this.pts, i, j);
+return this.sameAsIJ (this.countPlusIndices, this.pts, i, j);
 }, "~N,~N");
 Clazz.defineMethod (c$, "toVector", 
 function (asBitSet) {
@@ -362,7 +362,7 @@ c$.find = Clazz.defineMethod (c$, "find",
 function (measurements, m) {
 var indices = m.getCountPlusIndices ();
 var points = m.getPoints ();
-for (var i = measurements.size (); --i >= 0; ) if (measurements.get (i).sameAs (indices, points)) return i;
+for (var i = measurements.size (); --i >= 0; ) if (measurements.get (i).sameAsPoints (indices, points)) return i;
 
 return -1;
 }, "java.util.List,org.jmol.modelset.Measurement");

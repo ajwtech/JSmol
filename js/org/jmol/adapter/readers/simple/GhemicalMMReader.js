@@ -65,7 +65,7 @@ case 'S':
 default:
 order = 1;
 }
-this.atomSetCollection.addNewBond (atomIndex1, atomIndex2, order);
+this.atomSetCollection.addNewBondWithOrder (atomIndex1, atomIndex2, order);
 }
 });
 Clazz.defineMethod (c$, "processCoord", 
@@ -76,7 +76,7 @@ for (var i = 0; i < atomCount; ++i) {
 this.readLine ();
 var atomIndex = this.parseIntStr (this.line);
 if (atomIndex != i) throw  new Exception ("bad atom index in !Coordexpected: " + i + " saw:" + atomIndex);
-this.setAtomCoord (atoms[i], this.parseFloat () * 10, this.parseFloat () * 10, this.parseFloat () * 10);
+this.setAtomCoordXYZ (atoms[i], this.parseFloat () * 10, this.parseFloat () * 10, this.parseFloat () * 10);
 }
 });
 Clazz.defineMethod (c$, "processCharges", 

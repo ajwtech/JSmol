@@ -5,15 +5,12 @@ this.tuples = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.bspt, "Leaf", org.jmol.bspt.Element);
 Clazz.makeConstructor (c$, 
-function (bspt) {
+function (bspt, leaf, countToKeep) {
 Clazz.superConstructor (this, org.jmol.bspt.Leaf, []);
 this.bspt = bspt;
 this.count = 0;
 this.tuples =  new Array (2);
-}, "org.jmol.bspt.Bspt");
-Clazz.makeConstructor (c$, 
-function (bspt, leaf, countToKeep) {
-this.construct (bspt);
+if (leaf == null) return ;
 for (var i = countToKeep; i < 2; ++i) {
 this.tuples[this.count++] = leaf.tuples[i];
 leaf.tuples[i] = null;

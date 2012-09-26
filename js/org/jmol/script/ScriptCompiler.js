@@ -91,7 +91,7 @@ return this.parseScript (true);
 }, "~S,~S,~B,~B,~B,~B");
 Clazz.defineMethod (c$, "addContextVariable", 
 ($fz = function (ident) {
-this.theToken =  new org.jmol.script.Token (1073741824, ident);
+this.theToken = org.jmol.script.Token.newTokenObj (1073741824, ident);
 if (this.pushCount > 0) {
 var ct = this.vPush.get (this.pushCount - 1);
 ct.addName (ident);
@@ -104,7 +104,7 @@ this.thisFunction.addVariable (ident, false);
 }}, $fz.isPrivate = true, $fz), "~S");
 c$.addContextVariable = Clazz.defineMethod (c$, "addContextVariable", 
 function (contextVariables, ident) {
-contextVariables.put (ident, ( new org.jmol.script.ScriptVariable (4, "")).setName (ident));
+contextVariables.put (ident, org.jmol.script.ScriptVariable.newScriptVariableObj (4, "").setName (ident));
 }, "java.util.Map,~S");
 Clazz.defineMethod (c$, "isContextVariable", 
 ($fz = function (ident) {
@@ -232,7 +232,7 @@ return false;
 }
 this.checkImpliedScriptCmd = false;
 if (this.ichToken < this.cchScript) continue ;this.setAaTokenCompiled ();
-return (this.flowContext == null || this.error (11, org.jmol.script.Token.nameOf (this.flowContext.token.tok)));
+return (this.flowContext == null || this.errorStr (11, org.jmol.script.Token.nameOf (this.flowContext.token.tok)));
 }if (this.nTokens > 0) {
 switch (this.checkSpecialParameterSyntax ()) {
 case 2:
@@ -259,7 +259,7 @@ this.addTokenToPrefix (this.setCommand (org.jmol.script.Token.tokenScript));
 this.cchToken = 0;
 continue ;}if (this.lookingAtImpliedString (true, true, true)) this.ichEnd = this.ichToken + this.cchToken;
 }return this.commandExpected ();
-}return this.error (19, this.script.substring (this.ichToken, this.ichToken + 1));
+}return this.errorStr (19, this.script.substring (this.ichToken, this.ichToken + 1));
 }
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "setAaTokenCompiled", 
@@ -381,7 +381,7 @@ if (this.nTokens == 0) {
 this.ichCurrentCommand = this.ichToken;
 if (this.comment != null) {
 this.isComment = true;
-this.addTokenToPrefix ( new org.jmol.script.Token (0, this.comment));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (0, this.comment));
 }} else if (this.setBraceCount > 0 && this.endOfLine && this.ichToken < this.cchScript) {
 return 2;
 }if (this.tokCommand == 135271429 && this.checkImpliedScriptCmd) {
@@ -499,7 +499,7 @@ if (this.isNewSet && this.tokenAt (2).value.equals (".") && this.tokenAt (3).val
 var fname = this.tokenAt (1).value + "." + this.tokenAt (3).value;
 this.ltoken.clear ();
 this.addTokenToPrefix (org.jmol.script.Token.tokenScript);
-this.addTokenToPrefix ( new org.jmol.script.Token (4, fname));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, fname));
 this.isNewSet = false;
 }}
 this.setCommand (this.tokenAt (0));
@@ -568,13 +568,13 @@ if (this.nTokens == 1 && (this.tokCommand == 135368713 || this.tokCommand == 102
 ident = identLC;
 this.theToken = null;
 } else if (ident.length == 1) {
-if ((this.theToken = org.jmol.script.Token.getTokenFromName (ident)) == null && (this.theToken = org.jmol.script.Token.getTokenFromName (identLC)) != null) this.theToken =  new org.jmol.script.Token (this.theToken.tok, this.theToken.intValue, ident);
+if ((this.theToken = org.jmol.script.Token.getTokenFromName (ident)) == null && (this.theToken = org.jmol.script.Token.getTokenFromName (identLC)) != null) this.theToken = org.jmol.script.Token.newTokenIntVal (this.theToken.tok, this.theToken.intValue, ident);
 } else {
 ident = identLC;
 this.theToken = org.jmol.script.Token.getTokenFromName (ident);
 }if (this.theToken == null) {
-if (ident.indexOf ("property_") == 0) this.theToken =  new org.jmol.script.Token (1716520973, ident);
- else this.theToken =  new org.jmol.script.Token (1073741824, ident);
+if (ident.indexOf ("property_") == 0) this.theToken = org.jmol.script.Token.newTokenObj (1716520973, ident);
+ else this.theToken = org.jmol.script.Token.newTokenObj (1073741824, ident);
 }this.theTok = this.theToken.tok;
 return ident;
 }, $fz.isPrivate = true, $fz));
@@ -596,11 +596,11 @@ this.ltoken.add (0, this.tokenCommand);
 this.cchToken = 1;
 switch (ch) {
 case '[':
-this.addTokenToPrefix ( new org.jmol.script.Token (269484096, "["));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (269484096, "["));
 this.bracketCount++;
 return 2;
 case '.':
-this.addTokenToPrefix ( new org.jmol.script.Token (1048584, "."));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (1048584, "."));
 return 2;
 case '-':
 case '+':
@@ -631,13 +631,13 @@ str = this.getUnescapedStringLiteral ();
 if (this.tokCommand == 135271426 && this.lastToken.tok == 135270407 || this.tokCommand == 135270407 && str.indexOf ("@") < 0) {
 if (!this.getData (str)) return this.ERROR (11, "data");
 } else {
-this.addTokenToPrefix ( new org.jmol.script.Token (4, str));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, str));
 if (org.jmol.script.Token.tokAttr (this.tokCommand, 20480)) this.isEndOfCommand = true;
 }return 2;
 }if (this.tokCommand == 4156 && this.nTokens == 1 && this.charToken ()) {
 var ident = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 var iident = org.jmol.util.Parser.parseInt (ident);
-if (iident == -2147483648 || Math.abs (iident) < 1000) this.addTokenToPrefix ( new org.jmol.script.Token (1073741824, ident));
+if (iident == -2147483648 || Math.abs (iident) < 1000) this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (1073741824, ident));
  else this.addTokenToPrefix (org.jmol.script.Token.intToken (iident));
 return 2;
 }switch (this.tokCommand) {
@@ -666,21 +666,21 @@ break;
 default:
 var tok = (strFormat.indexOf ("=") == 0 || strFormat.indexOf ("$") == 0 ? 4 : org.jmol.util.Parser.isOneOf (strFormat = strFormat.toLowerCase (), "xyz;vxyz;vibration;temperature;occupancy;partialcharge") ? 1073741824 : 0);
 if (tok != 0) {
-this.addTokenToPrefix ( new org.jmol.script.Token (tok, strFormat));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (tok, strFormat));
 this.iHaveQuotedString = (tok == 4);
 }}
 return 2;
 }var bs;
 if ((this.script.charAt (this.ichToken)).charCodeAt (0) == 123 || this.parenCount > 0) break;
 if ((bs = this.lookingAtBitset ()) != null) {
-this.addTokenToPrefix ( new org.jmol.script.Token (10, bs));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (10, bs));
 return 2;
 }}if (!this.iHaveQuotedString && this.lookingAtImpliedString (false, this.tokCommand == 135271426, this.nTokens > 1 || this.tokCommand != 135271429)) {
 var str = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 if (this.tokCommand == 135271429 && str.startsWith ("javascript:")) {
 this.lookingAtImpliedString (true, true, true);
 str = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
-}this.addTokenToPrefix ( new org.jmol.script.Token (4, str));
+}this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, str));
 this.iHaveQuotedString = true;
 return 2;
 }break;
@@ -694,7 +694,7 @@ return 0;
 var pt = this.cchToken;
 var str = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 if (str.indexOf (" ") < 0) {
-this.addTokenToPrefix ( new org.jmol.script.Token (4, str));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, str));
 this.iHaveQuotedString = true;
 return 2;
 }this.cchToken = pt;
@@ -703,20 +703,20 @@ return 2;
 if (org.jmol.script.Token.tokAttr (this.tokCommand, 20480) && !(this.tokCommand == 135271429 && this.iHaveQuotedString) && this.lookingAtImpliedString (true, true, true)) {
 var str = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 if (this.tokCommand == 1826248715 && org.jmol.util.Parser.isOneOf (str.toLowerCase (), "on;off;hide;display")) this.addTokenToPrefix (org.jmol.script.Token.getTokenFromName (str.toLowerCase ()));
- else this.addTokenToPrefix ( new org.jmol.script.Token (4, str));
+ else this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, str));
 return 2;
 }var value;
 if (!Float.isNaN (value = this.lookingAtExponential ())) {
-this.addTokenToPrefix ( new org.jmol.script.Token (3,  new Float (value)));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (3,  new Float (value)));
 return 2;
 }if (this.lookingAtObjectID (this.nTokens == 1)) {
 this.addTokenToPrefix (org.jmol.script.Token.getTokenFromName ("$"));
-this.addTokenToPrefix ( new org.jmol.script.Token (1073741824, this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (1073741824, this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
 return 2;
 }if (this.lookingAtDecimal ()) {
 value = Float.$valueOf (this.script.substring (this.ichToken, this.ichToken + this.cchToken)).floatValue ();
 var intValue = (org.jmol.script.ScriptEvaluator.getFloatEncodedInt (this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
-this.addTokenToPrefix ( new org.jmol.script.Token (3, intValue,  new Float (value)));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenIntVal (3, intValue,  new Float (value)));
 return 2;
 }if (this.lookingAtSeqcode ()) {
 ch = this.script.charAt (this.ichToken);
@@ -728,7 +728,7 @@ if (seqNum < 0) {
 seqNum = -seqNum;
 this.addTokenToPrefix (org.jmol.script.Token.tokenMinus);
 }var seqcode = org.jmol.modelset.Group.getSeqcode (seqNum, insertionCode);
-this.addTokenToPrefix ( new org.jmol.script.Token (5, seqcode, "seqcode"));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenIntVal (5, seqcode, "seqcode"));
 return 2;
 } catch (nfe) {
 if (Clazz.exceptionOf (nfe, NumberFormatException)) {
@@ -746,7 +746,7 @@ var f = (this.flowContext == null ? null : this.flowContext.getBreakableContext 
 if (f == null) return this.ERROR (1, this.tokenCommand.value);
 this.tokenAt (0).intValue = f.pt0;
 }if (val == 0 && intString.equals ("-0")) this.addTokenToPrefix (org.jmol.script.Token.tokenMinus);
-this.addTokenToPrefix ( new org.jmol.script.Token (2, val, intString));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenIntVal (2, val, intString));
 return 2;
 }if (!this.isMathExpressionCommand && this.parenCount == 0 || this.lastToken.tok != 1073741824 && !org.jmol.script.ScriptCompilationTokenParser.tokenAttr (this.lastToken, 135266304)) {
 var isBondOrMatrix = ((this.script.charAt (this.ichToken)).charCodeAt (0) == 91);
@@ -755,11 +755,11 @@ if (bs == null) {
 if (isBondOrMatrix) {
 var m = this.lookingAtMatrix ();
 if (Clazz.instanceOf (m, javax.vecmath.Matrix3f) || Clazz.instanceOf (m, javax.vecmath.Matrix4f)) {
-this.addTokenToPrefix ( new org.jmol.script.Token ((Clazz.instanceOf (m, javax.vecmath.Matrix3f) ? 11 : 12), m));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj ((Clazz.instanceOf (m, javax.vecmath.Matrix3f) ? 11 : 12), m));
 return 2;
 }}} else {
-if (isBondOrMatrix) this.addTokenToPrefix ( new org.jmol.script.Token (10,  new org.jmol.modelset.Bond.BondSet (bs)));
- else this.addTokenToPrefix ( new org.jmol.script.Token (10, bs));
+if (isBondOrMatrix) this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (10,  new org.jmol.modelset.Bond.BondSet (bs)));
+ else this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (10, bs));
 return 2;
 }}return 0;
 }, $fz.isPrivate = true, $fz));
@@ -1102,12 +1102,12 @@ if (this.isSetBrace && this.setBraceCount == 0 && this.ptNewSetModifier == 21474
 }if (this.nTokens == this.ptNewSetModifier) {
 var token = this.tokenAt (0);
 if (this.theTok == 269484048 || this.isUserFunction (token.value.toString ())) {
-this.ltoken.set (0, this.setCommand ( new org.jmol.script.Token (1073741824, 0, token.value)));
+this.ltoken.set (0, this.setCommand (org.jmol.script.Token.newTokenIntVal (1073741824, 0, token.value)));
 this.setBraceCount = 0;
 break;
 }if (this.theTok != 1073741824 && this.theTok != 269484242 && this.theTok != 1060866 && (!org.jmol.script.Token.tokAttr (this.theTok, 536870912))) {
 if (this.isNewSet) this.commandExpected ();
- else this.error (18, "SET", ": " + ident);
+ else this.errorIntStr2 (18, "SET", ": " + ident);
 return 4;
 }if (this.nTokens == 1 && (this.lastToken.tok == 269484226 || this.lastToken.tok == 269484225)) {
 this.replaceCommand (org.jmol.script.Token.tokenSet);
@@ -1131,7 +1131,7 @@ if (this.nTokens == 1) {
 if (this.theTok != 1073741824) {
 if (this.preDefining) {
 if (!org.jmol.script.Token.tokAttr (this.theTok, 3145728)) {
-this.error ("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: " + ident, null);
+this.errorStr2 ("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: " + ident, null);
 return 4;
 }} else if (org.jmol.script.Token.tokAttr (this.theTok, 3145728)) {
 org.jmol.util.Logger.warn ("WARNING: predefined term '" + ident + "' has been redefined by the user until the next file load.");
@@ -1167,7 +1167,7 @@ this.setBraceCount = (isSetBrace ? 1 : 0);
 this.bracketCount = 0;
 this.setEqualPt = 2147483647;
 this.ptNewSetModifier = (this.isNewSet ? (ident.equals ("(") ? 2 : 1) : 2147483647);
-return ((isSetBrace || this.theToken.tok == 269484226 || this.theToken.tok == 269484225) ? this.theToken :  new org.jmol.script.Token (1073741824, ident));
+return ((isSetBrace || this.theToken.tok == 269484226 || this.theToken.tok == 269484225) ? this.theToken : org.jmol.script.Token.newTokenObj (1073741824, ident));
 }, $fz.isPrivate = true, $fz), "~B,~S");
 Clazz.defineMethod (c$, "nextChar", 
 ($fz = function () {
@@ -1182,7 +1182,7 @@ while (++ichT < this.cchScript && !Character.isWhitespace (ch = this.script.char
 }
 var name = this.script.substring (this.ichToken, ichT).$replace ('\\', '/');
 this.cchToken = ichT - this.ichToken;
-this.theToken =  new org.jmol.script.Token (4, name);
+this.theToken = org.jmol.script.Token.newTokenObj (4, name);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "checkFlowStartBrace", 
 ($fz = function (atEnd) {
@@ -1224,7 +1224,7 @@ return this.forceFlowEnd (token);
 Clazz.defineMethod (c$, "forceFlowEnd", 
 ($fz = function (token) {
 var t0 = this.tokenCommand;
-this.setCommand ( new org.jmol.script.Token (1150985, "end"));
+this.setCommand (org.jmol.script.Token.newTokenObj (1150985, "end"));
 if (!this.checkFlowCommand ("end")) return 0;
 this.addTokenToPrefix (this.tokenCommand);
 switch (token.tok) {
@@ -1258,12 +1258,12 @@ var isNew = true;
 switch (this.tokCommand) {
 case 135368713:
 case 102436:
-if (this.flowContext != null) return this.error (1, org.jmol.script.Token.nameOf (this.tokCommand));
+if (this.flowContext != null) return this.errorStr (1, org.jmol.script.Token.nameOf (this.tokCommand));
 break;
 case 1150985:
-if (this.flowContext == null) return this.error (1, ident);
+if (this.flowContext == null) return this.errorStr (1, ident);
 isEnd = true;
-if (this.flowContext.token.tok != 135368713 && this.flowContext.token.tok != 102436 && this.flowContext.token.tok != 364558) this.setCommand ( new org.jmol.script.Token (this.tokCommand, (this.flowContext.ptDefault > 0 ? this.flowContext.ptDefault : -this.flowContext.pt0), ident));
+if (this.flowContext.token.tok != 135368713 && this.flowContext.token.tok != 102436 && this.flowContext.token.tok != 364558) this.setCommand (org.jmol.script.Token.newTokenIntVal (this.tokCommand, (this.flowContext.ptDefault > 0 ? this.flowContext.ptDefault : -this.flowContext.pt0), ident));
 break;
 case 364558:
 case 102412:
@@ -1276,10 +1276,10 @@ case 102406:
 break;
 case 364548:
 isEnd = true;
-if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102439 && this.flowContext.token.tok != 364547 && this.flowContext.token.tok != 102402) return this.error (1, ident);
+if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102439 && this.flowContext.token.tok != 364547 && this.flowContext.token.tok != 102402) return this.errorStr (1, ident);
 break;
 case 364547:
-if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102402) return this.error (1, ident);
+if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102402) return this.errorStr (1, ident);
 this.flowContext.token.intValue = this.flowContext.setPt0 (pt, false);
 break;
 case 102407:
@@ -1288,19 +1288,19 @@ isNew = false;
 var f = (this.flowContext == null ? null : this.flowContext.getBreakableContext (0));
 if (this.tokCommand == 102408) while (f != null && f.token.tok != 135369224 && f.token.tok != 102406) f = f.getParent ();
 
-if (f == null) return this.error (1, ident);
-this.setCommand ( new org.jmol.script.Token (this.tokCommand, f.pt0, ident));
+if (f == null) return this.errorStr (1, ident);
+this.setCommand (org.jmol.script.Token.newTokenIntVal (this.tokCommand, f.pt0, ident));
 break;
 case 102413:
-if (this.flowContext == null || this.flowContext.token.tok != 102410 && this.flowContext.token.tok != 102411 && this.flowContext.ptDefault > 0) return this.error (1, ident);
+if (this.flowContext == null || this.flowContext.token.tok != 102410 && this.flowContext.token.tok != 102411 && this.flowContext.ptDefault > 0) return this.errorStr (1, ident);
 this.flowContext.token.intValue = this.flowContext.setPt0 (pt, true);
 break;
 case 102411:
-if (this.flowContext == null || this.flowContext.token.tok != 102410 && this.flowContext.token.tok != 102411 && this.flowContext.token.tok != 102413) return this.error (1, ident);
+if (this.flowContext == null || this.flowContext.token.tok != 102410 && this.flowContext.token.tok != 102411 && this.flowContext.token.tok != 102413) return this.errorStr (1, ident);
 this.flowContext.token.intValue = this.flowContext.setPt0 (pt, false);
 break;
 case 102402:
-if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102402 && this.flowContext.token.tok != 364547) return this.error (1, "elseif");
+if (this.flowContext == null || this.flowContext.token.tok != 135369225 && this.flowContext.token.tok != 102402 && this.flowContext.token.tok != 364547) return this.errorStr (1, "elseif");
 this.flowContext.token.intValue = this.flowContext.setPt0 (pt, false);
 break;
 }
@@ -1357,7 +1357,7 @@ break;
 default:
 isOK = false;
 }
-if (!isOK) return this.error (1, "end " + ident);
+if (!isOK) return this.errorStr (1, "end " + ident);
 }switch (tok) {
 case 135369225:
 case 102410:
@@ -1372,21 +1372,21 @@ case 102436:
 case 135368713:
 case 364558:
 if (!this.isCheckOnly) {
-this.addTokenToPrefix ( new org.jmol.script.Token (tok, this.thisFunction));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (tok, this.thisFunction));
 org.jmol.script.ScriptFunction.setFunction (this.thisFunction, this.script, pt1, this.lltoken.size (), this.lineNumbers, this.lineIndices, this.lltoken);
 }this.thisFunction = (this.vFunctionStack.size () == 0 ? null : this.vFunctionStack.remove (0));
 this.tokenCommand.intValue = 0;
 if (tok == 364558) this.vPush.remove (--this.pushCount);
 break;
 default:
-return this.error (19, "end " + ident);
+return this.errorStr (19, "end " + ident);
 }
 this.flowContext = this.flowContext.getParent ();
 return true;
 }, $fz.isPrivate = true, $fz), "~N,~S,~N");
 Clazz.defineMethod (c$, "getData", 
 ($fz = function (key) {
-this.addTokenToPrefix ( new org.jmol.script.Token (4, key));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, key));
 this.ichToken += key.length + 2;
 if (this.script.length > this.ichToken && (this.script.charAt (this.ichToken)).charCodeAt (0) == 13) {
 this.lineCurrent++;
@@ -1398,9 +1398,9 @@ this.ichToken++;
 if (i < 0 || !this.script.substring (i, i + 4).equalsIgnoreCase ("END ")) return false;
 var str = this.script.substring (this.ichToken, i);
 this.incrementLineCount (str);
-this.addTokenToPrefix ( new org.jmol.script.Token (135270407, str));
-this.addTokenToPrefix ( new org.jmol.script.Token (1073741824, "end"));
-this.addTokenToPrefix ( new org.jmol.script.Token (4, key));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (135270407, str));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (1073741824, "end"));
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, key));
 this.cchToken = i - this.ichToken + key.length + 6;
 return true;
 }, $fz.isPrivate = true, $fz), "~S");
@@ -1817,12 +1817,12 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "ERROR", 
 ($fz = function (error) {
-this.error (error, null, null);
+this.errorIntStr2 (error, null, null);
 return 4;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "ERROR", 
 ($fz = function (error, value) {
-this.error (error, value);
+this.errorStr (error, value);
 return 4;
 }, $fz.isPrivate = true, $fz), "~N,~S");
 Clazz.defineMethod (c$, "handleError", 

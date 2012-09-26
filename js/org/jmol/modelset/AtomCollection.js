@@ -203,7 +203,7 @@ Clazz.defineMethod (c$, "setFormalCharges",
 function (bs, formalCharge) {
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 this.atoms[i].setFormalCharge (formalCharge);
-this.taint (i, 4);
+this.taintAtom (i, 4);
 }
 }, "java.util.BitSet,~N");
 Clazz.defineMethod (c$, "getAtomicCharges", 
@@ -295,7 +295,7 @@ Clazz.defineMethod (c$, "calculateSurface",
 function (bsSelected, envelopeRadius) {
 if (envelopeRadius < 0) envelopeRadius = 3.0;
 var ec =  new org.jmol.geodesic.EnvelopeCalculation (this.viewer, this.atomCount, null);
-ec.calculate ( new org.jmol.atomdata.RadiusData (envelopeRadius, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, bsSelected, org.jmol.util.BitSetUtil.copyInvert (bsSelected, this.atomCount), false, false, false, true);
+ec.calculate ( new org.jmol.atomdata.RadiusData (null, envelopeRadius, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, bsSelected, org.jmol.util.BitSetUtil.copyInvert (bsSelected, this.atomCount), false, false, false, true);
 var points = ec.getPoints ();
 this.surfaceDistanceMax = 0;
 this.bsSurface = ec.getBsSurfaceClone ();
@@ -355,12 +355,12 @@ case 1146095626:
 this.setAtomCoord (i, xyz.x, xyz.y, xyz.z);
 break;
 case 1146095627:
-this.atoms[i].setFractionalCoord (xyz, true);
-this.taint (i, 2);
+this.atoms[i].setFractionalCoordTo (xyz, true);
+this.taintAtom (i, 2);
 break;
 case 1146095629:
-this.atoms[i].setFractionalCoord (xyz, false);
-this.taint (i, 2);
+this.atoms[i].setFractionalCoordTo (xyz, false);
+this.taintAtom (i, 2);
 break;
 case 1146095631:
 this.setAtomVibrationVector (i, xyz.x, xyz.y, xyz.z);
@@ -371,7 +371,7 @@ break;
 Clazz.defineMethod (c$, "setAtomVibrationVector", 
 ($fz = function (atomIndex, x, y, z) {
 this.setVibrationVector (atomIndex, x, y, z);
-this.taint (atomIndex, 12);
+this.taintAtom (atomIndex, 12);
 }, $fz.isPrivate = true, $fz), "~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setAtomCoord", 
 function (atomIndex, x, y, z) {
@@ -379,7 +379,7 @@ if (atomIndex < 0 || atomIndex >= this.atomCount) return ;
 this.atoms[atomIndex].x = x;
 this.atoms[atomIndex].y = y;
 this.atoms[atomIndex].z = z;
-this.taint (atomIndex, 2);
+this.taintAtom (atomIndex, 2);
 }, "~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setAtomCoordRelative", 
 function (atomIndex, x, y, z) {
@@ -387,9 +387,9 @@ if (atomIndex < 0 || atomIndex >= this.atomCount) return ;
 this.atoms[atomIndex].x += x;
 this.atoms[atomIndex].y += y;
 this.atoms[atomIndex].z += z;
-this.taint (atomIndex, 2);
+this.taintAtom (atomIndex, 2);
 }, "~N,~N,~N,~N");
-Clazz.defineMethod (c$, "setAtomCoordRelative", 
+Clazz.defineMethod (c$, "setAtomsCoordRelative", 
 function (bs, x, y, z) {
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.setAtomCoordRelative (i, x, y, z);
 
@@ -411,15 +411,15 @@ sValue = list[n++];
 }var atom = this.atoms[i];
 switch (tok) {
 case 1087375362:
-this.taint (i, 0);
+this.taintAtom (i, 0);
 this.setAtomName (i, sValue);
 break;
 case 1095763969:
-this.taint (i, 13);
+this.taintAtom (i, 13);
 this.setAtomNumber (i, iValue);
 break;
 case 1087375361:
-this.taint (i, 1);
+this.taintAtom (i, 1);
 this.setAtomType (i, sValue);
 break;
 case 1112541185:
@@ -443,13 +443,13 @@ case 1112541188:
 case 1112541189:
 case 1112541190:
 atom.setFractionalCoord (tok, fValue, true);
-this.taint (i, 2);
+this.taintAtom (i, 2);
 break;
 case 1112541191:
 case 1112541192:
 case 1112541193:
 atom.setFractionalCoord (tok, fValue, false);
-this.taint (i, 2);
+this.taintAtom (i, 2);
 break;
 case 1095763976:
 case 1087375365:
@@ -457,10 +457,10 @@ this.setElement (atom, iValue);
 break;
 case 1632634889:
 atom.setFormalCharge (iValue);
-this.taint (i, 4);
+this.taintAtom (i, 4);
 break;
 case 1114638346:
-if (this.setHydrophobicity (i, fValue)) this.taint (i, 5);
+if (this.setHydrophobicity (i, fValue)) this.taintAtom (i, 5);
 break;
 case 1826248715:
 case 1288701960:
@@ -468,13 +468,13 @@ this.viewer.setAtomLabel (sValue, i);
 break;
 case 1129318401:
 if (iValue < 2) iValue = Math.round ((100 * fValue));
-if (this.setOccupancy (i, iValue)) this.taint (i, 7);
+if (this.setOccupancy (i, iValue)) this.taintAtom (i, 7);
 break;
 case 1112541196:
-if (this.setPartialCharge (i, fValue)) this.taint (i, 8);
+if (this.setPartialCharge (i, fValue)) this.taintAtom (i, 8);
 break;
 case 1112541195:
-if (this.setIonicRadius (i, fValue)) this.taint (i, 6);
+if (this.setIonicRadius (i, fValue)) this.taintAtom (i, 6);
 break;
 case 1666189314:
 case 1113200651:
@@ -486,14 +486,14 @@ case 1114638350:
 this.viewer.setSelectedAtom (atom.index, (fValue != 0));
 break;
 case 1112541199:
-if (this.setBFactor (i, fValue)) this.taint (i, 9);
+if (this.setBFactor (i, fValue)) this.taintAtom (i, 9);
 break;
 case 1095763988:
 atom.setValence (iValue);
-this.taint (i, 10);
+this.taintAtom (i, 10);
 break;
 case 1649412112:
-if (atom.setRadius (fValue)) this.taint (i, 11);
+if (atom.setRadius (fValue)) this.taintAtom (i, 11);
  else this.untaint (i, 11);
 break;
 default:
@@ -505,7 +505,7 @@ if (tok == 1114638350) this.viewer.setSelectedAtom (-1, false);
 }, "java.util.BitSet,~N,~N,~N,~S,~A,~A");
 Clazz.defineMethod (c$, "setElement", 
 function (atom, atomicNumber) {
-this.taint (atom.index, 3);
+this.taintAtom (atom.index, 3);
 atom.setAtomicAndIsotopeNumber (atomicNumber);
 atom.setPaletteID (org.jmol.constant.EnumPalette.CPK.id);
 atom.setColixAtom (this.viewer.getColixAtomPalette (atom, org.jmol.constant.EnumPalette.CPK.id));
@@ -689,7 +689,7 @@ case 11:
 atom.setRadius (x);
 break;
 }
-this.taint (atomIndex, type);
+this.taintAtom (atomIndex, type);
 }
 if (type == 14 && n > 0) this.viewer.setData (name, [name, fData, bs], 0, 0, 0, 0, 0);
 } catch (e) {
@@ -729,9 +729,9 @@ Clazz.defineMethod (c$, "validateBspf",
 function (isValid) {
 if (this.bspf != null) this.bspf.validate (isValid);
 }, "~B");
-Clazz.defineMethod (c$, "validateBspf", 
+Clazz.defineMethod (c$, "validateBspfForModel", 
 function (modelIndex, isValid) {
-if (this.bspf != null) this.bspf.validate (modelIndex, isValid);
+if (this.bspf != null) this.bspf.validateModel (modelIndex, isValid);
 }, "~N,~B");
 Clazz.defineMethod (c$, "setPreserveState", 
 function (TF) {
@@ -753,20 +753,20 @@ Clazz.defineMethod (c$, "getTaintedAtoms",
 function (type) {
 return this.tainted == null ? null : this.tainted[type];
 }, "~N");
-Clazz.defineMethod (c$, "taint", 
+Clazz.defineMethod (c$, "taintAtoms", 
 function (bsAtoms, type) {
 this.canSkipLoad = false;
 if (!this.preserveState) return ;
-for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) this.taint (i, type);
+for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) this.taintAtom (i, type);
 
 }, "java.util.BitSet,~N");
-Clazz.defineMethod (c$, "taint", 
+Clazz.defineMethod (c$, "taintAtom", 
 function (atomIndex, type) {
 if (!this.preserveState) return ;
 if (this.tainted == null) this.tainted =  new Array (14);
 if (this.tainted[type] == null) this.tainted[type] =  new java.util.BitSet (this.atomCount);
 this.tainted[type].set (atomIndex);
-if (type == 2) this.validateBspf (this.atoms[atomIndex].modelIndex, false);
+if (type == 2) this.validateBspfForModel (this.atoms[atomIndex].modelIndex, false);
 }, "~N,~N");
 Clazz.defineMethod (c$, "untaint", 
 ($fz = function (atomIndex, type) {
@@ -797,11 +797,11 @@ function (taintWhat, bsSelected) {
 if (!this.preserveState) return "";
 var bs;
 var commands =  new StringBuffer ();
-for (var i = 0; i < 14; i++) if (taintWhat < 0 || i == taintWhat) if ((bs = (bsSelected != null ? bsSelected : this.getTaintedAtoms (i))) != null) this.getAtomicPropertyState (commands, i, bs, null, null);
+for (var i = 0; i < 14; i++) if (taintWhat < 0 || i == taintWhat) if ((bs = (bsSelected != null ? bsSelected : this.getTaintedAtoms (i))) != null) this.getAtomicPropertyStateBuffer (commands, i, bs, null, null);
 
 return commands.toString ();
 }, "~N,java.util.BitSet");
-Clazz.defineMethod (c$, "getAtomicPropertyState", 
+Clazz.defineMethod (c$, "getAtomicPropertyStateBuffer", 
 function (commands, type, bs, label, fData) {
 if (!this.viewer.getPreserveState ()) return ;
 var s =  new StringBuffer ();
@@ -1874,7 +1874,7 @@ if (distance > 0 && d >= -0.1 && d <= distance || distance < 0 && d <= 0.1 && d 
 }
 return bsResult;
 }, "~N,javax.vecmath.Point4f");
-Clazz.defineMethod (c$, "getAtomsWithin", 
+Clazz.defineMethod (c$, "getAtomsWithinBs", 
 function (distance, points, bsInclude) {
 var bsResult =  new java.util.BitSet ();
 if (points.length == 0 || bsInclude != null && bsInclude.cardinality () == 0) return bsResult;

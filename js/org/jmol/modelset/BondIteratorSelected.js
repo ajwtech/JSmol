@@ -14,20 +14,12 @@ Clazz.makeConstructor (c$,
 function (bonds, bondCount, bondType, bsSelected, bondSelectionModeOr) {
 this.bonds = bonds;
 this.bondCount = bondCount;
-this.bondType = bondType;
 this.bsSelected = bsSelected;
+this.bondType = bondType;
 this.bondSelectionModeOr = bondSelectionModeOr;
 this.isBondBitSet = false;
 this.iBond = 0;
 }, "~A,~N,~N,java.util.BitSet,~B");
-Clazz.makeConstructor (c$, 
-function (bonds, bondCount, bsSelected) {
-this.bonds = bonds;
-this.bondCount = bondCount;
-this.bsSelected = bsSelected;
-this.isBondBitSet = true;
-this.iBond = 0;
-}, "~A,~N,java.util.BitSet");
 Clazz.overrideMethod (c$, "hasNext", 
 function () {
 if (this.isBondBitSet) {

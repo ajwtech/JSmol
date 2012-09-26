@@ -14,7 +14,7 @@ this.viewer = viewer;
 Clazz.defineMethod (c$, "zap", 
 function () {
 this.fullPathName = this.fileName = null;
-return (this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, this.viewer.getZapName ())).getModelSet ());
+return (this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, this.viewer.getZapName (), null, null, null, null)).getModelSet ());
 });
 Clazz.defineMethod (c$, "getModelSetFileName", 
 function () {
@@ -43,7 +43,7 @@ if (modelSetName != null) {
 modelSetName = modelSetName.trim ();
 if (modelSetName.length == 0) modelSetName = null;
 }if (modelSetName == null) modelSetName = org.jmol.viewer.ModelManager.reduceFilename (fileName);
-}this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, loadScript, atomSetCollection, (isAppend ? this.modelSet : null), modelSetName, bsNew)).getModelSet ();
+}this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, modelSetName, loadScript, atomSetCollection, (isAppend ? this.modelSet : null), bsNew)).getModelSet ();
 }if (this.modelSet.getAtomCount () == 0) this.zap ();
 return this.modelSet;
 }, "~S,~S,StringBuffer,~O,java.util.BitSet,~B");

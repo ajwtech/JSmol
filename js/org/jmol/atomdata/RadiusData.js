@@ -14,19 +14,16 @@ this.factorType = org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE;
 this.vdwType = org.jmol.constant.EnumVdw.AUTO;
 });
 Clazz.makeConstructor (c$, 
-function () {
-});
-Clazz.makeConstructor (c$, 
-function (value, factorType, vdwType) {
+function (values, value, factorType, vdwType) {
+if (values != null) {
+this.values = values;
+this.value = 2147483647;
+return ;
+}if (factorType == null) return ;
 this.factorType = factorType;
 this.value = value;
 if (vdwType != null) this.vdwType = vdwType;
-}, "~N,org.jmol.atomdata.RadiusData.EnumType,org.jmol.constant.EnumVdw");
-Clazz.makeConstructor (c$, 
-function (values) {
-this.values = values;
-this.value = 2147483647;
-}, "~A");
+}, "~A,~N,org.jmol.atomdata.RadiusData.EnumType,org.jmol.constant.EnumVdw");
 Clazz.overrideMethod (c$, "toString", 
 function () {
 if (Float.isNaN (this.value)) return "";

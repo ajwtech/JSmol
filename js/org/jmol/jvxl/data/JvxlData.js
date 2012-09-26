@@ -121,12 +121,12 @@ this.nSurfaceInts = nSurfaceInts;
 }, "javax.vecmath.Point4f,javax.vecmath.Point3f,~N,~S");
 Clazz.defineMethod (c$, "setSurfaceInfoFromBitSet", 
 function (bs, thePlane) {
-this.setSurfaceInfoFromBitSet (bs, thePlane, null);
+this.setSurfaceInfoFromBitSetPts (bs, thePlane, null);
 }, "java.util.BitSet,javax.vecmath.Point4f");
-Clazz.defineMethod (c$, "setSurfaceInfoFromBitSet", 
+Clazz.defineMethod (c$, "setSurfaceInfoFromBitSetPts", 
 function (bs, thePlane, mapLattice) {
 var sb =  new StringBuffer ();
-var nSurfaceInts = (thePlane != null ? 0 : org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSet (bs, this.nPointsX * this.nPointsY * this.nPointsZ, sb));
+var nSurfaceInts = (thePlane != null ? 0 : org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, this.nPointsX * this.nPointsY * this.nPointsZ, sb));
 this.setSurfaceInfo (thePlane, mapLattice, nSurfaceInts, sb.toString ());
 }, "java.util.BitSet,javax.vecmath.Point4f,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "jvxlUpdateInfo", 

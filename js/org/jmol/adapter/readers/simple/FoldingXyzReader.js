@@ -30,12 +30,12 @@ var carCount = 1;
 if (atom.atomName.length >= 2) {
 var c1 = atom.atomName.charAt (0);
 var c2 = atom.atomName.charAt (1);
-if (Character.isUpperCase (c1) && Character.isLowerCase (c2) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (c1, c2)) {
+if (Character.isUpperCase (c1) && Character.isLowerCase (c2) && org.jmol.adapter.smarter.Atom.isValidElementSymbol2 (c1, c2)) {
 carCount = 2;
 }if ((c1.charCodeAt (0) == 67) && (c2.charCodeAt (0) == 76)) {
 carCount = 2;
 }}atom.elementSymbol = atom.atomName.substring (0, carCount);
-}this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
+}this.setAtomCoordXYZ (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
 var bondCount = 0;
 bonds[i] =  Clazz.newArray (5, 0);
 var bondNum = -2147483648;

@@ -40,7 +40,7 @@ this.atomPositions[this.atomCount] =  new javax.vecmath.Point3f (this.parseFloat
 var symbol = tokens[1];
 var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = symbol;
-this.setAtomCoord (atom, this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 }this.atomCount++;
 }
 if (haveFreq) this.setPositions ();

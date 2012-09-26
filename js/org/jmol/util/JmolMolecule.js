@@ -150,7 +150,7 @@ var bonds = atom.getEdges ();
 if (bonds == null) return true;
 for (var i = bonds.length; --i >= 0; ) {
 var bond = bonds[i];
-if (bond.isCovalent () && !org.jmol.util.JmolMolecule.getCovalentlyConnectedBitSet (atoms, bond.getOtherAtom (atom), bsToTest, allowCyclic, allowBioResidue, biobranches, bsResult)) return false;
+if (bond.isCovalent () && !org.jmol.util.JmolMolecule.getCovalentlyConnectedBitSet (atoms, bond.getOtherAtomNode (atom), bsToTest, allowCyclic, allowBioResidue, biobranches, bsResult)) return false;
 }
 return true;
 }, $fz.isPrivate = true, $fz), "~A,org.jmol.util.JmolNode,java.util.BitSet,~B,~B,java.util.List,java.util.BitSet");

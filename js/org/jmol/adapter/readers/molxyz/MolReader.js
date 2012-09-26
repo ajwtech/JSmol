@@ -75,7 +75,7 @@ this.readLine ();
 if (this.line == null) return ;
 header += this.line + "\n";
 org.jmol.util.Logger.info (header);
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("fileHeader", header);
 this.newAtomSet (thisDataSetName);
 });
@@ -160,7 +160,7 @@ if (this.is2D && z != 0) this.is2D = false;
 var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = elementSymbol;
 atom.formalCharge = charge;
-this.setAtomCoord (atom, x, y, z);
+this.setAtomCoordXYZ (atom, x, y, z);
 }
 }, "~N");
 Clazz.defineMethod (c$, "checkLineContinuation", 

@@ -197,7 +197,7 @@ var bonds = atom1.getEdges ();
 for (var k = 0; k < bonds.length; k++) {
 var bond = bonds[k];
 var index = bond.index;
-if (bsDone.get (index)) continue ;var atom2 = bond.getOtherAtom (atom1);
+if (bsDone.get (index)) continue ;var atom2 = bond.getOtherAtomNode (atom1);
 if (bond.getCovalentOrder () != 2 || org.jmol.smiles.SmilesSearch.isRingBond (this.ringSets, i, atom2.getIndex ())) continue ;bsDone.set (index);
 var b0 = null;
 var a0 = null;
@@ -221,11 +221,11 @@ i0 = 0;
 b0 = edges[i0][0];
 this.bsBondsUp.set (b0.index);
 }var c0 = this.getBondStereochemistry (b0, atom12[i0]);
-a0 = b0.getOtherAtom (atom12[i0]);
+a0 = b0.getOtherAtomNode (atom12[i0]);
 if (a0 == null) continue ;for (var j = 0; j < 2; j++) for (var jj = 0; jj < 2; jj++) {
 var b1 = edges[j][jj];
 if (b1 == null || b1 === b0) continue ;var bi = b1.index;
-var a1 = b1.getOtherAtom (atom12[j]);
+var a1 = b1.getOtherAtomNode (atom12[j]);
 if (a1 == null) continue ;var c1 = this.getBondStereochemistry (b1, atom12[j]);
 var isOpposite = org.jmol.smiles.SmilesSearch.isDiaxial (atom12[i0], atom12[j], a0, a1, this.vTemp, 0);
 if (c1.charCodeAt (0) == 0 || (c1.charCodeAt (0) != c0.charCodeAt (0)) == isOpposite) {
@@ -263,7 +263,7 @@ var stereo =  new Array (7);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug (sb.toString ());
 if (bonds != null) for (var i = bonds.length; --i >= 0; ) {
 var bond = bonds[i];
-if (!bond.isCovalent ()) continue ;var atom1 = bonds[i].getOtherAtom (atom);
+if (!bond.isCovalent ()) continue ;var atom1 = bonds[i].getOtherAtomNode (atom);
 var index1 = atom1.getIndex ();
 if (index1 == prevIndex) {
 bondPrev = bonds[i];
@@ -288,7 +288,7 @@ var nMax = 0;
 var bsBranches =  new java.util.BitSet ();
 if (allowBranches) for (var i = 0; i < v.size (); i++) {
 var bond = v.get (i);
-var a = bond.getOtherAtom (atom);
+var a = bond.getOtherAtomNode (atom);
 var n = a.getCovalentBondCount () - a.getCovalentHydrogenCount ();
 var order = bond.getCovalentOrder ();
 if (order == 1 && n == 1 && i < v.size () - (bond0 == null ? 1 : 0)) {
@@ -297,7 +297,7 @@ bsBranches.set (bond.index);
 nMax = (order > 1 ? 1000 + order : n);
 bond0 = bond;
 }}
-var atomNext = (bond0 == null ? null : bond0.getOtherAtom (atom));
+var atomNext = (bond0 == null ? null : bond0.getOtherAtomNode (atom));
 var orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder ());
 if (stereoFlag < 7 && bondPrev != null) {
 if (bondPrev.getCovalentOrder () == 2 && orderNext == 2 && this.prevSp2Atoms != null && this.prevSp2Atoms[1] != null) {
@@ -311,7 +311,7 @@ var chBond = this.getBondStereochemistry (bondPrev, this.prevAtom);
 var sMore =  new StringBuffer ();
 for (var i = 0; i < v.size (); i++) {
 var bond = v.get (i);
-if (!bsBranches.get (bond.index)) continue ;var a = bond.getOtherAtom (atom);
+if (!bsBranches.get (bond.index)) continue ;var a = bond.getOtherAtomNode (atom);
 var s2 =  new StringBuffer ();
 s2.append ("(");
 this.prevAtom = atom;
@@ -337,7 +337,7 @@ sb.append (strBond);
 if (!allowBranches && (v.size () == 5 || v.size () == 6)) atat = this.sortInorganic (atom, v);
 for (var i = 0; i < v.size (); i++) {
 var bond = v.get (i);
-if (bond === bond0) continue ;var a = bond.getOtherAtom (atom);
+if (bond === bond0) continue ;var a = bond.getOtherAtomNode (atom);
 var s = this.getRingCache (atomIndex, a.getIndex (), this.htRings);
 strBond = org.jmol.smiles.SmilesBond.getBondOrderString (bond.order);
 if (!deferStereo) {
@@ -393,14 +393,14 @@ var isOK = true;
 var s = "";
 for (var i = 0; i < n; i++) {
 bond1 = v.get (i);
-stereo[0] = a1 = bond1.getOtherAtom (atom);
+stereo[0] = a1 = bond1.getOtherAtomNode (atom);
 if (i == 0) s = this.addStereoCheck (atomIndex, stereo, 0, "");
  else if (isOK && this.addStereoCheck (atomIndex, stereo, 0, s) != null) isOK = false;
 if (bsDone.get (i)) continue ;bsDone.set (i);
 var isAxial = false;
 for (var j = i + 1; j < n; j++) {
 if (bsDone.get (j)) continue ;bond2 = v.get (j);
-a2 = bond2.getOtherAtom (atom);
+a2 = bond2.getOtherAtomNode (atom);
 if (org.jmol.smiles.SmilesSearch.isDiaxial (atom, atom, a1, a2, this.vTemp, -0.95)) {
 axialPairs.add ([bond1, bond2]);
 isAxial = true;
@@ -413,7 +413,7 @@ var nPairs = axialPairs.size ();
 if (isOK || n == 6 && nPairs != 3 || n == 5 && nPairs == 0) return "";
 pair0 = axialPairs.get (0);
 bond1 = pair0[0];
-stereo[0] = bond1.getOtherAtom (atom);
+stereo[0] = bond1.getOtherAtomNode (atom);
 v.clear ();
 v.add (bond1);
 if (nPairs > 1) bonds.add (axialPairs.get (1)[0]);
@@ -423,7 +423,7 @@ if (nPairs == 3) bonds.add (axialPairs.get (2)[1]);
 for (var i = 0; i < bonds.size (); i++) {
 bond1 = bonds.get (i);
 v.add (bond1);
-stereo[i + 1] = bond1.getOtherAtom (atom);
+stereo[i + 1] = bond1.getOtherAtomNode (atom);
 }
 v.add (pair0[1]);
 return org.jmol.smiles.SmilesGenerator.getStereoFlag (atom, stereo, n, this.vTemp);

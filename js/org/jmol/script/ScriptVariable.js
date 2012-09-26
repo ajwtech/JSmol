@@ -10,30 +10,37 @@ org.jmol.script.ScriptVariable.$ScriptVariable$Sort$ ();
 Clazz.instantialize (this, arguments);
 }, org.jmol.script, "ScriptVariable", org.jmol.script.Token);
 Clazz.makeConstructor (c$, 
-function () {
-Clazz.superConstructor (this, org.jmol.script.ScriptVariable, []);
-this.tok = 4;
-this.value = "";
-});
-Clazz.makeConstructor (c$, 
 function (tok) {
 Clazz.superConstructor (this, org.jmol.script.ScriptVariable, []);
 this.tok = tok;
 }, "~N");
-Clazz.makeConstructor (c$, 
+c$.newScriptVariableObj = Clazz.defineMethod (c$, "newScriptVariableObj", 
+function (tok, value) {
+var sv =  new org.jmol.script.ScriptVariable (tok);
+sv.value = value;
+return sv;
+}, "~N,~O");
+c$.newScriptVariableBs = Clazz.defineMethod (c$, "newScriptVariableBs", 
 function (bs, index) {
-Clazz.superConstructor (this, org.jmol.script.ScriptVariable, []);
-this.value = bs;
-this.index = index;
-this.tok = 10;
+var sv =  new org.jmol.script.ScriptVariable (10);
+sv.value = bs;
+sv.index = index;
+return sv;
 }, "java.util.BitSet,~N");
-Clazz.makeConstructor (c$, 
+c$.newScriptVariableToken = Clazz.defineMethod (c$, "newScriptVariableToken", 
 function (x) {
-Clazz.superConstructor (this, org.jmol.script.ScriptVariable, []);
-this.tok = x.tok;
-this.intValue = x.intValue;
-this.value = x.value;
+var sv =  new org.jmol.script.ScriptVariable (x.tok);
+sv.intValue = x.intValue;
+sv.value = x.value;
+return sv;
 }, "org.jmol.script.Token");
+c$.newScriptVariableIntValue = Clazz.defineMethod (c$, "newScriptVariableIntValue", 
+function (tok, intValue, value) {
+var sv =  new org.jmol.script.ScriptVariable (tok);
+sv.intValue = intValue;
+sv.value = value;
+return sv;
+}, "~N,~N,~O");
 c$.typeOf = Clazz.defineMethod (c$, "typeOf", 
 function (x) {
 var tok = (x == null ? 0 : x.tok);
@@ -92,23 +99,23 @@ return (Clazz.instanceOf (x, org.jmol.script.ScriptVariable) || Clazz.instanceOf
 }, "~O");
 c$.getVariable = Clazz.defineMethod (c$, "getVariable", 
 function (x) {
-if (x == null) return  new org.jmol.script.ScriptVariable ();
+if (x == null) return org.jmol.script.ScriptVariable.newScriptVariableObj (4, "");
 if (Clazz.instanceOf (x, org.jmol.script.ScriptVariable)) return x;
 if (Clazz.instanceOf (x, Boolean)) return org.jmol.script.ScriptVariable.getBoolean ((x).booleanValue ());
 if (Clazz.instanceOf (x, Integer)) return  new org.jmol.script.ScriptVariableInt ((x).intValue ());
-if (Clazz.instanceOf (x, Float)) return  new org.jmol.script.ScriptVariable (3, x);
+if (Clazz.instanceOf (x, Float)) return org.jmol.script.ScriptVariable.newScriptVariableObj (3, x);
 if (Clazz.instanceOf (x, String)) {
 x = org.jmol.script.ScriptVariable.unescapePointOrBitsetAsVariable (x);
 if (Clazz.instanceOf (x, org.jmol.script.ScriptVariable)) return x;
-return  new org.jmol.script.ScriptVariable (4, x);
-}if (Clazz.instanceOf (x, javax.vecmath.Point3f)) return  new org.jmol.script.ScriptVariable (8, x);
-if (Clazz.instanceOf (x, javax.vecmath.Vector3f)) return  new org.jmol.script.ScriptVariable (8,  new javax.vecmath.Point3f (x));
-if (Clazz.instanceOf (x, java.util.BitSet)) return  new org.jmol.script.ScriptVariable (10, x);
-if (Clazz.instanceOf (x, javax.vecmath.Point4f)) return  new org.jmol.script.ScriptVariable (9, x);
-if (Clazz.instanceOf (x, org.jmol.util.Quaternion)) return  new org.jmol.script.ScriptVariable (9, (x).toPoint4f ());
-if (Clazz.instanceOf (x, javax.vecmath.Matrix3f)) return  new org.jmol.script.ScriptVariable (11, x);
-if (Clazz.instanceOf (x, javax.vecmath.Matrix4f)) return  new org.jmol.script.ScriptVariable (12, x);
-if (Clazz.instanceOf (x, Array)) return  new org.jmol.script.ScriptVariable (13, x);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (4, x);
+}if (Clazz.instanceOf (x, javax.vecmath.Point3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8, x);
+if (Clazz.instanceOf (x, javax.vecmath.Vector3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8,  new javax.vecmath.Point3f (x));
+if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.script.ScriptVariable.newScriptVariableObj (10, x);
+if (Clazz.instanceOf (x, javax.vecmath.Point4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, x);
+if (Clazz.instanceOf (x, org.jmol.util.Quaternion)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, (x).toPoint4f ());
+if (Clazz.instanceOf (x, javax.vecmath.Matrix3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (11, x);
+if (Clazz.instanceOf (x, javax.vecmath.Matrix4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (12, x);
+if (Clazz.instanceOf (x, Array)) return org.jmol.script.ScriptVariable.newScriptVariableObj (13, x);
 if (Clazz.instanceOf (x, java.util.Map)) {
 var ht = x;
 var e = ht.keySet ().iterator ();
@@ -123,60 +130,60 @@ x2.put (key, org.jmol.script.ScriptVariable.getVariable (org.jmol.script.ScriptV
 x = x2;
 }break;
 }
-return  new org.jmol.script.ScriptVariable (6, x);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (6, x);
 }var objects = null;
 if (Clazz.instanceOf (x, java.util.List)) {
 var v = x;
 var len = v.size ();
-if (len > 0 && Clazz.instanceOf (v.get (0), org.jmol.script.ScriptVariable)) return  new org.jmol.script.ScriptVariable (7, v);
+if (len > 0 && Clazz.instanceOf (v.get (0), org.jmol.script.ScriptVariable)) return org.jmol.script.ScriptVariable.newScriptVariableObj (7, v);
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < len; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (v.get (i)));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 objects =  new java.util.ArrayList ();
 var v = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < v.length; i++) objects.add (v[i]);
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var s = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < s.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (s[i]));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var ix = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < ix.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (Integer.$valueOf (ix[i])));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var f = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < f.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (Float.$valueOf (f[i])));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var f = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < f.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (Float.$valueOf (f[i])));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var ix = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < ix.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (ix[i]));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
 }if (Clazz.instanceOf (x, Array)) {
 var fx = x;
 objects =  new java.util.ArrayList ();
 for (var i = 0; i < fx.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (fx[i]));
 
-return  new org.jmol.script.ScriptVariable (7, objects);
-}return  new org.jmol.script.ScriptVariable (4, org.jmol.util.Escape.toReadable (x));
+return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
+}return org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.util.Escape.toReadable (x));
 }, "~O");
 Clazz.defineMethod (c$, "set", 
 function (v, asCopy) {
@@ -499,7 +506,7 @@ function (x1, x2, asNew) {
 var v1 = x1.getList ();
 var v2 = x2.getList ();
 if (!asNew) {
-if (v2 == null) v1.add ( new org.jmol.script.ScriptVariable (x2));
+if (v2 == null) v1.add (org.jmol.script.ScriptVariable.newScriptVariableToken (x2));
  else for (var i = 0; i < v2.size (); i++) v1.add (v2.get (i));
 
 return x1;
@@ -532,13 +539,13 @@ return x.value;
 c$.selectItemVar = Clazz.defineMethod (c$, "selectItemVar", 
 function ($var) {
 if ($var.index != 2147483647 || $var.tok == 7 && $var.intValue == 2147483647) return $var;
-return org.jmol.script.ScriptVariable.selectItemVar ($var, -2147483648);
+return org.jmol.script.ScriptVariable.selectItemVar2 ($var, -2147483648);
 }, "org.jmol.script.ScriptVariable");
 c$.selectItemTok = Clazz.defineMethod (c$, "selectItemTok", 
 function ($var) {
 return org.jmol.script.ScriptVariable.selectItemTok ($var, -2147483648);
 }, "org.jmol.script.Token");
-c$.selectItemVar = Clazz.defineMethod (c$, "selectItemVar", 
+c$.selectItemVar2 = Clazz.defineMethod (c$, "selectItemVar2", 
 function ($var, i2) {
 return org.jmol.script.ScriptVariable.selectItemTok ($var, i2);
 }, "org.jmol.script.ScriptVariable,~N");
@@ -559,7 +566,7 @@ var s = null;
 var i1 = tokenIn.intValue;
 if (i1 == 2147483647) {
 if (i2 == -2147483648) i2 = i1;
-var v =  new org.jmol.script.ScriptVariable (tokenIn.tok, i2, tokenIn.value);
+var v = org.jmol.script.ScriptVariable.newScriptVariableIntValue (tokenIn.tok, i2, tokenIn.value);
 return v;
 }var len = 0;
 var isInputSelected = (Clazz.instanceOf (tokenIn, org.jmol.script.ScriptVariable) && (tokenIn).index != 2147483647);
@@ -595,10 +602,10 @@ if (i1 > 0 && Math.abs (i1) > len) {
 var col = i1 % 10;
 var row = Math.floor ((i1 - col) / 10);
 if (col > 0 && col <= len && row <= len) {
-if (tokenIn.tok == 11) return  new org.jmol.script.ScriptVariable (3,  new Float ((tokenIn.value).getElement (row - 1, col - 1)));
-return  new org.jmol.script.ScriptVariable (3,  new Float ((tokenIn.value).getElement (row - 1, col - 1)));
-}return  new org.jmol.script.ScriptVariable (4, "");
-}if (Math.abs (i1) > len) return  new org.jmol.script.ScriptVariable (4, "");
+if (tokenIn.tok == 11) return org.jmol.script.ScriptVariable.newScriptVariableObj (3,  new Float ((tokenIn.value).getElement (row - 1, col - 1)));
+return org.jmol.script.ScriptVariable.newScriptVariableObj (3,  new Float ((tokenIn.value).getElement (row - 1, col - 1)));
+}return org.jmol.script.ScriptVariable.newScriptVariableObj (4, "");
+}if (Math.abs (i1) > len) return org.jmol.script.ScriptVariable.newScriptVariableObj (4, "");
 var data =  Clazz.newArray (len, 0);
 if (len == 3) {
 if (i1 < 0) (tokenIn.value).getColumn (-1 - i1, data);
@@ -607,7 +614,7 @@ if (i1 < 0) (tokenIn.value).getColumn (-1 - i1, data);
 if (i1 < 0) (tokenIn.value).getColumn (-1 - i1, data);
  else (tokenIn.value).getRow (i1 - 1, data);
 }if (i2 == -2147483648) return org.jmol.script.ScriptVariable.getVariable (data);
-if (i2 < 1 || i2 > len) return  new org.jmol.script.ScriptVariable (4, "");
+if (i2 < 1 || i2 > len) return org.jmol.script.ScriptVariable.newScriptVariableObj (4, "");
 return org.jmol.script.ScriptVariable.getVariable ( new Float (data[i2 - 1]));
 }if (i1 <= 0) i1 = len + i1;
 if (i1 < 1) i1 = 1;
@@ -629,12 +636,12 @@ if (i1 < 1 || i1 > len) tokenOut.value = "";
  else tokenOut.value = s.substring (i1 - 1, i2);
 break;
 case 7:
-if (i1 < 1 || i1 > len || i2 > len) return  new org.jmol.script.ScriptVariable (4, "");
+if (i1 < 1 || i1 > len || i2 > len) return org.jmol.script.ScriptVariable.newScriptVariableObj (4, "");
 if (i2 == i1) return (tokenIn).getList ().get (i1 - 1);
 var o2 =  new java.util.ArrayList ();
 var o1 = (tokenIn).getList ();
 n = i2 - i1 + 1;
-for (var i = 0; i < n; i++) o2.add ( new org.jmol.script.ScriptVariable (o1.get (i + i1 - 1)));
+for (var i = 0; i < n; i++) o2.add (org.jmol.script.ScriptVariable.newScriptVariableToken (o1.get (i + i1 - 1)));
 
 tokenOut.value = o2;
 break;
@@ -732,18 +739,18 @@ break;
 s = o;
 }if (s != null && s.length == 0) return s;
 if (v == null) v = org.jmol.util.Escape.unescapePointOrBitsetOrMatrixOrArray (s);
-if (Clazz.instanceOf (v, javax.vecmath.Point3f)) return ( new org.jmol.script.ScriptVariable (8, v));
-if (Clazz.instanceOf (v, javax.vecmath.Point4f)) return  new org.jmol.script.ScriptVariable (9, v);
+if (Clazz.instanceOf (v, javax.vecmath.Point3f)) return (org.jmol.script.ScriptVariable.newScriptVariableObj (8, v));
+if (Clazz.instanceOf (v, javax.vecmath.Point4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, v);
 if (Clazz.instanceOf (v, java.util.BitSet)) {
 if (s != null && s.indexOf ("[{") == 0) v =  new org.jmol.modelset.Bond.BondSet (v);
-return  new org.jmol.script.ScriptVariable (10, v);
-}if (Clazz.instanceOf (v, javax.vecmath.Matrix3f)) return ( new org.jmol.script.ScriptVariable (11, v));
-if (Clazz.instanceOf (v, javax.vecmath.Matrix4f)) return  new org.jmol.script.ScriptVariable (12, v);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (10, v);
+}if (Clazz.instanceOf (v, javax.vecmath.Matrix3f)) return (org.jmol.script.ScriptVariable.newScriptVariableObj (11, v));
+if (Clazz.instanceOf (v, javax.vecmath.Matrix4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (12, v);
 return o;
 }, "~O");
 c$.getBoolean = Clazz.defineMethod (c$, "getBoolean", 
 function (value) {
-return  new org.jmol.script.ScriptVariable (value ? org.jmol.script.ScriptVariable.vT : org.jmol.script.ScriptVariable.vF);
+return org.jmol.script.ScriptVariable.newScriptVariableToken (value ? org.jmol.script.ScriptVariable.vT : org.jmol.script.ScriptVariable.vF);
 }, "~B");
 c$.sprintf = Clazz.defineMethod (c$, "sprintf", 
 function (strFormat, $var) {
@@ -770,7 +777,7 @@ if (getS) of[3] = org.jmol.script.ScriptVariable.sValue ($var);
 if (getP) of[4] = $var.value;
 return org.jmol.util.TextFormat.sprintf (strFormat, of);
 }, $fz.isPrivate = true, $fz), "~S,org.jmol.script.ScriptVariable,~A,~A,~A,~A,~B,~B");
-c$.sprintf = Clazz.defineMethod (c$, "sprintf", 
+c$.sprintfArray = Clazz.defineMethod (c$, "sprintfArray", 
 function (args) {
 switch (args.length) {
 case 0:
@@ -946,9 +953,9 @@ return (f < g ? -1 : f > g ? 1 : 0);
 }, "org.jmol.script.ScriptVariable,org.jmol.script.ScriptVariable");
 c$ = Clazz.p0p ();
 };
-c$.vT = c$.prototype.vT =  new org.jmol.script.ScriptVariable (1048589, 1, "true");
-c$.vF = c$.prototype.vF =  new org.jmol.script.ScriptVariable (1048588, 0, "false");
-c$.vAll = c$.prototype.vAll =  new org.jmol.script.ScriptVariable (1048579, "all");
+c$.vT = c$.prototype.vT = org.jmol.script.ScriptVariable.newScriptVariableIntValue (1048589, 1, "true");
+c$.vF = c$.prototype.vF = org.jmol.script.ScriptVariable.newScriptVariableIntValue (1048588, 0, "false");
+c$.vAll = c$.prototype.vAll = org.jmol.script.ScriptVariable.newScriptVariableObj (1048579, "all");
 Clazz.defineStatics (c$,
 "FLAG_CANINCREMENT", 1,
 "FLAG_LOCALVAR", 2);

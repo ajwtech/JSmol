@@ -46,11 +46,11 @@ this.ptXyzTemp =  new javax.vecmath.Point3f ();
 this.edgeVector =  new javax.vecmath.Vector3f ();
 this.ptTemp =  new javax.vecmath.Point3f ();
 });
-Clazz.defineMethod (c$, "getVoxelData", 
+Clazz.overrideMethod (c$, "getVoxelData", 
 function () {
 return this.voxelData;
 });
-Clazz.defineMethod (c$, "setVoxelData", 
+Clazz.overrideMethod (c$, "setVoxelDataAsArray", 
 function (voxelData) {
 this.voxelData = voxelData;
 }, "~A");
@@ -122,7 +122,7 @@ this.voxelCounts[1] = nPointsY;
 this.voxelCounts[2] = nPointsZ;
 return nPointsX * nPointsY * nPointsZ;
 }, "~N,~N,~N");
-Clazz.defineMethod (c$, "getVoxelData", 
+Clazz.defineMethod (c$, "getVoxelDataAt", 
 function (pt) {
 var ix = Math.floor (pt / this.yzCount);
 pt -= ix * this.yzCount;

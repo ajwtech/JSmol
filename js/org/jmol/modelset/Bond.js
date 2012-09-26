@@ -162,7 +162,7 @@ Clazz.defineMethod (c$, "is",
 function (bondType) {
 return (this.order & -131073) == bondType;
 }, "~N");
-Clazz.defineMethod (c$, "getOtherAtom", 
+Clazz.overrideMethod (c$, "getOtherAtomNode", 
 function (thisAtom) {
 return (this.atom1 === thisAtom ? this.atom2 : this.atom2 === thisAtom ? this.atom1 : null);
 }, "org.jmol.util.JmolNode");

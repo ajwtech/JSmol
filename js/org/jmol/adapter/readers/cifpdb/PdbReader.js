@@ -148,7 +148,7 @@ this.remark290 ();
 return false;
 }if (this.getTlsGroups) {
 if (this.line.indexOf ("TLS DETAILS") > 0) return this.remarkTls ();
-}this.checkLineForScript ();
+}this.checkCurrentLineForScript ();
 return true;
 case 18:
 this.header ();
@@ -406,7 +406,7 @@ this.htElementsInCurrentGroup = this.htFormul.get (atom.group3);
 this.nRes++;
 if (atom.group3.equals ("UNK")) this.nUNK++;
 }if (this.gromacsWideFormat) {
-this.setAtomCoord (atom, this.parseFloatRange (this.line, 30, 40), this.parseFloatRange (this.line, 40, 50), this.parseFloatRange (this.line, 50, 60));
+this.setAtomCoordXYZ (atom, this.parseFloatRange (this.line, 30, 40), this.parseFloatRange (this.line, 40, 50), this.parseFloatRange (this.line, 50, 60));
 } else {
 var charge = 0;
 if (this.lineLength >= 80) {
@@ -420,7 +420,7 @@ chMagnitude = chT;
 charge = chMagnitude.charCodeAt (0) - 48;
 if (chSign.charCodeAt (0) == 45) charge = -charge;
 }}atom.formalCharge = charge;
-this.setAtomCoord (atom, this.parseFloatRange (this.line, 30, 38), this.parseFloatRange (this.line, 38, 46), this.parseFloatRange (this.line, 46, 54));
+this.setAtomCoordXYZ (atom, this.parseFloatRange (this.line, 30, 38), this.parseFloatRange (this.line, 38, 46), this.parseFloatRange (this.line, 46, 54));
 }this.setAdditionalAtomParameters (atom);
 if (this.haveMappedSerials) this.atomSetCollection.addAtomWithMappedSerialNumber (atom);
  else this.atomSetCollection.addAtom (atom);
@@ -477,15 +477,15 @@ if (this.lineLength >= 78) {
 var ch76 = this.line.charAt (76);
 var ch77 = this.line.charAt (77);
 if (ch76.charCodeAt (0) == 32 && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch77)) return "" + ch77;
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch76, ch77)) return "" + ch76 + ch77;
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch76, ch77)) return "" + ch76 + ch77;
 }var ch12 = this.line.charAt (12);
 var ch13 = this.line.charAt (13);
-if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (12, 14)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch12, ch13)) return (isHetero || ch12.charCodeAt (0) != 72 ? "" + ch12 + ch13 : "H");
+if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (12, 14)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch12, ch13)) return (isHetero || ch12.charCodeAt (0) != 72 ? "" + ch12 + ch13 : "H");
 if (ch12.charCodeAt (0) == 72) return "H";
 if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get ("" + ch13) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch13)) return "" + ch13;
 if (ch12.charCodeAt (0) != 32 && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get ("" + ch12) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch12)) return "" + ch12;
 var ch14 = this.line.charAt (14);
-if (ch12.charCodeAt (0) == 32 && ch13.charCodeAt (0) != 88 && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (13, 15)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch13, ch14)) return "" + ch13 + ch14;
+if (ch12.charCodeAt (0) == 32 && ch13.charCodeAt (0) != 88 && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (13, 15)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch13, ch14)) return "" + ch13 + ch14;
 return "Xx";
 }, "~B");
 Clazz.defineMethod (c$, "conect", 
@@ -583,7 +583,7 @@ this.haveMappedSerials = false;
 this.sbConect = null;
 this.atomSetCollection.newAtomSet ();
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("isPDB", Boolean.TRUE);
-this.atomSetCollection.setAtomSetNumber (modelNumber);
+this.atomSetCollection.setCurrentAtomSetNumber (modelNumber);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "checkNotPDB", 
 ($fz = function () {
@@ -632,7 +632,7 @@ var elementWithCount;
 while ((elementWithCount = this.parseTokenNext (formula)) != null) {
 if (elementWithCount.length < 2) continue ;var chFirst = elementWithCount.charAt (0);
 var chSecond = elementWithCount.charAt (1);
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (chFirst, chSecond)) htElementsInGroup.put ("" + chFirst + chSecond, Boolean.TRUE);
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFirst, chSecond)) htElementsInGroup.put ("" + chFirst + chSecond, Boolean.TRUE);
  else if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (chFirst)) htElementsInGroup.put ("" + chFirst, Boolean.TRUE);
 }
 }, $fz.isPrivate = true, $fz));

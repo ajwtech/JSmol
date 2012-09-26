@@ -1190,7 +1190,7 @@ Clazz.defineMethod (c$, "getOrSetNewVariable",
 function (a, b) {
 if (a == null || a.length == 0) a = "x";
 var c = this.getParameter (a, true);
-return (c == null && b && (a.charAt (0)).charCodeAt (0) != 95 ? this.setUserVariable (a,  new org.jmol.script.ScriptVariable ()) : org.jmol.script.ScriptVariable.getVariable (c));
+return (c == null && b && (a.charAt (0)).charCodeAt (0) != 95 ? this.setUserVariable (a, org.jmol.script.ScriptVariable.newScriptVariableObj (4, "")) : org.jmol.script.ScriptVariable.getVariable (c));
 }, "~S,~B");
 Clazz.defineMethod (c$, "getParameter", 
 function (a, b) {

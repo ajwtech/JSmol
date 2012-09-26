@@ -137,7 +137,7 @@ return ;
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = atomName;
 if (this.sfacElementSymbols != null && elementIndex >= 0 && elementIndex < this.sfacElementSymbols.length) atom.elementSymbol = this.sfacElementSymbols[elementIndex];
-this.setAtomCoord (atom, x, y, z);
+this.setAtomCoordXYZ (atom, x, y, z);
 if (this.tokens.length == 12) {
 var data =  Clazz.newArray (8, 0);
 data[0] = this.parseFloatStr (this.tokens[6]);
@@ -159,7 +159,7 @@ var atom = this.atomSetCollection.addNewAtom ();
 this.tokens = this.getTokens ();
 atom.elementSymbol = this.getSymbol (this.tokens[0]);
 atom.atomName = this.tokens[1];
-this.setAtomCoord (atom, this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]));
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getSymbol", 

@@ -35,7 +35,7 @@ var atom1 = atts.get ("a");
 var atom2 = atts.get ("b");
 var order = 1;
 if (atts.containsKey ("order")) order = this.parseBondToken (atts.get ("order"));
-this.atomSetCollection.addNewBond (atom1, atom2, order);
+this.atomSetCollection.addNewBondFromNames (atom1, atom2, order);
 return ;
 }if ("boundary".equals (localName)) {
 var boxDim = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("box"));

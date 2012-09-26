@@ -45,7 +45,7 @@ propertyName = names[0];
 var n;
 for (var i = 1; i < names.length; i++) {
 if ((n = org.jmol.util.Parser.parseInt (names[i])) != -2147483648) args[i] =  new org.jmol.script.ScriptVariableInt (n);
- else args[i] =  new org.jmol.script.ScriptVariable (4, names[i]);
+ else args[i] = org.jmol.script.ScriptVariable.newScriptVariableObj (4, names[i]);
 }
 return org.jmol.viewer.PropertyManager.extractProperty (org.jmol.viewer.PropertyManager.getProperty (viewer, null, propertyName, propertyValue), args, 1);
 }, "org.jmol.viewer.Viewer,~S,~O");

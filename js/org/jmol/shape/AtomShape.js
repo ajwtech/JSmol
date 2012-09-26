@@ -26,7 +26,7 @@ return (this.mads == null ? 0 : this.mads[atomIndex]);
 Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
 if (size == 0) this.setSizeRD (null, bsSelected);
- else this.setSizeRD ( new org.jmol.atomdata.RadiusData (size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
+ else this.setSizeRD ( new org.jmol.atomdata.RadiusData (null, size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
 }, "~N,java.util.BitSet");
 Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {

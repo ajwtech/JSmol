@@ -68,7 +68,7 @@ for (var i = this.params.title.length; --i >= 0; ) this.fixTitleLine (i, null);
 if (isMapData && !this.isElectronDensityCalc && !haveVolumeData) {
 this.volumeData.sr = this;
 this.volumeData.doIterate = false;
-this.volumeData.setVoxelData (this.voxelData =  Clazz.newArray (1, 1, 1, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (1, 1, 1, 0));
 this.points =  new Array (1);
 this.points[0] =  new javax.vecmath.Point3f ();
 if (!this.setupCalculation ()) this.q = null;
@@ -127,7 +127,7 @@ for (var j = 0; j < 1000; j++) this.points[j] =  new javax.vecmath.Point3f ();
 if (this.params.thePlane != null) this.vTemp =  new javax.vecmath.Vector3f ();
 for (var i = 0; i < 3; i++) this.vDist[i] = this.volumeData.volumetricVectorLengths[i] * this.volumeData.voxelCounts[i];
 
-this.volumeData.setVoxelData (this.voxelData =  Clazz.newArray (1000, 1, 1, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (1000, 1, 1, 0));
 this.getValues ();
 var value;
 var f = 0;

@@ -46,7 +46,7 @@ for (var i = 0; i < this.atomCount; i++) if (this.filterAtom (atoms[i], i)) atom
 }for (var i = 0, j = 0, k = 0; i < this.atomCount; i++) {
 if (this.filter == null || this.bsFilter.get (i)) {
 if (k % 100 == 0) j++;
-this.setAtomCoord (atoms[i], (i % 100) * 2, j * 2, 0);
+this.setAtomCoordXYZ (atoms[i], (i % 100) * 2, j * 2, 0);
 }}
 if (atoms2 != null) {
 this.atomSetCollection.discardPreviousAtoms ();

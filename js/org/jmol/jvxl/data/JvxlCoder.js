@@ -37,7 +37,7 @@ if (isHeaderOnly) return data.toString ();
 var type = (vertexDataOnly ? "pmesh" : jvxlData.jvxlPlane == null ? "isosurface" : "plane");
 if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length > 0) type = "mapped " + type;
 org.jmol.util.XmlUtil.openTag (data, "jvxlSurface", ["type", type]);
-data.append (org.jmol.jvxl.data.JvxlCoder.jvxlGetInfo (jvxlData, vertexDataOnly));
+data.append (org.jmol.jvxl.data.JvxlCoder.jvxlGetInfoData (jvxlData, vertexDataOnly));
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCommandState (data, comment, state);
 if (title != null || msg != null && msg.length > 0) {
 sb =  new StringBuffer ();
@@ -82,7 +82,7 @@ c$.appendEncodedBitSetTag = Clazz.defineMethod (c$, "appendEncodedBitSetTag",
 if (count < 0) count = org.jmol.util.BitSetUtil.cardinalityOf (bs);
 if (count == 0) return ;
 var sb1 =  new StringBuffer ("\n ");
-org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSet (bs, -1, sb1);
+org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, -1, sb1);
 org.jmol.util.XmlUtil.appendTag (sb, name, [attribs, "bsEncoding", "base90+35", "count", "" + count, "len", "" + bs.length ()], org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (sb1.toString (), true));
 }, $fz.isPrivate = true, $fz), "StringBuffer,~S,java.util.BitSet,~N,~A");
 c$.jvxlSetCompressionRatio = Clazz.defineMethod (c$, "jvxlSetCompressionRatio", 
@@ -114,9 +114,9 @@ org.jmol.util.XmlUtil.appendTag (sb, key, ["count", "" + n, "encoding", "base90f
 }, $fz.isPrivate = true, $fz), "StringBuffer,~S,~S,~B,~N,~N");
 c$.jvxlGetInfo = Clazz.defineMethod (c$, "jvxlGetInfo", 
 function (jvxlData) {
-return org.jmol.jvxl.data.JvxlCoder.jvxlGetInfo (jvxlData, jvxlData.vertexDataOnly);
+return org.jmol.jvxl.data.JvxlCoder.jvxlGetInfoData (jvxlData, jvxlData.vertexDataOnly);
 }, "org.jmol.jvxl.data.JvxlData");
-c$.jvxlGetInfo = Clazz.defineMethod (c$, "jvxlGetInfo", 
+c$.jvxlGetInfoData = Clazz.defineMethod (c$, "jvxlGetInfoData", 
 function (jvxlData, vertexDataOnly) {
 if (jvxlData.jvxlSurfaceData == null) return "";
 var attribs =  new java.util.ArrayList ();
@@ -210,7 +210,7 @@ if (contours[i].size () < 6) {
 continue ;}var nPolygons = (contours[i].get (0)).intValue ();
 var sb1 =  new StringBuffer ("\n");
 var bs = contours[i].get (1);
-org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSet (bs, nPolygons, sb1);
+org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, nPolygons, sb1);
 org.jmol.util.XmlUtil.appendTag (sb, "jvxlContour", ["index", "" + i, "value", "" + contours[i].get (2), "color", org.jmol.util.Escape.escapeColor ((contours[i].get (4))[0]), "count", "" + bs.length (), "encoding", "base90iff1", "bsEncoding", "base90+35c", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (contours[i].get (5).toString (), true)], org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (sb1.toString (), true));
 }
 org.jmol.util.XmlUtil.closeTag (sb, "jvxlContourData");
@@ -387,9 +387,9 @@ org.jmol.jvxl.data.JvxlCoder.appendXmlColorData (sb, "jvxlColorData", list1.appe
 }, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.jvxl.data.JvxlData,~A,~A,~A,~N,~S,~N,java.util.BitSet,~B,~B");
 c$.jvxlFractionAsCharacter = Clazz.defineMethod (c$, "jvxlFractionAsCharacter", 
 function (fraction) {
-return org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (fraction, 35, 90);
+return org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction, 35, 90);
 }, "~N");
-c$.jvxlFractionAsCharacter = Clazz.defineMethod (c$, "jvxlFractionAsCharacter", 
+c$.jvxlFractionAsCharacterRange = Clazz.defineMethod (c$, "jvxlFractionAsCharacterRange", 
 function (fraction, base, range) {
 if (fraction > 0.9999) fraction = 0.9999;
  else if (Float.isNaN (fraction)) fraction = 1.0001;
@@ -401,10 +401,10 @@ return String.fromCharCode (ich);
 c$.jvxlAppendCharacter2 = Clazz.defineMethod (c$, "jvxlAppendCharacter2", 
 ($fz = function (value, min, max, base, range, list1, list2) {
 var fraction = (min == max ? value : (value - min) / (max - min));
-var ch1 = org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (fraction, base, range);
+var ch1 = org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction, base, range);
 list1.append (ch1);
 fraction -= org.jmol.jvxl.data.JvxlCoder.jvxlFractionFromCharacter (ch1.charCodeAt (0), base, range, 0);
-list2.append (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (fraction * range, base, range));
+list2.append (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction * range, base, range));
 }, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,StringBuffer,StringBuffer");
 c$.jvxlFractionFromCharacter = Clazz.defineMethod (c$, "jvxlFractionFromCharacter", 
 function (ich, base, range, fracOffset) {
@@ -424,7 +424,7 @@ return fraction + remains / range;
 c$.jvxlValueAsCharacter = Clazz.defineMethod (c$, "jvxlValueAsCharacter", 
 function (value, min, max, base, range) {
 var fraction = (min == max ? value : (value - min) / (max - min));
-return org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (fraction, base, range);
+return org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction, base, range);
 }, "~N,~N,~N,~N,~N");
 c$.jvxlValueFromCharacter2 = Clazz.defineMethod (c$, "jvxlValueFromCharacter2", 
 function (ich, ich2, min, max, base, range) {
@@ -463,10 +463,10 @@ return n;
 c$.jvxlEncodeBitSet = Clazz.defineMethod (c$, "jvxlEncodeBitSet", 
 function (bs) {
 var sb =  new StringBuffer ();
-org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSet (bs, -1, sb);
+org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, -1, sb);
 return sb.toString ();
 }, "java.util.BitSet");
-c$.jvxlEncodeBitSet = Clazz.defineMethod (c$, "jvxlEncodeBitSet", 
+c$.jvxlEncodeBitSetBuffer = Clazz.defineMethod (c$, "jvxlEncodeBitSetBuffer", 
 function (bs, nPoints, sb) {
 var dataCount = 0;
 var n = 0;
@@ -501,7 +501,7 @@ n = n1;
 }
 if (!isInRange) sb.append (" ");
 }, "StringBuffer,~N,~N,~N");
-c$.jvxlDecodeBitSet = Clazz.defineMethod (c$, "jvxlDecodeBitSet", 
+c$.jvxlDecodeBitSetRange = Clazz.defineMethod (c$, "jvxlDecodeBitSetRange", 
 function (data, base, range) {
 var bs =  new java.util.BitSet ();
 var dataCount = 0;
@@ -543,7 +543,7 @@ return value;
 }, "~S,~N,~N,~A");
 c$.jvxlDecodeBitSet = Clazz.defineMethod (c$, "jvxlDecodeBitSet", 
 function (data) {
-if (data.startsWith ("-")) return org.jmol.jvxl.data.JvxlCoder.jvxlDecodeBitSet (org.jmol.jvxl.data.JvxlCoder.jvxlUncompressString (data.substring (1)), 35, 90);
+if (data.startsWith ("-")) return org.jmol.jvxl.data.JvxlCoder.jvxlDecodeBitSetRange (org.jmol.jvxl.data.JvxlCoder.jvxlUncompressString (data.substring (1)), 35, 90);
 var bs =  new java.util.BitSet ();
 var dataCount = 0;
 var lastCount = 0;

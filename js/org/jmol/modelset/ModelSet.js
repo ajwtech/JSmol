@@ -86,7 +86,7 @@ i = this.models[i].trajectoryBaseIndex;
 }
 return bsModels;
 });
-Clazz.defineMethod (c$, "setTrajectory", 
+Clazz.defineMethod (c$, "setTrajectoryBs", 
 function (bsModels) {
 for (var i = 0; i < this.modelCount; i++) if (bsModels.get (i)) this.setTrajectory (i);
 
@@ -108,7 +108,7 @@ var vib =  new javax.vecmath.Vector3f ();
 var iFirst = this.models[baseModelIndex].firstAtomIndex;
 var iMax = iFirst + this.getAtomCountInModel (baseModelIndex);
 for (var pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt] != null; i++, pt++) {
-if (isFractional) this.atoms[i].setFractionalCoord (trajectory[pt], true);
+if (isFractional) this.atoms[i].setFractionalCoordTo (trajectory[pt], true);
  else this.atoms[i].set (trajectory[pt]);
 this.atoms[i].modelIndex = modelIndex;
 if (this.vibrationSteps != null) {
@@ -117,7 +117,7 @@ this.setVibrationVector (i, vib.x, vib.y, vib.z);
 }bs.set (i);
 }
 this.initializeBspf ();
-this.validateBspf (baseModelIndex, false);
+this.validateBspfForModel (baseModelIndex, false);
 this.recalculateLeadMidpointsAndWingVectors (baseModelIndex);
 this.shapeManager.refreshShapeTrajectories (baseModelIndex, bs, null);
 if (this.models[baseModelIndex].hasRasmolHBonds) {
@@ -235,7 +235,7 @@ var isAll = (bsAtoms == null);
 var i0 = (isAll ? this.atomCount - 1 : bsAtoms.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit (i + 1))) {
 var modelIndex = this.models[this.atoms[i].modelIndex].trajectoryBaseIndex;
-if (this.isJmolDataFrame (modelIndex)) continue ;bsModels.set (modelIndex);
+if (this.isJmolDataFrameForModel (modelIndex)) continue ;bsModels.set (modelIndex);
 bsAllAtoms.set (i);
 }
 return bsModels;
@@ -250,8 +250,8 @@ return ret.toString ();
 }, "java.util.BitSet,java.util.BitSet");
 Clazz.defineMethod (c$, "assignAromaticBonds", 
 function (isUserCalculation) {
-Clazz.superCall (this, org.jmol.modelset.ModelSet, "assignAromaticBonds", [isUserCalculation, null]);
-if (isUserCalculation) this.shapeManager.setShapeSize (1, -2147483648, null, this.bsAromatic);
+Clazz.superCall (this, org.jmol.modelset.ModelSet, "assignAromaticBondsBs", [isUserCalculation, null]);
+if (isUserCalculation) this.shapeManager.setShapeSizeBs (1, -2147483648, null, this.bsAromatic);
 }, "~B");
 Clazz.defineMethod (c$, "makeConnections", 
 function (minDistance, maxDistance, order, connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy) {
@@ -397,7 +397,7 @@ if (this.isTrajectory (i) && !bsModels.get (j = this.models[i].trajectoryBaseInd
 bsModels.set (j);
 this.includeAllRelatedFrames (bsModels);
 return ;
-}continue ;}if (this.isTrajectory (i) && bsModels.get (this.models[i].trajectoryBaseIndex) || this.isJmolDataFrame (i) && bsModels.get (this.models[i].dataSourceFrame)) bsModels.set (i);
+}continue ;}if (this.isTrajectory (i) && bsModels.get (this.models[i].trajectoryBaseIndex) || this.isJmolDataFrameForModel (i) && bsModels.get (this.models[i].dataSourceFrame)) bsModels.set (i);
 }
 }, $fz.isPrivate = true, $fz), "java.util.BitSet");
 Clazz.defineMethod (c$, "deleteModels", 
@@ -467,8 +467,8 @@ if (fValue > 16) fValue = 16;
 if (fValue < 0) fValue = 0;
 mar = Math.round ((fValue * 2000));
 } else {
-rd =  new org.jmol.atomdata.RadiusData (values);
-}this.shapeManager.setShapeSize (org.jmol.viewer.JmolConstants.shapeTokenIndex (tok), mar, rd, bs);
+rd =  new org.jmol.atomdata.RadiusData (values, 0, null, null);
+}this.shapeManager.setShapeSizeBs (org.jmol.viewer.JmolConstants.shapeTokenIndex (tok), mar, rd, bs);
 return ;
 }
 Clazz.superCall (this, org.jmol.modelset.ModelSet, "setAtomProperty", [bs, tok, iValue, fValue, sValue, values, list]);
@@ -499,7 +499,7 @@ var rd = this.viewer.getDefaultRadiusData ();
 var mad = this.getDefaultMadFromOrder (1);
 for (var i = 0, n = this.models[modelIndex].atomCount + 1; i < vConnections.size (); i++, n++) {
 var atom1 = vConnections.get (i);
-var atom2 = this.addAtom (modelIndex, atom1.group, 1, "H" + n, n, n, pts[i].x, pts[i].y, pts[i].z);
+var atom2 = this.addAtom (modelIndex, atom1.group, 1, "H" + n, n, n, pts[i].x, pts[i].y, pts[i].z, NaN, NaN, NaN, NaN, 0, 0, 100, NaN, null, false, 0, null);
 atom2.setMadAtom (this.viewer, rd);
 bs.set (atom2.index);
 this.bondAtoms (atom1, atom2, 1, mad, null, 0, false, false);
@@ -509,7 +509,7 @@ return bs;
 }, "java.util.List,~A");
 Clazz.defineMethod (c$, "setAtomCoordRelative", 
 function (offset, bs) {
-this.setAtomCoordRelative (bs, offset.x, offset.y, offset.z);
+this.setAtomsCoordRelative (bs, offset.x, offset.y, offset.z);
 this.mat4.setIdentity ();
 this.vTemp.set (offset);
 this.mat4.setTranslation (this.vTemp);
@@ -600,7 +600,7 @@ this.mat4.transform (this.atoms[i]);
 this.ptTemp.add (this.atoms[i]);
 this.mat4.transform (this.atoms[i]);
 this.ptTemp.sub (this.atoms[i]);
-}this.taint (i, 2);
+}this.taintAtom (i, 2);
 }
 if (!isInternal) {
 this.ptTemp.scale (1 / bs.cardinality ());
