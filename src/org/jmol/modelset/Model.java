@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-05-28 18:58:52 -0500 (Mon, 28 May 2012) $
- * $Revision: 17227 $
+ * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
+ * $Revision: 17579 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
