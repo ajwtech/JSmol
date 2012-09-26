@@ -80,7 +80,7 @@ var ch2 = (i < len ? XX.charAt (i) : ' ');
 var full = group3 + "." + ch1 + ch2;
 if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf (full) >= 0) return "Ca";
 if (XX.indexOf ("'") > 0 || XX.indexOf ("*") >= 0 || "HCNO".indexOf (ch1) >= 0 && ch2 <= 'H' || XX.startsWith ("CM")) return "" + ch1;
-if (isHetero && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch1, ch2)) return ("" + ch1 + ch2).trim ();
+if (isHetero && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch1, ch2)) return ("" + ch1 + ch2).trim ();
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch1)) return "" + ch1;
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch2)) return "" + ch2;
 return "Xx";

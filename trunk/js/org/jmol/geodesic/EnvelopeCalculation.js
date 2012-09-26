@@ -163,7 +163,7 @@ return this.atomData.atomRadius[atomIndex];
 Clazz.defineMethod (c$, "getPoints", 
 function () {
 if (this.dotsConvexMaps == null) {
-this.calculate ( new org.jmol.atomdata.RadiusData (3.0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, this.bsMySelected, null, false, false, false, false);
+this.calculate ( new org.jmol.atomdata.RadiusData (null, 3.0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null), 3.4028235E38, this.bsMySelected, null, false, false, false, false);
 }if (this.currentPoints != null) return this.currentPoints;
 var nPoints = 0;
 var dotCount = 42;

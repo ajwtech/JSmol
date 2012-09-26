@@ -218,7 +218,7 @@ this.bsColixSet.set (i);
 Clazz.defineMethod (c$, "setFormats", 
 ($fz = function (format) {
 if (format != null && format.length == 0) format = null;
-for (var i = this.measurements.size (); --i >= 0; ) if (this.bsSelected == null || this.bsSelected.get (i)) this.measurements.get (i).formatMeasurement (format, null, false);
+for (var i = this.measurements.size (); --i >= 0; ) if (this.bsSelected == null || this.bsSelected.get (i)) this.measurements.get (i).formatMeasurementAs (format, null, false);
 
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "showHide", 
@@ -304,7 +304,7 @@ if (iThis >= 0) {
 if (this.tokAction == 12291) {
 this.deleteMeasurement (iThis);
 } else if (this.strFormat != null) {
-this.measurements.get (iThis).formatMeasurement (this.strFormat, null, true);
+this.measurements.get (iThis).formatMeasurementAs (this.strFormat, null, true);
 } else {
 this.measurements.get (iThis).setHidden (this.tokAction == 1048588);
 }} else if (this.tokAction == 1060866 || this.tokAction == 269484114) {

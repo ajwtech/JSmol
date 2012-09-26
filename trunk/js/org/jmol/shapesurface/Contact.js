@@ -47,7 +47,7 @@ var saProbeRadius = (value[7]).floatValue ();
 var parameters = value[8];
 var command = value[9];
 if (Float.isNaN (saProbeRadius)) saProbeRadius = 0;
-if (rd == null) rd =  new org.jmol.atomdata.RadiusData (saProbeRadius, org.jmol.atomdata.RadiusData.EnumType.OFFSET, org.jmol.constant.EnumVdw.AUTO);
+if (rd == null) rd =  new org.jmol.atomdata.RadiusData (null, saProbeRadius, org.jmol.atomdata.RadiusData.EnumType.OFFSET, org.jmol.constant.EnumVdw.AUTO);
 if (colorDensity) {
 switch (displayType) {
 case 1073741961:
@@ -343,7 +343,7 @@ var rdA;
 var rdB;
 if (displayType == 3145756) {
 rdA = org.jmol.shapesurface.Contact.rdVDW;
-rdB =  new org.jmol.atomdata.RadiusData ((rd.factorType === org.jmol.atomdata.RadiusData.EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), rd.factorType, rd.vdwType);
+rdB =  new org.jmol.atomdata.RadiusData (null, (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), rd.factorType, rd.vdwType);
 } else {
 rdA = rdB = rd;
 }params.colorDensity = isColorDensity;
@@ -493,5 +493,5 @@ x = f + (g / vvu + vvu) * costheta;
 if (x > 0) {
 cp.xVdwClash = ((x / 2));
 }}, $fz.isPrivate = true, $fz), "org.jmol.util.ContactPair,~N,~N,~N,~N");
-c$.rdVDW = c$.prototype.rdVDW =  new org.jmol.atomdata.RadiusData (1, org.jmol.atomdata.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO);
+c$.rdVDW = c$.prototype.rdVDW =  new org.jmol.atomdata.RadiusData (null, 1, org.jmol.atomdata.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO);
 });

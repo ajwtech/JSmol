@@ -18,7 +18,7 @@ Clazz.overrideMethod (c$, "initializeReader",
 function () {
 var xmlReader = this.getXMLReader ();
 if (xmlReader == null) {
-this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection ("xml", this);
+this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection ("xml", this, null, null);
 this.atomSetCollection.errorMessage = "No XML reader found";
 return ;
 }this.processXml (xmlReader);
@@ -44,7 +44,7 @@ return xmlr;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processXml", 
 ($fz = function (xmlReader) {
-this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this);
+this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this, null, null);
 var res = this.getXmlReader ();
 if (Clazz.instanceOf (res, String)) return res;
 var thisReader = res;
@@ -103,7 +103,7 @@ throw e;
 }, "org.xml.sax.XMLReader");
 Clazz.defineMethod (c$, "processXml", 
 function (DOMNode) {
-this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this);
+this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this, null, null);
 var className = null;
 var atomSetCollectionReaderClass;
 var thisReader = null;

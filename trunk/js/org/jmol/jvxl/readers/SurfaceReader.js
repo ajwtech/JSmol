@@ -96,7 +96,7 @@ function (os) {
 }, "java.io.OutputStream");
 Clazz.defineMethod (c$, "newVoxelDataCube", 
 function () {
-this.volumeData.setVoxelData (this.voxelData =  Clazz.newArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0));
 });
 Clazz.defineMethod (c$, "setVolumeData", 
 function (v) {
@@ -288,7 +288,7 @@ this.params.isXLowToHigh = this.isXLowToHigh;
 this.marchingCubes =  new org.jmol.jvxl.calc.MarchingCubes (this, this.volumeData, this.params, this.jvxlVoxelBitSet);
 var data = this.marchingCubes.getEdgeData ();
 if (this.params.thePlane == null) this.edgeData = data;
-this.jvxlData.setSurfaceInfoFromBitSet (this.marchingCubes.getBsVoxels (), this.params.thePlane, this.params.mapLattice);
+this.jvxlData.setSurfaceInfoFromBitSetPts (this.marchingCubes.getBsVoxels (), this.params.thePlane, this.params.mapLattice);
 this.jvxlData.jvxlExcluded = this.params.bsExcluded;
 if (this.isJvxl) this.edgeData = this.jvxlEdgeDataRead;
 this.postProcessVertices ();

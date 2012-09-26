@@ -12,7 +12,7 @@ Clazz.defineMethod (c$, "validate",
 function (isValid) {
 this.isValid = isValid;
 }, "~B");
-Clazz.defineMethod (c$, "validate", 
+Clazz.defineMethod (c$, "validateModel", 
 function (i, isValid) {
 this.bsptsValid[i] = isValid;
 }, "~N,~B");
@@ -20,7 +20,7 @@ Clazz.defineMethod (c$, "isInitialized",
 function () {
 return this.isValid;
 });
-Clazz.defineMethod (c$, "isInitialized", 
+Clazz.defineMethod (c$, "isInitializedIndex", 
 function (bsptIndex) {
 return this.bspts.length > bsptIndex && this.bspts[bsptIndex] != null && this.bsptsValid[bsptIndex];
 }, "~N");

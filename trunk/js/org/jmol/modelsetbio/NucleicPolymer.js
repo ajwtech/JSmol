@@ -73,7 +73,7 @@ n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.g
 c$.addHydrogenBond = Clazz.defineMethod (c$, "addHydrogenBond", 
 function (vAtoms, atom1, atom2) {
 if (atom1 == null || atom2 == null) return 0;
-vAtoms.add ( new org.jmol.modelset.HBond (atom1, atom2, 18432, 0));
+vAtoms.add ( new org.jmol.modelset.HBond (atom1, atom2, 18432, 1, 0, 0));
 return 1;
 }, "java.util.List,org.jmol.modelset.Atom,org.jmol.modelset.Atom");
 Clazz.defineMethod (c$, "getPdbData", 

@@ -154,7 +154,7 @@ this.tokens = this.getTokens ();
 atom.elementSymbol = this.tokens[1];
 atom.atomName = this.tokens[1] + this.tokens[2];
 this.atomSetCollection.addAtomWithMappedName (atom);
-this.setAtomCoord (atom, this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]), this.parseFloatStr (this.tokens[5]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]), this.parseFloatStr (this.tokens[5]));
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readPhononTrajectories", 
@@ -173,7 +173,7 @@ while (this.line != null && this.line.contains ("<-- R")) {
 this.tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = this.tokens[0];
-this.setAtomCoord (atom, this.parseFloatStr (this.tokens[2]) * 0.5291772, this.parseFloatStr (this.tokens[3]) * 0.5291772, this.parseFloatStr (this.tokens[4]) * 0.5291772);
+this.setAtomCoordXYZ (atom, this.parseFloatStr (this.tokens[2]) * 0.5291772, this.parseFloatStr (this.tokens[3]) * 0.5291772, this.parseFloatStr (this.tokens[4]) * 0.5291772);
 this.readLine ();
 }
 this.applySymmetryAndSetTrajectory ();
@@ -374,7 +374,7 @@ this.setFractionalCoordinates (true);
 while (this.readLine () != null && this.line.indexOf ("END") < 0) {
 this.tokens = this.getTokens ();
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloatStr (this.tokens[1]), this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (this.tokens[1]), this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]));
 atom.elementSymbol = this.tokens[4];
 atom.bfactor = this.parseFloatStr (this.tokens[5]);
 }
@@ -408,7 +408,7 @@ var nx = 1;
 var ny = 1;
 var nz = 1;
 if (this.ptSupercell != null && !isOK && !isSecond) {
-this.atomSetCollection.setSupercell (this.ptSupercell);
+this.atomSetCollection.setSupercellFromPoint (this.ptSupercell);
 nx = this.ptSupercell.x;
 ny = this.ptSupercell.y;
 nz = this.ptSupercell.z;
@@ -456,7 +456,7 @@ t.x *= nx;
 t.y *= ny;
 t.z *= nz;
 this.setPhononVector (data, atoms[k], t, qvec, v);
-this.atomSetCollection.addVibrationVector (k, v.x, v.y, v.z, true);
+this.atomSetCollection.addVibrationVectorWithSymmetry (k, v.x, v.y, v.z, true);
 }
 }
 if (this.isTrajectory) this.atomSetCollection.setTrajectory ();

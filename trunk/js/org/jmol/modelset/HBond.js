@@ -11,12 +11,6 @@ Clazz.superConstructor (this, org.jmol.modelset.HBond, [atom1, atom2, order, mad
 this.energy = energy;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("HBond energy = " + energy + " #" + this.getIdentity ());
 }, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,~N,~N");
-Clazz.makeConstructor (c$, 
-function (atom1, atom2, order, energy) {
-Clazz.superConstructor (this, org.jmol.modelset.HBond, [atom1, atom2, order, 1, 0]);
-this.energy = energy;
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("HBond energy = " + energy + " #" + this.getIdentity ());
-}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N");
 Clazz.defineMethod (c$, "getEnergy", 
 function () {
 return this.energy;

@@ -53,33 +53,28 @@ this.htAtomMap =  new java.util.Hashtable ();
 this.structuresDefinedInFile =  new java.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
-function (viewer, name) {
-this.viewer = viewer;
-this.modelSet =  new org.jmol.modelset.ModelSet (viewer, name);
-viewer.resetShapes (false);
-this.modelSet.preserveState = viewer.getPreserveState ();
-this.initializeInfo (name, null);
-this.createModelSet (null, null, null);
-viewer.setStringProperty ("_fileType", "");
-}, "org.jmol.viewer.Viewer,~S");
-Clazz.makeConstructor (c$, 
-function (viewer, loadScript, atomSetCollection, mergeModelSet, modelSetName, bsNew) {
+function (viewer, modelSetName, loadScript, atomSetCollection, mergeModelSet, bsNew) {
 this.viewer = viewer;
 this.modelSet =  new org.jmol.modelset.ModelSet (viewer, modelSetName);
 this.mergeModelSet = mergeModelSet;
-var adapter = viewer.getModelAdapter ();
 this.merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
 if (this.merging) {
 this.modelSet.canSkipLoad = false;
 } else {
 viewer.resetShapes (false);
 }this.modelSet.preserveState = viewer.getPreserveState ();
-if (!this.modelSet.preserveState) this.modelSet.canSkipLoad = false;
+if (bsNew == null) {
+this.initializeInfo (modelSetName, null);
+this.createModelSet (null, null, null);
+viewer.setStringProperty ("_fileType", "");
+return ;
+}if (!this.modelSet.preserveState) this.modelSet.canSkipLoad = false;
+var adapter = viewer.getModelAdapter ();
 var info = adapter.getAtomSetCollectionAuxiliaryInfo (atomSetCollection);
 info.put ("loadScript", loadScript);
 this.initializeInfo (adapter.getFileTypeName (atomSetCollection).toLowerCase ().intern (), info);
 this.createModelSet (adapter, atomSetCollection, bsNew);
-}, "org.jmol.viewer.Viewer,StringBuffer,~O,org.jmol.modelset.ModelSet,~S,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,StringBuffer,~O,org.jmol.modelset.ModelSet,java.util.BitSet");
 Clazz.defineMethod (c$, "initializeInfo", 
 ($fz = function (name, info) {
 this.modelSet.g3d = this.viewer.getGraphicsData ();
@@ -670,7 +665,7 @@ if (bs == null) bs =  new java.util.BitSet (this.modelSet.atomCount);
 if (i == this.baseModelIndex || !this.isTrajectory) bs.or (models[i].bsAtoms);
 }}
 if (autoBonding) {
-this.modelSet.autoBond (bs, bs, bsExclude, null, this.modelSet.defaultCovalentMad, this.viewer.checkAutoBondLegacy ());
+this.modelSet.autoBondBs4 (bs, bs, bsExclude, null, this.modelSet.defaultCovalentMad, this.viewer.checkAutoBondLegacy ());
 org.jmol.util.Logger.info ("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
 } else {
 org.jmol.util.Logger.info ("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
@@ -838,7 +833,7 @@ this.modelSet.shapeManager = this.viewer.getShapeManager ();
 if (!this.merging) this.modelSet.shapeManager.resetShapes ();
 this.modelSet.shapeManager.loadDefaultShapes (this.modelSet);
 if (this.modelSet.someModelsHaveAromaticBonds && this.viewer.getSmartAromatic ()) this.modelSet.assignAromaticBonds (false);
-if (this.merging && this.baseModelCount == 1) this.modelSet.shapeManager.setShapeProperty (6, "clearModelIndex", null, null);
+if (this.merging && this.baseModelCount == 1) this.modelSet.shapeManager.setShapePropertyBs (6, "clearModelIndex", null, null);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "undeleteAtom", 
 function (iAtom) {

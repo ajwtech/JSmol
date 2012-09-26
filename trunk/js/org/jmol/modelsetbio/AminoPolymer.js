@@ -154,7 +154,7 @@ break;
 default:
 order = 4096;
 }
-vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, order, energy));
+vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, order, 1, 0, energy));
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,~N,java.util.List");
 c$.calculateStructuresDssp = Clazz.defineMethod (c$, "calculateStructuresDssp", 
 function (bioPolymers, bioPolymerCount, vHBonds, doReport, dsspIgnoreHydrogens, setStructure) {
@@ -332,7 +332,7 @@ if (htTemp != null) {
 var key = nitrogen.index + " " + oxygen.index;
 if (htTemp.containsKey (key)) return ;
 htTemp.put (key, Boolean.TRUE);
-}vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, type, iEnergy / 1000));
+}vHBonds.add ( new org.jmol.modelset.HBond (nitrogen, oxygen, type, 1, 0, iEnergy / 1000));
 }, $fz.isPrivate = true, $fz), "java.util.List,org.jmol.modelsetbio.Monomer,org.jmol.modelsetbio.Monomer,~N,~N,java.util.Map");
 c$.getSheetStructures = Clazz.defineMethod (c$, "getSheetStructures", 
 ($fz = function (bioPolymers, bridgesA, bridgesP, htBridges, htLadders, labels, bsDone, doReport, setStructure) {

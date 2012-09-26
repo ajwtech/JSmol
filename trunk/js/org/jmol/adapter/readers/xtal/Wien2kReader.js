@@ -79,7 +79,7 @@ var a = this.parseFloatStr (this.line.substring (12, 22));
 var b = this.parseFloatStr (this.line.substring (25, 35));
 var c = this.parseFloatStr (this.line.substring (38, 48));
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, a, b, c);
+this.setAtomCoordXYZ (atom, a, b, c);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readSymmetry", 
 ($fz = function () {
@@ -108,7 +108,7 @@ return xyz;
 Clazz.defineMethod (c$, "readEmbeddedScript", 
 ($fz = function () {
 while (this.line != null) {
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.readLine ();
 }
 }, $fz.isPrivate = true, $fz));

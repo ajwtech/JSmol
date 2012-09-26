@@ -46,7 +46,7 @@ atom.elementSymbol = this.parseToken ();
 this.parseToken ();
 this.parseToken ();
 atom.partialCharge = this.parseFloat ();
-this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
+this.setAtomCoordXYZ (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
 var bondCount = this.parseInt ();
 for (var i = 0; i < bondCount; ++i) {
 var otherAtomNumber = this.parseInt ();
@@ -68,7 +68,7 @@ break;
 default:
 throw  new Exception ("unrecognized bond type:" + bondTypeToken + " atom #" + fileAtomNumber);
 }
-this.atomSetCollection.addNewBond (this.baseAtomIndex + this.atomIndex, this.baseAtomIndex + otherAtomNumber - 1, bondOrder);
+this.atomSetCollection.addNewBondWithOrder (this.baseAtomIndex + this.atomIndex, this.baseAtomIndex + otherAtomNumber - 1, bondOrder);
 }
 ++this.atomIndex;
 }, $fz.isPrivate = true, $fz));

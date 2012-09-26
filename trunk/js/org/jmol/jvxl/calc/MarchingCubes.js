@@ -219,7 +219,7 @@ this.offset = org.jmol.util.TriangleData.cubeVertexOffsets[i];
 var pti = pt + this.linearOffsets[i];
 switch (this.mode) {
 case 3:
-v = this.vertexValues[i] = this.getValue (x + this.offset.x, y + this.offset.y, z + this.offset.z, pti, this.yzPlanes[org.jmol.jvxl.calc.MarchingCubes.yzPlanePts[i]]);
+v = this.vertexValues[i] = this.getValueArray (x + this.offset.x, y + this.offset.y, z + this.offset.z, pti, this.yzPlanes[org.jmol.jvxl.calc.MarchingCubes.yzPlanePts[i]]);
 this.$isInside = (this.allInside || this.bsVoxels.get (pti));
 break;
 case 2:
@@ -265,7 +265,7 @@ if (!this.bsExcludedTriangles.get (this.nTriangles) && this.surfaceReader.addTri
 this.bsExcludedTriangles.set (this.nTriangles);
 }this.nTriangles++;
 }, "~N,~N,~N,~N");
-Clazz.defineMethod (c$, "getValue", 
+Clazz.defineMethod (c$, "getValueArray", 
 function (x, y, z, pt, tempValues) {
 var ptyz = pt % this.yzCount;
 this.bsValues.set (pt);

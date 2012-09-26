@@ -19,9 +19,9 @@ return this.addVertexCopy (vertex, value);
 }, "javax.vecmath.Point3f,~N,~N");
 Clazz.defineMethod (c$, "getSurfaceSet", 
 function () {
-return (this.surfaceSet == null ? this.getSurfaceSet (0) : this.surfaceSet);
+return (this.surfaceSet == null ? this.getSurfaceSetForLevel (0) : this.surfaceSet);
 });
-Clazz.defineMethod (c$, "getSurfaceSet", 
+Clazz.defineMethod (c$, "getSurfaceSetForLevel", 
 function (level) {
 if (level == 0) {
 this.surfaceSet =  new Array (100);
@@ -55,7 +55,7 @@ for (var i = 0; i < this.nSets; i++) if (this.surfaceSet[i] != null) temp[n++] =
 
 this.nSets = n;
 this.surfaceSet = temp;
-if (!this.setsSuccessful && level < 2) this.getSurfaceSet (level + 1);
+if (!this.setsSuccessful && level < 2) this.getSurfaceSetForLevel (level + 1);
 if (level == 0) {
 this.sortSurfaceSets ();
 this.setVertexSets (false);

@@ -76,7 +76,7 @@ this.atomSetCollection.addAtomWithMappedName (this.atom);
 this.elementContext = 0;
 return ;
 }if ("bond".equals (localName)) {
-if (this.atomName2 != null) this.atomSetCollection.addNewBond (this.atomName1, this.atomName2, this.bondOrder);
+if (this.atomName2 != null) this.atomSetCollection.addNewBondFromNames (this.atomName1, this.atomName2, this.bondOrder);
 this.elementContext = 0;
 return ;
 }if ("transformmat".equals (localName)) {

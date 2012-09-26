@@ -46,7 +46,7 @@ m.value = value;
 value = m.fixValue (this.units, false);
 this.minArray[this.iFirstAtom] = (1 / f == -Infinity ? value : Math.min (f, value));
 return ;
-}this.measurementStrings.add (m.getString (this.viewer, this.strFormat, this.units));
+}this.measurementStrings.add (m.getStringUsing (this.viewer, this.strFormat, this.units));
 }, "org.jmol.modelset.Measurement");
 Clazz.defineMethod (c$, "getMeasurements", 
 function (asMinArray) {

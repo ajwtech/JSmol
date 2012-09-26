@@ -48,7 +48,7 @@ Clazz.defineMethod (c$, "readVoxelDataIndividually",
 function (isMapData) {
 if (isMapData && !this.allowMapData) return ;
 if (!isMapData || this.volumeData.sr != null) {
-this.volumeData.setVoxelData (this.voxelData = null);
+this.volumeData.setVoxelDataAsArray (this.voxelData = null);
 return ;
 }this.newVoxelDataCube ();
 for (var x = 0; x < this.nPointsX; ++x) {

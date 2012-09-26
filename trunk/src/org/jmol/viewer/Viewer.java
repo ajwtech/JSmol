@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-26 15:37:57 -0500 (Wed, 26 Sep 2012) $
+ * $Revision: 17583 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -4081,7 +4081,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * @j2sNative
      * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
      *   this.transformManager.finalizeTransformParameters();
-     *   Jmol.refresh(this.htmlName, mode, strWhy, 
+     *   if (Jmol._refresh)
+     *   Jmol._refresh(this.htmlName, mode, strWhy, 
      *    [this.transformManager.fixedRotationCenter, 
      *     this.transformManager.getRotationQuaternion(),
      *     this.transformManager.xTranslationFraction, 
@@ -4324,8 +4325,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     finalizeTransformParameters();
-    int[] minMax = shapeManager.transformAtoms(transformManager.bsSelectedAtoms, 
-        transformManager.ptOffset);
+    shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms, transformManager.ptOffset);
+    int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
     repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {

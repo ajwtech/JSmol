@@ -121,7 +121,7 @@ default:
 for (var i = bsRing.nextSetBit (0); i >= 0; i = bsRing.nextSetBit (i + 1)) {
 var bonds = jmolAtoms[i].getEdges ();
 for (var j = 0; j < bonds.length; j++) if (bonds[j].order == 2) {
-var i2 = bonds[j].getOtherAtom (jmolAtoms[i]).getIndex ();
+var i2 = bonds[j].getOtherAtomNode (jmolAtoms[i]).getIndex ();
 if (!bsRing.get (i2)) {
 var piShared = false;
 for (var k = v5.size (); --k >= 0 && !piShared; ) {
@@ -150,7 +150,7 @@ var atom = jmolAtoms[i];
 var bonds = atom.getEdges ();
 var haveDouble = false;
 for (var k = 0; k < bonds.length; k++) {
-var j = bonds[k].getOtherAtom (atom).getIndex ();
+var j = bonds[k].getOtherAtomNode (atom).getIndex ();
 if (bsRing.get (j)) {
 switch (bonds[k].order) {
 case 514:

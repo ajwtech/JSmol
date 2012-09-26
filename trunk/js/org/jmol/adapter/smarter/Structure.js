@@ -27,16 +27,12 @@ return org.jmol.constant.EnumStructure.HELIX310;
 return org.jmol.constant.EnumStructure.HELIX;
 }, "~N");
 Clazz.makeConstructor (c$, 
-function (type) {
-Clazz.superConstructor (this, org.jmol.adapter.smarter.Structure, []);
-this.structureType = this.substructureType = type;
-}, "org.jmol.constant.EnumStructure");
-Clazz.makeConstructor (c$, 
 function (modelIndex, structureType, substructureType, structureID, serialID, strandCount, startChainID, startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber, endInsertionCode) {
 Clazz.superConstructor (this, org.jmol.adapter.smarter.Structure, []);
-this.atomSetIndex = modelIndex;
 this.structureType = structureType;
 this.substructureType = substructureType;
+if (structureID == null) return ;
+this.atomSetIndex = modelIndex;
 this.structureID = structureID;
 this.strandCount = strandCount;
 this.serialID = serialID;

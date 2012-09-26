@@ -125,7 +125,7 @@ return "" + e;
 if (htParams.containsKey ("trajectorySteps")) {
 result = asc[0];
 try {
-result.finalizeTrajectory (htParams.get ("trajectorySteps"), htParams.get ("vibrationSteps"));
+result.finalizeTrajectoryAs (htParams.get ("trajectorySteps"), htParams.get ("vibrationSteps"));
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 if (result.errorMessage == null) result.errorMessage = "" + e;
@@ -134,7 +134,7 @@ throw e;
 }
 }
 } else {
-result =  new org.jmol.adapter.smarter.AtomSetCollection (asc);
+result =  new org.jmol.adapter.smarter.AtomSetCollection ("Array", null, asc, null);
 }return (result.errorMessage == null ? result : result.errorMessage);
 }, "~O,~O,java.util.Map");
 Clazz.overrideMethod (c$, "getAtomSetCollectionOrBufferedReaderFromZip", 
@@ -248,7 +248,7 @@ if (file.length == 0 || file.indexOf ("#") == 0) continue ;if (htCollections.con
  else if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("manifested file " + file + " was not found in " + fileName);
 }
 }if (!doCombine) return vCollections;
-var result =  new org.jmol.adapter.smarter.AtomSetCollection (vCollections);
+var result =  new org.jmol.adapter.smarter.AtomSetCollection ("Array", null, null, vCollections);
 if (result.errorMessage != null) {
 if (ignoreErrors) return null;
 return result.errorMessage;
@@ -281,7 +281,7 @@ var ret = org.jmol.adapter.smarter.Resolver.DOMResolve (DOMNode, htParams);
 if (!(Clazz.instanceOf (ret, org.jmol.adapter.smarter.AtomSetCollectionReader))) return ret;
 var a = ret;
 a.setup ("DOM node", htParams, null);
-ret = a.readData (DOMNode);
+ret = a.readDataObject (DOMNode);
 if (!(Clazz.instanceOf (ret, org.jmol.adapter.smarter.AtomSetCollection))) return ret;
 var asc = ret;
 if (asc.errorMessage != null) return asc.errorMessage;
@@ -305,7 +305,7 @@ return (atomSetCollection).getCollectionName ();
 }, "~O");
 Clazz.overrideMethod (c$, "getAtomSetCollectionAuxiliaryInfo", 
 function (atomSetCollection) {
-return (atomSetCollection).getAtomSetCollectionAuxiliaryInfo ();
+return (atomSetCollection).getAtomSetCollectionAuxiliaryInfoMap ();
 }, "~O");
 Clazz.overrideMethod (c$, "getAtomSetCount", 
 function (atomSetCollection) {

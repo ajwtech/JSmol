@@ -174,7 +174,7 @@ if (this.nSkipY != 0) this.skipVoxels (this.nSkipY);
 }
 if (this.nSkipZ != 0) this.skipVoxels (this.nSkipZ);
 }
-}this.volumeData.setVoxelData (this.voxelData);
+}this.volumeData.setVoxelDataAsArray (this.voxelData);
 }, "~B");
 Clazz.defineMethod (c$, "getPlane", 
 function (x) {

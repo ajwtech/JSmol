@@ -25,9 +25,9 @@ var name = atom.atomName = tokens[1];
 atom.elementSymbol = name.substring (0, 1);
 var c1 = name.charAt (0);
 var c2 = ' ';
-var nChar = (name.length == 2 && (org.jmol.adapter.smarter.Atom.isValidElementSymbol (c1, c2 = Character.toLowerCase (name.charAt (1))) || name.equals ("Du")) ? 2 : 1);
+var nChar = (name.length == 2 && (org.jmol.adapter.smarter.Atom.isValidElementSymbol2 (c1, c2 = Character.toLowerCase (name.charAt (1))) || name.equals ("Du")) ? 2 : 1);
 atom.elementSymbol = (nChar == 1 ? "" + c1 : "" + c1 + c2);
-this.setAtomCoord (atom, this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 atom.partialCharge = (tokens.length >= 6 ? this.parseFloatStr (tokens[5]) : 0);
 this.atomSetCollection.addAtomWithMappedSerialNumber (atom);
 }

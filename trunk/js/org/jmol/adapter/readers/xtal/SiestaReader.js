@@ -43,7 +43,7 @@ atom.atomName = tokens[4];
 var x = this.parseFloatStr (tokens[0]);
 var y = this.parseFloatStr (tokens[1]);
 var z = this.parseFloatStr (tokens[2]);
-this.setAtomCoord (atom, x, y, z);
+this.setAtomCoordXYZ (atom, x, y, z);
 }
 this.noAtoms = this.atomSetCollection.getAtomCount ();
 }, $fz.isPrivate = true, $fz));

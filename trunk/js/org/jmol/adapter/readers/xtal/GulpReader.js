@@ -213,7 +213,7 @@ continue ;}this.line = this.line.$replace ('*', ' ');
 var tokens = this.getTokens ();
 if (!tokens[2].equals ("c")) continue ;var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[1];
-this.setAtomCoord (atom, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 }
 if (finalizeSymmetry) this.applySymmetryAndSetTrajectory ();
 }, $fz.isPrivate = true, $fz), "~B");

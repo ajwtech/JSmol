@@ -226,7 +226,7 @@ Clazz.defineMethod (c$, "addNewBond",
 ($fz = function (a1, a2, order) {
 this.parent.applySymmetryToBonds = true;
 if (this.isSerial) this.atomSetCollection.addNewBondWithMappedSerialNumbers (org.jmol.util.Parser.parseInt (a1.substring (1)), org.jmol.util.Parser.parseInt (a2.substring (1)), order);
- else this.atomSetCollection.addNewBond (a1, a2, order);
+ else this.atomSetCollection.addNewBondFromNames (a1, a2, order);
 }, $fz.isPrivate = true, $fz), "~S,~S,~N");
 Clazz.defineMethod (c$, "getDictRefValue", 
 ($fz = function (atts) {
@@ -438,7 +438,7 @@ Clazz.defineMethod (c$, "checkBondArrayLength",
 function (newBondCount) {
 if (this.bondCount == 0) {
 if (newBondCount > this.bondArray.length) this.bondArray =  new Array (newBondCount);
-for (var i = newBondCount; --i >= 0; ) this.bondArray[i] =  new org.jmol.adapter.smarter.Bond ();
+for (var i = newBondCount; --i >= 0; ) this.bondArray[i] =  new org.jmol.adapter.smarter.Bond (-1, -1, 1);
 
 this.bondCount = newBondCount;
 } else if (newBondCount != this.bondCount) {

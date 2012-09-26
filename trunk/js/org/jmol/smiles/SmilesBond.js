@@ -158,7 +158,7 @@ Clazz.overrideMethod (c$, "getCovalentOrder",
 function () {
 return this.order;
 });
-Clazz.defineMethod (c$, "getOtherAtom", 
+Clazz.overrideMethod (c$, "getOtherAtomNode", 
 function (atom) {
 return (atom === this.atom1 ? this.atom2 : atom === this.atom2 ? this.atom1 : null);
 }, "org.jmol.util.JmolNode");

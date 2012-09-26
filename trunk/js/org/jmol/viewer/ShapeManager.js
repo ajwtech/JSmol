@@ -33,7 +33,7 @@ Clazz.defineMethod (c$, "getShapes",
 function () {
 return this.shapes;
 });
-Clazz.defineMethod (c$, "getShapeProperty", 
+Clazz.defineMethod (c$, "getShapePropertyIndex", 
 function (shapeID, propertyName, index) {
 if (this.shapes == null || this.shapes[shapeID] == null) return null;
 this.viewer.setShapeErrorState (shapeID, "get " + propertyName);
@@ -41,7 +41,7 @@ var result = this.shapes[shapeID].getProperty (propertyName, index);
 this.viewer.setShapeErrorState (-1, null);
 return result;
 }, "~N,~S,~N");
-Clazz.defineMethod (c$, "getShapeProperty", 
+Clazz.defineMethod (c$, "getShapePropertyData", 
 function (shapeID, propertyName, data) {
 if (this.shapes == null || this.shapes[shapeID] == null) return false;
 this.viewer.setShapeErrorState (shapeID, "get " + propertyName);
@@ -92,7 +92,7 @@ Clazz.defineMethod (c$, "refreshShapeTrajectories",
 function (baseModel, bs, mat) {
 var Imodel = Integer.$valueOf (baseModel);
 var bsModelAtoms = this.viewer.getModelUndeletedAtomsBitSet (baseModel);
-for (var i = 0; i < 35; i++) if (this.shapes[i] != null) this.setShapeProperty (i, "refreshTrajectories", [Imodel, bs, mat], bsModelAtoms);
+for (var i = 0; i < 35; i++) if (this.shapes[i] != null) this.setShapePropertyBs (i, "refreshTrajectories", [Imodel, bs, mat], bsModelAtoms);
 
 }, "~N,java.util.BitSet,javax.vecmath.Matrix4f");
 Clazz.defineMethod (c$, "releaseShape", 
@@ -103,7 +103,7 @@ Clazz.defineMethod (c$, "resetShapes",
 function () {
 if (!this.viewer.noGraphicsAllowed ()) this.shapes =  new Array (35);
 });
-Clazz.defineMethod (c$, "setShapeSize", 
+Clazz.defineMethod (c$, "setShapeSizeBs", 
 function (shapeID, size, rd, bsSelected) {
 if (this.shapes == null) return ;
 if (bsSelected == null && (shapeID != 1 || size != 2147483647)) bsSelected = this.viewer.getSelectionSet (false);
@@ -118,10 +118,10 @@ Clazz.defineMethod (c$, "setLabel",
 function (strLabel, bsSelection) {
 if (strLabel != null) {
 this.loadShape (5);
-this.setShapeSize (5, 0, null, bsSelection);
-}this.setShapeProperty (5, "label", strLabel, bsSelection);
+this.setShapeSizeBs (5, 0, null, bsSelection);
+}this.setShapePropertyBs (5, "label", strLabel, bsSelection);
 }, "~S,java.util.BitSet");
-Clazz.defineMethod (c$, "setShapeProperty", 
+Clazz.defineMethod (c$, "setShapePropertyBs", 
 function (shapeID, propertyName, value, bsSelected) {
 if (this.shapes == null || this.shapes[shapeID] == null) return ;
 this.viewer.setShapeErrorState (shapeID, "set " + propertyName);
@@ -162,7 +162,7 @@ return false;
 }, "~N,~N,java.util.BitSet,~B");
 Clazz.defineMethod (c$, "deleteShapeAtoms", 
 function (value, bs) {
-if (this.shapes != null) for (var j = 0; j < 35; j++) if (this.shapes[j] != null) this.setShapeProperty (j, "deleteModelAtoms", value, bs);
+if (this.shapes != null) for (var j = 0; j < 35; j++) if (this.shapes[j] != null) this.setShapePropertyBs (j, "deleteModelAtoms", value, bs);
 
 }, "~A,java.util.BitSet");
 Clazz.defineMethod (c$, "deleteVdwDependentShapes", 
@@ -184,7 +184,7 @@ Clazz.defineMethod (c$, "getObjectMap",
 function (map, withDollar) {
 if (this.shapes == null) return ;
 var bDollar = Boolean.$valueOf (withDollar);
-for (var i = 16; i < 29; ++i) this.getShapeProperty (i, "getNames", [map, bDollar]);
+for (var i = 16; i < 29; ++i) this.getShapePropertyData (i, "getNames", [map, bDollar]);
 
 }, "java.util.Map,~B");
 Clazz.defineMethod (c$, "getProperty", 

@@ -34,7 +34,7 @@ this.hemisphereOnly = hemisphereOnly;
 this.threadSafe = threadSafe;
 this.cubeIterator = null;
 }, "org.jmol.bspt.Bspf,java.util.BitSet,~B,~B,~B,~B");
-Clazz.defineMethod (c$, "set", 
+Clazz.overrideMethod (c$, "setModel", 
 function (modelSet, modelIndex, firstModelAtom, atomIndex, center, distance, rd) {
 if (this.threadSafe) modelIndex = -1 - modelIndex;
 if (modelIndex != this.modelIndex || this.cubeIterator == null) {
@@ -51,9 +51,9 @@ this.viewer = modelSet.viewer;
 distance = (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.OFFSET ? 5 + rd.value : 5 * rd.value);
 this.vdw1 = this.atoms[atomIndex].getVanderwaalsRadiusFloat (this.viewer, rd.vdwType);
 }this.checkGreater = (this.isGreaterOnly && atomIndex != 2147483647);
-this.set (center, distance);
+this.setCenter (center, distance);
 }, "org.jmol.modelset.ModelCollection,~N,~N,~N,javax.vecmath.Point3f,~N,org.jmol.atomdata.RadiusData");
-Clazz.defineMethod (c$, "set", 
+Clazz.overrideMethod (c$, "setCenter", 
 function (center, distance) {
 if (this.cubeIterator == null) return ;
 this.cubeIterator.initialize (center, distance, this.hemisphereOnly);

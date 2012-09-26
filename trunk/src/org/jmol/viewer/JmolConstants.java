@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-25 16:09:28 -0500 (Tue, 25 Sep 2012) $
- * $Revision: 17577 $
+ * $Date: 2012-09-26 11:33:55 -0500 (Wed, 26 Sep 2012) $
+ * $Revision: 17582 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -67,7 +67,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-09-25 16:09:28 -0500 (Tue, 25 Sep 2012) $"
+        // $Date: 2012-09-26 11:33:55 -0500 (Wed, 26 Sep 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do
@@ -115,7 +115,7 @@ public class JmolConstants {
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
-  public static final String EXPORT_DRIVER_LIST = "Idtf;Js;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
+  public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
   public final static Vector3f center = new Vector3f(0, 0, 0);
   public final static Vector3f axisX = new Vector3f(1, 0, 0);

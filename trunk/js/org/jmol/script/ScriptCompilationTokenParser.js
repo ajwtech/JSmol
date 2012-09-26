@@ -55,7 +55,7 @@ if (this.tokAt (i) == 1060866) nDefined++;
 size -= nDefined;
 if (this.isNewSet) {
 if (size == 1) {
-this.atokenInfix[0] =  new org.jmol.script.Token (135368713, 0, this.atokenInfix[0].value);
+this.atokenInfix[0] = org.jmol.script.Token.newTokenIntVal (135368713, 0, this.atokenInfix[0].value);
 this.isNewSet = false;
 }}if ((this.isNewSet || this.isSetBrace) && size < this.ptNewSetModifier + 2) return this.commandExpected ();
 return (size == 1 || !org.jmol.script.Token.tokAttr (this.tokCommand, 262144) ? true : this.error (0));
@@ -75,11 +75,11 @@ this.isSetBrace = true;
 this.ptNewSetModifier = 4;
 this.isMathExpressionCommand = true;
 this.isEmbeddedExpression = true;
-this.addTokenToPostfix (org.jmol.script.Token.tokenSetProperty);
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionBegin);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenSetProperty);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionBegin);
 this.addNextToken ();
 this.addNextToken ();
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionEnd);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
 firstToken = 0;
 }break;
 case 12295:
@@ -102,7 +102,7 @@ for (var i = 0; i < firstToken && this.addNextToken (); i++) {
 while (this.moreTokens ()) {
 if (this.isEmbeddedExpression) {
 while (!this.isExpressionNext ()) {
-if (this.tokPeek (1073741824) && !(this.tokCommand == 135271426 && this.itokenInfix == 1)) {
+if (this.tokPeekIs (1073741824) && !(this.tokCommand == 135271426 && this.itokenInfix == 1)) {
 var name = this.atokenInfix[this.itokenInfix].value;
 var t = org.jmol.script.Token.getTokenFromName (name);
 if (t != null) if (!this.isMathExpressionCommand && this.lastToken.tok != 1060866 || (this.lastToken.tok == 1048584 || this.tokAt (this.itokenInfix + 1) == 269484048) && !this.isUserFunction (name)) {
@@ -112,10 +112,10 @@ this.atokenInfix[this.itokenInfix] = t;
 if (!this.moreTokens ()) break;
 }if (this.lastToken.tok == 1060866) {
 if (!this.clauseDefine (true, false)) return false;
-continue ;}if (!this.isMathExpressionCommand) this.addTokenToPostfix (tokenBegin =  new org.jmol.script.Token (1048577, "implicitExpressionBegin"));
-if (!this.clauseOr (this.isCommaAsOrAllowed || !this.isMathExpressionCommand && this.tokPeek (269484048))) return false;
+continue ;}if (!this.isMathExpressionCommand) this.addTokenToPostfixToken (tokenBegin = org.jmol.script.Token.newTokenObj (1048577, "implicitExpressionBegin"));
+if (!this.clauseOr (this.isCommaAsOrAllowed || !this.isMathExpressionCommand && this.tokPeekIs (269484048))) return false;
 if (!this.isMathExpressionCommand && !(this.isEmbeddedExpression && this.lastToken === org.jmol.script.Token.tokenCoordinateEnd)) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionEnd);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
 }if (this.moreTokens ()) {
 if (this.tokCommand != 135280132 && !this.isEmbeddedExpression) return this.error (5);
 if (this.tokCommand == 135280132) {
@@ -134,7 +134,7 @@ return (!this.isStateScript && (this.viewer.isFunction (name) || this.htUserFunc
 }, "~S");
 Clazz.defineMethod (c$, "isExpressionNext", 
 ($fz = function () {
-return this.tokPeek (1048586) && !(this.tokAt (this.itokenInfix + 1) == 4 && this.tokAt (this.itokenInfix + 2) == 269484066) || !this.isMathExpressionCommand && this.tokPeek (269484048);
+return this.tokPeekIs (1048586) && !(this.tokAt (this.itokenInfix + 1) == 4 && this.tokAt (this.itokenInfix + 2) == 269484066) || !this.isMathExpressionCommand && this.tokPeekIs (269484048);
 }, $fz.isPrivate = true, $fz));
 c$.tokenAttr = Clazz.defineMethod (c$, "tokenAttr", 
 function (token, tok) {
@@ -152,7 +152,7 @@ Clazz.defineMethod (c$, "tokPeek",
 ($fz = function () {
 return (this.itokenInfix >= this.atokenInfix.length ? 0 : this.atokenInfix[this.itokenInfix].tok);
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "tokPeek", 
+Clazz.defineMethod (c$, "tokPeekIs", 
 ($fz = function (tok) {
 return (this.tokAt (this.itokenInfix) == tok);
 }, $fz.isPrivate = true, $fz), "~N");
@@ -168,7 +168,7 @@ Clazz.defineMethod (c$, "tokenNext",
 ($fz = function () {
 return (this.itokenInfix >= this.atokenInfix.length ? null : this.atokenInfix[this.itokenInfix++]);
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "tokenNext", 
+Clazz.defineMethod (c$, "tokenNextTok", 
 ($fz = function (tok) {
 var token = this.tokenNext ();
 return (token != null && token.tok == tok);
@@ -203,13 +203,13 @@ return 0;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addTokenToPostfix", 
 ($fz = function (tok, value) {
-return this.addTokenToPostfix ( new org.jmol.script.Token (tok, value));
+return this.addTokenToPostfixToken (org.jmol.script.Token.newTokenObj (tok, value));
 }, $fz.isPrivate = true, $fz), "~N,~O");
-Clazz.defineMethod (c$, "addTokenToPostfix", 
+Clazz.defineMethod (c$, "addTokenToPostfixInt", 
 ($fz = function (tok, intValue, value) {
-return this.addTokenToPostfix ( new org.jmol.script.Token (tok, intValue, value));
+return this.addTokenToPostfixToken (org.jmol.script.Token.newTokenIntVal (tok, intValue, value));
 }, $fz.isPrivate = true, $fz), "~N,~N,~O");
-Clazz.defineMethod (c$, "addTokenToPostfix", 
+Clazz.defineMethod (c$, "addTokenToPostfixToken", 
 ($fz = function (token) {
 if (token == null) return false;
 if (this.logMessages) org.jmol.util.Logger.info ("addTokenToPostfix" + token);
@@ -219,17 +219,17 @@ return true;
 }, $fz.isPrivate = true, $fz), "org.jmol.script.Token");
 Clazz.defineMethod (c$, "addNextToken", 
 ($fz = function () {
-return this.addTokenToPostfix (this.tokenNext ());
+return this.addTokenToPostfixToken (this.tokenNext ());
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addNextTokenIf", 
 ($fz = function (tok) {
-return (this.tokPeek (tok) && this.addNextToken ());
+return (this.tokPeekIs (tok) && this.addNextToken ());
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "addSubstituteTokenIf", 
 ($fz = function (tok, token) {
-if (!this.tokPeek (tok)) return false;
+if (!this.tokPeekIs (tok)) return false;
 this.itokenInfix++;
-return this.addTokenToPostfix (token);
+return this.addTokenToPostfixToken (token);
 }, $fz.isPrivate = true, $fz), "~N,org.jmol.script.Token");
 Clazz.defineMethod (c$, "clauseOr", 
 ($fz = function (allowComma) {
@@ -249,7 +249,7 @@ Clazz.defineMethod (c$, "clauseAnd",
 ($fz = function () {
 if (!this.clauseNot ()) return false;
 if (this.isEmbeddedExpression && this.lastToken.tok == 1048578) return true;
-while (this.tokPeek (269484128)) {
+while (this.tokPeekIs (269484128)) {
 this.addNextToken ();
 if (!this.clauseNot ()) return false;
 }
@@ -257,7 +257,7 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseNot", 
 ($fz = function () {
-if (this.tokPeek (269484144)) {
+if (this.tokPeekIs (269484144)) {
 this.addNextToken ();
 return this.clauseNot ();
 }return (this.clausePrimitive ());
@@ -286,7 +286,7 @@ case 4:
 this.haveString = true;
 return this.addNextToken ();
 case 3:
-return this.addTokenToPostfix (1048611, this.fixModelSpec (this.getToken ()), this.theValue);
+return this.addTokenToPostfixInt (1048611, this.fixModelSpec (this.getToken ()), this.theValue);
 case 1095761925:
 return this.clauseCell ();
 case 135266310:
@@ -302,13 +302,13 @@ return this.clauseDefine (false, false);
 case 1678770178:
 case 1746538509:
 this.addNextToken ();
-if (this.tokPeek (10)) this.addNextToken ();
- else if (this.tokPeek (1060866)) return this.clauseDefine (false, false);
+if (this.tokPeekIs (10)) this.addNextToken ();
+ else if (this.tokPeekIs (1060866)) return this.clauseDefine (false, false);
 return true;
 case 269484048:
 this.addNextToken ();
 if (!this.clauseOr (true)) return false;
-if (!this.addNextTokenIf (269484049)) return this.error (15, ")");
+if (!this.addNextTokenIf (269484049)) return this.errorStr (15, ")");
 return this.checkForItemSelector (true);
 case 1048586:
 return this.checkForCoordinate (this.isMathExpressionCommand);
@@ -329,14 +329,14 @@ Clazz.defineMethod (c$, "checkForCoordinate",
 var isCoordinate = false;
 var pt = this.ltokenPostfix.size ();
 if (isImplicitExpression) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionBegin);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionBegin);
 this.tokenNext ();
 } else if (this.isEmbeddedExpression) {
 this.tokenNext ();
 pt--;
 } else {
 this.addNextToken ();
-}var isHash = this.tokPeek (4);
+}var isHash = this.tokPeekIs (4);
 if (isHash) {
 isImplicitExpression = false;
 this.returnToken ();
@@ -344,32 +344,32 @@ this.ltokenPostfix.remove (this.ltokenPostfix.size () - 1);
 this.addNextToken ();
 var nBrace = 1;
 while (nBrace != 0) {
-if (this.tokPeek (1048586)) {
+if (this.tokPeekIs (1048586)) {
 if (this.isExpressionNext ()) {
-this.addTokenToPostfix ( new org.jmol.script.Token (1048577, "implicitExpressionBegin"));
+this.addTokenToPostfixToken (org.jmol.script.Token.newTokenObj (1048577, "implicitExpressionBegin"));
 if (!this.clauseOr (true)) return false;
 if (this.lastToken !== org.jmol.script.Token.tokenCoordinateEnd) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionEnd);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
 }} else {
 nBrace++;
-}}if (this.tokPeek (1048590)) nBrace--;
+}}if (this.tokPeekIs (1048590)) nBrace--;
 this.addNextToken ();
 }
 } else {
-if (!this.tokPeek (1048590) && !this.clauseOr (false)) return false;
+if (!this.tokPeekIs (1048590) && !this.clauseOr (false)) return false;
 var n = 1;
-while (!this.tokPeek (1048590)) {
+while (!this.tokPeekIs (1048590)) {
 var haveComma = this.addNextTokenIf (269484080);
-if (!this.clauseOr (false)) return (haveComma || n < 3 ? false : this.error (15, "}"));
+if (!this.clauseOr (false)) return (haveComma || n < 3 ? false : this.errorStr (15, "}"));
 n++;
 }
 isCoordinate = (n >= 2);
 }if (isCoordinate && (isImplicitExpression || this.isEmbeddedExpression)) {
 this.ltokenPostfix.set (pt, org.jmol.script.Token.tokenCoordinateBegin);
-this.addTokenToPostfix (org.jmol.script.Token.tokenCoordinateEnd);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenCoordinateEnd);
 this.tokenNext ();
 } else if (isImplicitExpression) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionEnd);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
 this.tokenNext ();
 } else if (this.isEmbeddedExpression && !isHash) {
 this.tokenNext ();
@@ -384,7 +384,7 @@ if ((tok = this.tokAt (this.itokenInfix + 1)) == 269484096 || allowNumeric && to
 while (true) {
 if (!this.addNextTokenIf (269484096)) break;
 if (!this.clauseItemSelector ()) return false;
-if (!this.addNextTokenIf (269484097)) return this.error (15, "]");
+if (!this.addNextTokenIf (269484097)) return this.errorStr (15, "]");
 }
 return true;
 }, $fz.isPrivate = true, $fz), "~B");
@@ -425,7 +425,7 @@ case 3:
 distance = this.floatValue ();
 break;
 case 1060866:
-this.addTokenToPostfix (this.theToken);
+this.addTokenToPostfixToken (this.theToken);
 if (!this.clauseDefine (true, false)) return false;
 key = "";
 allowComma = false;
@@ -484,7 +484,7 @@ case 1073741824:
 key = (this.theValue).toLowerCase ();
 break;
 default:
-return this.error (18, "WITHIN", ": " + this.theToken.value);
+return this.errorIntStr2 (18, "WITHIN", ": " + this.theToken.value);
 }
 if (key == null) this.addTokenToPostfix (3,  new Float (distance));
  else if (key.length > 0) this.addTokenToPostfix (4, key);
@@ -499,7 +499,7 @@ switch (tok0) {
 case 2:
 case 3:
 if (tok == 1048589 || tok == 1048588) {
-this.addTokenToPostfix (this.getToken ());
+this.addTokenToPostfixToken (this.getToken ());
 if (!this.addNextTokenIf (269484080)) break;
 tok = this.tokPeek ();
 }break;
@@ -526,41 +526,41 @@ break;
 case 1048586:
 this.returnToken ();
 isCoordOrPlane = true;
-this.addTokenToPostfix (org.jmol.script.Token.getTokenFromName (distance == 3.4028235E38 ? "plane" : "coord"));
+this.addTokenToPostfixToken (org.jmol.script.Token.getTokenFromName (distance == 3.4028235E38 ? "plane" : "coord"));
 }
 if (!done) this.addNextTokenIf (269484080);
 }}tok = this.tokPeek ();
 if (done) break;
 if (isCoordOrPlane) {
-while (!this.tokPeek (269484049)) {
+while (!this.tokPeekIs (269484049)) {
 switch (this.tokPeek ()) {
 case 0:
 return this.error (4);
 case 269484048:
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionBegin);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionBegin);
 this.addNextToken ();
-if (!this.clauseOr (false)) return this.error (18, "WITHIN", ": ?");
-if (!this.addNextTokenIf (269484049)) return this.error (15, ", / )");
-this.addTokenToPostfix (org.jmol.script.Token.tokenExpressionEnd);
+if (!this.clauseOr (false)) return this.errorIntStr2 (18, "WITHIN", ": ?");
+if (!this.addNextTokenIf (269484049)) return this.errorStr (15, ", / )");
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
 break;
 case 1060866:
 if (!this.clauseDefine (false, false)) return false;
 break;
 default:
-this.addTokenToPostfix (this.getToken ());
+this.addTokenToPostfixToken (this.getToken ());
 }
 }
 } else if (!this.clauseOr (allowComma)) {
 }}
-if (!this.addNextTokenIf (269484049)) return this.error (15, ")");
+if (!this.addNextTokenIf (269484049)) return this.errorStr (15, ")");
 return true;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "clauseConnected", 
 ($fz = function () {
 this.addNextToken ();
 if (!this.addNextTokenIf (269484048)) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenLeftParen);
-this.addTokenToPostfix (org.jmol.script.Token.tokenRightParen);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenLeftParen);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenRightParen);
 return true;
 }while (true) {
 if (this.addNextTokenIf (2)) if (!this.addNextTokenIf (269484080)) break;
@@ -575,25 +575,25 @@ this.returnToken ();
 this.addTokenToPostfix (4, strOrder);
 if (!this.addNextTokenIf (269484080)) break;
 }if (this.addNextTokenIf (269484049)) return true;
-if (!this.clauseOr (this.tokPeek (269484048))) return false;
+if (!this.clauseOr (this.tokPeekIs (269484048))) return false;
 if (this.addNextTokenIf (269484049)) return true;
 if (!this.addNextTokenIf (269484080)) return false;
-if (!this.clauseOr (this.tokPeek (269484048))) return false;
+if (!this.clauseOr (this.tokPeekIs (269484048))) return false;
 break;
 }
-if (!this.addNextTokenIf (269484049)) return this.error (15, ")");
+if (!this.addNextTokenIf (269484049)) return this.errorStr (15, ")");
 return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseSubstructure", 
 ($fz = function () {
 this.addNextToken ();
 if (!this.addNextTokenIf (269484048)) return false;
-if (this.tokPeek (1060866)) {
+if (this.tokPeekIs (1060866)) {
 if (!this.clauseDefine (false, true)) return false;
 } else if (!this.addNextTokenIf (4)) {
-return this.error (15, "\"...\"");
-}if (this.addNextTokenIf (269484080)) if (!this.clauseOr (this.tokPeek (269484048))) return false;
-if (!this.addNextTokenIf (269484049)) return this.error (15, ")");
+return this.errorStr (15, "\"...\"");
+}if (this.addNextTokenIf (269484080)) if (!this.clauseOr (this.tokPeekIs (269484048))) return false;
+if (!this.addNextTokenIf (269484049)) return this.errorStr (15, ")");
 return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseItemSelector", 
@@ -612,12 +612,12 @@ Clazz.defineMethod (c$, "clauseComparator",
 var tokenAtomProperty = this.tokenNext ();
 var tokenComparator = this.tokenNext ();
 if (!org.jmol.script.ScriptCompilationTokenParser.tokenAttr (tokenComparator, 269484288)) {
-if (!isOptional) return this.error (15, "== != < > <= >=");
+if (!isOptional) return this.errorStr (15, "== != < > <= >=");
 if (tokenComparator != null) this.returnToken ();
 this.returnToken ();
 return false;
-}if (org.jmol.script.ScriptCompilationTokenParser.tokenAttr (tokenAtomProperty, 1087373312) && tokenComparator.tok != 269484436 && tokenComparator.tok != 269484438) return this.error (15, "== !=");
-if (this.getToken () == null) return this.error (17, "" + this.valuePeek ());
+}if (org.jmol.script.ScriptCompilationTokenParser.tokenAttr (tokenAtomProperty, 1087373312) && tokenComparator.tok != 269484436 && tokenComparator.tok != 269484438) return this.errorStr (15, "== !=");
+if (this.getToken () == null) return this.errorStr (17, "" + this.valuePeek ());
 var isNegative = (this.isToken (269484192));
 if (isNegative && this.getToken () == null) return this.error (12);
 switch (this.theToken.tok) {
@@ -631,12 +631,12 @@ break;
 default:
 if (!org.jmol.script.Token.tokAttr (this.theToken.tok, 1073741824)) return this.error (13);
 }
-this.addTokenToPostfix (tokenComparator.tok, tokenAtomProperty.tok, tokenComparator.value + (isNegative ? " -" : ""));
-if (tokenAtomProperty.tok == 1716520973) this.addTokenToPostfix (tokenAtomProperty);
+this.addTokenToPostfixInt (tokenComparator.tok, tokenAtomProperty.tok, tokenComparator.value + (isNegative ? " -" : ""));
+if (tokenAtomProperty.tok == 1716520973) this.addTokenToPostfixToken (tokenAtomProperty);
 if (this.isToken (1048586)) {
 this.returnToken ();
 return this.clausePrimitive ();
-}this.addTokenToPostfix (this.theToken);
+}this.addTokenToPostfixToken (this.theToken);
 if (this.theToken.tok == 1060866) return this.clauseDefine (false, false);
 return true;
 }, $fz.isPrivate = true, $fz), "~B");
@@ -644,7 +644,7 @@ Clazz.defineMethod (c$, "clauseCell",
 ($fz = function () {
 var cell =  new javax.vecmath.Point3f ();
 this.tokenNext ();
-if (!this.tokenNext (269484436)) return this.error (15, "=");
+if (!this.tokenNextTok (269484436)) return this.errorStr (15, "=");
 if (this.getToken () == null) return this.error (3);
 if (this.isToken (2)) {
 var nnn = this.theToken.intValue;
@@ -654,11 +654,11 @@ cell.z = (nnn % 10) - 4;
 return this.addTokenToPostfix (1095761925, cell);
 }if (!this.isToken (1048586) || !this.getNumericalToken ()) return this.error (3);
 cell.x = this.floatValue ();
-if (this.tokPeek (269484080)) this.tokenNext ();
+if (this.tokPeekIs (269484080)) this.tokenNext ();
 if (!this.getNumericalToken ()) return this.error (3);
 cell.y = this.floatValue ();
-if (this.tokPeek (269484080)) this.tokenNext ();
-if (!this.getNumericalToken () || !this.tokenNext (1048590)) return this.error (3);
+if (this.tokPeekIs (269484080)) this.tokenNext ();
+if (!this.getNumericalToken () || !this.tokenNextTok (1048590)) return this.error (3);
 cell.z = this.floatValue ();
 return this.addTokenToPostfix (1095761925, cell);
 }, $fz.isPrivate = true, $fz));
@@ -667,11 +667,11 @@ Clazz.defineMethod (c$, "clauseDefine",
 if (!haveToken) {
 var token = this.tokenNext ();
 if (forceString) token = org.jmol.script.Token.tokenDefineString;
-this.addTokenToPostfix (token);
+this.addTokenToPostfixToken (token);
 }if (this.tokPeek () == 0) return this.error (4);
 if (!this.addSubstituteTokenIf (1048586, org.jmol.script.Token.tokenExpressionBegin)) return this.addNextToken () && this.checkForItemSelector (true);
-while (this.moreTokens () && !this.tokPeek (1048590)) {
-if (this.tokPeek (1048586)) {
+while (this.moreTokens () && !this.tokPeekIs (1048590)) {
+if (this.tokPeekIs (1048586)) {
 if (!this.checkForCoordinate (true)) return false;
 } else {
 this.addNextToken ();
@@ -680,8 +680,8 @@ return this.addSubstituteTokenIf (1048590, org.jmol.script.Token.tokenExpression
 }, $fz.isPrivate = true, $fz), "~B,~B");
 Clazz.defineMethod (c$, "generateResidueSpecCode", 
 ($fz = function (token) {
-if (this.residueSpecCodeGenerated) this.addTokenToPostfix (org.jmol.script.Token.tokenAND);
-this.addTokenToPostfix (token);
+if (this.residueSpecCodeGenerated) this.addTokenToPostfixToken (org.jmol.script.Token.tokenAND);
+this.addTokenToPostfixToken (token);
 this.residueSpecCodeGenerated = true;
 return true;
 }, $fz.isPrivate = true, $fz), "org.jmol.script.Token");
@@ -723,7 +723,7 @@ return false;
 }}var wasInteger = false;
 if (tok == 269484209 || tok == 2 || tok == 5) {
 wasInteger = (tok == 2);
-if (this.tokPeek (269484209)) this.getToken ();
+if (this.tokPeekIs (269484209)) this.getToken ();
  else if (!this.clauseSequenceSpec ()) return false;
 specSeen = true;
 tok = this.tokPeek ();
@@ -745,7 +745,7 @@ specSeen = true;
 tok = this.tokPeek ();
 }if (!specSeen) return this.error (14);
 if (!this.residueSpecCodeGenerated) {
-this.addTokenToPostfix (org.jmol.script.Token.tokenAll);
+this.addTokenToPostfixToken (org.jmol.script.Token.tokenAll);
 }return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseResNameSpec", 
@@ -763,13 +763,13 @@ if (strSpec === "") return true;
 var pt;
 if (strSpec.length > 0 && (pt = strSpec.indexOf ("*")) >= 0 && pt != strSpec.length - 1) return this.error (14);
 strSpec = strSpec.toUpperCase ();
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048612, strSpec));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1048612, strSpec));
 default:
 var res = this.theValue;
-if (this.tokPeek (269484209)) {
+if (this.tokPeekIs (269484209)) {
 res = this.theValue + "*";
 this.getToken ();
-}return this.generateResidueSpecCode ( new org.jmol.script.Token (1073741824, res));
+}return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1073741824, res));
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseSequenceSpec", 
@@ -786,7 +786,7 @@ this.tokenNext ().intValue = i;
 this.returnToken ();
 }seqToken.tok = 1048615;
 this.generateResidueSpecCode (seqToken);
-return this.addTokenToPostfix (this.getSequenceCode (true));
+return this.addTokenToPostfixToken (this.getSequenceCode (true));
 }return this.generateResidueSpecCode (seqToken);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getSequenceCode", 
@@ -798,14 +798,14 @@ if (tokPeek == 5) seqcode = this.tokenNext ().intValue;
  else if (tokPeek == 2) seqvalue = this.tokenNext ().intValue;
  else if (!isSecond) {
 return null;
-}return  new org.jmol.script.Token (1048614, seqvalue, Integer.$valueOf (seqcode));
+}return org.jmol.script.Token.newTokenIntVal (1048614, seqvalue, Integer.$valueOf (seqcode));
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "clauseChainSpec", 
 ($fz = function (tok) {
 if (tok == 269484066) {
 this.tokenNext ();
 tok = this.tokPeek ();
-if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode ( new org.jmol.script.Token (1048609, '\0'.charCodeAt (0), "spec_chain"));
+if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048609, '\0'.charCodeAt (0), "spec_chain"));
 }var chain;
 switch (tok) {
 case 269484209:
@@ -823,7 +823,7 @@ chain = strChain.charAt (0);
 if (chain.charCodeAt (0) == 63) return true;
 break;
 }
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048609, chain.charCodeAt (0), "spec_chain"));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048609, chain.charCodeAt (0), "spec_chain"));
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "isSpecTerminator", 
 ($fz = function (tok) {
@@ -845,7 +845,7 @@ Clazz.defineMethod (c$, "clauseAlternateSpec",
 ($fz = function () {
 this.tokenNext ();
 var tok = this.tokPeek ();
-if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode ( new org.jmol.script.Token (1048607, null));
+if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1048607, null));
 var alternate = this.getToken ().value;
 switch (this.theToken.tok) {
 case 269484209:
@@ -856,23 +856,23 @@ break;
 default:
 return this.error (10);
 }
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048607, alternate));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1048607, alternate));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "clauseModelSpec", 
 ($fz = function () {
 this.getToken ();
-if (this.tokPeek (269484209)) {
+if (this.tokPeekIs (269484209)) {
 this.getToken ();
 return true;
 }switch (this.tokPeek ()) {
 case 2:
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048610, Integer.$valueOf (this.getToken ().intValue)));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1048610, Integer.$valueOf (this.getToken ().intValue)));
 case 3:
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048610, this.fixModelSpec (this.getToken ()), this.theValue));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048610, this.fixModelSpec (this.getToken ()), this.theValue));
 case 269484080:
 case 1048590:
 case 0:
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048610, Integer.$valueOf (1)));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenObj (1048610, Integer.$valueOf (1)));
 }
 return this.error (10);
 }, $fz.isPrivate = true, $fz));
@@ -887,7 +887,7 @@ if (ival < 0) ival = 2147483647;
 }, $fz.isPrivate = true, $fz), "org.jmol.script.Token");
 Clazz.defineMethod (c$, "clauseAtomSpec", 
 ($fz = function () {
-if (!this.tokenNext (1048584)) return this.error (7);
+if (!this.tokenNextTok (1048584)) return this.error (7);
 if (this.getToken () == null) return true;
 var atomSpec = "";
 if (this.isToken (2)) {
@@ -898,11 +898,11 @@ case 269484209:
 return true;
 }
 atomSpec += "" + this.theToken.value;
-if (this.tokPeek (269484209)) {
+if (this.tokPeekIs (269484209)) {
 this.tokenNext ();
 atomSpec += "'";
 }var atomID = org.jmol.viewer.JmolConstants.lookupSpecialAtomID (atomSpec.toUpperCase ());
-return this.generateResidueSpecCode ( new org.jmol.script.Token (1048608, atomID, atomSpec));
+return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048608, atomID, atomSpec));
 }, $fz.isPrivate = true, $fz));
 c$.errorString = Clazz.defineMethod (c$, "errorString", 
 function (iError, value, more, translated) {
@@ -990,23 +990,23 @@ return this.error (2);
 });
 Clazz.defineMethod (c$, "error", 
 function (error) {
-return this.error (error, null, null);
+return this.errorIntStr2 (error, null, null);
 }, "~N");
-Clazz.defineMethod (c$, "error", 
+Clazz.defineMethod (c$, "errorStr", 
 function (error, value) {
-return this.error (error, value, null);
+return this.errorIntStr2 (error, value, null);
 }, "~N,~S");
-Clazz.defineMethod (c$, "error", 
+Clazz.defineMethod (c$, "errorIntStr2", 
 function (iError, value, more) {
 var strError = org.jmol.script.ScriptCompilationTokenParser.errorString (iError, value, more, true);
 var strUntranslated = (org.jmol.i18n.GT.getDoTranslate () ? org.jmol.script.ScriptCompilationTokenParser.errorString (iError, value, more, false) : null);
-return this.error (strError, strUntranslated);
+return this.errorStr2 (strError, strUntranslated);
 }, "~N,~S,~S");
 Clazz.defineMethod (c$, "isError", 
 ($fz = function () {
 return this.errorMessage != null;
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "error", 
+Clazz.defineMethod (c$, "errorStr2", 
 function (errorMessage, strUntranslated) {
 this.errorMessage = errorMessage;
 this.errorMessageUntranslated = strUntranslated;

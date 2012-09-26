@@ -98,11 +98,11 @@ this.setShapeVisibility (backboneVisibilityFlag, isVisible);
 Clazz.defineMethod (c$, "deleteBond", 
 function (bond) {
 if (this.bonds != null) for (var i = this.bonds.length; --i >= 0; ) if (this.bonds[i] === bond) {
-this.deleteBond (i);
+this.deleteBondAt (i);
 return ;
 }
 }, "org.jmol.modelset.Bond");
-Clazz.defineMethod (c$, "deleteBond", 
+Clazz.defineMethod (c$, "deleteBondAt", 
 ($fz = function (i) {
 var newLength = this.bonds.length - 1;
 if (newLength == 0) {
@@ -579,7 +579,7 @@ break;
 }
 if (c != null) c.toCartesian (this, asAbsolute);
 }, "~N,~N,~B");
-Clazz.defineMethod (c$, "setFractionalCoord", 
+Clazz.defineMethod (c$, "setFractionalCoordTo", 
 function (ptNew, asAbsolute) {
 this.setFractionalCoordPt (this, ptNew, asAbsolute);
 }, "javax.vecmath.Point3f,~B");

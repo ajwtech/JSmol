@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.BitSet", "$.Hashtable", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Float", "java.util.BitSet", "$.Hashtable", "javax.vecmath.Matrix4f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tokenizer = null;
 this.thisDataSetName = "";
@@ -14,6 +14,14 @@ this.molecularType = "GEOM_BOND default";
 this.lastAltLoc = 0;
 this.configurationPtr = -2147483648;
 this.conformationIndex = 0;
+this.filterAssembly = false;
+this.vBiomts = null;
+this.vBiomolecules = null;
+this.htBiomts = null;
+this.assemblyIdAtoms = null;
+this.appendedData = null;
+this.skipping = false;
+this.nAtoms = 0;
 this.nMolecular = 0;
 this.key = null;
 this.data = null;
@@ -21,6 +29,7 @@ this.atomTypes = null;
 this.bondTypes = null;
 this.disorderAssembly = ".";
 this.lastDisorderAssembly = null;
+this.assem = null;
 this.hetatmData = null;
 this.htSites = null;
 this.field = null;
@@ -49,7 +58,9 @@ this.ptOffset =  new javax.vecmath.Point3f ();
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 if (this.checkFilterKey ("CONF ")) this.configurationPtr = this.parseIntAt (this.filter, this.filter.indexOf ("CONF ") + 5);
+this.appendedData = this.htParams.get ("appendedData");
 this.isMolecular = (this.filter != null && this.filter.indexOf ("MOLECUL") >= 0);
+this.filterAssembly = (this.filter != null && this.filter.indexOf ("$") >= 0);
 if (this.isMolecular) {
 if (!this.doApplySymmetry) {
 this.doApplySymmetry = true;
@@ -57,35 +68,51 @@ this.latticeCells[0] = 1;
 this.latticeCells[1] = 1;
 this.latticeCells[2] = 1;
 }this.molecularType = "filter \"MOLECULAR\"";
-}var nAtoms = 0;
+}this.nAtoms = 0;
 this.line = "";
-var skipping = false;
-while ((this.key = this.tokenizer.peekToken ()) != null) {
+this.skipping = false;
+while ((this.key = this.tokenizer.peekToken ()) != null) if (!this.readAllData ()) break;
+
+if (this.appendedData != null) {
+this.tokenizer =  new org.jmol.util.CifDataReader ( new java.io.BufferedReader ( new java.io.StringReader (this.appendedData)));
+while ((this.key = this.tokenizer.peekToken ()) != null) if (!this.readAllData ()) break;
+
+}if (this.atomSetCollection.getAtomCount () == this.nAtoms) this.atomSetCollection.removeCurrentAtomSet ();
+ else this.applySymmetryAndSetTrajectory ();
+if (this.htSites != null) this.addSites (this.htSites);
+this.atomSetCollection.setCollectionName ("<collection of " + this.atomSetCollection.getAtomSetCount () + " models>");
+this.continuing = false;
+});
+Clazz.defineMethod (c$, "readAllData", 
+($fz = function () {
 if (this.key.startsWith ("data_")) {
-if (this.iHaveDesiredModel) break;
-skipping = !this.doGetModel (++this.modelNumber, null);
-if (skipping) {
+if (this.iHaveDesiredModel) return false;
+this.skipping = !this.doGetModel (++this.modelNumber, null);
+if (this.skipping) {
 this.tokenizer.getTokenPeeked ();
 } else {
 this.chemicalName = "";
 this.thisStructuralFormula = "";
 this.thisFormula = "";
-if (nAtoms == this.atomSetCollection.getAtomCount ()) this.atomSetCollection.removeAtomSet ();
+if (this.nAtoms == this.atomSetCollection.getAtomCount ()) this.atomSetCollection.removeCurrentAtomSet ();
  else this.applySymmetryAndSetTrajectory ();
 this.processDataParameter ();
 this.iHaveDesiredModel = (this.isLastModel (this.modelNumber));
-nAtoms = this.atomSetCollection.getAtomCount ();
-}continue ;}if (this.key.startsWith ("loop_")) {
-if (skipping) {
+this.nAtoms = this.atomSetCollection.getAtomCount ();
+}return true;
+}if (this.key.startsWith ("loop_")) {
+if (this.skipping) {
 this.tokenizer.getTokenPeeked ();
 this.skipLoop ();
 } else {
 this.processLoopBlock ();
-}continue ;}if (this.key.indexOf ("_") != 0) {
+}return true;
+}if (this.key.indexOf ("_") != 0) {
 org.jmol.util.Logger.warn ("CIF ERROR ? should be an underscore: " + this.key);
 this.tokenizer.getTokenPeeked ();
 } else if (!this.getData ()) {
-continue ;}if (!skipping) {
+return true;
+}if (!this.skipping) {
 this.key = this.key.$replace ('.', '_');
 if (this.key.startsWith ("_chemical_name") || this.key.equals ("_chem_comp_name")) {
 this.processChemicalInfo ("name");
@@ -101,19 +128,48 @@ this.processSymmetrySpaceGroupName ();
 this.processUnitCellTransformMatrix ();
 } else if (this.key.startsWith ("_pdbx_entity_nonpoly")) {
 this.processNonpolyData ();
-}}}
-if (this.atomSetCollection.getAtomCount () == nAtoms) this.atomSetCollection.removeAtomSet ();
- else this.applySymmetryAndSetTrajectory ();
-if (this.htSites != null) this.addSites (this.htSites);
-this.atomSetCollection.setCollectionName ("<collection of " + this.atomSetCollection.getAtomSetCount () + " models>");
-this.continuing = false;
-});
+} else if (this.key.startsWith ("_pdbx_struct_assembly_gen")) {
+this.processAssemblyGen ();
+}}return true;
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "finalizeReader", 
 function () {
-Clazz.superCall (this, org.jmol.adapter.readers.cifpdb.CifReader, "finalizeReader", []);
+if (this.vBiomolecules != null && this.vBiomolecules.size () == 1 && this.atomSetCollection.getAtomCount () > 0) {
+this.atomSetCollection.setAtomSetAuxiliaryInfo ("biomolecules", this.vBiomolecules);
+this.setBiomolecules ();
+if (this.vBiomts != null && this.vBiomts.size () > 1) {
+this.atomSetCollection.applySymmetry (this.vBiomts, this.notionalUnitCell, this.applySymmetryToBonds, this.filter);
+}}Clazz.superCall (this, org.jmol.adapter.readers.cifpdb.CifReader, "finalizeReader", []);
 var header = this.tokenizer.getFileHeader ();
 if (header.length > 0) this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("fileHeader", header);
 });
+Clazz.defineMethod (c$, "setBiomolecules", 
+($fz = function () {
+var mident =  new javax.vecmath.Matrix4f ();
+mident.setIdentity ();
+if (this.assemblyIdAtoms == null) return ;
+for (var i = this.vBiomolecules.size (); --i >= 0; ) {
+var biomolecule = this.vBiomolecules.get (i);
+var ops = org.jmol.util.TextFormat.split (biomolecule.get ("operators"), ',');
+var assemblies = biomolecule.get ("assemblies");
+this.vBiomts =  new java.util.ArrayList ();
+biomolecule.put ("biomts", this.vBiomts);
+this.vBiomts.add (mident);
+for (var j = 0; j < ops.length; j++) {
+var m = this.htBiomts.get (ops[j]);
+if (m != null && !m.equals (mident)) this.vBiomts.add (m);
+}
+if (this.vBiomts.size () < 2) return ;
+var bsAll =  new java.util.BitSet ();
+for (var j = assemblies.length - 1; --j >= 0; ) if ((assemblies.charAt (j)).charCodeAt (0) == 36) {
+var bs = this.assemblyIdAtoms.get ("" + assemblies.charAt (j + 1));
+if (bs != null) bsAll.or (bs);
+}
+var nAtoms = bsAll.cardinality ();
+if (nAtoms < this.atomSetCollection.getAtomCount ()) this.atomSetCollection.bsAtoms = bsAll;
+biomolecule.put ("atomCount", Integer.$valueOf (nAtoms * ops.length));
+}
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "applySymmetryAndSetTrajectory", 
 function () {
 this.atomSetCollection.setCheckSpecial (!this.isPDB);
@@ -228,6 +284,12 @@ this.processSymmetryOperationsLoopBlock ();
 }if (str.startsWith ("_struct_site")) {
 this.processStructSiteBlock ();
 return ;
+}if (str.startsWith ("_pdbx_struct_oper_list")) {
+this.processStructOperListBlock ();
+return ;
+}if (str.startsWith ("_pdbx_struct_assembly_gen")) {
+this.processAssemblyGenBlock ();
+return ;
 }this.skipLoop ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processAtomTypeLoopBlock", 
@@ -260,6 +322,7 @@ Clazz.defineMethod (c$, "processAtomSiteLoopBlock",
 function (isLigand) {
 var currentModelNO = -1;
 var isAnisoData = false;
+var assemblyId = '\0';
 this.parseLoopParameters (org.jmol.adapter.readers.cifpdb.CifReader.atomFields);
 if (this.fieldOf[55] != -1) {
 this.isPDB = false;
@@ -285,6 +348,7 @@ return false;
 var data;
 while (this.tokenizer.getData ()) {
 var atom =  new org.jmol.adapter.smarter.Atom ();
+assemblyId = '\0';
 for (var i = 0; i < this.tokenizer.fieldCount; ++i) {
 switch (this.fieldProperty (i)) {
 case -1:
@@ -296,7 +360,7 @@ if (this.field.length < 2) {
 elementSymbol = this.field;
 } else {
 var ch1 = Character.toLowerCase (this.field.charAt (1));
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (this.firstChar, ch1)) elementSymbol = "" + this.firstChar + ch1;
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbol2 (this.firstChar, ch1)) elementSymbol = "" + this.firstChar + ch1;
  else elementSymbol = "" + this.firstChar;
 }atom.elementSymbol = elementSymbol;
 if (this.atomTypes != null && this.atomTypes.containsKey (this.field)) {
@@ -350,6 +414,9 @@ break;
 case 48:
 case 11:
 atom.group3 = this.field;
+break;
+case 59:
+assemblyId = this.firstChar;
 break;
 case 12:
 if (this.field.length > 1) org.jmol.util.Logger.warn ("Don't know how to deal with chains more than 1 char: " + this.field);
@@ -450,9 +517,14 @@ break;
 if (Float.isNaN (atom.x) || Float.isNaN (atom.y) || Float.isNaN (atom.z)) {
 org.jmol.util.Logger.warn ("atom " + atom.atomName + " has invalid/unknown coordinates");
 } else {
-if (isAnisoData || !this.filterCIFAtom (atom, iAtom)) continue ;this.setAtomCoord (atom);
+if (isAnisoData || !this.filterCIFAtom (atom, iAtom, assemblyId)) continue ;this.setAtomCoord (atom);
 this.atomSetCollection.addAtomWithMappedName (atom);
-if (atom.isHetero && this.htHetero != null) {
+if (assemblyId.charCodeAt (0) != 0) {
+if (this.assemblyIdAtoms == null) this.assemblyIdAtoms =  new java.util.Hashtable ();
+var bs = this.assemblyIdAtoms.get ("" + assemblyId);
+if (bs == null) this.assemblyIdAtoms.put ("" + assemblyId, bs =  new java.util.BitSet ());
+bs.set (atom.atomIndex);
+}if (atom.isHetero && this.htHetero != null) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("hetNames", this.htHetero);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("hetNames", this.htHetero);
 this.htHetero = null;
@@ -463,8 +535,9 @@ this.setIsPDB ();
 return true;
 }, "~B");
 Clazz.defineMethod (c$, "filterCIFAtom", 
-function (atom, iAtom) {
+function (atom, iAtom, assemblyId) {
 if (!this.filterAtom (atom, iAtom)) return false;
+if (this.filterAssembly && this.filterReject (this.filter, "$", "" + assemblyId)) return false;
 if (this.configurationPtr > 0) {
 if (!this.disorderAssembly.equals (this.lastDisorderAssembly)) {
 this.lastDisorderAssembly = this.disorderAssembly;
@@ -478,7 +551,89 @@ this.conformationIndex--;
 org.jmol.util.Logger.info ("ignoring " + atom.atomName);
 return false;
 }}}return true;
-}, "org.jmol.adapter.smarter.Atom,~N");
+}, "org.jmol.adapter.smarter.Atom,~N,~S");
+Clazz.defineMethod (c$, "processAssemblyGen", 
+($fz = function () {
+if (this.assem == null) this.assem =  new Array (3);
+if (this.key.indexOf ("assembly_id") >= 0) this.assem[0] = this.data = this.tokenizer.fullTrim (this.data);
+ else if (this.key.indexOf ("oper_expression") >= 0) this.assem[1] = this.data = this.tokenizer.fullTrim (this.data);
+ else if (this.key.indexOf ("asym_id_list") >= 0) this.assem[2] = this.data = this.tokenizer.fullTrim (this.data);
+if (this.assem[0] != null && this.assem[1] != null && this.assem[2] != null) this.addAssembly ();
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "processAssemblyGenBlock", 
+($fz = function () {
+this.parseLoopParameters (org.jmol.adapter.readers.cifpdb.CifReader.assemblyFields);
+this.assem =  new Array (3);
+while (this.tokenizer.getData ()) {
+var count = 0;
+var p;
+for (var i = 0; i < this.tokenizer.fieldCount; ++i) {
+switch (p = this.fieldProperty (i)) {
+case 0:
+case 1:
+case 2:
+count++;
+this.assem[p] = this.field;
+break;
+}
+}
+if (count == 3) this.addAssembly ();
+}
+this.assem = null;
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "addAssembly", 
+($fz = function () {
+var iMolecule = this.parseIntStr (this.assem[0]);
+if (!this.checkFilterKey ("ASSEMBLY " + iMolecule + ";")) return ;
+if (this.vBiomolecules == null) {
+this.vBiomolecules =  new java.util.ArrayList ();
+}var info =  new java.util.Hashtable ();
+info.put ("molecule", Integer.$valueOf (iMolecule));
+info.put ("assemblies", "$" + this.assem[2].$replace (',', '$'));
+info.put ("operators", this.assem[1]);
+info.put ("biomts",  new java.util.ArrayList ());
+org.jmol.util.Logger.info ("assembly " + iMolecule + " operators " + this.assem[1] + " ASYM_IDs " + this.assem[2]);
+this.vBiomolecules.add (info);
+this.assem = null;
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "processStructOperListBlock", 
+($fz = function () {
+this.parseLoopParameters (org.jmol.adapter.readers.cifpdb.CifReader.operFields);
+var m =  Clazz.newArray (16, 0);
+m[15] = 1;
+while (this.tokenizer.getData ()) {
+var count = 0;
+var p;
+var id = null;
+var xyz = null;
+for (var i = 0; i < this.tokenizer.fieldCount; ++i) {
+switch (p = this.fieldProperty (i)) {
+case -1:
+break;
+case 12:
+id = this.field;
+break;
+case 13:
+xyz = this.field;
+break;
+default:
+m[p] = this.parseFloatStr (this.field);
+++count;
+}
+}
+if (id != null && (count == 12 || xyz != null && this.symmetry != null)) {
+org.jmol.util.Logger.info ("assembly operator " + id + " " + xyz);
+var m4 =  new javax.vecmath.Matrix4f ();
+if (count != 12) {
+this.symmetry.getMatrixFromString (xyz, m, false);
+m[3] *= this.symmetry.getUnitCellInfo (0) / 12;
+m[7] *= this.symmetry.getUnitCellInfo (1) / 12;
+m[11] *= this.symmetry.getUnitCellInfo (2) / 12;
+}m4.set (m);
+if (this.htBiomts == null) this.htBiomts =  new java.util.Hashtable ();
+this.htBiomts.put (id, m4);
+}}
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processLigandBondLoopBlock", 
 ($fz = function () {
 this.parseLoopParameters (org.jmol.adapter.readers.cifpdb.CifReader.chemCompBondFields);
@@ -522,7 +677,7 @@ case 2:
 order = 514;
 break;
 }
-this.atomSetCollection.addNewBond (atomIndex1, atomIndex2, order);
+this.atomSetCollection.addNewBondWithOrder (atomIndex1, atomIndex2, order);
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processGeomBondLoopBlock", 
@@ -645,7 +800,7 @@ this.skipLoop ();
 return ;
 }
 while (this.tokenizer.getData ()) {
-var structure =  new org.jmol.adapter.smarter.Structure (org.jmol.constant.EnumStructure.HELIX);
+var structure =  new org.jmol.adapter.smarter.Structure (-1, org.jmol.constant.EnumStructure.HELIX, org.jmol.constant.EnumStructure.HELIX, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
 for (var i = 0; i < this.tokenizer.fieldCount; ++i) {
 switch (this.fieldProperty (i)) {
 case -1:
@@ -695,7 +850,7 @@ this.skipLoop ();
 return ;
 }
 while (this.tokenizer.getData ()) {
-var structure =  new org.jmol.adapter.smarter.Structure (org.jmol.constant.EnumStructure.SHEET);
+var structure =  new org.jmol.adapter.smarter.Structure (-1, org.jmol.constant.EnumStructure.SHEET, org.jmol.constant.EnumStructure.SHEET, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
 for (var i = 0; i < this.tokenizer.fieldCount; ++i) {
 switch (this.fieldProperty (i)) {
 case 1:
@@ -838,7 +993,7 @@ if (this.tokenizer.fieldCount > 0) this.tokenizer.loopData =  new Array (this.to
 Clazz.overrideMethod (c$, "readLine", 
 function () {
 Clazz.superCall (this, org.jmol.adapter.readers.cifpdb.CifReader, "readLine", []);
-if (this.line.indexOf ("#jmolscript:") >= 0) this.checkLineForScript ();
+if (this.line.indexOf ("#jmolscript:") >= 0) this.checkCurrentLineForScript ();
 return this.line;
 });
 Clazz.defineMethod (c$, "disableField", 
@@ -1004,7 +1159,7 @@ Clazz.defineStatics (c$,
 "OCCUPANCY", 9,
 "B_ISO", 10,
 "COMP_ID", 11,
-"ASYM_ID", 12,
+"AUTH_ASYM_ID", 12,
 "SEQ_ID", 13,
 "INS_CODE", 14,
 "ALT_ID", 15,
@@ -1051,7 +1206,15 @@ Clazz.defineStatics (c$,
 "CHEM_COMP_AC_Y_IDEAL", 56,
 "CHEM_COMP_AC_Z_IDEAL", 57,
 "DISORDER_ASSEMBLY", 58,
-"atomFields", ["_atom_site_type_symbol", "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site_Cartn_x", "_atom_site_Cartn_y", "_atom_site_Cartn_z", "_atom_site_occupancy", "_atom_site_b_iso_or_equiv", "_atom_site_auth_comp_id", "_atom_site_auth_asym_id", "_atom_site_auth_seq_id", "_atom_site_pdbx_PDB_ins_code", "_atom_site_label_alt_id", "_atom_site_group_PDB", "_atom_site_pdbx_PDB_model_num", "_atom_site_calc_flag", "_atom_site_disorder_group", "_atom_site_aniso_label", "_atom_site_anisotrop_id", "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", "_atom_site_aniso_U_33", "_atom_site_aniso_U_12", "_atom_site_aniso_U_13", "_atom_site_aniso_U_23", "_atom_site_anisotrop_U[1][1]", "_atom_site_anisotrop_U[2][2]", "_atom_site_anisotrop_U[3][3]", "_atom_site_anisotrop_U[1][2]", "_atom_site_anisotrop_U[1][3]", "_atom_site_anisotrop_U[2][3]", "_atom_site_U_iso_or_equiv", "_atom_site_aniso_B_11", "_atom_site_aniso_B_22", "_atom_site_aniso_B_33", "_atom_site_aniso_B_12", "_atom_site_aniso_B_13", "_atom_site_aniso_B_23", "_atom_site_aniso_Beta_11", "_atom_site_aniso_Beta_22", "_atom_site_aniso_Beta_33", "_atom_site_aniso_Beta_12", "_atom_site_aniso_Beta_13", "_atom_site_aniso_Beta_23", "_atom_site_adp_type", "_chem_comp_atom_comp_id", "_chem_comp_atom_atom_id", "_chem_comp_atom_type_symbol", "_chem_comp_atom_charge", "_chem_comp_atom_model_Cartn_x", "_chem_comp_atom_model_Cartn_y", "_chem_comp_atom_model_Cartn_z", "_chem_comp_atom_pdbx_model_Cartn_x_ideal", "_chem_comp_atom_pdbx_model_Cartn_y_ideal", "_chem_comp_atom_pdbx_model_Cartn_z_ideal", "_atom_site_disorder_assembly"],
+"ASYM_ID", 59,
+"atomFields", ["_atom_site_type_symbol", "_atom_site_label", "_atom_site_auth_atom_id", "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z", "_atom_site_Cartn_x", "_atom_site_Cartn_y", "_atom_site_Cartn_z", "_atom_site_occupancy", "_atom_site_b_iso_or_equiv", "_atom_site_auth_comp_id", "_atom_site_auth_asym_id", "_atom_site_auth_seq_id", "_atom_site_pdbx_PDB_ins_code", "_atom_site_label_alt_id", "_atom_site_group_PDB", "_atom_site_pdbx_PDB_model_num", "_atom_site_calc_flag", "_atom_site_disorder_group", "_atom_site_aniso_label", "_atom_site_anisotrop_id", "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", "_atom_site_aniso_U_33", "_atom_site_aniso_U_12", "_atom_site_aniso_U_13", "_atom_site_aniso_U_23", "_atom_site_anisotrop_U[1][1]", "_atom_site_anisotrop_U[2][2]", "_atom_site_anisotrop_U[3][3]", "_atom_site_anisotrop_U[1][2]", "_atom_site_anisotrop_U[1][3]", "_atom_site_anisotrop_U[2][3]", "_atom_site_U_iso_or_equiv", "_atom_site_aniso_B_11", "_atom_site_aniso_B_22", "_atom_site_aniso_B_33", "_atom_site_aniso_B_12", "_atom_site_aniso_B_13", "_atom_site_aniso_B_23", "_atom_site_aniso_Beta_11", "_atom_site_aniso_Beta_22", "_atom_site_aniso_Beta_33", "_atom_site_aniso_Beta_12", "_atom_site_aniso_Beta_13", "_atom_site_aniso_Beta_23", "_atom_site_adp_type", "_chem_comp_atom_comp_id", "_chem_comp_atom_atom_id", "_chem_comp_atom_type_symbol", "_chem_comp_atom_charge", "_chem_comp_atom_model_Cartn_x", "_chem_comp_atom_model_Cartn_y", "_chem_comp_atom_model_Cartn_z", "_chem_comp_atom_pdbx_model_Cartn_x_ideal", "_chem_comp_atom_pdbx_model_Cartn_y_ideal", "_chem_comp_atom_pdbx_model_Cartn_z_ideal", "_atom_site_disorder_assembly", "_atom_site_label_asym_id"],
+"OPER_ID", 12,
+"OPER_XYZ", 13,
+"operFields", ["_pdbx_struct_oper_list_matrix[1][1]", "_pdbx_struct_oper_list_matrix[1][2]", "_pdbx_struct_oper_list_matrix[1][3]", "_pdbx_struct_oper_list_vector[1]", "_pdbx_struct_oper_list_matrix[2][1]", "_pdbx_struct_oper_list_matrix[2][2]", "_pdbx_struct_oper_list_matrix[2][3]", "_pdbx_struct_oper_list_vector[2]", "_pdbx_struct_oper_list_matrix[3][1]", "_pdbx_struct_oper_list_matrix[3][2]", "_pdbx_struct_oper_list_matrix[3][3]", "_pdbx_struct_oper_list_vector[3]", "_pdbx_struct_oper_list_id", "_pdbx_struct_oper_list_symmetry_operation"],
+"ASSEM_ID", 0,
+"ASSEM_OPERS", 1,
+"ASSEM_LIST", 2,
+"assemblyFields", ["_pdbx_struct_assembly_gen_assembly_id", "_pdbx_struct_assembly_gen_oper_expression", "_pdbx_struct_assembly_gen_asym_id_list"],
 "CHEM_COMP_BOND_ATOM_ID_1", 0,
 "CHEM_COMP_BOND_ATOM_ID_2", 1,
 "CHEM_COMP_BOND_VALUE_ORDER", 2,

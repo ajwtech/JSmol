@@ -141,7 +141,7 @@ org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensFloat (this.data.toStr
 var fpt = 0;
 for (var i = 0; i < this.atomCount; i++) {
 var atom = this.atomSetCollection.addNewAtom ();
-this.parent.setAtomCoord (atom, fdata[fpt++], fdata[fpt++], fdata[fpt++]);
+this.parent.setAtomCoordXYZ (atom, fdata[fpt++], fdata[fpt++], fdata[fpt++]);
 atom.elementSymbol = this.atomSyms[i];
 atom.atomName = this.atomNames[i];
 }

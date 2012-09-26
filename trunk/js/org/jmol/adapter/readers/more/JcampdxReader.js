@@ -60,7 +60,7 @@ return -1;
 Clazz.defineMethod (c$, "readModels", 
 ($fz = function () {
 if (this.line.indexOf ("<Models") < 0) {
-this.discardLinesUntilContains ("<Models", "##");
+this.discardLinesUntilContains2 ("<Models", "##");
 if (this.line.indexOf ("<Models") < 0) return false;
 }this.models = null;
 this.line = "";
@@ -155,13 +155,13 @@ var i0 = a.getAtomSetAtomIndex (j) - ii0;
 if (a.getAtomSetAtomCount (j) != n0) {
 org.jmol.util.Logger.warn ("atom set atom count in secondary model (" + a.getAtomSetAtomCount (j) + ") is not equal to " + n0 + " -- bonding ignored");
 return ;
-}for (var i = b0; i < b1; i++) a.addNewBond (bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);
+}for (var i = b0; i < b1; i++) a.addNewBondWithOrder (bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);
 
 }
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.AtomSetCollection,~N");
 Clazz.defineMethod (c$, "readPeaks", 
 ($fz = function () {
-if (this.line.indexOf ("<Peaks") < 0) this.discardLinesUntilContains ("<Peaks", "##");
+if (this.line.indexOf ("<Peaks") < 0) this.discardLinesUntilContains2 ("<Peaks", "##");
 if (this.line.indexOf ("<Peaks") < 0) return false;
 var type = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "type").toUpperCase ();
 if (type.equals ("HNMR")) type = "1HNMR";

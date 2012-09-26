@@ -108,7 +108,7 @@ if (Clazz.instanceOf (reader, java.io.BufferedReader)) this.reader = reader;
 Clazz.defineMethod (c$, "readData", 
 function () {
 this.initialize ();
-this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this);
+this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this, null, null);
 try {
 this.initializeReader ();
 if (this.doc == null) {
@@ -125,10 +125,10 @@ if (this.reader != null) this.reader.close ();
 if (this.doc != null) this.doc.close ();
 return this.finish ();
 });
-Clazz.defineMethod (c$, "readData", 
+Clazz.defineMethod (c$, "readDataObject", 
 function (node) {
 this.initialize ();
-this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this);
+this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this, null, null);
 this.initializeReader ();
 this.processXml (node);
 return this.finish ();
@@ -326,7 +326,7 @@ this.atomSetCollection.setCollectionName (name);
 Clazz.defineMethod (c$, "cloneLastAtomSet", 
 function (atomCount, pts) {
 var lastAtomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
-this.atomSetCollection.cloneLastAtomSet (atomCount, pts);
+this.atomSetCollection.cloneLastAtomSetFromPoints (atomCount, pts);
 if (this.atomSetCollection.haveUnitCell) {
 this.iHaveUnitCell = true;
 this.doCheckUnitCell = true;
@@ -487,9 +487,9 @@ Clazz.defineMethod (c$, "checkFilter",
 return (!this.filterGroup3 || atom.group3 == null || !this.filterReject (f, "[", atom.group3.toUpperCase () + "]")) && (!this.filterAtomType || atom.atomName == null || !this.filterReject (f, ".", atom.atomName.toUpperCase () + ";")) && (!this.filterElement || atom.elementSymbol == null || !this.filterReject (f, "_", atom.elementSymbol.toUpperCase () + ";")) && (!this.filterChain || atom.chainID.charCodeAt (0) == 0 || !this.filterReject (f, ":", "" + atom.chainID)) && (!this.filterAltLoc || atom.alternateLocationID.charCodeAt (0) == 0 || !this.filterReject (f, "%", "" + atom.alternateLocationID)) && (!this.filterHetero || !this.filterReject (f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,~S");
 Clazz.defineMethod (c$, "filterReject", 
-($fz = function (f, code, atomCode) {
+function (f, code, atomCode) {
 return (f.indexOf (code) >= 0 && (f.indexOf ("!" + code) >= 0 ? f.indexOf (code + atomCode) >= 0 : f.indexOf (code + atomCode) < 0));
-}, $fz.isPrivate = true, $fz), "~S,~S,~S");
+}, "~S,~S,~S");
 Clazz.defineMethod (c$, "set2D", 
 function () {
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("is2D", Boolean.TRUE);
@@ -518,7 +518,7 @@ var q =  new org.jmol.util.Quaternion (this.matrixRotate);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationQuaternion", q);
 org.jmol.util.Logger.info ("defaultOrientationMatrix = " + this.matrixRotate);
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N");
-Clazz.defineMethod (c$, "setAtomCoord", 
+Clazz.defineMethod (c$, "setAtomCoordXYZ", 
 function (atom, x, y, z) {
 atom.set (x, y, z);
 this.setAtomCoord (atom);
@@ -565,7 +565,7 @@ if (this.ignoreFileSpaceGroupName || !this.iHaveSymmetryOperators) {
 if (!this.merging || this.symmetry == null) this.getSymmetry ();
 if (this.symmetry.createSpaceGroup (this.desiredSpaceGroupIndex, (this.spaceGroup.indexOf ("!") >= 0 ? "P1" : this.spaceGroup), this.notionalUnitCell)) {
 this.atomSetCollection.setAtomSetSpaceGroupName (this.symmetry.getSpaceGroupName ());
-this.atomSetCollection.applySymmetry (this.symmetry);
+this.atomSetCollection.applySymmetryUsing (this.symmetry);
 }} else {
 this.atomSetCollection.applySymmetry ();
 }}if (this.iHaveFractionalCoordinates && this.merging && this.symmetry != null) {
@@ -586,7 +586,7 @@ c$.getElementSymbol = Clazz.defineMethod (c$, "getElementSymbol",
 function (elementNumber) {
 return org.jmol.api.JmolAdapter.getElementSymbol (elementNumber);
 }, "~N");
-Clazz.defineMethod (c$, "fillDataBlock", 
+Clazz.defineMethod (c$, "fillDataBlockFixed", 
 function (data, col0, colWidth, minLineLen) {
 if (colWidth == 0) {
 this.fillDataBlock (data, minLineLen);
@@ -636,7 +636,7 @@ if (atomIndexes != null) atomCount = atomIndexes.length;
 var nLines = (isWide ? atomCount : atomCount * 3);
 var nFreq = ignore.length;
 var data =  new Array (nLines);
-this.fillDataBlock (data, col0, colWidth, minLineLen);
+this.fillDataBlockFixed (data, col0, colWidth, minLineLen);
 for (var i = 0, atomPt = 0; i < nLines; i++, atomPt++) {
 var values = data[i];
 var valuesY = (isWide ? null : data[++i]);
@@ -651,7 +651,7 @@ var vy = this.parseFloatStr (isWide ? values[++dataPt] : valuesY[dataPt]);
 var vz = this.parseFloatStr (isWide ? values[++dataPt] : valuesZ[dataPt]);
 if (ignore[jj]) continue ;var iAtom = (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
 if (iAtom < 0) continue ;if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("atom " + iAtom + " vib" + j + ": " + vx + " " + vy + " " + vz);
-this.atomSetCollection.addVibrationVector (iAtom0 + modelAtomCount * j++ + iAtom, vx, vy, vz, withSymmetry);
+this.atomSetCollection.addVibrationVectorWithSymmetry (iAtom0 + modelAtomCount * j++ + iAtom, vx, vy, vz, withSymmetry);
 }
 }
 }, "~N,~N,~N,~A,~B,~N,~N,~A,~N");
@@ -673,7 +673,7 @@ while (this.readLine () != null && this.line.indexOf (containsMatch) < 0) {
 }
 return this.line;
 }, "~S");
-Clazz.defineMethod (c$, "discardLinesUntilContains", 
+Clazz.defineMethod (c$, "discardLinesUntilContains2", 
 function (s1, s2) {
 while (this.readLine () != null && this.line.indexOf (s1) < 0 && this.line.indexOf (s2) < 0) {
 }
@@ -693,9 +693,9 @@ return this.line;
 Clazz.defineMethod (c$, "checkLineForScript", 
 function (line) {
 this.line = line;
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 }, "~S");
-Clazz.defineMethod (c$, "checkLineForScript", 
+Clazz.defineMethod (c$, "checkCurrentLineForScript", 
 function () {
 if (this.line.indexOf ("Jmol") >= 0) {
 if (this.line.indexOf ("Jmol PDB-encoded data") >= 0) {

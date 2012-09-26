@@ -8,7 +8,7 @@ this.setIsPDB ();
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.atomSetCollection.setAtomSetName (this.line.trim ());
 this.readAtoms ();
 this.readUnitCell ();
@@ -55,7 +55,7 @@ if (atomName.length <= 2 && group3.equals (atomName)) return atomName;
 var ch1 = (atomName.length == 4 ? atomName.charAt (0) : '\0');
 var ch2 = atomName.charAt (atomName.length == 4 ? 1 : 0);
 var isHetero = org.jmol.api.JmolAdapter.isHetero (group3);
-if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar (ch1, ch2)) return (isHetero || ch1.charCodeAt (0) != 72 ? "" + ch1 + ch2 : "H");
+if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch1, ch2)) return (isHetero || ch1.charCodeAt (0) != 72 ? "" + ch1 + ch2 : "H");
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch2)) return "" + ch2;
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch1)) return "" + ch1;
 return "Xx";

@@ -13,6 +13,10 @@ java.net.URL.setURLStreamHandlerFactory ( new org.jmol.awtjs.AjaxURLStreamHandle
 } catch (e) {
 }
 }, "org.jmol.api.JmolViewer,~O");
+Clazz.overrideMethod (c$, "isSingleThreaded", 
+function () {
+return true;
+});
 Clazz.overrideMethod (c$, "convertPointFromScreen", 
 function (display, ptTemp) {
 org.jmol.awtjs.Display.convertPointFromScreen (display, ptTemp);

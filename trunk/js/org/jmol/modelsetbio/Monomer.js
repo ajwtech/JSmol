@@ -127,7 +127,7 @@ Clazz.overrideMethod (c$, "isLeadAtom",
 function (atomIndex) {
 return atomIndex == this.leadAtomIndex;
 }, "~N");
-Clazz.defineMethod (c$, "getLeadAtom", 
+Clazz.overrideMethod (c$, "getLeadAtom", 
 function () {
 return this.getAtomFromOffsetIndex (0);
 });

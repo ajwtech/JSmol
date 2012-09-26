@@ -14,7 +14,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial, "Dots", org.jmol.shape.AtomShape);
 Clazz.prepareFields (c$, function () {
 this.bsOn =  new java.util.BitSet ();
-this.rdLast =  new org.jmol.atomdata.RadiusData ();
+this.rdLast =  new org.jmol.atomdata.RadiusData (null, 0, null, null);
 });
 Clazz.defineMethod (c$, "initShape", 
 function () {
@@ -101,7 +101,7 @@ if (this.ec == null) this.ec =  new org.jmol.geodesic.EnvelopeCalculation (this.
 });
 Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
-if (rd == null) rd =  new org.jmol.atomdata.RadiusData (0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null);
+if (rd == null) rd =  new org.jmol.atomdata.RadiusData (null, 0, org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE, null);
 if (this.bsSelected != null) bsSelected = this.bsSelected;
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("Dots.setSize " + rd.value);

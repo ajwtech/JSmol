@@ -54,11 +54,11 @@ if (this.asVector) {
 var result =  new java.util.ArrayList ();
 for (var i = 0; i <= this.xPt; i++) result.add (org.jmol.script.ScriptVariable.selectItemVar (this.xStack[i]));
 
-return  new org.jmol.script.ScriptVariable (135198, result);
+return org.jmol.script.ScriptVariable.newScriptVariableObj (135198, result);
 }if (this.xPt == 0) {
 var x = this.xStack[0];
 if (x.tok == 10 || x.tok == 7 || x.tok == 4 || x.tok == 11 || x.tok == 12) x = org.jmol.script.ScriptVariable.selectItemVar (x);
-if (this.asBitSet && x.tok == 7) x =  new org.jmol.script.ScriptVariable (10, org.jmol.script.ScriptVariable.unEscapeBitSetArray (x.value, false));
+if (this.asBitSet && x.tok == 7) x = org.jmol.script.ScriptVariable.newScriptVariableObj (10, org.jmol.script.ScriptVariable.unEscapeBitSetArray (x.value, false));
 return x;
 }}if (!allowUnderflow && (this.xPt >= 0 || this.oPt >= 0)) {
 this.eval.error (22);
@@ -98,17 +98,17 @@ return this.wasX = true;
 }, "~O");
 Clazz.defineMethod (c$, "addXStr", 
 function (x) {
-this.putX ( new org.jmol.script.ScriptVariable (4, x));
+this.putX (org.jmol.script.ScriptVariable.newScriptVariableObj (4, x));
 return this.wasX = true;
 }, "~S");
 Clazz.defineMethod (c$, "addXBs", 
 function (bs) {
-this.putX ( new org.jmol.script.ScriptVariable (10, bs));
+this.putX (org.jmol.script.ScriptVariable.newScriptVariableObj (10, bs));
 return this.wasX = true;
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "addXPt", 
 function (pt) {
-this.putX ( new org.jmol.script.ScriptVariable (8, pt));
+this.putX (org.jmol.script.ScriptVariable.newScriptVariableObj (8, pt));
 return this.wasX = true;
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "addXNum", 
@@ -123,7 +123,7 @@ case 3:
 var f = (x.value).floatValue ();
 if (f < 0 || f == 0 && 1 / f == -Infinity) {
 this.addOp (org.jmol.script.Token.tokenMinus);
-x =  new org.jmol.script.ScriptVariable (3,  new Float (-f));
+x = org.jmol.script.ScriptVariable.newScriptVariableObj (3,  new Float (-f));
 }break;
 }
 this.putX (x);
@@ -224,13 +224,13 @@ this.incrementX = (op.tok == 269484226 ? 1 : -1);
 if (this.ptid == this.ptx) {
 if (this.isSyntaxCheck) return true;
 var x = this.xStack[this.xPt];
-this.xStack[this.xPt] = ( new org.jmol.script.ScriptVariable ()).set (x, false);
+this.xStack[this.xPt] = org.jmol.script.ScriptVariable.newScriptVariableObj (4, "").set (x, false);
 return x.increment (this.incrementX);
 }break;
 case 269484192:
 if (this.wasX) break;
 this.addXInt (0);
-op =  new org.jmol.script.ScriptVariable (269484224, "-");
+op = org.jmol.script.ScriptVariable.newScriptVariableObj (269484224, "-");
 break;
 case 269484049:
 if (!this.wasX && this.oPt >= 1 && tok0 == 269484048 && !org.jmol.script.ScriptMathProcessor.isOpFunc (this.oStack[this.oPt - 1])) return false;
@@ -258,14 +258,14 @@ break;
 break;
 }if (op.tok == 269484097 && tok0 == 269484096) {
 if (this.isArrayItem && this.squareCount == 1 && this.equalCount == 0) {
-this.addXVar ( new org.jmol.script.ScriptVariable (org.jmol.script.Token.tokenArraySelector));
+this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableToken (org.jmol.script.Token.tokenArraySelector));
 break;
 }if (!this.doBitsetSelect ()) return false;
 break;
 }if (!this.operate ()) return false;
 tok0 = (this.oPt >= 0 ? this.oStack[this.oPt].tok : 0);
 }
-if (newOp != null) this.addXVar ( new org.jmol.script.ScriptVariable (269484436, newOp));
+if (newOp != null) this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (269484436, newOp));
 switch (op.tok) {
 case 269484048:
 this.parenCount++;
@@ -351,7 +351,7 @@ return false;
 }var var1 = this.xStack[this.xPt--];
 var $var = this.xStack[this.xPt];
 if ($var.tok == 7 && var1.tok == 4 && $var.intValue != 2147483647) {
-$var = org.jmol.script.ScriptVariable.selectItemVar ($var, -2147483648);
+$var = org.jmol.script.ScriptVariable.selectItemVar2 ($var, -2147483648);
 }if ($var.tok == 6) {
 var v = $var.mapValue (org.jmol.script.ScriptVariable.sValue (var1));
 this.xStack[this.xPt] = (v == null ? org.jmol.script.ScriptVariable.getVariable ("") : v);
@@ -359,13 +359,13 @@ return true;
 }var i = org.jmol.script.ScriptVariable.iValue (var1);
 switch ($var.tok) {
 default:
-$var =  new org.jmol.script.ScriptVariable (4, org.jmol.script.ScriptVariable.sValue ($var));
+$var = org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.script.ScriptVariable.sValue ($var));
 case 10:
 case 7:
 case 4:
 case 11:
 case 12:
-this.xStack[this.xPt] = org.jmol.script.ScriptVariable.selectItemVar ($var, i);
+this.xStack[this.xPt] = org.jmol.script.ScriptVariable.selectItemVar2 ($var, i);
 break;
 }
 return true;
@@ -846,7 +846,7 @@ return false;
 if (nPoints < 2 || nPoints > 4 || rPt > 2 || isNotConnected && isAllConnected) return false;
 if (isNull) return this.addXStr ("");
 if (vdw != 3.4028235E38 && (nBitSets != 2 || nPoints != 2)) return this.addXStr ("");
-rd = (vdw == 3.4028235E38 ?  new org.jmol.atomdata.RadiusData (rangeMinMax) :  new org.jmol.atomdata.RadiusData (vdw, org.jmol.atomdata.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO));
+rd = (vdw == 3.4028235E38 ?  new org.jmol.atomdata.RadiusData (rangeMinMax, 0, null, null) :  new org.jmol.atomdata.RadiusData (null, vdw, org.jmol.atomdata.RadiusData.EnumType.FACTOR, org.jmol.constant.EnumVdw.AUTO));
 var md =  new org.jmol.modelset.MeasurementData (this.viewer, points, 0, rd, strFormat, units, null, isAllConnected, isNotConnected, null, true);
 return this.addXObj (md.getMeasurements (asArray));
 case 135266305:
@@ -881,7 +881,7 @@ params.add (args[i]);
 }
 if (isSelector) {
 return this.addXObj (this.eval.getBitsetProperty (org.jmol.script.ScriptVariable.bsSelectVar (x1), tok, null, null, x1.value, [name, params], false, x1.index, false));
-}var $var = this.eval.runFunction (null, name, params, null, true, true);
+}var $var = this.eval.runFunctionRet (null, name, params, null, true, true);
 return ($var == null ? false : this.addXVar ($var));
 }, $fz.isPrivate = true, $fz), "~S,~A,~N,~B");
 Clazz.defineMethod (c$, "evaluateFind", 
@@ -1328,7 +1328,7 @@ if (isMatrix) {
 if (len == 3) return this.addXObj ( new javax.vecmath.Matrix3f (m));
 return this.addXObj ( new javax.vecmath.Matrix4f (m));
 }}}var a =  new Array (args.length);
-for (var i = a.length; --i >= 0; ) a[i] =  new org.jmol.script.ScriptVariable (args[i]);
+for (var i = a.length; --i >= 0; ) a[i] = org.jmol.script.ScriptVariable.newScriptVariableToken (args[i]);
 
 return this.addXObj (a);
 }, $fz.isPrivate = true, $fz), "~A,~B");
@@ -1496,7 +1496,7 @@ switch (tok) {
 case 135271429:
 var appID = (args.length == 2 ? org.jmol.script.ScriptVariable.sValue (args[1]) : ".");
 if (!appID.equals (".")) sb.append (this.viewer.jsEval (appID + "\1" + s));
-if (appID.equals (".") || appID.equals ("*")) this.eval.runScript (s, sb);
+if (appID.equals (".") || appID.equals ("*")) this.eval.runScriptBuffer (s, sb);
 break;
 case 135287308:
 sb.append (this.viewer.jsEval (s));
@@ -1545,7 +1545,7 @@ Clazz.defineMethod (c$, "evaluateLabel",
 var x1 = (args.length < 2 ? this.getX () : null);
 var format = (args.length == 0 ? "%U" : org.jmol.script.ScriptVariable.sValue (args[0]));
 var asArray = org.jmol.script.Token.tokAttr (intValue, 480);
-if (x1 == null) return this.addXStr (org.jmol.script.ScriptVariable.sprintf (args));
+if (x1 == null) return this.addXStr (org.jmol.script.ScriptVariable.sprintfArray (args));
 var bs = org.jmol.script.ScriptVariable.getBitSet (x1, true);
 if (bs == null) return this.addXObj (org.jmol.script.ScriptVariable.sprintf (org.jmol.util.TextFormat.formatCheck (format), x1));
 return this.addXObj (this.eval.getBitsetIdent (bs, format, x1.value, true, x1.index, asArray));
@@ -1677,7 +1677,7 @@ if (tok == 1087373320) return this.addXBs (this.viewer.getSequenceBits (withinSt
 if (bs == null) bs =  new java.util.BitSet ();
 if (!isDistance) return this.addXBs (this.viewer.getAtomBits (tok, bs));
 if (isWithinGroup) return this.addXBs (this.viewer.getGroupsWithin (Math.round (distance), bs));
-if (isVdw) rd =  new org.jmol.atomdata.RadiusData ((distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
+if (isVdw) rd =  new org.jmol.atomdata.RadiusData (null, (distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
 return this.addXBs (this.viewer.getAtomsWithin (distance, bs, isWithinModelSet, rd));
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "evaluateContact", 
@@ -1700,7 +1700,7 @@ if (i == args.length || !(Clazz.instanceOf (args[i].value, java.util.BitSet))) r
 var bsA = org.jmol.util.BitSetUtil.copy (org.jmol.script.ScriptVariable.bsSelectVar (args[i++]));
 if (this.isSyntaxCheck) return this.addXBs ( new java.util.BitSet ());
 var bsB = (i < args.length ? org.jmol.util.BitSetUtil.copy (org.jmol.script.ScriptVariable.bsSelectVar (args[i])) : null);
-var rd =  new org.jmol.atomdata.RadiusData ((distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
+var rd =  new org.jmol.atomdata.RadiusData (null, (distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
 bsB = this.eval.setContactBitSets (bsA, bsB, true, NaN, rd, false);
 bsB.or (bsA);
 return this.addXBs (bsB);
@@ -1794,7 +1794,7 @@ if (haveDecimal && atoms2 == null) atoms2 = atoms1;
 if (atoms2 != null) {
 var bsBonds =  new java.util.BitSet ();
 this.viewer.makeConnections (fmin, fmax, order, 1087373321, atoms1, atoms2, bsBonds, isBonds, false, 0);
-return this.addXVar ( new org.jmol.script.ScriptVariable (10,  new org.jmol.modelset.Bond.BondSet (bsBonds, this.viewer.getAtomIndices (this.viewer.getAtomBits (1678770178, bsBonds)))));
+return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (10,  new org.jmol.modelset.Bond.BondSet (bsBonds, this.viewer.getAtomIndices (this.viewer.getAtomBits (1678770178, bsBonds)))));
 }return this.addXBs (this.viewer.getAtomsConnected (min, max, order, atoms1));
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "evaluateSubstructure", 
@@ -1915,7 +1915,7 @@ return this.getPointOrBitsetOperation (op, x2);
 }var x1 = this.getX ();
 if (this.isSyntaxCheck) {
 if (op === org.jmol.script.Token.tokenAndFALSE || op === org.jmol.script.Token.tokenOrTRUE) this.isSyntaxCheck = false;
-return this.addXVar ( new org.jmol.script.ScriptVariable (x1));
+return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableToken (x1));
 }switch (op.tok) {
 case 269484160:
 case 269484128:
@@ -1997,7 +1997,7 @@ return this.addXFloat (x1.intValue + org.jmol.script.ScriptVariable.fValue (x2))
 }
 return this.addXInt (x1.intValue + org.jmol.script.ScriptVariable.iValue (x2));
 case 4:
-return this.addXVar ( new org.jmol.script.ScriptVariable (4, org.jmol.script.ScriptVariable.sValue (x1) + org.jmol.script.ScriptVariable.sValue (x2)));
+return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.script.ScriptVariable.sValue (x1) + org.jmol.script.ScriptVariable.sValue (x2)));
 case 9:
 var q1 =  new org.jmol.util.Quaternion (x1.value);
 switch (x2.tok) {
@@ -2433,7 +2433,7 @@ if (op.intValue == 1678770178 && Clazz.instanceOf (x2.value, org.jmol.modelset.B
 var bs = org.jmol.script.ScriptVariable.bsSelectVar (x2);
 if (bs.cardinality () == 1 && (op.intValue & 480) == 0) op.intValue |= 32;
 var val = this.eval.getBitsetProperty (bs, op.intValue, null, null, x2.value, op.value, false, x2.index, true);
-if (op.intValue == 1678770178) val =  new org.jmol.script.ScriptVariable (10,  new org.jmol.modelset.Bond.BondSet (val, this.viewer.getAtomIndices (bs)));
+if (op.intValue == 1678770178) val = org.jmol.script.ScriptVariable.newScriptVariableObj (10,  new org.jmol.modelset.Bond.BondSet (val, this.viewer.getAtomIndices (bs)));
 return this.addXObj (val);
 }
 return false;

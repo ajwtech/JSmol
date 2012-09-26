@@ -150,6 +150,7 @@ return org.jmol.viewer.JmolConstants.getGroup3Pt (group3) >= 42;
 }, "~S");
 c$.getGroup3Pt = Clazz.defineMethod (c$, "getGroup3Pt", 
 ($fz = function (group3) {
+org.jmol.viewer.JmolConstants.getGroup3List ();
 var sb =  new StringBuffer ("[");
 sb.append (group3);
 switch (group3.length) {

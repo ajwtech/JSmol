@@ -45,7 +45,7 @@ var atom1 = atts.get ("bondAtom1");
 var atom2 = atts.get ("bondAtom2");
 var order = 1;
 if (atts.containsKey ("bondOrder")) order = this.parseIntStr (atts.get ("bondOrder"));
-this.atomSetCollection.addNewBond (atom1, atom2, order);
+this.atomSetCollection.addNewBondFromNames (atom1, atom2, order);
 return ;
 }if ("electronicStructureCalculation".equals (localName)) {
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (atts.get ("calcPartialCharges"));
@@ -86,7 +86,7 @@ vd.setVolumetricVector (0, xStep, 0, 0);
 vd.setVolumetricVector (1, 0, yStep, 0);
 vd.setVolumetricVector (2, 0, 0, zStep);
 vd.setVolumetricOrigin (ox, oy, oz);
-vd.setVoxelData (voxelData);
+vd.setVoxelDataAsArray (voxelData);
 if (this.moData == null) {
 this.moData =  new java.util.Hashtable ();
 this.moData.put ("defaultCutoff", Float.$valueOf (0.01));

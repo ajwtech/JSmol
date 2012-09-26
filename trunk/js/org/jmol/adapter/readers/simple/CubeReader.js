@@ -19,10 +19,10 @@ Clazz.defineMethod (c$, "readTitleLines",
 ($fz = function () {
 if (this.readLine ().indexOf ("#JVXL") == 0) while (this.readLine ().indexOf ("#") == 0) {
 }
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 var name = this.line.trim ();
 this.readLine ();
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.atomSetCollection.setAtomSetName (name + " - " + this.line.trim ());
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtomCountAndOrigin", 
@@ -41,7 +41,7 @@ this.readLine ();
 var atom = this.atomSetCollection.addNewAtom ();
 atom.elementNumber = this.parseIntStr (this.line);
 this.parseFloat ();
-this.setAtomCoord (atom, this.parseFloat () * f, this.parseFloat () * f, this.parseFloat () * f);
+this.setAtomCoordXYZ (atom, this.parseFloat () * f, this.parseFloat () * f, this.parseFloat () * f);
 }
 }, $fz.isPrivate = true, $fz));
 });

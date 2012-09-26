@@ -10,7 +10,7 @@ return false;
 }this.vibrationNumber = ++this.modelNumber;
 if (this.desiredVibrationNumber <= 0 ? this.doGetModel (this.modelNumber, null) : this.doGetVibration (this.vibrationNumber)) {
 this.readLine ();
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.atomSetCollection.newAtomSet ();
 var name = this.line;
 this.readAtoms (modelAtomCount);

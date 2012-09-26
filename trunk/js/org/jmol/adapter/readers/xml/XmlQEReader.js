@@ -38,7 +38,7 @@ return ;
 var xyz = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensFloat (atts.get ("TAU"), null, 3);
 this.atom = this.atomSetCollection.addNewAtom ();
 this.atom.elementSymbol = atts.get ("SPECIES").trim ();
-this.parent.setAtomCoord (this.atom, xyz[0] * 0.5291772, xyz[1] * 0.5291772, xyz[2] * 0.5291772);
+this.parent.setAtomCoordXYZ (this.atom, xyz[0] * 0.5291772, xyz[1] * 0.5291772, xyz[2] * 0.5291772);
 }if ("structure".equals (localName)) {
 if (!this.parent.doGetModel (++this.parent.modelNumber, null)) {
 this.parent.checkLastModel ();

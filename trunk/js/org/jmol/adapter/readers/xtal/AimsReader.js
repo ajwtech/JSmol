@@ -54,7 +54,7 @@ org.jmol.util.Logger.warn ("cannot read line with FHI-aims line: " + this.line);
 return ;
 }if (this.isFractional != isFractional) this.setFractionalCoordinates (this.isFractional = isFractional);
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 atom.elementSymbol = tokens[4];
 }, $fz.isPrivate = true, $fz), "~A,~B");
 Clazz.defineMethod (c$, "readMultipole", 
@@ -68,7 +68,7 @@ org.jmol.util.Logger.warn ("multipole line ignored since only monopoles are curr
 return ;
 }if (this.isFractional) this.setFractionalCoordinates (this.isFractional = false);
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
+this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 atom.partialCharge = this.parseFloatStr (tokens[5]);
 }, $fz.isPrivate = true, $fz), "~A");
 });

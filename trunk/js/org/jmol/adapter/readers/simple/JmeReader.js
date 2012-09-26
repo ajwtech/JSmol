@@ -6,7 +6,7 @@ function () {
 this.atomSetCollection.setCollectionName ("JME");
 this.atomSetCollection.newAtomSet ();
 this.line = this.readLine ().$replace ('\t', ' ');
-this.checkLineForScript ();
+this.checkCurrentLineForScript ();
 this.addJmolScript ("jmeString='" + this.line + "'");
 var atomCount = this.parseInt ();
 var bondCount = this.parseInt ();
@@ -20,7 +20,7 @@ Clazz.defineMethod (c$, "readAtoms",
 for (var i = 0; i < atomCount; ++i) {
 var strAtom = this.parseToken ();
 var atom = this.atomSetCollection.addNewAtom ();
-this.setAtomCoord (atom, this.parseFloat (), this.parseFloat (), 0);
+this.setAtomCoordXYZ (atom, this.parseFloat (), this.parseFloat (), 0);
 var indexColon = strAtom.indexOf (':');
 var elementSymbol = (indexColon > 0 ? strAtom.substring (0, indexColon) : strAtom);
 if (elementSymbol.indexOf ("+") >= 0) {

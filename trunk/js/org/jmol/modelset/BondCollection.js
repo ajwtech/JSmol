@@ -46,13 +46,13 @@ Clazz.defineMethod (c$, "getBondCount",
 function () {
 return this.bondCount;
 });
-Clazz.defineMethod (c$, "getBondIterator", 
+Clazz.defineMethod (c$, "getBondIteratorForType", 
 function (bondType, bsSelected) {
 return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, bondType, bsSelected, this.viewer.getBondSelectionModeOr ());
 }, "~N,java.util.BitSet");
 Clazz.defineMethod (c$, "getBondIterator", 
 function (bsSelected) {
-return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, bsSelected);
+return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, 0, bsSelected, false);
 }, "java.util.BitSet");
 Clazz.defineMethod (c$, "getBondAtom1", 
 function (i) {
@@ -278,9 +278,9 @@ if (bond.isAromatic ()) bond.setOrder (515);
 });
 Clazz.defineMethod (c$, "assignAromaticBonds", 
 function () {
-this.assignAromaticBonds (true, null);
+this.assignAromaticBondsBs (true, null);
 });
-Clazz.defineMethod (c$, "assignAromaticBonds", 
+Clazz.defineMethod (c$, "assignAromaticBondsBs", 
 function (isUserCalculation, bsBonds) {
 if (!isUserCalculation) this.bsAromatic =  new java.util.BitSet ();
 this.bsAromaticSingle =  new java.util.BitSet ();
@@ -330,7 +330,7 @@ var bondIndex = bond.index;
 if (this.bsAromaticSingle.get (bondIndex)) return false;
 if (this.bsAromaticDouble.get (bondIndex)) return true;
 this.bsAromaticDouble.set (bondIndex);
-if (!this.assignAromaticSingle (bond.atom1, bondIndex) || !this.assignAromaticSingle (bond.atom2, bondIndex)) {
+if (!this.assignAromaticSingleForAtom (bond.atom1, bondIndex) || !this.assignAromaticSingleForAtom (bond.atom2, bondIndex)) {
 this.bsAromaticDouble.clear (bondIndex);
 return false;
 }return true;
@@ -341,12 +341,12 @@ var bondIndex = bond.index;
 if (this.bsAromaticDouble.get (bondIndex)) return false;
 if (this.bsAromaticSingle.get (bondIndex)) return true;
 this.bsAromaticSingle.set (bondIndex);
-if (!this.assignAromaticDouble (bond.atom1) || !this.assignAromaticDouble (bond.atom2)) {
+if (!this.assignAromaticDoubleForAtom (bond.atom1) || !this.assignAromaticDoubleForAtom (bond.atom2)) {
 this.bsAromaticSingle.clear (bondIndex);
 return false;
 }return true;
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Bond");
-Clazz.defineMethod (c$, "assignAromaticSingle", 
+Clazz.defineMethod (c$, "assignAromaticSingleForAtom", 
 ($fz = function (atom, notBondIndex) {
 var bonds = atom.bonds;
 if (bonds == null || this.assignAromaticSingleHetero (atom)) return false;
@@ -358,7 +358,7 @@ return false;
 }}
 return true;
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,~N");
-Clazz.defineMethod (c$, "assignAromaticDouble", 
+Clazz.defineMethod (c$, "assignAromaticDoubleForAtom", 
 ($fz = function (atom) {
 var bonds = atom.bonds;
 if (bonds == null) return false;

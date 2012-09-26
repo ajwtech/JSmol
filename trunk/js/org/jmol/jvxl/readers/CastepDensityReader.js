@@ -81,7 +81,7 @@ if (this.volumeData.isNearPlane (x, y, z, f)) this.volumeData.setVoxelMapValue (
 }
 }
 this.voxelData = null;
-}this.volumeData.setVoxelData (this.voxelData);
+}this.volumeData.setVoxelDataAsArray (this.voxelData);
 if (this.dataMin > this.params.cutoff) this.params.cutoff = 2 * this.dataMin;
 }, "~B");
 Clazz.defineMethod (c$, "skipPoints", 

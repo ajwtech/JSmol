@@ -231,10 +231,6 @@ return org.jmol.modelset.Group.getSeqcodeString (this.seqcode);
 });
 c$.getSeqcode = Clazz.defineMethod (c$, "getSeqcode", 
 function (sequenceNumber, insertionCode) {
-return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode.charAt (0));
-}, "~N,~S");
-c$.getSeqcode = Clazz.defineMethod (c$, "getSeqcode", 
-function (sequenceNumber, insertionCode) {
 return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode);
 }, "~N,~S");
 c$.getSeqcode2 = Clazz.defineMethod (c$, "getSeqcode2", 
@@ -324,7 +320,7 @@ Clazz.defineMethod (c$, "isLeadAtom",
 function (atomIndex) {
 return false;
 }, "~N");
-Clazz.defineMethod (c$, "getLeadAtom", 
+Clazz.defineMethod (c$, "getLeadAtomOr", 
 function (atom) {
 var a = this.getLeadAtom ();
 return (a == null ? atom : a);

@@ -21,17 +21,14 @@ for (var i = org.jmol.modelset.LabelToken.labelTokenIds.length; --i >= 0; ) if (
 return false;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.makeConstructor (c$, 
-($fz = function (text) {
+($fz = function (text, pt) {
 this.text = text;
-}, $fz.isPrivate = true, $fz), "~S");
-Clazz.makeConstructor (c$, 
-($fz = function (pt) {
 this.pt = pt;
-}, $fz.isPrivate = true, $fz), "~N");
+}, $fz.isPrivate = true, $fz), "~S,~N");
 c$.compile = Clazz.defineMethod (c$, "compile", 
 function (viewer, strFormat, chAtom, htValues) {
 if (strFormat == null || strFormat.length == 0) return null;
-if (strFormat.indexOf ("%") < 0 || strFormat.length < 2) return [ new org.jmol.modelset.LabelToken (strFormat)];
+if (strFormat.indexOf ("%") < 0 || strFormat.length < 2) return [ new org.jmol.modelset.LabelToken (strFormat, -1)];
 var n = 0;
 var ich = -1;
 var cch = strFormat.length;
@@ -41,21 +38,21 @@ var tokens =  new Array (n * 2 + 1);
 var ichPercent;
 var i = 0;
 for (ich = 0; (ichPercent = strFormat.indexOf ('%', ich)) >= 0; ) {
-if (ich != ichPercent) tokens[i++] =  new org.jmol.modelset.LabelToken (strFormat.substring (ich, ichPercent));
-var lt = tokens[i++] =  new org.jmol.modelset.LabelToken (ichPercent);
+if (ich != ichPercent) tokens[i++] =  new org.jmol.modelset.LabelToken (strFormat.substring (ich, ichPercent), -1);
+var lt = tokens[i++] =  new org.jmol.modelset.LabelToken (null, ichPercent);
 viewer.autoCalculate (lt.tok);
 ich = org.jmol.modelset.LabelToken.setToken (viewer, strFormat, lt, cch, chAtom.charCodeAt (0), htValues);
 }
-if (ich < cch) tokens[i++] =  new org.jmol.modelset.LabelToken (strFormat.substring (ich));
+if (ich < cch) tokens[i++] =  new org.jmol.modelset.LabelToken (strFormat.substring (ich), -1);
 return tokens;
 }, "org.jmol.viewer.Viewer,~S,~S,java.util.Map");
 c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
 function (viewer, atom, strFormat) {
 if (strFormat == null || strFormat.length == 0) return null;
 var tokens = org.jmol.modelset.LabelToken.compile (viewer, strFormat, '\0', null);
-return org.jmol.modelset.LabelToken.formatLabel (viewer, atom, tokens, '\0', null);
+return org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, atom, tokens, '\0', null);
 }, "org.jmol.viewer.Viewer,org.jmol.modelset.Atom,~S");
-c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
+c$.formatLabelAtomArray = Clazz.defineMethod (c$, "formatLabelAtomArray", 
 function (viewer, atom, tokens, chAtom, indices) {
 if (atom == null) return null;
 var strLabel = (chAtom > '0' ? null :  new StringBuffer ());
@@ -81,7 +78,7 @@ htValues.put ("LENGTH",  new Float (0));
 htValues.put ("ENERGY",  new Float (0));
 return htValues;
 });
-c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
+c$.formatLabelBond = Clazz.defineMethod (c$, "formatLabelBond", 
 function (viewer, bond, tokens, values, indices) {
 values.put ("#", "" + (bond.index + 1));
 values.put ("ORDER", "" + bond.getOrderNumberAsString ());
@@ -89,11 +86,11 @@ values.put ("TYPE", bond.getOrderName ());
 values.put ("LENGTH",  new Float (bond.atom1.distance (bond.atom2)));
 values.put ("ENERGY",  new Float (bond.getEnergy ()));
 org.jmol.modelset.LabelToken.setValues (tokens, values);
-org.jmol.modelset.LabelToken.formatLabel (viewer, bond.atom1, tokens, '1', indices);
-org.jmol.modelset.LabelToken.formatLabel (viewer, bond.atom2, tokens, '2', indices);
+org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, bond.atom1, tokens, '1', indices);
+org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, bond.atom2, tokens, '2', indices);
 return org.jmol.modelset.LabelToken.getLabel (tokens);
 }, "org.jmol.viewer.Viewer,org.jmol.modelset.Bond,~A,java.util.Map,~A");
-c$.formatLabel = Clazz.defineMethod (c$, "formatLabel", 
+c$.formatLabelMeasure = Clazz.defineMethod (c$, "formatLabelMeasure", 
 function (viewer, measurement, label, value, units) {
 var htValues =  new java.util.Hashtable ();
 htValues.put ("#", "" + (measurement.getIndex () + 1));
@@ -103,7 +100,7 @@ var tokens = org.jmol.modelset.LabelToken.compile (viewer, label, '\1', htValues
 org.jmol.modelset.LabelToken.setValues (tokens, htValues);
 var atoms = measurement.modelSet.atoms;
 var indices = measurement.getCountPlusIndices ();
-for (var i = indices[0]; i >= 1; --i) if (indices[i] >= 0) org.jmol.modelset.LabelToken.formatLabel (viewer, atoms[indices[i]], tokens, String.fromCharCode ((48 + i)), null);
+for (var i = indices[0]; i >= 1; --i) if (indices[i] >= 0) org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, atoms[indices[i]], tokens, String.fromCharCode ((48 + i)), null);
 
 label = org.jmol.modelset.LabelToken.getLabel (tokens);
 return (label == null ? "" : label);

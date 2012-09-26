@@ -63,7 +63,7 @@ if (atts.containsKey ("Type")) {
 var type = atts.get ("Type");
 if (type.equals ("Double")) order = 2;
  else if (type.equals ("Triple")) order = 3;
-}this.atomSetCollection.addNewBond (atoms[0], atoms[1], order);
+}this.atomSetCollection.addNewBondFromNames (atoms[0], atoms[1], order);
 return ;
 }}, "~S,~S,~S,java.util.Map");
 Clazz.overrideMethod (c$, "processEndElement", 

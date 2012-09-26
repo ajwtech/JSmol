@@ -263,7 +263,7 @@ return (this.dipoles[i].isBondType ());
 Clazz.defineMethod (c$, "setColixDipole", 
 ($fz = function (colix, bondTypeMask, bs) {
 if (colix == 2) return ;
-var iter = this.modelSet.getBondIterator (bondTypeMask, bs);
+var iter = this.modelSet.getBondIteratorForType (bondTypeMask, bs);
 while (iter.hasNext ()) {
 var d = this.findBondDipole (iter.next ());
 if (d != null) d.colix = colix;

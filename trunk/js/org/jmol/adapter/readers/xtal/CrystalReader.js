@@ -97,7 +97,7 @@ if (this.line.startsWith (" TOTAL ENERGY")) {
 this.readEnergy ();
 this.readLine ();
 if (this.line.startsWith (" ********")) this.discardLinesUntilContains ("SYMMETRY ALLOWED");
- else if (this.line.startsWith (" TTTTTTTT")) this.discardLinesUntilContains ("PREDICTED ENERGY CHANGE", "HHHHHHH");
+ else if (this.line.startsWith (" TTTTTTTT")) this.discardLinesUntilContains2 ("PREDICTED ENERGY CHANGE", "HHHHHHH");
 return true;
 }if (this.line.startsWith (" TYPE OF CALCULATION")) {
 this.calculationType = this.line.substring (this.line.indexOf (":") + 1).trim ();
@@ -348,7 +348,7 @@ if (this.iHaveFractionalCoordinates && !this.isProperties) {
 if (x < 0 && (this.isPolymer || this.isSlab || doNormalizePrimitive)) x += 1;
 if (y < 0 && (this.isSlab || doNormalizePrimitive)) y += 1;
 if (z < 0 && doNormalizePrimitive) z += 1;
-}this.setAtomCoord (atom, x, y, z);
+}this.setAtomCoordXYZ (atom, x, y, z);
 }
 this.atomCount = this.atomSetCollection.getAtomCount () - this.atomIndexLast;
 return true;
@@ -391,7 +391,7 @@ offset = 0;
 }var x = this.parseFloatStr (tokens[2 + offset]) + this.ptOriginShift.x;
 var y = this.parseFloatStr (tokens[3 + offset]) + this.ptOriginShift.y;
 var z = this.parseFloatStr (tokens[4 + offset]) + this.ptOriginShift.z;
-this.setAtomCoord (atom, x, y, z);
+this.setAtomCoordXYZ (atom, x, y, z);
 atom.elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (atomicNumber);
 }
 this.vInputCoords = null;
