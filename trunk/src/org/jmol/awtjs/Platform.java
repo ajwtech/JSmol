@@ -34,6 +34,9 @@ public class Platform implements ApiPlatform {
 		}
 	}
 
+  public boolean isSingleThreaded() {
+    return true;
+  }
 	// /// Display
 
 	public void convertPointFromScreen(Object display, Point3f ptTemp) {

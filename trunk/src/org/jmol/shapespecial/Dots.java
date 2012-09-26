@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-10 20:34:48 -0500 (Mon, 10 Sep 2012) $
- * $Revision: 17550 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -59,7 +59,7 @@ public class Dots extends AtomShape {
   float thisRadius;
   int thisArgb;
 
-  RadiusData rdLast = new RadiusData();
+  RadiusData rdLast = new RadiusData(null, 0, null, null);
 
   @Override
   public void initShape() {
@@ -179,7 +179,7 @@ public class Dots extends AtomShape {
   @Override
   protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
-      rd = new RadiusData(0, EnumType.ABSOLUTE, null);
+      rd = new RadiusData(null, 0, EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
