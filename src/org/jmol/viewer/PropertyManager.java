@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-12 06:45:51 -0500 (Wed, 12 Sep 2012) $
- * $Revision: 17557 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -203,7 +203,7 @@ public class PropertyManager {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = new ScriptVariableInt(n);
       else
-        args[i] = new ScriptVariable(Token.string, names[i]);
+        args[i] = ScriptVariable.newScriptVariableObj(Token.string, names[i]);
     }
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }

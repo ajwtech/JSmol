@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-17 16:50:01 -0500 (Mon, 17 Sep 2012) $
- * $Revision: 17568 $
+ * $Date: 2012-09-25 16:09:28 -0500 (Tue, 25 Sep 2012) $
+ * $Revision: 17577 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -67,7 +67,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-09-17 16:50:01 -0500 (Mon, 17 Sep 2012) $"
+        // $Date: 2012-09-25 16:09:28 -0500 (Tue, 25 Sep 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do
@@ -1093,6 +1093,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   private static int getGroup3Pt(String group3) {
+    getGroup3List();
     StringBuffer sb = new StringBuffer("[");
     sb.append(group3);
     switch (group3.length()){
