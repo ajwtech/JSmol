@@ -52,7 +52,7 @@ final public class Export3D implements JmolRendererInterface {
 
   private GData g3d;
   private short colix;
-  private HermiteRenderer hermite3d;
+  //private HermiteRenderer hermite3d;
   private int width;
   private int height;
   private int slab;
@@ -60,7 +60,7 @@ final public class Export3D implements JmolRendererInterface {
   String exportName;
 
   public Export3D() {
-    hermite3d = new HermiteRenderer(this);
+    //hermite3d = new HermiteRenderer(this);
 
   }
 
@@ -534,22 +534,22 @@ final public class Export3D implements JmolRendererInterface {
   public void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
     // strands
-    hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
+    //hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
-    hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid,
-        diameterEnd, s0, s1, s2, s3);
+    //hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid,
+      //  diameterEnd, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
                           int aspectRatio) {
-    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
-        s5, s6, s7, aspectRatio);
+    //hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+      //  s5, s6, s7, aspectRatio);
   }
 
   /*
