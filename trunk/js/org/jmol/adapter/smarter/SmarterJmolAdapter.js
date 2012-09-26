@@ -60,6 +60,7 @@ var atomSetCollection = ret;
 if (atomSetCollection.errorMessage != null) return atomSetCollection.errorMessage;
 return atomSetCollection;
 } catch (e) {
+e.printStackTrace ();
 try {
 br.close ();
 } catch (ex) {

@@ -61,6 +61,7 @@ this.fullName = this.htmlName + "__" + this.syncId + "__";
 System.out.println ("Jmol JavaScript applet " + this.fullName + " initializing");
 this.setLogging ();
 this.viewerOptions.remove ("debug");
+this.viewerOptions.put ("fullName", this.fullName);
 this.mayScript = true;
 org.jmol.appletjs.JmolAppletRegistry.checkIn (this.fullName, this);
 this.initWindows ();

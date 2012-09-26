@@ -1184,7 +1184,7 @@ if (this.trajectoryStepCount == 0) return ;
 var trajectory = this.trajectorySteps.get (0);
 var vibrations = (this.vibrationSteps == null ? null : this.vibrationSteps.get (0));
 var v =  new javax.vecmath.Vector3f ();
-if (this.vibrationSteps != null && vibrations.length < this.atomCount || trajectory.length < this.atomCount) {
+if (this.vibrationSteps != null && vibrations != null && vibrations.length < this.atomCount || trajectory.length < this.atomCount) {
 this.errorMessage = "File cannot be loaded as a trajectory";
 return ;
 }for (var i = 0; i < this.atomCount; i++) {

@@ -23,8 +23,9 @@ import org.jmol.viewer.Viewer;
  *
  */
 public class Platform implements ApiPlatform {
-
+  Object display;
 	public void setViewer(JmolViewer viewer, Object display) {
+		this.display = display;
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
@@ -200,7 +201,7 @@ public class Platform implements ApiPlatform {
 	}
 
 	public boolean isHeadless() {
-		return true;
+		return false;
 	}
 
   private JmolFileAdapter fileAdapter;

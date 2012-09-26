@@ -1416,7 +1416,7 @@ this.contextPath += " >> " + name;
 var isTry = ($function.tok == 364558);
 this.thisContext.isFunction = !isTry;
 this.functionName = name;
-if (Clazz.instanceOf ($function, org.jmol.script.ParallelProcessor)) {
+if (Clazz.instanceOf ($function, org.jmol.thread.ScriptParallelProcessor)) {
 {
 this.parallelProcessor = $function;
 this.vProcess = null;

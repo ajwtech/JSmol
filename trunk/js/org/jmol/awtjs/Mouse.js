@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["org.jmol.api.JmolMouseInterface"], "org.jmol.awtjs.Mouse", ["java.lang.Character", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.api.JmolMouseInterface", "$.Event"], "org.jmol.awtjs.Mouse", ["java.lang.Character", "org.jmol.util.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.actionManager = null;
@@ -26,6 +26,9 @@ Clazz.overrideMethod (c$, "handleOldJvm10Event",
 function (id, x, y, modifiers, time) {
 modifiers = org.jmol.awtjs.Mouse.applyLeftMouse (modifiers);
 switch (id) {
+case -1:
+this.mouseWheel (time, x, modifiers | 32);
+break;
 case 501:
 this.xWhenPressed = x;
 this.yWhenPressed = y;

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ParallelProcessor", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -1009,7 +1009,7 @@ this.tokenCommand.value = ident;
 return 2;
 }if (this.nTokens == 1) {
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
-this.thisFunction = (this.tokCommand == 102436 ?  new org.jmol.script.ParallelProcessor (ident, this.tokCommand) :  new org.jmol.script.ScriptFunction (ident, this.tokCommand));
+this.thisFunction = (this.tokCommand == 102436 ?  new org.jmol.thread.ScriptParallelProcessor (ident, this.tokCommand) :  new org.jmol.script.ScriptFunction (ident, this.tokCommand));
 this.htUserFunctions.put (ident, Boolean.TRUE);
 this.flowContext.setFunction (this.thisFunction);
 break;
@@ -1315,7 +1315,7 @@ switch (this.tokCommand) {
 case 364558:
 this.flowContext =  new org.jmol.script.ScriptFlowContext (this, ct, pt, this.flowContext);
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
-this.thisFunction =  new org.jmol.script.ParallelProcessor ("", this.tokCommand);
+this.thisFunction =  new org.jmol.thread.ScriptParallelProcessor ("", this.tokCommand);
 this.flowContext.setFunction (this.thisFunction);
 this.pushCount++;
 this.vPush.add (ct);

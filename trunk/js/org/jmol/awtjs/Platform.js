@@ -1,11 +1,13 @@
 ﻿Clazz.declarePackage ("org.jmol.awtjs");
 Clazz.load (["org.jmol.api.ApiPlatform"], "org.jmol.awtjs.Platform", ["java.net.URL", "org.jmol.api.Interface", "org.jmol.awtjs.AjaxURLStreamHandlerFactory", "$.Display", "$.Font", "$.Image", "$.JmolFile", "$.JmolFileAdapter", "$.Mouse"], function () {
 c$ = Clazz.decorateAsClass (function () {
+this.display = null;
 this.fileAdapter = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.awtjs, "Platform", null, org.jmol.api.ApiPlatform);
 Clazz.overrideMethod (c$, "setViewer", 
 function (viewer, display) {
+this.display = display;
 try {
 java.net.URL.setURLStreamHandlerFactory ( new org.jmol.awtjs.AjaxURLStreamHandlerFactory ());
 } catch (e) {
@@ -148,7 +150,7 @@ return null;
 }, "~O,~S,~A");
 Clazz.overrideMethod (c$, "isHeadless", 
 function () {
-return true;
+return false;
 });
 Clazz.overrideMethod (c$, "getFileAdapter", 
 function () {

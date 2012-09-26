@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Thread", "java.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.util.Escape", "$.Logger", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["java.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.animationReplayMode = null;
@@ -22,9 +22,6 @@ this.bsVisibleFrames = null;
 this.firstFrameDelay = 0;
 this.intAnimThread = 0;
 this.lastFrameDelay = 1;
-if (!Clazz.isClassDefined ("org.jmol.viewer.AnimationManager.AnimationThread")) {
-org.jmol.viewer.AnimationManager.$AnimationManager$AnimationThread$ ();
-}
 Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "AnimationManager");
 Clazz.prepareFields (c$, function () {
@@ -245,7 +242,7 @@ return ;
 this.animationPaused = false;
 if (this.animationThread == null) {
 this.intAnimThread++;
-this.animationThread = Clazz.innerTypeInstance (org.jmol.viewer.AnimationManager.AnimationThread, this, null, this.firstModelIndex, this.lastModelIndex, this.intAnimThread);
+this.animationThread =  new org.jmol.thread.AnimationThread (this, this.viewer, this.firstModelIndex, this.lastModelIndex, this.intAnimThread);
 this.animationThread.start ();
 }});
 Clazz.defineMethod (c$, "setAnimationNext", 
@@ -297,73 +294,4 @@ for (var i = i0; i <= i1; i++) nsec += this.viewer.getFrameDelayMs (i) / 1000;
 
 return nsec;
 });
-c$.$AnimationManager$AnimationThread$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.framePointer = 0;
-this.framePointer2 = 0;
-this.intThread = 0;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.AnimationManager, "AnimationThread", Thread);
-Clazz.makeConstructor (c$, 
-function (a, b, c) {
-Clazz.superConstructor (this, org.jmol.viewer.AnimationManager.AnimationThread, []);
-this.framePointer = a;
-this.framePointer2 = b;
-this.setName ("AnimationThread");
-this.intThread = c;
-}, "~N,~N,~N");
-Clazz.overrideMethod (c$, "run", 
-function () {
-var a = System.currentTimeMillis ();
-var b = 0;
-var c;
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("animation thread " + this.intThread + " running");
-this.b$["org.jmol.viewer.AnimationManager"].viewer.requestRepaintAndWait ();
-try {
-c = b - (System.currentTimeMillis () - a);
-if (c > 0) Thread.sleep (c);
-var d = true;
-while (!this.isInterrupted () && this.b$["org.jmol.viewer.AnimationManager"].$animationOn) {
-if (this.b$["org.jmol.viewer.AnimationManager"].currentModelIndex == this.framePointer) {
-b += this.b$["org.jmol.viewer.AnimationManager"].firstFrameDelayMs;
-c = b - (System.currentTimeMillis () - a);
-if (c > 0) Thread.sleep (c);
-}if (this.b$["org.jmol.viewer.AnimationManager"].currentModelIndex == this.framePointer2) {
-b += this.b$["org.jmol.viewer.AnimationManager"].lastFrameDelayMs;
-c = b - (System.currentTimeMillis () - a);
-if (c > 0) Thread.sleep (c);
-}if (!d && this.b$["org.jmol.viewer.AnimationManager"].lastModelPainted == this.b$["org.jmol.viewer.AnimationManager"].currentModelIndex && !this.b$["org.jmol.viewer.AnimationManager"].setAnimationNext ()) {
-org.jmol.util.Logger.debug ("animation thread " + this.intThread + " exiting");
-this.b$["org.jmol.viewer.AnimationManager"].setAnimationOff (false);
-return ;
-}d = false;
-b += Math.round (((1000 / this.b$["org.jmol.viewer.AnimationManager"].animationFps) + this.b$["org.jmol.viewer.AnimationManager"].viewer.getFrameDelayMs (this.b$["org.jmol.viewer.AnimationManager"].currentModelIndex)));
-c = b - (System.currentTimeMillis () - a);
-while (!this.isInterrupted () && this.b$["org.jmol.viewer.AnimationManager"].$animationOn && !this.b$["org.jmol.viewer.AnimationManager"].viewer.getRefreshing ()) {
-Thread.sleep (10);
-}
-if (!this.b$["org.jmol.viewer.AnimationManager"].viewer.getSpinOn ()) this.b$["org.jmol.viewer.AnimationManager"].viewer.refresh (1, "animationThread");
-c = b - (System.currentTimeMillis () - a);
-if (c > 0) Thread.sleep (c);
-}
-} catch (ie) {
-if (Clazz.exceptionOf (ie, InterruptedException)) {
-org.jmol.util.Logger.debug ("animation thread interrupted!");
-try {
-this.b$["org.jmol.viewer.AnimationManager"].setAnimationOn (false);
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
-} else {
-throw ie;
-}
-}
-});
-c$ = Clazz.p0p ();
-};
 });

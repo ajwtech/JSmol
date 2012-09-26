@@ -1,18 +1,12 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Boolean", "$.Thread", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.load (["java.util.ArrayList"], "org.jmol.viewer.ScriptManager", ["java.lang.Boolean", "$.Thread", "org.jmol.thread.CommandWatcherThread", "$.ScriptQueueThread", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.queueThreads = null;
 this.scriptQueueRunning = null;
 this.scriptQueue = null;
 this.commandWatcherThread = null;
-if (!Clazz.isClassDefined ("org.jmol.viewer.ScriptManager.ScriptQueueRunnable")) {
-org.jmol.viewer.ScriptManager.$ScriptManager$ScriptQueueRunnable$ ();
-}
 this.useCommandWatcherThread = false;
-if (!Clazz.isClassDefined ("org.jmol.viewer.ScriptManager.CommandWatcher")) {
-org.jmol.viewer.ScriptManager.$ScriptManager$CommandWatcher$ ();
-}
 Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "ScriptManager");
 Clazz.prepareFields (c$, function () {
@@ -27,6 +21,7 @@ this.viewer = viewer;
 Clazz.defineMethod (c$, "clear", 
 function () {
 this.startCommandWatcher (false);
+this.interruptQueueThreads ();
 });
 Clazz.defineMethod (c$, "addScript", 
 function (strScript, isScriptFile, isQuiet) {
@@ -88,14 +83,12 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug (this.scriptQueue
 }}
 }, "~S");
 Clazz.defineMethod (c$, "startScriptQueue", 
-function (startedByCommandWatcher) {
+($fz = function (startedByCommandWatcher) {
 var pt = (startedByCommandWatcher ? 1 : 0);
 if (this.scriptQueueRunning[pt]) return ;
 this.scriptQueueRunning[pt] = true;
-this.queueThreads[pt] =  new Thread (Clazz.innerTypeInstance (org.jmol.viewer.ScriptManager.ScriptQueueRunnable, this, null, startedByCommandWatcher, pt));
-this.queueThreads[pt].setName ("QueueThread" + pt);
-this.queueThreads[pt].start ();
-}, "~B");
+this.queueThreads[pt] =  new org.jmol.thread.ScriptQueueThread (this, this.viewer, startedByCommandWatcher, pt);
+}, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "getScriptItem", 
 function (watching, isByCommandWatcher) {
 var scriptItem = this.scriptQueue.get (0);
@@ -108,13 +101,10 @@ function (isStart) {
 this.useCommandWatcherThread = isStart;
 if (isStart) {
 if (this.commandWatcherThread != null) return ;
-this.commandWatcherThread =  new Thread (Clazz.innerTypeInstance (org.jmol.viewer.ScriptManager.CommandWatcher, this, null));
-this.commandWatcherThread.setName ("CommmandWatcherThread");
-this.commandWatcherThread.start ();
+this.commandWatcherThread =  new org.jmol.thread.CommandWatcherThread (this);
 } else {
 if (this.commandWatcherThread == null) return ;
-this.commandWatcherThread.interrupt ();
-this.commandWatcherThread = null;
+this.clearCommandWatcherThread ();
 }if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.info ("command watcher " + (isStart ? "started" : "stopped") + this.commandWatcherThread);
 }}, "~B");
@@ -124,109 +114,25 @@ for (var i = 0; i < this.queueThreads.length; i++) {
 if (this.queueThreads[i] != null) this.queueThreads[i].interrupt ();
 }
 });
-c$.$ScriptManager$ScriptQueueRunnable$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.startedByCommandThread = false;
-this.pt = 0;
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.ScriptManager, "ScriptQueueRunnable", null, Runnable);
-Clazz.makeConstructor (c$, 
-function (a, b) {
-this.startedByCommandThread = a;
-this.pt = b;
-}, "~B,~N");
-Clazz.overrideMethod (c$, "run", 
+Clazz.defineMethod (c$, "clearCommandWatcherThread", 
 function () {
-while (this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () != 0) {
-if (!this.runNextScript ()) try {
-Thread.sleep (100);
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (this + " Exception " + e.getMessage ());
-break;
-} else {
-throw e;
-}
-}
-}
-this.b$["org.jmol.viewer.ScriptManager"].queueThreads[this.pt].interrupt ();
-this.stop ();
+if (this.commandWatcherThread == null) return ;
+this.commandWatcherThread.interrupt ();
+this.commandWatcherThread = null;
 });
-Clazz.defineMethod (c$, "stop", 
+Clazz.defineMethod (c$, "queueThreadFinished", 
+function (pt) {
+this.queueThreads[pt].interrupt ();
+this.scriptQueueRunning[pt] = false;
+this.queueThreads[pt] = null;
+this.viewer.setSyncDriver (4);
+}, "~N");
+Clazz.defineMethod (c$, "runScriptNow", 
 function () {
-this.b$["org.jmol.viewer.ScriptManager"].scriptQueueRunning[this.pt] = false;
-this.b$["org.jmol.viewer.ScriptManager"].queueThreads[this.pt] = null;
-this.b$["org.jmol.viewer.ScriptManager"].viewer.setSyncDriver (4);
-});
-Clazz.defineMethod (c$, "runNextScript", 
-($fz = function () {
-if (this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () == 0) return false;
-var a = this.b$["org.jmol.viewer.ScriptManager"].getScriptItem (false, this.startedByCommandThread);
-if (a == null) return false;
-var b = a.get (0);
-var c = a.get (1);
-var d = a.get (2);
-var e = (a.get (3)).booleanValue ();
-var f = (a.get (4)).booleanValue ();
-if (org.jmol.util.Logger.debugging) {
-org.jmol.util.Logger.info ("Queue[" + this.pt + "][" + this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () + "] scripts; running: " + b);
-}this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.remove (0);
-this.runScript (d, b, c, e, f);
-if (this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () == 0) {
-return false;
-}return true;
-}, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "runScript", 
-($fz = function (a, b, c, d, e) {
-this.b$["org.jmol.viewer.ScriptManager"].viewer.evalStringWaitStatus (a, b, c, d, e, true);
-}, $fz.isPrivate = true, $fz), "~S,~S,~S,~B,~B");
-c$ = Clazz.p0p ();
-};
-c$.$ScriptManager$CommandWatcher$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-Clazz.instantialize (this, arguments);
-}, org.jmol.viewer.ScriptManager, "CommandWatcher", null, Runnable);
-Clazz.overrideMethod (c$, "run", 
-function () {
-Thread.currentThread ().setPriority (1);
-var a = 50;
-while (this.b$["org.jmol.viewer.ScriptManager"].commandWatcherThread != null) {
-try {
-Thread.sleep (a);
-if (this.b$["org.jmol.viewer.ScriptManager"].commandWatcherThread != null) {
-if (this.b$["org.jmol.viewer.ScriptManager"].scriptQueue.size () > 0) {
-var b = this.b$["org.jmol.viewer.ScriptManager"].getScriptItem (true, true);
-if (b != null) {
-b.set (5, Integer.$valueOf (0));
-this.b$["org.jmol.viewer.ScriptManager"].startScriptQueue (true);
-}}}} catch (e$$) {
-if (Clazz.exceptionOf (e$$, InterruptedException)) {
-var ie = e$$;
-{
-org.jmol.util.Logger.warn ("CommandWatcher InterruptedException! " + this);
-break;
-}
-} else if (Clazz.exceptionOf (e$$, Exception)) {
-var ie = e$$;
-{
-var b = "script processing ERROR:\n\n" + ie.toString ();
-for (var c = 0; c < ie.getStackTrace ().length; c++) {
-b += "\n" + ie.getStackTrace ()[c].toString ();
-}
-org.jmol.util.Logger.warn ("CommandWatcher Exception! " + b);
-break;
-}
-} else {
-throw e$$;
-}
-}
-}
-this.b$["org.jmol.viewer.ScriptManager"].commandWatcherThread = null;
-});
-c$ = Clazz.p0p ();
-};
+if (this.scriptQueue.size () > 0) {
+var scriptItem = this.getScriptItem (true, true);
+if (scriptItem != null) {
+scriptItem.set (5, Integer.$valueOf (0));
+this.startScriptQueue (true);
+}}});
 });
