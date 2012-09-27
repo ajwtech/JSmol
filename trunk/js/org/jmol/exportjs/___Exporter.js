@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.exportjs");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.util.GData"], ["org.jmol.exportjs.UseTable", "$.___Exporter"], ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.OutputStreamWriter", "java.lang.Float", "$.Short", "$.StringBuffer", "java.text.SimpleDateFormat", "java.util.ArrayList", "$.Date", "javax.vecmath.Matrix3f", "org.jmol.util.Colix", "$.MeshSurface", "$.Quaternion"], function () {
+Clazz.load (["javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.util.GData"], "org.jmol.exportjs.___Exporter", ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.OutputStreamWriter", "java.lang.Float", "$.Short", "$.StringBuffer", "java.text.SimpleDateFormat", "java.util.ArrayList", "$.Date", "$.Hashtable", "javax.vecmath.Matrix3f", "org.jmol.util.Colix", "$.MeshSurface", "$.Quaternion"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.privateKey = 0;
@@ -348,23 +348,4 @@ this.outputComment ("end text " + this.nText + ": " + text);
 }, "~N,~N,~N,~N,~S,org.jmol.util.JmolFont");
 Clazz.defineStatics (c$,
 "degreesPerRadian", (57.29577951308232));
-c$ = Clazz.decorateAsClass (function () {
-this.iObj = 0;
-this.keyword = null;
-this.term = 0;
-Clazz.instantialize (this, arguments);
-}, org.jmol.exportjs, "UseTable", java.util.Hashtable);
-Clazz.makeConstructor (c$, 
-function (keyword) {
-Clazz.superConstructor (this, org.jmol.exportjs.UseTable, []);
-this.keyword = keyword;
-this.term = keyword.charAt (keyword.length - 1);
-}, "~S");
-Clazz.defineMethod (c$, "getDef", 
-function (key) {
-if (this.containsKey (key)) return this.keyword + this.get (key) + this.term;
-var id = "_" + (this.iObj++);
-this.put (key, id);
-return id;
-}, "~S");
 });

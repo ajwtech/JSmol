@@ -2976,6 +2976,10 @@ this.render1 (gLeft, this.getImage (false), 0, 0);
 Clazz.defineMethod (c$, "updateJS", 
 function (width, height) {
 {
+if (this.updateWindow(width, height)) {
+this.render();
+}
+this.notifyViewerRepaintDone();
 }}, "~N,~N");
 Clazz.defineMethod (c$, "updateWindow", 
 ($fz = function (width, height) {
