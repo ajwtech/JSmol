@@ -316,7 +316,7 @@ throw e;
 "LOAD_ATOM_DATA_TYPES", "xyz;vxyz;vibration;temperature;occupancy;partialcharge",
 "radiansPerDegree", (0.017453292519943295),
 "allowedQuaternionFrames", "RC;RP;a;b;c;n;p;q;x;",
-"EXPORT_DRIVER_LIST", "Idtf;Js;Maya;Povray;Vrml;X3d;Tachyon;Obj");
+"EXPORT_DRIVER_LIST", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
 c$.center = c$.prototype.center =  new javax.vecmath.Vector3f (0, 0, 0);
 c$.axisX = c$.prototype.axisX =  new javax.vecmath.Vector3f (1, 0, 0);
 c$.axisY = c$.prototype.axisY =  new javax.vecmath.Vector3f (0, 1, 0);

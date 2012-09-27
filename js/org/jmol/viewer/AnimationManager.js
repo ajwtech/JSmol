@@ -52,8 +52,8 @@ var ids = null;
 var isSameSource = false;
 if (this.currentModelIndex != modelIndex) {
 if (modelCount > 0) {
-var toDataFrame = this.viewer.isJmolDataFrame (modelIndex);
-var fromDataFrame = this.viewer.isJmolDataFrame (this.currentModelIndex);
+var toDataFrame = this.viewer.isJmolDataFrameForModel (modelIndex);
+var fromDataFrame = this.viewer.isJmolDataFrameForModel (this.currentModelIndex);
 if (fromDataFrame) this.viewer.setJmolDataFrame (null, -1, this.currentModelIndex);
 if (this.currentModelIndex != -1) this.viewer.saveModelOrientation ();
 if (fromDataFrame || toDataFrame) {
@@ -96,12 +96,12 @@ return ;
 }if (this.frameStep == 0) return ;
 var nDisplayed = 0;
 var frameDisplayed = 0;
-for (var i = this.firstModelIndex; i != this.lastModelIndex; i += this.frameStep) if (!this.viewer.isJmolDataFrame (i)) {
+for (var i = this.firstModelIndex; i != this.lastModelIndex; i += this.frameStep) if (!this.viewer.isJmolDataFrameForModel (i)) {
 this.bsVisibleFrames.set (i);
 nDisplayed++;
 frameDisplayed = i;
 }
-if (this.firstModelIndex == this.lastModelIndex || !this.viewer.isJmolDataFrame (this.lastModelIndex) || nDisplayed == 0) {
+if (this.firstModelIndex == this.lastModelIndex || !this.viewer.isJmolDataFrameForModel (this.lastModelIndex) || nDisplayed == 0) {
 this.bsVisibleFrames.set (this.lastModelIndex);
 if (nDisplayed == 0) this.firstModelIndex = this.lastModelIndex;
 nDisplayed = 0;

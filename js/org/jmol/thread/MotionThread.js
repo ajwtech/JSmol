@@ -175,7 +175,7 @@ if (this.center != null) this.transformManager.fixedRotationCenter.add (this.aaS
 if (this.navCenter != null && this.transformManager.mode == 1) {
 var pt =  new javax.vecmath.Point3f (this.transformManager.navigationCenter);
 pt.add (this.aaStepNavCenter);
-this.transformManager.navigate (0, pt);
+this.transformManager.navigatePt (0, pt);
 if (!Float.isNaN (this.xNav) && !Float.isNaN (this.yNav)) this.transformManager.navTranslatePercent (0, this.xNavTransStart + this.xNavTransDelta * fStep, this.yNavTransStart + this.yNavTransDelta * fStep);
 if (!Float.isNaN (this.navDepth)) this.transformManager.setNavigationDepthPercent (0, this.navDepthStart + this.navDepthDelta * fStep);
 }this.targetTime += this.frameTimeMillis;

@@ -407,7 +407,7 @@ this.navCenter =  new javax.vecmath.Point3f ();
 Clazz.makeConstructor (c$, 
 function (a) {
 if (a) {
-var b = this.b$["org.jmol.viewer.StateManager"].viewer.getModelSetAuxiliaryInfo ("defaultOrientationMatrix");
+var b = this.b$["org.jmol.viewer.StateManager"].viewer.getModelSetAuxiliaryInfoValue ("defaultOrientationMatrix");
 if (b == null) this.rotationMatrix.setIdentity ();
  else this.rotationMatrix.set (b);
 } else {
@@ -805,7 +805,7 @@ this.setParameterValue ("defaultColorScheme", "Jmol");
 this.setParameterValue ("defaultDirectoryLocal", "");
 this.setParameterValue ("defaults", "Jmol");
 this.setParameterValue ("defaultVDW", "Jmol");
-this.setParameterValue ("exportDrivers", "Idtf;Js;Maya;Povray;Vrml;X3d;Tachyon;Obj");
+this.setParameterValue ("exportDrivers", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
 this.setParameterValue ("propertyAtomNumberColumnCount", 0);
 this.setParameterValue ("propertyAtomNumberField", 0);
 this.setParameterValue ("propertyDataColumnCount", 0);

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -380,7 +380,7 @@ public abstract class Shape {
   }
 
   protected int coordinateInRange(int x, int y, Point3f vertex, int dmin2, Point3i ptXY) {
-    viewer.transformPoint(vertex, ptXY);
+    viewer.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);
   }

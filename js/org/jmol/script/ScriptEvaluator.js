@@ -104,7 +104,7 @@ Clazz.defineMethod (c$, "evaluateCompiledScript",
 function (isCmdLine_c_or_C_Option, isCmdLine_C_Option, historyDisabled, listCommands, outputBuffer) {
 var tempOpen = this.isCmdLine_C_Option;
 this.isCmdLine_C_Option = isCmdLine_C_Option;
-this.viewer.pushHoldRepaint ("runEval");
+this.viewer.pushHoldRepaintWhy ("runEval");
 this.interruptExecution = this.executionPaused = false;
 this.executionStepping = false;
 this.isExecuting = true;
@@ -146,7 +146,7 @@ if (this.errorMessage == null && this.interruptExecution) this.setErrorMessage (
  else if (!this.tQuiet && !this.isSyntaxCheck) this.viewer.scriptStatus ("Script completed");
 this.isExecuting = this.isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
 this.viewer.setTainted (true);
-this.viewer.popHoldRepaint ("runEval");
+this.viewer.popHoldRepaintWhy ("runEval");
 }, "~B,~B,~B,~B,StringBuffer");
 Clazz.defineMethod (c$, "runScriptBuffer", 
 function (script, outputBuffer) {
@@ -195,7 +195,7 @@ Clazz.defineMethod (c$, "pauseExecution",
 function (withDelay) {
 if (this.isSyntaxCheck || this.viewer.isHeadless ()) return ;
 if (withDelay) this.delayMillis (-100);
-this.viewer.popHoldRepaint ("pauseExecution");
+this.viewer.popHoldRepaintWhy ("pauseExecution");
 this.executionStepping = false;
 this.executionPaused = true;
 }, "~B");
@@ -1299,7 +1299,7 @@ Clazz.defineMethod (c$, "compileScriptFileInternal",
 if (filename.toLowerCase ().indexOf ("javascript:") == 0) return this.compileScript (filename, this.viewer.jsEval (filename.substring (11)), this.debugScript);
 var data =  new Array (2);
 data[0] = filename;
-if (!this.viewer.getFileAsString (data, 2147483647, false)) {
+if (!this.viewer.getFileAsStringBin (data, 2147483647, false)) {
 this.setErrorMessage ("io error reading " + data[0] + ": " + data[1]);
 return false;
 }if (("\n" + data[1]).indexOf ("\nJmolManifest.txt\n") >= 0) {
@@ -1309,13 +1309,13 @@ path = "|state.spt";
 filename += "|";
 } else {
 data[0] = filename += "|JmolManifest.txt";
-if (!this.viewer.getFileAsString (data, 2147483647, false)) {
+if (!this.viewer.getFileAsStringBin (data, 2147483647, false)) {
 this.setErrorMessage ("io error reading " + data[0] + ": " + data[1]);
 return false;
 }path = org.jmol.util.ZipUtil.getManifestScriptPath (data[1]);
 }if (path != null && path.length > 0) {
 data[0] = filename = filename.substring (0, filename.lastIndexOf ("|")) + path;
-if (!this.viewer.getFileAsString (data, 2147483647, false)) {
+if (!this.viewer.getFileAsStringBin (data, 2147483647, false)) {
 this.setErrorMessage ("io error reading " + data[0] + ": " + data[1]);
 return false;
 }}}this.scriptFileName = filename;
@@ -3675,7 +3675,7 @@ Clazz.defineMethod (c$, "checkContinue",
 ($fz = function () {
 if (this.interruptExecution) return false;
 if (this.executionStepping && this.isCommandDisplayable (this.pc)) {
-this.viewer.scriptStatus ("Next: " + this.getNextStatement (), "stepping -- type RESUME to continue", 0, null);
+this.viewer.setScriptStatus ("Next: " + this.getNextStatement (), "stepping -- type RESUME to continue", 0, null);
 this.executionPaused = true;
 } else if (!this.executionPaused) {
 return true;
@@ -3684,7 +3684,7 @@ org.jmol.util.Logger.info ("script execution paused at command " + (this.pc + 1)
 }try {
 this.refresh ();
 while (this.executionPaused) {
-this.viewer.popHoldRepaint ("pause");
+this.viewer.popHoldRepaintWhy ("pause");
 Thread.sleep (100);
 var script = this.viewer.getInterruptScript ();
 if (script !== "") {
@@ -3714,13 +3714,13 @@ this.scriptStatusOrBuffer (this.errorMessage);
 this.setErrorMessage (null);
 }this.restoreScriptContext (scSave, true, false, false);
 this.pauseExecution (false);
-}this.viewer.pushHoldRepaint ("pause");
+}this.viewer.pushHoldRepaintWhy ("pause");
 }
 if (!this.isSyntaxCheck && !this.interruptExecution && !this.executionStepping) {
 this.viewer.scriptStatus ("script execution " + (this.$error || this.interruptExecution ? "interrupted" : "resumed"));
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-this.viewer.pushHoldRepaint ("pause");
+this.viewer.pushHoldRepaintWhy ("pause");
 } else {
 throw e;
 }
@@ -4802,7 +4802,7 @@ if (!this.isSyntaxCheck) this.viewer.setNavigationDepthPercent (timeSec, depth);
 continue ;case 12289:
 pt = this.centerParameter (++i);
 i = this.iToken;
-if (!this.isSyntaxCheck) this.viewer.navigate (timeSec, pt);
+if (!this.isSyntaxCheck) this.viewer.navigatePt (timeSec, pt);
 continue ;case 528432:
 switch (this.getToken (++i).tok) {
 case 1112541205:
@@ -4827,7 +4827,7 @@ this.error (22);
 break;
 }
 var degrees = this.floatParameter (i);
-if (!this.isSyntaxCheck) this.viewer.navigate (timeSec, rotAxis, degrees);
+if (!this.isSyntaxCheck) this.viewer.navigateAxis (timeSec, rotAxis, degrees);
 continue ;case 4160:
 var x = NaN;
 var y = NaN;
@@ -4862,7 +4862,7 @@ pathGuide =  new Array (n);
 for (var j = 0; j < n; j++) {
 pathGuide[j] = vp.get (j);
 }
-this.viewer.navigate (timeSec, pathGuide);
+this.viewer.navigateGuide (timeSec, pathGuide);
 continue ;}break;
 case 3145756:
 if (i != 1) this.error (22);
@@ -4881,7 +4881,7 @@ this.refresh ();
 if (path == null) this.error (22);
 var indexStart = Math.round ((this.isFloatParameter (i + 1) ? this.floatParameter (++i) : 0));
 var indexEnd = Math.round ((this.isFloatParameter (i + 1) ? this.floatParameter (++i) : 2147483647));
-if (!this.isSyntaxCheck) this.viewer.navigate (timeSec, path, theta, indexStart, indexEnd);
+if (!this.isSyntaxCheck) this.viewer.navigatePath (timeSec, path, theta, indexStart, indexEnd);
 continue ;}var v =  new java.util.ArrayList ();
 while (this.isCenterParameter (i + 1)) {
 v.add (this.centerParameter (++i));
@@ -4889,7 +4889,7 @@ i = this.iToken;
 }
 if (v.size () > 0) {
 path = v.toArray ( new Array (v.size ()));
-if (!this.isSyntaxCheck) this.viewer.navigate (timeSec, path, theta, 0, 2147483647);
+if (!this.isSyntaxCheck) this.viewer.navigatePath (timeSec, path, theta, 0, 2147483647);
 continue ;}default:
 this.error (22);
 }
@@ -5299,14 +5299,14 @@ var ptColor = 0;
 var energy = 0;
 var addGroup = false;
 if (this.statementLength == 1) {
-if (!this.isSyntaxCheck) this.viewer.rebond (this.isStateScript);
+if (!this.isSyntaxCheck) this.viewer.rebondState (this.isStateScript);
 return ;
 }for (var i = index; i < this.statementLength; ++i) {
 switch (this.getToken (i).tok) {
 case 1048589:
 case 1048588:
 this.checkLength (2);
-if (!this.isSyntaxCheck) this.viewer.rebond (this.isStateScript);
+if (!this.isSyntaxCheck) this.viewer.rebondState (this.isStateScript);
 return ;
 case 2:
 case 3:
@@ -5832,7 +5832,7 @@ if (isIsosurface) {
 } else if (data == null) {
 this.viewer.setCurrentColorRange (name);
 } else {
-this.viewer.setCurrentColorRange (data, bsSelected);
+this.viewer.setCurrentColorRangeData (data, bsSelected);
 }if (isIsosurface) {
 this.checkLength (index);
 isColor = false;
@@ -6580,7 +6580,7 @@ return ;
 }if (isAppend && (appendNew || nFiles > 1)) {
 this.viewer.setAnimationRange (-1, -1);
 this.viewer.setCurrentModelIndex (modelCount0);
-}if (this.scriptLevel == 0 && !isAppend && nFiles < 2) this.showString (this.viewer.getModelSetAuxiliaryInfo ("modelLoadNote"));
+}if (this.scriptLevel == 0 && !isAppend && nFiles < 2) this.showString (this.viewer.getModelSetAuxiliaryInfoValue ("modelLoadNote"));
 if (this.logMessages) this.scriptStatusOrBuffer ("Successfully loaded:" + (filenames == null ? htParams.get ("fullPathName") : modelName));
 var info = this.viewer.getModelSetAuxiliaryInfo ();
 if (info != null && info.containsKey ("centroidMinMax") && this.viewer.getAtomCount () > 0) this.viewer.setCentroid (isAppend ? atomCount0 : 0, this.viewer.getAtomCount () - 1, info.get ("centroidMinMax"));
@@ -6762,7 +6762,7 @@ nBitSets++;
 nAtoms++;
 var bs2 = org.jmol.util.BitSetUtil.copy (bs);
 org.jmol.util.BitSetUtil.invertInPlace (bs2, this.viewer.getAtomCount ());
-bs2.and (this.viewer.getAtomsWithin (5, bs, false, null));
+bs2.and (this.viewer.getAtomsWithinRadius (5, bs, false, null));
 points.add (bs2);
 }break;
 case 10:
@@ -6939,7 +6939,7 @@ if (makeNewFrame) {
 stateScript += "plot " + type;
 var ptDataFrame = this.viewer.getJmolDataFrameIndex (modelIndex, stateScript);
 if (ptDataFrame > 0 && tokCmd != 135270421 && tokCmd != 4148) {
-this.viewer.setCurrentModelIndex (ptDataFrame, true);
+this.viewer.setCurrentModelIndexClear (ptDataFrame, true);
 return "";
 }}var dataX = null;
 var dataY = null;
@@ -7062,7 +7062,7 @@ this.viewer.scriptStatus ("nothing to pause: " + msg);
 return false;
 }msg = (msg.length == 0 ? ": RESUME to continue." : ": " + this.viewer.formatText (msg));
 this.pauseExecution (true);
-this.viewer.scriptStatus ("script execution paused" + msg, "script paused for RESUME");
+this.viewer.scriptStatusMsg ("script execution paused" + msg, "script paused for RESUME");
 return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "print", 
@@ -7363,10 +7363,10 @@ if (theta < 0) rotAxis.scale (-1);
 }if (isSpin && m4 == null) m4 = org.jmol.script.ScriptMathProcessor.getMatrix4f (q.getMatrix (), translation);
 if (points[0] != null) nPoints = 1;
 }if (invPoint != null) {
-this.viewer.invertAtomCoord (invPoint, bsAtoms);
+this.viewer.invertAtomCoordPt (invPoint, bsAtoms);
 if (rotAxis == null) return ;
 }if (invPlane != null) {
-this.viewer.invertAtomCoord (invPlane, bsAtoms);
+this.viewer.invertAtomCoordPlane (invPlane, bsAtoms);
 if (rotAxis == null) return ;
 }if (nPoints < 2) {
 if (!isMolecular) {
@@ -7774,7 +7774,7 @@ case 0:
 if (this.isSyntaxCheck) return ;
 bs = this.viewer.getSelectionSet (false);
 pt = this.viewer.getAtomSetCenter (bs);
-this.viewer.invertAtomCoord (pt, bs);
+this.viewer.invertAtomCoordPt (pt, bs);
 return ;
 case 528443:
 iAtom = this.atomExpressionAt (2).nextSetBit (0);
@@ -7913,7 +7913,7 @@ if (this.tokAt (ptCenter) == 1048583) {
 var bbox = this.getObjectBoundingBox (this.objectNameParameter (ptCenter + 1));
 if (bbox == null || (r = bbox[0].distance (bbox[1]) / 2) == 0) this.error (22);
 }} else {
-r = this.viewer.calcRotationRadius (bs);
+r = this.viewer.calcRotationRadiusBs (bs);
 }if (Float.isNaN (r)) this.error (22);
 currentZoom = this.viewer.getRotationRadius () / r * 100;
 zoom = NaN;
@@ -7981,7 +7981,7 @@ var seconds = Math.floor (millis / 1000);
 millis -= seconds * 1000;
 if (millis <= 0) millis = 1;
 while (seconds >= 0 && millis > 0 && !this.interruptExecution && this.currentThread === Thread.currentThread ()) {
-this.viewer.popHoldRepaint ("delay");
+this.viewer.popHoldRepaintWhy ("delay");
 try {
 Thread.sleep ((seconds--) > 0 ? 1000 : millis);
 } catch (e) {
@@ -7990,7 +7990,7 @@ if (Clazz.exceptionOf (e, InterruptedException)) {
 throw e;
 }
 }
-this.viewer.pushHoldRepaint ("delay");
+this.viewer.pushHoldRepaintWhy ("delay");
 }
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "slab", 
@@ -8325,7 +8325,7 @@ Clazz.defineMethod (c$, "configuration",
 var bsAtoms;
 if (this.statementLength == 1) {
 bsAtoms = this.viewer.setConformation ();
-this.viewer.addStateScript ("select", null, this.viewer.getSelectionSet (false), null, "configuration", true, false);
+this.viewer.addStateScriptRet ("select", null, this.viewer.getSelectionSet (false), null, "configuration", true, false);
 } else {
 var n = this.intParameter (this.checkLast (1));
 if (this.isSyntaxCheck) return ;
@@ -8860,7 +8860,7 @@ this.error (20);
 if (!this.isSyntaxCheck) this.viewer.setFrameDelayMs (millis);
 return ;
 case 1073742166:
-if (this.checkLength23 () > 0) if (!this.isSyntaxCheck) this.viewer.setFrameTitle (this.statementLength == 2 ? "@{_modelName}" : (this.tokAt (2) == 7 ? org.jmol.script.ScriptVariable.listValue (this.statement[2]) : this.parameterAsString (2)));
+if (this.checkLength23 () > 0) if (!this.isSyntaxCheck) this.viewer.setFrameTitleObj (this.statementLength == 2 ? "@{_modelName}" : (this.tokAt (2) == 7 ? org.jmol.script.ScriptVariable.listValue (this.statement[2]) : this.parameterAsString (2)));
 return ;
 case 1073741832:
 var bs = (this.statementLength == 2 || this.tokAt (2) == 1048587 ? null : this.atomExpressionAt (2));
@@ -8964,13 +8964,13 @@ if (isRange) nFrames = 2;
 isRange = isRange || modelIndex == modelIndex2;
 }} else {
 return ;
-}}if (!isPlay && !isRange || modelIndex >= 0) this.viewer.setCurrentModelIndex (modelIndex, false);
+}}if (!isPlay && !isRange || modelIndex >= 0) this.viewer.setCurrentModelIndexClear (modelIndex, false);
 if (isPlay && nFrames == 2 || isRange || isHyphen) {
 if (modelIndex2 < 0) modelIndex2 = this.viewer.getModelNumberIndex (frameList[1], useModelNumber, false);
 this.viewer.setAnimationOn (false);
 this.viewer.setAnimationDirection (1);
 this.viewer.setAnimationRange (modelIndex, modelIndex2);
-this.viewer.setCurrentModelIndex (isHyphen && !isRange ? -1 : modelIndex >= 0 ? modelIndex : 0, false);
+this.viewer.setCurrentModelIndexClear (isHyphen && !isRange ? -1 : modelIndex >= 0 ? modelIndex : 0, false);
 }if (isPlay) this.viewer.setAnimation (266287);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "bitSetForModelFileNumber", 
@@ -10051,9 +10051,9 @@ this.checkLast (this.iToken);
 if (this.isSyntaxCheck) return ;
 if (icell != 2147483647) this.viewer.setCurrentUnitCellOffset (icell);
  else if (id != null) this.viewer.setCurrentUnitCell (id);
- else if (points != null) this.viewer.setCurrentUnitCell (points);
+ else if (points != null) this.viewer.setCurrentUnitCellPts (points);
 this.setObjectMad (32, "unitCell", mad);
-if (pt != null) this.viewer.setCurrentUnitCellOffset (pt);
+if (pt != null) this.viewer.setCurrentUnitCellOffsetPt (pt);
 if (tickInfo != null) this.setShapeProperty (32, "tickInfo", tickInfo);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "frank", 
@@ -10394,7 +10394,7 @@ if (!isCommand) return data;
 if ((type.equals ("Povray") || type.equals ("Idtf")) && fullPath[0] != null) {
 var ext = (type.equals ("Idtf") ? ".tex" : ".ini");
 fileName = fullPath[0] + ext;
-msg = this.viewer.createImage (fileName, ext, data, null, -2147483648, 0, 0, null, 0, fullPath);
+msg = this.viewer.createImageSet (fileName, ext, data, null, -2147483648, 0, 0, null, 0, fullPath);
 if (type.equals ("Idtf")) data = data.substring (0, data.indexOf ("\\begin{comment}"));
 data = "Created " + fullPath[0] + ":\n\n" + data;
 } else {
@@ -10472,7 +10472,7 @@ return bytes;
 }if (type.equals ("SCENE")) bytes = sceneType;
  else if (bytes == null && (!isImage || fileName != null)) bytes = data;
 if (doDefer) msg = this.viewer.streamFileData (fileName, type, type2, 0, null);
- else msg = this.viewer.createImage (fileName, type, bytes, scripts, quality, width, height, bsFrames, nVibes, fullPath);
+ else msg = this.viewer.createImageSet (fileName, type, bytes, scripts, quality, width, height, bsFrames, nVibes, fullPath);
 }if (!this.isSyntaxCheck && msg != null) {
 if (!msg.startsWith ("OK")) this.evalError (msg, null);
 this.scriptStatusOrBuffer (msg + (isImage ? "; width=" + width + "; height=" + height : ""));
@@ -11634,13 +11634,13 @@ if (warnMultiModel && nModels > 1 && !this.tQuiet) this.showString (org.jmol.i18
 }if (!bsA.equals (bsB)) {
 var setBfirst = (!localOnly || bsA.cardinality () < bsB.cardinality ());
 if (setBfirst) {
-bs = this.viewer.getAtomsWithin (distance, bsA, withinAllModels, (Float.isNaN (distance) ? rd : null));
+bs = this.viewer.getAtomsWithinRadius (distance, bsA, withinAllModels, (Float.isNaN (distance) ? rd : null));
 bsB.and (bs);
 }if (localOnly) {
-bs = this.viewer.getAtomsWithin (distance, bsB, withinAllModels, (Float.isNaN (distance) ? rd : null));
+bs = this.viewer.getAtomsWithinRadius (distance, bsB, withinAllModels, (Float.isNaN (distance) ? rd : null));
 bsA.and (bs);
 if (!setBfirst) {
-bs = this.viewer.getAtomsWithin (distance, bsA, withinAllModels, (Float.isNaN (distance) ? rd : null));
+bs = this.viewer.getAtomsWithinRadius (distance, bsA, withinAllModels, (Float.isNaN (distance) ? rd : null));
 bsB.and (bs);
 }bs = org.jmol.util.BitSetUtil.copy (bsB);
 bs.and (bsA);
@@ -12289,9 +12289,9 @@ if (this.isSyntaxCheck) {
 bs =  new java.util.BitSet ();
 } else if (this.tokAt (this.iToken + 1) == 1048577 || this.tokAt (this.iToken + 1) == 10) {
 bs = this.atomExpressionAt (++this.iToken);
-bs.and (this.viewer.getAtomsWithin (5.0, bsSelect, false, null));
+bs.and (this.viewer.getAtomsWithinRadius (5.0, bsSelect, false, null));
 } else {
-bs = this.viewer.getAtomsWithin (5.0, bsSelect, true, null);
+bs = this.viewer.getAtomsWithinRadius (5.0, bsSelect, true, null);
 bs.andNot (this.viewer.getAtomBits (1095761934, bsSelect));
 }bs.andNot (bsSelect);
 sbCommand.append (" intersection ").append (org.jmol.util.Escape.escape (bsSelect)).append (" ").append (org.jmol.util.Escape.escape (bs));
@@ -13470,10 +13470,10 @@ Clazz.defineMethod (c$, "getAtomsNearSurface",
 function (distance, surfaceId) {
 var data = [surfaceId, null, null];
 if (this.isSyntaxCheck) return  new java.util.BitSet ();
-if (this.getShapePropertyData (23, "getVertices", data)) return this.viewer.getAtomsWithin (distance, data[1], data[2]);
+if (this.getShapePropertyData (23, "getVertices", data)) return this.viewer.getAtomsNearPts (distance, data[1], data[2]);
 data[1] = Integer.$valueOf (0);
 data[2] = Integer.$valueOf (-1);
-if (this.getShapePropertyData (22, "getCenter", data)) return this.viewer.getAtomsWithin (distance, data[2]);
+if (this.getShapePropertyData (22, "getCenter", data)) return this.viewer.getAtomsNearPt (distance, data[2]);
 return  new java.util.BitSet ();
 }, "~N,~S");
 c$.getFloatEncodedInt = Clazz.defineMethod (c$, "getFloatEncodedInt", 

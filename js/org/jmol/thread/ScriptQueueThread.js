@@ -46,7 +46,7 @@ var isQuiet = (scriptItem.get (4)).booleanValue ();
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.info ("Queue[" + this.pt + "][" + this.scriptManager.scriptQueue.size () + "] scripts; running: " + script);
 }this.scriptManager.scriptQueue.remove (0);
-this.viewer.evalStringWaitStatus (returnType, script, statusList, isScriptFile, isQuiet, true);
+this.viewer.evalStringWaitStatusQueued (returnType, script, statusList, isScriptFile, isQuiet, true);
 if (this.scriptManager.scriptQueue.size () == 0) {
 return false;
 }return true;

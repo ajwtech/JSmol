@@ -99,7 +99,7 @@ var baseModelIndex = this.models[modelIndex].trajectoryBaseIndex;
 this.models[baseModelIndex].selectedTrajectory = modelIndex;
 this.setAtomPositions (baseModelIndex, modelIndex, this.trajectorySteps.get (modelIndex), (this.vibrationSteps == null ? null : this.vibrationSteps.get (modelIndex)), true);
 var m = this.viewer.getCurrentModelIndex ();
-if (m >= 0 && m != modelIndex && this.models[m].fileIndex == this.models[modelIndex].fileIndex) this.viewer.setCurrentModelIndex (modelIndex, false);
+if (m >= 0 && m != modelIndex && this.models[m].fileIndex == this.models[modelIndex].fileIndex) this.viewer.setCurrentModelIndexClear (modelIndex, false);
 }, "~N");
 Clazz.defineMethod (c$, "setAtomPositions", 
 ($fz = function (baseModelIndex, modelIndex, trajectory, vibrations, isFractional) {
@@ -165,7 +165,7 @@ return Clazz.superCall (this, org.jmol.modelset.ModelSet, "getAtomBits", [tokTyp
 }, "~N,~O");
 Clazz.defineMethod (c$, "getAtomLabel", 
 function (i) {
-return this.viewer.getShapeProperty (5, "label", i);
+return this.viewer.getShapePropertyIndex (5, "label", i);
 }, "~N");
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (x, y, bsNot) {
@@ -219,7 +219,7 @@ iAtom = bs.nextSetBit (0);
 if (iAtom < 0) {
 bs = this.viewer.getModelUndeletedAtomsBitSet (modelIndex);
 iAtom = bs.nextSetBit (0);
-}var obj = this.viewer.getShapeProperty (18, "mad", iAtom);
+}var obj = this.viewer.getShapePropertyIndex (18, "mad", iAtom);
 var haveVibration = (obj != null && (obj).intValue () != 0 || this.viewer.isVibrationOn ());
 var symmetry = org.jmol.api.Interface.getOptionInterface ("symmetry.Symmetry");
 this.pointGroup = symmetry.setPointGroup (this.pointGroup, this.atoms, bs, haveVibration, this.viewer.getPointGroupTolerance (0), this.viewer.getPointGroupTolerance (1));

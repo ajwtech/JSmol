@@ -32,6 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
+//import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -39,7 +40,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.viewer.Viewer;
 
 /**
- * Provides high-level graphics primitives for 3D graphics export.
+ * An interface to JmolJSO.js 
  * 
  * @author hansonr, hansonr@stolaf.edu
  * 
@@ -52,7 +53,7 @@ final public class Export3D implements JmolRendererInterface {
 
   private GData g3d;
   private short colix;
-  //private HermiteRenderer hermite3d;
+//  private HermiteRenderer hermite3d;
   private int width;
   private int height;
   private int slab;
@@ -60,7 +61,7 @@ final public class Export3D implements JmolRendererInterface {
   String exportName;
 
   public Export3D() {
-    //hermite3d = new HermiteRenderer(this);
+  //  hermite3d = new HermiteRenderer(this);
 
   }
 
@@ -72,18 +73,17 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
+  public Object initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
                                     Object output) {
     exportName = type;
     try {
-      String name = "org.jmol.export._"
-          + type + "Exporter";
+      String name = (type.equals("JS") ? "org.jmol.exportjs._JSExporter" : "org.jmol.export._" + type + "Exporter");
       Class<?> exporterClass = Class.forName(name);
       // Class exporterClass =
       // Class.forName("org.jmol.export.NewPovrayExporter");
       exporter = (___Exporter) exporterClass.newInstance();
     } catch (Exception e) {
-      return false;
+      return null;
     }
     g3d = gdata;
     exporter.setRenderer(this);
@@ -92,7 +92,7 @@ final public class Export3D implements JmolRendererInterface {
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
     this.privateKey = privateKey;
-    return exporter.initializeOutput(viewer, privateKey, g3d, output);
+    return (exporter.initializeOutput(viewer, privateKey, g3d, output) ? exporter : null);
   }
 
   public String finalizeOutput() {
@@ -534,22 +534,22 @@ final public class Export3D implements JmolRendererInterface {
   public void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
     // strands
-    //hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
+//    hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
-    //hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid,
-      //  diameterEnd, s0, s1, s2, s3);
+  //  hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid,
+     //   diameterEnd, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
                           int aspectRatio) {
-    //hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
-      //  s5, s6, s7, aspectRatio);
+  //  hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+   //     s5, s6, s7, aspectRatio);
   }
 
   /*
@@ -862,6 +862,16 @@ final public class Export3D implements JmolRendererInterface {
   public void volumeRender(int diam, int x, int y, int z) {
     fillSphere(diam, x, y, z);
     
+  }
+
+  // Graphics3D only:
+  public boolean currentlyRendering() {
+    return false;
+  }
+
+  public void renderCrossHairs(int[] minMax, int screenWidth, int screenHeight,
+                               Point3f navigationOffset,
+                               float navigationDepthPercent) {    
   }
 
 }

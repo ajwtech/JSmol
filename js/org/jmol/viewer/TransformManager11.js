@@ -129,7 +129,7 @@ Clazz.superCall (this, org.jmol.viewer.TransformManager11, "setScreenParameters"
 if (pt != null) {
 this.navigationCenter.set (pt);
 this.navTranslatePercent (-1, ptoff.x * this.width, ptoff.y * this.height);
-this.navigate (0, pt);
+this.navigatePt (0, pt);
 }}, "~N,~N,~B,~B,~B,~B");
 Clazz.overrideMethod (c$, "calcNavigationPoint", 
 function () {
@@ -251,7 +251,7 @@ var pts =  new javax.vecmath.Point3f ();
 this.transformPoint (pt, pts);
 pts.z += this.navZ;
 this.unTransformPoint (pts, pt);
-this.navigate (0, pt);
+this.navigatePt (0, pt);
 }, "~B");
 Clazz.defineMethod (c$, "navigate", 
 function (keyCode, modifiers) {
@@ -375,7 +375,7 @@ if (this.viewer.isRepaintPending ()) return ;
 this.viewer.setShapeProperty (23, "navigate", Integer.$valueOf (dz == 2147483647 ? 2 * this.multiplier : dz));
 this.viewer.requestRepaintAndWait ();
 }, $fz.isPrivate = true, $fz), "~N");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.overrideMethod (c$, "navigatePt", 
 function (seconds, pt) {
 if (seconds > 0) {
 this.navigateTo (seconds, null, NaN, pt, NaN, NaN, NaN);
@@ -386,7 +386,7 @@ this.navigating = true;
 this.finalizeTransformParameters ();
 this.navigating = false;
 }, "~N,javax.vecmath.Point3f");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.overrideMethod (c$, "navigateAxis", 
 function (seconds, rotAxis, degrees) {
 if (degrees == 0) return ;
 if (seconds > 0) {
@@ -456,10 +456,10 @@ var centerStart =  new javax.vecmath.Point3f (this.navigationCenter);
 for (var iStep = 1; iStep < totalSteps; ++iStep) {
 this.navigating = true;
 var fStep = iStep / (totalSteps - 1);
-if (!Float.isNaN (degrees)) this.navigate (0, axis, degreeStep);
+if (!Float.isNaN (degrees)) this.navigateAxis (0, axis, degreeStep);
 if (center != null) {
 centerStart.add (aaStepCenter);
-this.navigate (0, centerStart);
+this.navigatePt (0, centerStart);
 }if (!Float.isNaN (xTrans) || !Float.isNaN (yTrans)) {
 var x = NaN;
 var y = NaN;
@@ -500,11 +500,11 @@ throw ie;
 if (!Float.isNaN (depthPercent)) this.setNavigationDepthPercent (depthPercent);
 this.viewer.setInMotion (false);
 }, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Vector3f,~N,javax.vecmath.Point3f,~N,~N,~N");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.overrideMethod (c$, "navigateGuide", 
 function (seconds, pathGuide) {
 this.navigate (seconds, pathGuide, null, null, 0, 2147483647);
 }, "~N,~A");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.overrideMethod (c$, "navigatePath", 
 function (seconds, path, theta, indexStart, indexEnd) {
 this.navigate (seconds, null, path, theta, indexStart, indexEnd);
 }, "~N,~A,~A,~N,~N");
@@ -544,7 +544,7 @@ this.viewer.setInMotion (true);
 var frameTimeMillis = Math.round ((1000 / this.navFps));
 var targetTime = System.currentTimeMillis ();
 for (var iStep = 0; iStep < totalSteps; ++iStep) {
-this.navigate (0, points[iStep]);
+this.navigatePt (0, points[iStep]);
 if (isPathGuide) {
 this.alignZX (points[iStep], points[iStep + 1], pointGuides[iStep]);
 }targetTime += frameTimeMillis;
@@ -578,7 +578,7 @@ vPath.sub (pt1s);
 var v =  new javax.vecmath.Vector3f (0, 0, 1);
 var angle = vPath.angle (v);
 v.cross (vPath, v);
-if (angle != 0) this.navigate (0, v, (angle * 57.29577951308232));
+if (angle != 0) this.navigateAxis (0, v, (angle * 57.29577951308232));
 this.matrixRotate.transform (pt0, pt0s);
 var pt2 =  new javax.vecmath.Point3f (ptVectorWing);
 pt2.add (pt0);
@@ -591,10 +591,10 @@ v.set (-1, 0, 0);
 angle = vPath.angle (v);
 if (vPath.y < 0) angle = -angle;
 v.set (0, 0, 1);
-if (angle != 0) this.navigate (0, v, (angle * 57.29577951308232));
+if (angle != 0) this.navigateAxis (0, v, (angle * 57.29577951308232));
 if (this.viewer.getNavigateSurface ()) {
 v.set (1, 0, 0);
-this.navigate (0, v, 20);
+this.navigateAxis (0, v, 20);
 }this.matrixRotate.transform (pt0, pt0s);
 this.matrixRotate.transform (pt1, pt1s);
 this.matrixRotate.transform (ptVectorWing, pt2s);

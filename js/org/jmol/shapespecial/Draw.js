@@ -236,7 +236,7 @@ if (org.jmol.util.BitSetUtil.cardinalityOf (value) == 0) return ;
 var bsAtoms = value;
 this.vData.add ([Integer.$valueOf (3), bsAtoms]);
 this.nbitsets++;
-if (this.isCircle && this.diameter == 0 && this.width == 0) this.width = this.viewer.calcRotationRadius (bsAtoms) * 2.0;
+if (this.isCircle && this.diameter == 0 && this.width == 0) this.width = this.viewer.calcRotationRadiusBs (bsAtoms) * 2.0;
 return ;
 }if ("modelBasedPoints" === propertyName) {
 this.vData.add ([Integer.$valueOf (5), value]);
@@ -429,7 +429,7 @@ if (this.plane == null) {
 }} else if (this.plane != null && this.intersectID != null) {
 var vData =  new java.util.ArrayList ();
 var data = [this.intersectID, this.plane, vData, null];
-this.viewer.getShapeProperty (23, "intersectPlane", data);
+this.viewer.getShapePropertyData (23, "intersectPlane", data);
 if (vData.size () == 0) return ;
 this.indicatedModelIndex = (data[3]).intValue ();
 this.lineData = vData;
@@ -783,7 +783,7 @@ x <<= 1;
 y <<= 1;
 }var s = (this.pickedMesh.title == null ? this.pickedMesh.thisID : this.pickedMesh.title[0]);
 if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == 62) s = s.substring (1);
-this.viewer.hoverOn (x, y, s, this.pickedMesh.thisID, this.pickedPt);
+this.viewer.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
 }, "~N,~N,java.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectDragged", 
@@ -813,7 +813,7 @@ var ptVertex = vertexes[iVertex];
 var coord =  new javax.vecmath.Point3f (mesh.vertices[ptVertex]);
 var newcoord =  new javax.vecmath.Point3f ();
 var move =  new javax.vecmath.Vector3f ();
-this.viewer.transformPoint (coord, pt);
+this.viewer.transformPt3f (coord, pt);
 pt.x = x;
 pt.y = y;
 this.viewer.unTransformPoint (pt, newcoord);

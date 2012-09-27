@@ -32,7 +32,7 @@ if (!this.viewer.getShowFrank () || !this.wasClicked (x, y) || !this.viewer.menu
 if (this.gdata.isDisplayAntialiased ()) {
 x <<= 1;
 y <<= 1;
-}this.viewer.hoverOn (x, y, org.jmol.i18n.GT._ ("Click for menu..."), null, null);
+}this.viewer.hoverOnPt (x, y, org.jmol.i18n.GT._ ("Click for menu..."), null, null);
 return true;
 }, "~N,~N,java.util.BitSet");
 Clazz.defineMethod (c$, "calcMetrics", 

@@ -359,7 +359,7 @@ function (fileName) {
 var dir = null;
 dir = this.getZipDirectory (fileName, false);
 if (dir.length == 0) {
-var state = this.viewer.getFileAsString (fileName, 2147483647, false, true);
+var state = this.viewer.getFileAsStringBin (fileName, 2147483647, false, true);
 return (state.indexOf ("**** Jmol Embedded Script ****") < 0 ? "" : org.jmol.script.ScriptCompiler.getEmbeddedScript (state));
 }for (var i = 0; i < dir.length; i++) if (dir[i].indexOf (".spt") >= 0) {
 var data = [fileName + "|" + dir[i], null];
@@ -962,7 +962,7 @@ v.add ("Jmol_version_" + org.jmol.viewer.Viewer.getJmolVersion ().$replace (' ',
 v.add (null);
 v.add ( Clazz.newArray (0, 0));
 if (fileRoot != null) {
-var bytes = this.viewer.getImageAs ("PNG", -1, -1, -1, null, null, null, org.jmol.viewer.JmolConstants.embedScript (script));
+var bytes = this.viewer.getImageAsWithComment ("PNG", -1, -1, -1, null, null, null, org.jmol.viewer.JmolConstants.embedScript (script));
 if (Clazz.instanceOf (bytes, Array)) {
 v.add ("preview.png");
 v.add (null);

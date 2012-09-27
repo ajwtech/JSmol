@@ -565,7 +565,7 @@ if (bsCmd == null) this.sg.setParameter ("ignore", bs);
 if ((i = script.indexOf ("/({", j)) == j + 2) {
 if ((j = script.indexOf ("})", i)) < 0) return false;
 bs = org.jmol.util.Escape.unescapeBitset (script.substring (i + 3, j + 1));
-if (bsCmd == null) this.viewer.setTrajectory (bs);
+if (bsCmd == null) this.viewer.setTrajectoryBs (bs);
  else bsCmd[2] = bs;
 }return true;
 }, $fz.isPrivate = true, $fz), "~S,~A");
@@ -932,7 +932,7 @@ if (s == null) return false;
 if (this.gdata.isDisplayAntialiased ()) {
 x <<= 1;
 y <<= 1;
-}this.viewer.hoverOn (x, y, s, this.pickedMesh.thisID, this.pickedPt);
+}this.viewer.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
 }, "~N,~N,java.util.BitSet");
 Clazz.defineMethod (c$, "hoverKey", 
@@ -958,7 +958,7 @@ s = "" + g + " - " + f;
 }if (this.gdata.isAntialiased ()) {
 x <<= 1;
 y <<= 1;
-}this.viewer.hoverOn (x, y, s, null, null);
+}this.viewer.hoverOnPt (x, y, s, null, null);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -1032,29 +1032,29 @@ if (!this.getClosestNormal (this.thisMesh, toPt, ptRet, vNorm)) return ;
 var pt2 =  new javax.vecmath.Point3f (ptRet);
 pt2.add (vNorm);
 var pt2s =  new javax.vecmath.Point3f ();
-this.viewer.transformPoint (pt2, pt2s);
+this.viewer.transformPt3f (pt2, pt2s);
 if (pt2s.y > navPt.y) vNorm.scale (-1);
 this.setHeading (ptRet, vNorm, 0);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "setHeading", 
 ($fz = function (pt, vNorm, nSeconds) {
 var o1 = this.viewer.getOrientation ();
-this.viewer.navigate (0, pt);
+this.viewer.navigatePt (0, pt);
 var toPts =  new javax.vecmath.Point3f ();
 var toPt =  new javax.vecmath.Point3f (vNorm);
 toPt.add (pt);
-this.viewer.transformPoint (toPt, toPts);
+this.viewer.transformPt3f (toPt, toPts);
 var navPt =  new javax.vecmath.Point3f (this.viewer.getNavigationOffset ());
 toPts.sub (navPt);
 toPts.z = 0;
 var angle = org.jmol.util.Measure.computeTorsion (org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.center, org.jmol.viewer.JmolConstants.axisZ, toPts, true);
-this.viewer.navigate (0, org.jmol.viewer.JmolConstants.axisZ, angle);
+this.viewer.navigateAxis (0, org.jmol.viewer.JmolConstants.axisZ, angle);
 toPt.set (vNorm);
 toPt.add (pt);
-this.viewer.transformPoint (toPt, toPts);
+this.viewer.transformPt3f (toPt, toPts);
 toPts.sub (navPt);
 angle = org.jmol.util.Measure.computeTorsion (org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.center, org.jmol.viewer.JmolConstants.axisX, toPts, true);
-this.viewer.navigate (0, org.jmol.viewer.JmolConstants.axisX, 20 - angle);
+this.viewer.navigateAxis (0, org.jmol.viewer.JmolConstants.axisX, 20 - angle);
 navPt =  new javax.vecmath.Point3f (this.viewer.getNavigationOffset ());
 if (nSeconds <= 0) return ;
 this.viewer.saveOrientation ("_navsurf");

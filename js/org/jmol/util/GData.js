@@ -25,11 +25,14 @@ this.width = 0;
 this.height = 0;
 this.zSlab = 0;
 this.zDepth = 0;
+this.colixCurrent = 0;
+this.argbCurrent = 0;
 this.bufferSize = 0;
 this.zShadeR = 0;
 this.zShadeG = 0;
 this.zShadeB = 0;
 this.graphicsForMetrics = null;
+this.$isPass2 = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "GData", null, org.jmol.api.JmolGraphicsInterface);
 Clazz.prepareFields (c$, function () {
@@ -350,12 +353,57 @@ function () {
 Clazz.defineMethod (c$, "clearFontCache", 
 function () {
 });
+Clazz.defineMethod (c$, "plotImage", 
+function (x, y, z, image, jmolRenderer, bgcolix, width, height) {
+}, "~N,~N,~N,java.awt.Image,org.jmol.api.JmolRendererInterface,~N,~N,~N");
+Clazz.defineMethod (c$, "plotText", 
+function (x, y, z, colorArgbOrGray, text, font3d, jmolRenderer) {
+}, "~N,~N,~N,~N,~S,org.jmol.util.JmolFont,org.jmol.api.JmolRendererInterface");
+Clazz.defineMethod (c$, "renderBackground", 
+function (jmolRenderer) {
+}, "org.jmol.api.JmolRendererInterface");
+Clazz.defineMethod (c$, "getFont3DCurrent", 
+function () {
+return null;
+});
+Clazz.defineMethod (c$, "setFont", 
+function (font3d) {
+}, "org.jmol.util.JmolFont");
+Clazz.defineMethod (c$, "setFont", 
+function (fid) {
+}, "~N");
+Clazz.defineMethod (c$, "setColor", 
+function (color) {
+this.argbCurrent = color;
+}, "~N");
+Clazz.defineMethod (c$, "isPass2", 
+function () {
+return this.$isPass2;
+});
+Clazz.defineMethod (c$, "setColix", 
+function (colix) {
+return true;
+}, "~N");
+Clazz.defineMethod (c$, "isDirectedTowardsCamera", 
+function (normix) {
+return true;
+}, "~N");
+Clazz.defineMethod (c$, "getTransformedVertexVectors", 
+function () {
+return null;
+});
+Clazz.defineMethod (c$, "setNoisySurfaceShade", 
+function (pointA, pointB, pointC) {
+}, "javax.vecmath.Point3i,javax.vecmath.Point3i,javax.vecmath.Point3i");
 Clazz.defineStatics (c$,
 "ENDCAPS_NONE", 0,
 "ENDCAPS_OPEN", 1,
 "ENDCAPS_FLAT", 2,
 "ENDCAPS_SPHERICAL", 3,
 "ENDCAPS_OPENEND", 4,
+"EXPORT_RAYTRACER", 2,
+"EXPORT_CARTESIAN", 1,
+"EXPORT_NOT", 0,
 "yGT", 1,
 "yLT", 2,
 "xGT", 4,

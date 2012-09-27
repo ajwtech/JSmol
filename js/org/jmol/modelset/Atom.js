@@ -350,7 +350,7 @@ return (dimension == 0 ? this.x : (dimension == 1 ? this.y : this.z));
 }, "~N");
 Clazz.defineMethod (c$, "getVanderwaalsRadiusFloat", 
 function (viewer, type) {
-return (Float.isNaN (this.userDefinedVanDerWaalRadius) ? viewer.getVanderwaalsMar (this.atomicAndIsotopeNumber % 128, this.getVdwType (type)) / 1000 : this.userDefinedVanDerWaalRadius);
+return (Float.isNaN (this.userDefinedVanDerWaalRadius) ? viewer.getVanderwaalsMarType (this.atomicAndIsotopeNumber % 128, this.getVdwType (type)) / 1000 : this.userDefinedVanDerWaalRadius);
 }, "org.jmol.viewer.Viewer,org.jmol.constant.EnumVdw");
 Clazz.defineMethod (c$, "getVdwType", 
 ($fz = function (type) {
@@ -378,12 +378,12 @@ return (r == 0 ? org.jmol.util.Elements.getBondingRadiusFloat (this.atomicAndIso
 Clazz.defineMethod (c$, "getVolume", 
 function (viewer, vType) {
 var r1 = (vType == null ? this.userDefinedVanDerWaalRadius : NaN);
-if (Float.isNaN (r1)) r1 = viewer.getVanderwaalsMar (this.getElementNumber (), this.getVdwType (vType)) / 1000;
+if (Float.isNaN (r1)) r1 = viewer.getVanderwaalsMarType (this.getElementNumber (), this.getVdwType (vType)) / 1000;
 var volume = 0;
 if (this.bonds != null) for (var j = 0; j < this.bonds.length; j++) {
 if (!this.bonds[j].isCovalent ()) continue ;var atom2 = this.bonds[j].getOtherAtom (this);
 var r2 = (vType == null ? atom2.userDefinedVanDerWaalRadius : NaN);
-if (Float.isNaN (r2)) r2 = viewer.getVanderwaalsMar (atom2.getElementNumber (), atom2.getVdwType (vType)) / 1000;
+if (Float.isNaN (r2)) r2 = viewer.getVanderwaalsMarType (atom2.getElementNumber (), atom2.getVdwType (vType)) / 1000;
 var d = this.distance (atom2);
 if (d > r1 + r2) continue ;if (d + r1 <= r2) return 0;
 var h = r1 - (r1 * r1 + d * d - r2 * r2) / (2.0 * d);
