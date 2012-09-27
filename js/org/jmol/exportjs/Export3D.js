@@ -220,10 +220,10 @@ this.ptB.set (pointB.x, pointB.y, pointB.z);
 this.exporter.fillCylinderScreenMad (this.colix, 2, this.exporter.lineWidthMad, this.ptA, this.ptB);
 }, "javax.vecmath.Point3i,javax.vecmath.Point3i");
 Clazz.overrideMethod (c$, "drawBond", 
-function (atomA, atomB, colixA, colixB, endcaps, mad) {
+function (atomA, atomB, colixA, colixB, endcaps, mad, bondOrder) {
 if (mad == 1) mad = this.exporter.lineWidthMad;
-this.exporter.drawCylinder (atomA, atomB, colixA, colixB, endcaps, mad, -1);
-}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,~N,~N");
+this.exporter.drawCylinder (atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
+}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "fillCylinder", 
 function (colixA, colixB, endcaps, mad, xA, yA, zA, xB, yB, zB) {
 this.ptA.set (xA, yA, zA);
