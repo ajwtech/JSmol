@@ -31,7 +31,7 @@ import javax.vecmath.Tuple3f;
 
 import org.jmol.util.J2SRequireImport;
 
-@J2SRequireImport({org.jmol.exportjs.___Exporter.class, org.jmol.exportjs.__CartesianExporter.class, org.jmol.exportjs.___Exporter.class, org.jmol.exportjs.Export3D.class})
+@J2SRequireImport({org.jmol.exportjs.___Exporter.class, org.jmol.exportjs.__CartesianExporter.class, org.jmol.exportjs.Export3D.class})
 public class _JSExporter extends __CartesianExporter {
 
   public _JSExporter() {

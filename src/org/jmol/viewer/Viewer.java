@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 15:37:57 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17583 $
+ * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
+ * $Revision: 17585 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -4290,12 +4290,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void updateJS(int width, int height) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
-     * if (this.updateWindow(width, height) {
+     * if (this.updateWindow(width, height)) {
      *   this.render();
      * }
-     * notifyViewerRepaintDone();
+     * this.notifyViewerRepaintDone();
      * 
      */
     {}

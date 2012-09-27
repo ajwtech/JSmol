@@ -1,7 +1,7 @@
 LoadClazz = function() {
- // BH 9/18/2012 7:29:10 AM
- // BH note that this implementation does NOT use all of the aspects of j2slib.src.js
- // BH embedded in LoadClazz function for delayed, optional execution in JmolJSO
+
+window["j2s.object.native"] = true;
+
  // BH changed alert to Clazz.alert in java.lang.Class.js *.ClassLoader.js, java.lang.thread.js
  // BH removed toString from innerFunctionNames due to infinite recursion
  // BH note: Logger.error(null, e) does not work -- get no constructor for (String) (TypeError)
@@ -17,7 +17,6 @@ LoadClazz = function() {
  // BH added System.gc() at end
  // BH added Clazz.exceptionOf = updated
  // BH added String.getBytes() at end
- 
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -4504,7 +4503,7 @@ ClazzLoader.tryToLoadNext = function (file) {
 					n.name = nm;
 					var pp = ClazzLoader.classpathMap["#" + nm];
 					if (pp == null) {
-						log (nm);
+						alert (nm);
 						error ("Java2Script implementation error! Please report this bug!");
 					}
 					//n.path = ClazzLoader.lastScriptPath;
@@ -5220,7 +5219,7 @@ ClazzLoader.load = function (musts, clazz, optionals, declaration) {
 		node.name = clazz;
 		var pp = ClazzLoader.classpathMap["#" + clazz];
 		if (pp == null) { // TODO: Remove this test in final release
-			log (clazz);
+			alert (clazz);
 			error ("Java2Script implementation error! Please report this bug!");
 		}
 		//node.path = ClazzLoader.lastScriptPath;

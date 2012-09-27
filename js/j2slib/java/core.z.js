@@ -633,7 +633,7 @@ return Boolean.toBoolean(s);
 },"~S");
 Clazz.defineMethod(Boolean,"booleanValue",
 function(){
-return this.value;
+return this.valueOf();
 });
 Boolean.$valueOf=Clazz.defineMethod(Boolean,"$valueOf",
 function(b){
