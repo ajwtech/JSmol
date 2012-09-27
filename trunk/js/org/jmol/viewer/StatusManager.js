@@ -90,7 +90,7 @@ this.jmolCallbackListener = jmolCallbackListener;
 Clazz.defineMethod (c$, "jmolScriptCallback", 
 ($fz = function (callback) {
 var s = this.jmolScriptCallbacks.get (callback);
-if (s != null) this.viewer.evalStringQuiet (s, true, false);
+if (s != null) this.viewer.evalStringQuietSync (s, true, false);
 return s;
 }, $fz.isPrivate = true, $fz), "org.jmol.constant.EnumCallback");
 Clazz.defineMethod (c$, "setCallbackFunction", 

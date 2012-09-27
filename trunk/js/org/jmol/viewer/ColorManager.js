@@ -180,7 +180,7 @@ function () {
 if (this.propertyColorEncoder.isReversed) return [this.propertyColorEncoder.hi, this.propertyColorEncoder.lo];
 return [this.propertyColorEncoder.lo, this.propertyColorEncoder.hi];
 });
-Clazz.defineMethod (c$, "setPropertyColorRange", 
+Clazz.defineMethod (c$, "setPropertyColorRangeData", 
 function (data, bs, colorScheme) {
 this.colorData = data;
 this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.getColorScheme (colorScheme, true, false);

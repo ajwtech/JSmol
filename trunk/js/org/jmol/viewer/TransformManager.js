@@ -209,7 +209,7 @@ this.rotationRadiusDefault = this.setRotationRadius (0, true);
 this.windowCentered = true;
 this.setRotationCenterAndRadiusXYZ (null, true);
 this.matrixRotate.setIdentity ();
-var m = this.viewer.getModelSetAuxiliaryInfo ("defaultOrientationMatrix");
+var m = this.viewer.getModelSetAuxiliaryInfoValue ("defaultOrientationMatrix");
 if (m != null) this.matrixRotate.set (m);
 this.setZoomEnabled (true);
 this.zoomToPercent (this.viewer.isModelKitMode () ? 50 : 100);
@@ -1039,7 +1039,7 @@ this.matrixTransform.transform (pointAngstroms, this.point3fScreenTemp);
 this.adjustTemporaryScreenPoint ();
 return this.point3fScreenTemp;
 }, "javax.vecmath.Point3f");
-Clazz.defineMethod (c$, "transformPoint", 
+Clazz.defineMethod (c$, "transformPointVib", 
 function (pointAngstroms, vibrationVector) {
 this.point3fVibrationTemp.set (pointAngstroms);
 if (this.vibrationOn && vibrationVector != null) this.point3fVibrationTemp.scaleAdd (this.vibrationAmplitude, vibrationVector, pointAngstroms);
@@ -1284,7 +1284,7 @@ sb.append (";");
 Clazz.defineMethod (c$, "getRotateZyzText", 
 ($fz = function (iAddComment) {
 var sb =  new StringBuffer ();
-var m = this.viewer.getModelSetAuxiliaryInfo ("defaultOrientationMatrix");
+var m = this.viewer.getModelSetAuxiliaryInfoValue ("defaultOrientationMatrix");
 if (m == null) {
 m = this.matrixRotate;
 } else {
@@ -1548,16 +1548,16 @@ return false;
 Clazz.defineMethod (c$, "navigate", 
 function (keyCode, modifiers) {
 }, "~N,~N");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.defineMethod (c$, "navigatePt", 
 function (seconds, center) {
 }, "~N,javax.vecmath.Point3f");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.defineMethod (c$, "navigateAxis", 
 function (seconds, rotAxis, degrees) {
 }, "~N,javax.vecmath.Vector3f,~N");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.defineMethod (c$, "navigatePath", 
 function (seconds, path, theta, indexStart, indexEnd) {
 }, "~N,~A,~A,~N,~N");
-Clazz.defineMethod (c$, "navigate", 
+Clazz.defineMethod (c$, "navigateGuide", 
 function (timeSeconds, pathGuide) {
 }, "~N,~A");
 Clazz.defineMethod (c$, "navTranslate", 

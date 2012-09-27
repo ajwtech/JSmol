@@ -413,7 +413,7 @@ isBound = this.isBound (action, 29) || this.isBound (action, 25) || this.isBound
 break;
 }
 if (isBound) {
-this.dragAtomIndex = this.viewer.findNearestAtomIndex (x, y, true);
+this.dragAtomIndex = this.viewer.findNearestAtomIndexMovable (x, y, true);
 if (this.dragAtomIndex >= 0 && (this.atomPickingMode == 32 || this.atomPickingMode == 31) && this.viewer.isAtomAssignable (this.dragAtomIndex)) {
 this.enterMeasurementMode (this.dragAtomIndex);
 this.measurementPending.addPoint (this.dragAtomIndex, null, false);
@@ -428,7 +428,7 @@ return ;
 }if (this.dragSelectedMode) {
 this.haveSelection = true;
 if (isSelectAndDrag) {
-this.haveSelection = (this.viewer.findNearestAtomIndex (x, y, true) >= 0);
+this.haveSelection = (this.viewer.findNearestAtomIndexMovable (x, y, true) >= 0);
 }if (!this.haveSelection) return ;
 if (this.isBound (action, 22) || this.isBound (action, 24)) this.viewer.moveSelected (-2147483648, 0, -2147483648, -2147483648, -2147483648, null, false, false);
 return ;
@@ -449,7 +449,7 @@ if (this.atomPickingMode == 29 || this.atomPickingMode == 30) this.minimize (tru
 }if (this.atomPickingMode == 32 && this.isBound (action, 43)) {
 if (this.measurementPending == null || this.dragAtomIndex < 0) return ;
 if (this.measurementPending.getCount () == 2) {
-this.viewer.undoMoveAction (-1, 4146, true);
+this.viewer.undoMoveActionClear (-1, 4146, true);
 this.viewer.script ("assign connect " + this.measurementPending.getMeasurementScript (" ", false));
 } else if (this.pickAtomAssignType.equals ("Xx")) {
 this.exitMeasurementMode ();
@@ -459,12 +459,12 @@ if (this.pressed.inRange (this.xyRange, this.dragged.x, this.dragged.y)) {
 var s = "assign atom ({" + this.dragAtomIndex + "}) \"" + this.pickAtomAssignType + "\"";
 if (this.isPickAtomAssignCharge) {
 s += ";{atomindex=" + this.dragAtomIndex + "}.label='%C'; ";
-this.viewer.undoMoveAction (this.dragAtomIndex, 4, true);
+this.viewer.undoMoveActionClear (this.dragAtomIndex, 4, true);
 } else {
-this.viewer.undoMoveAction (-1, 4146, true);
+this.viewer.undoMoveActionClear (-1, 4146, true);
 }this.viewer.script (s);
 } else if (!this.isPickAtomAssignCharge) {
-this.viewer.undoMoveAction (-1, 4146, true);
+this.viewer.undoMoveActionClear (-1, 4146, true);
 var a = this.viewer.getModelSet ().atoms[this.dragAtomIndex];
 if (a.getElementNumber () == 1) {
 this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"X\"");
@@ -571,7 +571,7 @@ case 27:
 case 28:
 case 29:
 case 30:
-if (this.dragGesture.getPointCount () == 1) this.viewer.undoMoveAction (this.dragAtomIndex, 2, true);
+if (this.dragGesture.getPointCount () == 1) this.viewer.undoMoveActionClear (this.dragAtomIndex, 2, true);
 this.checkMotion (3);
 if (this.isBound (action, 25)) {
 bs = this.viewer.getAtomBits (1095761934, org.jmol.util.BitSetUtil.setBit (this.dragAtomIndex));
@@ -589,7 +589,7 @@ this.viewer.moveAtomWithHydrogens (this.dragAtomIndex, deltaX, deltaY, (this.isB
 }return ;
 }
 }if (this.dragAtomIndex >= 0 && this.isBound (action, 43) && this.atomPickingMode == 32) {
-var nearestAtomIndex = this.viewer.findNearestAtomIndex (x, y, false);
+var nearestAtomIndex = this.viewer.findNearestAtomIndexMovable (x, y, false);
 if (nearestAtomIndex >= 0) {
 if (this.measurementPending != null) {
 this.measurementPending.setCount (1);
@@ -618,7 +618,7 @@ return ;
 }}if (this.dragSelectedMode && this.haveSelection && (this.isBound (action, 22) || this.isBound (action, 25))) {
 var iatom = this.viewer.getSelectionSet (false).nextSetBit (0);
 if (iatom < 0) return ;
-if (this.dragGesture.getPointCount () == 1) this.viewer.undoMoveAction (iatom, 2, true);
+if (this.dragGesture.getPointCount () == 1) this.viewer.undoMoveActionClear (iatom, 2, true);
  else this.viewer.moveSelected (2147483647, 0, -2147483648, -2147483648, -2147483648, null, false, false);
 this.checkMotion (3);
 if (this.isBound (action, 25) && this.viewer.allowRotateSelected ()) this.viewer.rotateSelected (this.getDegrees (deltaX, 0), this.getDegrees (deltaY, 1), null);
@@ -775,7 +775,7 @@ this.viewer.navTranslatePercent (0, x * 100 / this.viewer.getScreenWidth () - 50
 return false;
 }if (isBond) {
 if (this.isBound (action, this.bondPickingMode == 34 || this.bondPickingMode == 33 ? 43 : 41)) {
-if (this.bondPickingMode == 33) this.viewer.undoMoveAction (-1, 4146, true);
+if (this.bondPickingMode == 33) this.viewer.undoMoveActionClear (-1, 4146, true);
 var index = (t.get ("index")).intValue ();
 switch (this.bondPickingMode) {
 case 33:
@@ -821,7 +821,7 @@ return pt;
 }, $fz.isPrivate = true, $fz), "java.util.Map");
 Clazz.defineMethod (c$, "findNearestAtom", 
 ($fz = function (x, y, nearestPoint, isClicked) {
-var index = (this.drawMode || nearestPoint != null ? -1 : this.viewer.findNearestAtomIndex (x, y, false));
+var index = (this.drawMode || nearestPoint != null ? -1 : this.viewer.findNearestAtomIndexMovable (x, y, false));
 return (index >= 0 && (isClicked || this.measurementPending == null) && !this.viewer.isInSelectionSubset (index) ? -1 : index);
 }, $fz.isPrivate = true, $fz), "~N,~N,org.jmol.util.Point3fi,~B");
 Clazz.defineMethod (c$, "isSelectAction", 
@@ -1083,7 +1083,7 @@ max = lengths[i];
 bs.clear (imax);
 }
 }
-this.viewer.undoMoveAction (atomIndex, 2, true);
+this.viewer.undoMoveActionClear (atomIndex, 2, true);
 this.viewer.invertSelected (null, null, atomIndex, bs);
 this.viewer.setStatusAtomPicked (atomIndex, "inverted: " + org.jmol.util.Escape.escape (bs));
 }return ;
@@ -1184,7 +1184,7 @@ Clazz.defineMethod (c$, "getSelectionSet",
 ($fz = function (script) {
 try {
 if (this.eval == null) this.eval =  new org.jmol.script.ScriptEvaluator (this.viewer);
-return this.viewer.getAtomBitSet (this.eval, script);
+return this.viewer.getAtomBitSetEval (this.eval, script);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {

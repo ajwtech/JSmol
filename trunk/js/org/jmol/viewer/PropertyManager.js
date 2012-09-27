@@ -180,7 +180,7 @@ return viewer.getJspecViewProperties (myParam);
 case 26:
 return viewer.getData (myParam.toString ());
 case 33:
-return viewer.getErrorMessageUntranslated ();
+return viewer.getErrorMessageUn ();
 case 28:
 return org.jmol.script.ScriptEvaluator.evaluateExpression (viewer, myParam.toString ());
 case 20:

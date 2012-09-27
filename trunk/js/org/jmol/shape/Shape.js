@@ -116,7 +116,7 @@ return false;
 }, "~N,~N,~N,~N,~N,java.util.BitSet");
 Clazz.defineMethod (c$, "coordinateInRange", 
 function (x, y, vertex, dmin2, ptXY) {
-this.viewer.transformPoint (vertex, ptXY);
+this.viewer.transformPtScr (vertex, ptXY);
 var d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
 return (d2 < dmin2 ? d2 : -1);
 }, "~N,~N,javax.vecmath.Point3f,~N,javax.vecmath.Point3i");

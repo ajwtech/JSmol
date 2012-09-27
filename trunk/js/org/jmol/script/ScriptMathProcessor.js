@@ -1480,7 +1480,7 @@ Clazz.defineMethod (c$, "evaluateLoad",
 if (args.length > 2 || args.length < 1) return false;
 var file = org.jmol.script.ScriptVariable.sValue (args[0]);
 var nBytesMax = (args.length == 2 ? org.jmol.script.ScriptVariable.iValue (args[1]) : 2147483647);
-return this.addXObj (tok == 135271426 ? this.viewer.getFileAsString (file, nBytesMax, false, false) : this.viewer.getFilePath (file, false));
+return this.addXObj (tok == 135271426 ? this.viewer.getFileAsStringBin (file, nBytesMax, false, false) : this.viewer.getFilePath (file, false));
 }, $fz.isPrivate = true, $fz), "~A,~N");
 Clazz.defineMethod (c$, "evaluateWrite", 
 ($fz = function (args) {
@@ -1670,15 +1670,15 @@ plane = args[i].value;
 pt = args[i].value;
 if (org.jmol.script.ScriptVariable.sValue (args[1]).equalsIgnoreCase ("hkl")) plane = this.eval.getHklPlane (pt);
 }if (i > 0 && plane == null && pt == null && !(Clazz.instanceOf (args[i].value, java.util.BitSet))) return false;
-if (plane != null) return this.addXBs (this.viewer.getAtomsWithin (distance, plane));
-if (pt != null) return this.addXBs (this.viewer.getAtomsWithin (distance, pt));
+if (plane != null) return this.addXBs (this.viewer.getAtomsNearPlane (distance, plane));
+if (pt != null) return this.addXBs (this.viewer.getAtomsNearPt (distance, pt));
 bs = (args[i].tok == 10 ? org.jmol.script.ScriptVariable.bsSelectVar (args[i]) : null);
 if (tok == 1087373320) return this.addXBs (this.viewer.getSequenceBits (withinStr, bs));
 if (bs == null) bs =  new java.util.BitSet ();
 if (!isDistance) return this.addXBs (this.viewer.getAtomBits (tok, bs));
 if (isWithinGroup) return this.addXBs (this.viewer.getGroupsWithin (Math.round (distance), bs));
 if (isVdw) rd =  new org.jmol.atomdata.RadiusData (null, (distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
-return this.addXBs (this.viewer.getAtomsWithin (distance, bs, isWithinModelSet, rd));
+return this.addXBs (this.viewer.getAtomsWithinRadius (distance, bs, isWithinModelSet, rd));
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "evaluateContact", 
 ($fz = function (args) {
@@ -1730,7 +1730,7 @@ hi = range[1];
 }if (isIsosurface) {
 var id = colorScheme.substring (1);
 var data = [id, null];
-if (!this.viewer.getShapeProperty (23, "colorEncoder", data)) return this.addXStr ("");
+if (!this.viewer.getShapePropertyData (23, "colorEncoder", data)) return this.addXStr ("");
 ce = data[1];
 } else {
 ce.setRange (lo, hi, lo > hi);

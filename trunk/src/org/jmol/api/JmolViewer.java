@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-12 13:11:19 -0500 (Wed, 12 Sep 2012) $
- * $Revision: 17558 $
+ * $Date: 2012-09-15 20:11:31 -0500 (Sat, 15 Sep 2012) $
+ * $Revision: 17566 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -172,7 +172,7 @@ abstract public class JmolViewer {
    * @param width 
    * @param height 
    */
-  abstract public void renderScreenImage(Object gLeft, Object gRight, int width, int height);
+  abstract public void renderScreenImageStereo(Object gLeft, Object gRight, int width, int height);
 
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();
@@ -336,7 +336,7 @@ abstract public class JmolViewer {
   abstract public String getModelSetPathName();
   abstract public String getEmbeddedFileState(String filename);
   abstract public String getFileAsString(String filename);
-  abstract public boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad);
+  abstract public boolean getFileAsStringBin(String[] data, int nBytesMax, boolean doSpecialLoad);
   abstract public Properties getModelSetProperties();
   abstract public Map<String, Object> getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int modelIndex);
@@ -510,23 +510,23 @@ abstract public class JmolViewer {
   // "To" was removed in the next, because they don't 
   // rotate "TO" anything. They just rotate.
   
-  abstract public void rotateX(int degrees);
-  abstract public void rotateY(int degrees);
+  abstract public void rotateXDeg(int degrees);
+  abstract public void rotateYDeg(int degrees);
   abstract public void rotateX(float radians);
   abstract public void rotateY(float radians);
   abstract public void rotateZ(float radians);
 
   abstract public JmolAdapter getModelAdapter();
 
-  abstract public void openFileAsynchronously(String fileName, boolean pdbCartoons);
-  public void openFileAsynchronously(String fileName) {
-    openFileAsynchronously(fileName, false);    
+  abstract public void openFileAsyncPDB(String fileName, boolean pdbCartoons);
+  public void openFileAsync(String fileName) {
+    openFileAsyncPDB(fileName, false);    
   }
   
   abstract public Object getFileAsBytes(String fullPathName, OutputStream os);
 
   abstract public String getErrorMessage();
-  abstract public String getErrorMessageUntranslated();
+  abstract public String getErrorMessageUn();
 
   abstract public String getModelFileName(int modelIndex);
 

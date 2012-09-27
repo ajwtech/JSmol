@@ -260,12 +260,12 @@ var shape = this.shapes[i];
 if (shape != null) shape.setModelClickability ();
 }
 });
-Clazz.defineMethod (c$, "transformAtoms", 
+Clazz.defineMethod (c$, "finalizeAtoms", 
 function (bsAtoms, ptOffset) {
 if (bsAtoms != null) {
 var ptCenter = this.viewer.getAtomSetCenter (bsAtoms);
 var pt =  new javax.vecmath.Point3f ();
-this.viewer.transformPoint (ptCenter, pt);
+this.viewer.transformPt3f (ptCenter, pt);
 pt.add (ptOffset);
 this.viewer.unTransformPoint (pt, pt);
 pt.sub (ptCenter);
@@ -273,11 +273,18 @@ this.viewer.setAtomCoordRelative (pt, bsAtoms);
 ptOffset.set (0, 0, 0);
 }this.bsRenderableAtoms.clear ();
 var atoms = this.modelSet.atoms;
-var vibrationVectors = this.modelSet.vibrationVectors;
 for (var i = this.modelSet.getAtomCount (); --i >= 0; ) {
 var atom = atoms[i];
 if ((atom.getShapeVisibilityFlags () & 1) == 0) continue ;this.bsRenderableAtoms.set (i);
-var screen = (vibrationVectors != null && atom.hasVibration () ? this.viewer.transformPoint (atom, vibrationVectors[i]) : this.viewer.transformPoint (atom));
+}
+}, "java.util.BitSet,javax.vecmath.Point3f");
+Clazz.defineMethod (c$, "transformAtoms", 
+function () {
+var vibrationVectors = this.modelSet.vibrationVectors;
+var atoms = this.modelSet.atoms;
+for (var i = this.bsRenderableAtoms.nextSetBit (0); i >= 0; i = this.bsRenderableAtoms.nextSetBit (i + 1)) {
+var atom = atoms[i];
+var screen = (vibrationVectors != null && atom.hasVibration () ? this.viewer.transformPtVib (atom, vibrationVectors[i]) : this.viewer.transformPt (atom));
 atom.screenX = screen.x;
 atom.screenY = screen.y;
 atom.screenZ = screen.z;
@@ -329,7 +336,7 @@ this.navigationCrossHairMinMax[1] = maxX;
 this.navigationCrossHairMinMax[2] = minY;
 this.navigationCrossHairMinMax[3] = maxY;
 return this.navigationCrossHairMinMax;
-}, "java.util.BitSet,javax.vecmath.Point3f");
+});
 Clazz.defineStatics (c$,
 "hoverable", [29, 24, 23, 22, 34]);
 c$.clickableMax = c$.prototype.clickableMax = org.jmol.viewer.ShapeManager.hoverable.length - 1;

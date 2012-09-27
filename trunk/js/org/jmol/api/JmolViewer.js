@@ -44,9 +44,9 @@ Clazz.defineMethod (c$, "getBooleanProperty",
 function (key, doICare) {
 return this.getBooleanProperty (key);
 }, "~S,~B");
-Clazz.defineMethod (c$, "openFileAsynchronously", 
+Clazz.defineMethod (c$, "openFileAsync", 
 function (fileName) {
-this.openFileAsynchronously (fileName, false);
+this.openFileAsyncPDB (fileName, false);
 }, "~S");
 Clazz.defineMethod (c$, "mouseEvent", 
 function (id, x, y, modifiers, when) {

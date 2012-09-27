@@ -494,11 +494,9 @@ return (this.modelSetAuxiliaryInfo == null ? null : this.modelSetAuxiliaryInfo.g
 }, "~S");
 Clazz.defineMethod (c$, "getModelSetAuxiliaryInfoBoolean", 
 function (keyName) {
-if (this.modelSetAuxiliaryInfo == null || !this.modelSetAuxiliaryInfo.containsKey (keyName)) return false;
-var o = this.modelSetAuxiliaryInfo.get (keyName);
-{
-return o.valueOf();
-}}, "~S");
+var info = this.modelSetAuxiliaryInfo;
+return (info != null && info.containsKey (keyName) && (info.get (keyName)).booleanValue ());
+}, "~S");
 Clazz.defineMethod (c$, "getMergeTrajectoryCount", 
 function (isTrajectory) {
 if (this.trajectorySteps == null) {
