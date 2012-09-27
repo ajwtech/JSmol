@@ -167,7 +167,7 @@ break;
 Clazz.defineMethod (c$, "drawBond", 
 ($fz = function (dottedMask) {
 if (this.exportType == 1 && this.bondOrder == 1) {
-this.g3d.drawBond (this.atomA, this.atomB, this.colixA, this.colixB, this.endcaps, this.mad);
+this.g3d.drawBond (this.atomA, this.atomB, this.colixA, this.colixB, this.endcaps, this.mad, -1);
 return ;
 }var isEndOn = (this.dx == 0 && this.dy == 0);
 if (isEndOn && this.lineBond) return ;
@@ -181,8 +181,9 @@ this.fillCylinder (this.colixA, this.colixA, this.endcaps, this.width, this.xA, 
 y += step;
 } while (--this.bondOrder > 0);
 return ;
-}if (this.bondOrder == 1) {
-if ((dottedMask & 1) != 0) this.drawDashed (this.xA, this.yA, this.zA, this.xB, this.yB, this.zB, this.dashDots);
+}var isDashed = (dottedMask & 1) != 0;
+if (this.bondOrder == 1 && this.exportType != 1) {
+if (isDashed) this.drawDashed (this.xA, this.yA, this.zA, this.xB, this.yB, this.zB, this.dashDots);
  else this.fillCylinder (this.colixA, this.colixB, this.endcaps, this.width, this.xA, this.yA, this.zA, this.xB, this.yB, this.zB);
 return ;
 }if (doFixedSpacing) {
@@ -195,14 +196,18 @@ this.x.scale ((this.bondOrder - 1) / 2);
 this.p1.sub (this.atomA, this.x);
 this.p2.sub (this.atomB, this.x);
 while (true) {
+if (this.exportType == 1 && !isDashed) {
+this.g3d.drawBond (this.p1, this.p2, this.colixA, this.colixB, this.endcaps, this.mad, -2);
+} else {
 this.viewer.transformPtScr (this.p1, this.s1);
 this.viewer.transformPtScr (this.p2, this.s2);
-this.p1.add (this.y);
-this.p2.add (this.y);
-if ((dottedMask & 1) != 0) this.drawDashed (this.s1.x, this.s1.y, this.s1.z, this.s2.x, this.s2.y, this.s2.z, this.dashDots);
+if (isDashed) this.drawDashed (this.s1.x, this.s1.y, this.s1.z, this.s2.x, this.s2.y, this.s2.z, this.dashDots);
  else this.fillCylinder (this.colixA, this.colixB, this.endcaps, this.width, this.s1.x, this.s1.y, this.s1.z, this.s2.x, this.s2.y, this.s2.z);
 dottedMask >>= 1;
-if (--this.bondOrder <= 0) break;
+isDashed = (dottedMask & 1) != 0;
+}if (--this.bondOrder <= 0) break;
+this.p1.add (this.y);
+this.p2.add (this.y);
 this.stepAxisCoordinates ();
 }
 return ;

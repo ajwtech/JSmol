@@ -127,7 +127,7 @@ this.outputCone (this.tempP1, this.tempP2, radius, colix);
 }, "~N,~N,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~B");
 Clazz.overrideMethod (c$, "drawCylinder", 
 function (ptA, ptB, colix1, colix2, endcaps, mad, bondOrder) {
-this.setTempPoints (ptA, ptB, bondOrder == -1);
+this.setTempPoints (ptA, ptB, bondOrder < 0);
 var radius = mad / 2000;
 if (colix1 == colix2) {
 this.outputCylinder (null, this.tempP1, this.tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
@@ -139,8 +139,8 @@ this.tempP3.set (this.tempV2);
 this.outputCylinder (null, this.tempP1, this.tempP3, colix1, (endcaps == 3 ? 0 : endcaps), radius, null, null, true);
 this.outputCylinder (null, this.tempP3, this.tempP2, colix2, (endcaps == 3 ? 0 : endcaps), radius, null, null, true);
 if (endcaps == 3) {
-this.outputSphere (this.tempP1, radius * 1.01, colix1, bondOrder != -1);
-this.outputSphere (this.tempP2, radius * 1.01, colix2, bondOrder != -1);
+this.outputSphere (this.tempP1, radius * 1.01, colix1, bondOrder != -2);
+this.outputSphere (this.tempP2, radius * 1.01, colix2, bondOrder != -2);
 }}}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "fillCylinderScreenMad", 
 function (colix, endcaps, mad, screenA, screenB) {
