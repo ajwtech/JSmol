@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
- * $Revision: 17556 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -28,7 +28,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 
 public class Echo extends TextShape {
@@ -147,7 +147,7 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Object2d.VALIGN_BOTTOM;
           }
-          text = new Text(viewer, gdata, gdata.getFont3D(FONTFACE, FONTSIZE),
+          text = new Text(viewer, gdata, gdata.getFont3DFS(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);

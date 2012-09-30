@@ -1,6 +1,6 @@
 ﻿Clazz.declarePackage ("javax.vecmath");
 Clazz.load (["javax.vecmath.Tuple3d"], "javax.vecmath.Vector3d", null, function () {
-c$ = Clazz.declareType (javax.vecmath, "Vector3d", javax.vecmath.Tuple3d, java.io.Serializable);
+c$ = Clazz.declareType (javax.vecmath, "Vector3d", javax.vecmath.Tuple3d);
 Clazz.defineMethod (c$, "cross", 
 function (v1, v2) {
 var x;
@@ -11,14 +11,6 @@ this.z = v1.x * v2.y - v1.y * v2.x;
 this.x = x;
 this.y = y;
 }, "javax.vecmath.Vector3d,javax.vecmath.Vector3d");
-Clazz.defineMethod (c$, "normalize", 
-function (v1) {
-var norm;
-norm = 1.0 / Math.sqrt (v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
-this.x = v1.x * norm;
-this.y = v1.y * norm;
-this.z = v1.z * norm;
-}, "javax.vecmath.Vector3d");
 Clazz.defineMethod (c$, "normalize", 
 function () {
 var norm;
@@ -39,11 +31,4 @@ Clazz.defineMethod (c$, "length",
 function () {
 return Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z);
 });
-Clazz.defineMethod (c$, "angle", 
-function (v1) {
-var vDot = this.dot (v1) / (this.length () * v1.length ());
-if (vDot < -1.0) vDot = -1.0;
-if (vDot > 1.0) vDot = 1.0;
-return ((Math.acos (vDot)));
-}, "javax.vecmath.Vector3d");
 });

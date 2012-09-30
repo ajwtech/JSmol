@@ -33,7 +33,7 @@ for (var i = 0; i < 3; i++) this.lengths[i] *= org.jmol.util.Quadric.ONE_OVER_RO
 }, "~A");
 Clazz.defineMethod (c$, "rotate", 
 function (mat) {
-if (this.vectors != null) for (var i = 0; i < 3; i++) mat.transform (this.vectors[i]);
+if (this.vectors != null) for (var i = 0; i < 3; i++) mat.transformV (this.vectors[i]);
 
 }, "javax.vecmath.Matrix4f");
 Clazz.defineMethod (c$, "setSize", 
@@ -54,11 +54,11 @@ mat[1][2] = mat[2][1] = coef[5] / 2;
 c$.setEllipsoidMatrix = Clazz.defineMethod (c$, "setEllipsoidMatrix", 
 function (unitAxes, lengths, vTemp, mat) {
 for (var i = 0; i < 3; i++) {
-vTemp.set (unitAxes[i]);
+vTemp.setT (unitAxes[i]);
 vTemp.scale (lengths[i]);
-mat.setColumn (i, vTemp);
+mat.setColumnV (i, vTemp);
 }
-mat.invert (mat);
+mat.invertM (mat);
 return mat;
 }, "~A,~A,javax.vecmath.Vector3f,javax.vecmath.Matrix3f");
 c$.getEquationForQuadricWithCenter = Clazz.defineMethod (c$, "getEquationForQuadricWithCenter", 
@@ -66,7 +66,7 @@ function (x, y, z, mToElliptical, vTemp, mTemp, coef, mDeriv) {
 vTemp.set (x, y, z);
 mToElliptical.transform (vTemp);
 var f = 1 - vTemp.dot (vTemp);
-mTemp.transpose (mToElliptical);
+mTemp.transposeM (mToElliptical);
 mTemp.transform (vTemp);
 mTemp.mul (mToElliptical);
 coef[0] = mTemp.m00 / f;

@@ -67,7 +67,7 @@ for (var i = this.bsVisible.nextSetBit (0); i >= 0; i = this.bsVisible.nextSetBi
 if (isTraceAlpha) {
 this.ptConnect.set (Math.floor ((this.controlPointScreens[i].x + this.controlPointScreens[i + 1].x) / 2), Math.floor ((this.controlPointScreens[i].y + this.controlPointScreens[i + 1].y) / 2), Math.floor ((this.controlPointScreens[i].z + this.controlPointScreens[i + 1].z) / 2));
 } else {
-this.ptConnect.set (this.controlPointScreens[i + 1]);
+this.ptConnect.setT (this.controlPointScreens[i + 1]);
 }this.renderHermiteConic (i, false);
 this.colix = this.getLeadColix (i);
 if (this.g3d.setColix (this.colix)) this.renderNucleicBaseStep (this.monomers[i], this.mads[i], this.ptConnect);

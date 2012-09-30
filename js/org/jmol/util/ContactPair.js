@@ -28,12 +28,12 @@ this.vdws[0] = vdwA;
 this.vdws[1] = vdwB;
 this.myAtoms[0] = atoms[i1];
 this.myAtoms[1] = atoms[i2];
-var v =  new javax.vecmath.Vector3f (this.myAtoms[1]);
+var v = javax.vecmath.Vector3f.newV (this.myAtoms[1]);
 v.sub (this.myAtoms[0]);
 this.d = v.length ();
 var f = (R - r + this.d) / (2 * this.d);
 this.pt =  new javax.vecmath.Point3f ();
-this.pt.scaleAdd (f, v, this.myAtoms[0]);
+this.pt.scaleAdd2 (f, v, this.myAtoms[0]);
 this.score = this.d - vdwA - vdwB;
 this.contactType = (this.score < 0 ? 1073741881 : 1649412112);
 if (this.score < 0) {

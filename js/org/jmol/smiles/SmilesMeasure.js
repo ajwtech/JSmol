@@ -51,8 +51,8 @@ case 2:
 d = this.points[0].distance (this.points[1]);
 break;
 case 3:
-this.search.v.vA.sub (this.points[0], this.points[1]);
-this.search.v.vB.sub (this.points[2], this.points[1]);
+this.search.v.vA.sub2 (this.points[0], this.points[1]);
+this.search.v.vB.sub2 (this.points[2], this.points[1]);
 d = this.search.v.vA.angle (this.search.v.vB) / 0.017453292;
 break;
 case 4:
@@ -64,12 +64,12 @@ return ((d < this.min || d > this.max) == this.isNot);
 });
 c$.setTorsionData = Clazz.defineMethod (c$, "setTorsionData", 
 function (pt1a, pt1, pt2, pt2a, v, isAll) {
-v.vTemp1.set (pt1a);
+v.vTemp1.setT (pt1a);
 v.vTemp1.sub (pt1);
-v.vTemp2.set (pt2a);
+v.vTemp2.setT (pt2a);
 v.vTemp2.sub (pt2);
 if (!isAll) return ;
-v.vNorm1.set (pt1);
+v.vNorm1.setT (pt1);
 v.vNorm1.sub (pt2);
 v.vNorm1.normalize ();
 v.vTemp1.cross (v.vTemp1, v.vNorm1);

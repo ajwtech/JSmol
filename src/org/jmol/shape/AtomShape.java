@@ -25,7 +25,7 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -57,11 +57,11 @@ public abstract class AtomShape extends Shape {
     atomCount = modelSet.getAtomCount();
     // in case this is due to "load append"
     if (mads != null)
-      mads = ArrayUtil.setLength(mads, atomCount);
+      mads = ArrayUtil.arrayCopyShort(mads, atomCount);
     if (colixes != null)
-      colixes = ArrayUtil.setLength(colixes, atomCount);
+      colixes = ArrayUtil.arrayCopyShort(colixes, atomCount);
     if (paletteIDs != null)
-      paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
+      paletteIDs = ArrayUtil.arrayCopyByte(paletteIDs, atomCount);
   }
 
   @Override
@@ -95,7 +95,7 @@ public abstract class AtomShape extends Shape {
       mads[i] = atom.calculateMad(viewer, rd);
       //System.out.println("atomshape - setSize " + i + " " + rd);
 //      System.out.println("atomSHape " + atom + " mad=" + mads[i]);
-      bsSizeSet.set(i, isVisible);
+      bsSizeSet.setBitTo(i, isVisible);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
@@ -152,13 +152,13 @@ public abstract class AtomShape extends Shape {
     if (colixes == null || atomIndex >= colixes.length) {
       if (colix == Colix.INHERIT_ALL)
         return;
-      colixes = ArrayUtil.ensureLength(colixes, atomIndex + 1);
-      paletteIDs = ArrayUtil.ensureLength(paletteIDs, atomIndex + 1);
+      colixes = ArrayUtil.ensureLengthShort(colixes, atomIndex + 1);
+      paletteIDs = ArrayUtil.ensureLengthByte(paletteIDs, atomIndex + 1);
     }
     if (bsColixSet == null)
       bsColixSet = new BitSet();
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
-    bsColixSet.set(atomIndex, colix != Colix.INHERIT_ALL);
+    bsColixSet.setBitTo(atomIndex, colix != Colix.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
   }
 

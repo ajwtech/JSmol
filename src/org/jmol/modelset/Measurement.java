@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -269,11 +269,11 @@ public class Measurement {
         float radians = Measure.computeAngle(getAtom(1), getAtom(2), getAtom(3), vectorBA, vectorBC, false);
         Vector3f vectorAxis = new Vector3f();
         vectorAxis.cross(vectorBA, vectorBC);
-        aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
+        aa = AxisAngle4f.new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
         vectorBA.normalize();
         vectorBA.scale(0.5f);
-        pointArc = new Point3f(vectorBA);
+        pointArc = Point3f.newP(vectorBA);
       }
       //$FALL-THROUGH$
     case 4:
@@ -441,7 +441,7 @@ public class Measurement {
       return ptA.distance(ptB);
     case 3:
       ptC = getAtom(3);
-      return Measure.computeAngle(ptA, ptB, ptC, true);
+      return Measure.computeAngleABC(ptA, ptB, ptC, true);
     case 4:
       ptC = getAtom(3);
       ptD = getAtom(4);

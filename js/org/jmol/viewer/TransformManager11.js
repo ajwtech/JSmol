@@ -121,13 +121,13 @@ this.haveNotifiedNaN = true;
 });
 Clazz.defineMethod (c$, "setScreenParameters", 
 function (screenWidth, screenHeight, useZoomLarge, antialias, resetSlab, resetZoom) {
-var pt = (this.mode == 1 ?  new javax.vecmath.Point3f (this.navigationCenter) : null);
-var ptoff =  new javax.vecmath.Point3f (this.navigationOffset);
+var pt = (this.mode == 1 ? javax.vecmath.Point3f.newP (this.navigationCenter) : null);
+var ptoff = javax.vecmath.Point3f.newP (this.navigationOffset);
 ptoff.x = ptoff.x / this.width;
 ptoff.y = ptoff.y / this.height;
 Clazz.superCall (this, org.jmol.viewer.TransformManager11, "setScreenParameters", [screenWidth, screenHeight, useZoomLarge, antialias, resetSlab, resetZoom]);
 if (pt != null) {
-this.navigationCenter.set (pt);
+this.navigationCenter.setT (pt);
 this.navTranslatePercent (-1, ptoff.x * this.width, ptoff.y * this.height);
 this.navigatePt (0, pt);
 }}, "~N,~N,~B,~B,~B,~B");
@@ -147,7 +147,7 @@ this.newNavigationCenter ();
 break;
 case 0:
 case -1:
-this.fixedRotationOffset.set (this.fixedTranslation);
+this.fixedRotationOffset.setT (this.fixedTranslation);
 this.newNavigationCenter ();
 break;
 case 2:
@@ -156,9 +156,9 @@ break;
 case -2:
 case 3:
 var pt1 =  new javax.vecmath.Point3f ();
-this.matrixTransform.transform (this.navigationCenter, pt1);
+this.matrixTransform.transform2 (this.navigationCenter, pt1);
 var z = pt1.z;
-this.matrixTransform.transform (this.fixedRotationCenter, pt1);
+this.matrixTransform.transform2 (this.fixedRotationCenter, pt1);
 this.modelCenterOffset = this.referencePlaneOffset + (pt1.z - z);
 this.calcCameraFactors ();
 this.calcTransformMatrix ();
@@ -168,19 +168,19 @@ this.navigationOffset.z = this.referencePlaneOffset;
 this.unTransformPoint (this.navigationOffset, this.navigationCenter);
 break;
 }
-this.matrixTransform.transform (this.navigationCenter, this.navigationShiftXY);
+this.matrixTransform.transform2 (this.navigationCenter, this.navigationShiftXY);
 if (this.viewer.getNavigationPeriodic ()) {
-var pt =  new javax.vecmath.Point3f (this.navigationCenter);
+var pt = javax.vecmath.Point3f.newP (this.navigationCenter);
 this.viewer.toUnitCell (this.navigationCenter, null);
 if (pt.distance (this.navigationCenter) > 0.01) {
-this.matrixTransform.transform (this.navigationCenter, pt);
+this.matrixTransform.transform2 (this.navigationCenter, pt);
 var dz = this.navigationShiftXY.z - pt.z;
 this.modelCenterOffset += dz;
 this.calcCameraFactors ();
 this.calcTransformMatrix ();
-this.matrixTransform.transform (this.navigationCenter, this.navigationShiftXY);
+this.matrixTransform.transform2 (this.navigationCenter, this.navigationShiftXY);
 }}this.transformPoint (this.fixedRotationCenter, this.fixedTranslation);
-this.fixedRotationOffset.set (this.fixedTranslation);
+this.fixedRotationOffset.setT (this.fixedTranslation);
 this.previousX = this.fixedTranslation.x;
 this.previousY = this.fixedTranslation.y;
 this.transformPoint (this.navigationCenter, this.navigationOffset);
@@ -212,7 +212,7 @@ var f = -this.getPerspectiveFactor (pt.z);
 pt.x /= f;
 pt.y /= f;
 pt.z = this.referencePlaneOffset;
-this.matrixTransformInv.transform (pt, this.navigationCenter);
+this.matrixTransformInv.transform2 (pt, this.navigationCenter);
 this.mode = 1;
 }, $fz.isPrivate = true, $fz));
 Clazz.overrideMethod (c$, "canNavigate", 
@@ -380,7 +380,7 @@ function (seconds, pt) {
 if (seconds > 0) {
 this.navigateTo (seconds, null, NaN, pt, NaN, NaN, NaN);
 return ;
-}this.navigationCenter.set (pt);
+}this.navigationCenter.setT (pt);
 this.navMode = 3;
 this.navigating = true;
 this.finalizeTransformParameters ();
@@ -449,10 +449,10 @@ var yTransStart = this.navigationOffset.y;
 var yTransDelta = yTrans - yTransStart;
 var degreeStep = degrees / totalSteps;
 var aaStepCenter =  new javax.vecmath.Vector3f ();
-aaStepCenter.set (this.ptMoveToCenter);
+aaStepCenter.setT (this.ptMoveToCenter);
 aaStepCenter.sub (this.navigationCenter);
 aaStepCenter.scale (1 / totalSteps);
-var centerStart =  new javax.vecmath.Point3f (this.navigationCenter);
+var centerStart = javax.vecmath.Point3f.newP (this.navigationCenter);
 for (var iStep = 1; iStep < totalSteps; ++iStep) {
 this.navigating = true;
 var fStep = iStep / (totalSteps - 1);
@@ -571,20 +571,20 @@ Clazz.defineMethod (c$, "alignZX",
 function (pt0, pt1, ptVectorWing) {
 var pt0s =  new javax.vecmath.Point3f ();
 var pt1s =  new javax.vecmath.Point3f ();
-this.matrixRotate.transform (pt0, pt0s);
-this.matrixRotate.transform (pt1, pt1s);
-var vPath =  new javax.vecmath.Vector3f (pt0s);
+this.matrixRotate.transform2 (pt0, pt0s);
+this.matrixRotate.transform2 (pt1, pt1s);
+var vPath = javax.vecmath.Vector3f.newV (pt0s);
 vPath.sub (pt1s);
-var v =  new javax.vecmath.Vector3f (0, 0, 1);
+var v = javax.vecmath.Vector3f.new3 (0, 0, 1);
 var angle = vPath.angle (v);
 v.cross (vPath, v);
 if (angle != 0) this.navigateAxis (0, v, (angle * 57.29577951308232));
-this.matrixRotate.transform (pt0, pt0s);
-var pt2 =  new javax.vecmath.Point3f (ptVectorWing);
+this.matrixRotate.transform2 (pt0, pt0s);
+var pt2 = javax.vecmath.Point3f.newP (ptVectorWing);
 pt2.add (pt0);
 var pt2s =  new javax.vecmath.Point3f ();
-this.matrixRotate.transform (pt2, pt2s);
-vPath.set (pt2s);
+this.matrixRotate.transform2 (pt2, pt2s);
+vPath.setT (pt2s);
 vPath.sub (pt0s);
 vPath.z = 0;
 v.set (-1, 0, 0);
@@ -595,9 +595,9 @@ if (angle != 0) this.navigateAxis (0, v, (angle * 57.29577951308232));
 if (this.viewer.getNavigateSurface ()) {
 v.set (1, 0, 0);
 this.navigateAxis (0, v, 20);
-}this.matrixRotate.transform (pt0, pt0s);
-this.matrixRotate.transform (pt1, pt1s);
-this.matrixRotate.transform (ptVectorWing, pt2s);
+}this.matrixRotate.transform2 (pt0, pt0s);
+this.matrixRotate.transform2 (pt1, pt1s);
+this.matrixRotate.transform2 (ptVectorWing, pt2s);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f");
 Clazz.overrideMethod (c$, "getNavigationCenter", 
 function () {

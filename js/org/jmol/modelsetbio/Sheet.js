@@ -24,7 +24,7 @@ this.alphaPolymer.getLeadMidPoint (this.monomerIndexFirst + 1, this.axisA);
 this.axisB =  new javax.vecmath.Point3f ();
 this.alphaPolymer.getLeadMidPoint (this.monomerIndexFirst + this.monomerCount - 1, this.axisB);
 }this.axisUnitVector =  new javax.vecmath.Vector3f ();
-this.axisUnitVector.sub (this.axisB, this.axisA);
+this.axisUnitVector.sub2 (this.axisB, this.axisA);
 this.axisUnitVector.normalize ();
 var tempA =  new javax.vecmath.Point3f ();
 this.alphaPolymer.getLeadMidPoint (this.monomerIndexFirst, tempA);
@@ -46,10 +46,10 @@ if (this.widthUnitVector == null) {
 var vectorCO =  new javax.vecmath.Vector3f ();
 var vectorCOSum =  new javax.vecmath.Vector3f ();
 var amino = this.alphaPolymer.monomers[this.monomerIndexFirst];
-vectorCOSum.sub (amino.getCarbonylOxygenAtom (), amino.getCarbonylCarbonAtom ());
+vectorCOSum.sub2 (amino.getCarbonylOxygenAtom (), amino.getCarbonylCarbonAtom ());
 for (var i = this.monomerCount; --i > this.monomerIndexFirst; ) {
 amino = this.alphaPolymer.monomers[i];
-vectorCO.sub (amino.getCarbonylOxygenAtom (), amino.getCarbonylCarbonAtom ());
+vectorCO.sub2 (amino.getCarbonylOxygenAtom (), amino.getCarbonylCarbonAtom ());
 if (vectorCOSum.angle (vectorCO) < 1.5707964) vectorCOSum.add (vectorCO);
  else vectorCOSum.sub (vectorCO);
 }

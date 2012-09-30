@@ -83,8 +83,8 @@ xyz[j + 2] = atom.z;
 }
 for (var i = this.atomCount; --i >= 0; ) this.setAtomCoord (this.vAtoms.get (i));
 
-var ptMax =  new javax.vecmath.Point3f (-3.4028235E38, -3.4028235E38, -3.4028235E38);
-var ptMin =  new javax.vecmath.Point3f (3.4028235E38, 3.4028235E38, 3.4028235E38);
+var ptMax = javax.vecmath.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
+var ptMin = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
 if (this.doCentralize) {
 for (var i = this.atomCount; --i >= 0; ) {
 atom = this.vAtoms.get (i);
@@ -104,8 +104,8 @@ ptCenter.y = 0.5;
 case 1:
 ptCenter.z = 0.5;
 }
-ptCenter.scaleAdd (-0.5, ptMin, ptCenter);
-ptCenter.scaleAdd (-0.5, ptMax, ptCenter);
+ptCenter.scaleAdd2 (-0.5, ptMin, ptCenter);
+ptCenter.scaleAdd2 (-0.5, ptMax, ptCenter);
 for (var i = this.atomCount; --i >= 0; ) this.vAtoms.get (i).add (ptCenter);
 
 }this.doCentralize = false;

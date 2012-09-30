@@ -22,7 +22,7 @@ this.haveParameters = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelsetbio, "BioPolymer");
 Clazz.prepareFields (c$, function () {
-this.unitVectorX =  new javax.vecmath.Vector3f (1, 0, 0);
+this.unitVectorX = javax.vecmath.Vector3f.new3 (1, 0, 0);
 });
 Clazz.defineMethod (c$, "getGroups", 
 function () {
@@ -91,16 +91,16 @@ function (groupIndex, midPoint) {
 if (groupIndex == this.monomerCount) {
 --groupIndex;
 } else if (groupIndex > 0) {
-midPoint.set (this.getLeadPoint (groupIndex));
+midPoint.setT (this.getLeadPoint (groupIndex));
 midPoint.add (this.getLeadPoint (groupIndex - 1));
 midPoint.scale (0.5);
 return ;
-}midPoint.set (this.getLeadPoint (groupIndex));
+}midPoint.setT (this.getLeadPoint (groupIndex));
 }, "~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getLeadPoint", 
 function (groupIndex, midPoint) {
 if (groupIndex == this.monomerCount) --groupIndex;
-midPoint.set (this.getLeadPoint (groupIndex));
+midPoint.setT (this.getLeadPoint (groupIndex));
 }, "~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getWingPoint", 
 function (polymerIndex) {
@@ -186,18 +186,18 @@ var previousVectorD = null;
 for (var i = 1; i < this.monomerCount; ++i) {
 leadPointPrev = leadPoint;
 this.leadPoints[i] = leadPoint = this.getLeadPoint (i);
-var midpoint =  new javax.vecmath.Point3f (leadPoint);
+var midpoint = javax.vecmath.Point3f.newP (leadPoint);
 midpoint.add (leadPointPrev);
 midpoint.scale (0.5);
 this.leadMidpoints[i] = midpoint;
 if (this.hasWingPoints) {
-vectorA.sub (leadPoint, leadPointPrev);
-vectorB.sub (leadPointPrev, this.getWingPoint (i - 1));
+vectorA.sub2 (leadPoint, leadPointPrev);
+vectorB.sub2 (leadPointPrev, this.getWingPoint (i - 1));
 vectorC.cross (vectorA, vectorB);
 vectorD.cross (vectorA, vectorC);
 vectorD.normalize ();
 if (previousVectorD != null && previousVectorD.angle (vectorD) > 1.5707963267948966) vectorD.scale (-1);
-previousVectorD = this.wingVectors[i] =  new javax.vecmath.Vector3f (vectorD);
+previousVectorD = this.wingVectors[i] = javax.vecmath.Vector3f.newV (vectorD);
 }}
 this.leadPoints[this.monomerCount] = this.leadMidpoints[this.monomerCount] = this.getTerminatorPoint ();
 if (!this.hasWingPoints) {
@@ -206,12 +206,12 @@ this.wingVectors[1] = this.unitVectorX;
 } else {
 var previousVectorC = null;
 for (var i = 1; i < this.monomerCount; ++i) {
-vectorA.sub (this.leadMidpoints[i], this.leadPoints[i]);
-vectorB.sub (this.leadPoints[i], this.leadMidpoints[i + 1]);
+vectorA.sub2 (this.leadMidpoints[i], this.leadPoints[i]);
+vectorB.sub2 (this.leadPoints[i], this.leadMidpoints[i + 1]);
 vectorC.cross (vectorA, vectorB);
 vectorC.normalize ();
 if (previousVectorC != null && previousVectorC.angle (vectorC) > 1.5707963267948966) vectorC.scale (-1);
-previousVectorC = this.wingVectors[i] =  new javax.vecmath.Vector3f (vectorC);
+previousVectorC = this.wingVectors[i] = javax.vecmath.Vector3f.newV (vectorC);
 }
 }}this.wingVectors[0] = this.wingVectors[1];
 this.wingVectors[this.monomerCount] = this.wingVectors[this.monomerCount - 1];
@@ -248,13 +248,13 @@ var points = this.getControlPoints (isTraceAlpha, sheetSmoothing, false);
 var vectors = this.getWingVectors ();
 var count = this.monomerCount;
 for (var j = 0; j < count; j++) if (bs.get (this.monomers[j].leadAtomIndex)) {
-vList.add ([points[j],  new javax.vecmath.Point3f (vectors[j])]);
+vList.add ([points[j], javax.vecmath.Point3f.newP (vectors[j])]);
 last = j;
 } else if (last != 2147483646) {
-vList.add ([points[j],  new javax.vecmath.Point3f (vectors[j])]);
+vList.add ([points[j], javax.vecmath.Point3f.newP (vectors[j])]);
 last = 2147483646;
 }
-if (last + 1 < count) vList.add ([points[last + 1],  new javax.vecmath.Point3f (vectors[last + 1])]);
+if (last + 1 < count) vList.add ([points[last + 1], javax.vecmath.Point3f.newP (vectors[last + 1])]);
 return last;
 }, "~N,java.util.BitSet,java.util.List,~B,~N");
 Clazz.defineMethod (c$, "getSequence", 
@@ -408,7 +408,7 @@ pdbATOM.append ("draw ID \"planeCCN").append (id).append ("\" ").append (org.jmo
 continue ;}if (Float.isNaN (angledeg)) {
 strExtra = "";
 if (writeRamachandranStraightness) continue ;} else {
-q =  new org.jmol.util.Quaternion ( new javax.vecmath.Point3f (1, 0, 0), angledeg);
+q =  new org.jmol.util.Quaternion (javax.vecmath.Point3f.new3 (1, 0, 0), angledeg);
 strExtra = q.getInfo ();
 if (writeRamachandranStraightness) {
 z = angledeg;

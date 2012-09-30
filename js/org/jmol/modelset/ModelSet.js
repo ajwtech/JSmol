@@ -109,7 +109,7 @@ var iFirst = this.models[baseModelIndex].firstAtomIndex;
 var iMax = iFirst + this.getAtomCountInModel (baseModelIndex);
 for (var pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt] != null; i++, pt++) {
 if (isFractional) this.atoms[i].setFractionalCoordTo (trajectory[pt], true);
- else this.atoms[i].set (trajectory[pt]);
+ else this.atoms[i].setT (trajectory[pt]);
 this.atoms[i].modelIndex = modelIndex;
 if (this.vibrationSteps != null) {
 if (vibrations != null && vibrations[pt] != null) vib = vibrations[pt];
@@ -511,7 +511,7 @@ Clazz.defineMethod (c$, "setAtomCoordRelative",
 function (offset, bs) {
 this.setAtomsCoordRelative (bs, offset.x, offset.y, offset.z);
 this.mat4.setIdentity ();
-this.vTemp.set (offset);
+this.vTemp.setT (offset);
 this.mat4.setTranslation (this.vTemp);
 this.recalculatePositionDependentQuantities (bs, this.mat4);
 }, "javax.vecmath.Tuple3f,java.util.BitSet");
@@ -539,7 +539,7 @@ this.setAtomCoordRelative (i, x, y, z);
 }
 return ;
 }if (plane != null) {
-var norm =  new javax.vecmath.Vector3f (plane.x, plane.y, plane.z);
+var norm = javax.vecmath.Vector3f.new3 (plane.x, plane.y, plane.z);
 norm.normalize ();
 var d = Math.sqrt (plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
@@ -566,7 +566,7 @@ vNot.add (a);
 }}
 if (vNot.size () == 0) return ;
 pt = org.jmol.util.Measure.getCenterAndPoints (vNot)[0];
-var v =  new javax.vecmath.Vector3f (thisAtom);
+var v = javax.vecmath.Vector3f.newV (thisAtom);
 v.sub (pt);
 var q =  new org.jmol.util.Quaternion (v, 180);
 this.moveAtoms (null, q.getMatrix (), null, bsAtoms, thisAtom, true);
@@ -579,10 +579,10 @@ this.matTemp.set (matrixRotate);
 this.matInv.set (matrixRotate);
 this.matInv.invert ();
 this.ptTemp.set (0, 0, 0);
-this.matTemp.mul (mNew, matrixRotate);
-this.matTemp.mul (this.matInv, this.matTemp);
+this.matTemp.mul2 (mNew, matrixRotate);
+this.matTemp.mul2 (this.matInv, this.matTemp);
 }if (isInternal) {
-this.vTemp.set (center);
+this.vTemp.setT (center);
 this.mat4.setIdentity ();
 this.mat4.setTranslation (this.vTemp);
 this.mat4t.set (this.matTemp);
@@ -611,7 +611,7 @@ for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.atoms[i]
 
 this.mat4t.setIdentity ();
 this.mat4t.setTranslation (translation);
-this.mat4.mul (this.mat4t, this.mat4);
+this.mat4.mul2 (this.mat4t, this.mat4);
 }this.recalculatePositionDependentQuantities (bs, this.mat4);
 }, "javax.vecmath.Matrix3f,javax.vecmath.Matrix3f,javax.vecmath.Vector3f,java.util.BitSet,javax.vecmath.Point3f,~B");
 Clazz.defineMethod (c$, "recalculatePositionDependentQuantities", 

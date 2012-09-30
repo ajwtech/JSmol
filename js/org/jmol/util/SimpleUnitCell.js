@@ -60,9 +60,9 @@ this.na = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[22]) 
 this.nb = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[23]) ? Math.round (parameters[23]) : 1);
 this.nc = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[24]) ? Math.round (parameters[24]) : 1);
 if (this.a <= 0) {
-var va =  new javax.vecmath.Vector3f (parameters[6], parameters[7], parameters[8]);
-var vb =  new javax.vecmath.Vector3f (parameters[9], parameters[10], parameters[11]);
-var vc =  new javax.vecmath.Vector3f (parameters[12], parameters[13], parameters[14]);
+var va = javax.vecmath.Vector3f.new3 (parameters[6], parameters[7], parameters[8]);
+var vb = javax.vecmath.Vector3f.new3 (parameters[9], parameters[10], parameters[11]);
+var vc = javax.vecmath.Vector3f.new3 (parameters[12], parameters[13], parameters[14]);
 this.a = va.length ();
 this.b = vb.length ();
 this.c = vc.length ();
@@ -134,25 +134,25 @@ break;
 }
 scaleMatrix[i] = parameters[6 + i] * f;
 }
-this.matrixCartesianToFractional =  new javax.vecmath.Matrix4f (scaleMatrix);
+this.matrixCartesianToFractional = javax.vecmath.Matrix4f.newA (scaleMatrix);
 this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
-this.matrixFractionalToCartesian.invert (this.matrixCartesianToFractional);
+this.matrixFractionalToCartesian.invertM (this.matrixCartesianToFractional);
 } else if (parameters.length > 14 && !Float.isNaN (parameters[14])) {
 var m = this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
-m.setColumn (0, parameters[6] * this.na, parameters[7] * this.na, parameters[8] * this.na, 0);
-m.setColumn (1, parameters[9] * this.nb, parameters[10] * this.nb, parameters[11] * this.nb, 0);
-m.setColumn (2, parameters[12] * this.nc, parameters[13] * this.nc, parameters[14] * this.nc, 0);
-m.setColumn (3, 0, 0, 0, 1);
+m.setColumn4 (0, parameters[6] * this.na, parameters[7] * this.na, parameters[8] * this.na, 0);
+m.setColumn4 (1, parameters[9] * this.nb, parameters[10] * this.nb, parameters[11] * this.nb, 0);
+m.setColumn4 (2, parameters[12] * this.nc, parameters[13] * this.nc, parameters[14] * this.nc, 0);
+m.setColumn4 (3, 0, 0, 0, 1);
 this.matrixCartesianToFractional =  new javax.vecmath.Matrix4f ();
-this.matrixCartesianToFractional.invert (this.matrixFractionalToCartesian);
+this.matrixCartesianToFractional.invertM (this.matrixFractionalToCartesian);
 } else {
 var m = this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
-m.setColumn (0, this.a, 0, 0, 0);
-m.setColumn (1, (this.b * this.cosGamma), (this.b * this.sinGamma), 0, 0);
-m.setColumn (2, (this.c * this.cosBeta), (this.c * (this.cosAlpha - this.cosBeta * this.cosGamma) / this.sinGamma), (this.volume / (this.a * this.b * this.sinGamma)), 0);
-m.setColumn (3, 0, 0, 0, 1);
+m.setColumn4 (0, this.a, 0, 0, 0);
+m.setColumn4 (1, (this.b * this.cosGamma), (this.b * this.sinGamma), 0, 0);
+m.setColumn4 (2, (this.c * this.cosBeta), (this.c * (this.cosAlpha - this.cosBeta * this.cosGamma) / this.sinGamma), (this.volume / (this.a * this.b * this.sinGamma)), 0);
+m.setColumn4 (3, 0, 0, 0, 1);
 this.matrixCartesianToFractional =  new javax.vecmath.Matrix4f ();
-this.matrixCartesianToFractional.invert (this.matrixFractionalToCartesian);
+this.matrixCartesianToFractional.invertM (this.matrixFractionalToCartesian);
 }this.matrixCtoFAbsolute = this.matrixCartesianToFractional;
 this.matrixFtoCAbsolute = this.matrixFractionalToCartesian;
 }, "~A");

@@ -771,13 +771,13 @@ if (jn[i] == null) continue ;n++;
 v.sub (jn[i]);
 }
 if (v.length () == 0) {
-v.set ((jn[4]));
+v.setT ((jn[4]));
 doSwitch = false;
 } else {
-v.scaleAdd (n + 1, this.getJmolAtom (sAtom.getMatchingAtom ()), v);
+v.scaleAdd2 (n + 1, this.getJmolAtom (sAtom.getMatchingAtom ()), v);
 doSwitch = this.isSmilesFind || doSwitch;
 }jn[pt] =  new org.jmol.smiles.SmilesAtom (-1);
-(jn[pt]).set (v);
+(jn[pt]).setT (v);
 }}if (jn[pt] == null) {
 jn[pt] = this.getHydrogens (atom, null);
 if (needHSwitch) doSwitch = true;
@@ -799,7 +799,7 @@ case 6:
 if (isNot != (!org.jmol.smiles.SmilesSearch.isDiaxial (atom0, atom0, atom6, atom1, v, -0.95))) return false;
 org.jmol.smiles.SmilesSearch.getPlaneNormals (atom2, atom3, atom4, atom5, v);
 if (isNot != (v.vNorm1.dot (v.vNorm2) < 0 || v.vNorm2.dot (v.vNorm3) < 0)) return false;
-v.vNorm2.set (atom0);
+v.vNorm2.setT (atom0);
 v.vNorm2.sub (atom1);
 return (isNot == ((v.vNorm1.dot (v.vNorm2) < 0 ? 2 : 1) == order));
 case 8:
@@ -965,8 +965,8 @@ return map;
 }, "org.jmol.util.JmolNode,org.jmol.util.JmolNode,~A");
 c$.isDiaxial = Clazz.defineMethod (c$, "isDiaxial", 
 function (atomA, atomB, atom1, atom2, v, f) {
-v.vA.set (atomA);
-v.vB.set (atomB);
+v.vA.setT (atomA);
+v.vB.setT (atomB);
 v.vA.sub (atom1);
 v.vB.sub (atom2);
 v.vA.normalize ();

@@ -82,7 +82,7 @@ bs = (value)[1];
 var m4 = (value)[2];
 if (m4 == null) return ;
 var m =  new javax.vecmath.Matrix3f ();
-m4.get (m);
+m4.getRotationScale (m);
 this.ec.reCalculate (bs, m);
 return ;
 }if (propertyName === "deleteModelAtoms") {

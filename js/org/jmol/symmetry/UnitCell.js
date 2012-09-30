@@ -31,8 +31,8 @@ function (mat) {
 if (mat == null) return ;
 var m =  new javax.vecmath.Matrix4f ();
 m.set (mat);
-this.matrixFractionalToCartesian.mul (m, this.matrixFractionalToCartesian);
-this.matrixCartesianToFractional.invert (this.matrixFractionalToCartesian);
+this.matrixFractionalToCartesian.mul2 (m, this.matrixFractionalToCartesian);
+this.matrixCartesianToFractional.invertM (this.matrixFractionalToCartesian);
 this.calcUnitcellVertices ();
 }, "javax.vecmath.Matrix3f");
 Clazz.defineMethod (c$, "toUnitCell", 
@@ -70,14 +70,14 @@ Clazz.defineMethod (c$, "setOffset",
 function (pt) {
 if (pt == null) return ;
 if (pt.x >= 100 || pt.y >= 100) {
-this.unitCellMultiplier =  new javax.vecmath.Point3f (pt);
+this.unitCellMultiplier = javax.vecmath.Point3f.newP (pt);
 return ;
 }if (pt.x == 0 && pt.y == 0 && pt.z == 0) this.unitCellMultiplier = null;
-this.fractionalOffset.set (pt);
+this.fractionalOffset.setT (pt);
 this.matrixCartesianToFractional.m03 = -pt.x;
 this.matrixCartesianToFractional.m13 = -pt.y;
 this.matrixCartesianToFractional.m23 = -pt.z;
-this.cartesianOffset.set (pt);
+this.cartesianOffset.setT (pt);
 this.matrixFractionalToCartesian.m03 = 0;
 this.matrixFractionalToCartesian.m13 = 0;
 this.matrixFractionalToCartesian.m23 = 0;
@@ -86,16 +86,16 @@ this.matrixFractionalToCartesian.m03 = this.cartesianOffset.x;
 this.matrixFractionalToCartesian.m13 = this.cartesianOffset.y;
 this.matrixFractionalToCartesian.m23 = this.cartesianOffset.z;
 if (this.allFractionalRelative) {
-this.matrixCtoFAbsolute.set (this.matrixCartesianToFractional);
-this.matrixFtoCAbsolute.set (this.matrixFractionalToCartesian);
+this.matrixCtoFAbsolute.setM (this.matrixCartesianToFractional);
+this.matrixFtoCAbsolute.setM (this.matrixFractionalToCartesian);
 }}, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setCartesianOffset", 
 function (origin) {
-this.cartesianOffset.set (origin);
+this.cartesianOffset.setT (origin);
 this.matrixFractionalToCartesian.m03 = this.cartesianOffset.x;
 this.matrixFractionalToCartesian.m13 = this.cartesianOffset.y;
 this.matrixFractionalToCartesian.m23 = this.cartesianOffset.z;
-this.fractionalOffset.set (this.cartesianOffset);
+this.fractionalOffset.setT (this.cartesianOffset);
 this.matrixCartesianToFractional.m03 = 0;
 this.matrixCartesianToFractional.m13 = 0;
 this.matrixCartesianToFractional.m23 = 0;
@@ -104,8 +104,8 @@ this.matrixCartesianToFractional.m03 = -this.fractionalOffset.x;
 this.matrixCartesianToFractional.m13 = -this.fractionalOffset.y;
 this.matrixCartesianToFractional.m23 = -this.fractionalOffset.z;
 if (this.allFractionalRelative) {
-this.matrixCtoFAbsolute.set (this.matrixCartesianToFractional);
-this.matrixFtoCAbsolute.set (this.matrixFractionalToCartesian);
+this.matrixCtoFAbsolute.setM (this.matrixCartesianToFractional);
+this.matrixFtoCAbsolute.setM (this.matrixFractionalToCartesian);
 }}, "javax.vecmath.Tuple3f");
 Clazz.defineMethod (c$, "setOffset", 
 function (nnn) {
@@ -188,7 +188,7 @@ Clazz.defineMethod (c$, "getCanonicalCopy",
 function (scale) {
 var pts =  new Array (8);
 for (var i = 0; i < 8; i++) {
-pts[i] =  new javax.vecmath.Point3f (org.jmol.util.BoxInfo.unitCubePoints[i]);
+pts[i] = javax.vecmath.Point3f.newP (org.jmol.util.BoxInfo.unitCubePoints[i]);
 this.matrixFractionalToCartesian.transform (pts[i]);
 }
 return org.jmol.util.BoxInfo.getCanonicalCopy (pts, scale);
@@ -202,17 +202,17 @@ return x;
 Clazz.defineMethod (c$, "calcUnitcellVertices", 
 ($fz = function () {
 if (this.matrixFractionalToCartesian == null) return ;
-this.matrixCtoFAbsolute =  new javax.vecmath.Matrix4f (this.matrixCartesianToFractional);
-this.matrixFtoCAbsolute =  new javax.vecmath.Matrix4f (this.matrixFractionalToCartesian);
+this.matrixCtoFAbsolute = javax.vecmath.Matrix4f.newM (this.matrixCartesianToFractional);
+this.matrixFtoCAbsolute = javax.vecmath.Matrix4f.newM (this.matrixFractionalToCartesian);
 this.vertices =  new Array (8);
 for (var i = 8; --i >= 0; ) {
 this.vertices[i] =  new javax.vecmath.Point3f ();
-this.matrixFractionalToCartesian.transform (org.jmol.util.BoxInfo.unitCubePoints[i], this.vertices[i]);
+this.matrixFractionalToCartesian.transform2 (org.jmol.util.BoxInfo.unitCubePoints[i], this.vertices[i]);
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "checkDistance", 
 function (f1, f2, distance, dx, iRange, jRange, kRange, ptOffset) {
-var p1 =  new javax.vecmath.Point3f (f1);
+var p1 = javax.vecmath.Point3f.newP (f1);
 this.toCartesian (p1, true);
 for (var i = -iRange; i <= iRange; i++) for (var j = -jRange; j <= jRange; j++) for (var k = -kRange; k <= kRange; k++) {
 ptOffset.set (f2.x + i, f2.y + j, f2.z + k);
@@ -233,7 +233,7 @@ return this.unitCellMultiplier;
 Clazz.defineMethod (c$, "getUnitCellVectors", 
 function () {
 var m = this.matrixFractionalToCartesian;
-return [ new javax.vecmath.Point3f (this.cartesianOffset),  new javax.vecmath.Point3f (m.m00, m.m10, m.m20),  new javax.vecmath.Point3f (m.m01, m.m11, m.m21),  new javax.vecmath.Point3f (m.m02, m.m12, m.m22)];
+return [javax.vecmath.Point3f.newP (this.cartesianOffset), javax.vecmath.Point3f.new3 (m.m00, m.m10, m.m20), javax.vecmath.Point3f.new3 (m.m01, m.m11, m.m21), javax.vecmath.Point3f.new3 (m.m02, m.m12, m.m22)];
 });
 Clazz.defineStatics (c$,
 "twoP2", 19.739208802178716);

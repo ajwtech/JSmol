@@ -109,7 +109,7 @@ x = org.jmol.script.ScriptVariable.unescapePointOrBitsetAsVariable (x);
 if (Clazz.instanceOf (x, org.jmol.script.ScriptVariable)) return x;
 return org.jmol.script.ScriptVariable.newScriptVariableObj (4, x);
 }if (Clazz.instanceOf (x, javax.vecmath.Point3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8, x);
-if (Clazz.instanceOf (x, javax.vecmath.Vector3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8,  new javax.vecmath.Point3f (x));
+if (Clazz.instanceOf (x, javax.vecmath.Vector3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8, javax.vecmath.Point3f.newP (x));
 if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.script.ScriptVariable.newScriptVariableObj (10, x);
 if (Clazz.instanceOf (x, javax.vecmath.Point4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, x);
 if (Clazz.instanceOf (x, org.jmol.util.Quaternion)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, (x).toPoint4f ());

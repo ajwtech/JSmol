@@ -838,14 +838,14 @@ public class KeyEvent extends InputEvent {
           KEY_LOCATION_UNKNOWN);
     }
 
-    /**
-     * @deprecated as of JDK1.1
-     */
-    @Deprecated
-    public KeyEvent(Component source, int id, long when, int modifiers,
-                    int keyCode) {
-        this(source, id, when, modifiers, keyCode, (char)keyCode);
-    }
+//    /**
+//     * @deprecated as of JDK1.1
+//     */
+//    @Deprecated
+//    public KeyEvent(Component source, int id, long when, int modifiers,
+//                    int keyCode) {
+//        this(source, id, when, modifiers, keyCode, (char)keyCode);
+//    }
 
     /**
      * Returns the integer keyCode associated with the key in this event.
@@ -937,6 +937,7 @@ public class KeyEvent extends InputEvent {
     /**
      * Returns a String describing the keyCode, such as "HOME", "F1" or "A".
      * These strings can be localized by changing the awt.properties file.
+     * @param keyCode 
      *
      * @return a string containing a text description for a physical key,
      *         identified by its keyCode
@@ -956,6 +957,7 @@ public class KeyEvent extends InputEvent {
      * <code>InputEvent.META_MASK</code> and
      * <code>InputEvent.BUTTON3_MASK</code> have the same value,
      * so the string "Meta" is returned for both modifiers.
+     * @param modifiers 
      *
      * @return string a text description of the combination of modifier
      *                keys that were held down during the event

@@ -415,7 +415,7 @@ this.b$["org.jmol.viewer.StateManager"].viewer.getRotation (this.rotationMatrix)
 }this.xTrans = this.b$["org.jmol.viewer.StateManager"].viewer.getTranslationXPercent ();
 this.yTrans = this.b$["org.jmol.viewer.StateManager"].viewer.getTranslationYPercent ();
 this.zoom = this.b$["org.jmol.viewer.StateManager"].viewer.getZoomSetting ();
-this.center.set (this.b$["org.jmol.viewer.StateManager"].viewer.getRotationCenter ());
+this.center.setT (this.b$["org.jmol.viewer.StateManager"].viewer.getRotationCenter ());
 this.windowCenteredFlag = this.b$["org.jmol.viewer.StateManager"].viewer.isWindowCentered ();
 this.rotationRadius = this.b$["org.jmol.viewer.StateManager"].viewer.getRotationRadius ();
 this.navigationMode = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationMode ();
@@ -425,7 +425,7 @@ if (this.navigationMode) {
 this.xNav = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationOffsetPercent ('X');
 this.yNav = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationOffsetPercent ('Y');
 this.navDepth = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationDepthPercent ();
-this.navCenter =  new javax.vecmath.Point3f (this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationCenter ());
+this.navCenter = javax.vecmath.Point3f.newP (this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationCenter ());
 }}, "~B");
 Clazz.defineMethod (c$, "getMoveToText", 
 function (a) {
@@ -1049,7 +1049,7 @@ return b.toString ();
 }, "java.util.Map");
 Clazz.defineMethod (c$, "setDefaultLattice", 
 function (a) {
-this.ptDefaultLattice.set (a);
+this.ptDefaultLattice.setT (a);
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getDefaultLattice", 
 function () {

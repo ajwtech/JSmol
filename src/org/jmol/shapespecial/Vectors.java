@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2010-07-31 09:06:52 -0500 (Sat, 31 Jul 2010) $
- * $Revision: 13796 $
+ * $Author: hansonr $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,7 +24,7 @@
 
 package org.jmol.shapespecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.shape.AtomShape;
 

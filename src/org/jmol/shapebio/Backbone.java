@@ -25,7 +25,7 @@
 
 package org.jmol.shapebio;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;
@@ -95,8 +95,8 @@ public class Backbone extends BioShapeCollection {
             atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);
           }
           bioShape.mads[i] = mad;
-          bioShape.bsSizeSet.set(i, isVisible);
-          bioShape.bsSizeDefault.set(i, mad == -1);
+          bioShape.bsSizeSet.setBitTo(i, isVisible);
+          bioShape.bsSizeDefault.setBitTo(i, mad == -1);
         }
       }
     }

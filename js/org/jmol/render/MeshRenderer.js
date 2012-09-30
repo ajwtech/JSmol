@@ -64,13 +64,13 @@ if (unitcell == null) unitcell = mesh.getUnitCell ();
 if (unitcell != null) {
 var vTemp =  new javax.vecmath.Point3f ();
 var minXYZ =  new javax.vecmath.Point3i ();
-var maxXYZ =  new javax.vecmath.Point3i (Math.round (mesh.lattice.x), Math.round (mesh.lattice.y), Math.round (mesh.lattice.z));
+var maxXYZ = javax.vecmath.Point3i.new3 (Math.round (mesh.lattice.x), Math.round (mesh.lattice.y), Math.round (mesh.lattice.z));
 unitcell.setMinMaxLatticeParameters (minXYZ, maxXYZ);
 for (var tx = minXYZ.x; tx < maxXYZ.x; tx++) for (var ty = minXYZ.y; ty < maxXYZ.y; ty++) for (var tz = minXYZ.z; tz < maxXYZ.z; tz++) {
 this.latticeOffset.set (tx, ty, tz);
 unitcell.toCartesian (this.latticeOffset, false);
 for (var i = this.vertexCount; --i >= 0; ) {
-vTemp.set (this.vertices[i]);
+vTemp.setT (this.vertices[i]);
 vTemp.add (this.latticeOffset);
 this.viewer.transformPtScr (vTemp, this.screens[i]);
 }
@@ -224,7 +224,7 @@ var endCap = (iA != iB && !fill ? 0 : this.width < 0 || this.width == -0.0 || iA
 if (this.width == 0) {
 if (this.diameter == 0) this.diameter = (this.mesh.diameter > 0 ? this.mesh.diameter : iA == iB ? 7 : 3);
 if (this.exportType == 1) {
-this.pt1f.set (vA);
+this.pt1f.setT (vA);
 this.pt1f.add (vB);
 this.pt1f.scale (0.5);
 this.viewer.transformPtScr (this.pt1f, this.pt1i);
@@ -234,7 +234,7 @@ this.g3d.fillSphere (this.diameter, sA);
 } else {
 this.g3d.fillCylinder (endCap, this.diameter, sA, sB);
 }} else {
-this.pt1f.set (vA);
+this.pt1f.setT (vA);
 this.pt1f.add (vB);
 this.pt1f.scale (0.5);
 this.viewer.transformPtScr (this.pt1f, this.pt1i);

@@ -1,85 +1,41 @@
 /*
- * $RCSfile$
- *
- * Copyright 1999-2008 Sun Microsystems, Inc.  All Rights Reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
- *
- * $Revision: 127 $
- * $Date: 2008-02-28 14:18:51 -0600 (Thu, 28 Feb 2008) $
- * $State$
- */
+   Copyright (C) 1997,1998,1999
+   Kenji Hiranabe, Eiwa System Management, Inc.
 
+   This program is free software.
+   Implemented by Kenji Hiranabe(hiranabe@esm.co.jp),
+   conforming to the Java(TM) 3D API specification by Sun Microsystems.
+
+   Permission to use, copy, modify, distribute and sell this software
+   and its documentation for any purpose is hereby granted without fee,
+   provided that the above copyright notice appear in all copies and
+   that both that copyright notice and this permission notice appear
+   in supporting documentation. Kenji Hiranabe and Eiwa System Management,Inc.
+   makes no representations about the suitability of this software for any
+   purpose.  It is provided "AS IS" with NO WARRANTY.
+*/
 package javax.vecmath;
 
-import java.lang.Math;
-
 /**
- * A 3 element point represented by signed integer x,y,z
- * coordinates.
- *
- * @since vecmath 1.2
+ * A 3 element point that is represented by signed integer x,y,z coordinates.
+ * 
+ * @since Java 3D 1.2
+ * @version specification 1.2, implementation $Revision: 1.9 $, $Date:
+ *          2006/07/28 17:01:33 $
+ * @author Kenji hiranabe
+ * 
+ * 
+ *         additions by Bob Hanson hansonr@stolaf.edu 9/30/2012 for unique
+ *         constructor and method names for the optimization of compiled
+ *         JavaScript using Java2Script
  */
-public class Point3i extends Tuple3i implements java.io.Serializable {
+public class Point3i extends Tuple3i {
 
-    // Compatible with 1.2
-    static final long serialVersionUID = 6149289077348153921L;
-
-    /**
-     * Constructs and initializes a Point3i from the specified
-     * x, y, and z coordinates.
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
-     */
-    public Point3i(int x, int y, int z) {
-	super(x, y, z);
-    }
-
-
-    /**
-     * Constructs and initializes a Point3i from the array of length 3.
-     * @param t the array of length 3 containing x, y, and z in order.
-     */
-    public Point3i(int[] t) {
-	super(t);
-    }
-
-
-    /**
-     * Constructs and initializes a Point3i from the specified Tuple3i.
-     * @param t1 the Tuple3i containing the initialization x, y, and z
-     * data.
-     */
-    public Point3i(Tuple3i t1) {
-	super(t1);
-    }
-
-
-    /**
-     * Constructs and initializes a Point3i to (0,0,0).
-     */
-    public Point3i() {
-	super();
-    }
-
+  public static Point3i new3(int x, int y, int z) {
+    Point3i pt = new Point3i();
+    pt.x = x;
+    pt.y = y;
+    pt.z = z;
+    return pt;
+  }
 }

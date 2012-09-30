@@ -72,8 +72,8 @@ ptB = this.bioPolymer.monomers[i - 1].getAtomFromOffsetIndex (0);
 if (ptP == null || ptA == null || ptB == null) return null;
 var vA =  new javax.vecmath.Vector3f ();
 var vB =  new javax.vecmath.Vector3f ();
-vA.sub (ptA, ptP);
-vB.sub (ptB, ptP);
+vA.sub2 (ptA, ptP);
+vB.sub2 (ptB, ptP);
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, false);
 }, "~S");
 Clazz.overrideMethod (c$, "getQuaternionFrameCenter", 

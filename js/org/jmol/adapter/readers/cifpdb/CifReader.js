@@ -629,7 +629,7 @@ this.symmetry.getMatrixFromString (xyz, m, false);
 m[3] *= this.symmetry.getUnitCellInfo (0) / 12;
 m[7] *= this.symmetry.getUnitCellInfo (1) / 12;
 m[11] *= this.symmetry.getUnitCellInfo (2) / 12;
-}m4.set (m);
+}m4.setA (m);
 if (this.htBiomts == null) this.htBiomts =  new java.util.Hashtable ();
 this.htBiomts.put (id, m4);
 }}
@@ -1108,11 +1108,11 @@ for (var i = this.firstAtom; i < this.atomCount; i++) if (!this.bsMolecule.get (
 this.setBs (this.atoms, i, this.bsConnected, bsBranch);
 for (var k = bsBranch.nextSetBit (0); k >= 0; k = bsBranch.nextSetBit (k + 1)) {
 this.atoms[k].add (this.ptOffset);
-cart1.set (this.atoms[k]);
+cart1.setT (this.atoms[k]);
 this.symmetry.toCartesian (cart1, true);
 var bs = this.bsSets[this.atomSetCollection.getAtomIndexFromName (this.atoms[k].atomName) - this.firstAtom];
 if (bs != null) for (var ii = bs.nextSetBit (0); ii >= 0; ii = bs.nextSetBit (ii + 1)) {
-if (ii + this.firstAtom == k) continue ;cart2.set (this.atoms[ii + this.firstAtom]);
+if (ii + this.firstAtom == k) continue ;cart2.setT (this.atoms[ii + this.firstAtom]);
 this.symmetry.toCartesian (cart2, true);
 if (cart2.distance (cart1) < 0.1) {
 this.bsExclude.set (k);

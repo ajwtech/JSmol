@@ -41,7 +41,7 @@ public class JSmol {
 		bs.set(6);
 	}
 
-	protected static Point3f pt = new Point3f(2,3,4);
+	protected static Point3f pt = Point3f.new3(2,3,4);
   
 	protected void testStatic() {
 		sayHello("testing = " + testing + " pt = " + pt + " bs = " + bs);

@@ -1011,7 +1011,7 @@ case 256:
 fout[i] = Math.sqrt (t.x * t.x + t.y * t.y + t.z * t.z);
 break;
 case 1048579:
-vout.add ( new javax.vecmath.Point3f (t));
+vout.add (javax.vecmath.Point3f.newP (t));
 break;
 default:
 pt.add (t);
@@ -1051,10 +1051,10 @@ break;
 case 1146095626:
 switch (minmaxtype) {
 case 1048579:
-pt.set (bond.getAtom1 ());
+pt.setT (bond.getAtom1 ());
 pt.add (bond.getAtom2 ());
 pt.scale (0.5);
-vout.add ( new javax.vecmath.Point3f (pt));
+vout.add (javax.vecmath.Point3f.newP (pt));
 break;
 default:
 pt.add (bond.getAtom1 ());
@@ -1066,7 +1066,7 @@ case 1766856708:
 org.jmol.util.ColorUtil.colorPointFromInt (this.viewer.getColorArgbOrGray (bond.getColix ()), ptT);
 switch (minmaxtype) {
 case 1048579:
-vout.add ( new javax.vecmath.Point3f (ptT));
+vout.add (javax.vecmath.Point3f.newP (ptT));
 break;
 default:
 pt.add (ptT);
@@ -1113,7 +1113,7 @@ if (Clazz.instanceOf (v, javax.vecmath.Point3f)) sout[i] = org.jmol.util.Escape.
  else sout[i] = "" + vout.get (i);
 }
 return sout;
-}if (isPt) return (n == 0 ? pt :  new javax.vecmath.Point3f (pt.x / n, pt.y / n, pt.z / n));
+}if (isPt) return (n == 0 ? pt : javax.vecmath.Point3f.new3 (pt.x / n, pt.y / n, pt.z / n));
 if (n == 0 || n == 1 && minmaxtype == 192) return Float.$valueOf (NaN);
 if (isInt) {
 switch (minmaxtype) {
@@ -3301,7 +3301,7 @@ var isNegated = (this.tokAt (i) == 269484192);
 if (isNegated) i++;
 if (i < this.statementLength) switch (this.getToken (i).tok) {
 case 9:
-plane =  new javax.vecmath.Point4f (this.theToken.value);
+plane = javax.vecmath.Point4f.newPt (this.theToken.value);
 break;
 case 1048583:
 var id = this.objectNameParameter (++i);
@@ -3322,22 +3322,22 @@ break;
 break;
 case 1112541205:
 if (!this.checkToken (++i) || this.getToken (i++).tok != 269484436) this.evalError ("x=?", null);
-plane =  new javax.vecmath.Point4f (1, 0, 0, -this.floatParameter (i));
+plane = javax.vecmath.Point4f.new4 (1, 0, 0, -this.floatParameter (i));
 break;
 case 1112541206:
 if (!this.checkToken (++i) || this.getToken (i++).tok != 269484436) this.evalError ("y=?", null);
-plane =  new javax.vecmath.Point4f (0, 1, 0, -this.floatParameter (i));
+plane = javax.vecmath.Point4f.new4 (0, 1, 0, -this.floatParameter (i));
 break;
 case 1112541207:
 if (!this.checkToken (++i) || this.getToken (i++).tok != 269484436) this.evalError ("z=?", null);
-plane =  new javax.vecmath.Point4f (0, 0, 1, -this.floatParameter (i));
+plane = javax.vecmath.Point4f.new4 (0, 0, 1, -this.floatParameter (i));
 break;
 case 1073741824:
 case 4:
 var str = this.parameterAsString (i);
-if (str.equalsIgnoreCase ("xy")) return  new javax.vecmath.Point4f (0, 0, 1, 0);
-if (str.equalsIgnoreCase ("xz")) return  new javax.vecmath.Point4f (0, 1, 0, 0);
-if (str.equalsIgnoreCase ("yz")) return  new javax.vecmath.Point4f (1, 0, 0, 0);
+if (str.equalsIgnoreCase ("xy")) return javax.vecmath.Point4f.new4 (0, 0, 1, 0);
+if (str.equalsIgnoreCase ("xz")) return javax.vecmath.Point4f.new4 (0, 1, 0, 0);
+if (str.equalsIgnoreCase ("yz")) return javax.vecmath.Point4f.new4 (1, 0, 0, 0);
 this.iToken += 2;
 break;
 case 1048586:
@@ -3354,7 +3354,8 @@ var pt3 = this.atomCenterOrCoordinateParameter (this.iToken);
 i = this.iToken;
 var norm =  new javax.vecmath.Vector3f ();
 var w = org.jmol.util.Measure.getNormalThroughPoints (pt1, pt2, pt3, norm, vAB, vAC);
-plane =  new javax.vecmath.Point4f (norm.x, norm.y, norm.z, w);
+plane =  new javax.vecmath.Point4f ();
+plane.set (norm.x, norm.y, norm.z, w);
 if (!this.isSyntaxCheck && org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("points: " + pt1 + pt2 + pt3 + " defined plane: " + plane);
 break;
 }
@@ -3376,9 +3377,9 @@ Clazz.defineMethod (c$, "getHklPlane",
 function (pt) {
 var vAB =  new javax.vecmath.Vector3f ();
 var vAC =  new javax.vecmath.Vector3f ();
-var pt1 =  new javax.vecmath.Point3f (pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
-var pt2 =  new javax.vecmath.Point3f (0, pt.y == 0 ? 1 : 1 / pt.y, 0);
-var pt3 =  new javax.vecmath.Point3f (0, 0, pt.z == 0 ? 1 : 1 / pt.z);
+var pt1 = javax.vecmath.Point3f.new3 (pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
+var pt2 = javax.vecmath.Point3f.new3 (0, pt.y == 0 ? 1 : 1 / pt.y, 0);
+var pt3 = javax.vecmath.Point3f.new3 (0, 0, pt.z == 0 ? 1 : 1 / pt.z);
 if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
 return null;
 } else if (pt.x == 0 && pt.y == 0) {
@@ -3401,7 +3402,9 @@ this.viewer.toCartesian (pt2, false);
 this.viewer.toCartesian (pt3, false);
 var plane =  new javax.vecmath.Vector3f ();
 var w = org.jmol.util.Measure.getNormalThroughPoints (pt1, pt2, pt3, plane, vAB, vAC);
-return  new javax.vecmath.Point4f (plane.x, plane.y, plane.z, w);
+var pt4 =  new javax.vecmath.Point4f ();
+pt4.set (plane.x, plane.y, plane.z, w);
+return pt4;
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getMadParameter", 
 ($fz = function () {
@@ -3480,7 +3483,7 @@ case 269484096:
 return this.getColorTriad (++index);
 case 7:
 var rgb = org.jmol.script.ScriptVariable.flistValue (this.theToken, 3);
-if (rgb != null && rgb.length != 3) pt =  new javax.vecmath.Point3f (rgb[0], rgb[1], rgb[2]);
+if (rgb != null && rgb.length != 3) pt = javax.vecmath.Point3f.new3 (rgb[0], rgb[1], rgb[2]);
 break;
 case 8:
 pt = this.theToken.value;
@@ -3528,7 +3531,7 @@ break;
 case 269484097:
 if (n != 3) this.error (4);
 --i;
-pt =  new javax.vecmath.Point3f (colors[0], colors[1], colors[2]);
+pt = javax.vecmath.Point3f.new3 (colors[0], colors[1], colors[2]);
 break out;
 default:
 this.error (4);
@@ -3638,14 +3641,14 @@ this.error (22);
 }
 if (n < minDim || n > maxDim) this.error (22);
 if (n == 3) {
-var pt =  new javax.vecmath.Point3f (coord[0], coord[1], coord[2]);
+var pt = javax.vecmath.Point3f.new3 (coord[0], coord[1], coord[2]);
 if (this.coordinatesAreFractional && doConvert) {
-this.fractionalPoint =  new javax.vecmath.Point3f (pt);
+this.fractionalPoint = javax.vecmath.Point3f.newP (pt);
 if (!this.isSyntaxCheck) this.viewer.toCartesian (pt, !this.viewer.getFractionalRelative ());
 }return pt;
 }if (n == 4) {
 if (this.coordinatesAreFractional) this.error (22);
-var plane =  new javax.vecmath.Point4f (coord[0], coord[1], coord[2], coord[3]);
+var plane = javax.vecmath.Point4f.new4 (coord[0], coord[1], coord[2], coord[3]);
 return plane;
 }return coord;
 }, $fz.isPrivate = true, $fz), "~N,~B,~B,~B,~B,~N,~N");
@@ -4619,9 +4622,9 @@ this.viewer.getHelp (what);
 Clazz.defineMethod (c$, "move", 
 ($fz = function () {
 if (this.statementLength > 11) this.error (2);
-var dRot =  new javax.vecmath.Vector3f (this.floatParameter (1), this.floatParameter (2), this.floatParameter (3));
+var dRot = javax.vecmath.Vector3f.new3 (this.floatParameter (1), this.floatParameter (2), this.floatParameter (3));
 var dZoom = this.floatParameter (4);
-var dTrans =  new javax.vecmath.Vector3f (this.intParameter (5), this.intParameter (6), this.intParameter (7));
+var dTrans = javax.vecmath.Vector3f.new3 (this.intParameter (5), this.intParameter (6), this.intParameter (7));
 var dSlab = this.floatParameter (8);
 var floatSecondsTotal = this.floatParameter (9);
 var fps = (this.statementLength == 11 ? this.intParameter (10) : 30);
@@ -4640,7 +4643,7 @@ if (this.isSyntaxCheck) return ;
 if (f > 0) this.refresh ();
 this.viewer.moveTo (f, null, org.jmol.viewer.JmolConstants.axisZ, 0, null, 100, 0, 0, 0, null, NaN, NaN, NaN);
 return ;
-}var axis =  new javax.vecmath.Vector3f (NaN, 0, 0);
+}var axis = javax.vecmath.Vector3f.new3 (NaN, 0, 0);
 var center = null;
 var i = 1;
 var floatSecondsTotal = (this.isFloatParameter (i) ? this.floatParameter (i++) : 2.0);
@@ -4671,7 +4674,7 @@ case 9:
 case 8:
 case 1048586:
 if (this.isPoint3f (i)) {
-axis.set (this.getPoint3f (i, true));
+axis.setT (this.getPoint3f (i, true));
 i = this.iToken + 1;
 degrees = this.floatParameter (i++);
 } else {
@@ -4707,7 +4710,7 @@ axis.set (-1, 0, 0);
 this.checkLength (++i);
 break;
 default:
-axis =  new javax.vecmath.Vector3f (this.floatParameter (i++), this.floatParameter (i++), this.floatParameter (i++));
+axis = javax.vecmath.Vector3f.new3 (this.floatParameter (i++), this.floatParameter (i++), this.floatParameter (i++));
 degrees = this.floatParameter (i++);
 }
 if (Float.isNaN (axis.x) || Float.isNaN (axis.y) || Float.isNaN (axis.z)) axis.set (0, 0, 0);
@@ -4762,7 +4765,7 @@ Clazz.defineMethod (c$, "navigate",
 if (this.statementLength == 1) {
 this.setBooleanProperty ("navigationMode", true);
 return ;
-}var rotAxis =  new javax.vecmath.Vector3f (0, 1, 0);
+}var rotAxis = javax.vecmath.Vector3f.new3 (0, 1, 0);
 var pt;
 if (this.statementLength == 2) {
 switch (this.getToken (1).tok) {
@@ -4770,7 +4773,7 @@ case 1048589:
 case 1048588:
 if (this.isSyntaxCheck) return ;
 this.setObjectMad (30, "axes", 1);
-this.setShapeProperty (30, "position",  new javax.vecmath.Point3f (50, 50, 3.4028235E38));
+this.setShapeProperty (30, "position", javax.vecmath.Point3f.new3 (50, 50, 3.4028235E38));
 this.setBooleanProperty ("navigationMode", true);
 this.viewer.setNavOn (this.theTok == 1048589);
 return ;
@@ -4819,7 +4822,7 @@ i++;
 break;
 case 8:
 case 1048586:
-rotAxis.set (this.getPoint3f (i, true));
+rotAxis.setT (this.getPoint3f (i, true));
 i = this.iToken + 1;
 break;
 case 1073741824:
@@ -4941,7 +4944,7 @@ break;
 default:
 this.error (22);
 }
-var pt =  new javax.vecmath.Point3f (0, 0, 0);
+var pt = javax.vecmath.Point3f.new3 (0, 0, 0);
 if (this.statementLength == 5) {
 pt.x = this.floatParameter (2);
 pt.y = this.floatParameter (3);
@@ -5153,19 +5156,19 @@ if (Float.isNaN (stddev)) this.error (22);
 var translation =  new javax.vecmath.Vector3f ();
 m4.get (translation);
 var m3 =  new javax.vecmath.Matrix3f ();
-m4.get (m3);
+m4.getRotationScale (m3);
 q =  new org.jmol.util.Quaternion (m3);
 }if (centerAndPoints == null) centerAndPoints = this.viewer.getCenterAndPoints (vAtomSets2, true);
 var pt1 =  new javax.vecmath.Point3f ();
 var endDegrees = NaN;
 var translation = null;
 if (doTranslate) {
-translation =  new javax.vecmath.Vector3f (centerAndPoints[1][0]);
+translation = javax.vecmath.Vector3f.newV (centerAndPoints[1][0]);
 translation.sub (centerAndPoints[0][0]);
 endDegrees = 0;
 }if (doRotate) {
 if (q == null) this.evalError ("option not implemented", null);
-pt1.set (centerAndPoints[0][0]);
+pt1.setT (centerAndPoints[0][0]);
 pt1.add (q.getNormal ());
 endDegrees = q.getTheta ();
 }if (Float.isNaN (endDegrees) || Float.isNaN (pt1.x)) continue ;var ptsB = null;
@@ -6377,7 +6380,7 @@ case 1073742163:
 case 1073742114:
 case 1073742152:
 case 1614417948:
-if (lattice == null) lattice =  new javax.vecmath.Point3f (555, 555, -1);
+if (lattice == null) lattice = javax.vecmath.Point3f.new3 (555, 555, -1);
 this.iToken = i - 1;
 }
 var offset = null;
@@ -6455,7 +6458,7 @@ if (iGroup != -2147483648) htParams.put ("spaceGroupIndex", Integer.$valueOf (iG
  else if (this.tokAt (i) == 1073742066) offset = this.getPoint3f (++i, true);
 if (offset != null) {
 if (this.coordinatesAreFractional) {
-offset.set (this.fractionalPoint);
+offset.setT (this.fractionalPoint);
 htParams.put ("unitCellOffsetFractional", (this.coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
 sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z + "/1}";
 } else {
@@ -6489,7 +6492,7 @@ continue ;case 1048582:
 htParams.remove ("isTrajectory");
 if (firstLastSteps == null) {
 firstLastSteps =  new java.util.ArrayList ();
-pt =  new javax.vecmath.Point3f (0, -1, 1);
+pt = javax.vecmath.Point3f.new3 (0, -1, 1);
 }if (this.isPoint3f (++i)) {
 pt = this.getPoint3f (i, false);
 i = this.iToken + 1;
@@ -6779,7 +6782,7 @@ value = bs = this.expressionResult;
 if (!this.isSyntaxCheck && bs.length () == 0) return ;
 }if (Clazz.instanceOf (value, javax.vecmath.Point3f)) {
 var v =  new org.jmol.util.Point3fi ();
-v.set (value);
+v.setT (value);
 v.modelIndex = modelIndex;
 value = v;
 }if ((nAtoms = ++expressionCount) > 4) this.error (2);
@@ -6944,18 +6947,18 @@ return "";
 }}var dataX = null;
 var dataY = null;
 var dataZ = null;
-var factors =  new javax.vecmath.Point3f (1, 1, 1);
+var factors = javax.vecmath.Point3f.new3 (1, 1, 1);
 if (tok == 1716520973) {
 dataX = this.getBitsetPropertyFloat (bs, propertyX | 224, (minXYZ == null ? NaN : minXYZ.x), (maxXYZ == null ? NaN : maxXYZ.x));
 dataY = this.getBitsetPropertyFloat (bs, propertyY | 224, (minXYZ == null ? NaN : minXYZ.y), (maxXYZ == null ? NaN : maxXYZ.y));
 if (propertyZ != 0) dataZ = this.getBitsetPropertyFloat (bs, propertyZ | 224, (minXYZ == null ? NaN : minXYZ.z), (maxXYZ == null ? NaN : maxXYZ.z));
-if (minXYZ == null) minXYZ =  new javax.vecmath.Point3f (org.jmol.script.ScriptEvaluator.getMinMax (dataX, false, propertyX), org.jmol.script.ScriptEvaluator.getMinMax (dataY, false, propertyY), org.jmol.script.ScriptEvaluator.getMinMax (dataZ, false, propertyZ));
-if (maxXYZ == null) maxXYZ =  new javax.vecmath.Point3f (org.jmol.script.ScriptEvaluator.getMinMax (dataX, true, propertyX), org.jmol.script.ScriptEvaluator.getMinMax (dataY, true, propertyY), org.jmol.script.ScriptEvaluator.getMinMax (dataZ, true, propertyZ));
+if (minXYZ == null) minXYZ = javax.vecmath.Point3f.new3 (org.jmol.script.ScriptEvaluator.getMinMax (dataX, false, propertyX), org.jmol.script.ScriptEvaluator.getMinMax (dataY, false, propertyY), org.jmol.script.ScriptEvaluator.getMinMax (dataZ, false, propertyZ));
+if (maxXYZ == null) maxXYZ = javax.vecmath.Point3f.new3 (org.jmol.script.ScriptEvaluator.getMinMax (dataX, true, propertyX), org.jmol.script.ScriptEvaluator.getMinMax (dataY, true, propertyY), org.jmol.script.ScriptEvaluator.getMinMax (dataZ, true, propertyZ));
 org.jmol.util.Logger.info ("plot min/max: " + minXYZ + " " + maxXYZ);
-var center =  new javax.vecmath.Point3f (maxXYZ);
+var center = javax.vecmath.Point3f.newP (maxXYZ);
 center.add (minXYZ);
 center.scale (0.5);
-factors.set (maxXYZ);
+factors.setT (maxXYZ);
 factors.sub (minXYZ);
 factors.set (factors.x / 200, factors.y / 200, factors.z / 200);
 if (org.jmol.script.Token.tokAttr (propertyX, 1095761920)) {
@@ -7178,7 +7181,7 @@ var isMolecular = false;
 var haveRotation = false;
 var ptsA = null;
 var points =  new Array (2);
-var rotAxis =  new javax.vecmath.Vector3f (0, 1, 0);
+var rotAxis = javax.vecmath.Vector3f.new3 (0, 1, 0);
 var translation = null;
 var m4 = null;
 var m3 = null;
@@ -7253,13 +7256,13 @@ case 135270417:
 if (tok == 135270417) i++;
 haveRotation = true;
 q = this.getQuaternionParameter (i);
-rotAxis.set (q.getNormal ());
+rotAxis.setT (q.getNormal ());
 endDegrees = q.getTheta ();
 break;
 case 135266307:
 haveRotation = true;
 if (this.isPoint3f (++i)) {
-rotAxis.set (this.centerParameter (i));
+rotAxis.setT (this.centerParameter (i));
 break;
 }var p4 = this.getPoint4f (i);
 rotAxis.set (p4.x, p4.y, p4.z);
@@ -7279,7 +7282,7 @@ points[1] = this.viewer.getAtomPoint3f (iAtom2);
 nPoints = 2;
 break;
 case 4160:
-translation =  new javax.vecmath.Vector3f (this.centerParameter (++i));
+translation = javax.vecmath.Vector3f.newV (this.centerParameter (++i));
 isMolecular = isSelected = true;
 break;
 case 137363468:
@@ -7328,11 +7331,11 @@ m4 = this.theToken.value;
 if (m4 != null) {
 translation =  new javax.vecmath.Vector3f ();
 m4.get (translation);
-m4.get (m3);
+m4.getRotationScale (m3);
 } else {
 m3 = this.theToken.value;
 }q = (this.isSyntaxCheck ?  new org.jmol.util.Quaternion () :  new org.jmol.util.Quaternion (m3));
-rotAxis.set (q.getNormal ());
+rotAxis.setT (q.getNormal ());
 endDegrees = q.getTheta ();
 isMolecular = true;
 break;
@@ -7350,14 +7353,14 @@ if (bsAtoms == null) bsAtoms = bsCompare;
 if (q != null) {
 if (nPoints == 0 && translation != null) points[0] = this.viewer.getAtomSetCenter (bsAtoms != null ? bsAtoms : isSelected ? this.viewer.getSelectionSet (false) : this.viewer.getModelUndeletedAtomsBitSet (-1));
 if (helicalPath && translation != null) {
-points[1] =  new javax.vecmath.Point3f (points[0]);
+points[1] = javax.vecmath.Point3f.newP (points[0]);
 points[1].add (translation);
 var ret = org.jmol.util.Measure.computeHelicalAxis (null, 135266306, points[0], points[1], q);
 points[0] = ret[0];
 var theta = (ret[3]).x;
 if (theta != 0) {
 translation = ret[1];
-rotAxis =  new javax.vecmath.Vector3f (translation);
+rotAxis = javax.vecmath.Vector3f.newV (translation);
 if (theta < 0) rotAxis.scale (-1);
 }m4 = null;
 }if (isSpin && m4 == null) m4 = org.jmol.script.ScriptMathProcessor.getMatrix4f (q.getMatrix (), translation);
@@ -7373,12 +7376,12 @@ if (!isMolecular) {
 this.viewer.rotateAxisAngleAtCenter (points[0], rotAxis, rate, endDegrees, isSpin, bsAtoms);
 return ;
 }if (nPoints == 0) points[0] =  new javax.vecmath.Point3f ();
-points[1] =  new javax.vecmath.Point3f (points[0]);
+points[1] = javax.vecmath.Point3f.newP (points[0]);
 points[1].add (rotAxis);
 nPoints = 2;
 }if (nPoints == 0) points[0] =  new javax.vecmath.Point3f ();
 if (nPoints < 2 || points[0].distance (points[1]) == 0) {
-points[1] =  new javax.vecmath.Point3f (points[0]);
+points[1] = javax.vecmath.Point3f.newP (points[0]);
 points[1].y += 1.0;
 }if (endDegrees == 3.4028235E38) endDegrees = 0;
 if (endDegrees != 0 && translation != null && !haveRotation) translation.scale (endDegrees / translation.length ());
@@ -8082,7 +8085,7 @@ case 1611272194:
 var axes =  new Array (3);
 for (var j = 0; j < 3; j++) {
 axes[j] =  new javax.vecmath.Vector3f ();
-axes[j].set (this.centerParameter (++i));
+axes[j].setT (this.centerParameter (++i));
 i = this.iToken;
 }
 value = axes;
@@ -10004,7 +10007,7 @@ this.iToken = index;
 return tickInfo;
 }tickInfo =  new org.jmol.modelset.TickInfo (this.getPointOrPlane (index, false, true, false, false, 3, 3));
 if (this.coordinatesAreFractional || this.tokAt (this.iToken + 1) == 1614417948) {
-tickInfo.scale =  new javax.vecmath.Point3f (NaN, NaN, NaN);
+tickInfo.scale = javax.vecmath.Point3f.new3 (NaN, NaN, NaN);
 allowScale = false;
 }if (this.tokAt (this.iToken + 1) == 1614417948) this.iToken++;
 tickInfo.type = str;
@@ -10013,7 +10016,7 @@ if (!allowScale) return tickInfo;
 if (this.tokAt (this.iToken + 1) == 1073742138) {
 if (this.isFloatParameter (this.iToken + 2)) {
 var f = this.floatParameter (this.iToken + 2);
-tickInfo.scale =  new javax.vecmath.Point3f (f, f, f);
+tickInfo.scale = javax.vecmath.Point3f.new3 (f, f, f);
 } else {
 tickInfo.scale = this.getPoint3f (this.iToken + 2, true);
 }}if (allowFirst) if (this.tokAt (this.iToken + 1) == 1073741942) tickInfo.first = this.floatParameter (this.iToken + 2);
@@ -10431,7 +10434,7 @@ type = "TXT";
 } else if (data === "SPT") {
 if (isCoord) {
 var tainted = this.viewer.getTaintedAtoms (2);
-this.viewer.setAtomCoordRelative ( new javax.vecmath.Point3f (0, 0, 0), null);
+this.viewer.setAtomCoordRelative (javax.vecmath.Point3f.new3 (0, 0, 0), null);
 data = this.viewer.getProperty ("string", "stateInfo", null);
 this.viewer.setTaintedAtoms (tainted, 2);
 } else {
@@ -11690,7 +11693,7 @@ default:
 this.error (22);
 }
 propertyName = "rotationAxis";
-propertyValue =  new javax.vecmath.Vector3f (degx, degy, degz);
+propertyValue = javax.vecmath.Vector3f.new3 (degx, degy, degz);
 break;
 case 1048589:
 case 1610625028:
@@ -11880,11 +11883,11 @@ switch (iType) {
 case 3:
 break;
 case 1:
-v2 =  new javax.vecmath.Vector3f (pts[2]);
+v2 = javax.vecmath.Vector3f.newV (pts[2]);
 v2.sub (pts[0]);
 v2.scale (1000);
 case 2:
-v1 =  new javax.vecmath.Vector3f (pts[1]);
+v1 = javax.vecmath.Vector3f.newV (pts[1]);
 v1.sub (pts[0]);
 v1.scale (1000);
 pts[0].sub (v1);
@@ -12616,7 +12619,7 @@ if (atomIndex < 0) this.error (14);
 sbCommand.append (" ({").append (atomIndex).append ("})");
 modelIndex = this.viewer.getAtomModelIndex (atomIndex);
 this.addShapeProperty (propertyList, "modelIndex", Integer.$valueOf (modelIndex));
-var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (this.viewer.getAtomPoint3f (atomIndex)),  new javax.vecmath.Vector3f ()];
+var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (), javax.vecmath.Vector3f.newV (this.viewer.getAtomPoint3f (atomIndex)),  new javax.vecmath.Vector3f ()];
 if (!lcaoType.equalsIgnoreCase ("s") && this.viewer.getHybridizationAndAxes (atomIndex, axes[0], axes[1], lcaoType) == null) return ;
 propertyValue = axes;
 break;
@@ -13341,8 +13344,8 @@ Clazz.defineMethod (c$, "getWithinDistanceVector",
 var v =  new java.util.ArrayList ();
 var pts =  new Array (2);
 if (bs == null) {
-var pt1 =  new javax.vecmath.Point3f (distance, distance, distance);
-var pt0 =  new javax.vecmath.Point3f (ptc);
+var pt1 = javax.vecmath.Point3f.new3 (distance, distance, distance);
+var pt0 = javax.vecmath.Point3f.newP (ptc);
 pt0.sub (pt1);
 pt1.add (ptc);
 pts[0] = pt0;

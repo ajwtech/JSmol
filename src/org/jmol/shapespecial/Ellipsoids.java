@@ -25,7 +25,7 @@
 
 package org.jmol.shapespecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class Ellipsoids extends AtomShape {
     String id;
     public Vector3f[] axes;
     public float[] lengths;
-    public Point3f center = new Point3f(0, 0, 0);
+    public Point3f center = Point3f.new3(0, 0, 0);
     double[] coef;
     public short colix = Colix.GOLD;
     int modelIndex;
@@ -94,7 +94,7 @@ public class Ellipsoids extends AtomShape {
       boolean isVisible = (madset[0] != null && madset[0].length > i && madset[0][i] > 0
           || madset[1] != null && madset[1].length > i && madset[1][i] > 0
           || madset[2] != null && madset[2].length > i && madset[2][i] > 0);
-      bsSizeSet.set(i, isVisible);
+      bsSizeSet.setBitTo(i, isVisible);
       atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
@@ -270,7 +270,7 @@ public class Ellipsoids extends AtomShape {
           .append(ellipsoid.modelIndex).append(" center ").append(
               Escape.escapePt(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {
-        v1.set(ellipsoid.axes[i]);
+        v1.setT(ellipsoid.axes[i]);
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.escapePt(v1));
       }

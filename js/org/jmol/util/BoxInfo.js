@@ -20,8 +20,8 @@ for (var i = 8; --i >= 0; ) this.bbVertices[i] =  new org.jmol.util.Point3fi ();
 
 }{
 for (var i = 0; i < 8; i++) {
-org.jmol.util.BoxInfo.unitBboxPoints[i] =  new javax.vecmath.Point3f (-1, -1, -1);
-org.jmol.util.BoxInfo.unitBboxPoints[i].scaleAdd (2, org.jmol.util.BoxInfo.unitCubePoints[i], org.jmol.util.BoxInfo.unitBboxPoints[i]);
+org.jmol.util.BoxInfo.unitBboxPoints[i] = javax.vecmath.Point3f.new3 (-1, -1, -1);
+org.jmol.util.BoxInfo.unitBboxPoints[i].scaleAdd2 (2, org.jmol.util.BoxInfo.unitCubePoints[i], org.jmol.util.BoxInfo.unitBboxPoints[i]);
 }
 }});
 Clazz.makeConstructor (c$, 
@@ -41,7 +41,7 @@ return org.jmol.util.BoxInfo.getCanonicalCopy (this.bbVertices, scale);
 c$.getCanonicalCopy = Clazz.defineMethod (c$, "getCanonicalCopy", 
 function (bbUcPoints, scale) {
 var pts =  new Array (8);
-for (var i = 0; i < 8; i++) pts[org.jmol.util.BoxInfo.toCanonical[i]] =  new javax.vecmath.Point3f (bbUcPoints[i]);
+for (var i = 0; i < 8; i++) pts[org.jmol.util.BoxInfo.toCanonical[i]] = javax.vecmath.Point3f.newP (bbUcPoints[i]);
 
 org.jmol.util.BoxInfo.scaleBox (pts, scale);
 return pts;
@@ -55,9 +55,9 @@ for (var i = 0; i < 8; i++) center.add (pts[i]);
 
 center.scale (0.125);
 for (var i = 0; i < 8; i++) {
-v.sub (pts[i], center);
+v.sub2 (pts[i], center);
 v.scale (scale);
-pts[i].add (center, v);
+pts[i].add2 (center, v);
 }
 }, "~A,~N");
 c$.getFacesFromCriticalPoints = Clazz.defineMethod (c$, "getFacesFromCriticalPoints", 
@@ -71,25 +71,25 @@ var vb =  new javax.vecmath.Point3f ();
 var vc =  new javax.vecmath.Point3f ();
 var vertices =  new Array (8);
 for (var i = 0; i < 8; i++) {
-vertices[i] =  new javax.vecmath.Point3f (points[0]);
+vertices[i] = javax.vecmath.Point3f.newP (points[0]);
 if ((i & 1) == 1) vertices[i].add (points[1]);
 if ((i & 2) == 2) vertices[i].add (points[2]);
 if ((i & 4) == 4) vertices[i].add (points[3]);
 }
 for (var i = 0; i < 6; i++) {
-va.set (vertices[org.jmol.util.BoxInfo.facePoints[i].x]);
-vb.set (vertices[org.jmol.util.BoxInfo.facePoints[i].y]);
-vc.set (vertices[org.jmol.util.BoxInfo.facePoints[i].z]);
+va.setT (vertices[org.jmol.util.BoxInfo.facePoints[i].x]);
+vb.setT (vertices[org.jmol.util.BoxInfo.facePoints[i].y]);
+vc.setT (vertices[org.jmol.util.BoxInfo.facePoints[i].z]);
 org.jmol.util.Measure.getPlaneThroughPoints (va, vb, vc, vNorm, vAB, vAC, faces[i] =  new javax.vecmath.Point4f ());
 }
 return faces;
 }, "~A");
 c$.getCriticalPoints = Clazz.defineMethod (c$, "getCriticalPoints", 
 function (bbVertices, offset) {
-var center =  new javax.vecmath.Point3f (bbVertices[0]);
-var a =  new javax.vecmath.Point3f (bbVertices[1]);
-var b =  new javax.vecmath.Point3f (bbVertices[2]);
-var c =  new javax.vecmath.Point3f (bbVertices[4]);
+var center = javax.vecmath.Point3f.newP (bbVertices[0]);
+var a = javax.vecmath.Point3f.newP (bbVertices[1]);
+var b = javax.vecmath.Point3f.newP (bbVertices[2]);
+var c = javax.vecmath.Point3f.newP (bbVertices[4]);
 a.sub (center);
 b.sub (center);
 c.sub (center);
@@ -109,7 +109,7 @@ return this.bbVector;
 Clazz.defineMethod (c$, "getBoundBoxPoints", 
 function (isAll) {
 if (!this.isScaleSet) this.setBbcage (1);
-return (isAll ? [this.bbCenter,  new javax.vecmath.Point3f (this.bbVector), this.bbCorner0, this.bbCorner1] : [this.bbCorner0, this.bbCorner1]);
+return (isAll ? [this.bbCenter, javax.vecmath.Point3f.newP (this.bbVector), this.bbCorner0, this.bbCorner1] : [this.bbCorner0, this.bbCorner1]);
 }, "~B");
 Clazz.defineMethod (c$, "getBboxVertices", 
 function () {
@@ -120,10 +120,10 @@ Clazz.defineMethod (c$, "getBoundBoxInfo",
 function () {
 if (!this.isScaleSet) this.setBbcage (1);
 var info =  new java.util.Hashtable ();
-info.put ("center",  new javax.vecmath.Point3f (this.bbCenter));
-info.put ("vector",  new javax.vecmath.Vector3f (this.bbVector));
-info.put ("corner0",  new javax.vecmath.Point3f (this.bbCorner0));
-info.put ("corner1",  new javax.vecmath.Point3f (this.bbCorner1));
+info.put ("center", javax.vecmath.Point3f.newP (this.bbCenter));
+info.put ("vector", javax.vecmath.Vector3f.newV (this.bbVector));
+info.put ("corner0", javax.vecmath.Point3f.newP (this.bbCorner0));
+info.put ("corner1", javax.vecmath.Point3f.newP (this.bbCorner1));
 return info;
 });
 Clazz.defineMethod (c$, "setBoundBox", 
@@ -163,9 +163,9 @@ if (pt.z + margin > xyzMax.z) xyzMax.z = pt.z + margin;
 Clazz.defineMethod (c$, "setBbcage", 
 function (scale) {
 this.isScaleSet = true;
-this.bbCenter.add (this.bbCorner0, this.bbCorner1);
+this.bbCenter.add2 (this.bbCorner0, this.bbCorner1);
 this.bbCenter.scale (0.5);
-this.bbVector.sub (this.bbCorner1, this.bbCenter);
+this.bbVector.sub2 (this.bbCorner1, this.bbCenter);
 if (scale > 0) {
 this.bbVector.scale (scale);
 } else {
@@ -174,14 +174,14 @@ this.bbVector.y -= scale / 2;
 this.bbVector.z -= scale / 2;
 }for (var i = 8; --i >= 0; ) {
 var pt = this.bbVertices[i];
-pt.set (org.jmol.util.BoxInfo.unitBboxPoints[i]);
+pt.setT (org.jmol.util.BoxInfo.unitBboxPoints[i]);
 pt.x *= this.bbVector.x;
 pt.y *= this.bbVector.y;
 pt.z *= this.bbVector.z;
 pt.add (this.bbCenter);
 }
-this.bbCorner0.set (this.bbVertices[0]);
-this.bbCorner1.set (this.bbVertices[7]);
+this.bbCorner0.setT (this.bbVertices[0]);
+this.bbCorner1.setT (this.bbVertices[7]);
 }, "~N");
 Clazz.defineMethod (c$, "isWithin", 
 function (pt) {
@@ -192,10 +192,10 @@ Clazz.defineStatics (c$,
 "bbcageTickEdges", ['z', 0, 0, 'y', 'x', 0, 0, 0, 0, 0, 0, 0],
 "uccageTickEdges", ['z', 'y', 'x', 0, 0, 0, 0, 0, 0, 0, 0, 0],
 "edges", [0, 1, 0, 2, 0, 4, 1, 3, 1, 5, 2, 3, 2, 6, 3, 7, 4, 5, 4, 6, 5, 7, 6, 7]);
-c$.unitCubePoints = c$.prototype.unitCubePoints = [ new javax.vecmath.Point3f (0, 0, 0),  new javax.vecmath.Point3f (0, 0, 1),  new javax.vecmath.Point3f (0, 1, 0),  new javax.vecmath.Point3f (0, 1, 1),  new javax.vecmath.Point3f (1, 0, 0),  new javax.vecmath.Point3f (1, 0, 1),  new javax.vecmath.Point3f (1, 1, 0),  new javax.vecmath.Point3f (1, 1, 1)];
-c$.facePoints = c$.prototype.facePoints = [ new javax.vecmath.Point3i (4, 0, 6),  new javax.vecmath.Point3i (4, 6, 5),  new javax.vecmath.Point3i (5, 7, 1),  new javax.vecmath.Point3i (1, 3, 0),  new javax.vecmath.Point3i (6, 2, 7),  new javax.vecmath.Point3i (1, 0, 5)];
+c$.unitCubePoints = c$.prototype.unitCubePoints = [javax.vecmath.Point3f.new3 (0, 0, 0), javax.vecmath.Point3f.new3 (0, 0, 1), javax.vecmath.Point3f.new3 (0, 1, 0), javax.vecmath.Point3f.new3 (0, 1, 1), javax.vecmath.Point3f.new3 (1, 0, 0), javax.vecmath.Point3f.new3 (1, 0, 1), javax.vecmath.Point3f.new3 (1, 1, 0), javax.vecmath.Point3f.new3 (1, 1, 1)];
+c$.facePoints = c$.prototype.facePoints = [javax.vecmath.Point3i.new3 (4, 0, 6), javax.vecmath.Point3i.new3 (4, 6, 5), javax.vecmath.Point3i.new3 (5, 7, 1), javax.vecmath.Point3i.new3 (1, 3, 0), javax.vecmath.Point3i.new3 (6, 2, 7), javax.vecmath.Point3i.new3 (1, 0, 5)];
 Clazz.defineStatics (c$,
 "toCanonical", [0, 3, 4, 7, 1, 2, 5, 6]);
-c$.cubeVertexOffsets = c$.prototype.cubeVertexOffsets = [ new javax.vecmath.Point3i (0, 0, 0),  new javax.vecmath.Point3i (1, 0, 0),  new javax.vecmath.Point3i (1, 0, 1),  new javax.vecmath.Point3i (0, 0, 1),  new javax.vecmath.Point3i (0, 1, 0),  new javax.vecmath.Point3i (1, 1, 0),  new javax.vecmath.Point3i (1, 1, 1),  new javax.vecmath.Point3i (0, 1, 1)];
+c$.cubeVertexOffsets = c$.prototype.cubeVertexOffsets = [javax.vecmath.Point3i.new3 (0, 0, 0), javax.vecmath.Point3i.new3 (1, 0, 0), javax.vecmath.Point3i.new3 (1, 0, 1), javax.vecmath.Point3i.new3 (0, 0, 1), javax.vecmath.Point3i.new3 (0, 1, 0), javax.vecmath.Point3i.new3 (1, 1, 0), javax.vecmath.Point3i.new3 (1, 1, 1), javax.vecmath.Point3i.new3 (0, 1, 1)];
 c$.unitBboxPoints = c$.prototype.unitBboxPoints =  new Array (8);
 });

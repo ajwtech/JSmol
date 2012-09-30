@@ -260,7 +260,7 @@ v.add (org.jmol.jvxl.data.JvxlCoder.getContourPoint (vertices, i3, i4, f2));
 c$.getContourPoint = Clazz.defineMethod (c$, "getContourPoint", 
 ($fz = function (vertices, i, j, f) {
 var pt =  new javax.vecmath.Point3f ();
-pt.set (vertices[j]);
+pt.setT (vertices[j]);
 pt.sub (vertices[i]);
 pt.scale (f);
 pt.add (vertices[i]);

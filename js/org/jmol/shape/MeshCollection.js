@@ -268,7 +268,7 @@ var id = data[0];
 var index = (data[1]).intValue ();
 var m;
 if ((m = this.getMesh (id)) == null || m.vertices == null) return false;
-if (index == 2147483647) data[2] =  new javax.vecmath.Point3f (m.index + 1, this.meshCount, m.vertexCount);
+if (index == 2147483647) data[2] = javax.vecmath.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
  else data[2] = m.vertices[m.getVertexIndexFromNumber (index)];
 return true;
 }return false;

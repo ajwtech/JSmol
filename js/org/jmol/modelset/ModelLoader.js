@@ -784,7 +784,7 @@ Clazz.defineMethod (c$, "set2dZ",
 var atomlist =  new java.util.BitSet (iatom2);
 var bsBranch =  new java.util.BitSet ();
 var v =  new javax.vecmath.Vector3f ();
-var v0 =  new javax.vecmath.Vector3f (0, 1, 0);
+var v0 = javax.vecmath.Vector3f.new3 (0, 1, 0);
 var v1 =  new javax.vecmath.Vector3f ();
 var bs0 =  new java.util.BitSet ();
 bs0.set (iatom1, iatom2);
@@ -819,7 +819,7 @@ org.jmol.modelset.ModelLoader.setBranch2dZ (atom2, bs, bsToTest, v, v0, v1);
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,java.util.BitSet,java.util.BitSet,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
 c$.setAtom2dZ = Clazz.defineMethod (c$, "setAtom2dZ", 
 ($fz = function (atomRef, atom2, v, v0, v1) {
-v.set (atom2);
+v.setT (atom2);
 v.sub (atomRef);
 v.z = 0;
 v.normalize ();

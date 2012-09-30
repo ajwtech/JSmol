@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 22:20:13 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17506 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -311,7 +311,7 @@ public class Resolver {
       return atomSetCollectionReader;
     } catch (Exception e) {
       String err = "File reader was not found:" + className;
-      Logger.error(err, e);
+      Logger.errorEx(err, e);
       return err;
     }
   }

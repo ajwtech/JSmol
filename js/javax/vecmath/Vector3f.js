@@ -1,6 +1,6 @@
 ﻿Clazz.declarePackage ("javax.vecmath");
 Clazz.load (["javax.vecmath.Tuple3f"], "javax.vecmath.Vector3f", null, function () {
-c$ = Clazz.declareType (javax.vecmath, "Vector3f", javax.vecmath.Tuple3f, java.io.Serializable);
+c$ = Clazz.declareType (javax.vecmath, "Vector3f", javax.vecmath.Tuple3f);
 Clazz.defineMethod (c$, "lengthSquared", 
 function () {
 return (this.x * this.x + this.y * this.y + this.z * this.z);
@@ -24,14 +24,6 @@ function (v1) {
 return (this.x * v1.x + this.y * v1.y + this.z * v1.z);
 }, "javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "normalize", 
-function (v1) {
-var norm;
-norm = (1.0 / Math.sqrt (v1.x * v1.x + v1.y * v1.y + v1.z * v1.z));
-this.x = v1.x * norm;
-this.y = v1.y * norm;
-this.z = v1.z * norm;
-}, "javax.vecmath.Vector3f");
-Clazz.defineMethod (c$, "normalize", 
 function () {
 var norm;
 norm = (1.0 / Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z));
@@ -46,4 +38,20 @@ if (vDot < -1.0) vDot = -1.0;
 if (vDot > 1.0) vDot = 1.0;
 return ((Math.acos (vDot)));
 }, "javax.vecmath.Vector3f");
+c$.newV = Clazz.defineMethod (c$, "newV", 
+function (t) {
+var v =  new javax.vecmath.Vector3f ();
+v.x = t.x;
+v.y = t.y;
+v.z = t.z;
+return v;
+}, "javax.vecmath.Tuple3f");
+c$.new3 = Clazz.defineMethod (c$, "new3", 
+function (x, y, z) {
+var v =  new javax.vecmath.Vector3f ();
+v.x = x;
+v.y = y;
+v.z = z;
+return v;
+}, "~N,~N,~N");
 });

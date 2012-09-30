@@ -63,21 +63,21 @@ for (var i = 0; i < this.monomerCount; ++i) {
 point = this.cordMidPoints[i];
 var residue = this.monomers[i];
 if (isNewStyle && this.renderArrowHeads) {
-point.set (this.controlPoints[i]);
+point.setT (this.controlPoints[i]);
 } else if (this.isHelix (i) || !isNewStyle && this.isSheet (i)) {
 var proteinstructure = residue.getProteinStructure ();
-point.set (i - 1 != proteinstructure.getMonomerIndex () ? proteinstructure.getAxisStartPoint () : proteinstructure.getAxisEndPoint ());
+point.setT (i - 1 != proteinstructure.getMonomerIndex () ? proteinstructure.getAxisStartPoint () : proteinstructure.getAxisEndPoint ());
 proteinstructurePrev = proteinstructure;
 } else {
-if (proteinstructurePrev != null) point.set (proteinstructurePrev.getAxisEndPoint ());
+if (proteinstructurePrev != null) point.setT (proteinstructurePrev.getAxisEndPoint ());
  else {
-point.set (this.controlPoints[i]);
+point.setT (this.controlPoints[i]);
 }proteinstructurePrev = null;
 }}
 point = this.cordMidPoints[this.monomerCount];
-if (proteinstructurePrev != null) point.set (proteinstructurePrev.getAxisEndPoint ());
+if (proteinstructurePrev != null) point.setT (proteinstructurePrev.getAxisEndPoint ());
  else {
-point.set (this.controlPoints[this.monomerCount]);
+point.setT (this.controlPoints[this.monomerCount]);
 }}, "~B");
 Clazz.defineMethod (c$, "render1", 
 function () {
@@ -145,7 +145,7 @@ Clazz.defineMethod (c$, "buildBox",
 function (pointCorner, scaledWidthVector, scaledHeightVector, lengthVector) {
 for (var i = 8; --i >= 0; ) {
 var corner = this.corners[i];
-corner.set (pointCorner);
+corner.setT (pointCorner);
 if ((i & 1) != 0) corner.add (scaledWidthVector);
 if ((i & 2) != 0) corner.add (scaledHeightVector);
 if ((i & 4) != 0) corner.add (lengthVector);
@@ -156,27 +156,27 @@ Clazz.defineMethod (c$, "buildArrowHeadBox",
 function (pointCorner, scaledWidthVector, scaledHeightVector, pointTip) {
 for (var i = 4; --i >= 0; ) {
 var corner = this.corners[i];
-corner.set (pointCorner);
+corner.setT (pointCorner);
 if ((i & 1) != 0) corner.add (scaledWidthVector);
 if ((i & 2) != 0) corner.add (scaledHeightVector);
 this.viewer.transformPt3f (corner, this.screenCorners[i]);
 }
-this.corners[4].set (pointTip);
+this.corners[4].setT (pointTip);
 this.viewer.transformPt3f (pointTip, this.screenCorners[4]);
-this.corners[5].add (pointTip, scaledHeightVector);
+this.corners[5].add2 (pointTip, scaledHeightVector);
 this.viewer.transformPt3f (this.corners[5], this.screenCorners[5]);
 }, "javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "drawBox", 
 function (pointA, pointB) {
 var sheet = this.proteinstructurePending;
 var scale = this.mad / 1000;
-this.scaledWidthVector.set (sheet.getWidthUnitVector ());
+this.scaledWidthVector.setT (sheet.getWidthUnitVector ());
 this.scaledWidthVector.scale (scale);
-this.scaledHeightVector.set (sheet.getHeightUnitVector ());
+this.scaledHeightVector.setT (sheet.getHeightUnitVector ());
 this.scaledHeightVector.scale (scale / 4);
-this.pointCorner.add (this.scaledWidthVector, this.scaledHeightVector);
+this.pointCorner.add2 (this.scaledWidthVector, this.scaledHeightVector);
 this.pointCorner.scaleAdd (-0.5, pointA);
-this.lengthVector.sub (pointB, pointA);
+this.lengthVector.sub2 (pointB, pointA);
 this.buildBox (this.pointCorner, this.scaledWidthVector, this.scaledHeightVector, this.lengthVector);
 for (var i = 0; i < 6; ++i) {
 var i0 = org.jmol.renderbio.RocketsRenderer.boxFaces[i * 4];
@@ -190,13 +190,13 @@ Clazz.defineMethod (c$, "drawArrowHeadBox",
 function (base, tip) {
 var sheet = this.proteinstructurePending;
 var scale = this.mad / 1000;
-this.scaledWidthVector.set (sheet.getWidthUnitVector ());
+this.scaledWidthVector.setT (sheet.getWidthUnitVector ());
 this.scaledWidthVector.scale (scale * 1.25);
-this.scaledHeightVector.set (sheet.getHeightUnitVector ());
+this.scaledHeightVector.setT (sheet.getHeightUnitVector ());
 this.scaledHeightVector.scale (scale / 3);
-this.pointCorner.add (this.scaledWidthVector, this.scaledHeightVector);
+this.pointCorner.add2 (this.scaledWidthVector, this.scaledHeightVector);
 this.pointCorner.scaleAdd (-0.5, base);
-this.pointTipOffset.set (this.scaledHeightVector);
+this.pointTipOffset.setT (this.scaledHeightVector);
 this.pointTipOffset.scaleAdd (-0.5, tip);
 this.buildArrowHeadBox (this.pointCorner, this.scaledWidthVector, this.scaledHeightVector, this.pointTipOffset);
 this.g3d.fillTriangle (this.screenCorners[0], this.screenCorners[1], this.screenCorners[4]);

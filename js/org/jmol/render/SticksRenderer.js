@@ -187,14 +187,14 @@ if (isDashed) this.drawDashed (this.xA, this.yA, this.zA, this.xB, this.yB, this
  else this.fillCylinder (this.colixA, this.colixB, this.endcaps, this.width, this.xA, this.yA, this.zA, this.xB, this.yB, this.zB);
 return ;
 }if (doFixedSpacing) {
-this.x.sub (this.atomB, this.atomA);
+this.x.sub2 (this.atomB, this.atomA);
 this.y.cross (this.x, this.z);
 this.y.normalize ();
 this.y.scale (this.multipleBondSpacing);
-this.x.set (this.y);
+this.x.setT (this.y);
 this.x.scale ((this.bondOrder - 1) / 2);
-this.p1.sub (this.atomA, this.x);
-this.p2.sub (this.atomB, this.x);
+this.p1.sub2 (this.atomA, this.x);
+this.p2.sub2 (this.atomB, this.x);
 while (true) {
 if (this.exportType == 1 && !isDashed) {
 this.g3d.drawBond (this.p1, this.p2, this.colixA, this.colixB, this.endcaps, this.mad, -2);

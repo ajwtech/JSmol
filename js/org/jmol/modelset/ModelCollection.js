@@ -49,8 +49,8 @@ this.ptTemp =  new javax.vecmath.Point3f ();
 this.averageAtomPoint =  new javax.vecmath.Point3f ();
 this.boxInfo =  new org.jmol.util.BoxInfo ();
 {
-this.boxInfo.addBoundBoxPoint ( new javax.vecmath.Point3f (-10, -10, -10));
-this.boxInfo.addBoundBoxPoint ( new javax.vecmath.Point3f (10, 10, 10));
+this.boxInfo.addBoundBoxPoint (javax.vecmath.Point3f.new3 (-10, -10, -10));
+this.boxInfo.addBoundBoxPoint (javax.vecmath.Point3f.new3 (10, 10, 10));
 }this.stateScripts =  new java.util.ArrayList ();
 this.selectedMolecules =  new java.util.BitSet ();
 });
@@ -225,12 +225,12 @@ this.boxInfo.setBoundBox (pt1, pt2, byCorner, scale);
 Clazz.defineMethod (c$, "getBoundBoxCommand", 
 function (withOptions) {
 if (!withOptions && this.bboxAtoms != null) return "boundbox " + org.jmol.util.Escape.escape (this.bboxAtoms);
-this.ptTemp.set (this.boxInfo.getBoundBoxCenter ());
+this.ptTemp.setT (this.boxInfo.getBoundBoxCenter ());
 var bbVector = this.boxInfo.getBoundBoxCornerVector ();
 var s = (withOptions ? "boundbox " + org.jmol.util.Escape.escapePt (this.ptTemp) + " " + org.jmol.util.Escape.escapePt (bbVector) + "\n#or\n" : "");
 this.ptTemp.sub (bbVector);
 s += "boundbox corners " + org.jmol.util.Escape.escapePt (this.ptTemp) + " ";
-this.ptTemp.scaleAdd (2, bbVector, this.ptTemp);
+this.ptTemp.scaleAdd2 (2, bbVector, this.ptTemp);
 var v = Math.abs (8 * bbVector.x * bbVector.y * bbVector.z);
 s += org.jmol.util.Escape.escapePt (this.ptTemp) + " # volume = " + v;
 return s;
@@ -271,7 +271,7 @@ if (bs == null && this.isBbcageDefault || this.atomCount < 2) return ;
 this.bboxModels = this.getModelBitSet (this.bboxAtoms = org.jmol.util.BitSetUtil.copy (bs), false);
 if (this.calcAtomsMinMax (bs, this.boxInfo) == this.atomCount) this.isBbcageDefault = true;
 if (bs == null) {
-this.averageAtomPoint.set (this.getAtomSetCenter (null));
+this.averageAtomPoint.setT (this.getAtomSetCenter (null));
 if (this.unitCells != null) this.calcUnitCellMinMax ();
 }this.boxInfo.setBbcage (scale);
 }, "java.util.BitSet,~N");
@@ -349,7 +349,7 @@ points[1][0].scale (1 / (points[1].length - 1));
 }, "java.util.List,~B");
 Clazz.defineMethod (c$, "getAtomSetCenter", 
 function (bs) {
-var ptCenter =  new javax.vecmath.Point3f (0, 0, 0);
+var ptCenter = javax.vecmath.Point3f.new3 (0, 0, 0);
 var nPoints = 0;
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 if (!this.isJmolDataFrameForAtom (this.atoms[i])) {
@@ -1178,11 +1178,11 @@ if (this.atoms[i].modelIndex != modelIndex) continue ;var c = this.partialCharge
 if (c < 0) {
 nNeg++;
 cNeg += c;
-neg.scaleAdd (c, this.atoms[i], neg);
+neg.scaleAdd2 (c, this.atoms[i], neg);
 } else if (c > 0) {
 nPos++;
 cPos += c;
-pos.scaleAdd (c, this.atoms[i], pos);
+pos.scaleAdd2 (c, this.atoms[i], pos);
 }}
 if (nNeg == 0 || nPos == 0) return null;
 pos.scale (1 / cPos);
@@ -1232,7 +1232,7 @@ center.set (0, 0, 0);
 var n = 0;
 for (var j = bs.nextSetBit (0); j >= 0; j = bs.nextSetBit (j + 1)) {
 if (isOneMolecule || centroidPacked) {
-center.set (this.atoms[j]);
+center.setT (this.atoms[j]);
 if (org.jmol.modelset.ModelCollection.isNotCentroid (center, 1, uc, minmax, centroidPacked)) {
 if (isOneMolecule) bsDelete.set (j);
 } else if (!isOneMolecule) {
@@ -1426,7 +1426,7 @@ case 1614417948:
 bs =  new java.util.BitSet ();
 var unitcell = this.viewer.getCurrentUnitCell ();
 if (unitcell == null) return bs;
-var cell =  new javax.vecmath.Point3f (1, 1, 1);
+var cell = javax.vecmath.Point3f.new3 (1, 1, 1);
 pt =  new javax.vecmath.Point3f ();
 for (var i = this.atomCount; --i >= 0; ) if (this.isInLatticeCell (i, cell, pt, false)) bs.set (i);
 
@@ -1434,7 +1434,7 @@ return bs;
 case 1095761925:
 bs =  new java.util.BitSet ();
 info = specInfo;
-var ptcell =  new javax.vecmath.Point3f (info[0] / 1000, info[1] / 1000, info[2] / 1000);
+var ptcell = javax.vecmath.Point3f.new3 (info[0] / 1000, info[1] / 1000, info[2] / 1000);
 pt =  new javax.vecmath.Point3f ();
 var isAbsolute = !this.viewer.getFractionalRelative ();
 for (var i = this.atomCount; --i >= 0; ) if (this.isInLatticeCell (i, ptcell, pt, isAbsolute)) bs.set (i);
@@ -1447,7 +1447,7 @@ Clazz.defineMethod (c$, "isInLatticeCell",
 var iModel = this.atoms[i].modelIndex;
 var uc = this.getUnitCell (iModel);
 if (uc == null) return false;
-pt.set (this.atoms[i]);
+pt.setT (this.atoms[i]);
 uc.toFractional (pt, isAbsolute);
 var slop = 0.02;
 if (pt.x < cell.x - 1 - slop || pt.x > cell.x + slop) return false;
@@ -1843,7 +1843,7 @@ var atomNear = this.atoms[iter.next ()];
 var elementNumberNear = atomNear.getElementNumber ();
 if (atomNear === atom || !isH && elementNumberNear != 7 && elementNumberNear != 8 || isH && elementNumberNear == 1 || (d2 = iter.foundDistance2 ()) < min2 || d2 > max2 || firstIsCO && bsCO.get (atomNear.index) || atom.isBonded (atomNear)) {
 continue ;}if (minAttachedAngle > 0) {
-v1.sub (atom, atomNear);
+v1.sub2 (atom, atomNear);
 if ((D = org.jmol.modelset.ModelCollection.checkMinAttachedAngle (atom, minAttachedAngle, v1, v2, haveHAtoms)) == null) continue ;v1.scale (-1);
 if ((C = org.jmol.modelset.ModelCollection.checkMinAttachedAngle (atomNear, minAttachedAngle, v1, v2, haveHAtoms)) == null) continue ;}var energy = 0;
 var bo;
@@ -1864,12 +1864,12 @@ return (haveHAtoms ? nNew : -nNew);
 c$.checkMinAttachedAngle = Clazz.defineMethod (c$, "checkMinAttachedAngle", 
 ($fz = function (atom1, minAngle, v1, v2, haveHAtoms) {
 var bonds = atom1.bonds;
-if (bonds == null || bonds.length == 0) return  new javax.vecmath.Point3f (NaN, 0, 0);
+if (bonds == null || bonds.length == 0) return javax.vecmath.Point3f.new3 (NaN, 0, 0);
 var X = null;
 var dMin = 3.4028235E38;
 for (var i = bonds.length; --i >= 0; ) if (bonds[i].isCovalent ()) {
 var atomA = bonds[i].getOtherAtom (atom1);
-if (!haveHAtoms && atomA.getElementNumber () == 1) continue ;v2.sub (atom1, atomA);
+if (!haveHAtoms && atomA.getElementNumber () == 1) continue ;v2.sub2 (atom1, atomA);
 var d = v2.angle (v1);
 if (d < minAngle) return null;
 if (d < dMin) {
@@ -2077,7 +2077,7 @@ return bsBonds;
 Clazz.defineMethod (c$, "getAtomRecordMOL", 
 ($fz = function (mol, n, a, q, pTemp, asV3000, asChemDoodle) {
 if (this.models[a.modelIndex].isTrajectory) a.setFractionalCoordPt (this.ptTemp, this.trajectorySteps.get (a.modelIndex)[a.index - this.models[a.modelIndex].firstAtomIndex], true);
- else pTemp.set (a);
+ else pTemp.setT (a);
 if (q != null) q.transform (pTemp, pTemp);
 var elemNo = a.getElementNumber ();
 var sym = (a.isDeleted () ? "Xx" : org.jmol.util.Elements.elementSymbolFromNumber (elemNo));
@@ -2206,9 +2206,9 @@ info.put ("elemno", Integer.$valueOf (this.getElementNumber (i)));
 info.put ("x", Float.$valueOf (atom.x));
 info.put ("y", Float.$valueOf (atom.y));
 info.put ("z", Float.$valueOf (atom.z));
-info.put ("coord",  new javax.vecmath.Point3f (atom));
+info.put ("coord", javax.vecmath.Point3f.newP (atom));
 if (this.vibrationVectors != null && this.vibrationVectors[i] != null) {
-info.put ("vibVector",  new javax.vecmath.Vector3f (this.vibrationVectors[i]));
+info.put ("vibVector", javax.vecmath.Vector3f.newV (this.vibrationVectors[i]));
 }info.put ("bondCount", Integer.$valueOf (atom.getCovalentBondCount ()));
 info.put ("radius", Float.$valueOf ((atom.getRasMolRadius () / 120.0)));
 info.put ("model", atom.getModelNumberForLabel ());
@@ -2407,7 +2407,7 @@ var iSym = this.symTemp.addSpaceGroupOperation ((op < 0 ? "!" : "=") + xyz, Math
 if (iSym < 0) return "";
 this.symTemp.setUnitCell (uc.getNotionalUnitCell ());
 var info;
-pt =  new javax.vecmath.Point3f (pt == null ? this.atoms[iAtom] : pt);
+pt = javax.vecmath.Point3f.newP (pt == null ? this.atoms[iAtom] : pt);
 if (type == 135266320) {
 uc.toFractional (pt, false);
 if (Float.isNaN (pt.x)) return "";
@@ -2543,7 +2543,7 @@ dx = 1.50;
 } else if (!wasH && atomicNumber == 1) {
 dx = 1.0;
 }if (dx != 0) {
-var v =  new javax.vecmath.Vector3f (atom);
+var v = javax.vecmath.Vector3f.newV (atom);
 v.sub (this.atoms[atom.getBondedAtomIndex (0)]);
 var d = v.length ();
 v.normalize ();

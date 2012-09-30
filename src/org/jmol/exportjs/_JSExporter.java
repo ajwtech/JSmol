@@ -29,11 +29,9 @@ package org.jmol.exportjs;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 
-import org.jmol.util.ColorUtil;
 import org.jmol.util.J2SRequireImport;
 
 @J2SRequireImport({org.jmol.exportjs.___Exporter.class, org.jmol.exportjs.__CartesianExporter.class, org.jmol.exportjs.Export3D.class})
@@ -124,8 +122,8 @@ public class _JSExporter extends __CartesianExporter {
     
   }
 
-  private Point3f getColor(short colix) {
-    return ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colix));
+  private Integer getColor(short colix) {
+    return Integer.valueOf(g3d.getColorArgbOrGray(colix));
   }
 
   void addObject(String id, Object o) {
@@ -138,17 +136,6 @@ public class _JSExporter extends __CartesianExporter {
      {
        System.out.println(id + " " + o);
      }
-  }
-
-  private void useObject(String id, Matrix4f transform) {
-    // implemented in JavaScript only
-    /**
-     * @j2sNative
-     * 
-     */
-    {
-      System.out.println(id + " " + transform);
-    }
   }
 
 	@Override

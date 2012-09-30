@@ -39,7 +39,7 @@ package java.awt.event;
  * enabled on the component. A mouse event type is enabled by adding the
  * appropriate mouse-based {@code EventListener} to the component
  * ({@link MouseListener} or {@link MouseMotionListener}), or by invoking
- * {@link Component#enableEvents(long)} with the appropriate mask parameter
+ * {link Component#enableEvents(long)} with the appropriate mask parameter
  * ({@code AWTEvent.MOUSE_EVENT_MASK} or {@code AWTEvent.MOUSE_MOTION_EVENT_MASK}).
  * If the mouse event type has not been enabled on the component, the
  * corresponding mouse events are dispatched to the first ancestor that
@@ -307,7 +307,7 @@ public class MouseEvent extends InputEvent {
      * For all other events the count will be 0.
      *
      * @serial
-     * @see #getClickCount().
+     * @see #getClickCount
      */
     int clickCount;
 
@@ -320,7 +320,7 @@ public class MouseEvent extends InputEvent {
      * <code>BUTTON2</code> or
      * <code>BUTTON3</code>.
      * @serial
-     * @see #getButton().
+     * @see #getButton
      */
     int button;
 
@@ -388,7 +388,7 @@ public class MouseEvent extends InputEvent {
      * An invocation of the form
      * <tt>MouseEvent(source, id, when, modifiers, x, y, clickCount, popupTrigger, button)</tt>
      * behaves in exactly the same way as the invocation
-     * <tt> {@link #MouseEvent(Component, int, long, int, int, int,
+     * <tt> {link #MouseEvent(Component, int, long, int, int, int,
      * int, int, int, boolean, int) MouseEvent}(source, id, when, modifiers,
      * x, y, xAbs, yAbs, clickCount, popupTrigger, button)</tt>
      * where xAbs and yAbs defines as source's location on screen plus
@@ -438,7 +438,7 @@ public class MouseEvent extends InputEvent {
      * An invocation of the form
      * <tt>MouseEvent(source, id, when, modifiers, x, y, clickCount, popupTrigger)</tt>
      * behaves in exactly the same way as the invocation
-     * <tt> {@link #MouseEvent(Component, int, long, int, int, int,
+     * <tt> {link #MouseEvent(Component, int, long, int, int, int,
      * int, int, int, boolean, int) MouseEvent}(source, id, when, modifiers,
      * x, y, xAbs, yAbs, clickCount, popupTrigger, MouseEvent.NOBUTTON)</tt>
      * where xAbs and yAbs defines as source's location on screen plus

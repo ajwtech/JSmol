@@ -54,11 +54,11 @@ this.calcAxis ();
 this.segments =  new Array (this.monomerCount + 1);
 this.segments[this.monomerCount] = this.axisB;
 this.segments[0] = this.axisA;
-var axis =  new javax.vecmath.Vector3f (this.axisUnitVector);
+var axis = javax.vecmath.Vector3f.newV (this.axisUnitVector);
 axis.scale (this.axisB.distance (this.axisA) / this.monomerCount);
 for (var i = 1; i < this.monomerCount; i++) {
 var point = this.segments[i] =  new javax.vecmath.Point3f ();
-point.set (this.segments[i - 1]);
+point.setT (this.segments[i - 1]);
 point.add (axis);
 }
 });

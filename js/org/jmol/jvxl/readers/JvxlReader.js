@@ -96,11 +96,11 @@ var param3 = this.parseInt ();
 if (param3 == -2147483648 || param3 == -1) param3 = 0;
 if (param1 == -1) {
 try {
-this.params.thePlane =  new javax.vecmath.Point4f (this.parseFloat (), this.parseFloat (), this.parseFloat (), this.parseFloat ());
+this.params.thePlane = javax.vecmath.Point4f.new4 (this.parseFloat (), this.parseFloat (), this.parseFloat (), this.parseFloat ());
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
-this.params.thePlane =  new javax.vecmath.Point4f (0, 0, 1, 0);
+this.params.thePlane = javax.vecmath.Point4f.new4 (0, 0, 1, 0);
 } else {
 throw e;
 }

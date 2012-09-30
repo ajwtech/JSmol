@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -508,7 +508,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Logger.error("" + e);
       return "" + e;
     } catch (Error er) {
-      Logger.error(null, er);
+      Logger.errorEx(null, er);
       return "" + er;
     }
   }

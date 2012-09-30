@@ -18,7 +18,7 @@ this.verticesT =  new Array (8);
 for (var i = 8; --i >= 0; ) {
 this.verticesT[i] =  new javax.vecmath.Point3f ();
 }
-}this.fset0 =  new javax.vecmath.Point3f (555, 555, 1);
+}this.fset0 = javax.vecmath.Point3f.new3 (555, 555, 1);
 this.cell0 =  new javax.vecmath.Point3f ();
 this.cell1 =  new javax.vecmath.Point3f ();
 this.offset =  new javax.vecmath.Point3f ();
@@ -50,7 +50,7 @@ if (unitcell == null) return ;
 this.isPolymer = unitcell.isPolymer ();
 this.isSlab = unitcell.isSlab ();
 var vertices = unitcell.getUnitCellVertices ();
-this.offset.set (unitcell.getCartesianOffset ());
+this.offset.setT (unitcell.getCartesianOffset ());
 var fset = unitcell.getUnitCellMultiplier ();
 var haveMultiple = (fset != null);
 if (!haveMultiple) fset = this.fset0;
@@ -78,11 +78,11 @@ firstLine = (drawAllLines || aPoints == null ? 0 : 3);
 allow0 = 0xFF;
 allow1 = 0xFF;
 } else {
-this.offsetT.set (this.offset);
+this.offsetT.setT (this.offset);
 firstLine = (drawAllLines ? 0 : 3);
 allow0 = 0xFF;
 allow1 = 0xFF;
-}for (var i = 8; --i >= 0; ) this.verticesT[i].add (vertices[i], this.offsetT);
+}for (var i = 8; --i >= 0; ) this.verticesT[i].add2 (vertices[i], this.offsetT);
 
 this.render (mad, this.verticesT, aPoints, firstLine, allow0, allow1, Math.abs (fset.z));
 }

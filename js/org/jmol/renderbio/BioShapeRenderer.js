@@ -65,7 +65,7 @@ this.screenArrowTopPrev =  new javax.vecmath.Point3i ();
 this.screenArrowBot =  new javax.vecmath.Point3i ();
 this.screenArrowBotPrev =  new javax.vecmath.Point3i ();
 this.norm =  new javax.vecmath.Vector3f ();
-this.Z =  new javax.vecmath.Vector3f (0.1345, 0.5426, 0.3675);
+this.Z = javax.vecmath.Vector3f.new3 (0.1345, 0.5426, 0.3675);
 this.wing =  new javax.vecmath.Vector3f ();
 this.wing0 =  new javax.vecmath.Vector3f ();
 this.wing1 =  new javax.vecmath.Vector3f ();
@@ -187,7 +187,7 @@ for (var i = count; --i >= 0; ) this.calc1Screen (this.controlPoints[i], this.wi
 }, "~N");
 Clazz.defineMethod (c$, "calc1Screen", 
 ($fz = function (center, vector, mad, offset_1000, screen) {
-this.pointT.set (vector);
+this.pointT.setT (vector);
 var scale = mad * offset_1000;
 this.pointT.scaleAdd (scale, center);
 this.viewer.transformPtScr (this.pointT, screen);
@@ -330,7 +330,7 @@ this.controlHermites =  new Array (nHermites + 1);
 if (isEccentric) {
 if (this.wingHermites == null || this.wingHermites.length < nHermites + 1) {
 this.wingHermites =  new Array (nHermites + 1);
-}this.wing.set (this.wingVectors[this.iPrev]);
+}this.wing.setT (this.wingVectors[this.iPrev]);
 if (madEnd == 0) this.wing.scale (2.0);
 org.jmol.util.Hermite.getHermiteList (this.isNucleic ? 4 : 7, this.wing, this.wingVectors[i], this.wingVectors[this.iNext], this.wingVectors[this.iNext2], this.wingVectors[this.iNext3], this.wingHermites, 0, nHermites);
 }var radius1 = madBeg / 2000;
@@ -345,16 +345,16 @@ this.pt1.set (radius2, radius3, 0);
 this.ptNext.set (radius3, radius3, 0);
 org.jmol.util.Hermite.getHermiteList (4, this.ptPrev, this.pt, this.pt1, this.ptNext, this.ptNext, this.radiusHermites, 0, (nHermites + 1) >> 1);
 }if (!isEccentric) {
-this.norm.sub (this.controlHermites[1], this.controlHermites[0]);
+this.norm.sub2 (this.controlHermites[1], this.controlHermites[0]);
 this.wing0.cross (this.norm, this.Z);
 this.wing0.cross (this.norm, this.wing0);
 }var nPoints = 0;
 var iMid = nHermites >> 1;
 for (var p = 0; p < nHermites; p++) {
-this.norm.sub (this.controlHermites[p + 1], this.controlHermites[p]);
+this.norm.sub2 (this.controlHermites[p + 1], this.controlHermites[p]);
 if (isEccentric) {
-this.wing.set (this.wingHermites[p]);
-this.wing1.set (this.wing);
+this.wing.setT (this.wingHermites[p]);
+this.wing1.setT (this.wing);
 this.wing.scale (2 / aspectRatio);
 } else {
 this.wing.cross (this.norm, this.wing0);
@@ -363,15 +363,15 @@ this.wing.normalize ();
 this.wing.scale (scale);
 this.wing1.scale (scale);
 this.aa.set (this.norm, (6.283185307179586 / nPer));
-this.mat.set (this.aa);
-this.pt1.set (this.controlHermites[p]);
+this.mat.setAA (this.aa);
+this.pt1.setT (this.controlHermites[p]);
 for (var k = 0; k < nPer; k++) {
 this.mat.transform (this.wing);
-this.wingT.set (this.wing);
+this.wingT.setT (this.wing);
 if (isEccentric) {
 if (k == Math.floor ((nPer + 2) / 4) || k == Math.floor ((3 * nPer + 2) / 4)) this.wing1.scale (-1);
 this.wingT.add (this.wing1);
-}this.pt.add (this.pt1, this.wingT);
+}this.pt.add2 (this.pt1, this.wingT);
 if (isEccentric) {
 }mesh.addVertexCopy (this.pt);
 }

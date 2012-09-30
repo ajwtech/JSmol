@@ -317,13 +317,13 @@ throw e;
 "radiansPerDegree", (0.017453292519943295),
 "allowedQuaternionFrames", "RC;RP;a;b;c;n;p;q;x;",
 "EXPORT_DRIVER_LIST", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
-c$.center = c$.prototype.center =  new javax.vecmath.Vector3f (0, 0, 0);
-c$.axisX = c$.prototype.axisX =  new javax.vecmath.Vector3f (1, 0, 0);
-c$.axisY = c$.prototype.axisY =  new javax.vecmath.Vector3f (0, 1, 0);
-c$.axisZ = c$.prototype.axisZ =  new javax.vecmath.Vector3f (0, 0, 1);
-c$.axisNX = c$.prototype.axisNX =  new javax.vecmath.Vector3f (-1, 0, 0);
-c$.axisNY = c$.prototype.axisNY =  new javax.vecmath.Vector3f (0, -1, 0);
-c$.axisNZ = c$.prototype.axisNZ =  new javax.vecmath.Vector3f (0, 0, -1);
+c$.center = c$.prototype.center = javax.vecmath.Vector3f.new3 (0, 0, 0);
+c$.axisX = c$.prototype.axisX = javax.vecmath.Vector3f.new3 (1, 0, 0);
+c$.axisY = c$.prototype.axisY = javax.vecmath.Vector3f.new3 (0, 1, 0);
+c$.axisZ = c$.prototype.axisZ = javax.vecmath.Vector3f.new3 (0, 0, 1);
+c$.axisNX = c$.prototype.axisNX = javax.vecmath.Vector3f.new3 (-1, 0, 0);
+c$.axisNY = c$.prototype.axisNY = javax.vecmath.Vector3f.new3 (0, -1, 0);
+c$.axisNZ = c$.prototype.axisNZ = javax.vecmath.Vector3f.new3 (0, 0, -1);
 c$.unitAxisVectors = c$.prototype.unitAxisVectors = [org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, org.jmol.viewer.JmolConstants.axisNX, org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.axisNZ];
 Clazz.defineStatics (c$,
 "XY_ZTOP", 100,

@@ -27,7 +27,7 @@ package org.jmol.util;
 
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 
@@ -128,7 +128,7 @@ public class JmolMolecule {
                                        BitSet bsToTest, List<BitSet> biobranches,
                                        int atomIndexNot, boolean allowCyclic,
                                        boolean allowBioResidue) {
-    BitSet bs = new BitSet(atoms.length);
+    BitSet bs = BitSetUtil.newBitSet(atoms.length);
     if (atomIndex < 0)
       return bs;
     if (atomIndexNot >= 0)
@@ -137,15 +137,18 @@ public class JmolMolecule {
         bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs : new BitSet());
   }
 
-  public final static JmolMolecule[] addMolecule(JmolMolecule[] molecules, int iMolecule,
-                                       JmolNode[] atoms, int iAtom,
-                                       BitSet bsBranch, int modelIndex,
-                                       int indexInModel, BitSet bsExclude) {
+  public final static JmolMolecule[] addMolecule(JmolMolecule[] molecules,
+                                                 int iMolecule,
+                                                 JmolNode[] atoms, int iAtom,
+                                                 BitSet bsBranch,
+                                                 int modelIndex,
+                                                 int indexInModel,
+                                                 BitSet bsExclude) {
     bsExclude.or(bsBranch);
     if (iMolecule == molecules.length)
       molecules = allocateArray(molecules, iMolecule * 2 + 1);
-    molecules[iMolecule] = new JmolMolecule(atoms, iMolecule, iAtom,
-        bsBranch, modelIndex, indexInModel);
+    molecules[iMolecule] = initialize(atoms, iMolecule, iAtom, bsBranch,
+        modelIndex, indexInModel);
     return molecules;
   }
   
@@ -183,20 +186,22 @@ public class JmolMolecule {
   }
 
   
-  private JmolMolecule(JmolNode[] nodes, int moleculeIndex, int firstAtomIndex, BitSet atomList, int modelIndex,
+  private static JmolMolecule initialize(JmolNode[] nodes, int moleculeIndex, int firstAtomIndex, BitSet atomList, int modelIndex,
       int indexInModel) {
-    this.nodes = nodes;
-    this.firstAtomIndex = firstAtomIndex;
-    this.atomList = atomList;
-    this.moleculeIndex = moleculeIndex;
-    this.modelIndex = modelIndex;
-    this.indexInModel = indexInModel;
+    JmolMolecule jm = new JmolMolecule();
+    jm.nodes = nodes;
+    jm.firstAtomIndex = firstAtomIndex;
+    jm.atomList = atomList;
+    jm.moleculeIndex = moleculeIndex;
+    jm.modelIndex = modelIndex;
+    jm.indexInModel = indexInModel;
+    return jm;
   }
 
   private void getElementAndAtomCount(boolean includeMissingHydrogens) {
     if (atomList == null) {
       atomList = new BitSet();
-      atomList.set(0, nodes.length);
+      atomList.setBits(0, nodes.length);
     }
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];
@@ -276,11 +281,8 @@ public class JmolMolecule {
   }
   
   private static JmolMolecule[] allocateArray(JmolMolecule[] molecules, int len) {
-    if (molecules.length == len)
-      return molecules;
-    JmolMolecule[] jm = new JmolMolecule[len];
-    System.arraycopy(molecules, 0, jm, 0, len < molecules.length ? len : molecules.length);
-    return jm;
+    return (len == molecules.length ? molecules : (JmolMolecule[]) ArrayUtil
+        .arrayCopyOpt(molecules, len));
   }
   
 

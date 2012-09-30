@@ -3,7 +3,7 @@ Clazz.load (["javax.vecmath.Tuple4f"], "javax.vecmath.Vector4f", null, function 
 c$ = Clazz.declareType (javax.vecmath, "Vector4f", javax.vecmath.Tuple4f, java.io.Serializable);
 Clazz.makeConstructor (c$, 
 function (t1) {
-Clazz.superConstructor (this, javax.vecmath.Vector4f, [t1.x, t1.y, t1.z, 0.0]);
+Clazz.superConstructor (this, javax.vecmath.Vector4f);
 }, "javax.vecmath.Tuple3f");
 Clazz.defineMethod (c$, "set", 
 function (t1) {

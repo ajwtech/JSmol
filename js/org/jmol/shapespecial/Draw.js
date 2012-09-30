@@ -126,7 +126,7 @@ this.lineData =  new java.util.ArrayList ();
 if (this.indicatedModelIndex < 0) this.indicatedModelIndex = this.viewer.getCurrentModelIndex ();
 var fdata = value;
 var n = Math.floor (fdata.length / 6);
-for (var i = 0, pt = 0; i < n; i++) this.lineData.add ([ new javax.vecmath.Point3f (fdata[pt++], fdata[pt++], fdata[pt++]),  new javax.vecmath.Point3f (fdata[pt++], fdata[pt++], fdata[pt++])]);
+for (var i = 0, pt = 0; i < n; i++) this.lineData.add ([javax.vecmath.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++]), javax.vecmath.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++])]);
 
 return ;
 }if ("modelIndex" === propertyName) {
@@ -138,7 +138,7 @@ return ;
 this.plane = value;
 if (this.intersectID != null || this.boundBox != null || this.slabData != null) return ;
 if (this.isCircle || this.isArc) this.isPlane = true;
-this.vData.add ([Integer.$valueOf (1),  new javax.vecmath.Point3f (NaN, NaN, NaN)]);
+this.vData.add ([Integer.$valueOf (1), javax.vecmath.Point3f.new3 (NaN, NaN, NaN)]);
 return ;
 }if ("perp" === propertyName) {
 this.isPerpendicular = true;
@@ -228,7 +228,7 @@ this.vData.add ([Integer.$valueOf (1), value]);
 if (this.indicatedModelIndex >= 0) this.modelInfo[1]++;
 return ;
 }if ("offset" === propertyName) {
-this.offset =  new javax.vecmath.Vector3f (value);
+this.offset = javax.vecmath.Vector3f.newV (value);
 if (this.thisMesh != null) this.thisMesh.offset (this.offset);
 return ;
 }if ("atomSet" === propertyName) {
@@ -327,7 +327,7 @@ throw e;
 id = axisID;
 }var m = this.getMesh (id);
 if (m == null || m.vertices == null) return null;
-if (vertexIndex == 2147483647) return  new javax.vecmath.Point3f (m.index + 1, this.meshCount, m.vertexCount);
+if (vertexIndex == 2147483647) return javax.vecmath.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
 if (vertexIndex != -2147483648) vertexIndex = m.getVertexIndexFromNumber (vertexIndex);
 return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null || modelIndex < 0 || modelIndex >= m.ptCenters.length ? m.ptCenter : m.ptCenters[modelIndex]);
 }, $fz.isPrivate = true, $fz), "~S,~N,~N");
@@ -447,7 +447,7 @@ Clazz.defineMethod (c$, "addPoint",
 var isOK = (iModel < 0 || this.bsAllModels.get (iModel));
 if (this.makePoints) {
 if (!isOK) return ;
-this.ptList[this.nPoints] =  new javax.vecmath.Point3f (newPt);
+this.ptList[this.nPoints] = javax.vecmath.Point3f.newP (newPt);
 if (newPt.z == 3.4028235E38 || newPt.z == -3.4028235E38) this.thisMesh.haveXyPoints = true;
 } else if (iModel >= 0) {
 this.bsAllModels.set (iModel);
@@ -579,18 +579,18 @@ this.vAC.scale (0.005);
 this.ptList[0].sub (this.vAC);
 this.vAC.scale (2);
 }this.vAC.add (this.ptList[0]);
-this.ptList[1] =  new javax.vecmath.Point3f (this.vAC);
+this.ptList[1] = javax.vecmath.Point3f.newP (this.vAC);
 drawType = (this.isArrow ? org.jmol.shapespecial.Draw.EnumDrawType.ARROW : this.isArc ? org.jmol.shapespecial.Draw.EnumDrawType.ARC : org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE);
 }if (this.isArc) {
 dist = Math.abs (dist);
 if (nVertices > 3) {
 } else if (nVertices == 3) {
-this.ptList[3] =  new javax.vecmath.Point3f (this.ptList[2]);
+this.ptList[3] = javax.vecmath.Point3f.newP (this.ptList[2]);
 this.ptList[2] = org.jmol.shapespecial.Draw.randomPoint ();
 } else {
 if (nVertices == 2) {
 this.ptList[2] = org.jmol.shapespecial.Draw.randomPoint ();
-}this.ptList[3] =  new javax.vecmath.Point3f (0, 360, 0);
+}this.ptList[3] = javax.vecmath.Point3f.new3 (0, 360, 0);
 }if (this.plane != null) this.ptList[3].z *= dist;
 nVertices = 4;
 }this.plane = null;
@@ -599,17 +599,17 @@ var pt;
 var center =  new javax.vecmath.Point3f ();
 var normal =  new javax.vecmath.Vector3f ();
 if (nVertices == 2 && this.plane != null) {
-this.ptList[1] =  new javax.vecmath.Point3f (this.ptList[0]);
+this.ptList[1] = javax.vecmath.Point3f.newP (this.ptList[0]);
 var vTemp =  new javax.vecmath.Vector3f ();
 org.jmol.util.Measure.getPlaneProjection (this.ptList[1], this.plane, this.ptList[1], vTemp);
 nVertices = -2;
 if (this.isArrow) drawType = org.jmol.shapespecial.Draw.EnumDrawType.ARROW;
 this.plane = null;
 }if (nVertices == 3 && this.isPlane && !this.isPerpendicular) {
-pt =  new javax.vecmath.Point3f (this.ptList[1]);
+pt = javax.vecmath.Point3f.newP (this.ptList[1]);
 pt.sub (this.ptList[0]);
 pt.scale (0.5);
-this.ptList[3] =  new javax.vecmath.Point3f (this.ptList[2]);
+this.ptList[3] = javax.vecmath.Point3f.newP (this.ptList[2]);
 this.ptList[2].add (pt);
 this.ptList[3].sub (pt);
 nVertices = 4;
@@ -619,8 +619,8 @@ center =  new javax.vecmath.Point3f ();
 org.jmol.util.Measure.calcAveragePointN (this.ptList, nVertices, center);
 dist = (this.length == 3.4028235E38 ? this.ptList[0].distance (center) : this.length);
 normal.scale (dist);
-this.ptList[0].set (center);
-this.ptList[1].set (center);
+this.ptList[0].setT (center);
+this.ptList[1].setT (center);
 this.ptList[1].add (normal);
 nVertices = 2;
 } else if (nVertices == 2 && this.isPerpendicular) {
@@ -631,17 +631,17 @@ if (this.isPlane && this.isRotated45) dist *= 1.4142;
 org.jmol.util.Measure.getNormalToLine (this.ptList[0], this.ptList[1], normal);
 normal.scale (dist);
 if (this.isPlane) {
-this.ptList[2] =  new javax.vecmath.Point3f (center);
+this.ptList[2] = javax.vecmath.Point3f.newP (center);
 this.ptList[2].sub (normal);
-pt =  new javax.vecmath.Point3f (center);
+pt = javax.vecmath.Point3f.newP (center);
 pt.add (normal);
 org.jmol.util.Measure.calcNormalizedNormal (this.ptList[0], this.ptList[1], this.ptList[2], normal, this.vAB, this.vAC);
 normal.scale (dist);
-this.ptList[3] =  new javax.vecmath.Point3f (center);
+this.ptList[3] = javax.vecmath.Point3f.newP (center);
 this.ptList[3].add (normal);
-this.ptList[1].set (center);
+this.ptList[1].setT (center);
 this.ptList[1].sub (normal);
-this.ptList[0].set (pt);
+this.ptList[0].setT (pt);
 if (this.isRotated45) {
 org.jmol.util.Measure.calcAveragePoint (this.ptList[0], this.ptList[1], this.ptList[0]);
 org.jmol.util.Measure.calcAveragePoint (this.ptList[1], this.ptList[2], this.ptList[1]);
@@ -649,19 +649,19 @@ org.jmol.util.Measure.calcAveragePoint (this.ptList[2], this.ptList[3], this.ptL
 org.jmol.util.Measure.calcAveragePoint (this.ptList[3], pt, this.ptList[3]);
 }nVertices = 4;
 } else {
-this.ptList[0].set (center);
-this.ptList[1].set (center);
+this.ptList[0].setT (center);
+this.ptList[1].setT (center);
 this.ptList[0].sub (normal);
 this.ptList[1].add (normal);
 }if (this.isArrow && nVertices != -2) this.isArrow = false;
 } else if (nVertices == 2 && this.length != 3.4028235E38) {
 org.jmol.util.Measure.calcAveragePoint (this.ptList[0], this.ptList[1], center);
-normal.set (this.ptList[1]);
+normal.setT (this.ptList[1]);
 normal.sub (center);
 normal.scale (0.5 / normal.length () * (this.length == 0 ? 0.01 : this.length));
-if (this.length == 0) center.set (this.ptList[0]);
-this.ptList[0].set (center);
-this.ptList[1].set (this.ptList[0]);
+if (this.length == 0) center.setT (this.ptList[0]);
+this.ptList[0].setT (center);
+this.ptList[1].setT (this.ptList[0]);
 this.ptList[0].sub (normal);
 this.ptList[1].add (normal);
 }if (nVertices > 4) nVertices = 4;
@@ -708,16 +708,16 @@ if (mesh.polygonIndexes[i] == null) continue ;iptlast = -1;
 for (var iV = mesh.polygonIndexes[i].length; --iV >= 0; ) {
 ipt = mesh.polygonIndexes[i][iV];
 if (ipt == iptlast) continue ;iptlast = ipt;
-diff.sub (mesh.vertices[ipt], center);
+diff.sub2 (mesh.vertices[ipt], center);
 diff.scale (f);
 diff.add (center);
-mesh.vertices[ipt].set (diff);
+mesh.vertices[ipt].setT (diff);
 }
 }
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.DrawMesh,~N");
 c$.setAxes = Clazz.defineMethod (c$, "setAxes", 
 ($fz = function (m) {
-m.axis =  new javax.vecmath.Vector3f (0, 0, 0);
+m.axis = javax.vecmath.Vector3f.new3 (0, 0, 0);
 m.axes =  new Array (m.polygonCount > 0 ? m.polygonCount : 1);
 if (m.vertices == null) return ;
 var n = 0;
@@ -726,7 +726,7 @@ var p = m.polygonIndexes[i];
 m.axes[i] =  new javax.vecmath.Vector3f ();
 if (p == null || p.length == 0) {
 } else if (m.drawVertexCount == 2 || m.drawVertexCount < 0 && m.drawVertexCounts[i] == 2) {
-m.axes[i].sub (m.vertices[p[0]], m.vertices[p[1]]);
+m.axes[i].sub2 (m.vertices[p[0]], m.vertices[p[1]]);
 n++;
 } else {
 org.jmol.util.Measure.calcNormalizedNormal (m.vertices[p[0]], m.vertices[p[1]], m.vertices[p[2]], m.axes[i], m.vAB, m.vAC);
@@ -810,14 +810,14 @@ x <<= 1;
 y <<= 1;
 }var pt =  new javax.vecmath.Point3f ();
 var ptVertex = vertexes[iVertex];
-var coord =  new javax.vecmath.Point3f (mesh.vertices[ptVertex]);
+var coord = javax.vecmath.Point3f.newP (mesh.vertices[ptVertex]);
 var newcoord =  new javax.vecmath.Point3f ();
 var move =  new javax.vecmath.Vector3f ();
 this.viewer.transformPt3f (coord, pt);
 pt.x = x;
 pt.y = y;
 this.viewer.unTransformPoint (pt, newcoord);
-move.set (newcoord);
+move.setT (newcoord);
 move.sub (coord);
 if (mesh.isTriangleSet) iVertex = ptVertex;
 var n = (!moveAll ? iVertex + 1 : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
@@ -991,7 +991,7 @@ var pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
 if (pt.z == 3.4028235E38 || pt.z == -3.4028235E38) {
 str += (i == 0 ? " " : " ,") + "[" + Math.round (pt.x) + " " + Math.round (pt.y) + (pt.z < 0 ? " %]" : "]");
 } else if (adjustPt && i == 1) {
-var pt1 =  new javax.vecmath.Point3f (pt);
+var pt1 = javax.vecmath.Point3f.newP (pt);
 pt1.sub (mesh.vertices[mesh.polygonIndexes[iModel][0]]);
 str += " " + org.jmol.util.Escape.escapePt (pt1);
 } else {
@@ -1065,7 +1065,7 @@ return s.toString ();
 });
 c$.randomPoint = Clazz.defineMethod (c$, "randomPoint", 
 function () {
-return  new javax.vecmath.Point3f (Math.random (), Math.random (), Math.random ());
+return javax.vecmath.Point3f.new3 (Math.random (), Math.random (), Math.random ());
 });
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

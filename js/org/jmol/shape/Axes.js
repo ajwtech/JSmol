@@ -28,7 +28,7 @@ return (isDataFrame ? org.jmol.shape.Axes.pt0 : this.originPoint);
 Clazz.defineMethod (c$, "getAxisPoint", 
 function (i, isDataFrame) {
 if (!isDataFrame && this.axisXY.z == 0) return this.axisPoints[i];
-this.ptTemp.set (this.axisPoints[i]);
+this.ptTemp.setT (this.axisPoints[i]);
 this.ptTemp.sub (this.originPoint);
 this.ptTemp.scale (0.5);
 return this.ptTemp;
@@ -43,7 +43,7 @@ if (value == null) {
 this.fixedOrigin = null;
 } else {
 if (this.fixedOrigin == null) this.fixedOrigin =  new javax.vecmath.Point3f ();
-this.fixedOrigin.set (value);
+this.fixedOrigin.setT (value);
 }this.initShape ();
 return ;
 }if ("labels" === propertyName) {
@@ -64,23 +64,23 @@ this.myType = "axes";
 this.font3d = this.gdata.getFont3D (14);
 var axesMode = this.viewer.getAxesMode ();
 if (this.fixedOrigin == null) this.originPoint.set (0, 0, 0);
- else this.originPoint.set (this.fixedOrigin);
+ else this.originPoint.setT (this.fixedOrigin);
 if (axesMode === org.jmol.constant.EnumAxesMode.UNITCELL && this.modelSet.getCellInfos () != null) {
 var unitcell = this.viewer.getCurrentUnitCell ();
 if (unitcell != null) {
 var vectors = unitcell.getUnitCellVertices ();
 var offset = unitcell.getCartesianOffset ();
 if (this.fixedOrigin == null) {
-this.originPoint.set (offset);
+this.originPoint.setT (offset);
 } else {
 offset = this.fixedOrigin;
 }this.scale = this.viewer.getAxesScale () / 2;
-this.axisPoints[0].scaleAdd (this.scale, vectors[4], offset);
-this.axisPoints[1].scaleAdd (this.scale, vectors[2], offset);
-this.axisPoints[2].scaleAdd (this.scale, vectors[1], offset);
+this.axisPoints[0].scaleAdd2 (this.scale, vectors[4], offset);
+this.axisPoints[1].scaleAdd2 (this.scale, vectors[2], offset);
+this.axisPoints[2].scaleAdd2 (this.scale, vectors[1], offset);
 return ;
 }} else if (axesMode === org.jmol.constant.EnumAxesMode.BOUNDBOX) {
-if (this.fixedOrigin == null) this.originPoint.set (this.viewer.getBoundBoxCenter ());
+if (this.fixedOrigin == null) this.originPoint.setT (this.viewer.getBoundBoxCenter ());
 }this.setScale (this.viewer.getAxesScale () / 2);
 });
 Clazz.overrideMethod (c$, "getProperty", 
@@ -93,10 +93,10 @@ return null;
 Clazz.defineMethod (c$, "setScale", 
 function (scale) {
 this.scale = scale;
-this.corner.set (this.viewer.getBoundBoxCornerVector ());
+this.corner.setT (this.viewer.getBoundBoxCornerVector ());
 for (var i = 6; --i >= 0; ) {
 var axisPoint = this.axisPoints[i];
-axisPoint.set (org.jmol.viewer.JmolConstants.unitAxisVectors[i]);
+axisPoint.setT (org.jmol.viewer.JmolConstants.unitAxisVectors[i]);
 if (this.corner.x < 1.5) this.corner.x = 1.5;
 if (this.corner.y < 1.5) this.corner.y = 1.5;
 if (this.corner.z < 1.5) this.corner.z = 1.5;

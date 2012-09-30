@@ -33,12 +33,12 @@ var v =  Clazz.newArray (4, 0);
 ($t$ = org.jmol.util.Geodesic.neighborVertexesArrays =  Clazz.newArray (4, 0), org.jmol.util.Geodesic.prototype.neighborVertexesArrays = org.jmol.util.Geodesic.neighborVertexesArrays, $t$);
 ($t$ = org.jmol.util.Geodesic.faceVertexesArrays =  Clazz.newArray (4, 0), org.jmol.util.Geodesic.prototype.faceVertexesArrays = org.jmol.util.Geodesic.faceVertexesArrays, $t$);
 ($t$ = org.jmol.util.Geodesic.vertexVectors =  new Array (12), org.jmol.util.Geodesic.prototype.vertexVectors = org.jmol.util.Geodesic.vertexVectors, $t$);
-org.jmol.util.Geodesic.vertexVectors[0] =  new javax.vecmath.Vector3f (0, 0, org.jmol.util.Geodesic.halfRoot5);
+org.jmol.util.Geodesic.vertexVectors[0] = javax.vecmath.Vector3f.new3 (0, 0, org.jmol.util.Geodesic.halfRoot5);
 for (var i = 0; i < 5; ++i) {
-org.jmol.util.Geodesic.vertexVectors[i + 1] =  new javax.vecmath.Vector3f (Math.cos (i * 1.2566371), Math.sin (i * 1.2566371), 0.5);
-org.jmol.util.Geodesic.vertexVectors[i + 6] =  new javax.vecmath.Vector3f (Math.cos (i * 1.2566371 + 0.62831855), Math.sin (i * 1.2566371 + 0.62831855), -0.5);
+org.jmol.util.Geodesic.vertexVectors[i + 1] = javax.vecmath.Vector3f.new3 (Math.cos (i * 1.2566371), Math.sin (i * 1.2566371), 0.5);
+org.jmol.util.Geodesic.vertexVectors[i + 6] = javax.vecmath.Vector3f.new3 (Math.cos (i * 1.2566371 + 0.62831855), Math.sin (i * 1.2566371 + 0.62831855), -0.5);
 }
-org.jmol.util.Geodesic.vertexVectors[11] =  new javax.vecmath.Vector3f (0, 0, ($t$ = - org.jmol.util.Geodesic.halfRoot5, org.jmol.util.Geodesic.prototype.halfRoot5 = org.jmol.util.Geodesic.halfRoot5, $t$));
+org.jmol.util.Geodesic.vertexVectors[11] = javax.vecmath.Vector3f.new3 (0, 0, ($t$ = - org.jmol.util.Geodesic.halfRoot5, org.jmol.util.Geodesic.prototype.halfRoot5 = org.jmol.util.Geodesic.halfRoot5, $t$));
 for (var i = 12; --i >= 0; ) org.jmol.util.Geodesic.vertexVectors[i].normalize ();
 
 org.jmol.util.Geodesic.faceVertexesArrays[0] = org.jmol.util.Geodesic.faceVertexesIcosahedron;
@@ -153,7 +153,7 @@ v2 = t;
 var iv = org.jmol.util.Geodesic.htVertex.get (hashKey);
 if (iv != null) {
 return iv.shortValue ();
-}var newVertexVector =  new javax.vecmath.Vector3f (org.jmol.util.Geodesic.vertexVectors[v1]);
+}var newVertexVector = javax.vecmath.Vector3f.newV (org.jmol.util.Geodesic.vertexVectors[v1]);
 org.jmol.util.Geodesic.vertexVectors[org.jmol.util.Geodesic.vertexNext] = newVertexVector;
 newVertexVector.add (org.jmol.util.Geodesic.vertexVectors[v2]);
 newVertexVector.scale (0.5);

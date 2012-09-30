@@ -64,8 +64,8 @@ if (this.params.bsIgnore != null) this.bsMyIgnored = this.params.bsIgnore;
 if (this.params.volumeData != null) {
 this.setVolumeData (this.params.volumeData);
 this.setBoundingBox (this.volumeData.volumetricOrigin, 0);
-this.ptXyzTemp.set (this.volumeData.volumetricOrigin);
-for (var i = 0; i < 3; i++) this.ptXyzTemp.scaleAdd (this.volumeData.voxelCounts[i] - 1, this.volumeData.volumetricVectors[i], this.ptXyzTemp);
+this.ptXyzTemp.setT (this.volumeData.volumetricOrigin);
+for (var i = 0; i < 3; i++) this.ptXyzTemp.scaleAdd2 (this.volumeData.voxelCounts[i] - 1, this.volumeData.volumetricVectors[i], this.ptXyzTemp);
 
 this.setBoundingBox (this.ptXyzTemp, 0);
 }this.havePlane = (this.params.thePlane != null);
@@ -81,16 +81,16 @@ this.thisPlane[i] = this.ptXyzTemp.distance (p) - r;
 Clazz.defineMethod (c$, "setVolumeForPlane", 
 function () {
 if (this.useOriginStepsPoints) {
-this.xyzMin =  new javax.vecmath.Point3f (this.params.origin);
-this.xyzMax =  new javax.vecmath.Point3f (this.params.origin);
+this.xyzMin = javax.vecmath.Point3f.newP (this.params.origin);
+this.xyzMax = javax.vecmath.Point3f.newP (this.params.origin);
 this.xyzMax.x += (this.params.points.x - 1) * this.params.steps.x;
 this.xyzMax.y += (this.params.points.y - 1) * this.params.steps.y;
 this.xyzMax.z += (this.params.points.z - 1) * this.params.steps.z;
 } else {
 this.getAtoms (this.params.bsSelected, false, true, false, false, false, false, this.params.mep_marginAngstroms);
 if (this.xyzMin == null) {
-this.xyzMin =  new javax.vecmath.Point3f (-10, -10, -10);
-this.xyzMax =  new javax.vecmath.Point3f (10, 10, 10);
+this.xyzMin = javax.vecmath.Point3f.new3 (-10, -10, -10);
+this.xyzMax = javax.vecmath.Point3f.new3 (10, 10, 10);
 }}this.setRanges (this.params.plane_ptsPerAngstrom, this.params.plane_gridMax, 0);
 });
 Clazz.defineMethod (c$, "getAtoms", 
@@ -160,17 +160,17 @@ this.myAtomCount++;
 }this.firstNearbyAtom = this.myAtomCount;
 org.jmol.util.Logger.info (this.myAtomCount + " atoms will be used in the surface calculation");
 if (this.myAtomCount == 0) {
-this.setBoundingBox ( new javax.vecmath.Point3f (10, 10, 10), 0);
-this.setBoundingBox ( new javax.vecmath.Point3f (-10, -10, -10), 0);
+this.setBoundingBox (javax.vecmath.Point3f.new3 (10, 10, 10), 0);
+this.setBoundingBox (javax.vecmath.Point3f.new3 (-10, -10, -10), 0);
 }for (var i = 0; i < this.myAtomCount; i++) this.setBoundingBox (this.atomXyz[i], getRadii ? this.atomRadius[i] + 0.5 : 0);
 
 if (!Float.isNaN (this.params.scale)) {
-var v =  new javax.vecmath.Vector3f (this.xyzMax);
+var v = javax.vecmath.Vector3f.newV (this.xyzMax);
 v.sub (this.xyzMin);
 v.scale (0.5);
 this.xyzMin.add (v);
 v.scale (this.params.scale);
-this.xyzMax.set (this.xyzMin);
+this.xyzMax.setT (this.xyzMin);
 this.xyzMax.add (v);
 this.xyzMin.sub (v);
 }if (!addNearbyAtoms || this.myAtomCount == 0) return ;
@@ -308,10 +308,10 @@ if (this.isProgressive) {
 this.pt0.x = this.thisX;
 this.pt1.x = this.thisX + 1;
 }this.volumeData.voxelPtToXYZ (this.pt0.x, this.pt0.y, this.pt0.z, this.ptXyzTemp);
-for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[0], this.ptY0)) {
-this.ptY0.set (this.ptXyzTemp);
-for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[1], this.ptZ0)) {
-this.ptZ0.set (this.ptXyzTemp);
+for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[0], this.ptY0)) {
+this.ptY0.setT (this.ptXyzTemp);
+for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[1], this.ptZ0)) {
+this.ptZ0.setT (this.ptXyzTemp);
 for (var k = this.pt0.z; k < this.pt1.z; k++, this.ptXyzTemp.add (this.volumetricVectors[2])) {
 var value = this.ptXyzTemp.distance (ptA) - rA;
 var ipt = this.volumeData.getPointIndex (i, j, k);

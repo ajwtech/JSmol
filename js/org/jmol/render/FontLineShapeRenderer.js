@@ -80,7 +80,7 @@ this.vectorT.set (ptA.screenX, ptA.screenY, 0);
 this.vectorT2.sub (this.vectorT);
 if (this.vectorT2.length () < 50) return ;
 var signFactor = this.tickInfo.signFactor;
-this.vectorT.set (ptB);
+this.vectorT.setT (ptB);
 this.vectorT.sub (ptA);
 var d0 = this.vectorT.length ();
 if (this.tickInfo.scale != null) {
@@ -96,7 +96,7 @@ this.vectorT.scale (f);
 var dz = (ptB.screenZ - ptA.screenZ) / (d / dx);
 d += this.tickInfo.first;
 var p = (Math.round ((this.tickInfo.first / dx))) * dx - this.tickInfo.first;
-this.pointT.scaleAdd (p / dx, this.vectorT, ptA);
+this.pointT.scaleAdd2 (p / dx, this.vectorT, ptA);
 p += this.tickInfo.first;
 var z = ptA.screenZ;
 if (diameter < 0) diameter = 1;
@@ -104,13 +104,13 @@ this.vectorT2.set (-this.vectorT2.y, this.vectorT2.x, 0);
 this.vectorT2.scale (length / this.vectorT2.length ());
 var ptRef = this.tickInfo.reference;
 if (ptRef == null) {
-this.pointT3.set (this.viewer.getBoundBoxCenter ());
+this.pointT3.setT (this.viewer.getBoundBoxCenter ());
 if (this.viewer.getAxesMode () === org.jmol.constant.EnumAxesMode.BOUNDBOX) {
 this.pointT3.x += 1.0;
 this.pointT3.y += 1.0;
 this.pointT3.z += 1.0;
 }} else {
-this.pointT3.set (ptRef);
+this.pointT3.setT (ptRef);
 }this.viewer.transformPtScr (this.pointT3, this.pt2);
 var horizontal = (Math.abs (this.vectorT2.x / this.vectorT2.y) < 0.2);
 var centerX = horizontal;
@@ -123,7 +123,7 @@ var val =  new Array (1);
 var i = (this.draw000 ? 0 : -1);
 while (p < d) {
 if (p >= this.tickInfo.first) {
-this.pointT2.set (this.pointT);
+this.pointT2.setT (this.pointT);
 this.viewer.transformPt3f (this.pointT2, this.pointT2);
 this.drawLine (Math.round (this.pointT2.x), Math.round (this.pointT2.y), Math.round (z), (x = Math.round ((this.pointT2.x + this.vectorT2.x))), (y = Math.round ((this.pointT2.y + this.vectorT2.y))), Math.round (z), diameter);
 if (drawLabel && (this.draw000 || p != 0)) {

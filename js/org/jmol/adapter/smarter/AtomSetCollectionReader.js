@@ -272,9 +272,9 @@ if (this.desiredSpaceGroupIndex == -2) this.spaceGroup = this.htParams.get ("spa
 this.ignoreFileSpaceGroupName = (this.desiredSpaceGroupIndex == -2 || this.desiredSpaceGroupIndex >= 0);
 this.ignoreFileSymmetryOperators = (this.desiredSpaceGroupIndex != -1);
 }if (this.htParams.containsKey ("unitCellOffset")) {
-this.fileScaling =  new javax.vecmath.Point3f (1, 1, 1);
+this.fileScaling = javax.vecmath.Point3f.new3 (1, 1, 1);
 this.fileOffset = this.htParams.get ("unitCellOffset");
-this.fileOffsetFractional =  new javax.vecmath.Point3f (this.fileOffset);
+this.fileOffsetFractional = javax.vecmath.Point3f.newP (this.fileOffset);
 this.unitCellOffsetFractional = this.htParams.containsKey ("unitCellOffsetFractional");
 }if (this.htParams.containsKey ("unitcell")) {
 var fParams = this.htParams.get ("unitcell");
@@ -411,7 +411,7 @@ return true;
 Clazz.defineMethod (c$, "checkUnitCellOffset", 
 ($fz = function () {
 if (this.symmetry == null || this.fileOffsetFractional == null) return ;
-this.fileOffset.set (this.fileOffsetFractional);
+this.fileOffset.setT (this.fileOffsetFractional);
 if (this.unitCellOffsetFractional != this.fileCoordinatesAreFractional) {
 if (this.unitCellOffsetFractional) this.symmetry.toCartesian (this.fileOffset, false);
  else this.symmetry.toFractional (this.fileOffset, false);
@@ -506,14 +506,14 @@ this.matrixRotate =  new javax.vecmath.Matrix3f ();
 var v =  new javax.vecmath.Vector3f ();
 v.set (x1, y1, z1);
 v.normalize ();
-this.matrixRotate.setColumn (0, v);
+this.matrixRotate.setColumnV (0, v);
 v.set (x2, y2, z2);
 v.normalize ();
-this.matrixRotate.setColumn (1, v);
+this.matrixRotate.setColumnV (1, v);
 v.set (x3, y3, z3);
 v.normalize ();
-this.matrixRotate.setColumn (2, v);
-this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationMatrix",  new javax.vecmath.Matrix3f (this.matrixRotate));
+this.matrixRotate.setColumnV (2, v);
+this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationMatrix", javax.vecmath.Matrix3f.newM (this.matrixRotate));
 var q =  new org.jmol.util.Quaternion (this.matrixRotate);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationQuaternion", q);
 org.jmol.util.Logger.info ("defaultOrientationMatrix = " + this.matrixRotate);
@@ -705,11 +705,11 @@ if (!this.line.endsWith ("#noautobond")) this.line += "#noautobond";
 org.jmol.util.Logger.info (this.line);
 var data =  Clazz.newArray (15, 0);
 this.parseStringInfestedFloatArray (this.line.substring (10).$replace ('=', ' ').$replace ('{', ' ').$replace ('}', ' '), data);
-var minXYZ =  new javax.vecmath.Point3f (data[0], data[1], data[2]);
-var maxXYZ =  new javax.vecmath.Point3f (data[3], data[4], data[5]);
-this.fileScaling =  new javax.vecmath.Point3f (data[6], data[7], data[8]);
-this.fileOffset =  new javax.vecmath.Point3f (data[9], data[10], data[11]);
-var plotScale =  new javax.vecmath.Point3f (data[12], data[13], data[14]);
+var minXYZ = javax.vecmath.Point3f.new3 (data[0], data[1], data[2]);
+var maxXYZ = javax.vecmath.Point3f.new3 (data[3], data[4], data[5]);
+this.fileScaling = javax.vecmath.Point3f.new3 (data[6], data[7], data[8]);
+this.fileOffset = javax.vecmath.Point3f.new3 (data[9], data[10], data[11]);
+var plotScale = javax.vecmath.Point3f.new3 (data[12], data[13], data[14]);
 if (plotScale.x <= 0) plotScale.x = 100;
 if (plotScale.y <= 0) plotScale.y = 100;
 if (plotScale.z <= 0) plotScale.z = 100;
@@ -719,10 +719,10 @@ this.setFractionalCoordinates (true);
 this.latticeCells =  Clazz.newArray (3, 0);
 this.atomSetCollection.setLatticeCells (this.latticeCells, true, false, false, false, null, null);
 this.setUnitCell (plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2 / (maxXYZ.y - minXYZ.y), plotScale.z * 2 / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
-this.unitCellOffset =  new javax.vecmath.Point3f (plotScale);
+this.unitCellOffset = javax.vecmath.Point3f.newP (plotScale);
 this.unitCellOffset.scale (-1);
 this.symmetry.toFractional (this.unitCellOffset, false);
-this.unitCellOffset.scaleAdd (-1.0, minXYZ, this.unitCellOffset);
+this.unitCellOffset.scaleAdd2 (-1.0, minXYZ, this.unitCellOffset);
 this.symmetry.setUnitCellOffset (this.unitCellOffset);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("jmolDataScaling", [minXYZ, maxXYZ, plotScale]);
 }}if (this.line.endsWith ("#noautobond")) {
@@ -899,7 +899,8 @@ this.readLine ();
 if (i == 0 && this.line != null) {
 i = -1;
 continue ;}}this.fillFloatArray (this.line, 0, f);
-vectors[i] =  new javax.vecmath.Vector3f (f);
+vectors[i] =  new javax.vecmath.Vector3f ();
+vectors[i].setA (f);
 if (isBohr) vectors[i].scale (0.5291772);
 }
 return vectors;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -272,11 +272,11 @@ public class Model {
   }
 
   public void freeze() {
-    chains = (Chain[])ArrayUtil.setLength(chains, chainCount);
+    chains = (Chain[])ArrayUtil.arrayCopyOpt(chains, chainCount);
     groupCount = -1;
     getGroupCount();      
     for (int i = 0; i < chainCount; ++i)
-      chains[i].groups = (Group[])ArrayUtil.setLength(chains[i].groups, chains[i].groupCount);
+      chains[i].groups = (Group[])ArrayUtil.arrayCopyOpt(chains[i].groups, chains[i].groupCount);
   }
 
 

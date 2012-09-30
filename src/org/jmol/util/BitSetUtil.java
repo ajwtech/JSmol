@@ -23,14 +23,14 @@
  */
 package org.jmol.util;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 final public class BitSetUtil {
 
   public static final BitSet bsNull= new BitSet();
 
-  public static BitSet setBit(int i) {
-    BitSet bs = new BitSet(i + 1);
+  public static BitSet newAndSetBit(int i) {
+    BitSet bs = newBitSet(i + 1);
     bs.set(i);
     return bs;
   }
@@ -52,15 +52,15 @@ final public class BitSetUtil {
     return (bs == null ? 0 : bs.cardinality());
   }
 
-  public static BitSet newBitSet(int i0, int i1) {
-    BitSet bs = new BitSet(i1);
-    bs.set(i0, i1);
+  public static BitSet newBitSet2(int i0, int i1) {
+    BitSet bs = newBitSet(i1);
+    bs.setBits(i0, i1);
     return bs;
   }
   
   public static BitSet setAll(int n) {
-    BitSet bs = new BitSet(n);
-    bs.set(0, n);
+    BitSet bs = newBitSet(n);
+    bs.setBits(0, n);
     return bs;
   }
 
@@ -74,10 +74,10 @@ final public class BitSetUtil {
     return bs == null ? null : (BitSet) bs.clone();
   }
 
-  public static BitSet copy(BitSet a, BitSet b) {
+  public static BitSet copy2(BitSet a, BitSet b) {
     if (a == null || b == null)
       return null;
-    b.clear();
+    b.clearAll();
     b.or(a);
     return b;
   }
@@ -95,7 +95,7 @@ final public class BitSetUtil {
    * @return  pointer to original bitset, now inverted
    */
   public static BitSet invertInPlace(BitSet bs, int n) {
-    return copy(copyInvert(bs, n), bs);
+    return copy2(copyInvert(bs, n), bs);
   }
 
   /**
@@ -127,7 +127,7 @@ final public class BitSetUtil {
   public static BitSet toggleInPlace(BitSet a, BitSet b) {
     if (a.equals(b)) {
       // all on -- toggle all off
-      a.clear();
+      a.clearAll();
     } else if (andNot(copy(b), a).length() == 0) {
       // b is a subset of a -> remove all b bits from a
       andNot(a, b); 
@@ -160,11 +160,18 @@ final public class BitSetUtil {
     int lend = Math.min(len, bsDelete.length());
     int i;
     for (i = bsDelete.nextClearBit(ipt); i < lend && i >= 0; i = bsDelete.nextClearBit(i + 1))
-      bs.set(ipt++, bs.get(i));
+      bs.setBitTo(ipt++, bs.get(i));
     for (i = lend; i < len; i++)
-      bs.set(ipt++, bs.get(i));
+      bs.setBitTo(ipt++, bs.get(i));
     if (ipt < len)
-      bs.clear(ipt, len);
+      bs.clearBits(ipt, len);
     return bs;
   }
+
+  public static BitSet newBitSet(int nFree) {
+    return BitSet.newN(nFree);
+  }
+  
+  public final static BitSet emptySet = new BitSet();
+
 }

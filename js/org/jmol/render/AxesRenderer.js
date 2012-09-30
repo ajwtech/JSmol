@@ -63,7 +63,7 @@ if (diameter == 0) diameter = 2;
 } else {
 if (this.g3d.isAntialiased ()) diameter += diameter;
 }this.g3d.setSlab (0);
-this.pt0.set (this.viewer.transformPt (axes.axisXY));
+this.pt0.setT (this.viewer.transformPt (axes.axisXY));
 this.originScreen.set (this.pt0.x, this.pt0.y, this.pt0.z);
 var zoomDimension = this.viewer.getScreenDim ();
 var scaleFactor = zoomDimension / 10 * axes.scale;
@@ -71,7 +71,7 @@ if (this.g3d.isAntialiased ()) scaleFactor *= 2;
 for (var i = 0; i < 3; i++) {
 this.viewer.rotatePoint (axes.getAxisPoint (i, false), this.screens[i]);
 this.screens[i].z *= -1;
-this.screens[i].scaleAdd (scaleFactor, this.screens[i], this.originScreen);
+this.screens[i].scaleAdd2 (scaleFactor, this.screens[i], this.originScreen);
 }
 } else {
 drawTicks = (axes.tickInfos != null);
@@ -79,7 +79,7 @@ if (drawTicks) {
 if (this.atomA == null) {
 this.atomA =  new org.jmol.util.Point3fi ();
 this.atomB =  new org.jmol.util.Point3fi ();
-}this.atomA.set (axes.getOriginPoint (isDataFrame));
+}this.atomA.setT (axes.getOriginPoint (isDataFrame));
 }this.viewer.transformPtNoClip (axes.getOriginPoint (isDataFrame), this.originScreen);
 diameter = this.getDiameter (Math.round (this.originScreen.z), mad);
 for (var i = nPoints; --i >= 0; ) this.viewer.transformPtNoClip (axes.getAxisPoint (i, isDataFrame), this.screens[i]);
@@ -97,7 +97,7 @@ if (label != null && label.length > 0) this.renderLabel (label, this.screens[i].
 if (drawTicks) {
 this.tickInfo = axes.tickInfos[(i % 3) + 1];
 if (this.tickInfo == null) this.tickInfo = axes.tickInfos[0];
-this.atomB.set (axes.getAxisPoint (i, isDataFrame));
+this.atomB.setT (axes.getAxisPoint (i, isDataFrame));
 if (this.tickInfo != null) {
 this.tickInfo.first = 0;
 this.tickInfo.signFactor = (i % 6 >= 3 ? -1 : 1);

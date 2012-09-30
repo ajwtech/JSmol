@@ -96,7 +96,7 @@ return -1;
 }
 }retColor[0] = this.getColor (tokens[0]);
 tokens = org.jmol.util.Parser.getTokens (tokens[i].$replace (',', ' '));
-var pt =  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloatStr (tokens[0]), org.jmol.util.Parser.parseFloatStr (tokens[1]), org.jmol.util.Parser.parseFloatStr (tokens[2]));
+var pt = javax.vecmath.Point3f.new3 (org.jmol.util.Parser.parseFloatStr (tokens[0]), org.jmol.util.Parser.parseFloatStr (tokens[1]), org.jmol.util.Parser.parseFloatStr (tokens[2]));
 if (this.isAnisotropic) this.setVertexAnisotropy (pt);
 return this.addVertexCopy (pt, value, this.nVertices++);
 }, $fz.isPrivate = true, $fz), "~S,~N,~A,~B");

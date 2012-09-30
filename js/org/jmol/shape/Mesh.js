@@ -48,7 +48,7 @@ this.recalcAltVertices = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shape, "Mesh", org.jmol.util.MeshSurface);
 Clazz.prepareFields (c$, function () {
-this.ptCenter =  new javax.vecmath.Point3f (0, 0, 0);
+this.ptCenter = javax.vecmath.Point3f.new3 (0, 0, 0);
 this.vAB =  new javax.vecmath.Vector3f ();
 this.vAC =  new javax.vecmath.Vector3f ();
 this.vTemp =  new javax.vecmath.Vector3f ();
@@ -124,7 +124,7 @@ for (var i = this.normixCount; --i >= 0; ) normals[i] =  new javax.vecmath.Vecto
 if (plane == null) {
 this.sumVertexNormals (vertices, normals);
 } else {
-var normal =  new javax.vecmath.Vector3f (plane.x, plane.y, plane.z);
+var normal = javax.vecmath.Vector3f.new3 (plane.x, plane.y, plane.z);
 for (var i = this.normixCount; --i >= 0; ) normals[i] = normal;
 
 }if (!this.isTriangleSet) for (var i = this.normixCount; --i >= 0; ) normals[i].normalize ();
@@ -166,7 +166,7 @@ var vB = vertices[this.iB];
 var vC = vertices[this.iC];
 if (vA.distanceSquared (vB) < min || vB.distanceSquared (vC) < min || vA.distanceSquared (vC) < min) continue ;org.jmol.util.Measure.calcNormalizedNormal (vA, vB, vC, this.vTemp, this.vAB, this.vAC);
 if (this.isTriangleSet) {
-normals[i].set (this.vTemp);
+normals[i].setT (this.vTemp);
 continue ;}var l = this.vTemp.length ();
 if (l > 0.9 && l < 1.1) for (var j = this.polygonIndexes[i].length - adjustment; --j >= 0; ) {
 var k = this.polygonIndexes[i][j];
@@ -215,22 +215,22 @@ Clazz.defineMethod (c$, "getOffsetVertices",
 function (thePlane) {
 if (this.altVertices != null && !this.recalcAltVertices) return this.altVertices;
 this.altVertices =  new Array (this.vertexCount);
-for (var i = 0; i < this.vertexCount; i++) this.altVertices[i] =  new javax.vecmath.Point3f (this.vertices[i]);
+for (var i = 0; i < this.vertexCount; i++) this.altVertices[i] = javax.vecmath.Point3f.newP (this.vertices[i]);
 
 var normal = null;
 var val = 0;
 if (this.scale3d != 0 && this.vertexValues != null && thePlane != null) {
-normal =  new javax.vecmath.Vector3f (thePlane.x, thePlane.y, thePlane.z);
+normal = javax.vecmath.Vector3f.new3 (thePlane.x, thePlane.y, thePlane.z);
 normal.normalize ();
 normal.scale (this.scale3d);
 if (this.mat4 != null) {
 var m3 =  new javax.vecmath.Matrix3f ();
-this.mat4.get (m3);
+this.mat4.getRotationScale (m3);
 m3.transform (normal);
 }}for (var i = 0; i < this.vertexCount; i++) {
 if (this.vertexValues != null && Float.isNaN (val = this.vertexValues[i])) continue ;if (this.mat4 != null) this.mat4.transform (this.altVertices[i]);
 var pt = this.altVertices[i];
-if (normal != null && val != 0) pt.scaleAdd (val, normal, pt);
+if (normal != null && val != 0) pt.scaleAdd2 (val, normal, pt);
 }
 this.initialize (this.lighting, this.altVertices, null);
 this.recalcAltVertices = false;
@@ -344,13 +344,14 @@ var v =  new javax.vecmath.Vector3f ();
 if (this.mat4 == null) {
 this.mat4 =  new javax.vecmath.Matrix4f ();
 this.mat4.setIdentity ();
-}var f = this.mat4.get (m3, v);
+}this.mat4.getRotationScale (m3);
+this.mat4.get (v);
 if (q == null) {
-if (isAbsolute) v.set (offset);
+if (isAbsolute) v.setT (offset);
  else v.add (offset);
 } else {
 m3.mul (q.getMatrix ());
-}this.mat4 =  new javax.vecmath.Matrix4f (m3, v, f);
+}this.mat4 = javax.vecmath.Matrix4f.newMV (m3, v);
 this.recalcAltVertices = true;
 }, "org.jmol.util.Quaternion,javax.vecmath.Tuple3f,~B");
 Clazz.defineStatics (c$,

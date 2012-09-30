@@ -162,8 +162,8 @@ Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["color
 if (this.cappingObject != null) Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["cap", this.cappingObject, null]);
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["lcaoType", this.thisType, null]);
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["atomIndex", Integer.$valueOf (iAtom), null]);
-var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (this.modelSet.atoms[iAtom]),  new javax.vecmath.Vector3f ()];
-if (this.rotationAxis != null) axes[3].set (this.rotationAxis);
+var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (), javax.vecmath.Vector3f.newV (this.modelSet.atoms[iAtom]),  new javax.vecmath.Vector3f ()];
+if (this.rotationAxis != null) axes[3].setT (this.rotationAxis);
 if (this.isMolecular) {
 if (this.thisType.indexOf ("px") >= 0) {
 axes[0].set (0, -1, 0);

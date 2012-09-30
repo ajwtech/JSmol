@@ -216,9 +216,9 @@ this.translation.vectorShift12ths.add (i.vectorShift12ths);
 }}
 this.primitiveCode = (this.isImproper ? "-" : "") + this.primitiveCode + this.translationString;
 if (this.isImproper) {
-this.seitzMatrix12ths.set (this.rotation.seitzMatrixInv);
+this.seitzMatrix12ths.setM (this.rotation.seitzMatrixInv);
 } else {
-this.seitzMatrix12ths.set (this.rotation.seitzMatrix);
+this.seitzMatrix12ths.setM (this.rotation.seitzMatrix);
 }this.seitzMatrix12ths.m03 = this.translation.vectorShift12ths.x;
 this.seitzMatrix12ths.m13 = this.translation.vectorShift12ths.y;
 this.seitzMatrix12ths.m23 = this.translation.vectorShift12ths.z;
@@ -244,7 +244,7 @@ h.m23 = this.b$["org.jmol.symmetry.HallInfo"].vector12ths.z;
 i.m03 = -this.b$["org.jmol.symmetry.HallInfo"].vector12ths.x;
 i.m13 = -this.b$["org.jmol.symmetry.HallInfo"].vector12ths.y;
 i.m23 = -this.b$["org.jmol.symmetry.HallInfo"].vector12ths.z;
-this.seitzMatrix12ths.mul (h, this.seitzMatrix12ths);
+this.seitzMatrix12ths.mul2 (h, this.seitzMatrix12ths);
 this.seitzMatrix12ths.mul (i);
 }if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("code = " + a + "; primitive code =" + this.primitiveCode + "\n Seitz Matrix(12ths):" + this.seitzMatrix12ths);

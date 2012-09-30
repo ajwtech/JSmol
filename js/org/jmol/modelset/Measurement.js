@@ -204,7 +204,7 @@ vectorAxis.cross (vectorBA, vectorBC);
 this.aa =  new javax.vecmath.AxisAngle4f (vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 vectorBA.normalize ();
 vectorBA.scale (0.5);
-this.pointArc =  new javax.vecmath.Point3f (vectorBA);
+this.pointArc = javax.vecmath.Point3f.newP (vectorBA);
 }case 4:
 this.strMeasurement = this.formatAngle (this.value);
 return ;

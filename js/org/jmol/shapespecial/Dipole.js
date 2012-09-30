@@ -55,8 +55,8 @@ this.mad = mad;
 this.offsetAngstroms = offsetAngstroms;
 this.offsetPercent = offsetPercent;
 this.offsetSide = offsetSide;
-this.vector =  new javax.vecmath.Vector3f (vector);
-this.origin =  new javax.vecmath.Point3f (origin);
+this.vector = javax.vecmath.Vector3f.newV (vector);
+this.origin = javax.vecmath.Point3f.newP (origin);
 this.haveAtoms = (atoms[0] != null);
 if (this.haveAtoms) {
 this.atoms[0] = atoms[0];
@@ -67,16 +67,16 @@ this.center = null;
 }}, "~S,~S,~A,~N,~N,~N,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "set", 
 ($fz = function (pt1, pt2) {
-this.coords[0] =  new javax.vecmath.Point3f (pt1);
-this.coords[1] =  new javax.vecmath.Point3f (pt2);
+this.coords[0] = javax.vecmath.Point3f.newP (pt1);
+this.coords[1] = javax.vecmath.Point3f.newP (pt2);
 this.isValid = (this.coords[0].distance (this.coords[1]) > 0.1);
 if (this.dipoleValue < 0) {
-this.origin =  new javax.vecmath.Point3f (pt2);
-this.vector =  new javax.vecmath.Vector3f (pt1);
+this.origin = javax.vecmath.Point3f.newP (pt2);
+this.vector = javax.vecmath.Vector3f.newV (pt1);
 this.dipoleValue = -this.dipoleValue;
 } else {
-this.origin =  new javax.vecmath.Point3f (pt1);
-this.vector =  new javax.vecmath.Vector3f (pt2);
+this.origin = javax.vecmath.Point3f.newP (pt1);
+this.vector = javax.vecmath.Vector3f.newV (pt2);
 }this.dipoleInfo = "" + this.origin + this.vector;
 this.vector.sub (this.origin);
 if (this.dipoleValue == 0) this.dipoleValue = this.vector.length ();
@@ -101,7 +101,7 @@ this.set (pt1, pt2);
 Clazz.defineMethod (c$, "set", 
 function (pt1, dipole) {
 this.set (dipole.length ());
-var pt2 =  new javax.vecmath.Point3f (pt1);
+var pt2 = javax.vecmath.Point3f.newP (pt1);
 pt2.add (dipole);
 this.set (pt1, pt2);
 this.type = 5;
@@ -122,9 +122,9 @@ function () {
 this.isValid = (this.atoms[0] !== this.atoms[1] && this.dipoleValue != 0);
 if (!this.isValid) return ;
 var f = this.atoms[0].distance (this.atoms[1]) / (2 * this.dipoleValue) - 0.5;
-this.origin.scaleAdd (f, this.vector, this.atoms[0]);
+this.origin.scaleAdd2 (f, this.vector, this.atoms[0]);
 this.center =  new javax.vecmath.Point3f ();
-this.center.scaleAdd (0.5, this.vector, this.origin);
+this.center.scaleAdd2 (0.5, this.vector, this.origin);
 this.bond = this.atoms[0].getBond (this.atoms[1]);
 this.type = (this.bond == null ? 2 : 3);
 });

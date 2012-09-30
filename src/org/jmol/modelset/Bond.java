@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
@@ -48,7 +48,7 @@ public class Bond extends JmolEdge {
     }
 
     public BondSet(BitSet bs) {
-      BitSetUtil.copy(bs, this);
+      BitSetUtil.copy2(bs, this);
     }
 
     public BondSet(BitSet bs, int[] atoms) {

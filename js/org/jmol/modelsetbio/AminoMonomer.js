@@ -106,24 +106,24 @@ if (this.monomerIndex == 0 || this.groupID == 15) return false;
 var nitrogenPoint = this.getNitrogenAtom ();
 var nhPoint = this.getNitrogenHydrogenPoint ();
 if (nhPoint != null && !dsspIgnoreHydrogens) {
-vNH.sub (nhPoint, nitrogenPoint);
-aminoHydrogenPoint.set (nhPoint);
+vNH.sub2 (nhPoint, nitrogenPoint);
+aminoHydrogenPoint.setT (nhPoint);
 return true;
 }var prev = this.bioPolymer.monomers[this.monomerIndex - 1];
 if (jmolHPoint) {
-vNH.sub (nitrogenPoint, this.getLeadAtom ());
+vNH.sub2 (nitrogenPoint, this.getLeadAtom ());
 vNH.normalize ();
 var v =  new javax.vecmath.Vector3f ();
-v.sub (nitrogenPoint, prev.getCarbonylCarbonAtom ());
+v.sub2 (nitrogenPoint, prev.getCarbonylCarbonAtom ());
 v.normalize ();
 vNH.add (v);
 } else {
 var oxygen = prev.getCarbonylOxygenAtom ();
 if (oxygen == null) return false;
-vNH.sub (prev.getCarbonylCarbonAtom (), oxygen);
+vNH.sub2 (prev.getCarbonylCarbonAtom (), oxygen);
 }vNH.normalize ();
-aminoHydrogenPoint.add (nitrogenPoint, vNH);
-this.nitrogenHydrogenPoint =  new javax.vecmath.Point3f (aminoHydrogenPoint);
+aminoHydrogenPoint.add2 (nitrogenPoint, vNH);
+this.nitrogenHydrogenPoint = javax.vecmath.Point3f.newP (aminoHydrogenPoint);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("draw ID \"pta" + this.monomerIndex + "_" + nitrogenPoint.index + "\" " + org.jmol.util.Escape.escapePt (nitrogenPoint) + org.jmol.util.Escape.escapePt (aminoHydrogenPoint) + " # " + nitrogenPoint);
 return true;
 }, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~B,~B");
@@ -144,7 +144,7 @@ return this.getCarbonylCarbonAtom ();
 case 'q':
 if (this.monomerIndex == this.bioPolymer.monomerCount - 1) return null;
 var mNext = (this.bioPolymer.getGroups ()[this.monomerIndex + 1]);
-var pt =  new javax.vecmath.Point3f (this.getCarbonylCarbonAtom ());
+var pt = javax.vecmath.Point3f.newP (this.getCarbonylCarbonAtom ());
 pt.add (mNext.getNitrogenAtom ());
 pt.scale (0.5);
 return pt;
@@ -163,30 +163,30 @@ case 'n':
 if (this.monomerIndex == 0 || this.groupID == 15) return null;
 vC =  new javax.vecmath.Vector3f ();
 this.getNHPoint (this.ptTemp, vC, true, false);
-vB.sub (ptCa, this.getNitrogenAtom ());
+vB.sub2 (ptCa, this.getNitrogenAtom ());
 vB.cross (vC, vB);
 var mat =  new javax.vecmath.Matrix3f ();
-mat.set ( new javax.vecmath.AxisAngle4f (vB, -0.29670596));
+mat.setAA ( new javax.vecmath.AxisAngle4f (vB, -0.29670596));
 mat.transform (vC);
 vA.cross (vB, vC);
 break;
 case 'b':
 return Clazz.superCall (this, org.jmol.modelsetbio.AminoMonomer, "getQuaternion", ['b']);
 case 'c':
-vA.sub (ptC, ptCa);
-vB.sub (this.getNitrogenAtom (), ptCa);
+vA.sub2 (ptC, ptCa);
+vB.sub2 (this.getNitrogenAtom (), ptCa);
 break;
 case 'p':
 case 'x':
 if (this.monomerIndex == this.bioPolymer.monomerCount - 1) return null;
-vA.sub (ptCa, ptC);
-vB.sub ((this.bioPolymer.getGroups ()[this.monomerIndex + 1]).getNitrogenAtom (), ptC);
+vA.sub2 (ptCa, ptC);
+vB.sub2 ((this.bioPolymer.getGroups ()[this.monomerIndex + 1]).getNitrogenAtom (), ptC);
 break;
 case 'q':
 if (this.monomerIndex == this.bioPolymer.monomerCount - 1) return null;
 var mNext = (this.bioPolymer.getGroups ()[this.monomerIndex + 1]);
-vB.sub (mNext.getLeadAtom (), mNext.getNitrogenAtom ());
-vA.sub (ptCa, ptC);
+vB.sub2 (mNext.getLeadAtom (), mNext.getNitrogenAtom ());
+vA.sub2 (ptCa, ptC);
 break;
 default:
 return null;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2009-03-28 10:42:36 -0500 (Sat, 28 Mar 2009) $
- * $Revision: 10745 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -31,10 +31,6 @@ public class Int2IntHash {
 
   public Int2IntHash(int initialCapacity) {
     entries = new Entry[initialCapacity];
-  }
-
-  public Int2IntHash() {
-    this(256);
   }
 
   public synchronized int get(int key) {

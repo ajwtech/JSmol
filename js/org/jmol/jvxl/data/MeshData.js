@@ -140,15 +140,15 @@ var vTemp =  new javax.vecmath.Vector3f ();
 for (var i = this.polygonCount; --i >= 0; ) {
 if (!this.setABC (i)) continue ;var iSet = (this.nSets == 0 ? 0 : this.vertexSets[this.iA]);
 if (thisSet >= 0 && iSet != thisSet) continue ;if (isArea) {
-vAB.sub (this.vertices[this.iB], this.vertices[this.iA]);
-vAC.sub (this.vertices[this.iC], this.vertices[this.iA]);
+vAB.sub2 (this.vertices[this.iB], this.vertices[this.iA]);
+vAC.sub2 (this.vertices[this.iC], this.vertices[this.iA]);
 vTemp.cross (vAB, vAC);
 v[justOne ? 0 : iSet] += vTemp.length ();
 } else {
-vAB.set (this.vertices[this.iB]);
-vAC.set (this.vertices[this.iC]);
+vAB.setT (this.vertices[this.iB]);
+vAC.setT (this.vertices[this.iC]);
 vTemp.cross (vAB, vAC);
-vAC.set (this.vertices[this.iA]);
+vAC.setT (this.vertices[this.iA]);
 v[justOne ? 0 : iSet] += vAC.dot (vTemp);
 }}
 var factor = (isArea ? 2 : 6);

@@ -240,9 +240,9 @@ ptB = this.getAtomFromOffsetIndex (1);
 }break;
 }
 if (ptA == null || ptB == null) return null;
-var vA =  new javax.vecmath.Vector3f (ptA);
+var vA = javax.vecmath.Vector3f.newV (ptA);
 vA.sub (ptNorP);
-var vB =  new javax.vecmath.Vector3f (ptB);
+var vB = javax.vecmath.Vector3f.newV (ptB);
 vB.sub (ptNorP);
 if (reverseY) vB.scale (-1);
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, yBased);

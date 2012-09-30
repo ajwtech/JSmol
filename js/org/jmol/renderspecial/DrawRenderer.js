@@ -101,13 +101,13 @@ var nDegreesOffset = (this.vertexCount > 3 ? this.vertices[3].x : 0);
 var theta = (this.vertexCount > 3 ? this.vertices[3].y : 360);
 if (theta == 0) return ;
 var fractionalOffset = (this.vertexCount > 3 ? this.vertices[3].z : 0);
-this.vTemp.set (this.vertices[1]);
+this.vTemp.setT (this.vertices[1]);
 this.vTemp.sub (this.vertices[0]);
-this.pt1f.scaleAdd (fractionalOffset, this.vTemp, this.vertices[0]);
+this.pt1f.scaleAdd2 (fractionalOffset, this.vTemp, this.vertices[0]);
 var mat =  new javax.vecmath.Matrix3f ();
-mat.set ( new javax.vecmath.AxisAngle4f (this.vTemp, (nDegreesOffset * 3.141592653589793 / 180)));
-if (this.vertexCount > 2) this.vTemp2.set (this.vertices[2]);
- else this.vTemp2.set (org.jmol.shapespecial.Draw.randomPoint ());
+mat.setAA ( new javax.vecmath.AxisAngle4f (this.vTemp, (nDegreesOffset * 3.141592653589793 / 180)));
+if (this.vertexCount > 2) this.vTemp2.setT (this.vertices[2]);
+ else this.vTemp2.setT (org.jmol.shapespecial.Draw.randomPoint ());
 this.vTemp2.sub (this.vertices[0]);
 this.vTemp2.cross (this.vTemp, this.vTemp2);
 this.vTemp2.cross (this.vTemp2, this.vTemp);
@@ -122,20 +122,20 @@ while (nPoints < 10) {
 degrees /= 2;
 nPoints = Math.round ((theta / degrees + 0.5)) + 1;
 }
-mat.set ( new javax.vecmath.AxisAngle4f (this.vTemp, (degrees * 3.141592653589793 / 180)));
+mat.setAA ( new javax.vecmath.AxisAngle4f (this.vTemp, (degrees * 3.141592653589793 / 180)));
 this.screens = this.viewer.allocTempScreens (nPoints);
 var iBase = nPoints - (this.dmesh.scale < 2 ? 3 : 3);
 for (var i = 0; i < nPoints; i++) {
-if (i == iBase) this.vpt0.set (this.vpt1);
-this.vpt1.scaleAdd (1, this.vTemp2, this.pt1f);
-if (i == 0) this.vpt2.set (this.vpt1);
+if (i == iBase) this.vpt0.setT (this.vpt1);
+this.vpt1.scaleAdd2 (1, this.vTemp2, this.pt1f);
+if (i == 0) this.vpt2.setT (this.vpt1);
 this.viewer.transformPtScr (this.vpt1, this.screens[i]);
 mat.transform (this.vTemp2);
 }
 if (this.dmesh.isVector && !this.dmesh.noHead) {
 this.renderArrowHead (this.vpt0, this.vpt1, 0.3, false, false, this.dmesh.isBarb);
 this.viewer.transformPtScr (this.pt1f, this.screens[nPoints - 1]);
-}this.pt1f.set (this.vpt2);
+}this.pt1f.setT (this.vpt2);
 break;
 case org.jmol.shapespecial.Draw.EnumDrawType.ARROW:
 if (this.vertexCount == 2) {
@@ -174,21 +174,21 @@ i0 = i;
 j0 = j;
 }}
 
-this.vpt0.set (this.vertices[0]);
+this.vpt0.setT (this.vertices[0]);
 this.vpt0.add (this.vertices[1]);
 this.vpt0.scale (0.5);
-this.vpt2.set (this.vertices[2]);
+this.vpt2.setT (this.vertices[2]);
 this.vpt2.add (this.vertices[3]);
 this.vpt2.scale (0.5);
-this.vpt1.set (this.vpt0);
+this.vpt1.setT (this.vpt0);
 this.vpt1.add (this.vpt2);
 this.vpt1.scale (0.5);
-this.vertices[3] =  new javax.vecmath.Point3f (this.vertices[i0]);
+this.vertices[3] = javax.vecmath.Point3f.newP (this.vertices[i0]);
 this.vertices[3].add (this.vertices[j0]);
 this.vertices[3].scale (0.5);
-this.vertices[1] =  new javax.vecmath.Point3f (this.vpt1);
-this.vertices[0] =  new javax.vecmath.Point3f (this.vpt0);
-this.vertices[2] =  new javax.vecmath.Point3f (this.vpt2);
+this.vertices[1] = javax.vecmath.Point3f.newP (this.vpt1);
+this.vertices[0] = javax.vecmath.Point3f.newP (this.vpt0);
+this.vertices[2] = javax.vecmath.Point3f.newP (this.vpt2);
 for (var i = 0; i < 4; i++) this.viewer.transformPtScr (this.vertices[i], this.screens[i]);
 
 var f = 1;
@@ -199,18 +199,18 @@ this.vpt1.set (this.screens[1].x, this.screens[1].y, this.screens[1].z);
 this.vpt2.set (this.screens[3].x, this.screens[3].y, this.screens[3].z);
 var dx = (this.screens[1].x - this.screens[0].x) * f;
 var dy = (this.screens[1].y - this.screens[0].y) * f;
-if (dmax == 0 || org.jmol.util.Measure.computeTorsion (this.vpt2, this.vpt0,  new javax.vecmath.Point3f (this.vpt0.x, this.vpt0.y, 10000), this.vpt1, false) > 0) {
+if (dmax == 0 || org.jmol.util.Measure.computeTorsion (this.vpt2, this.vpt0, javax.vecmath.Point3f.new3 (this.vpt0.x, this.vpt0.y, 10000), this.vpt1, false) > 0) {
 dx = -dx;
 dy = -dy;
 }this.vpt2.set (dy, -dx, 0);
 this.vpt1.add (this.vpt2);
 this.viewer.unTransformPoint (this.vpt1, this.vertices[1]);
 this.vpt2.scale (offsetside);
-this.vTemp.set (this.vertices[1]);
+this.vTemp.setT (this.vertices[1]);
 this.vTemp.sub (this.vertices[0]);
 this.vTemp.scale (endoffset);
 this.vertices[0].add (this.vTemp);
-this.vTemp.set (this.vertices[1]);
+this.vTemp.setT (this.vertices[1]);
 this.vTemp.sub (this.vertices[2]);
 this.vTemp.scale (endoffset);
 this.vertices[2].add (this.vTemp);
@@ -244,7 +244,7 @@ this.viewer.rotatePoint (this.vertices[ptXYZ], this.vpt1);
 this.vpt1.z *= -1;
 var zoomDimension = this.viewer.getScreenDim ();
 var scaleFactor = zoomDimension / 20;
-this.vpt1.scaleAdd (this.dmesh.scale * scaleFactor, this.vpt1, this.vpt0);
+this.vpt1.scaleAdd2 (this.dmesh.scale * scaleFactor, this.vpt1, this.vpt0);
 if (this.diameter == 0) this.diameter = 1;
 this.pt1i.set (Math.round (this.vpt0.x), Math.round (this.vpt0.y), Math.round (this.vpt0.z));
 this.pt2i.set (Math.round (this.vpt1.x), Math.round (this.vpt1.y), Math.round (this.vpt1.z));
@@ -260,17 +260,17 @@ if (fScale == 0) fScale = this.viewer.getDefaultDrawArrowScale () * (this.dmesh.
 if (fScale <= 0) fScale = 0.5;
 if (isTransformed) fScale *= 40;
 if (factor2 > 0) fScale *= factor2;
-this.pt0f.set (pt1);
-this.pt2f.set (pt2);
+this.pt0f.setT (pt1);
+this.pt2f.setT (pt2);
 var d = this.pt0f.distance (this.pt2f);
 if (d == 0) return ;
-this.vTemp.set (this.pt2f);
+this.vTemp.setT (this.pt2f);
 this.vTemp.sub (this.pt0f);
 this.vTemp.normalize ();
 this.vTemp.scale (fScale / 5);
 if (!withShaft) this.pt2f.add (this.vTemp);
 this.vTemp.scale (5);
-this.pt1f.set (this.pt2f);
+this.pt1f.setT (this.pt2f);
 this.pt1f.sub (this.vTemp);
 if (isTransformed) {
 this.pt1i.set (Math.round (this.pt1f.x), Math.round (this.pt1f.y), Math.round (this.pt1f.z));
@@ -322,8 +322,8 @@ var pt = 0;
 if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == 62) {
 pt = this.dmesh.polygonIndexes[i].length - 1;
 s = s.substring (1);
-if (this.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC) this.pt1f.set (this.pt2f);
-}if (this.drawType !== org.jmol.shapespecial.Draw.EnumDrawType.ARC) this.pt1f.set (this.vertices[this.dmesh.polygonIndexes[i][pt]]);
+if (this.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC) this.pt1f.setT (this.pt2f);
+}if (this.drawType !== org.jmol.shapespecial.Draw.EnumDrawType.ARC) this.pt1f.setT (this.vertices[this.dmesh.polygonIndexes[i][pt]]);
 this.viewer.transformPtScr (this.pt1f, this.pt1i);
 var offset = Math.round ((5 * this.imageFontScaling));
 this.g3d.drawString (s, null, this.pt1i.x + offset, this.pt1i.y - offset, this.pt1i.z, this.pt1i.z);

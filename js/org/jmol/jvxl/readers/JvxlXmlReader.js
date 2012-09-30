@@ -82,7 +82,7 @@ var s = this.xr.getXmlData ("jvxlFileTitle", null, false, false);
 this.jvxlFileHeaderBuffer =  new StringBuffer (s);
 this.xr.toTag ("jvxlVolumeData");
 var data = this.tempDataXml = this.xr.getXmlData ("jvxlVolumeData", null, true, false);
-this.volumetricOrigin.set (this.xr.getXmlPoint (data, "origin"));
+this.volumetricOrigin.setT (this.xr.getXmlPoint (data, "origin"));
 this.isAngstroms = true;
 this.readVector (0);
 this.readVector (1);
@@ -101,7 +101,7 @@ this.tempDataXml = this.tempDataXml.substring (this.tempDataXml.indexOf (data) +
 var n = this.parseIntStr (org.jmol.util.XmlReader.getXmlAttrib (data, "count"));
 if (n == -2147483648) this.vertexDataOnly = true;
 this.voxelCounts[voxelVectorIndex] = (n < 0 ? 0 : n);
-this.volumetricVectors[voxelVectorIndex].set (this.xr.getXmlPoint (data, "vector"));
+this.volumetricVectors[voxelVectorIndex].setT (this.xr.getXmlPoint (data, "vector"));
 if (this.isAnisotropic) this.setVectorAnisotropy (this.volumetricVectors[voxelVectorIndex]);
 }, "~N");
 Clazz.overrideMethod (c$, "gotoData", 
@@ -175,7 +175,7 @@ if (Float.isNaN (this.params.scale3d)) this.params.scale3d = 0;
 if (Clazz.exceptionOf (e, Exception)) {
 if (this.params.thePlane == null) {
 org.jmol.util.Logger.error ("JVXL Error reading plane definition -- setting to 0 0 1 0  (z=0)");
-this.params.thePlane =  new javax.vecmath.Point4f (0, 0, 1, 0);
+this.params.thePlane = javax.vecmath.Point4f.new4 (0, 0, 1, 0);
 } else {
 org.jmol.util.Logger.error ("JVXL Error reading mapLattice definition -- ignored");
 }} else {
@@ -333,7 +333,7 @@ return bs;
 Clazz.defineMethod (c$, "getSurfacePointAndFraction", 
 function (cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn) {
 if (this.edgeDataCount <= 0) return Clazz.superCall (this, org.jmol.jvxl.readers.JvxlXmlReader, "getSurfacePointAndFraction", [cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn]);
-ptReturn.scaleAdd (fReturn[0] = this.jvxlGetNextFraction (this.edgeFractionBase, this.edgeFractionRange, 0.5), edgeVector, pointA);
+ptReturn.scaleAdd2 (fReturn[0] = this.jvxlGetNextFraction (this.edgeFractionBase, this.edgeFractionRange, 0.5), edgeVector, pointA);
 if (Float.isNaN (this.valueMin)) this.setValueMinMax ();
 return (this.valueCount == 0 || this.includeValueNaN && Float.isNaN (fReturn[0]) ? fReturn[0] : this.getNextValue ());
 }, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");

@@ -64,7 +64,7 @@ return org.jmol.util.ColorUtil.colorPointFromInt (org.jmol.util.ColorUtil.getArg
 }, "~S,javax.vecmath.Point3f");
 c$.colorPointFromInt2 = Clazz.defineMethod (c$, "colorPointFromInt2", 
 function (color) {
-return  new javax.vecmath.Point3f ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+return javax.vecmath.Point3f.new3 ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
 }, "~N");
 c$.colorPtToInt = Clazz.defineMethod (c$, "colorPtToInt", 
 function (pt) {

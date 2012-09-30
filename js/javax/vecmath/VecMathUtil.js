@@ -5,14 +5,11 @@ c$.floatToIntBits = Clazz.defineMethod (c$, "floatToIntBits",
 function (f) {
 if (f == 0.0) {
 return 0;
-} else {
-return Float.floatToIntBits (f);
-}}, "~N");
+}return Float.floatToIntBits (f);
+}, "~N");
 c$.doubleToLongBits = Clazz.defineMethod (c$, "doubleToLongBits", 
 function (d) {
-if (d == 0.0) {
-return 0;
-} else {
+if (d == 0.0) return 0;
 return Double.doubleToLongBits (d);
-}}, "~N");
+}, "~N");
 });

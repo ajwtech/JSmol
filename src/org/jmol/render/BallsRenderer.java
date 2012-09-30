@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 19:02:08 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17502 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -25,7 +25,7 @@
 
 package org.jmol.render;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.Atom;
 

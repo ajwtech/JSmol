@@ -119,8 +119,8 @@ this.startPixelScale = this.transformManager.scaleDefaultPixelsPerAngstrom;
 this.targetPixelScale = (center == null ? this.startPixelScale : this.transformManager.defaultScaleToScreen (this.targetRotationRadius));
 if (Float.isNaN (zoom)) zoom = this.transformManager.zoomPercent;
 this.transformManager.getRotation (this.matrixStart);
-this.matrixStartInv.invert (this.matrixStart);
-this.matrixStep.mul (this.matrixEnd, this.matrixStartInv);
+this.matrixStartInv.invertM (this.matrixStart);
+this.matrixStep.mul2 (this.matrixEnd, this.matrixStartInv);
 this.aaTotal.set (this.matrixStep);
 this.fps = 30;
 this.totalSteps = Math.round ((floatSecondsTotal * this.fps));
@@ -133,13 +133,13 @@ this.xTransStart = this.transformManager.getTranslationXPercent ();
 this.xTransDelta = xTrans - this.xTransStart;
 this.yTransStart = this.transformManager.getTranslationYPercent ();
 this.yTransDelta = yTrans - this.yTransStart;
-this.aaStepCenter.set (this.ptMoveToCenter);
+this.aaStepCenter.setT (this.ptMoveToCenter);
 this.aaStepCenter.sub (this.transformManager.fixedRotationCenter);
 this.aaStepCenter.scale (1 / this.totalSteps);
 this.pixelScaleDelta = (this.targetPixelScale - this.startPixelScale);
 this.rotationRadiusDelta = (this.targetRotationRadius - this.startRotationRadius);
 if (navCenter != null && this.transformManager.mode == 1) {
-this.aaStepNavCenter.set (navCenter);
+this.aaStepNavCenter.setT (navCenter);
 this.aaStepNavCenter.sub (this.transformManager.navigationCenter);
 this.aaStepNavCenter.scale (1 / this.totalSteps);
 }var xNavTransStart = this.transformManager.getNavigationOffsetPercent ('X');
@@ -155,13 +155,13 @@ function () {
 for (; this.iStep < this.totalSteps; ++this.iStep) {
 if (!Float.isNaN (this.matrixEnd.m00)) {
 this.transformManager.getRotation (this.matrixStart);
-this.matrixStartInv.invert (this.matrixStart);
-this.matrixStep.mul (this.matrixEnd, this.matrixStartInv);
+this.matrixStartInv.invertM (this.matrixStart);
+this.matrixStep.mul2 (this.matrixEnd, this.matrixStartInv);
 this.aaTotal.set (this.matrixStep);
 this.aaStep.set (this.aaTotal);
 this.aaStep.angle /= (this.totalSteps - this.iStep);
 if (this.aaStep.angle == 0) this.matrixStep.setIdentity ();
- else this.matrixStep.set (this.aaStep);
+ else this.matrixStep.setAA (this.aaStep);
 this.matrixStep.mul (this.matrixStart);
 }var fStep = this.iStep / (this.totalSteps - 1);
 this.transformManager.modelRadius = this.startRotationRadius + this.rotationRadiusDelta * fStep;
@@ -173,7 +173,7 @@ this.transformManager.translateToPercent ('y', this.yTransStart + this.yTransDel
 }this.transformManager.setRotation (this.matrixStep);
 if (this.center != null) this.transformManager.fixedRotationCenter.add (this.aaStepCenter);
 if (this.navCenter != null && this.transformManager.mode == 1) {
-var pt =  new javax.vecmath.Point3f (this.transformManager.navigationCenter);
+var pt = javax.vecmath.Point3f.newP (this.transformManager.navigationCenter);
 pt.add (this.aaStepNavCenter);
 this.transformManager.navigatePt (0, pt);
 if (!Float.isNaN (this.xNav) && !Float.isNaN (this.yNav)) this.transformManager.navTranslatePercent (0, this.xNavTransStart + this.xNavTransDelta * fStep, this.yNavTransStart + this.yNavTransDelta * fStep);
@@ -194,7 +194,7 @@ this.transformManager.translateToPercent ('x', this.xTrans);
 this.transformManager.translateToPercent ('y', this.yTrans);
 }this.transformManager.setRotation (this.matrixEnd);
 if (this.navCenter != null && this.transformManager.mode == 1) {
-this.transformManager.navigationCenter.set (this.navCenter);
+this.transformManager.navigationCenter.setT (this.navCenter);
 if (!Float.isNaN (this.xNav) && !Float.isNaN (this.yNav)) this.transformManager.navTranslatePercent (0, this.xNav, this.yNav);
 if (!Float.isNaN (this.navDepth)) this.transformManager.setNavigationDepthPercent (0, this.navDepth);
 }});
