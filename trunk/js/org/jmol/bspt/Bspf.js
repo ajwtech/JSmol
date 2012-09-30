@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.bspt");
-Clazz.load (null, "org.jmol.bspt.Bspf", ["org.jmol.bspt.Bspt", "org.jmol.util.Logger"], function () {
+Clazz.load (null, "org.jmol.bspt.Bspf", ["org.jmol.bspt.Bspt", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dimMax = 0;
 this.bspts = null;
@@ -38,12 +38,8 @@ return this.bspts.length;
 Clazz.defineMethod (c$, "addTuple", 
 function (bsptIndex, tuple) {
 if (bsptIndex >= this.bspts.length) {
-var t =  new Array (bsptIndex + 1);
-System.arraycopy (this.bspts, 0, t, 0, this.bspts.length);
-this.bspts = t;
-var b =  Clazz.newArray (bsptIndex + 1, false);
-System.arraycopy (this.bsptsValid, 0, b, 0, this.bsptsValid.length);
-this.bsptsValid = b;
+this.bspts = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bspts, bsptIndex + 1);
+this.bsptsValid = org.jmol.util.ArrayUtil.arrayCopyBool (this.bsptsValid, bsptIndex + 1);
 }var bspt = this.bspts[bsptIndex];
 if (bspt == null) {
 bspt = this.bspts[bsptIndex] =  new org.jmol.bspt.Bspt (this.dimMax, bsptIndex);
@@ -65,11 +61,8 @@ org.jmol.util.Logger.info ("<<<<");
 Clazz.defineMethod (c$, "getCubeIterator", 
 function (bsptIndex) {
 if (bsptIndex < 0) return this.getNewCubeIterator (-1 - bsptIndex);
-if (bsptIndex >= this.cubeIterators.length) {
-var t =  new Array (bsptIndex + 1);
-System.arraycopy (this.cubeIterators, 0, t, 0, this.cubeIterators.length);
-this.cubeIterators = t;
-}if (this.cubeIterators[bsptIndex] == null && this.bspts[bsptIndex] != null) this.cubeIterators[bsptIndex] = this.getNewCubeIterator (bsptIndex);
+if (bsptIndex >= this.cubeIterators.length) this.cubeIterators = org.jmol.util.ArrayUtil.arrayCopyOpt (this.cubeIterators, bsptIndex + 1);
+if (this.cubeIterators[bsptIndex] == null && this.bspts[bsptIndex] != null) this.cubeIterators[bsptIndex] = this.getNewCubeIterator (bsptIndex);
 this.cubeIterators[bsptIndex].set (this.bspts[bsptIndex]);
 return this.cubeIterators[bsptIndex];
 }, "~N");
@@ -83,5 +76,5 @@ if (this.bspts[modelIndex] != null) this.bspts[modelIndex].reset ();
 for (var i = modelAtomBitSet.nextSetBit (0); i >= 0; i = modelAtomBitSet.nextSetBit (i + 1)) this.addTuple (modelIndex, atoms[i]);
 
 this.bsptsValid[modelIndex] = true;
-}, "~N,~A,java.util.BitSet");
+}, "~N,~A,javax.util.BitSet");
 });

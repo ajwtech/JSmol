@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["java.util.BitSet"], "org.jmol.util.Elements", ["java.util.Hashtable", "org.jmol.util.Logger"], function () {
+Clazz.load (["javax.util.BitSet"], "org.jmol.util.Elements", ["java.util.Hashtable", "org.jmol.util.Logger"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Elements");
 c$.getAtomicMass = Clazz.defineMethod (c$, "getAtomicMass", 
 function (i) {
@@ -99,11 +99,11 @@ return ("1H,12C,14N,".indexOf (isotopeSymbol + ",") >= 0);
 c$.getBondingRadiusFloat = Clazz.defineMethod (c$, "getBondingRadiusFloat", 
 function (atomicNumberAndIsotope, charge) {
 var atomicNumber = org.jmol.util.Elements.getElementNumber (atomicNumberAndIsotope);
-if (charge > 0 && org.jmol.util.Elements.bsCations.get (atomicNumber)) return org.jmol.util.Elements.getBondingRadiusFloat (atomicNumber, charge, org.jmol.util.Elements.cationLookupTable);
-if (charge < 0 && org.jmol.util.Elements.bsAnions.get (atomicNumber)) return org.jmol.util.Elements.getBondingRadiusFloat (atomicNumber, charge, org.jmol.util.Elements.anionLookupTable);
+if (charge > 0 && org.jmol.util.Elements.bsCations.get (atomicNumber)) return org.jmol.util.Elements.getBondingRadFromTable (atomicNumber, charge, org.jmol.util.Elements.cationLookupTable);
+if (charge < 0 && org.jmol.util.Elements.bsAnions.get (atomicNumber)) return org.jmol.util.Elements.getBondingRadFromTable (atomicNumber, charge, org.jmol.util.Elements.anionLookupTable);
 return org.jmol.util.Elements.covalentMars[atomicNumber] / 1000;
 }, "~N,~N");
-c$.getBondingRadiusFloat = Clazz.defineMethod (c$, "getBondingRadiusFloat", 
+c$.getBondingRadFromTable = Clazz.defineMethod (c$, "getBondingRadFromTable", 
 function (atomicNumber, charge, table) {
 var ionic = ((atomicNumber << 4) + (charge + 4));
 var iVal = 0;
@@ -156,8 +156,8 @@ Clazz.defineStatics (c$,
 "FORMAL_CHARGE_MAX", 7,
 "cationLookupTable", [53, 680, 69, 440, 70, 350, 85, 350, 87, 230, 104, 160, 117, 680, 119, 160, 121, 130, 133, 220, 138, 90, 155, 80, 165, 1120, 181, 970, 197, 820, 198, 660, 215, 510, 229, 650, 232, 420, 247, 440, 249, 350, 262, 2190, 264, 370, 266, 300, 281, 340, 283, 270, 293, 1540, 309, 1330, 325, 1180, 326, 990, 343, 732, 357, 960, 358, 940, 359, 760, 360, 680, 374, 880, 375, 740, 376, 630, 377, 590, 389, 810, 390, 890, 391, 630, 394, 520, 406, 800, 407, 660, 408, 600, 411, 460, 422, 740, 423, 640, 438, 720, 439, 630, 454, 690, 469, 960, 470, 720, 485, 880, 486, 740, 501, 810, 503, 620, 518, 730, 520, 530, 535, 580, 537, 460, 549, 660, 552, 500, 554, 420, 569, 470, 571, 390, 597, 1470, 614, 1120, 631, 893, 645, 1090, 648, 790, 661, 1000, 664, 740, 665, 690, 677, 930, 680, 700, 682, 620, 699, 979, 712, 670, 727, 680, 742, 800, 744, 650, 757, 1260, 758, 890, 773, 1140, 774, 970, 791, 810, 806, 930, 808, 710, 823, 760, 825, 620, 837, 820, 840, 700, 842, 560, 857, 620, 859, 500, 885, 1670, 901, 1530, 902, 1340, 917, 1390, 919, 1016, 933, 1270, 935, 1034, 936, 920, 951, 1013, 952, 900, 967, 995, 983, 979, 999, 964, 1014, 1090, 1015, 950, 1031, 938, 1047, 923, 1048, 840, 1063, 908, 1079, 894, 1095, 881, 1111, 870, 1126, 930, 1127, 858, 1143, 850, 1160, 780, 1177, 680, 1192, 700, 1194, 620, 1208, 720, 1211, 560, 1224, 880, 1226, 690, 1240, 680, 1254, 800, 1256, 650, 1269, 1370, 1271, 850, 1285, 1270, 1286, 1100, 1301, 1470, 1303, 950, 1318, 1200, 1320, 840, 1333, 980, 1335, 960, 1337, 740, 1354, 670, 1371, 620, 1397, 1800, 1414, 1430, 1431, 1180, 1448, 1020, 1463, 1130, 1464, 980, 1465, 890, 1480, 970, 1482, 800, 1495, 1100, 1496, 950, 1499, 710, 1511, 1080, 1512, 930, 1527, 1070, 1528, 920],
 "anionLookupTable", [19, 1540, 96, 2600, 113, 1710, 130, 1360, 131, 680, 147, 1330, 241, 2120, 258, 1840, 275, 1810, 512, 2720, 529, 2220, 546, 1980, 563, 1960, 800, 2940, 803, 3700, 817, 2450, 834, 2110, 835, 2500, 851, 2200]);
-c$.bsCations = c$.prototype.bsCations =  new java.util.BitSet ();
-c$.bsAnions = c$.prototype.bsAnions =  new java.util.BitSet ();
+c$.bsCations = c$.prototype.bsCations =  new javax.util.BitSet ();
+c$.bsAnions = c$.prototype.bsAnions =  new javax.util.BitSet ();
 {
 for (var i = 0; i < org.jmol.util.Elements.anionLookupTable.length; i += 2) org.jmol.util.Elements.bsAnions.set (org.jmol.util.Elements.anionLookupTable[i] >> 4);
 

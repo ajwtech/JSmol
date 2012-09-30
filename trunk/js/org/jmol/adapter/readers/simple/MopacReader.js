@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.MopacReader", ["java.lang.Exception", "$.Float", "java.util.BitSet", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.MopacReader", ["java.lang.Exception", "$.Float", "javax.util.BitSet", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.baseAtomIndex = 0;
 this.chargesFound = false;
@@ -94,7 +94,7 @@ atom.elementSymbol = elementSymbol;
 });
 Clazz.defineMethod (c$, "readFrequencies", 
 ($fz = function () {
-var bsOK =  new java.util.BitSet ();
+var bsOK =  new javax.util.BitSet ();
 var n0 = this.atomSetCollection.getCurrentAtomSetIndex () + 1;
 var tokens;
 var done = false;

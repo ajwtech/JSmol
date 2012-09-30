@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.Mesh", "java.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.shapespecial.Draw"], "org.jmol.shapespecial.DrawMesh", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
+Clazz.load (["org.jmol.shape.Mesh", "javax.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.shapespecial.Draw"], "org.jmol.shapespecial.DrawMesh", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelFlags = null;
 this.drawType = null;
@@ -20,7 +20,7 @@ Clazz.instantialize (this, arguments);
 Clazz.prepareFields (c$, function () {
 this.drawType = org.jmol.shapespecial.Draw.EnumDrawType.NONE;
 this.axis = javax.vecmath.Vector3f.new3 (1, 0, 0);
-this.bsMeshesVisible =  new java.util.BitSet ();
+this.bsMeshesVisible =  new javax.util.BitSet ();
 });
 Clazz.defineMethod (c$, "setCenters", 
 function () {
@@ -66,7 +66,7 @@ this.drawTypes = org.jmol.util.ArrayUtil.deleteElements (this.drawTypes, modelIn
 this.drawVertexCounts = org.jmol.util.ArrayUtil.deleteElements (this.drawVertexCounts, modelIndex, 1);
 this.ptCenters = org.jmol.util.ArrayUtil.deleteElements (this.ptCenters, modelIndex, 1);
 this.axes = org.jmol.util.ArrayUtil.deleteElements (this.axes, modelIndex, 1);
-var bs = org.jmol.util.BitSetUtil.setBit (modelIndex);
+var bs = org.jmol.util.BitSetUtil.newAndSetBit (modelIndex);
 org.jmol.util.BitSetUtil.deleteBits (this.modelFlags, bs);
 }, "~N");
 });

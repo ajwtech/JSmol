@@ -194,7 +194,7 @@ ch = altloc;
 conformationIndex--;
 }if (conformationIndex < 0 && altloc.charCodeAt (0) != ch.charCodeAt (0)) bsConformation.clear (i);
 }
-}, "~A,java.util.BitSet,~N");
+}, "~A,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "updateOffsetsForAlternativeLocations", 
 function (atoms, bsSelected) {
 for (var offsetIndex = this.offsets.length; --offsetIndex >= 0; ) {
@@ -213,12 +213,12 @@ this.offsets[offsetIndex] = offsetNew;
 break;
 }
 }
-}, "~A,java.util.BitSet");
+}, "~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getMonomerSequenceAtoms", 
 function (bsInclude, bsResult) {
 Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "selectAtoms", [bsResult]);
 bsResult.and (bsInclude);
-}, "java.util.BitSet,java.util.BitSet");
+}, "javax.util.BitSet,javax.util.BitSet");
 c$.checkOptional = Clazz.defineMethod (c$, "checkOptional", 
 function (offsets, atom, firstAtomIndex, index) {
 if (offsets[atom] >= 0) return true;
@@ -235,7 +235,7 @@ function (tokType, qType, mStep) {
 var iPrev = this.monomerIndex - mStep;
 var prev = (mStep < 1 || this.monomerIndex <= 0 ? null : this.bioPolymer.monomers[iPrev]);
 var q2 = this.getQuaternion (qType);
-var q1 = (mStep < 1 ? org.jmol.util.Quaternion.getQuaternionFrame (org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, false) : prev == null ? null : prev.getQuaternion (qType));
+var q1 = (mStep < 1 ? org.jmol.util.Quaternion.getQuaternionFrameV (org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, false) : prev == null ? null : prev.getQuaternion (qType));
 if (q1 == null || q2 == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
 var a = (mStep < 1 ? javax.vecmath.Point3f.new3 (0, 0, 0) : prev.getQuaternionFrameCenter (qType));
 var b = this.getQuaternionFrameCenter (qType);

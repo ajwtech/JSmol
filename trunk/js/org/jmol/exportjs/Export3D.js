@@ -416,7 +416,7 @@ return this.g3d.isClippedZ (z);
 }, "~N");
 Clazz.defineMethod (c$, "clipCode", 
 function (x, y, z) {
-return (this.exporter.exportType == 1 ? this.g3d.clipCode (z) : this.g3d.clipCode (x, y, z));
+return (this.exporter.exportType == 1 ? this.g3d.clipCode (z) : this.g3d.clipCode3 (x, y, z));
 }, "~N,~N,~N");
 Clazz.overrideMethod (c$, "isClippedXY", 
 function (diameter, x, y) {
@@ -440,9 +440,9 @@ Clazz.overrideMethod (c$, "setNoisySurfaceShade",
 function (pointA, pointB, pointC) {
 this.g3d.setNoisySurfaceShade (pointA, pointB, pointC);
 }, "javax.vecmath.Point3i,javax.vecmath.Point3i,javax.vecmath.Point3i");
-Clazz.defineMethod (c$, "getFontFid", 
+Clazz.overrideMethod (c$, "getFontFidFS", 
 function (fontFace, fontSize) {
-return this.g3d.getFontFid (fontFace, fontSize);
+return this.g3d.getFontFidFS (fontFace, fontSize);
 }, "~S,~N");
 Clazz.overrideMethod (c$, "isDirectedTowardsCamera", 
 function (normix) {
@@ -456,7 +456,7 @@ Clazz.overrideMethod (c$, "getFont3DScaled",
 function (font, scale) {
 return this.g3d.getFont3DScaled (font, scale);
 }, "org.jmol.util.JmolFont,~N");
-Clazz.defineMethod (c$, "getFontFid", 
+Clazz.overrideMethod (c$, "getFontFid", 
 function (fontSize) {
 return this.g3d.getFontFid (fontSize);
 }, "~N");

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.InputStreamReader", "$.StringReader", "java.util.BitSet", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.ApbsReader", "$.AtomPropertyMapper", "$.CastepDensityReader", "$.CubeReader", "$.Dsn6BinaryReader", "$.EfvetReader", "$.IsoFxyReader", "$.IsoFxyzReader", "$.IsoIntersectReader", "$.IsoMOReader", "$.IsoMepReader", "$.IsoMlpReader", "$.IsoPlaneReader", "$.IsoShapeReader", "$.IsoSolventReader", "$.JaguarReader", "$.JvxlReader", "$.JvxlXmlReader", "$.KinemageReader", "$.MrcBinaryReader", "$.MsmsReader", "$.NffFileReader", "$.ObjReader", "$.Parameters", "$.PltFormattedReader", "$.PmeshReader", "$.SurfaceReader", "$.VolumeDataReader", "$.XplorReader", "$.XsfReader", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Parser", "$.SurfaceFileTyper", "$.TextFormat"], function () {
+Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.InputStreamReader", "$.StringReader", "javax.util.BitSet", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.ApbsReader", "$.AtomPropertyMapper", "$.CastepDensityReader", "$.CubeReader", "$.Dsn6BinaryReader", "$.EfvetReader", "$.IsoFxyReader", "$.IsoFxyzReader", "$.IsoIntersectReader", "$.IsoMOReader", "$.IsoMepReader", "$.IsoMlpReader", "$.IsoPlaneReader", "$.IsoShapeReader", "$.IsoSolventReader", "$.JaguarReader", "$.JvxlReader", "$.JvxlXmlReader", "$.KinemageReader", "$.MrcBinaryReader", "$.MsmsReader", "$.NffFileReader", "$.ObjReader", "$.Parameters", "$.PltFormattedReader", "$.PmeshReader", "$.SurfaceReader", "$.VolumeDataReader", "$.XplorReader", "$.XsfReader", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Parser", "$.SurfaceFileTyper", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.jvxlData = null;
 this.meshData = null;
@@ -257,7 +257,7 @@ this.params.isPositiveOnly = false;
 this.params.cutoffAutomatic = false;
 return true;
 }if ("parameters" === propertyName) {
-this.params.parameters = org.jmol.util.ArrayUtil.ensureLength (value, 2);
+this.params.parameters = org.jmol.util.ArrayUtil.ensureLengthA (value, 2);
 if (this.params.parameters.length > 0 && this.params.parameters[0] != 0) this.params.cutoff = this.params.parameters[0];
 return true;
 }if ("cutoffPositive" === propertyName) {
@@ -590,7 +590,7 @@ return true;
 }if ("periodic" === propertyName) {
 this.params.isPeriodic = true;
 }return false;
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getSurfaceSets", 
 ($fz = function () {
 if (this.meshDataServer == null) {
@@ -922,7 +922,7 @@ return this.bsVdw;
 Clazz.defineMethod (c$, "fillAtomData", 
 function (atomData, mode) {
 if ((mode & 2) != 0 && atomData.bsSelected != null) {
-if (this.bsVdw == null) this.bsVdw =  new java.util.BitSet ();
+if (this.bsVdw == null) this.bsVdw =  new javax.util.BitSet ();
 this.bsVdw.or (atomData.bsSelected);
 }this.atomDataServer.fillAtomData (atomData, mode);
 }, "org.jmol.atomdata.AtomData,~N");

@@ -20,7 +20,7 @@ function (viewer, gdata) {
 this.viewer = viewer;
 this.g3d = gdata;
 this.argbsCpk = org.jmol.constant.EnumPalette.argbsCpk;
-this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopy (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1, false);
+this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1);
 }, "org.jmol.viewer.Viewer,org.jmol.util.GData");
 Clazz.defineMethod (c$, "clear", 
 function () {
@@ -41,8 +41,8 @@ this.argbsCpk = org.jmol.util.ColorEncoder.getRasmolScale ().clone ();
 } else {
 this.isDefaultColorRasmol = false;
 this.argbsCpk = org.jmol.constant.EnumPalette.argbsCpk;
-}this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopy (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1, false);
-this.propertyColorEncoder.getColorScheme ((isRasmol ? "Rasmol=" : "Jmol="), true, true);
+}this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1);
+this.propertyColorEncoder.createColorScheme ((isRasmol ? "Rasmol=" : "Jmol="), true, true);
 for (var i = org.jmol.constant.EnumPalette.argbsCpk.length; --i >= 0; ) this.g3d.changeColixArgb (i, this.argbsCpk[i]);
 
 for (var i = org.jmol.viewer.JmolConstants.altArgbsCpk.length; --i >= 0; ) this.g3d.changeColixArgb ((org.jmol.util.Elements.elementNumberMax + i), this.altArgbsCpk[i]);
@@ -165,8 +165,8 @@ function (id, argb) {
 if (argb == 1073741992 && this.argbsCpk === org.jmol.constant.EnumPalette.argbsCpk) return ;
 argb = this.getJmolOrRasmolArgb (id, argb);
 if (this.argbsCpk === org.jmol.constant.EnumPalette.argbsCpk) {
-this.argbsCpk = org.jmol.util.ArrayUtil.arrayCopy (org.jmol.constant.EnumPalette.argbsCpk, 0, -1, false);
-this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopy (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1, false);
+this.argbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.constant.EnumPalette.argbsCpk, 0, -1);
+this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.viewer.JmolConstants.altArgbsCpk, 0, -1);
 }if (id < org.jmol.util.Elements.elementNumberMax) {
 this.argbsCpk[id] = argb;
 this.g3d.changeColixArgb (id, argb);
@@ -183,7 +183,7 @@ return [this.propertyColorEncoder.lo, this.propertyColorEncoder.hi];
 Clazz.defineMethod (c$, "setPropertyColorRangeData", 
 function (data, bs, colorScheme) {
 this.colorData = data;
-this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.getColorScheme (colorScheme, true, false);
+this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.createColorScheme (colorScheme, true, false);
 this.propertyColorEncoder.hi = 1.4E-45;
 this.propertyColorEncoder.lo = 3.4028235E38;
 if (data == null) return ;
@@ -195,18 +195,18 @@ if (Float.isNaN (d = data[i])) continue ;this.propertyColorEncoder.hi = Math.max
 this.propertyColorEncoder.lo = Math.min (this.propertyColorEncoder.lo, d);
 }
 this.setPropertyColorRange (this.propertyColorEncoder.lo, this.propertyColorEncoder.hi);
-}, "~A,java.util.BitSet,~S");
+}, "~A,javax.util.BitSet,~S");
 Clazz.defineMethod (c$, "setPropertyColorRange", 
 function (min, max) {
 this.propertyColorEncoder.setRange (min, max, min > max);
-org.jmol.util.Logger.info ("ColorManager: color \"" + this.propertyColorEncoder.getColorSchemeName () + "\" range " + min + " " + max);
+org.jmol.util.Logger.info ("ColorManager: color \"" + this.propertyColorEncoder.getCurrentColorSchemeName () + "\" range " + min + " " + max);
 }, "~N,~N");
 Clazz.defineMethod (c$, "setPropertyColorScheme", 
 function (colorScheme, isTranslucent, isOverloaded) {
 var isReset = (colorScheme.length == 0);
 if (isReset) colorScheme = "=";
 var range = this.getPropertyColorRange ();
-this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.getColorScheme (colorScheme, true, isOverloaded);
+this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.createColorScheme (colorScheme, true, isOverloaded);
 if (!isReset) this.setPropertyColorRange (range[0], range[1]);
 this.propertyColorEncoder.isTranslucent = isTranslucent;
 }, "~S,~B,~B");
@@ -223,7 +223,7 @@ this.propertyColorEncoder.setUserScale (scale);
 }, "~A");
 Clazz.defineMethod (c$, "getColorSchemeList", 
 function (colorScheme) {
-var iPt = (colorScheme == null || colorScheme.length == 0) ? this.propertyColorEncoder.currentPalette : this.propertyColorEncoder.getColorScheme (colorScheme, true, false);
+var iPt = (colorScheme == null || colorScheme.length == 0) ? this.propertyColorEncoder.currentPalette : this.propertyColorEncoder.createColorScheme (colorScheme, true, false);
 return org.jmol.util.ColorEncoder.getColorSchemeList (this.propertyColorEncoder.getColorSchemeArray (iPt));
 }, "~S");
 Clazz.defineMethod (c$, "getColixForPropertyValue", 
@@ -234,7 +234,7 @@ Clazz.defineMethod (c$, "getColorEncoder",
 function (colorScheme) {
 if (colorScheme == null || colorScheme.length == 0) return this.propertyColorEncoder;
 var ce =  new org.jmol.util.ColorEncoder (this.propertyColorEncoder);
-ce.currentPalette = ce.getColorScheme (colorScheme, false, true);
+ce.currentPalette = ce.createColorScheme (colorScheme, false, true);
 return (ce.currentPalette == 2147483647 ? null : ce);
 }, "~S");
 });

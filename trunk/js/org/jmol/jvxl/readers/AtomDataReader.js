@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "java.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "org.jmol.atomdata.AtomData"], "org.jmol.jvxl.readers.AtomDataReader", ["java.lang.Float", "$.StringBuffer", "java.util.Date", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "org.jmol.atomdata.AtomData"], "org.jmol.jvxl.readers.AtomDataReader", ["java.lang.Float", "$.StringBuffer", "java.util.Date", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.maxDistance = 0;
 this.contactPair = null;
@@ -41,8 +41,8 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "AtomDataReader", org.jmol.jvxl.readers.VolumeDataReader);
 Clazz.prepareFields (c$, function () {
 this.atomData =  new org.jmol.atomdata.AtomData ();
-this.bsMySelected =  new java.util.BitSet ();
-this.bsMyIgnored =  new java.util.BitSet ();
+this.bsMySelected =  new javax.util.BitSet ();
+this.bsMyIgnored =  new javax.util.BitSet ();
 this.ptY0 =  new javax.vecmath.Point3f ();
 this.ptZ0 =  new javax.vecmath.Point3f ();
 this.pt0 =  new javax.vecmath.Point3i ();
@@ -175,7 +175,7 @@ this.xyzMax.add (v);
 this.xyzMin.sub (v);
 }if (!addNearbyAtoms || this.myAtomCount == 0) return ;
 var pt =  new javax.vecmath.Point3f ();
-this.bsNearby =  new java.util.BitSet ();
+this.bsNearby =  new javax.util.BitSet ();
 for (var i = 0; i < this.atomCount; i++) {
 if (atomSet.get (i) || this.bsMyIgnored.get (i)) continue ;var rA = this.atomData.atomRadius[i];
 if (this.params.thePlane != null && Math.abs (this.volumeData.distancePointToPlane (this.atomData.atomXyz[i])) > 2 * rA) continue ;if (this.params.theProperty != null) rA += this.maxDistance;
@@ -187,10 +187,10 @@ this.nearbyAtomCount++;
 var nAtoms = this.myAtomCount;
 if (this.nearbyAtomCount != 0) {
 nAtoms += this.nearbyAtomCount;
-this.atomRadius = org.jmol.util.ArrayUtil.setLength (this.atomRadius, nAtoms);
-this.atomXyz = org.jmol.util.ArrayUtil.setLength (this.atomXyz, nAtoms);
-if (this.atomIndex != null) this.atomIndex = org.jmol.util.ArrayUtil.setLength (this.atomIndex, nAtoms);
-if (props != null) this.atomProp = org.jmol.util.ArrayUtil.setLength (this.atomProp, nAtoms);
+this.atomRadius = org.jmol.util.ArrayUtil.arrayCopyF (this.atomRadius, nAtoms);
+this.atomXyz = org.jmol.util.ArrayUtil.arrayCopyOpt (this.atomXyz, nAtoms);
+if (this.atomIndex != null) this.atomIndex = org.jmol.util.ArrayUtil.arrayCopyI (this.atomIndex, nAtoms);
+if (props != null) this.atomProp = org.jmol.util.ArrayUtil.arrayCopyF (this.atomProp, nAtoms);
 for (var i = this.bsNearby.nextSetBit (0); i >= 0; i = this.bsNearby.nextSetBit (i + 1)) {
 if (props != null) this.atomProp[this.myAtomCount] = props[i];
 this.myIndex[i] = this.myAtomCount;
@@ -198,7 +198,7 @@ this.atomIndex[this.myAtomCount] = i;
 this.atomXyz[this.myAtomCount] = this.atomData.atomXyz[i];
 this.atomRadius[this.myAtomCount++] = this.atomData.atomRadius[i];
 }
-}}, "java.util.BitSet,~B,~B,~B,~B,~B,~B,~N");
+}}, "javax.util.BitSet,~B,~B,~B,~B,~B,~B,~N");
 Clazz.defineMethod (c$, "getWorkingRadius", 
 ($fz = function (i, marginAtoms) {
 var r = (i < 0 ? this.atomData.hAtomRadius : this.atomData.atomRadius[i]);
@@ -230,15 +230,15 @@ Clazz.defineMethod (c$, "fixTitleLine",
 function (iLine) {
 if (this.params.title == null) return false;
 var line = this.params.title[iLine];
-if (line.indexOf ("%F") > 0) line = this.params.title[iLine] = org.jmol.util.TextFormat.formatString (line, "F", this.atomData.fileName);
-if (line.indexOf ("%M") > 0) this.params.title[iLine] = org.jmol.util.TextFormat.formatString (line, "M", this.atomData.modelName);
+if (line.indexOf ("%F") > 0) line = this.params.title[iLine] = org.jmol.util.TextFormat.formatStringS (line, "F", this.atomData.fileName);
+if (line.indexOf ("%M") > 0) this.params.title[iLine] = org.jmol.util.TextFormat.formatStringS (line, "M", this.atomData.modelName);
 return true;
 }, "~N");
 Clazz.defineMethod (c$, "setVertexSource", 
 function () {
 if (this.meshDataServer != null) this.meshDataServer.fillMeshData (this.meshData, 1, null);
 if (this.params.vertexSource != null) {
-this.params.vertexSource = org.jmol.util.ArrayUtil.setLength (this.params.vertexSource, this.meshData.vertexCount);
+this.params.vertexSource = org.jmol.util.ArrayUtil.arrayCopyI (this.params.vertexSource, this.meshData.vertexCount);
 for (var i = 0; i < this.meshData.vertexCount; i++) this.params.vertexSource[i] = Math.abs (this.params.vertexSource[i]) - 1;
 
 }});
@@ -286,14 +286,14 @@ pt1.z = Math.min (pt1.z + 1, this.nPointsZ);
 }, "javax.vecmath.Point3f,~N,javax.vecmath.Point3i,javax.vecmath.Point3i");
 Clazz.defineMethod (c$, "getAtomMinMax", 
 function (bs, bsAtomMinMax) {
-for (var i = 0; i < this.nPointsX; i++) bsAtomMinMax[i] =  new java.util.BitSet ();
+for (var i = 0; i < this.nPointsX; i++) bsAtomMinMax[i] =  new javax.util.BitSet ();
 
 for (var iAtom = this.myAtomCount; --iAtom >= 0; ) {
 if (bs != null && !bs.get (iAtom)) continue ;this.setGridLimitsForAtom (this.atomXyz[iAtom], this.atomRadius[iAtom], this.pt0, this.pt1);
 for (var i = this.pt0.x; i < this.pt1.x; i++) bsAtomMinMax[i].set (iAtom);
 
 }
-}, "java.util.BitSet,~A");
+}, "javax.util.BitSet,~A");
 Clazz.defineMethod (c$, "markSphereVoxels", 
 function (r0, distance) {
 var isWithin = (distance != 3.4028235E38 && this.point != null);

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.BitSet", "$.Hashtable", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelLoader = null;
 this.modelSet = null;
@@ -61,8 +61,8 @@ Clazz.overrideMethod (c$, "initializeHydrogenAddition",
 function (modelLoader, bondCount) {
 this.modelLoader = modelLoader;
 this.baseBondIndex = bondCount;
-this.bsAddedHydrogens =  new java.util.BitSet ();
-this.bsAtomsForHs =  new java.util.BitSet ();
+this.bsAddedHydrogens =  new javax.util.BitSet ();
+this.bsAtomsForHs =  new javax.util.BitSet ();
 this.htBondMap =  new java.util.Hashtable ();
 this.htGroupBonds =  new java.util.Hashtable ();
 this.hNames =  new Array (3);
@@ -87,8 +87,8 @@ nH = adapter.getHydrogenAtomCount (model);
 if (nH < 1) return ;
 }this.getBondInfo (adapter, group3, model);
 this.modelSet.getModels ()[this.modelSet.atoms[iFirst].modelIndex].isPdbWithMultipleBonds = true;
-this.bsAtomsForHs.set (iFirst, atomCount);
-this.bsAddedHydrogens.set (atomCount, atomCount + nH);
+this.bsAtomsForHs.setBits (iFirst, atomCount);
+this.bsAddedHydrogens.setBits (atomCount, atomCount + nH);
 var isHetero = this.modelSet.atoms[iFirst].isHetero ();
 for (var i = 0; i < nH; i++) this.modelSet.addAtom (this.modelSet.atoms[iFirst].modelIndex, this.modelSet.atoms[iFirst].getGroup (), 1, "H", 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0, 0, 1, 0, null, isHetero, 0, null).$delete (null);
 
@@ -243,7 +243,7 @@ this.deleteUnneededAtoms ();
 }});
 Clazz.defineMethod (c$, "deleteUnneededAtoms", 
 ($fz = function () {
-var bsBondsDeleted =  new java.util.BitSet ();
+var bsBondsDeleted =  new javax.util.BitSet ();
 for (var i = this.bsAtomsForHs.nextSetBit (0); i >= 0; i = this.bsAtomsForHs.nextSetBit (i + 1)) {
 var atom = this.modelSet.atoms[i];
 if (!atom.isHetero () || atom.getElementNumber () != 8 || atom.getFormalCharge () != 0 || atom.getCovalentBondCount () != 2) continue ;var bonds = atom.getBonds ();
@@ -339,7 +339,7 @@ if (atoms[i].getElementNumber () != 1) lastData = aData[pt++];
 newData[iAtom] = lastData;
 }
 return org.jmol.util.TextFormat.join (newData, '\n', 0);
-}, "java.util.BitSet,~S");
+}, "javax.util.BitSet,~S");
 c$.allocateBioPolymer = Clazz.defineMethod (c$, "allocateBioPolymer", 
 function (groups, firstGroupIndex, checkConnections) {
 var previous = null;

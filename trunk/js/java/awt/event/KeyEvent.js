@@ -30,10 +30,6 @@ Clazz.makeConstructor (c$,
 function (source, id, when, modifiers, keyCode, keyChar) {
 this.construct (source, id, when, modifiers, keyCode, keyChar, 0);
 }, "java.awt.Component,~N,~N,~N,~N,~S");
-Clazz.makeConstructor (c$, 
-function (source, id, when, modifiers, keyCode) {
-this.construct (source, id, when, modifiers, keyCode, String.fromCharCode (keyCode));
-}, "java.awt.Component,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "getKeyCode", 
 function () {
 return this.keyCode;

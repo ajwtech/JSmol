@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jmol.modelsetbio.AminoPolymer.Bridge")) {
 org.jmol.modelsetbio.AminoPolymer.$AminoPolymer$Bridge$ ();
@@ -81,7 +81,7 @@ min1 = min[i];
 var isInA = (bsA == null || bsA.get (source.getNitrogenAtom ().index));
 if (!isInA) continue ;if (!checkDistances && source.getCarbonylOxygenAtom () == null) continue ;this.checkRasmolHydrogenBond (source, polymer, i, pt, (isInA ? bsB : bsA), vHBonds, min1, checkDistances);
 }}
-}, "org.jmol.modelsetbio.BioPolymer,java.util.BitSet,java.util.BitSet,java.util.List,~N,~A,~B,~B");
+}, "org.jmol.modelsetbio.BioPolymer,javax.util.BitSet,javax.util.BitSet,java.util.List,~N,~A,~B,~B");
 Clazz.defineMethod (c$, "checkRasmolHydrogenBond", 
 ($fz = function (source, polymer, indexDonor, hydrogenPoint, bsB, vHBonds, min, checkDistances) {
 var sourceAlphaPoint = source.getLeadAtom ();
@@ -107,7 +107,7 @@ m[2] = energy;
 }
 if (vHBonds != null) for (var i = 0; i < 2; i++) if (min[i][1] >= 0) this.addResidueHydrogenBond (nitrogen, ((polymer).monomers[min[i][1]]).getCarbonylOxygenAtom (), (polymer === this ? indexDonor : -99), min[i][1], min[i][2] / 1000, vHBonds);
 
-}, $fz.isPrivate = true, $fz), "org.jmol.modelsetbio.AminoMonomer,org.jmol.modelsetbio.BioPolymer,~N,javax.vecmath.Point3f,java.util.BitSet,java.util.List,~A,~B");
+}, $fz.isPrivate = true, $fz), "org.jmol.modelsetbio.AminoMonomer,org.jmol.modelsetbio.BioPolymer,~N,javax.vecmath.Point3f,javax.util.BitSet,java.util.List,~A,~B");
 Clazz.defineMethod (c$, "calcHbondEnergy", 
 ($fz = function (nitrogenPoint, hydrogenPoint, target, checkDistances) {
 var targetOxygenPoint = target.getCarbonylOxygenAtom ();
@@ -167,7 +167,7 @@ if (setStructure && m.modelIndex == 0) sb.append ("\nAll bioshapes have been del
 if (m.nAltLocs > 0) sb.append ("\nNote: This model contains alternative locations. Use  'CONFIGURATION 1' to be consistent with CMBI DSSP.\n");
 var labels =  Clazz.newArray (bioPolymerCount, '\0');
 var bsDone =  new Array (bioPolymerCount);
-var bsBad =  new java.util.BitSet ();
+var bsBad =  new javax.util.BitSet ();
 var haveWarned = false;
 for (var i = 0; i < bioPolymerCount; i++) {
 if (!(Clazz.instanceOf (bioPolymers[i], org.jmol.modelsetbio.AminoPolymer))) continue ;var ap = bioPolymers[i];
@@ -177,7 +177,7 @@ if (dsspIgnoreHydrogens) sb.append (org.jmol.i18n.GT._ ("NOTE: Backbone amide hy
 haveWarned = true;
 }bioPolymers[i].recalculateLeadMidpointsAndWingVectors ();
 labels[i] =  Clazz.newArray (bioPolymers[i].monomerCount, '\0');
-bsDone[i] =  new java.util.BitSet ();
+bsDone[i] =  new javax.util.BitSet ();
 for (var j = 0; j < ap.monomerCount; j++) if ((ap.monomers[j]).getCarbonylOxygenAtom () == null) bsBad.set (ap.monomers[j].leadAtomIndex);
 
 }
@@ -223,7 +223,7 @@ Clazz.defineMethod (c$, "findHelixes",
 ($fz = function (min, iPolymer, bsDone, labels, doReport, setStructure, vHBonds, bsBad) {
 if (org.jmol.util.Logger.debugging) for (var j = 0; j < this.monomerCount; j++) org.jmol.util.Logger.debug (iPolymer + "." + this.monomers[j].getResno () + "\t" + org.jmol.util.Escape.escape (min[j]));
 
-var bsTurn =  new java.util.BitSet ();
+var bsTurn =  new javax.util.BitSet ();
 var line4 = this.findHelixes (4, min, iPolymer, org.jmol.constant.EnumStructure.HELIXALPHA, 10240, bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 var line3 = this.findHelixes (3, min, iPolymer, org.jmol.constant.EnumStructure.HELIX310, 8192, bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 var line5 = this.findHelixes (5, min, iPolymer, org.jmol.constant.EnumStructure.HELIXPI, 12288, bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
@@ -232,14 +232,14 @@ if (doReport) {
 this.setTag (labels, bsTurn, 'T');
 return this.dumpTags ("$.5: " + line5 + "\n" + "$.4: " + line4 + "\n" + "$.3: " + line3, bsBad, 1);
 }return "";
-}, $fz.isPrivate = true, $fz), "~A,~N,java.util.BitSet,~A,~B,~B,java.util.List,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,~N,javax.util.BitSet,~A,~B,~B,java.util.List,javax.util.BitSet");
 Clazz.defineMethod (c$, "findHelixes", 
 ($fz = function (pitch, min, thisIndex, subtype, type, bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad) {
-var bsStart =  new java.util.BitSet ();
-var bsNNN =  new java.util.BitSet ();
-var bsX =  new java.util.BitSet ();
-var bsStop =  new java.util.BitSet ();
-var bsHelix =  new java.util.BitSet ();
+var bsStart =  new javax.util.BitSet ();
+var bsNNN =  new javax.util.BitSet ();
+var bsX =  new javax.util.BitSet ();
+var bsStop =  new javax.util.BitSet ();
+var bsHelix =  new javax.util.BitSet ();
 var warning = "";
 for (var i = pitch; i < this.monomerCount; ++i) {
 var i0 = i - pitch;
@@ -248,13 +248,13 @@ if (min[i][0][0] == thisIndex && min[i][0][1] == i0 || min[i][bpt = 1][0] == thi
 var ia = this.monomers[i0].leadAtomIndex;
 var ipt = bsBad.nextSetBit (ia);
 if (ipt >= ia && ipt <= this.monomers[i].leadAtomIndex) continue ;bsStart.set (i0);
-bsNNN.set (i0 + 1, i);
+bsNNN.setBits (i0 + 1, i);
 bsStop.set (i);
 ipt = bsDone.nextSetBit (i0);
 var isClear = (ipt < 0 || ipt >= i);
 var addH = false;
 if (i0 > 0 && bsStart.get (i0 - 1) && (pitch == 4 || isClear)) {
-bsHelix.set (i0, i);
+bsHelix.setBits (i0, i);
 if (!isClear) warning += "  WARNING! Bridge to helix at " + this.monomers[ipt];
 addH = true;
 } else if (isClear || bsDone.nextClearBit (ipt) < i) {
@@ -281,7 +281,7 @@ if (doReport) {
 this.setTag (labels, bsHelix, String.fromCharCode ((68 + pitch)));
 return String.valueOf (taglines) + warning;
 }return "";
-}, $fz.isPrivate = true, $fz), "~N,~A,~N,org.jmol.constant.EnumStructure,~N,java.util.BitSet,java.util.BitSet,~A,~B,~B,java.util.List,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~A,~N,org.jmol.constant.EnumStructure,~N,javax.util.BitSet,javax.util.BitSet,~A,~B,~B,java.util.List,javax.util.BitSet");
 c$.getBridges = Clazz.defineMethod (c$, "getBridges", 
 ($fz = function (bioPolymers, min, bridgesA, bridgesP, htBridges, htLadders, bsBad, vHBonds, bsDone) {
 var atoms = bioPolymers[0].model.getModelSet ().atoms;
@@ -307,7 +307,7 @@ htBridges.put (ia + "-" + ib, bridge);
 
 }
 }
-}, $fz.isPrivate = true, $fz), "~A,~A,java.util.List,java.util.List,java.util.Map,java.util.Map,java.util.BitSet,java.util.List,~A");
+}, $fz.isPrivate = true, $fz), "~A,~A,java.util.List,java.util.List,java.util.Map,java.util.Map,javax.util.BitSet,java.util.List,~A");
 c$.getBridge = Clazz.defineMethod (c$, "getBridge", 
 ($fz = function (min, p1, a, p2, b, bridges, atom1, atom2, ap1, ap2, vHBonds, htTemp, isAntiparallel, htLadders) {
 var b1 = null;
@@ -339,8 +339,8 @@ c$.getSheetStructures = Clazz.defineMethod (c$, "getSheetStructures",
 if (bridgesA.size () == 0 && bridgesP.size () == 0) return ;
 org.jmol.modelsetbio.AminoPolymer.createLadders (bridgesA, htBridges, htLadders, true);
 org.jmol.modelsetbio.AminoPolymer.createLadders (bridgesP, htBridges, htLadders, false);
-var bsEEE =  new java.util.BitSet ();
-var bsB =  new java.util.BitSet ();
+var bsEEE =  new javax.util.BitSet ();
+var bsB =  new javax.util.BitSet ();
 var e = htLadders.keySet ().iterator ();
 while (e.hasNext ()) {
 var ladder = e.next ();
@@ -348,14 +348,14 @@ if (ladder[0][0] == ladder[0][1] && ladder[1][0] == ladder[1][1]) {
 bsB.set (ladder[0][0]);
 bsB.set (ladder[1][0]);
 } else {
-bsEEE.set (ladder[0][0], ladder[0][1] + 1);
-bsEEE.set (ladder[1][0], ladder[1][1] + 1);
+bsEEE.setBits (ladder[0][0], ladder[0][1] + 1);
+bsEEE.setBits (ladder[1][0], ladder[1][1] + 1);
 }}
-var bsSheet =  new java.util.BitSet ();
-var bsBridge =  new java.util.BitSet ();
+var bsSheet =  new javax.util.BitSet ();
+var bsBridge =  new javax.util.BitSet ();
 for (var i = bioPolymers.length; --i >= 0; ) {
-if (!(Clazz.instanceOf (bioPolymers[i], org.jmol.modelsetbio.AminoPolymer))) continue ;bsSheet.clear ();
-bsBridge.clear ();
+if (!(Clazz.instanceOf (bioPolymers[i], org.jmol.modelsetbio.AminoPolymer))) continue ;bsSheet.clearAll ();
+bsBridge.clearAll ();
 var ap = bioPolymers[i];
 for (var iStart = 0; iStart < ap.monomerCount; ) {
 var index = ap.monomers[iStart].leadAtomIndex;
@@ -363,7 +363,7 @@ if (bsEEE.get (index)) {
 var iEnd = iStart + 1;
 while (iEnd < ap.monomerCount && bsEEE.get (ap.monomers[iEnd].leadAtomIndex)) iEnd++;
 
-bsSheet.set (iStart, iEnd);
+bsSheet.setBits (iStart, iEnd);
 iStart = iEnd;
 } else {
 if (bsB.get (index)) bsBridge.set (iStart);
@@ -409,7 +409,7 @@ if (i2 < 0) i2 = this.monomerCount;
 this.addSecondaryStructure (type, null, 0, 0, i, i2 - 1);
 i = i2;
 }
-}, $fz.isPrivate = true, $fz), "java.util.BitSet,org.jmol.constant.EnumStructure");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,org.jmol.constant.EnumStructure");
 c$.isHbonded = Clazz.defineMethod (c$, "isHbonded", 
 ($fz = function (indexDonor, indexAcceptor, pDonor, pAcceptor, min) {
 if (indexDonor < 0 || indexAcceptor < 0) return null;
@@ -422,7 +422,7 @@ Clazz.defineMethod (c$, "setTag",
 ($fz = function (tags, bs, ch) {
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) tags[i] = ch;
 
-}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet,~S");
+}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet,~S");
 Clazz.defineMethod (c$, "dumpSummary", 
 ($fz = function (labels) {
 var id = this.monomers[0].getLeadAtom ().getChainID ();
@@ -471,7 +471,7 @@ if ((mode & 2) == 2) {
 sb.append (sb3);
 sb.append ("\n\n");
 }return sb.toString ().$replace ('\0', '.');
-}, $fz.isPrivate = true, $fz), "~S,java.util.BitSet,~N");
+}, $fz.isPrivate = true, $fz), "~S,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (alphaOnly) {
 if (alphaOnly) return ;

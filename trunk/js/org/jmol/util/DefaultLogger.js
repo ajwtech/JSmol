@@ -23,27 +23,27 @@ Clazz.overrideMethod (c$, "info",
 function (txt) {
 this.log (System.out, 4, txt, null);
 }, "~S");
-Clazz.defineMethod (c$, "warn", 
+Clazz.overrideMethod (c$, "warn", 
 function (txt) {
 this.log (System.out, 3, txt, null);
 }, "~S");
-Clazz.defineMethod (c$, "warn", 
+Clazz.overrideMethod (c$, "warnEx", 
 function (txt, e) {
 this.log (System.out, 3, txt, e);
 }, "~S,Throwable");
-Clazz.defineMethod (c$, "error", 
+Clazz.overrideMethod (c$, "error", 
 function (txt) {
 this.log (System.err, 2, txt, null);
 }, "~S");
-Clazz.defineMethod (c$, "error", 
+Clazz.overrideMethod (c$, "errorEx", 
 function (txt, e) {
 this.log (System.err, 2, txt, e);
 }, "~S,Throwable");
-Clazz.defineMethod (c$, "fatal", 
+Clazz.overrideMethod (c$, "fatal", 
 function (txt) {
 this.log (System.err, 1, txt, null);
 }, "~S");
-Clazz.defineMethod (c$, "fatal", 
+Clazz.overrideMethod (c$, "fatalEx", 
 function (txt, e) {
 this.log (System.err, 1, txt, e);
 }, "~S,Throwable");

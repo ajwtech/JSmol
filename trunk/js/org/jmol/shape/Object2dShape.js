@@ -124,7 +124,7 @@ text.modelIndex--;
 }}
 return ;
 }Clazz.superCall (this, org.jmol.shape.Object2dShape, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "initModelSet", 
 function () {
 this.currentObject = null;
@@ -139,7 +139,7 @@ while (e.hasNext ()) {
 var t = e.next ();
 t.setVisibility (t.modelIndex < 0 || bs.get (t.modelIndex));
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
 function (x, y, modifiers, bsVisible) {
 if (this.isHover || modifiers == 0) return null;
@@ -161,7 +161,7 @@ map.put ("type", "echo");
 return map;
 }}
 return null;
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (this.isHover) return false;
@@ -178,5 +178,5 @@ return true;
 }}}
 if (haveScripts) this.viewer.setCursor (0);
 return false;
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 });

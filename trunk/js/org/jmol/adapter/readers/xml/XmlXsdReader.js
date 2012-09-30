@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xml");
-Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "java.util.BitSet"], "org.jmol.adapter.readers.xml.XmlXsdReader", ["java.lang.Float", "org.jmol.adapter.smarter.Atom", "org.jmol.util.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.readers.xml.XmlReader", "javax.util.BitSet"], "org.jmol.adapter.readers.xml.XmlXsdReader", ["java.lang.Float", "org.jmol.adapter.smarter.Atom", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsBackbone = null;
 this.iChain = -1;
@@ -8,7 +8,7 @@ this.iAtom = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.xml, "XmlXsdReader", org.jmol.adapter.readers.xml.XmlReader);
 Clazz.prepareFields (c$, function () {
-this.bsBackbone =  new java.util.BitSet ();
+this.bsBackbone =  new javax.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
 function () {

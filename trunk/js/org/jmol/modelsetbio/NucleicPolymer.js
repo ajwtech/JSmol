@@ -69,7 +69,7 @@ if (n >= nMaxPerResidue) continue ;n += org.jmol.modelsetbio.NucleicPolymer.addH
 if (n >= nMaxPerResidue) continue ;} else {
 n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.getN6 (), bestNucleotide.getO4 ());
 }}}
-}, "org.jmol.modelsetbio.BioPolymer,java.util.BitSet,java.util.BitSet,java.util.List,~N,~A,~B,~B");
+}, "org.jmol.modelsetbio.BioPolymer,javax.util.BitSet,javax.util.BitSet,java.util.List,~N,~A,~B,~B");
 c$.addHydrogenBond = Clazz.defineMethod (c$, "addHydrogenBond", 
 function (vAtoms, atom1, atom2) {
 if (atom1 == null || atom2 == null) return 0;
@@ -79,5 +79,5 @@ return 1;
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 org.jmol.modelsetbio.BioPolymer.getPdbData (viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,javax.util.BitSet");
 });

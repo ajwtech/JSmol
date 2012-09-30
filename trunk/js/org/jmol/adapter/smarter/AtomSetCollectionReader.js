@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBinary = false;
 this.atomSetCollection = null;
@@ -232,7 +232,7 @@ var ptFile = (this.htParams.containsKey ("ptFile") ? (this.htParams.get ("ptFile
 this.isTrajectory = this.htParams.containsKey ("isTrajectory");
 if (ptFile > 0 && this.htParams.containsKey ("firstLastSteps")) {
 var val = (this.htParams.get ("firstLastSteps")).get (ptFile - 1);
-if (Clazz.instanceOf (val, java.util.BitSet)) {
+if (Clazz.instanceOf (val, javax.util.BitSet)) {
 this.bsModels = val;
 } else {
 this.firstLastStep = val;
@@ -246,7 +246,7 @@ if (this.bsModels == null && this.firstLastStep != null) {
 if (this.firstLastStep[0] < 0) this.firstLastStep[0] = 0;
 if (this.firstLastStep[2] == 0 || this.firstLastStep[1] < this.firstLastStep[0]) this.firstLastStep[1] = -1;
 if (this.firstLastStep[2] < 1) this.firstLastStep[2] = 1;
-this.bsModels = org.jmol.util.BitSetUtil.setBit (this.firstLastStep[0]);
+this.bsModels = org.jmol.util.BitSetUtil.newAndSetBit (this.firstLastStep[0]);
 if (this.firstLastStep[1] > this.firstLastStep[0]) {
 for (var i = this.firstLastStep[0]; i <= this.firstLastStep[1]; i += this.firstLastStep[2]) this.bsModels.set (i);
 
@@ -458,7 +458,7 @@ if (this.filterEveryNth) this.filterN = this.parseIntStr (this.filter.substring 
 if (this.filterN == -2147483648) this.filterEveryNth = false;
 this.haveAtomFilter = this.filterAtomType || this.filterElement || this.filterGroup3 || this.filterChain || this.filterAltLoc || this.filterHetero || this.filterEveryNth || this.checkFilterKey ("/=");
 if (this.bsFilter == null) {
-this.bsFilter =  new java.util.BitSet ();
+this.bsFilter =  new javax.util.BitSet ();
 this.htParams.put ("bsFilter", this.bsFilter);
 this.filter = (";" + this.filter + ";").$replace (',', ';');
 org.jmol.util.Logger.info ("filtering with " + this.filter);
@@ -479,7 +479,7 @@ if (!this.haveAtomFilter) return true;
 var isOK = this.checkFilter (atom, this.filter1);
 if (this.filter2 != null) isOK = new Boolean (isOK | this.checkFilter (atom, this.filter2)).valueOf ();
 if (isOK && this.filterEveryNth) isOK = (((this.nFiltered++) % this.filterN) == 0);
-this.bsFilter.set (iAtom >= 0 ? iAtom : this.atomSetCollection.getAtomCount (), isOK);
+this.bsFilter.setBitTo (iAtom >= 0 ? iAtom : this.atomSetCollection.getAtomCount (), isOK);
 return isOK;
 }, "org.jmol.adapter.smarter.Atom,~N");
 Clazz.defineMethod (c$, "checkFilter", 
@@ -514,7 +514,7 @@ v.set (x3, y3, z3);
 v.normalize ();
 this.matrixRotate.setColumnV (2, v);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationMatrix", javax.vecmath.Matrix3f.newM (this.matrixRotate));
-var q =  new org.jmol.util.Quaternion (this.matrixRotate);
+var q = org.jmol.util.Quaternion.newM (this.matrixRotate);
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("defaultOrientationQuaternion", q);
 org.jmol.util.Logger.info ("defaultOrientationMatrix = " + this.matrixRotate);
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N");

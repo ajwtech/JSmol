@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Collections", "$.Hashtable", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.Collections", "$.Hashtable", "javax.util.BitSet", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 2147483647;
 this.flags = 2;
@@ -26,7 +26,7 @@ var sv =  new org.jmol.script.ScriptVariable (10);
 sv.value = bs;
 sv.index = index;
 return sv;
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 c$.newScriptVariableToken = Clazz.defineMethod (c$, "newScriptVariableToken", 
 function (x) {
 var sv =  new org.jmol.script.ScriptVariable (x.tok);
@@ -95,7 +95,7 @@ return 0;
 }, "org.jmol.script.Token");
 c$.isVariableType = Clazz.defineMethod (c$, "isVariableType", 
 function (x) {
-return (Clazz.instanceOf (x, org.jmol.script.ScriptVariable) || Clazz.instanceOf (x, java.util.BitSet) || Clazz.instanceOf (x, Boolean) || Clazz.instanceOf (x, Float) || Clazz.instanceOf (x, Integer) || Clazz.instanceOf (x, javax.vecmath.Point3f) || Clazz.instanceOf (x, javax.vecmath.Vector3f) || Clazz.instanceOf (x, javax.vecmath.Point4f) || Clazz.instanceOf (x, org.jmol.util.Quaternion) || Clazz.instanceOf (x, String) || Clazz.instanceOf (x, java.util.Map) || Clazz.instanceOf (x, java.util.List) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array));
+return (Clazz.instanceOf (x, org.jmol.script.ScriptVariable) || Clazz.instanceOf (x, javax.util.BitSet) || Clazz.instanceOf (x, Boolean) || Clazz.instanceOf (x, Float) || Clazz.instanceOf (x, Integer) || Clazz.instanceOf (x, javax.vecmath.Point3f) || Clazz.instanceOf (x, javax.vecmath.Vector3f) || Clazz.instanceOf (x, javax.vecmath.Point4f) || Clazz.instanceOf (x, org.jmol.util.Quaternion) || Clazz.instanceOf (x, String) || Clazz.instanceOf (x, java.util.Map) || Clazz.instanceOf (x, java.util.List) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array) || Clazz.instanceOf (x, Array));
 }, "~O");
 c$.getVariable = Clazz.defineMethod (c$, "getVariable", 
 function (x) {
@@ -110,7 +110,7 @@ if (Clazz.instanceOf (x, org.jmol.script.ScriptVariable)) return x;
 return org.jmol.script.ScriptVariable.newScriptVariableObj (4, x);
 }if (Clazz.instanceOf (x, javax.vecmath.Point3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8, x);
 if (Clazz.instanceOf (x, javax.vecmath.Vector3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (8, javax.vecmath.Point3f.newP (x));
-if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.script.ScriptVariable.newScriptVariableObj (10, x);
+if (Clazz.instanceOf (x, javax.util.BitSet)) return org.jmol.script.ScriptVariable.newScriptVariableObj (10, x);
 if (Clazz.instanceOf (x, javax.vecmath.Point4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, x);
 if (Clazz.instanceOf (x, org.jmol.util.Quaternion)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, (x).toPoint4f ());
 if (Clazz.instanceOf (x, javax.vecmath.Matrix3f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (11, x);
@@ -183,7 +183,7 @@ objects =  new java.util.ArrayList ();
 for (var i = 0; i < fx.length; i++) objects.add (org.jmol.script.ScriptVariable.getVariable (fx[i]));
 
 return org.jmol.script.ScriptVariable.newScriptVariableObj (7, objects);
-}return org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.util.Escape.toReadable (x));
+}return org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.util.Escape.toReadableNoName (x));
 }, "~O");
 Clazz.defineMethod (c$, "set", 
 function (v, asCopy) {
@@ -625,7 +625,7 @@ if (i2 > len) i2 = len;
 switch (tokenIn.tok) {
 case 10:
 if (isInputSelected) {
-if (i1 > 1) bs.clear ();
+if (i1 > 1) bs.clearAll ();
 break;
 }var n = 0;
 for (var j = bs.nextSetBit (0); j >= 0; j = bs.nextSetBit (j + 1)) if (++n < i1 || n > i2) bs.clear (j);
@@ -741,7 +741,7 @@ s = o;
 if (v == null) v = org.jmol.util.Escape.unescapePointOrBitsetOrMatrixOrArray (s);
 if (Clazz.instanceOf (v, javax.vecmath.Point3f)) return (org.jmol.script.ScriptVariable.newScriptVariableObj (8, v));
 if (Clazz.instanceOf (v, javax.vecmath.Point4f)) return org.jmol.script.ScriptVariable.newScriptVariableObj (9, v);
-if (Clazz.instanceOf (v, java.util.BitSet)) {
+if (Clazz.instanceOf (v, javax.util.BitSet)) {
 if (s != null && s.indexOf ("[{") == 0) v =  new org.jmol.modelset.Bond.BondSet (v);
 return org.jmol.script.ScriptVariable.newScriptVariableObj (10, v);
 }if (Clazz.instanceOf (v, javax.vecmath.Matrix3f)) return (org.jmol.script.ScriptVariable.newScriptVariableObj (11, v));
@@ -808,13 +808,13 @@ switch (x.tok) {
 case 10:
 return org.jmol.script.ScriptVariable.bsSelectVar (x);
 case 7:
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var sv = x.value;
 for (var i = 0; i < sv.size (); i++) if (!sv.get (i).unEscapeBitSetArray (bs) && allowNull) return null;
 
 return bs;
 }
-return (allowNull ? null :  new java.util.BitSet ());
+return (allowNull ? null :  new javax.util.BitSet ());
 }, "org.jmol.script.ScriptVariable,~B");
 c$.areEqual = Clazz.defineMethod (c$, "areEqual", 
 function (x1, x2) {
@@ -852,10 +852,10 @@ bs.or (this.value);
 return true;
 }
 return false;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 c$.unEscapeBitSetArray = Clazz.defineMethod (c$, "unEscapeBitSetArray", 
 function (x, allowNull) {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 for (var i = 0; i < x.size (); i++) if (!x.get (i).unEscapeBitSetArray (bs) && allowNull) return null;
 
 return bs;

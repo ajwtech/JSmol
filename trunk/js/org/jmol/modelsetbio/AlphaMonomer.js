@@ -141,7 +141,7 @@ vA.sub2 (ptCaNext, ptCa);
 vB.sub2 (ptCaPrev, ptCa);
 break;
 }
-return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, vC, false);
+return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, vC, false);
 }, "~S");
 Clazz.defineStatics (c$,
 "alphaOffsets", [0]);

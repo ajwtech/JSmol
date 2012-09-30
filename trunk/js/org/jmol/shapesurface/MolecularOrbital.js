@@ -169,7 +169,7 @@ this.meshes[i].thisID = this.getId (this.meshes[i].modelIndex);
 this.htModels = htModelsNew;
 return ;
 }Clazz.superCall (this, org.jmol.shapesurface.MolecularOrbital, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getId", 
 ($fz = function (modelIndex) {
 return "mo_model" + this.viewer.getModelNumberDotted (modelIndex);

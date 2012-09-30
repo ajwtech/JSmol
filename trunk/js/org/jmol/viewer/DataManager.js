@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "org.jmol.constant.EnumVdw"], "org.jmol.viewer.DataManager", ["java.lang.StringBuffer", "java.util.BitSet", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Parser"], function () {
+Clazz.load (["java.util.Hashtable", "org.jmol.constant.EnumVdw"], "org.jmol.viewer.DataManager", ["java.lang.StringBuffer", "javax.util.BitSet", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dataValues = null;
 this.viewer = null;
@@ -43,7 +43,7 @@ return ;
 var createNew = (matchField != 0 || field != -2147483648 && field != 2147483647);
 var oldData = this.dataValues.get (type);
 var bs;
-var f = (oldData == null || createNew ?  Clazz.newArray (actualAtomCount, 0) : org.jmol.util.ArrayUtil.ensureLength ((oldData[1]), actualAtomCount));
+var f = (oldData == null || createNew ?  Clazz.newArray (actualAtomCount, 0) : org.jmol.util.ArrayUtil.ensureLengthA ((oldData[1]), actualAtomCount));
 var stringData = (Clazz.instanceOf (data[1], String) ? data[1] : null);
 var floatData = (Clazz.instanceOf (data[1], Array) ? data[1] : null);
 var strData = null;
@@ -66,10 +66,10 @@ org.jmol.util.Parser.parseFloatArrayFromMatchAndField (stringData, bs, 0, 0, nul
 } else {
 var iData = data[2];
 org.jmol.util.Parser.parseFloatArrayFromMatchAndField (stringData, null, matchField, matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
-bs =  new java.util.BitSet ();
+bs =  new javax.util.BitSet ();
 for (var i = iData.length; --i >= 0; ) if (iData[i] >= 0) bs.set (iData[i]);
 
-}if (oldData != null && Clazz.instanceOf (oldData[2], java.util.BitSet) && !createNew) bs.or ((oldData[2]));
+}if (oldData != null && Clazz.instanceOf (oldData[2], javax.util.BitSet) && !createNew) bs.or ((oldData[2]));
 data[2] = bs;
 data[1] = f;
 if (type.indexOf ("property_atom.") == 0) {
@@ -144,7 +144,7 @@ obj[1] = org.jmol.util.ArrayUtil.deleteElements (obj[1], firstAtomIndex, nAtoms)
 obj[1] = org.jmol.util.ArrayUtil.deleteElements (obj[1], firstAtomIndex, nAtoms);
 } else {
 }}}
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getDataState", 
 function (state, sfunc, atomProps) {
 if (this.dataValues == null) return ;
@@ -187,7 +187,7 @@ Clazz.defineMethod (c$, "setUserVdw",
 ($fz = function (mode) {
 this.userVdwMars =  Clazz.newArray (org.jmol.util.Elements.elementNumberMax, 0);
 this.userVdws =  Clazz.newArray (org.jmol.util.Elements.elementNumberMax, 0);
-this.bsUserVdws =  new java.util.BitSet ();
+this.bsUserVdws =  new javax.util.BitSet ();
 if (mode === org.jmol.constant.EnumVdw.USER) mode = org.jmol.constant.EnumVdw.JMOL;
 for (var i = 1; i < org.jmol.util.Elements.elementNumberMax; i++) {
 this.userVdwMars[i] = org.jmol.util.Elements.getVanderwaalsMar (i, mode);
@@ -228,7 +228,7 @@ var i1 = (isAll ? org.jmol.util.Elements.elementNumberMax : bs.length ());
 for (var i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs.nextSetBit (i + 1))) sb.append (i).append ('\t').append (type === org.jmol.constant.EnumVdw.USER ? this.userVdws[i] : org.jmol.util.Elements.getVanderwaalsMar (i, type) / 1000).append ('\t').append (org.jmol.util.Elements.elementSymbolFromNumber (i)).append ('\n');
 
 return (bs == null ? sb.toString () : "\n  DATA \"element_vdw\"\n" + sb.append ("  end \"element_vdw\";\n\n").toString ());
-}, "~N,org.jmol.constant.EnumVdw,java.util.BitSet");
+}, "~N,org.jmol.constant.EnumVdw,javax.util.BitSet");
 c$.getInlineData = Clazz.defineMethod (c$, "getInlineData", 
 function (loadScript, strModel, isAppend, loadFilter) {
 var tag = (isAppend ? "append" : "model") + " inline";

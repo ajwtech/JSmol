@@ -203,7 +203,7 @@ diam = Math.floor (this.viewer.getScreenDim () / (this.volumeRender ? 50 : 100))
 if (diam < 1) diam = 1;
 var cX = (this.showNumbers ? Math.floor (this.viewer.getScreenWidth () / 2) : 0);
 var cY = (this.showNumbers ? Math.floor (this.viewer.getScreenHeight () / 2) : 0);
-if (this.showNumbers) this.g3d.setFont (this.g3d.getFontFid ("Monospaced", 24));
+if (this.showNumbers) this.g3d.setFont (this.g3d.getFontFidFS ("Monospaced", 24));
 for (var i = (!this.imesh.hasGridPoints || this.imesh.firstRealVertex < 0 ? 0 : this.imesh.firstRealVertex); i < this.vertexCount; i += incr) {
 if (this.vertexValues != null && Float.isNaN (this.vertexValues[i]) || this.frontOnly && this.transformedVectors[this.normixes[i]].z < 0 || this.imesh.jvxlData.thisSet >= 0 && this.imesh.vertexSets[i] != this.imesh.jvxlData.thisSet || !this.imesh.isColorSolid && this.imesh.vertexColixes != null && !this.setColix (this.imesh.vertexColixes[i]) || this.haveBsDisplay && !this.imesh.bsDisplay.get (i) || slabPoints && !this.bsSlab.get (i)) continue ;this.hasColorRange = true;
 if (this.showNumbers && this.screens[i].z > 10 && Math.abs (this.screens[i].x - cX) < 150 && Math.abs (this.screens[i].y - cY) < 150) {
@@ -241,7 +241,7 @@ var diam = -2147483648;
 var generateSet = isExport;
 if (generateSet) {
 if (this.frontOnly && fill) this.frontOnly = false;
-this.bsPolygons.clear ();
+this.bsPolygons.clearAll ();
 }if (this.exportType == 1) {
 this.frontOnly = false;
 }var colorSolid = (this.haveBsSlabGhost && (!this.isBicolorMap) || vertexColixes == null || this.imesh.isColorSolid);
@@ -317,7 +317,7 @@ if (generateSet) this.exportSurface (colorSolid ? colix : 0);
 Clazz.defineMethod (c$, "renderNormals", 
 ($fz = function () {
 if (!this.g3d.setColix (8)) return ;
-this.g3d.setFont (this.g3d.getFontFid ("Monospaced", 24));
+this.g3d.setFont (this.g3d.getFontFidFS ("Monospaced", 24));
 var vertexVectors = org.jmol.util.Normix.getVertexVectors ();
 for (var i = this.vertexCount; --i >= 0; ) {
 if (this.vertexValues != null && Float.isNaN (this.vertexValues[i])) continue ;if (i < 7117 || i > 7119) continue ;this.ptTemp.setT (this.vertices[i]);

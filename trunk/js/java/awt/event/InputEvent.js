@@ -18,7 +18,7 @@ Clazz.defineMethod (c$, "isShiftDown",
 function () {
 return (this.modifiers & 1) != 0;
 });
-Clazz.defineMethod (c$, "isControlDown", 
+Clazz.defineMethod (c$, "ibsControlDown", 
 function () {
 return (this.modifiers & 2) != 0;
 });

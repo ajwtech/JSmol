@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -438,9 +438,7 @@ break;
 }
 if (doEval) {
 if (this.iCommand == this.lnLength) {
-var lnT =  Clazz.newArray (this.lnLength * 2, 0);
-System.arraycopy (this.lineNumbers, 0, lnT, 0, this.lnLength);
-this.lineNumbers = lnT;
+this.lineNumbers = org.jmol.util.ArrayUtil.doubleLengthShort (this.lineNumbers);
 var lnI =  Clazz.newArray (this.lnLength * 2, 2, 0);
 System.arraycopy (this.lineIndices, 0, lnI, 0, this.lnLength);
 this.lineIndices = lnI;
@@ -1704,7 +1702,7 @@ Clazz.defineMethod (c$, "lookingAtBitset",
 function () {
 if (this.script.indexOf ("({null})", this.ichToken) == this.ichToken) {
 this.cchToken = 8;
-return  new java.util.BitSet ();
+return  new javax.util.BitSet ();
 }var ichT;
 if (this.ichToken + 4 > this.cchScript || (this.script.charAt (this.ichToken + 1)).charCodeAt (0) != 123 || (ichT = this.script.indexOf ("}", this.ichToken)) < 0 || ichT + 1 == this.cchScript) return null;
 var bs = org.jmol.util.Escape.unescapeBitset (this.script.substring (this.ichToken, ichT + 2));

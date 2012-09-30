@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Escape", ["java.lang.Character", "$.Float", "$.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "org.jmol.script.ScriptVariable", "org.jmol.util.Parser", "$.TextFormat", "$.XmlUtil"], function () {
+Clazz.load (null, "org.jmol.util.Escape", ["java.lang.Character", "$.Float", "$.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Parser", "$.TextFormat", "$.XmlUtil"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Escape");
 c$.escapeColor = Clazz.defineMethod (c$, "escapeColor", 
 function (argb) {
@@ -29,7 +29,7 @@ c$.escape = Clazz.defineMethod (c$, "escape",
 function (x) {
 if (Clazz.instanceOf (x, String)) return org.jmol.util.Escape.escapeStr (x);
 if (Clazz.instanceOf (x, java.util.List)) return org.jmol.util.Escape.escapeVar (x);
-if (Clazz.instanceOf (x, java.util.BitSet)) return org.jmol.util.Escape.escapeBs (x, true);
+if (Clazz.instanceOf (x, javax.util.BitSet)) return org.jmol.util.Escape.escapeBs (x, true);
 if (Clazz.instanceOf (x, javax.vecmath.Matrix3f)) return org.jmol.util.TextFormat.simpleReplace ((x).toString (), "\t", ",\t");
 if (Clazz.instanceOf (x, javax.vecmath.Matrix4f)) return org.jmol.util.TextFormat.simpleReplace ((x).toString (), "\t", ",\t");
 if (Clazz.instanceOf (x, javax.vecmath.Tuple3f)) return org.jmol.util.Escape.escapePt (x);
@@ -246,7 +246,7 @@ return null;
 throw e;
 }
 }
-var bs =  new java.util.BitSet (lastN);
+var bs = org.jmol.util.BitSetUtil.newBitSet (lastN);
 lastN = -1;
 var iPrev = -1;
 var iThis = -2;
@@ -259,7 +259,7 @@ if (iThis < 0) break;
 if (iThis < lastN) return null;
 lastN = iThis;
 if (iPrev < 0) iPrev = iThis;
-bs.set (iPrev, iThis + 1);
+bs.setBits (iPrev, iThis + 1);
 iPrev = -1;
 iThis = -2;
 break;
@@ -318,8 +318,8 @@ iFirst = i;
 }}
 s.append ("}").append (chClose);
 return s.toString ();
-}, "java.util.BitSet,~B");
-c$.packageJSON = Clazz.defineMethod (c$, "packageJSON", 
+}, "javax.util.BitSet,~B");
+c$.packageJSONSb = Clazz.defineMethod (c$, "packageJSONSb", 
 ($fz = function (infoType, sb) {
 return org.jmol.util.Escape.packageJSON (infoType, sb.toString ());
 }, $fz.isPrivate = true, $fz), "~S,StringBuilder");
@@ -350,7 +350,7 @@ sb.append (sep).append (org.jmol.util.Escape.fixString ((info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -359,7 +359,7 @@ sb.append (sep).append ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -368,7 +368,7 @@ sb.append (sep).append ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -377,7 +377,7 @@ sb.append (sep).append ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -387,7 +387,7 @@ org.jmol.util.Escape.addJsonTuple (sb, (info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -396,7 +396,7 @@ sb.append (sep).append (org.jmol.util.Escape.toJSON (null, (info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -405,7 +405,7 @@ sb.append (sep).append (org.jmol.util.Escape.toJSON (null, (info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -414,7 +414,7 @@ sb.append (sep).append (org.jmol.util.Escape.toJSON (null, (info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -423,7 +423,7 @@ sb.append (sep).append (org.jmol.util.Escape.toJSON (null, (info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, java.util.List)) {
 sb.append ("[ ");
 var imax = (info).size ();
@@ -432,7 +432,7 @@ sb.append (sep).append (org.jmol.util.Escape.toJSON (null, (info).get (i)));
 sep = ",";
 }
 sb.append (" ]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, javax.vecmath.Matrix4f)) {
 var x =  Clazz.newArray (4, 0);
 var m4 = info;
@@ -443,7 +443,7 @@ m4.getRow (i, x);
 sb.append (org.jmol.util.Escape.toJSON (null, x));
 }
 sb.append (']');
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, javax.vecmath.Matrix3f)) {
 var x =  Clazz.newArray (3, 0);
 var m3 = info;
@@ -454,16 +454,16 @@ m3.getRow (i, x);
 sb.append (org.jmol.util.Escape.toJSON (null, x));
 }
 sb.append (']');
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, javax.vecmath.Tuple3f)) {
 org.jmol.util.Escape.addJsonTuple (sb, info);
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, javax.vecmath.AxisAngle4f)) {
 sb.append ("[").append ((info).x).append (",").append ((info).y).append (",").append ((info).z).append (",").append (((info).angle * 180 / 3.141592653589793)).append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, javax.vecmath.Point4f)) {
 sb.append ("[").append ((info).x).append (",").append ((info).y).append (",").append ((info).z).append (",").append ((info).w).append ("]");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }if (Clazz.instanceOf (info, java.util.Map)) {
 sb.append ("{ ");
 var e = (info).keySet ().iterator ();
@@ -473,14 +473,14 @@ sb.append (sep).append (org.jmol.util.Escape.packageJSON (key, org.jmol.util.Esc
 sep = ",";
 }
 sb.append (" }");
-return org.jmol.util.Escape.packageJSON (infoType, sb);
+return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 }return org.jmol.util.Escape.packageJSON (infoType, org.jmol.util.Escape.fixString (info.toString ()));
 }, "~S,~O");
 c$.addJsonTuple = Clazz.defineMethod (c$, "addJsonTuple", 
 ($fz = function (sb, pt) {
 sb.append ("[").append (pt.x).append (",").append (pt.y).append (",").append (pt.z).append ("]");
 }, $fz.isPrivate = true, $fz), "StringBuilder,javax.vecmath.Tuple3f");
-c$.toReadable = Clazz.defineMethod (c$, "toReadable", 
+c$.toReadableNoName = Clazz.defineMethod (c$, "toReadableNoName", 
 function (info) {
 return org.jmol.util.Escape.toReadable (null, info);
 }, "~O");
@@ -498,7 +498,7 @@ sb.append (sep).append (org.jmol.util.Escape.escapeStr ((info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "String[" + imax + "]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "String[" + imax + "]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -507,7 +507,7 @@ sb.append (sep).append ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "int[" + imax + "]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "int[" + imax + "]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -516,7 +516,7 @@ sb.append (sep).append ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "float[" + imax + "]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "float[" + imax + "]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -525,7 +525,7 @@ sb.append (sep).append (org.jmol.util.Escape.escapePt ((info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "point3f[" + imax + "]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "point3f[" + imax + "]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -534,7 +534,7 @@ sb.append (sep).append (org.jmol.util.Escape.toReadable (null, (info)[i]));
 sep = ",\n";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "String[" + imax + "][]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "String[" + imax + "][]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[");
 var imax = (info).length;
@@ -543,7 +543,7 @@ sb.append (sep).append (org.jmol.util.Escape.toReadable (null, (info)[i]));
 sep = ",";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "int[" + imax + "][]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "int[" + imax + "][]", sb);
 }if (Clazz.instanceOf (info, Array)) {
 sb.append ("[\n");
 var imax = (info).length;
@@ -552,16 +552,16 @@ sb.append (sep).append (org.jmol.util.Escape.toReadable (null, (info)[i]));
 sep = ",\n";
 }
 sb.append ("]");
-return org.jmol.util.Escape.packageReadable (name, "float[][]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "float[][]", sb);
 }if (Clazz.instanceOf (info, java.util.List)) {
 var imax = (info).size ();
 for (var i = 0; i < imax; i++) {
 sb.append (org.jmol.util.Escape.toReadable (name + "[" + (i + 1) + "]", (info).get (i)));
 }
-return org.jmol.util.Escape.packageReadable (name, "List[" + imax + "]", sb);
+return org.jmol.util.Escape.packageReadableSb (name, "List[" + imax + "]", sb);
 }if (Clazz.instanceOf (info, javax.vecmath.Matrix3f) || Clazz.instanceOf (info, javax.vecmath.Tuple3f) || Clazz.instanceOf (info, javax.vecmath.Point4f) || Clazz.instanceOf (info, javax.vecmath.AxisAngle4f)) {
 sb.append (org.jmol.util.Escape.escape (info));
-return org.jmol.util.Escape.packageReadable (name, null, sb);
+return org.jmol.util.Escape.packageReadableSb (name, null, sb);
 }if (Clazz.instanceOf (info, java.util.Map)) {
 var e = (info).keySet ().iterator ();
 while (e.hasNext ()) {
@@ -571,7 +571,7 @@ sb.append (org.jmol.util.Escape.toReadable ((name == null ? "" : name + ".") + k
 return sb.toString ();
 }return org.jmol.util.Escape.packageReadable (name, null, info.toString ());
 }, "~S,~O");
-c$.packageReadable = Clazz.defineMethod (c$, "packageReadable", 
+c$.packageReadableSb = Clazz.defineMethod (c$, "packageReadableSb", 
 ($fz = function (infoName, infoType, sb) {
 return org.jmol.util.Escape.packageReadable (infoName, infoType, sb.toString ());
 }, $fz.isPrivate = true, $fz), "~S,~S,StringBuilder");

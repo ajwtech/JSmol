@@ -177,7 +177,7 @@ this.dipoleCount--;
 }
 this.currentDipole = null;
 return ;
-}}, "~S,~O,java.util.BitSet");
+}}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 ($fz = function (tok, bondOnly, iValue, fValue) {
 if (this.currentDipole != null) this.setProperty (tok, this.currentDipole, iValue, fValue);
@@ -268,7 +268,7 @@ while (iter.hasNext ()) {
 var d = this.findBondDipole (iter.next ());
 if (d != null) d.colix = colix;
 }
-}, $fz.isPrivate = true, $fz), "~N,~N,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setDipole", 
 ($fz = function () {
 if (this.currentDipole == null) this.currentDipole = this.allocDipole ("", "");
@@ -412,7 +412,7 @@ for (var i = this.dipoleCount; --i >= 0; ) {
 var dipole = this.dipoles[i];
 dipole.visibilityFlags = ((dipole.modelIndex < 0 || bs.get (dipole.modelIndex)) && dipole.mad != 0 && dipole.visible && dipole.origin != null && dipole.vector != null && dipole.vector.length () != 0 && dipole.dipoleValue != 0 ? this.myVisibilityFlag : 0);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 if (this.dipoleCount == 0) return "";

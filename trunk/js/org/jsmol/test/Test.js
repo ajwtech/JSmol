@@ -6,7 +6,7 @@ Clazz.instantialize (this, arguments);
 }, org.jsmol.test, "Test", null, org.jmol.api.JmolStatusListener);
 c$.main = Clazz.defineMethod (c$, "main", 
 function (args) {
-var test =  new org.jsmol.test.Test ();
+ new org.jsmol.test.Test ();
 }, "~A");
 c$.getBufferedReaderForString = Clazz.defineMethod (c$, "getBufferedReaderForString", 
 function (string) {
@@ -82,6 +82,5 @@ Clazz.overrideMethod (c$, "setCallbackFunction",
 function (callbackType, callbackFunction) {
 }, "~S,~S");
 Clazz.defineStatics (c$,
-"adapter", null,
 "strXyzHOH", "3\nwater\nO  0.0 0.0 0.0\nH  0.76923955 -0.59357141 0.0\nH -0.76923955 -0.59357141 0.0\n");
 });

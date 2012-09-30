@@ -340,7 +340,7 @@ a[1][2] = a[2][1] = (a[1][2] + a[2][1]) / 2;
 }if (a[0][2] != a[2][0]) {
 y = -(a[0][2] - a[2][0]) / 2;
 a[0][2] = a[2][0] = (a[0][2] + a[2][0]) / 2;
-}atom.setEllipsoid (org.jmol.util.Eigen.getEllipsoid (a));
+}atom.setEllipsoid (org.jmol.util.Eigen.getEllipsoidDD (a));
 this.atomSetCollection.addVibrationVector (atom.atomIndex, x, y, z);
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,~S");
 Clazz.defineMethod (c$, "readOutputCharges", 

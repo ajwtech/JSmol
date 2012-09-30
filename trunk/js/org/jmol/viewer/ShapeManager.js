@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.BitSet"], "org.jmol.viewer.ShapeManager", ["java.lang.Boolean", "$.StringBuffer", "java.util.Hashtable", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "$.EnumVdw", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.ShapeManager", ["java.lang.Boolean", "$.StringBuffer", "java.util.Hashtable", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "$.EnumVdw", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.gdata = null;
 this.modelSet = null;
@@ -10,7 +10,7 @@ this.navigationCrossHairMinMax = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "ShapeManager");
 Clazz.prepareFields (c$, function () {
-this.bsRenderableAtoms =  new java.util.BitSet ();
+this.bsRenderableAtoms =  new javax.util.BitSet ();
 this.navigationCrossHairMinMax =  Clazz.newArray (4, 0);
 });
 Clazz.makeConstructor (c$, 
@@ -28,7 +28,7 @@ Clazz.defineMethod (c$, "findNearestShapeAtomIndex",
 function (x, y, closest, bsNot) {
 if (this.shapes != null) for (var i = 0; i < this.shapes.length && closest[0] == null; ++i) if (this.shapes[i] != null) this.shapes[i].findNearestAtomIndex (x, y, closest, bsNot);
 
-}, "~N,~N,~A,java.util.BitSet");
+}, "~N,~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapes", 
 function () {
 return this.shapes;
@@ -81,7 +81,7 @@ this.viewer.setShapeErrorState (-1, null);
 return this.shapes[shapeID] = shape;
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error ("Could not instantiate shape:" + className, e);
+org.jmol.util.Logger.errorEx ("Could not instantiate shape:" + className, e);
 return null;
 } else {
 throw e;
@@ -94,7 +94,7 @@ var Imodel = Integer.$valueOf (baseModel);
 var bsModelAtoms = this.viewer.getModelUndeletedAtomsBitSet (baseModel);
 for (var i = 0; i < 35; i++) if (this.shapes[i] != null) this.setShapePropertyBs (i, "refreshTrajectories", [Imodel, bs, mat], bsModelAtoms);
 
-}, "~N,java.util.BitSet,javax.vecmath.Matrix4f");
+}, "~N,javax.util.BitSet,javax.vecmath.Matrix4f");
 Clazz.defineMethod (c$, "releaseShape", 
 function (shapeID) {
 if (this.shapes != null) this.shapes[shapeID] = null;
@@ -113,21 +113,21 @@ if (rd != null && rd.value != 0 || rd == null && size != 0) this.loadShape (shap
 if (this.shapes[shapeID] != null) {
 this.shapes[shapeID].setShapeSizeRD (size, rd, bsSelected);
 }this.viewer.setShapeErrorState (-1, null);
-}, "~N,~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "~N,~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setLabel", 
 function (strLabel, bsSelection) {
 if (strLabel != null) {
 this.loadShape (5);
 this.setShapeSizeBs (5, 0, null, bsSelection);
 }this.setShapePropertyBs (5, "label", strLabel, bsSelection);
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "setShapePropertyBs", 
 function (shapeID, propertyName, value, bsSelected) {
 if (this.shapes == null || this.shapes[shapeID] == null) return ;
 this.viewer.setShapeErrorState (shapeID, "set " + propertyName);
 this.shapes[shapeID].setShapeProperty (propertyName.intern (), value, bsSelected);
 this.viewer.setShapeErrorState (-1, null);
-}, "~N,~S,~O,java.util.BitSet");
+}, "~N,~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkFrankclicked", 
 function (x, y) {
 var frankShape = this.shapes[34];
@@ -141,7 +141,7 @@ if (modifiers != 0 && this.viewer.getBondPicking () && (map = this.shapes[1].che
 for (var i = 0; i < org.jmol.viewer.ShapeManager.clickableMax; i++) if ((shape = this.shapes[org.jmol.viewer.ShapeManager.hoverable[i]]) != null && (map = shape.checkObjectClicked (x, y, modifiers, bsVisible)) != null) return map;
 
 return null;
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkObjectDragged", 
 function (prevX, prevY, x, y, modifiers, bsVisible, iShape) {
 var found = false;
@@ -149,7 +149,7 @@ var n = (iShape > 0 ? iShape + 1 : 35);
 for (var i = iShape; !found && i < n; ++i) if (this.shapes[i] != null) found = this.shapes[i].checkObjectDragged (prevX, prevY, x, y, modifiers, bsVisible);
 
 return found;
-}, "~N,~N,~N,~N,~N,java.util.BitSet,~N");
+}, "~N,~N,~N,~N,~N,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible, checkBonds) {
 var shape = this.shapes[1];
@@ -159,17 +159,17 @@ shape = this.shapes[org.jmol.viewer.ShapeManager.hoverable[i]];
 if (shape != null && shape.checkObjectHovered (x, y, bsVisible)) return true;
 }
 return false;
-}, "~N,~N,java.util.BitSet,~B");
+}, "~N,~N,javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "deleteShapeAtoms", 
 function (value, bs) {
 if (this.shapes != null) for (var j = 0; j < 35; j++) if (this.shapes[j] != null) this.setShapePropertyBs (j, "deleteModelAtoms", value, bs);
 
-}, "~A,java.util.BitSet");
+}, "~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "deleteVdwDependentShapes", 
 function (bs) {
 if (this.shapes[23] != null) this.shapes[23].setShapeProperty ("deleteVdw", null, bs);
 if (this.shapes[24] != null) this.shapes[24].setShapeProperty ("deleteVdw", null, bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomShapeValue", 
 function (tok, group, atomIndex) {
 var iShape = org.jmol.viewer.JmolConstants.shapeTokenIndex (tok);
@@ -241,7 +241,7 @@ this.shapes[i].setModelSet (this.modelSet);
 this.shapes[i].setShapeSizeRD (0, null, bsAllAtoms);
 this.shapes[i].setShapeProperty ("color", org.jmol.constant.EnumPalette.NONE, bsAllAtoms);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setAtomLabel", 
 function (strLabel, i) {
 if (this.shapes == null) return ;
@@ -271,13 +271,13 @@ this.viewer.unTransformPoint (pt, pt);
 pt.sub (ptCenter);
 this.viewer.setAtomCoordRelative (pt, bsAtoms);
 ptOffset.set (0, 0, 0);
-}this.bsRenderableAtoms.clear ();
+}this.bsRenderableAtoms.clearAll ();
 var atoms = this.modelSet.atoms;
 for (var i = this.modelSet.getAtomCount (); --i >= 0; ) {
 var atom = atoms[i];
 if ((atom.getShapeVisibilityFlags () & 1) == 0) continue ;this.bsRenderableAtoms.set (i);
 }
-}, "java.util.BitSet,javax.vecmath.Point3f");
+}, "javax.util.BitSet,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "transformAtoms", 
 function () {
 var vibrationVectors = this.modelSet.vibrationVectors;

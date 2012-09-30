@@ -248,7 +248,7 @@ ecc.normalize ();
 if (Float.isNaN (ecc.x)) ecc.set (1, 0, 0);
 this.eccentricityMatrix =  new javax.vecmath.Matrix3f ();
 this.eccentricityMatrix.setIdentity ();
-this.eccentricityMatrix.setAA ( new javax.vecmath.AxisAngle4f (ecc, 3.141592653589793));
+this.eccentricityMatrix.setAA (javax.vecmath.AxisAngle4f.newVA (ecc, 3.141592653589793));
 this.eccentricityMatrixInverse =  new javax.vecmath.Matrix3f ();
 this.eccentricityMatrixInverse.invertM (this.eccentricityMatrix);
 this.isEccentric = this.isAnisotropic = true;

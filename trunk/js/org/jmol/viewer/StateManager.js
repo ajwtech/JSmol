@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "javax.util.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.saved = null;
@@ -129,13 +129,13 @@ this.deleteSavedType ("Selected_");
 return ;
 }saveName = this.lastSelected = "Selected_" + saveName;
 this.saved.put (saveName, org.jmol.util.BitSetUtil.copy (bsSelected));
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "restoreSelection", 
 function (saveName) {
 var name = (saveName.length > 0 ? "Selected_" + saveName : this.lastSelected);
 var bsSelected = this.saved.get (name);
 if (bsSelected == null) {
-this.viewer.select ( new java.util.BitSet (), false, null, false);
+this.viewer.select ( new javax.util.BitSet (), false, null, false);
 return false;
 }this.viewer.select (bsSelected, false, null, false);
 return true;
@@ -175,7 +175,7 @@ this.deleteSavedType ("Coordinates_");
 return ;
 }saveName = this.lastCoordinates = "Coordinates_" + saveName;
 this.saved.put (saveName, this.viewer.getCoordinateState (bsSelected));
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "getSavedCoordinates", 
 function (saveName) {
 var name = (saveName.length > 0 ? "Coordinates_" + saveName : this.lastCoordinates);
@@ -336,9 +336,9 @@ var bs;
 if (ht.containsKey (key)) {
 bs = ht.get (key);
 } else {
-bs =  new java.util.BitSet ();
+bs =  new javax.util.BitSet ();
 ht.put (key, bs);
-}bs.set (i1, i2 + 1);
+}bs.setBits (i1, i2 + 1);
 }, "java.util.Map,~N,~N,~S");
 c$.varClip = Clazz.defineMethod (c$, "varClip", 
 function (name, sv, nMax) {
@@ -1343,7 +1343,7 @@ if (a >= 0) {
 this.setParameterValue ("_atompicked", a);
 b = this.getParameter ("picked", true);
 }if (b == null || b.tok != 10) {
-b = org.jmol.script.ScriptVariable.getVariable ( new java.util.BitSet ());
+b = org.jmol.script.ScriptVariable.getVariable ( new javax.util.BitSet ());
 this.setUserVariable ("picked", b);
 }if (a >= 0) org.jmol.script.ScriptVariable.getBitSet (b, false).set (a);
 }, "~N");

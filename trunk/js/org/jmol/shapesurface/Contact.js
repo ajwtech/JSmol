@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw"], "org.jmol.shapesurface.Contact", ["java.lang.Boolean", "$.Double", "$.Float", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.atomdata.AtomData", "org.jmol.constant.EnumHBondType", "org.jmol.jvxl.data.MeshData", "$.VolumeData", "org.jmol.script.Token", "org.jmol.util.BitSetUtil", "$.ColorUtil", "$.ContactPair", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface"], function () {
+Clazz.load (["org.jmol.shapesurface.Isosurface", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw"], "org.jmol.shapesurface.Contact", ["java.lang.Boolean", "$.Double", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.atomdata.AtomData", "org.jmol.constant.EnumHBondType", "org.jmol.jvxl.data.MeshData", "$.VolumeData", "org.jmol.script.Token", "org.jmol.util.BitSetUtil", "$.ColorUtil", "$.ContactPair", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atoms = null;
 this.atomCount = 0;
@@ -32,7 +32,7 @@ return ;
 }if ("init" === propertyName) {
 this.translucentLevel = 0;
 }Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setContacts", 
 ($fz = function (value, doEditCpList) {
 org.jmol.util.Logger.startTimer ();
@@ -147,7 +147,7 @@ this.thisMesh.setMerged (false);
 this.thisMesh.jvxlData.vertexDataOnly = true;
 this.thisMesh.reinitializeLightingAndColor ();
 if (contactType != 1073742036) {
-this.thisMesh.bsVdw =  new java.util.BitSet ();
+this.thisMesh.bsVdw =  new javax.util.BitSet ();
 this.thisMesh.bsVdw.or (bsA);
 this.thisMesh.bsVdw.or (bsB);
 }Clazz.superCall (this, org.jmol.shapesurface.Contact, "setProperty", ["finalize", command, null]);
@@ -287,7 +287,7 @@ iter.release ();
 iter = null;
 if (!doEditCpList) return list;
 var n = list.size () - 1;
-var bsBad =  new java.util.BitSet ();
+var bsBad =  new javax.util.BitSet ();
 for (var i = 0; i < n; i++) {
 var cp1 = list.get (i);
 for (var j = i + 1; j <= n; j++) {
@@ -313,7 +313,7 @@ if (org.jmol.util.Logger.debugging) for (var i = 0; i < list.size (); i++) org.j
 
 org.jmol.util.Logger.info ("Contact pairs: " + list.size ());
 return list;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet,java.util.BitSet,org.jmol.atomdata.RadiusData,~N,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,javax.util.BitSet,org.jmol.atomdata.RadiusData,~N,~B");
 c$.checkCp = Clazz.defineMethod (c$, "checkCp", 
 ($fz = function (cp1, cp2, i1, i2) {
 if (cp1.myAtoms[i1] !== cp2.myAtoms[i2]) return 0;
@@ -396,7 +396,7 @@ if (displayType != 4106) iSlab0 = -100;
 }
 if (iSlab0 != iSlab1) this.thisMesh.slabPolygons (org.jmol.util.MeshSurface.getSlabWithinRange (iSlab0, iSlab1), false);
 if (displayType != 3145756) this.thisMesh.setMerged (true);
-}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.ContactPair,java.util.BitSet,java.util.BitSet,org.jmol.atomdata.RadiusData,~A,~O,~B,org.jmol.jvxl.data.VolumeData,~N");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.ContactPair,javax.util.BitSet,javax.util.BitSet,org.jmol.atomdata.RadiusData,~A,~O,~B,org.jmol.jvxl.data.VolumeData,~N");
 Clazz.defineMethod (c$, "setVolumeData", 
 ($fz = function (type, volumeData, cp, resolution, nPairs) {
 this.pt1.setT (cp.myAtoms[0]);

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.BitSet", "$.Date", "$.Hashtable", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.thread.ScriptParallelProcessor", "$.TimeoutThread", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.Date", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.thread.ScriptParallelProcessor", "$.TimeoutThread", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$display = null;
 this.gdata = null;
@@ -141,7 +141,7 @@ return this.symmetry;
 Clazz.defineMethod (c$, "getSymmetryInfo", 
 function (bsAtoms, xyz, op, pt, pt2, id, type) {
 return this.modelSet.getSymmetryInfo (bsAtoms, xyz, op, pt, pt2, id, type);
-}, "java.util.BitSet,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S,~N");
+}, "javax.util.BitSet,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S,~N");
 Clazz.defineMethod (c$, "clearModelDependentObjects", 
 ($fz = function () {
 this.setFrameOffsets (null);
@@ -162,7 +162,7 @@ Clazz.overrideMethod (c$, "getSmartsMatch",
 function (smarts, bsSelected) {
 if (bsSelected == null) bsSelected = this.getSelectionSet (false);
 return this.getSmilesMatcher ().getSubstructureSet (smarts, this.getModelSet ().atoms, this.getAtomCount (), bsSelected, true, false);
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "getGlobalSettings", 
 function () {
 return this.global;
@@ -492,7 +492,7 @@ return this.stateManager.getSavedStructure (saveName);
 Clazz.defineMethod (c$, "saveCoordinates", 
 function (saveName, bsSelected) {
 this.stateManager.saveCoordinates (saveName, bsSelected);
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "getSavedCoordinates", 
 function (saveName) {
 return this.stateManager.getSavedCoordinates (saveName);
@@ -537,7 +537,7 @@ function (bsCenter, doScale) {
 var center = (org.jmol.util.BitSetUtil.cardinalityOf (bsCenter) > 0 ? this.getAtomSetCenter (bsCenter) : null);
 if (this.isJmolDataFrame ()) return ;
 this.transformManager.setNewRotationCenter (center, doScale);
-}, "java.util.BitSet,~B");
+}, "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "setNewRotationCenter", 
 function (center) {
 if (this.isJmolDataFrame ()) return ;
@@ -690,7 +690,7 @@ if (this.mouseEnabled) {
 this.transformManager.rotateXYBy (deltaX, deltaY, this.setMovableBitSet (bsSelected, false));
 this.refreshMeasures (true);
 }this.refresh (2, this.statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX + " " + deltaY : "");
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setMovableBitSet", 
 ($fz = function (bsSelected, checkMolecule) {
 if (bsSelected == null) bsSelected = this.getSelectionSet (false);
@@ -698,7 +698,7 @@ bsSelected = org.jmol.util.BitSetUtil.copy (bsSelected);
 org.jmol.util.BitSetUtil.andNot (bsSelected, this.getMotionFixedAtoms ());
 if (checkMolecule && !this.global.allowMoveAtoms) bsSelected = this.modelSet.getMoleculeBitSet (bsSelected);
 return bsSelected;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "translateXYBy", 
 function (xDelta, yDelta) {
 if (this.mouseEnabled) this.transformManager.translateXYBy (xDelta, yDelta);
@@ -762,7 +762,7 @@ if (type.charCodeAt (0) == 0) this.transformManager.translateToPercent ('z', x);
 break;
 }
 }this.refresh (1, "Viewer:translate()");
-}, "~S,~N,~S,java.util.BitSet");
+}, "~S,~N,~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "getTranslationXPercent", 
 function () {
 return this.transformManager.getTranslationXPercent ();
@@ -1193,27 +1193,27 @@ function (bs, isGroup, addRemove, isQuiet) {
 if (isGroup) bs = this.getUndeletedGroupAtomBits (bs);
 this.selectionManager.select (bs, addRemove, isQuiet);
 this.shapeManager.setShapeSizeBs (1, 2147483647, null, null);
-}, "java.util.BitSet,~B,Boolean,~B");
+}, "javax.util.BitSet,~B,Boolean,~B");
 Clazz.overrideMethod (c$, "setSelectionSet", 
 function (set) {
 this.select (set, false, null, true);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "selectBonds", 
 function (bs) {
 this.shapeManager.setShapeSizeBs (1, 2147483647, null, bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "display", 
 function (bs, isDisplay, isGroup, addRemove, isQuiet) {
 if (isGroup) bs = this.getUndeletedGroupAtomBits (bs);
 if (isDisplay) this.selectionManager.display (this.modelSet, bs, addRemove, isQuiet);
  else this.selectionManager.hide (this.modelSet, bs, addRemove, isQuiet);
-}, "java.util.BitSet,~B,~B,Boolean,~B");
+}, "javax.util.BitSet,~B,~B,Boolean,~B");
 Clazz.defineMethod (c$, "getUndeletedGroupAtomBits", 
 ($fz = function (bs) {
 bs = this.getAtomBits (1087373318, bs);
 org.jmol.util.BitSetUtil.andNot (bs, this.selectionManager.getDeletedAtoms ());
 return bs;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 Clazz.defineMethod (c$, "getHiddenSet", 
 function () {
 return this.selectionManager.getHiddenSet ();
@@ -1234,7 +1234,7 @@ if (this.isScriptQueued || this.global.debugScript) this.scriptStatus (msg);
 Clazz.defineMethod (c$, "getAtomSetCenter", 
 function (bs) {
 return this.modelSet.getAtomSetCenter (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "clearAtomSets", 
 ($fz = function () {
 this.setSelectionSubset (null);
@@ -1260,7 +1260,7 @@ this.global.setParameterValue ("hideNotSelected", false);
 Clazz.defineMethod (c$, "setSelectionSubset", 
 function (subset) {
 this.selectionManager.setSelectionSubset (subset);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getSelectionSubset", 
 function () {
 return this.selectionManager.getSelectionSubset ();
@@ -1397,7 +1397,7 @@ if (fileName.endsWith ("jvxl")) cmd = "isosurface ";
  else if (!fileName.endsWith (".spt")) {
 var type = this.fileManager.getFileTypeName (fileName);
 if (type == null) {
-type = org.jmol.util.SurfaceFileTyper.determineSurfaceFileType (this.getBufferedInputStream (fileName));
+type = org.jmol.util.SurfaceFileTyper.determineSurfaceTypeIs (this.getBufferedInputStream (fileName));
 if (type != null) {
 this.evalString ("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} " + org.jmol.util.Escape.escapeStr (fileName) + " mesh nofill }; else; { isosurface " + org.jmol.util.Escape.escapeStr (fileName) + "}");
 return ;
@@ -1683,7 +1683,7 @@ this.setFileLoadStatus (org.jmol.constant.EnumFileStatus.CREATING_MODELSET, full
 this.pushHoldRepaintWhy ("createModelSet");
 this.setErrorMessage (null);
 try {
-var bsNew =  new java.util.BitSet ();
+var bsNew =  new javax.util.BitSet ();
 this.modelSet = this.modelManager.createModelSet (fullPathName, fileName, loadScript, atomSetCollection, bsNew, isAppend);
 if (bsNew.cardinality () > 0) {
 var jmolScript = this.modelSet.getModelSetAuxiliaryInfoValue ("jmolscript");
@@ -1840,7 +1840,7 @@ function (bsSelected, envelopeRadius) {
 if (bsSelected == null) bsSelected = this.getSelectionSet (false);
 if (envelopeRadius == 3.4028235E38 || envelopeRadius == -1) this.addStateScriptRet ("calculate surfaceDistance " + (envelopeRadius == 3.4028235E38 ? "FROM" : "WITHIN"), null, bsSelected, null, "", false, true);
 return this.modelSet.calculateSurface (bsSelected, envelopeRadius);
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getStructureList", 
 function () {
 return this.global.getStructureList ();
@@ -1858,16 +1858,16 @@ Clazz.defineMethod (c$, "getDefaultStructure",
 function (bsAtoms, bsAllAtoms) {
 if (bsAtoms == null) bsAtoms = this.getSelectionSet (false);
 return this.modelSet.getDefaultStructure (bsAtoms, bsAllAtoms);
-}, "java.util.BitSet,java.util.BitSet");
+}, "javax.util.BitSet,javax.util.BitSet");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (bsAtoms, asDSSP, setStructure) {
 if (bsAtoms == null) bsAtoms = this.getSelectionSet (false);
 return this.modelSet.calculateStructures (bsAtoms, asDSSP, this.global.dsspCalcHydrogen, setStructure);
-}, "java.util.BitSet,~B,~B");
+}, "javax.util.BitSet,~B,~B");
 Clazz.overrideMethod (c$, "getSelectedAtomIterator", 
 function (bsSelected, isGreaterOnly, modelZeroBased, isMultiModel) {
 return this.modelSet.getSelectedAtomIterator (bsSelected, isGreaterOnly, modelZeroBased, false, isMultiModel);
-}, "java.util.BitSet,~B,~B,~B");
+}, "javax.util.BitSet,~B,~B,~B");
 Clazz.overrideMethod (c$, "setIteratorForAtom", 
 function (iterator, atomIndex, distance) {
 this.modelSet.setIteratorForAtom (iterator, -1, atomIndex, distance, null);
@@ -1889,7 +1889,7 @@ return this.addStateScriptRet (script, null, null, null, null, addFrameNumber, p
 Clazz.defineMethod (c$, "addStateScriptRet", 
 function (script1, bsBonds, bsAtoms1, bsAtoms2, script2, addFrameNumber, postDefinitions) {
 return this.modelSet.addStateScript (script1, bsBonds, bsAtoms1, bsAtoms2, script2, addFrameNumber, postDefinitions);
-}, "~S,java.util.BitSet,java.util.BitSet,java.util.BitSet,~S,~B,~B");
+}, "~S,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~S,~B,~B");
 Clazz.defineMethod (c$, "getEchoStateActive", 
 function () {
 return this.modelSet.getEchoStateActive ();
@@ -1996,7 +1996,7 @@ return this.modelSet.getSpaceGroupInfo (-1, spaceGroup, 0, null, null, null);
 Clazz.defineMethod (c$, "getPolymerPointsAndVectors", 
 function (bs, vList) {
 this.modelSet.getPolymerPointsAndVectors (bs, vList);
-}, "java.util.BitSet,java.util.List");
+}, "javax.util.BitSet,java.util.List");
 Clazz.defineMethod (c$, "getModelSetProperty", 
 function (strProp) {
 return this.modelSet.getModelSetProperty (strProp);
@@ -2042,17 +2042,17 @@ return bs;
 Clazz.defineMethod (c$, "getModelBitSet", 
 function (atomList, allTrajectories) {
 return this.modelSet.getModelBitSet (atomList, allTrajectories);
-}, "java.util.BitSet,~B");
+}, "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "getModelUndeletedAtomsBitSetBs", 
 function (bsModels) {
 var bs = this.modelSet.getModelAtomBitSetIncludingDeletedBs (bsModels);
 this.excludeAtoms (bs, false);
 return bs;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "excludeAtoms", 
 function (bs, ignoreSubset) {
 this.selectionManager.excludeAtoms (bs, ignoreSubset);
-}, "java.util.BitSet,~B");
+}, "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "getModelSet", 
 function () {
 return this.modelSet;
@@ -2077,11 +2077,11 @@ Clazz.defineMethod (c$, "calcBoundBoxDimensions",
 function (bs, scale) {
 this.modelSet.calcBoundBoxDimensions (bs, scale);
 this.axesAreTainted = true;
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getBoxInfo", 
 function (bs, scale) {
 return this.modelSet.getBoxInfo (bs, scale);
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "calcRotationRadius", 
 function (center) {
 return this.modelSet.calcRotationRadius (this.animationManager.currentModelIndex, center);
@@ -2089,7 +2089,7 @@ return this.modelSet.calcRotationRadius (this.animationManager.currentModelIndex
 Clazz.defineMethod (c$, "calcRotationRadiusBs", 
 function (bs) {
 return this.modelSet.calcRotationRadiusBs (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getBoundBoxCornerVector", 
 function () {
 return this.modelSet.getBoundBoxCornerVector ();
@@ -2239,7 +2239,7 @@ return this.modelSet.getBondCountInModel (modelIndex);
 Clazz.defineMethod (c$, "getBondsForSelectedAtoms", 
 function (bsAtoms) {
 return this.modelSet.getBondsForSelectedAtoms (bsAtoms, this.global.bondModeOr || org.jmol.util.BitSetUtil.cardinalityOf (bsAtoms) == 1);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "frankClicked", 
 function (x, y) {
 return !this.global.disablePopupMenu && this.getShowFrank () && this.shapeManager.checkFrankclicked (x, y);
@@ -2341,7 +2341,7 @@ return this.global.minBondDistance;
 Clazz.defineMethod (c$, "getAtomIndices", 
 function (bs) {
 return this.modelSet.getAtomIndices (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomBits", 
 function (tokType, specInfo) {
 return this.modelSet.getAtomBits (tokType, specInfo);
@@ -2349,17 +2349,17 @@ return this.modelSet.getAtomBits (tokType, specInfo);
 Clazz.defineMethod (c$, "getSequenceBits", 
 function (specInfo, bs) {
 return this.modelSet.getSequenceBits (specInfo, bs);
-}, "~S,java.util.BitSet");
+}, "~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomsNearPt", 
 function (distance, coord) {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 this.modelSet.getAtomsWithin (distance, coord, bs, -1);
 return bs;
 }, "~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "getAtomsNearPts", 
 function (distance, points, bsInclude) {
 return this.modelSet.getAtomsWithinBs (distance, points, bsInclude);
-}, "~N,~A,java.util.BitSet");
+}, "~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomsNearPlane", 
 function (distance, plane) {
 return this.modelSet.getAtomsWithin (distance, plane);
@@ -2367,14 +2367,14 @@ return this.modelSet.getAtomsWithin (distance, plane);
 Clazz.defineMethod (c$, "getAtomsWithinRadius", 
 function (distance, bs, withinAllModels, rd) {
 return this.modelSet.getAtomsWithinBs (distance, bs, withinAllModels, rd);
-}, "~N,java.util.BitSet,~B,org.jmol.atomdata.RadiusData");
+}, "~N,javax.util.BitSet,~B,org.jmol.atomdata.RadiusData");
 Clazz.defineMethod (c$, "getAtomsConnected", 
 function (min, max, intType, bs) {
 return this.modelSet.getAtomsConnected (min, max, intType, bs);
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getBranchBitSet", 
 function (atomIndex, atomIndexNot) {
-if (atomIndex < 0 || atomIndex >= this.getAtomCount ()) return  new java.util.BitSet ();
+if (atomIndex < 0 || atomIndex >= this.getAtomCount ()) return  new javax.util.BitSet ();
 return org.jmol.util.JmolMolecule.getBranchBitSet (this.modelSet.atoms, atomIndex, this.getModelUndeletedAtomsBitSet (this.modelSet.atoms[atomIndex].modelIndex), null, atomIndexNot, true, true);
 }, "~N,~N");
 Clazz.defineMethod (c$, "getAtomIndexFromAtomNumber", 
@@ -2526,7 +2526,7 @@ return this.modelSet.getProteinStructureState (this.getSelectionSet (false), fal
 Clazz.defineMethod (c$, "getCoordinateState", 
 function (bsSelected) {
 return this.modelSet.getAtomicPropertyState (2, bsSelected);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setCurrentColorRange", 
 function (label) {
 var data = this.getDataFloat (label);
@@ -2537,7 +2537,7 @@ this.setCurrentColorRangeData (data, bs);
 Clazz.defineMethod (c$, "setCurrentColorRangeData", 
 function (data, bs) {
 this.colorManager.setPropertyColorRangeData (data, bs, this.global.propertyColorScheme);
-}, "~A,java.util.BitSet");
+}, "~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "setCurrentColorRange", 
 function (min, max) {
 this.colorManager.setPropertyColorRange (min, max);
@@ -2582,7 +2582,7 @@ Clazz.defineMethod (c$, "autoHbond",
 function (bsFrom, bsTo, onlyIfHaveCalculated) {
 if (bsFrom == null) bsFrom = bsTo = this.getSelectionSet (false);
 return this.modelSet.autoHbond (bsFrom, bsTo, onlyIfHaveCalculated);
-}, "java.util.BitSet,java.util.BitSet,~B");
+}, "javax.util.BitSet,javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "getHbondsAngleMin", 
 function () {
 return this.global.hbondsAngleMinimum;
@@ -2754,7 +2754,7 @@ this.modelSet.setTrajectory (modelIndex);
 Clazz.defineMethod (c$, "setTrajectoryBs", 
 function (bsModels) {
 this.modelSet.setTrajectoryBs (bsModels);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "isTrajectory", 
 function (modelIndex) {
 return this.modelSet.isTrajectory (modelIndex);
@@ -2775,7 +2775,7 @@ Clazz.defineMethod (c$, "setFrameOffsets",
 function (bsAtoms) {
 this.bsFrameOffsets = bsAtoms;
 this.transformManager.setFrameOffsets (this.frameOffsets = this.modelSet.getFrameOffsets (this.bsFrameOffsets));
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getFrameOffsets", 
 function () {
 return this.bsFrameOffsets;
@@ -3399,7 +3399,7 @@ f = f.substring (1);
 type = '#';
 }var s = (type.charCodeAt (0) == 61 ? this.global.loadFormat : this.global.loadLigandFormat);
 if (f.indexOf (".") > 0 && s.indexOf ("%FILE.") >= 0) s = s.substring (0, s.indexOf ("%FILE") + 5);
-return org.jmol.util.TextFormat.formatString (s, "FILE", f);
+return org.jmol.util.TextFormat.formatStringS (s, "FILE", f);
 case ':':
 format = this.global.pubChemFormat;
 var fl = f.toLowerCase ();
@@ -3420,12 +3420,12 @@ f = "name/" + org.jmol.util.Escape.escapeUrl (f);
 throw e;
 }
 }
-return org.jmol.util.TextFormat.formatString (format, "FILE", f);
+return org.jmol.util.TextFormat.formatStringS (format, "FILE", f);
 case '$':
 if (f.startsWith ("$")) {
 f = f.substring (1);
 format = org.jmol.util.TextFormat.simpleReplace (this.global.smilesUrlFormat, "&get3d=True", "");
-return org.jmol.util.TextFormat.formatString (format, "FILE", org.jmol.util.Escape.escapeUrl (f));
+return org.jmol.util.TextFormat.formatStringS (format, "FILE", org.jmol.util.Escape.escapeUrl (f));
 }case 'N':
 case '2':
 case 'I':
@@ -3452,7 +3452,7 @@ default:
 format = this.global.smilesUrlFormat;
 break;
 }
-return (withPrefix ? "MOL3D::" : "") + org.jmol.util.TextFormat.formatString (format, "FILE", f);
+return (withPrefix ? "MOL3D::" : "") + org.jmol.util.TextFormat.formatStringS (format, "FILE", f);
 case '_':
 var server = org.jmol.viewer.FileManager.fixFileNameVariables (this.global.edsUrlFormat, f);
 var strCutoff = org.jmol.viewer.FileManager.fixFileNameVariables (this.global.edsUrlCutoff, f);
@@ -3506,12 +3506,12 @@ for (var i = 0, pt = 0; i < pts.length; i++) if (pts[i] != null) for (var j = 0;
 
 
 return points;
-}, "java.util.BitSet,~B,~B,java.util.List");
+}, "javax.util.BitSet,~B,~B,java.util.List");
 Clazz.defineMethod (c$, "addHydrogens", 
 function (bsAtoms, asScript, isSilent) {
 var doAll = (bsAtoms == null);
 if (bsAtoms == null) bsAtoms = this.getModelUndeletedAtomsBitSet (this.getVisibleFramesBitSet ().length () - 1);
-var bsB =  new java.util.BitSet ();
+var bsB =  new javax.util.BitSet ();
 if (bsAtoms.cardinality () == 0) return bsB;
 var modelIndex = this.modelSet.atoms[bsAtoms.nextSetBit (0)].modelIndex;
 if (modelIndex != this.modelSet.getModelCount () - 1) return bsB;
@@ -3533,11 +3533,11 @@ throw e;
 if (wasAppendNew) this.setAppendNew (true);
 }if (!isSilent) this.scriptStatus (org.jmol.i18n.GT._ ("{0} hydrogens added", pts.length));
 return bsB;
-}, "java.util.BitSet,~B,~B");
+}, "javax.util.BitSet,~B,~B");
 Clazz.defineMethod (c$, "addHydrogensInline", 
 ($fz = function (bsAtoms, vConnections, pts) {
 var modelIndex = this.getAtomModelIndex (bsAtoms.nextSetBit (0));
-if (modelIndex != this.modelSet.getModelCount () - 1) return  new java.util.BitSet ();
+if (modelIndex != this.modelSet.getModelCount () - 1) return  new javax.util.BitSet ();
 var bsA = this.getModelUndeletedAtomsBitSet (modelIndex);
 this.setAppendNew (false);
 var atomIndex = this.modelSet.getAtomCount ();
@@ -3556,7 +3556,7 @@ this.$eval.runScriptBuffer (sbConnect.toString (), null);
 var bsB = this.getModelUndeletedAtomsBitSet (modelIndex);
 bsB.andNot (bsA);
 return bsB;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet,java.util.List,~A");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,java.util.List,~A");
 Clazz.overrideMethod (c$, "setMarBond", 
 function (marBond) {
 this.global.bondRadiusMilliAngstroms = marBond;
@@ -3578,7 +3578,7 @@ function (atomIndex, action) {
 this.setStatusAtomHovered (atomIndex, this.getAtomInfoXYZ (atomIndex, false));
 if (!this.hoverEnabled) return ;
 if (this.isModelKitMode ()) {
-if (this.isAtomAssignable (atomIndex)) this.highlight (org.jmol.util.BitSetUtil.setBit (atomIndex));
+if (this.isAtomAssignable (atomIndex)) this.highlight (org.jmol.util.BitSetUtil.newAndSetBit (atomIndex));
 this.refresh (3, "hover on atom");
 return ;
 }if (this.$eval != null && this.isScriptExecuting () || atomIndex == this.hoverAtomIndex || this.global.hoverDelayMs == 0) return ;
@@ -5382,7 +5382,7 @@ function (minDistance, maxDistance, order, connectOperation, bsA, bsB, bsBonds, 
 this.clearModelDependentObjects ();
 this.clearMinimization ();
 return this.modelSet.makeConnections (minDistance, maxDistance, order, connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);
-}, "~N,~N,~N,~N,java.util.BitSet,java.util.BitSet,java.util.BitSet,~B,~B,~N");
+}, "~N,~N,~N,~N,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~B,~B,~N");
 Clazz.overrideMethod (c$, "rebond", 
 function () {
 this.rebondState (false);
@@ -5399,7 +5399,7 @@ Clazz.defineMethod (c$, "setPdbConectBonding",
 function (isAuto, isStateScript) {
 this.clearModelDependentObjects ();
 this.modelSet.deleteAllBonds ();
-var bsExclude =  new java.util.BitSet ();
+var bsExclude =  new javax.util.BitSet ();
 this.modelSet.setPdbConectBonding (0, 0, bsExclude);
 if (isAuto) {
 var isLegacy = isStateScript && this.checkAutoBondLegacy ();
@@ -5629,7 +5629,7 @@ this.tempManager.freeTempEnum (temp);
 }, "~A");
 Clazz.defineMethod (c$, "getFont3D", 
 function (fontFace, fontStyle, fontSize) {
-return this.gdata.getFont3D (fontFace, fontStyle, fontSize);
+return this.gdata.getFont3DFSS (fontFace, fontStyle, fontSize);
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "formatText", 
 function (text0) {
@@ -5679,7 +5679,7 @@ return this.modelSet.getAtomNumber (i);
 Clazz.defineMethod (c$, "getAtomGroupQuaternions", 
 function (bsAtoms, nMax) {
 return this.modelSet.getAtomGroupQuaternions (bsAtoms, nMax, this.getQuaternionFrame ());
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getAtomQuaternion", 
 function (i) {
 return this.modelSet.getQuaternion (i, this.getQuaternionFrame ());
@@ -5691,7 +5691,7 @@ return this.modelSet.atoms[i];
 Clazz.defineMethod (c$, "getAtomPointVector", 
 function (bs) {
 return this.modelSet.getAtomPointVector (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getAtomRadius", 
 function (i) {
 return this.modelSet.getAtomRadius (i);
@@ -5903,11 +5903,11 @@ if (iShape == 22) this.scriptEcho (this.getShapeProperty (22, "command"));
 Clazz.defineMethod (c$, "rotateAxisAngleAtCenter", 
 function (rotCenter, rotAxis, degreesPerSecond, endDegrees, isSpin, bsSelected) {
 if (this.transformManager.rotateAxisAngleAtCenter (rotCenter, rotAxis, degreesPerSecond, endDegrees, isSpin, bsSelected)) this.refresh (-1, "rotateAxisAngleAtCenter");
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~B,java.util.BitSet");
+}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateAboutPointsInternal", 
 function (point1, point2, degreesPerSecond, endDegrees, isSpin, bsSelected, translation, finalPoints) {
 if (this.transformManager.rotateAboutPointsInternal (point1, point2, degreesPerSecond, endDegrees, false, isSpin, bsSelected, false, translation, finalPoints)) this.refresh (-1, "rotateAxisAboutPointsInternal");
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~B,java.util.BitSet,javax.vecmath.Vector3f,java.util.List");
+}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~B,javax.util.BitSet,javax.vecmath.Vector3f,java.util.List");
 Clazz.defineMethod (c$, "getPickingSpinRate", 
 function () {
 return this.global.pickingSpinRate;
@@ -5952,7 +5952,7 @@ return this.modelSet.getTaintedAtoms (type);
 Clazz.defineMethod (c$, "setTaintedAtoms", 
 function (bs, type) {
 this.modelSet.setTaintedAtoms (bs, type);
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getData", 
 function (atomExpression, type) {
 var exp = "";
@@ -5969,7 +5969,7 @@ return this.evaluateExpression (exp);
 Clazz.defineMethod (c$, "getModelCml", 
 function (bs, nAtomsMax, addBonds) {
 return this.modelSet.getModelCml (bs, nAtomsMax, addBonds);
-}, "java.util.BitSet,~N,~B");
+}, "javax.util.BitSet,~N,~B");
 Clazz.defineMethod (c$, "evaluateExpression", 
 function (stringOrTokens) {
 return org.jmol.script.ScriptEvaluator.evaluateExpression (this, stringOrTokens);
@@ -5977,12 +5977,12 @@ return org.jmol.script.ScriptEvaluator.evaluateExpression (this, stringOrTokens)
 Clazz.defineMethod (c$, "getHelixData", 
 function (bs, tokType) {
 return this.modelSet.getHelixData (bs, tokType);
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getPdbData", 
 function (bs, sb) {
 if (bs == null) bs = this.getSelectionSet (true);
 return this.modelSet.getPdbAtomData (bs, sb);
-}, "java.util.BitSet,org.jmol.util.OutputStringBuffer");
+}, "javax.util.BitSet,org.jmol.util.OutputStringBuffer");
 Clazz.defineMethod (c$, "isJmolDataFrameForModel", 
 function (modelIndex) {
 return this.modelSet.isJmolDataFrameForModel (modelIndex);
@@ -6001,7 +6001,7 @@ this.modelSet.setJmolDataFrame (type, modelIndex, dataIndex);
 }, "~S,~N,~N");
 Clazz.defineMethod (c$, "setFrameTitle", 
 function (modelIndex, title) {
-this.modelSet.setFrameTitle (org.jmol.util.BitSetUtil.setBit (modelIndex), title);
+this.modelSet.setFrameTitle (org.jmol.util.BitSetUtil.newAndSetBit (modelIndex), title);
 }, "~N,~S");
 Clazz.defineMethod (c$, "setFrameTitleObj", 
 function (title) {
@@ -6038,7 +6038,7 @@ case 1112539153:
 case 1087375365:
 this.refreshMeasures (true);
 }
-}, "java.util.BitSet,~N,~N,~N,~S,~A,~A");
+}, "javax.util.BitSet,~N,~N,~N,~S,~A,~A");
 Clazz.defineMethod (c$, "checkCoordinatesChanged", 
 function () {
 this.modelSet.recalculatePositionDependentQuantities (null, null);
@@ -6058,7 +6058,7 @@ if (bs.cardinality () == 0) return ;
 this.modelSet.setAtomCoord (bs, tokType, xyzValues);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bs);
-}, "java.util.BitSet,~N,~O");
+}, "javax.util.BitSet,~N,~O");
 Clazz.defineMethod (c$, "setAtomCoordRelative", 
 function (offset, bs) {
 if (bs == null) bs = this.getSelectionSet (false);
@@ -6066,7 +6066,7 @@ if (bs.cardinality () == 0) return ;
 this.modelSet.setAtomCoordRelative (offset, bs);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bs);
-}, "javax.vecmath.Tuple3f,java.util.BitSet");
+}, "javax.vecmath.Tuple3f,javax.util.BitSet");
 Clazz.defineMethod (c$, "allowRotateSelected", 
 function () {
 return this.global.allowRotateSelected;
@@ -6076,13 +6076,13 @@ function (pt, bs) {
 this.modelSet.invertSelected (pt, null, -1, null, bs);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bs);
-}, "javax.vecmath.Point3f,java.util.BitSet");
+}, "javax.vecmath.Point3f,javax.util.BitSet");
 Clazz.defineMethod (c$, "invertAtomCoordPlane", 
 function (plane, bs) {
 this.modelSet.invertSelected (null, plane, -1, null, bs);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bs);
-}, "javax.vecmath.Point4f,java.util.BitSet");
+}, "javax.vecmath.Point4f,javax.util.BitSet");
 Clazz.defineMethod (c$, "invertSelected", 
 function (pt, plane, iAtom, invAtoms) {
 var bs = this.getSelectionSet (false);
@@ -6090,14 +6090,14 @@ if (bs.cardinality () == 0) return ;
 this.modelSet.invertSelected (pt, plane, iAtom, invAtoms, bs);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bs);
-}, "javax.vecmath.Point3f,javax.vecmath.Point4f,~N,java.util.BitSet");
+}, "javax.vecmath.Point3f,javax.vecmath.Point4f,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "moveAtoms", 
 function (mNew, matrixRotate, translation, center, isInternal, bsAtoms) {
 if (bsAtoms.cardinality () == 0) return ;
 this.modelSet.moveAtoms (mNew, matrixRotate, translation, bsAtoms, center, isInternal);
 this.checkMinimization ();
 this.statusManager.setStatusAtomMoved (bsAtoms);
-}, "javax.vecmath.Matrix3f,javax.vecmath.Matrix3f,javax.vecmath.Vector3f,javax.vecmath.Point3f,~B,java.util.BitSet");
+}, "javax.vecmath.Matrix3f,javax.vecmath.Matrix3f,javax.vecmath.Vector3f,javax.vecmath.Point3f,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "moveSelected", 
 function (deltaX, deltaY, deltaZ, x, y, bsSelected, isTranslation, asAtoms) {
 if (deltaZ == 0) return ;
@@ -6137,7 +6137,7 @@ this.setAtomCoordRelative (ptNew, bsSelected);
 this.transformManager.rotateXYBy (deltaX, deltaY, bsSelected);
 }}}this.refresh (2, "");
 this.movingSelected = false;
-}, "~N,~N,~N,~N,~N,java.util.BitSet,~B,~B");
+}, "~N,~N,~N,~N,~N,javax.util.BitSet,~B,~B");
 Clazz.defineMethod (c$, "highlightBond", 
 function (index, isHover) {
 if (isHover && !this.isHoverEnabled ()) return ;
@@ -6146,7 +6146,7 @@ if (index >= 0) {
 var b = this.modelSet.getBonds ()[index];
 var i = b.getAtomIndex2 ();
 if (!this.isAtomAssignable (i)) return ;
-bs = org.jmol.util.BitSetUtil.setBit (i);
+bs = org.jmol.util.BitSetUtil.newAndSetBit (i);
 bs.set (b.getAtomIndex1 ());
 }this.highlight (bs);
 this.refresh (3, "highlightBond");
@@ -6155,7 +6155,7 @@ Clazz.defineMethod (c$, "highlight",
 function (bs) {
 if (bs != null) this.loadShape (8);
 this.setShapeProperty (8, "highlight", bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setRotateBondIndex", 
 function (index) {
 var haveBond = (this.rotateBondIndex >= 0);
@@ -6187,7 +6187,7 @@ if (atom2.getCovalentBondCount () == 1 || pt.distance (atom1) < pt.distance (ato
 var a = atom1;
 atom1 = atom2;
 atom2 = a;
-}if (org.jmol.util.Measure.computeAngle (pt, atom1, atom2, true) > 90 || org.jmol.util.Measure.computeAngle (pt, atom2, atom1, true) > 90) {
+}if (org.jmol.util.Measure.computeAngleABC (pt, atom1, atom2, true) > 90 || org.jmol.util.Measure.computeAngleABC (pt, atom2, atom1, true) > 90) {
 bsBranch = this.getBranchBitSet (atom2.index, atom1.index);
 }if (bsBranch != null) for (var n = 0, i = atom1.getBonds ().length; --i >= 0; ) {
 if (bsBranch.get (atom1.getBondedAtomIndex (i)) && ++n == 2) {
@@ -6352,7 +6352,7 @@ if (!this.writeFrame (++n, froot, fext, fullPath, type, text_or_bytes, quality, 
 }
 }if (info.length == 0) info = "OK\n";
 return info + "\n" + n + " files created";
-}, "~S,~S,~O,~A,~N,~N,~N,java.util.BitSet,~N,~A");
+}, "~S,~S,~O,~A,~N,~N,~N,javax.util.BitSet,~N,~A");
 Clazz.defineMethod (c$, "writeFrame", 
 ($fz = function (n, froot, fext, fullPath, type, text_or_bytes, quality, width, height, sb) {
 var fileName = "0000" + n;
@@ -6541,11 +6541,11 @@ var m = org.jmol.api.Interface.getOptionInterface ("quantum.MlpCalculation");
 var data = (fileName == null ? null : this.getFileAsString (fileName));
 m.assignPotentials (this.modelSet.atoms, potentials, this.getSmartsMatch ("a", bsSelected), this.getSmartsMatch ("/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
 return potentials;
-}, "~B,java.util.BitSet,java.util.BitSet,~S");
+}, "~B,javax.util.BitSet,javax.util.BitSet,~S");
 Clazz.defineMethod (c$, "setProteinType", 
 function (type, bs) {
 this.modelSet.setProteinType (bs == null ? this.getSelectionSet (false) : bs, type);
-}, "org.jmol.constant.EnumStructure,java.util.BitSet");
+}, "org.jmol.constant.EnumStructure,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getBondPoint3f1", 
 function (i) {
 return this.modelSet.getBondAtom1 (i);
@@ -6615,18 +6615,18 @@ this.setFileLoadStatus (org.jmol.constant.EnumFileStatus.DELETED, null, null, nu
 this.refreshMeasures (true);
 if (bsD0 != null) bsDeleted.andNot (bsD0);
 return org.jmol.util.BitSetUtil.cardinalityOf (bsDeleted);
-}, "java.util.BitSet,~B");
+}, "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "deleteBonds", 
 function (bsDeleted) {
 this.modelSet.deleteBonds (bsDeleted, false);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "deleteModelAtoms", 
 function (firstAtomIndex, nAtoms, bsDeleted) {
 this.selectionManager.deleteModelAtoms (bsDeleted);
 org.jmol.util.BitSetUtil.deleteBits (this.getFrameOffsets (), bsDeleted);
 this.setFrameOffsets (this.getFrameOffsets ());
 this.dataManager.deleteModelAtoms (firstAtomIndex, nAtoms, bsDeleted);
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getDeletedAtoms", 
 function () {
 return this.selectionManager.getDeletedAtoms ();
@@ -6801,7 +6801,7 @@ return null;
 Clazz.defineMethod (c$, "calculateStruts", 
 function (bs1, bs2) {
 return this.modelSet.calculateStruts (bs1 == null ? this.getSelectionSet (false) : bs1, bs2 == null ? this.getSelectionSet (false) : bs2);
-}, "java.util.BitSet,java.util.BitSet");
+}, "javax.util.BitSet,javax.util.BitSet");
 Clazz.defineMethod (c$, "getStrutsMultiple", 
 function () {
 return this.global.strutsMultiple;
@@ -6972,11 +6972,11 @@ org.jmol.util.Logger.error (e.getMessage ());
 throw e;
 }
 }
-}, "~N,~N,java.util.BitSet,java.util.BitSet,~N,~B,~B,~B");
+}, "~N,~N,javax.util.BitSet,javax.util.BitSet,~N,~B,~B,~B");
 Clazz.defineMethod (c$, "setMotionFixedAtoms", 
 function (bs) {
 this.selectionManager.setMotionFixedAtoms (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getMotionFixedAtoms", 
 function () {
 return this.selectionManager.getMotionFixedAtoms ();
@@ -6993,7 +6993,7 @@ this.refresh (2, this.statusManager.syncingMouse ? "Mouse: rotateArcBall " + x +
 Clazz.defineMethod (c$, "getAtomicPropertyState", 
 function (commands, type, bs, name, data) {
 this.modelSet.getAtomicPropertyStateBuffer (commands, type, bs, name, data);
-}, "StringBuffer,~N,java.util.BitSet,~S,~A");
+}, "StringBuffer,~N,javax.util.BitSet,~S,~A");
 Clazz.defineMethod (c$, "getCenterAndPoints", 
 function (atomSets, addCenter) {
 return this.modelSet.getCenterAndPoints (atomSets, addCenter);
@@ -7041,7 +7041,7 @@ return this.global.repaintWaitMs;
 Clazz.defineMethod (c$, "getGroupsWithin", 
 function (nResidues, bs) {
 return this.modelSet.getGroupsWithin (nResidues, bs);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getExecutor", 
 function () {
 if (this.executor != null || org.jmol.viewer.Viewer.nProcessors < 2) return this.executor;
@@ -7081,7 +7081,7 @@ function (bs) {
 if (bs == null) bs = this.getSelectionSet (false);
 this.loadShape (5);
 this.shapeManager.setShapePropertyBs (5, "toggleLabel", null, bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "loadShape", 
 function (shapeID) {
 this.shapeManager.loadShape (shapeID);
@@ -7090,11 +7090,11 @@ Clazz.defineMethod (c$, "setShapeSize",
 function (shapeID, mad, bsSelected) {
 if (bsSelected == null) bsSelected = this.getSelectionSet (false);
 this.shapeManager.setShapeSizeBs (shapeID, mad, null, bsSelected);
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setShapeSize", 
 function (shapeID, rd, bsAtoms) {
 this.shapeManager.setShapeSizeBs (shapeID, 0, rd, bsAtoms);
-}, "~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setShapeProperty", 
 function (shapeID, propertyName, value) {
 if (shapeID < 0) return ;
@@ -7136,7 +7136,7 @@ this.shapeManager.setAtomLabel (value, i);
 Clazz.defineMethod (c$, "deleteShapeAtoms", 
 function (value, bs) {
 this.shapeManager.deleteShapeAtoms (value, bs);
-}, "~A,java.util.BitSet");
+}, "~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function (commands, isAll, iShape) {
 this.shapeManager.getShapeState (commands, isAll, iShape);
@@ -7144,7 +7144,7 @@ this.shapeManager.getShapeState (commands, isAll, iShape);
 Clazz.defineMethod (c$, "resetBioshapes", 
 function (bsAllAtoms) {
 this.shapeManager.resetBioshapes (bsAllAtoms);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomShapeValue", 
 function (tok, group, atomIndex) {
 return this.shapeManager.getAtomShapeValue (tok, group, atomIndex);
@@ -7293,7 +7293,7 @@ this.modelSet.setAtomNamesAndNumbers (atomIndex, -1, null);
 this.refresh (3, "assignAtom");
 return ;
 }var atom = this.modelSet.atoms[atomIndex];
-var bs = org.jmol.util.BitSetUtil.setBit (atomIndex);
+var bs = org.jmol.util.BitSetUtil.newAndSetBit (atomIndex);
 var pts = [pt];
 var vConnections =  new java.util.ArrayList ();
 vConnections.add (atom);
@@ -7324,14 +7324,14 @@ function (atomIndex, deltaX, deltaY, deltaZ, bsAtoms) {
 this.stopMinimization ();
 if (bsAtoms == null) {
 var atom = this.modelSet.atoms[atomIndex];
-bsAtoms = org.jmol.util.BitSetUtil.setBit (atomIndex);
+bsAtoms = org.jmol.util.BitSetUtil.newAndSetBit (atomIndex);
 var bonds = atom.getBonds ();
 if (bonds != null) for (var i = 0; i < bonds.length; i++) {
 var atom2 = bonds[i].getOtherAtom (atom);
 if (atom2.getElementNumber () == 1) bsAtoms.set (atom2.index);
 }
 }this.moveSelected (deltaX, deltaY, deltaZ, -2147483648, -2147483648, bsAtoms, true, true);
-}, "~N,~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "appendLoadStates", 
 function (commands) {
 if (this.ligandModelSet != null) {
@@ -7368,7 +7368,7 @@ return this.modelSet.haveModelKit ();
 Clazz.defineMethod (c$, "getModelKitStateBitSet", 
 function (bs, bsDeleted) {
 return this.modelSet.getModelKitStateBitset (bs, bsDeleted);
-}, "java.util.BitSet,java.util.BitSet");
+}, "javax.util.BitSet,javax.util.BitSet");
 Clazz.defineMethod (c$, "getSmiles", 
 function (index1, index2, bsSelected, isBioSmiles, allowUnmatchedRings, addCrossLinks, addComment) {
 var atoms = this.getModelSet ().atoms;
@@ -7383,11 +7383,11 @@ index1 = index2;
 index2 = i;
 }index1 = atoms[index1].getGroup ().firstAtomIndex;
 index2 = atoms[index2].getGroup ().lastAtomIndex;
-}bsSelected =  new java.util.BitSet ();
-bsSelected.set (index1, index2 + 1);
+}bsSelected =  new javax.util.BitSet ();
+bsSelected.setBits (index1, index2 + 1);
 }}var comment = (addComment ? org.jmol.viewer.Viewer.getJmolVersion () + " " + this.getModelName (this.getCurrentModelIndex ()) : null);
 return this.getSmilesMatcher ().getSmiles (atoms, this.getAtomCount (), bsSelected, isBioSmiles, allowUnmatchedRings, addCrossLinks, comment);
-}, "~N,~N,java.util.BitSet,~B,~B,~B,~B");
+}, "~N,~N,javax.util.BitSet,~B,~B,~B,~B");
 Clazz.defineMethod (c$, "connect", 
 function (connections) {
 this.modelSet.connect (connections);
@@ -7480,7 +7480,7 @@ this.transformManager.setZslabPoint (pt);
 Clazz.overrideMethod (c$, "calcAtomsMinMax", 
 function (bs, boxInfo) {
 this.modelSet.calcAtomsMinMax (bs, boxInfo);
-}, "java.util.BitSet,org.jmol.util.BoxInfo");
+}, "javax.util.BitSet,org.jmol.util.BoxInfo");
 Clazz.overrideMethod (c$, "evalFunctionFloat", 
 function (func, params, values) {
 return this.$eval.evalFunctionFloat (func, params, values);
@@ -7573,7 +7573,7 @@ Clazz.defineMethod (c$, "calculatePartialCharges",
 function (bsSelected) {
 if (bsSelected == null || bsSelected.cardinality () == 0) bsSelected = this.getModelUndeletedAtomsBitSetBs (this.getVisibleFramesBitSet ());
 this.getMinimizer (true).calculatePartialCharges (this.modelSet.getBonds (), this.modelSet.getBondCount (), this.modelSet.atoms, bsSelected);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "cachePut", 
 function (key, data) {
 this.fileManager.cachePut (key, data);

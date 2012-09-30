@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["org.jmol.util.JmolMolecule", "java.util.ArrayList", "$.BitSet", "javax.vecmath.Vector3f"], "org.jmol.smiles.SmilesSearch", ["java.lang.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.Hashtable", "org.jmol.smiles.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesParser", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
+Clazz.load (["org.jmol.util.JmolMolecule", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.smiles.SmilesSearch", ["java.lang.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.Hashtable", "org.jmol.smiles.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesParser", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.patternAtoms = null;
 this.pattern = null;
@@ -51,12 +51,12 @@ Clazz.instantialize (this, arguments);
 Clazz.prepareFields (c$, function () {
 this.patternAtoms =  new Array (16);
 this.measures =  new java.util.ArrayList ();
-this.bsAromatic =  new java.util.BitSet ();
-this.bsAromatic5 =  new java.util.BitSet ();
-this.bsAromatic6 =  new java.util.BitSet ();
+this.bsAromatic =  new javax.util.BitSet ();
+this.bsAromatic5 =  new javax.util.BitSet ();
+this.bsAromatic6 =  new javax.util.BitSet ();
 this.top = this;
-this.bsFound =  new java.util.BitSet ();
-this.bsReturn =  new java.util.BitSet ();
+this.bsFound =  new javax.util.BitSet ();
+this.bsReturn =  new javax.util.BitSet ();
 this.v =  new org.jmol.smiles.SmilesSearch.VTemp ();
 });
 Clazz.defineMethod (c$, "toString", 
@@ -68,25 +68,19 @@ return sb.toString ();
 Clazz.defineMethod (c$, "setSelected", 
 function (bs) {
 if (bs == null) {
-bs =  new java.util.BitSet (this.jmolAtomCount);
-bs.set (0, this.jmolAtomCount);
+bs = org.jmol.util.BitSetUtil.newBitSet (this.jmolAtomCount);
+bs.setBits (0, this.jmolAtomCount);
 }this.bsSelected = bs;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setAtomArray", 
 function () {
+if (this.patternAtoms.length > this.atomCount) this.patternAtoms = org.jmol.util.ArrayUtil.arrayCopyOpt (this.patternAtoms, this.atomCount);
 this.nodes = this.patternAtoms;
-if (this.patternAtoms.length > this.atomCount) {
-var tmp =  new Array (this.atomCount);
-System.arraycopy (this.patternAtoms, 0, tmp, 0, this.atomCount);
-this.nodes = this.patternAtoms = tmp;
-}});
+});
 Clazz.defineMethod (c$, "addAtom", 
 function () {
-if (this.atomCount >= this.patternAtoms.length) {
-var tmp =  new Array (this.patternAtoms.length * 2);
-System.arraycopy (this.patternAtoms, 0, tmp, 0, this.patternAtoms.length);
-this.patternAtoms = tmp;
-}var sAtom =  new org.jmol.smiles.SmilesAtom (this.atomCount);
+if (this.atomCount >= this.patternAtoms.length) this.patternAtoms = org.jmol.util.ArrayUtil.doubleLength (this.patternAtoms);
+var sAtom =  new org.jmol.smiles.SmilesAtom (this.atomCount);
 this.patternAtoms[this.atomCount] = sAtom;
 this.atomCount++;
 return sAtom;
@@ -99,7 +93,7 @@ return this.top.nNested;
 }, "~S");
 Clazz.defineMethod (c$, "clear", 
 function () {
-this.bsReturn.clear ();
+this.bsReturn.clearAll ();
 this.nNested = 0;
 this.htNested = null;
 this.nestedBond = null;
@@ -127,11 +121,11 @@ if (this.needAromatic) this.needRingData = true;
 var noAromatic = ((this.flags & 1) != 0);
 this.needAromatic = new Boolean (this.needAromatic & ( new Boolean ((bsA == null) & !noAromatic).valueOf ())).valueOf ();
 if (!this.needAromatic) {
-this.bsAromatic.clear ();
+this.bsAromatic.clearAll ();
 if (bsA != null) this.bsAromatic.or (bsA);
 if (!this.needRingMemberships && !this.needRingData) return ;
 }this.getRingData (this.needRingData, this.flags, null);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getRingData", 
 function (needRingData, flags, vRings) {
 var aromaticStrict = ((flags & 4) != 0);
@@ -179,7 +173,7 @@ this.setAromatic56 (vR, this.bsAromatic6, 6, vRings[3]);
 break;
 }
 }}if (needRingData) {
-this.ringData[i] =  new java.util.BitSet ();
+this.ringData[i] =  new javax.util.BitSet ();
 for (var k = 0; k < vR.size (); k++) {
 var r = vR.get (k);
 this.ringData[i].or (r);
@@ -199,14 +193,14 @@ Clazz.defineMethod (c$, "setAromatic56",
 ($fz = function (vRings, bs56, n56, vAromatic56) {
 for (var k = 0; k < vRings.size (); k++) {
 var r = vRings.get (k);
-this.v.bsTemp.clear ();
+this.v.bsTemp.clearAll ();
 this.v.bsTemp.or (r);
 this.v.bsTemp.and (this.bsAromatic);
 if (this.v.bsTemp.cardinality () == n56) {
 bs56.or (r);
 if (vAromatic56 != null) vAromatic56.add (r);
 }}
-}, $fz.isPrivate = true, $fz), "java.util.List,java.util.BitSet,~N,java.util.List");
+}, $fz.isPrivate = true, $fz), "java.util.List,javax.util.BitSet,~N,java.util.List");
 Clazz.defineMethod (c$, "subsearch", 
 function (search, firstAtomOnly, isRingCheck) {
 search.ringSets = this.ringSets;
@@ -252,8 +246,8 @@ this.aromaticDouble = ((this.flags & 16) != 0);
 if (org.jmol.util.Logger.debugging && !this.isSilent) org.jmol.util.Logger.debug ("SmilesSearch processing " + this.pattern);
 if (this.vReturn == null && (this.asVector || this.getMaps)) this.vReturn =  new java.util.ArrayList ();
 if (this.bsSelected == null) {
-this.bsSelected =  new java.util.BitSet (this.jmolAtomCount);
-this.bsSelected.set (0, this.jmolAtomCount);
+this.bsSelected = org.jmol.util.BitSetUtil.newBitSet (this.jmolAtomCount);
+this.bsSelected.setBits (0, this.jmolAtomCount);
 }this.selectedAtomCount = this.bsSelected.cardinality ();
 if (this.subSearches != null) {
 for (var i = 0; i < this.subSearches.length; i++) {
@@ -273,7 +267,7 @@ if (patternAtom == null) {
 if (this.nestedBond == null) {
 this.clearBsFound (-1);
 } else {
-this.bsReturn.clear ();
+this.bsReturn.clearAll ();
 }} else {
 if (this.bsFound.get (iAtom) || !this.bsSelected.get (iAtom)) return true;
 jmolAtom = this.jmolAtoms[iAtom];
@@ -368,7 +362,7 @@ if (jmolBonds != null) for (var j = 0; j < jmolBonds.length; j++) if (!this.chec
 this.clearBsFound (iAtom);
 return true;
 }if (!this.ignoreStereochemistry && !this.checkStereochemistry ()) return true;
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var nMatch = 0;
 for (var j = 0; j < this.atomCount; j++) {
 var i = this.patternAtoms[j].getMatchingAtom ();
@@ -382,7 +376,7 @@ if (this.bsRequired != null && !this.bsRequired.intersects (bs)) return true;
 if (this.matchAllAtoms && bs.cardinality () != this.selectedAtomCount) return true;
 if (this.bsCheck != null) {
 if (firstAtomOnly) {
-this.bsCheck.clear ();
+this.bsCheck.clearAll ();
 for (var j = 0; j < this.atomCount; j++) {
 this.bsCheck.set (this.patternAtoms[j].getMatchingAtom ());
 }
@@ -416,7 +410,7 @@ Clazz.defineMethod (c$, "clearBsFound",
 ($fz = function (iAtom) {
 if (iAtom < 0) {
 if (this.bsCheck == null) {
-this.bsFound.clear ();
+this.bsFound.clearAll ();
 }} else this.bsFound.clear (iAtom);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "getHydrogens", 
@@ -429,7 +423,7 @@ if (bsHydrogens == null) break;
 bsHydrogens.set (k);
 }
 return (k >= 0 ? this.jmolAtoms[k] : null);
-}, $fz.isPrivate = true, $fz), "org.jmol.util.JmolNode,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.JmolNode,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkPrimitiveAtom", 
 ($fz = function (patternAtom, iAtom) {
 var atom = this.jmolAtoms[iAtom];
@@ -442,7 +436,7 @@ if (Clazz.instanceOf (o, org.jmol.smiles.SmilesSearch)) {
 var search = o;
 if (patternAtom.isBioAtom) search.nestedBond = patternAtom.getBondTo (null);
 o = this.subsearch (search, true, false);
-if (o == null) o =  new java.util.BitSet ();
+if (o == null) o =  new javax.util.BitSet ();
 if (!patternAtom.isBioAtom) this.setNested (patternAtom.iNested, o);
 }foundAtom = (patternAtom.not != ((o).get (iAtom)));
 break;
@@ -990,12 +984,12 @@ return (norm == null ? NaN : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w)
 }, "javax.vecmath.Vector3f,~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "createTopoMap", 
 function (bsAromatic) {
-if (bsAromatic == null) bsAromatic =  new java.util.BitSet ();
+if (bsAromatic == null) bsAromatic =  new javax.util.BitSet ();
 var nAtomsMissing = this.getMissingHydrogenCount ();
 var atoms =  new Array (this.atomCount + nAtomsMissing);
 this.jmolAtoms = atoms;
 var ptAtom = 0;
-var bsFixH =  new java.util.BitSet ();
+var bsFixH =  new javax.util.BitSet ();
 for (var i = 0; i < this.atomCount; i++) {
 var sAtom = this.patternAtoms[i];
 var cclass = sAtom.getChiralClass ();
@@ -1077,7 +1071,7 @@ var b = bonds[0];
 bonds[0] = bonds[1];
 bonds[1] = b;
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setTop", 
 function (parent) {
 if (parent == null) this.top = this;
@@ -1096,7 +1090,7 @@ for (var entry, $entry = ht.entrySet ().iterator (); $entry.hasNext () && ((entr
 var key = entry.getValue ().toString ();
 if (key.startsWith ("select")) {
 var bs = (htNew.containsKey (key) ? htNew.get (key) : this.jmolAtoms[0].findAtomsLike (key.substring (6)));
-if (bs == null) bs =  new java.util.BitSet ();
+if (bs == null) bs =  new javax.util.BitSet ();
 htNew.put (key, bs);
 entry.setValue (bs);
 }}
@@ -1123,7 +1117,7 @@ this.vTemp2 =  new javax.vecmath.Vector3f ();
 this.vNorm1 =  new javax.vecmath.Vector3f ();
 this.vNorm2 =  new javax.vecmath.Vector3f ();
 this.vNorm3 =  new javax.vecmath.Vector3f ();
-this.bsTemp =  new java.util.BitSet ();
+this.bsTemp =  new javax.util.BitSet ();
 });
 c$ = Clazz.p0p ();
 Clazz.defineStatics (c$,

@@ -44,23 +44,23 @@ function (size, rd, bsSelected) {
 this.setXmlProperty ("size", (rd == null ? Integer.$valueOf (size) : rd), bsSelected);
 if (rd == null) this.setSize (size, bsSelected);
  else this.setSizeRD (rd, bsSelected);
-}, "~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setSize", 
 function (size, bsSelected) {
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
-}, "org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setShapeProperty", 
 function (propertyName, value, bsSelected) {
 if (!this.setXmlProperty (propertyName, value, bsSelected)) this.setProperty (propertyName, value, bsSelected == null ? this.viewer.getSelectionSet (false) : bsSelected);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setXmlProperty", 
 ($fz = function (propertyName, value, bs) {
 var myType = org.jmol.viewer.JmolConstants.shapeClassBases[this.shapeID];
 if (org.jmol.util.Logger.debuggingHigh && this.shapeID != 33) org.jmol.util.Logger.info (myType + " setProperty: " + propertyName + " = " + value);
 return false;
-}, $fz.isPrivate = true, $fz), "~S,~O,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bsSelected) {
 if (propertyName === "setProperties") {
@@ -76,7 +76,7 @@ return ;
 }if (propertyName === "refreshTrajectories") {
 return ;
 }org.jmol.util.Logger.warn ("unassigned " + org.jmol.viewer.JmolConstants.shapeClassBases[this.shapeID] + " + shape setProperty:" + propertyName + ":" + value);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 return false;
@@ -95,7 +95,7 @@ return false;
 }, "~N,~N");
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (xMouse, yMouse, closest, bsNot) {
-}, "~N,~N,~A,java.util.BitSet");
+}, "~N,~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkBoundsMinMax", 
 function (pointMin, pointMax) {
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f");
@@ -105,15 +105,15 @@ function () {
 Clazz.defineMethod (c$, "checkObjectClicked", 
 function (x, y, modifiers, bsVisible) {
 return null;
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 return false;
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkObjectDragged", 
 function (prevX, prevY, x, y, modifiers, bsVisible) {
 return false;
-}, "~N,~N,~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "coordinateInRange", 
 function (x, y, vertex, dmin2, ptXY) {
 this.viewer.transformPtScr (vertex, ptXY);
@@ -142,7 +142,7 @@ return null;
 });
 Clazz.defineMethod (c$, "setVisibilityFlags", 
 function (bs) {
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 c$.setStateInfo = Clazz.defineMethod (c$, "setStateInfo", 
 function (ht, i, key) {
 org.jmol.shape.Shape.setStateInfo (ht, i, i, key);

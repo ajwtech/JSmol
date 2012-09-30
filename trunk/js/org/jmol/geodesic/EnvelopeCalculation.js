@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.geodesic");
-Clazz.load (["javax.vecmath.Point3f", "org.jmol.atomdata.AtomData"], "org.jmol.geodesic.EnvelopeCalculation", ["java.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.FastBitSet", "$.Geodesic", "$.Normix"], function () {
+Clazz.load (["javax.vecmath.Point3f", "org.jmol.atomdata.AtomData"], "org.jmol.geodesic.EnvelopeCalculation", ["javax.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Geodesic", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.geodesicMap = null;
 this.mapT = null;
@@ -7,7 +7,6 @@ this.mads = null;
 this.atomData = null;
 this.viewer = null;
 this.atomCount = 0;
-this.emptySet = null;
 this.maxRadius = 0;
 this.modelZeroBased = false;
 this.disregardNeighbors = false;
@@ -55,9 +54,9 @@ this.viewer = viewer;
 this.atomCount = atomCount;
 this.mads = mads;
 this.geodesicCount = org.jmol.util.Geodesic.getVertexCount (3);
-this.geodesicMap = org.jmol.util.FastBitSet.allocateBitmap (this.geodesicCount);
-this.mapT = org.jmol.util.FastBitSet.allocateBitmap (this.geodesicCount);
-this.emptySet = org.jmol.util.FastBitSet.getEmptySet ();
+this.geodesicMap = org.jmol.util.BitSetUtil.newBitSet (this.geodesicCount);
+this.mapT = org.jmol.util.BitSetUtil.newBitSet (this.geodesicCount);
+($t$ = org.jmol.geodesic.EnvelopeCalculation.EMPTY_SET = org.jmol.util.BitSetUtil.emptySet, org.jmol.geodesic.EnvelopeCalculation.prototype.EMPTY_SET = org.jmol.geodesic.EnvelopeCalculation.EMPTY_SET, $t$);
 }, "org.jmol.atomdata.AtomDataServer,~N,~A");
 Clazz.defineMethod (c$, "getDotsConvexMaps", 
 function () {
@@ -83,17 +82,17 @@ this.mads = mads;
 }, "~A");
 Clazz.defineMethod (c$, "setFromBits", 
 function (index, bs) {
-this.geodesicMap.set (0, this.geodesicCount);
+this.geodesicMap.setBits (0, this.geodesicCount);
 for (var iDot = this.geodesicCount; --iDot >= 0; ) if (!bs.get (iDot)) this.geodesicMap.clear (iDot);
 
 if (this.dotsConvexMaps == null) this.dotsConvexMaps =  new Array (this.atomCount);
 var map;
-if (this.geodesicMap.isEmpty ()) map = this.emptySet;
- else map =  new org.jmol.util.FastBitSet (this.geodesicMap);
+if (this.geodesicMap.isEmpty ()) map = org.jmol.geodesic.EnvelopeCalculation.EMPTY_SET;
+ else map = javax.util.BitSet.copy (this.geodesicMap);
 if (index >= this.dotsConvexMaps.length) return ;
 this.dotsConvexMaps[index] = map;
 this.dotsConvexMax = Math.max (this.dotsConvexMax, index);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "newSet", 
 function () {
 this.dotsConvexMax = 0;
@@ -108,19 +107,19 @@ this.calculate (null, this.maxRadius, bs, this.bsIgnore, this.disregardNeighbors
 return ;
 }if (this.dotsConvexMaps == null || this.dotsConvexMax == 0) return ;
 var pt =  new javax.vecmath.Vector3f ();
-var bsTemp =  new java.util.BitSet ();
+var bsTemp =  new javax.util.BitSet ();
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 if (i >= this.dotsConvexMax) return ;
 var map = this.dotsConvexMaps[i];
-if (map == null || map.isEmpty ()) continue ;var bsNew =  new org.jmol.util.FastBitSet ();
+if (map == null || map.isEmpty ()) continue ;var bsNew =  new javax.util.BitSet ();
 for (var j = map.nextSetBit (0); j >= 0; j = map.nextSetBit (j + 1)) {
 pt.setT (org.jmol.util.Geodesic.getVertexVector (j));
 m.transform (pt);
-bsNew.set (org.jmol.util.Normix.getNormix (pt, bsTemp));
+bsNew.set (org.jmol.util.Normix.getNormixV (pt, bsTemp));
 }
 this.dotsConvexMaps[i] = bsNew;
 }
-}, "java.util.BitSet,javax.vecmath.Matrix3f");
+}, "javax.util.BitSet,javax.vecmath.Matrix3f");
 Clazz.defineMethod (c$, "calculate", 
 function (rd, maxRadius, bsSelected, bsIgnore, disregardNeighbors, onlySelectedDots, isSurface, multiModel) {
 if (rd == null) {
@@ -143,7 +142,7 @@ this.bsMySelected = (onlySelectedDots && bsSelected != null ? org.jmol.util.BitS
 org.jmol.util.BitSetUtil.andNot (this.bsMySelected, bsIgnore);
 this.disregardNeighbors = disregardNeighbors;
 this.maxRadius = maxRadius;
-this.bsSurface =  new java.util.BitSet ();
+this.bsSurface =  new javax.util.BitSet ();
 var isAll = (bsSelected == null);
 var iter = this.viewer.getSelectedAtomIterator (this.bsMySelected, false, this.modelZeroBased, false);
 var i0 = (isAll ? this.atomCount - 1 : bsSelected.nextSetBit (0));
@@ -155,7 +154,7 @@ this.calcConvexMap (isSurface);
 iter.release ();
 this.currentPoints = null;
 this.setDotsConvexMax ();
-}, "org.jmol.atomdata.RadiusData,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~B");
+}, "org.jmol.atomdata.RadiusData,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~B");
 Clazz.defineMethod (c$, "getRadius", 
 function (atomIndex) {
 return this.atomData.atomRadius[atomIndex];
@@ -167,7 +166,7 @@ this.calculate ( new org.jmol.atomdata.RadiusData (null, 3.0, org.jmol.atomdata.
 }if (this.currentPoints != null) return this.currentPoints;
 var nPoints = 0;
 var dotCount = 42;
-for (var i = this.dotsConvexMax; --i >= 0; ) if (this.dotsConvexMaps[i] != null) nPoints += this.dotsConvexMaps[i].cardinality (dotCount);
+for (var i = this.dotsConvexMax; --i >= 0; ) if (this.dotsConvexMaps[i] != null) nPoints += this.dotsConvexMaps[i].cardinalityN (dotCount);
 
 var points =  new Array (nPoints);
 if (nPoints == 0) return points;
@@ -210,18 +209,18 @@ Clazz.defineMethod (c$, "calcConvexMap",
 if (this.dotsConvexMaps == null) this.dotsConvexMaps =  new Array (this.atomCount);
 this.calcConvexBits ();
 var map;
-if (this.geodesicMap.isEmpty ()) map = this.emptySet;
+if (this.geodesicMap.isEmpty ()) map = org.jmol.geodesic.EnvelopeCalculation.EMPTY_SET;
  else {
 this.bsSurface.set (this.indexI);
 if (isSurface) {
 this.addIncompleteFaces (this.geodesicMap);
 this.addIncompleteFaces (this.geodesicMap);
-}map =  new org.jmol.util.FastBitSet (this.geodesicMap);
+}map = javax.util.BitSet.copy (this.geodesicMap);
 }this.dotsConvexMaps[this.indexI] = map;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "addIncompleteFaces", 
 ($fz = function (points) {
-this.mapT.clear ();
+this.mapT.clearAll ();
 var faces = org.jmol.util.Geodesic.getFaceVertexes (3);
 var len = faces.length;
 var maxPt = -1;
@@ -245,10 +244,10 @@ if (maxPt < p3) maxPt = p3;
 for (var i = 0; i <= maxPt; i++) {
 if (this.mapT.get (i)) points.set (i);
 }
-}, $fz.isPrivate = true, $fz), "org.jmol.util.FastBitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 Clazz.defineMethod (c$, "calcConvexBits", 
 ($fz = function () {
-this.geodesicMap.set (0, this.geodesicCount);
+this.geodesicMap.setBits (0, this.geodesicCount);
 var combinedRadii = this.radiusI + this.radiusP;
 if (this.neighborCount == 0) return ;
 var faceTest;
@@ -260,7 +259,7 @@ var p4 = org.jmol.geodesic.EnvelopeCalculation.power4[2];
 var ok1;
 var ok2;
 var ok3;
-this.mapT.clear ();
+this.mapT.clearAll ();
 for (var i = 0; i < 12; i++) {
 this.vertexTest[i].setT (org.jmol.util.Geodesic.getVertexVector (i));
 this.vertexTest[i].scaleAdd (combinedRadii, this.centerI);
@@ -315,10 +314,10 @@ while (iter.hasNext ()) {
 var indexN = iter.next ();
 var neighborRadius = this.atomData.atomRadius[indexN];
 if (this.centerI.distance (this.atomData.atomXyz[indexN]) > this.radiusI + this.radiusP + this.radiusP + neighborRadius) continue ;if (this.neighborCount == this.neighborIndices.length) {
-this.neighborIndices = org.jmol.util.ArrayUtil.doubleLength (this.neighborIndices);
+this.neighborIndices = org.jmol.util.ArrayUtil.doubleLengthI (this.neighborIndices);
 this.neighborCenters = org.jmol.util.ArrayUtil.doubleLength (this.neighborCenters);
-this.neighborPlusProbeRadii2 = org.jmol.util.ArrayUtil.doubleLength (this.neighborPlusProbeRadii2);
-this.neighborRadii2 = org.jmol.util.ArrayUtil.doubleLength (this.neighborRadii2);
+this.neighborPlusProbeRadii2 = org.jmol.util.ArrayUtil.doubleLengthF (this.neighborPlusProbeRadii2);
+this.neighborRadii2 = org.jmol.util.ArrayUtil.doubleLengthF (this.neighborRadii2);
 }this.neighborCenters[this.neighborCount] = this.atomData.atomXyz[indexN];
 this.neighborIndices[this.neighborCount] = indexN;
 var r = neighborRadius + this.radiusP;
@@ -339,6 +338,7 @@ this.atomData.atomCount -= nAtomsDeleted;
 this.atomCount = this.atomData.atomCount;
 }, "~N,~N");
 Clazz.defineStatics (c$,
+"EMPTY_SET", null,
 "SURFACE_DISTANCE_FOR_CALCULATION", 3,
 "MAX_LEVEL", 3);
 Clazz.defineStatics (c$,

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shape.Mesh", "org.jmol.jvxl.data.JvxlData"], "org.jmol.shapesurface.IsosurfaceMesh", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.shape.Mesh", "org.jmol.jvxl.data.JvxlData"], "org.jmol.shapesurface.IsosurfaceMesh", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.jvxlData = null;
 this.vertexIncrement = 1;
@@ -67,7 +67,7 @@ for (var i = this.vertexCount; --i >= 0; ) this.vertexColixes[i] = this.colix;
 });
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertex, value, assocVertex, associateNormals) {
-var vPt = this.addVertexCopy (vertex, value);
+var vPt = this.addVertexCopyVal (vertex, value);
 switch (assocVertex) {
 case -1:
 if (this.firstRealVertex < 0) this.firstRealVertex = vPt;
@@ -174,7 +174,7 @@ return this.jvxlData.vContours = vContours;
 });
 Clazz.defineMethod (c$, "get3dContour", 
 ($fz = function (v, value, colix) {
-var bsContour =  new java.util.BitSet (this.polygonCount);
+var bsContour = org.jmol.util.BitSetUtil.newBitSet (this.polygonCount);
 var fData =  new StringBuffer ();
 var color = org.jmol.util.Colix.getArgb (colix);
 org.jmol.shapesurface.IsosurfaceMesh.setContourVector (v, this.polygonCount, bsContour, value, colix, color, fData);
@@ -189,7 +189,7 @@ v.add (2,  new Float (value));
 v.add (3, [colix]);
 v.add (4, [color]);
 v.add (5, fData);
-}, "java.util.List,~N,java.util.BitSet,~N,~N,~N,StringBuffer");
+}, "java.util.List,~N,javax.util.BitSet,~N,~N,~N,StringBuffer");
 c$.addContourPoints = Clazz.defineMethod (c$, "addContourPoints", 
 function (v, bsContour, i, fData, vertices, vertexValues, iA, iB, iC, value) {
 var pt1 = null;
@@ -230,7 +230,7 @@ bsContour.set (i);
 org.jmol.jvxl.data.JvxlCoder.appendContourTriangleIntersection (type, f1, f2, fData);
 v.add (pt1);
 v.add (pt2);
-}, "java.util.List,java.util.BitSet,~N,StringBuffer,~A,~A,~N,~N,~N,~N");
+}, "java.util.List,javax.util.BitSet,~N,StringBuffer,~A,~A,~N,~N,~N,~N");
 c$.checkPt = Clazz.defineMethod (c$, "checkPt", 
 ($fz = function (vertexValues, i, j, v) {
 var v1;
@@ -303,16 +303,16 @@ this.jvxlData.vContours = null;
 Clazz.defineMethod (c$, "colorAtoms", 
 function (colix, bs) {
 this.colorVertices (colix, bs, true);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "colorVertices", 
 function (colix, bs) {
 this.colorVertices (colix, bs, false);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "colorVertices", 
 ($fz = function (colix, bs, isAtoms) {
 if (this.vertexSource == null) return ;
 colix = org.jmol.util.Colix.copyColixTranslucency (this.colix, colix);
-var bsVertices = (isAtoms ?  new java.util.BitSet () : bs);
+var bsVertices = (isAtoms ?  new javax.util.BitSet () : bs);
 if (this.vertexColixes == null || this.vertexColorMap == null && this.isColorSolid) {
 this.vertexColixes =  Clazz.newArray (this.vertexCount, 0);
 for (var i = 0; i < this.vertexCount; i++) this.vertexColixes[i] = this.colix;
@@ -330,7 +330,7 @@ return ;
 }var color = org.jmol.util.Colix.getHexCode (colix);
 if (this.vertexColorMap == null) this.vertexColorMap =  new java.util.Hashtable ();
 org.jmol.shapesurface.IsosurfaceMesh.addColorToMap (this.vertexColorMap, color, bs);
-}, $fz.isPrivate = true, $fz), "~N,java.util.BitSet,~B");
+}, $fz.isPrivate = true, $fz), "~N,javax.util.BitSet,~B");
 c$.addColorToMap = Clazz.defineMethod (c$, "addColorToMap", 
 ($fz = function (colorMap, color, bs) {
 var bsMap = null;
@@ -341,7 +341,7 @@ bsMap.or (bs);
 entry.getValue ().andNot (bs);
 }
 if (bsMap == null) colorMap.put (color, bs);
-}, $fz.isPrivate = true, $fz), "java.util.Map,~S,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "java.util.Map,~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "setJvxlColorMap", 
 function (isAll) {
 this.jvxlData.diameter = this.diameter;
@@ -356,7 +356,7 @@ if (this.jvxlData.vertexColorMap == null) this.jvxlData.vertexColorMap =  new ja
 for (var entry, $entry = this.vertexColorMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var bsMap = entry.getValue ();
 if (bsMap.isEmpty ()) continue ;var color = entry.getKey ();
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 for (var i = 0; i < this.vertexCount; i++) if (bsMap.get (this.vertexSource[i])) bs.set (i);
 
 org.jmol.shapesurface.IsosurfaceMesh.addColorToMap (this.jvxlData.vertexColorMap, color, bs);
@@ -474,7 +474,7 @@ if (this.polygonCount == 0) for (var i = this.vertexCount; --i >= 0; ) {
 bi.addBoundBoxPoint (this.vertices[i]);
 }
  else {
-var bsDone =  new java.util.BitSet ();
+var bsDone =  new javax.util.BitSet ();
 for (var i = this.polygonCount; --i >= 0; ) {
 if (!this.setABC (i)) continue ;if (!bsDone.get (this.iA)) {
 bi.addBoundBoxPoint (this.vertices[this.iA]);
@@ -496,9 +496,9 @@ if (m != null && m.polygonIndexes == null) m.polygonIndexes =  Clazz.newArray (0
 var nP = (this.bsSlabDisplay == null || this.polygonCount == 0 ? this.polygonCount : this.bsSlabDisplay.cardinality ()) + (m == null || m.polygonCount == 0 ? 0 : m.bsSlabDisplay == null ? m.polygonCount : m.bsSlabDisplay.cardinality ());
 if (this.vertices == null) this.vertices =  new Array (0);
 this.vertices = org.jmol.util.ArrayUtil.ensureLength (this.vertices, nV);
-this.vertexValues = org.jmol.util.ArrayUtil.ensureLength (this.vertexValues, nV);
+this.vertexValues = org.jmol.util.ArrayUtil.ensureLengthA (this.vertexValues, nV);
 var haveSources = (this.vertexSource != null && (m == null || m.vertexSource != null));
-this.vertexSource = org.jmol.util.ArrayUtil.ensureLength (this.vertexSource, nV);
+this.vertexSource = org.jmol.util.ArrayUtil.ensureLengthI (this.vertexSource, nV);
 var newPolygons =  Clazz.newArray (nP, 0);
 var ipt = org.jmol.shapesurface.IsosurfaceMesh.mergePolygons (this, 0, 0, newPolygons);
 if (m != null) {
@@ -549,30 +549,30 @@ var ptTemp =  new javax.vecmath.Point3f ();
 var planeGammaK =  new javax.vecmath.Point4f ();
 var vGammaToKPoint =  new javax.vecmath.Vector3f ();
 var vTemp =  new javax.vecmath.Vector3f ();
-var bsMoved =  new java.util.BitSet ();
+var bsMoved =  new javax.util.BitSet ();
 var mapEdge =  new java.util.Hashtable ();
-this.bsSlabGhost =  new java.util.BitSet ();
+this.bsSlabGhost =  new javax.util.BitSet ();
 for (var i = 1; i < 27; i++) {
 vGammaToKPoint.setT (pts[i]);
 org.jmol.util.Measure.getBisectingPlane (pts[0], vGammaToKPoint, ptTemp, vTemp, planeGammaK);
 this.getIntersection (1, planeGammaK, null, null, null, null, null, false, false, 135266319, true);
-bsMoved.clear ();
+bsMoved.clearAll ();
 mapEdge.clear ();
 for (var j = this.bsSlabGhost.nextSetBit (0); j >= 0; j = this.bsSlabGhost.nextSetBit (j + 1)) {
-if (!this.setABC (j)) continue ;var p = org.jmol.util.ArrayUtil.arrayCopy (this.polygonIndexes[j], 0, -1, false);
+if (!this.setABC (j)) continue ;var p = org.jmol.util.ArrayUtil.arrayCopyRangeI (this.polygonIndexes[j], 0, -1);
 for (var k = 0; k < 3; k++) {
 var pk = p[k];
 p[k] = this.addIntersectionVertex (this.vertices[pk], this.vertexValues[pk], this.vertexSource == null ? 0 : this.vertexSource[pk], this.vertexSets == null ? 0 : this.vertexSets[pk], mapEdge, 0, pk);
 if (pk != p[k] && bsMoved.get (pk)) bsMoved.set (p[k]);
 }
-this.addPolygon (p, 0, this.bsSlabDisplay);
+this.addPolygonC (p, 0, this.bsSlabDisplay);
 for (var k = 0; k < 3; k++) if (!bsMoved.get (p[k])) {
 bsMoved.set (p[k]);
 this.vertices[p[k]].sub (vGammaToKPoint);
 }
 }
 if (this.bsSlabGhost.nextSetBit (0) >= 0) {
-this.bsSlabGhost.clear ();
+this.bsSlabGhost.clearAll ();
 i = 0;
 }}
 this.bsSlabGhost = null;
@@ -605,5 +605,5 @@ this.mat4 =  new javax.vecmath.Matrix4f ();
 this.mat4.setIdentity ();
 }this.mat4.mul2 (m, this.mat4);
 this.recalcAltVertices = true;
-}, "javax.vecmath.Matrix4f,java.util.BitSet");
+}, "javax.vecmath.Matrix4f,javax.util.BitSet");
 });

@@ -41,11 +41,11 @@ bonds[i] =  Clazz.newArray (5, 0);
 var bondNum = -2147483648;
 while ((bondNum = this.parseInt ()) > 0) {
 if (bondCount == bonds[i].length) {
-bonds[i] = org.jmol.util.ArrayUtil.setLength (bonds[i], bondCount + 1);
+bonds[i] = org.jmol.util.ArrayUtil.arrayCopyI (bonds[i], bondCount + 1);
 }bonds[i][bondCount++] = bondNum - 1;
 }
 if (bondCount < bonds[i].length) {
-bonds[i] = org.jmol.util.ArrayUtil.setLength (bonds[i], bondCount);
+bonds[i] = org.jmol.util.ArrayUtil.arrayCopyI (bonds[i], bondCount);
 }}}
 if (true) {
 var incorrectBonds = 0;

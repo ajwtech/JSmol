@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "$.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.XmlReader"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.XmlReader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.JVXL_VERSION = "2.2";
 this.surfaceDataCount = 0;
@@ -311,7 +311,7 @@ return str;
 Clazz.overrideMethod (c$, "getVoxelBitSet", 
 function (nPoints) {
 if (this.bsVoxelBitSet != null) return this.bsVoxelBitSet;
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var bsVoxelPtr = 0;
 if (this.surfaceDataCount <= 0) return bs;
 var nThisValue = 0;
@@ -325,7 +325,7 @@ this.endOfData = true;
 nThisValue = 10000;
 }}this.thisInside = !this.thisInside;
 ++this.jvxlNSurfaceInts;
-if (this.thisInside) bs.set (bsVoxelPtr, bsVoxelPtr + nThisValue);
+if (this.thisInside) bs.setBits (bsVoxelPtr, bsVoxelPtr + nThisValue);
 bsVoxelPtr += nThisValue;
 }
 return bs;

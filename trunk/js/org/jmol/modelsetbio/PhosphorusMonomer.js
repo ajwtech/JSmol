@@ -74,7 +74,7 @@ var vA =  new javax.vecmath.Vector3f ();
 var vB =  new javax.vecmath.Vector3f ();
 vA.sub2 (ptA, ptP);
 vB.sub2 (ptB, ptP);
-return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, false);
+return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, null, false);
 }, "~S");
 Clazz.overrideMethod (c$, "getQuaternionFrameCenter", 
 function (qType) {

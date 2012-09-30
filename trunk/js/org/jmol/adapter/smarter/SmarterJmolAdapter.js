@@ -266,7 +266,7 @@ return "" + e;
 } else if (Clazz.exceptionOf (e$$, Error)) {
 var er = e$$;
 {
-org.jmol.util.Logger.error (null, er);
+org.jmol.util.Logger.errorEx (null, er);
 return "" + er;
 }
 } else {

@@ -14,7 +14,7 @@ function (propertyName, value, bs) {
 if ("font" === propertyName) {
 this.font3d = value;
 return ;
-}}, "~S,~O,java.util.BitSet");
+}}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var s = this.viewer.getObjectState (this.myType);

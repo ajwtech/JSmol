@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.AtomShape", ["java.util.BitSet", "$.Hashtable", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.AtomShape", ["java.util.Hashtable", "javax.util.BitSet", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.mads = null;
 this.colixes = null;
@@ -15,9 +15,9 @@ Clazz.overrideMethod (c$, "initModelSet",
 function () {
 this.atoms = this.modelSet.atoms;
 this.atomCount = this.modelSet.getAtomCount ();
-if (this.mads != null) this.mads = org.jmol.util.ArrayUtil.setLength (this.mads, this.atomCount);
-if (this.colixes != null) this.colixes = org.jmol.util.ArrayUtil.setLength (this.colixes, this.atomCount);
-if (this.paletteIDs != null) this.paletteIDs = org.jmol.util.ArrayUtil.setLength (this.paletteIDs, this.atomCount);
+if (this.mads != null) this.mads = org.jmol.util.ArrayUtil.arrayCopyShort (this.mads, this.atomCount);
+if (this.colixes != null) this.colixes = org.jmol.util.ArrayUtil.arrayCopyShort (this.colixes, this.atomCount);
+if (this.paletteIDs != null) this.paletteIDs = org.jmol.util.ArrayUtil.arrayCopyByte (this.paletteIDs, this.atomCount);
 });
 Clazz.defineMethod (c$, "getSize", 
 function (atomIndex) {
@@ -27,12 +27,12 @@ Clazz.overrideMethod (c$, "setSize",
 function (size, bsSelected) {
 if (size == 0) this.setSizeRD (null, bsSelected);
  else this.setSizeRD ( new org.jmol.atomdata.RadiusData (null, size, org.jmol.atomdata.RadiusData.EnumType.SCREEN, null), bsSelected);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 if (this.atoms == null) return ;
 this.isActive = true;
-if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
+if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
 var isVisible = (rd != null && rd.value != 0);
 var isAll = (bsSelected == null);
 var i0 = (isAll ? this.atomCount - 1 : bsSelected.nextSetBit (0));
@@ -40,24 +40,24 @@ if (this.mads == null && i0 >= 0) this.mads =  Clazz.newArray (this.atomCount, 0
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit (i + 1))) {
 var atom = this.atoms[i];
 this.mads[i] = atom.calculateMad (this.viewer, rd);
-this.bsSizeSet.set (i, isVisible);
+this.bsSizeSet.setBitTo (i, isVisible);
 atom.setShapeVisibility (this.myVisibilityFlag, isVisible);
 }
-}, "org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
 if ("color" === propertyName) {
 this.isActive = true;
 var colix = org.jmol.util.Colix.getColix (value);
 var pid = org.jmol.constant.EnumPalette.pidOf (value);
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.setColixAndPalette (colix, pid, i);
 
 return ;
 }if ("translucency" === propertyName) {
 this.isActive = true;
 var isTranslucent = (value.equals ("translucent"));
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 if (this.colixes == null) {
 this.colixes =  Clazz.newArray (this.atomCount, 0);
@@ -79,16 +79,16 @@ org.jmol.util.BitSetUtil.deleteBits (this.bsSizeSet, bs);
 org.jmol.util.BitSetUtil.deleteBits (this.bsColixSet, bs);
 return ;
 }Clazz.superCall (this, org.jmol.shape.AtomShape, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setColixAndPalette", 
 function (colix, paletteID, atomIndex) {
 if (this.colixes == null || atomIndex >= this.colixes.length) {
 if (colix == 0) return ;
-this.colixes = org.jmol.util.ArrayUtil.ensureLength (this.colixes, atomIndex + 1);
-this.paletteIDs = org.jmol.util.ArrayUtil.ensureLength (this.paletteIDs, atomIndex + 1);
-}if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+this.colixes = org.jmol.util.ArrayUtil.ensureLengthShort (this.colixes, atomIndex + 1);
+this.paletteIDs = org.jmol.util.ArrayUtil.ensureLengthByte (this.paletteIDs, atomIndex + 1);
+}if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 this.colixes[atomIndex] = colix = this.setColix (colix, paletteID, atomIndex);
-this.bsColixSet.set (atomIndex, colix != 0);
+this.bsColixSet.setBitTo (atomIndex, colix != 0);
 this.paletteIDs[atomIndex] = paletteID;
 }, "~N,~N,~N");
 Clazz.overrideMethod (c$, "setModelClickability", 

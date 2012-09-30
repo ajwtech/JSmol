@@ -8,10 +8,6 @@ Clazz.makeConstructor (c$,
 function (initialCapacity) {
 this.entries =  new Array (initialCapacity);
 }, "~N");
-Clazz.makeConstructor (c$, 
-function () {
-this.construct (256);
-});
 Clazz.defineMethod (c$, "get", 
 function (key) {
 var entries = this.entries;

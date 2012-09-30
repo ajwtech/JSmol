@@ -4,7 +4,7 @@ c$ = Clazz.declareType (org.jmol.util, "Parser");
 c$.parseStringInfestedFloatArray = Clazz.defineMethod (c$, "parseStringInfestedFloatArray", 
 function (str, bs, data) {
 return org.jmol.util.Parser.parseFloatArrayBsData (org.jmol.util.Parser.getTokens (str), bs, data);
-}, "~S,java.util.BitSet,~A");
+}, "~S,javax.util.BitSet,~A");
 c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
 function (str) {
 return org.jmol.util.Parser.parseFloatArrayNext (str,  Clazz.newArray (1, 0));
@@ -42,7 +42,7 @@ if (!Float.isNaN (f)) data[(max = i)] = f;
 if (n == nTokens) break;
 }
 return max + 1;
-}, "~A,java.util.BitSet,~A");
+}, "~A,javax.util.BitSet,~A");
 c$.fixDataString = Clazz.defineMethod (c$, "fixDataString", 
 ($fz = function (str) {
 str = str.$replace (';', str.indexOf ('\n') < 0 ? '\n' : ' ');
@@ -95,7 +95,7 @@ var isAll = (bs == null);
 var i0 = (isAll ? 0 : bs.nextSetBit (0));
 for (var i = i0; i >= 0 && i < data.length; i = (isAll ? i + 1 : bs.nextSetBit (i + 1))) data[i] = f;
 
-}, "~N,java.util.BitSet,~A");
+}, "~N,javax.util.BitSet,~A");
 c$.extractData = Clazz.defineMethod (c$, "extractData", 
 function (data, field, nBytes, firstLine) {
 return org.jmol.util.Parser.parseFloatArrayFromMatchAndField (data, null, 0, 0, null, field, nBytes, null, firstLine);
@@ -131,7 +131,7 @@ iData = i;
 }data[iData] = f;
 }
 return data;
-}, "~S,java.util.BitSet,~N,~N,~A,~N,~N,~A,~N");
+}, "~S,javax.util.BitSet,~N,~N,~A,~N,~N,~A,~N");
 c$.parseFloatArrayData = Clazz.defineMethod (c$, "parseFloatArrayData", 
 function (tokens, data) {
 org.jmol.util.Parser.parseFloatArrayDataN (tokens, data, data.length);

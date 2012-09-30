@@ -172,7 +172,7 @@ thisSID = MSAT[this.nIntPerSector - 1];
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }
@@ -194,7 +194,7 @@ thisSID = this.SAT[thisSID];
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }
@@ -219,7 +219,7 @@ thisSID = this.SAT[thisSID];
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }
@@ -245,7 +245,7 @@ thisSID = this.SAT[thisSID];
 if (nBytes == -9999) return  new StringBuffer ();
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }
@@ -292,7 +292,7 @@ shortSID = this.SSAT[shortSID];
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (data.toString ());
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }
@@ -357,7 +357,7 @@ for (var c = 0; c < 109; c++) this.MSAT0[c] = this.b$["org.jmol.util.CompoundDoc
 
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 return false;
 } else {
 throw e;
@@ -409,7 +409,7 @@ this.lenStream = this.b$["org.jmol.util.CompoundDocument"].readInt ();
 this.b$["org.jmol.util.CompoundDocument"].readByteArray (this.unused);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 return false;
 } else {
 throw e;

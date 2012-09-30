@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.lang.Float", "java.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.modelset.AtomCollection", ["java.lang.Character", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "$.EnumStructure", "$.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.modelset.Group", "$.LabelToken", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.lang.Float", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.modelset.AtomCollection", ["java.lang.Character", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "$.EnumStructure", "$.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.modelset.Group", "$.LabelToken", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.g3d = null;
@@ -39,9 +39,9 @@ org.jmol.modelset.AtomCollection.$AtomCollection$AtomSorter$ ();
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelset, "AtomCollection");
 Clazz.prepareFields (c$, function () {
-this.bsHidden =  new java.util.BitSet ();
-this.bsEmpty =  new java.util.BitSet ();
-this.bsFoundRectangle =  new java.util.BitSet ();
+this.bsHidden =  new javax.util.BitSet ();
+this.bsEmpty =  new javax.util.BitSet ();
+this.bsFoundRectangle =  new javax.util.BitSet ();
 });
 Clazz.defineMethod (c$, "releaseModelSet", 
 function () {
@@ -93,7 +93,7 @@ for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 v.add (this.atoms[i]);
 }
 }return v;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomCount", 
 function () {
 return this.atomCount;
@@ -125,7 +125,7 @@ return this.hydrophobicities;
 Clazz.defineMethod (c$, "setBsHidden", 
 function (bs) {
 this.bsHidden = bs;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "isAtomHidden", 
 function (iAtom) {
 return this.bsHidden.get (iAtom);
@@ -190,7 +190,7 @@ Clazz.defineMethod (c$, "getHelixData",
 function (bs, tokType) {
 var iAtom = bs.nextSetBit (0);
 return (iAtom < 0 ? "null" : this.atoms[iAtom].group.getHelixData (tokType, this.viewer.getQuaternionFrame (), this.viewer.getHelixStep ()));
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getAtomIndexFromAtomNumber", 
 function (atomNumber, bsVisibleFrames) {
 for (var i = 0; i < this.atomCount; i++) {
@@ -198,14 +198,14 @@ var atom = this.atoms[i];
 if (atom.getAtomNumber () == atomNumber && bsVisibleFrames.get (atom.modelIndex)) return i;
 }
 return -1;
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setFormalCharges", 
 function (bs, formalCharge) {
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 this.atoms[i].setFormalCharge (formalCharge);
 this.taintAtom (i, 4);
 }
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getAtomicCharges", 
 function () {
 var charges =  Clazz.newArray (this.atomCount, 0);
@@ -248,7 +248,7 @@ for (var i = 0; i < this.atomCount; i++) this.setBf (i);
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.setBf (i);
 
 }this.hasBfactorRange = true;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 Clazz.defineMethod (c$, "setBf", 
 ($fz = function (i) {
 var bf = this.atoms[i].getBfactor100 ();
@@ -280,7 +280,7 @@ var volume = 0;
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) volume += this.atoms[i].getVolume (this.viewer, vType);
 
 return volume;
-}, "java.util.BitSet,org.jmol.constant.EnumVdw");
+}, "javax.util.BitSet,org.jmol.constant.EnumVdw");
 Clazz.defineMethod (c$, "getSurfaceDistance100", 
 function (atomIndex) {
 if (this.nSurfaceAtoms == 0) return -1;
@@ -318,7 +318,7 @@ var d = this.surfaceDistance100s[i] = Math.round ((dMin * 100));
 this.surfaceDistanceMax = Math.max (this.surfaceDistanceMax, d);
 }}
 return points;
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "setAtomCoord", 
 function (bs, tokType, xyzValues) {
 var xyz = null;
@@ -367,7 +367,7 @@ this.setAtomVibrationVector (i, xyz.x, xyz.y, xyz.z);
 break;
 }
 }
-}, "java.util.BitSet,~N,~O");
+}, "javax.util.BitSet,~N,~O");
 Clazz.defineMethod (c$, "setAtomVibrationVector", 
 ($fz = function (atomIndex, x, y, z) {
 this.setVibrationVector (atomIndex, x, y, z);
@@ -393,7 +393,7 @@ Clazz.defineMethod (c$, "setAtomsCoordRelative",
 function (bs, x, y, z) {
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.setAtomCoordRelative (i, x, y, z);
 
-}, "java.util.BitSet,~N,~N,~N");
+}, "javax.util.BitSet,~N,~N,~N");
 Clazz.defineMethod (c$, "setAtomProperty", 
 function (bs, tok, iValue, fValue, sValue, values, list) {
 var n = 0;
@@ -502,7 +502,7 @@ break;
 }
 }
 if (tok == 1114638350) this.viewer.setSelectedAtom (-1, false);
-}, "java.util.BitSet,~N,~N,~N,~S,~A,~A");
+}, "javax.util.BitSet,~N,~N,~N,~S,~A,~A");
 Clazz.defineMethod (c$, "setElement", 
 function (atom, atomicNumber) {
 this.taintAtom (atom.index, 3);
@@ -635,7 +635,7 @@ this.loadCoordinates (dataString, true, true);
 return ;
 case 14:
 fData =  Clazz.newArray (this.atomCount, 0);
-bs =  new java.util.BitSet (this.atomCount);
+bs = org.jmol.util.BitSetUtil.newBitSet (this.atomCount);
 break;
 }
 var lines = org.jmol.util.Parser.markLines (dataString, ';');
@@ -759,12 +759,12 @@ this.canSkipLoad = false;
 if (!this.preserveState) return ;
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) this.taintAtom (i, type);
 
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "taintAtom", 
 function (atomIndex, type) {
 if (!this.preserveState) return ;
 if (this.tainted == null) this.tainted =  new Array (14);
-if (this.tainted[type] == null) this.tainted[type] =  new java.util.BitSet (this.atomCount);
+if (this.tainted[type] == null) this.tainted[type] = org.jmol.util.BitSetUtil.newBitSet (this.atomCount);
 this.tainted[type].set (atomIndex);
 if (type == 2) this.validateBspfForModel (this.atoms[atomIndex].modelIndex, false);
 }, "~N,~N");
@@ -782,16 +782,16 @@ if (this.tainted == null) return ;
 this.tainted[type] = null;
 return ;
 }if (this.tainted == null) this.tainted =  new Array (14);
-if (this.tainted[type] == null) this.tainted[type] =  new java.util.BitSet (this.atomCount);
-org.jmol.util.BitSetUtil.copy (bs, this.tainted[type]);
-}, "java.util.BitSet,~N");
+if (this.tainted[type] == null) this.tainted[type] = org.jmol.util.BitSetUtil.newBitSet (this.atomCount);
+org.jmol.util.BitSetUtil.copy2 (bs, this.tainted[type]);
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "unTaintAtoms", 
 function (bs, type) {
 if (this.tainted == null || this.tainted[type] == null) return ;
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) this.tainted[type].clear (i);
 
 if (this.tainted[type].nextSetBit (0) < 0) this.tainted[type] = null;
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "getAtomicPropertyState", 
 function (taintWhat, bsSelected) {
 if (!this.preserveState) return "";
@@ -800,7 +800,7 @@ var commands =  new StringBuffer ();
 for (var i = 0; i < 14; i++) if (taintWhat < 0 || i == taintWhat) if ((bs = (bsSelected != null ? bsSelected : this.getTaintedAtoms (i))) != null) this.getAtomicPropertyStateBuffer (commands, i, bs, null, null);
 
 return commands.toString ();
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomicPropertyStateBuffer", 
 function (commands, type, bs, label, fData) {
 if (!this.viewer.getPreserveState ()) return ;
@@ -865,7 +865,7 @@ if (isDefault) dataLabel += "(default)";
 commands.append ("\n  DATA \"" + dataLabel + "\"\n").append (n).append (" ;\nJmol Property Data Format 1 -- Jmol ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append (";\n");
 commands.append (s);
 commands.append ("  end \"" + dataLabel + "\";\n");
-}, "StringBuffer,~N,java.util.BitSet,~S,~A");
+}, "StringBuffer,~N,javax.util.BitSet,~S,~A");
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (x, y, closest, bsNot) {
 var champion = null;
@@ -875,7 +875,7 @@ if (bsNot != null && bsNot.get (i)) continue ;var contender = this.atoms[i];
 if (contender.isClickable () && this.isCursorOnTopOf (contender, x, y, min, champion)) champion = contender;
 }
 closest[0] = champion;
-}, "~N,~N,~A,java.util.BitSet");
+}, "~N,~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "isCursorOnTopOf", 
 function (contender, x, y, radius, champion) {
 return contender.screenZ > 1 && !this.g3d.isClippedZ (contender.screenZ) && this.g3d.isInDisplayRange (contender.screenX, contender.screenY) && contender.isCursorOnTopOf (x, y, radius, champion);
@@ -888,7 +888,7 @@ var atom = this.atoms[i];
 if (bsModels.get (atom.modelIndex) && atom.isVisible (0) && rect.contains (atom.screenX, atom.screenY)) this.bsFoundRectangle.set (i);
 }
 return this.bsFoundRectangle;
-}, "org.jmol.util.Rectangle,java.util.BitSet");
+}, "org.jmol.util.Rectangle,javax.util.BitSet");
 Clazz.defineMethod (c$, "fillAtomData", 
 function (atomData, mode) {
 atomData.atomXyz = this.atoms;
@@ -900,7 +900,7 @@ var isMultiModel = ((mode & 16) != 0);
 for (var i = 0; i < this.atomCount; i++) {
 var atom = this.atoms[i];
 if (atom.isDeleted () || !isMultiModel && atomData.modelIndex >= 0 && atom.modelIndex != atomData.firstModelIndex) {
-if (atomData.bsIgnored == null) atomData.bsIgnored =  new java.util.BitSet ();
+if (atomData.bsIgnored == null) atomData.bsIgnored =  new javax.util.BitSet ();
 atomData.bsIgnored.set (i);
 continue ;}atomData.atomicNumber[i] = atom.getElementNumber ();
 atomData.lastModelIndex = atom.modelIndex;
@@ -1054,7 +1054,7 @@ break;
 }
 nTotal[0] = nH;
 return hAtoms;
-}, "java.util.BitSet,~A,~B,~B,java.util.List");
+}, "javax.util.BitSet,~A,~B,~B,java.util.List");
 Clazz.defineMethod (c$, "isAdjacentSp2", 
 ($fz = function (atom) {
 var bonds = atom.bonds;
@@ -1224,7 +1224,7 @@ z.normalize ();
 x.scaleAdd2 (2.828, x, z);
 if (pt != 3) {
 x.normalize ();
-var a =  new javax.vecmath.AxisAngle4f (z.x, z.y, z.z, (pt == 2 ? 1 : -1) * 2.09439507);
+var a = javax.vecmath.AxisAngle4f.new4 (z.x, z.y, z.z, (pt == 2 ? 1 : -1) * 2.09439507);
 var m =  new javax.vecmath.Matrix3f ();
 m.setIdentity ();
 m.setAA (a);
@@ -1362,7 +1362,7 @@ var _120 = 1;
 var _180 = 2;
 var n120_atom0 = 0;
 for (var i = 0; i < nAttached - 1; i++) for (var j = i + 1; j < nAttached; j++) {
-var angle = org.jmol.util.Measure.computeAngle (attached[i], atom, attached[j], true);
+var angle = org.jmol.util.Measure.computeAngleABC (attached[i], atom, attached[j], true);
 var itype = (angle < 105 ? _90 : angle >= 150 ? _180 : _120);
 typePtrs[itype][ntypes[itype]] = n;
 ntypes[itype]++;
@@ -1507,8 +1507,8 @@ if (doSort) java.util.Arrays.sort (attached, Clazz.innerTypeInstance (org.jmol.m
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,~N,~B");
 Clazz.defineMethod (c$, "findNotAttached", 
 ($fz = function (nAttached, angles, ptrs, nPtrs) {
-var bs =  new java.util.BitSet (nAttached);
-bs.set (0, nAttached);
+var bs = org.jmol.util.BitSetUtil.newBitSet (nAttached);
+bs.setBits (0, nAttached);
 for (var i = 0; i < nAttached; i++) for (var j = 0; j < nPtrs; j++) {
 var a = angles[ptrs[j]];
 if (a[0] == i || a[1] == i) bs.clear (i);
@@ -1569,10 +1569,10 @@ if (info.indexOf ("\n" + s + "\n") < 0) info.append (s).append ('\n');
 }
 if (tok == 1087373320) info.append ('\n');
 return info.toString ().substring (1);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomBitsMaybeDeleted", 
 function (tokType, specInfo) {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var bsInfo;
 var bsTemp;
 var iSpec;
@@ -1650,7 +1650,7 @@ for (i = this.atomCount; --i >= 0; ) if (this.atoms[i].isPyrimidine ()) bs.set (
 break;
 case 1087375365:
 bsInfo = specInfo;
-bsTemp =  new java.util.BitSet ();
+bsTemp =  new javax.util.BitSet ();
 for (i = bsInfo.nextSetBit (0); i >= 0; i = bsInfo.nextSetBit (i + 1)) bsTemp.set (this.getElementNumber (i));
 
 for (i = this.atomCount; --i >= 0; ) if (bsTemp.get (this.getElementNumber (i))) bs.set (i);
@@ -1658,7 +1658,7 @@ for (i = this.atomCount; --i >= 0; ) if (bsTemp.get (this.getElementNumber (i)))
 break;
 case 1095761938:
 bsInfo = specInfo;
-bsTemp =  new java.util.BitSet ();
+bsTemp =  new javax.util.BitSet ();
 for (i = bsInfo.nextSetBit (0); i >= 0; i = bsInfo.nextSetBit (i + 1)) bsTemp.set (this.atoms[i].atomSite);
 
 for (i = this.atomCount; --i >= 0; ) if (bsTemp.get (this.atoms[i].atomSite)) bs.set (i);
@@ -1754,7 +1754,7 @@ while (pt < len && Character.isLetter (identifier.charAt (pt))) ++pt;
 
 bs = this.getSpecNameOrNull (identifier.substring (0, pt), false);
 if (pt == len) return bs;
-if (bs == null) bs =  new java.util.BitSet ();
+if (bs == null) bs =  new javax.util.BitSet ();
 var pt0 = pt;
 while (pt < len && Character.isDigit (identifier.charAt (pt))) ++pt;
 
@@ -1788,7 +1788,7 @@ Clazz.defineMethod (c$, "getSpecName",
 var bs = this.getSpecNameOrNull (name, false);
 if (bs != null) return bs;
 if (name.indexOf ("*") > 0) bs = this.getSpecNameOrNull (name, true);
-return (bs == null ?  new java.util.BitSet () : bs);
+return (bs == null ?  new javax.util.BitSet () : bs);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSpecNameOrNull", 
 ($fz = function (name, checkStar) {
@@ -1799,13 +1799,13 @@ for (var i = this.atomCount; --i >= 0; ) {
 var g3 = this.atoms[i].getGroup3 (true);
 if (g3 != null && g3.length > 0) {
 if (org.jmol.util.TextFormat.isMatch (g3, name, checkStar, true)) {
-if (bs == null) bs =  new java.util.BitSet (i + 1);
+if (bs == null) bs = org.jmol.util.BitSetUtil.newBitSet (i + 1);
 bs.set (i);
 while (--i >= 0 && this.atoms[i].getGroup3 (true).equals (g3)) bs.set (i);
 
 i++;
 }} else if (this.isAtomNameMatch (this.atoms[i], name, checkStar)) {
-if (bs == null) bs =  new java.util.BitSet (i + 1);
+if (bs == null) bs = org.jmol.util.BitSetUtil.newBitSet (i + 1);
 bs.set (i);
 }}
 return bs;
@@ -1816,7 +1816,7 @@ return org.jmol.util.TextFormat.isMatch (atom.getAtomName ().toUpperCase (), str
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,~S,~B");
 Clazz.defineMethod (c$, "getSeqcodeBits", 
 function (seqcode, returnEmpty) {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var seqNum = org.jmol.modelset.Group.getSequenceNumber (seqcode);
 var haveSeqNumber = (seqNum != 2147483647);
 var isEmpty = true;
@@ -1844,8 +1844,8 @@ Clazz.defineMethod (c$, "getChainBits",
 function (chainId) {
 var caseSensitive = this.viewer.getChainCaseSensitive ();
 if (!caseSensitive) chainId = Character.toUpperCase (chainId);
-var bs =  new java.util.BitSet ();
-var bsDone =  new java.util.BitSet (this.atomCount);
+var bs =  new javax.util.BitSet ();
+var bsDone = org.jmol.util.BitSetUtil.newBitSet (this.atomCount);
 for (var i = bsDone.nextClearBit (0); i < this.atomCount; i = bsDone.nextClearBit (i + 1)) {
 var chain = this.atoms[i].getChain ();
 if (chainId.charCodeAt (0) == ((caseSensitive ? chain.chainID : Character.toUpperCase (chain.chainID))).charCodeAt (0)) {
@@ -1863,10 +1863,10 @@ var indices =  Clazz.newArray (this.atomCount, 0);
 for (var j = bs.nextSetBit (0); j >= 0 && j < this.atomCount; j = bs.nextSetBit (j + 1)) indices[j] = ++n;
 
 return indices;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomsWithin", 
 function (distance, plane) {
-var bsResult =  new java.util.BitSet ();
+var bsResult =  new javax.util.BitSet ();
 for (var i = this.atomCount; --i >= 0; ) {
 var atom = this.atoms[i];
 var d = org.jmol.util.Measure.distanceToPlane (plane, atom);
@@ -1876,7 +1876,7 @@ return bsResult;
 }, "~N,javax.vecmath.Point4f");
 Clazz.defineMethod (c$, "getAtomsWithinBs", 
 function (distance, points, bsInclude) {
-var bsResult =  new java.util.BitSet ();
+var bsResult =  new javax.util.BitSet ();
 if (points.length == 0 || bsInclude != null && bsInclude.cardinality () == 0) return bsResult;
 if (bsInclude == null) bsInclude = org.jmol.util.BitSetUtil.setAll (points.length);
 for (var i = this.atomCount; --i >= 0; ) {
@@ -1887,17 +1887,17 @@ break;
 }
 }
 return bsResult;
-}, "~N,~A,java.util.BitSet");
+}, "~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getVisibleSet", 
 function () {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 for (var i = this.atomCount; --i >= 0; ) if (this.atoms[i].isVisible (0)) bs.set (i);
 
 return bs;
 });
 Clazz.defineMethod (c$, "getClickableSet", 
 function () {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 for (var i = this.atomCount; --i >= 0; ) if (this.atoms[i].isClickable ()) bs.set (i);
 
 return bs;
@@ -1924,7 +1924,7 @@ this.bsSurface = null;
 this.surfaceDistance100s = null;
 if (this.tainted != null) for (var i = 0; i < 14; i++) org.jmol.util.BitSetUtil.deleteBits (this.tainted[i], bs);
 
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 c$.$AtomCollection$AtomSorter$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

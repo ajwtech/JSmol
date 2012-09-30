@@ -71,7 +71,7 @@ valign = 3;
 halign = 2;
 } else if ("bottom" === target) {
 valign = 2;
-}text =  new org.jmol.shape.Text (this.viewer, this.gdata, this.gdata.getFont3D ("Serif", 20), target, 10, valign, halign, 0);
+}text =  new org.jmol.shape.Text (this.viewer, this.gdata, this.gdata.getFont3DFS ("Serif", 20), target, 10, valign, halign, 0);
 text.setAdjustForWindow (true);
 this.objects.put (target, text);
 if (this.currentFont != null) text.setFont (this.currentFont);
@@ -82,7 +82,7 @@ if (this.currentBgTranslucentLevel != 0) text.setTranslucent (this.currentBgTran
 }this.currentObject = text;
 return ;
 }}Clazz.superCall (this, org.jmol.shape.Echo, "setProperty", [propertyName, value, null]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "checkID") {

@@ -92,7 +92,7 @@ for (var i = 0; i < java.awt.Event.actionKeyCodes.length; i++) {
 if (java.awt.Event.actionKeyCodes[i][0] == keyCode) {
 return java.awt.Event.actionKeyCodes[i][1];
 }}
-return (e.getKeyChar ()).charCodeAt (0);
+return e.getKeyChar ();
 }, "java.awt.event.KeyEvent");
 Clazz.defineMethod (c$, "getKeyEventChar", 
 function () {

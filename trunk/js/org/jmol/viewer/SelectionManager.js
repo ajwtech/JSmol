@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.BitSet"], "org.jmol.viewer.SelectionManager", ["java.lang.StringBuffer", "java.util.Hashtable", "org.jmol.i18n.GT", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.SelectionManager", ["java.lang.StringBuffer", "java.util.Hashtable", "org.jmol.i18n.GT", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.listeners = null;
@@ -15,10 +15,10 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "SelectionManager");
 Clazz.prepareFields (c$, function () {
 this.listeners =  new Array (0);
-this.bsHidden =  new java.util.BitSet ();
-this.bsSelection =  new java.util.BitSet ();
-this.bsFixed =  new java.util.BitSet ();
-this.bsTemp =  new java.util.BitSet ();
+this.bsHidden =  new javax.util.BitSet ();
+this.bsSelection =  new javax.util.BitSet ();
+this.bsFixed =  new javax.util.BitSet ();
+this.bsTemp =  new javax.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
 function (viewer) {
@@ -31,7 +31,7 @@ org.jmol.util.BitSetUtil.deleteBits (this.bsSelection, bsDeleted);
 org.jmol.util.BitSetUtil.deleteBits (this.bsSubset, bsDeleted);
 org.jmol.util.BitSetUtil.deleteBits (this.bsFixed, bsDeleted);
 org.jmol.util.BitSetUtil.deleteBits (this.bsDeleted, bsDeleted);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "clear", 
 function () {
 this.clearSelection (true);
@@ -43,9 +43,9 @@ this.setMotionFixedAtoms (null);
 Clazz.defineMethod (c$, "hide", 
 function (modelSet, bs, addRemove, isQuiet) {
 if (bs == null) {
-this.bsHidden.clear ();
+this.bsHidden.clearAll ();
 } else if (addRemove == null) {
-this.bsHidden.clear ();
+this.bsHidden.clearAll ();
 this.bsHidden.or (bs);
 } else if (addRemove.booleanValue ()) {
 this.bsHidden.or (bs);
@@ -53,12 +53,12 @@ this.bsHidden.or (bs);
 this.bsHidden.andNot (bs);
 }if (modelSet != null) modelSet.setBsHidden (this.bsHidden);
 if (!isQuiet) this.viewer.reportSelection (org.jmol.i18n.GT._ ("{0} atoms hidden", "" + this.bsHidden.cardinality ()));
-}, "org.jmol.modelset.ModelSet,java.util.BitSet,Boolean,~B");
+}, "org.jmol.modelset.ModelSet,javax.util.BitSet,Boolean,~B");
 Clazz.defineMethod (c$, "display", 
 function (modelSet, bs, addRemove, isQuiet) {
 var bsAll = modelSet.getModelAtomBitSetIncludingDeleted (-1, false);
 if (bs == null) {
-this.bsHidden.clear ();
+this.bsHidden.clearAll ();
 } else if (addRemove == null) {
 this.bsHidden.or (bsAll);
 this.bsHidden.andNot (bs);
@@ -69,7 +69,7 @@ this.bsHidden.or (bs);
 }org.jmol.util.BitSetUtil.andNot (this.bsHidden, this.bsDeleted);
 modelSet.setBsHidden (this.bsHidden);
 if (!isQuiet) this.viewer.reportSelection (org.jmol.i18n.GT._ ("{0} atoms hidden", "" + this.bsHidden.cardinality ()));
-}, "org.jmol.modelset.ModelSet,java.util.BitSet,Boolean,~B");
+}, "org.jmol.modelset.ModelSet,javax.util.BitSet,Boolean,~B");
 Clazz.defineMethod (c$, "getHiddenSet", 
 function () {
 return this.bsHidden;
@@ -101,7 +101,7 @@ if (!reportChime && isQuiet) return ;
 var n = this.getSelectionCount ();
 if (reportChime) this.viewer.reportSelection ((n == 0 ? "No atoms" : n == 1 ? "1 atom" : n + " atoms") + " selected!");
  else if (!isQuiet) this.viewer.reportSelection (org.jmol.i18n.GT._ ("{0} atoms selected", n));
-}, "java.util.BitSet,Boolean,~B");
+}, "javax.util.BitSet,Boolean,~B");
 Clazz.defineMethod (c$, "selectAll", 
 function (isQuiet) {
 var count = this.viewer.getAtomCount ();
@@ -114,7 +114,7 @@ this.selectionChanged (isQuiet);
 Clazz.defineMethod (c$, "clearSelection", 
 function (isQuiet) {
 this.setHideNotSelected (false);
-this.bsSelection.clear ();
+this.bsSelection.clearAll ();
 this.empty = 1;
 this.selectionChanged (isQuiet);
 }, "~B");
@@ -128,16 +128,16 @@ if (atomIndex < 0) {
 this.selectionChanged (true);
 return ;
 }if (this.bsSubset != null && !this.bsSubset.get (atomIndex) || this.bsDeleted != null && this.bsDeleted.get (atomIndex)) return ;
-this.bsSelection.set (atomIndex, TF);
+this.bsSelection.setBitTo (atomIndex, TF);
 if (TF) this.empty = 0;
  else this.empty = -1;
 }, "~N,~B");
 Clazz.defineMethod (c$, "setSelectionSet", 
 function (set, addRemove) {
 if (set == null) {
-this.bsSelection.clear ();
+this.bsSelection.clearAll ();
 } else if (addRemove == null) {
-this.bsSelection.clear ();
+this.bsSelection.clearAll ();
 this.bsSelection.or (set);
 } else if (addRemove.booleanValue ()) {
 this.bsSelection.or (set);
@@ -145,11 +145,11 @@ this.bsSelection.or (set);
 this.bsSelection.andNot (set);
 }this.empty = -1;
 this.selectionChanged (false);
-}, "java.util.BitSet,Boolean");
+}, "javax.util.BitSet,Boolean");
 Clazz.defineMethod (c$, "setSelectionSubset", 
 function (bs) {
 this.bsSubset = bs;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "isInSelectionSubset", 
 function (atomIndex) {
 return (atomIndex < 0 || this.bsSubset == null || this.bsSubset.get (atomIndex));
@@ -165,14 +165,14 @@ Clazz.defineMethod (c$, "excludeSelectionSet",
 if (setExclude == null || this.empty == 1) return ;
 this.bsSelection.andNot (setExclude);
 this.empty = -1;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 Clazz.defineMethod (c$, "getSelectionCount", 
 function () {
 if (this.empty == 1) return 0;
 this.empty = 1;
 var bs;
 if (this.bsSubset != null) {
-this.bsTemp.clear ();
+this.bsTemp.clearAll ();
 this.bsTemp.or (this.bsSubset);
 this.bsTemp.and (this.bsSelection);
 bs = this.bsTemp;
@@ -231,7 +231,7 @@ c$.addBs = Clazz.defineMethod (c$, "addBs",
 ($fz = function (sb, key, bs) {
 if (bs == null || bs.length () == 0) return ;
 org.jmol.viewer.StateManager.appendCmd (sb, key + org.jmol.util.Escape.escape (bs));
-}, $fz.isPrivate = true, $fz), "StringBuffer,~S,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "StringBuffer,~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "deleteAtoms", 
 function (bs) {
 var bsNew = org.jmol.util.BitSetUtil.copy (bs);
@@ -243,7 +243,7 @@ this.bsDeleted.or (bs);
 }this.bsHidden.andNot (this.bsDeleted);
 this.bsSelection.andNot (this.bsDeleted);
 return bsNew.cardinality ();
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getDeletedAtoms", 
 function () {
 return this.bsDeleted;
@@ -251,7 +251,7 @@ return this.bsDeleted;
 Clazz.defineMethod (c$, "getSelectionSet", 
 function (includeDeleted) {
 if (includeDeleted || this.bsDeleted == null && this.bsSubset == null) return this.bsSelection;
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 bs.or (this.bsSelection);
 this.excludeAtoms (bs, false);
 return bs;
@@ -264,7 +264,7 @@ Clazz.defineMethod (c$, "excludeAtoms",
 function (bs, ignoreSubset) {
 if (this.bsDeleted != null) bs.andNot (this.bsDeleted);
 if (!ignoreSubset && this.bsSubset != null) bs.and (this.bsSubset);
-}, "java.util.BitSet,~B");
+}, "javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "processDeletedModelAtoms", 
 function (bsAtoms) {
 if (this.bsDeleted != null) org.jmol.util.BitSetUtil.deleteBits (this.bsDeleted, bsAtoms);
@@ -274,12 +274,12 @@ org.jmol.util.BitSetUtil.deleteBits (this.bsHidden, bsAtoms);
 var bs = org.jmol.util.BitSetUtil.copy (this.bsSelection);
 org.jmol.util.BitSetUtil.deleteBits (bs, bsAtoms);
 this.setSelectionSet (bs, null);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setMotionFixedAtoms", 
 function (bs) {
-this.bsFixed.clear ();
+this.bsFixed.clearAll ();
 if (bs != null) this.bsFixed.or (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getMotionFixedAtoms", 
 function () {
 return this.bsFixed;

@@ -101,7 +101,7 @@ this.getCapSlabInfo (this.fullCommand);
 }Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", [propertyName, value, bs]);
 if (setInfo || "lobe" === propertyName || "sphere" === propertyName) {
 this.setScriptInfo (null);
-}}, "~S,~O,java.util.BitSet");
+}}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setLcaoOn", 
 ($fz = function (TF) {
 if (org.jmol.util.TextFormat.isWild (this.lcaoID)) {

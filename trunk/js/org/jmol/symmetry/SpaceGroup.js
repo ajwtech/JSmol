@@ -247,7 +247,7 @@ this.xyzList.put (xyz, Integer.$valueOf (this.operationCount));
 if (this.operations == null) {
 this.operations =  new Array (4);
 this.operationCount = 0;
-}if (this.operationCount == this.operations.length) this.operations = org.jmol.util.ArrayUtil.setLength (this.operations, this.operationCount * 2);
+}if (this.operationCount == this.operations.length) this.operations = org.jmol.util.ArrayUtil.arrayCopyOpt (this.operations, this.operationCount * 2);
 this.operations[this.operationCount++] = symmetryOperation;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("\naddOperation " + this.operationCount + symmetryOperation.dumpInfo ());
 return this.operationCount - 1;

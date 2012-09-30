@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.animationReplayMode = null;
@@ -26,7 +26,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "AnimationManager");
 Clazz.prepareFields (c$, function () {
 this.animationReplayMode = org.jmol.constant.EnumAnimationMode.ONCE;
-this.bsVisibleFrames =  new java.util.BitSet ();
+this.bsVisibleFrames =  new javax.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
 function (viewer) {
@@ -88,7 +88,7 @@ if (this.viewer.getModelSet () != null) this.viewer.setStatusFrameChanged (this.
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setFrameRangeVisible", 
 ($fz = function () {
-this.bsVisibleFrames.clear ();
+this.bsVisibleFrames.clearAll ();
 if (this.backgroundModelIndex >= 0) this.bsVisibleFrames.set (this.backgroundModelIndex);
 if (this.currentModelIndex >= 0) {
 this.bsVisibleFrames.set (this.currentModelIndex);

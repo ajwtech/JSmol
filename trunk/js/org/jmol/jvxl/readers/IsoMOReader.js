@@ -89,9 +89,9 @@ var line = this.params.title[iLine];
 var pt = line.indexOf ("%");
 if (line.length == 0 || pt < 0) return ;
 var rep = 0;
-if (line.indexOf ("%F") >= 0) line = org.jmol.util.TextFormat.formatString (line, "F", this.params.fileName);
-if (line.indexOf ("%I") >= 0) line = org.jmol.util.TextFormat.formatString (line, "I", this.params.qm_moLinearCombination == null ? "" + this.params.qm_moNumber : org.jmol.constant.EnumQuantumShell.getMOString (this.params.qm_moLinearCombination));
-if (line.indexOf ("%N") >= 0) line = org.jmol.util.TextFormat.formatString (line, "N", "" + this.params.qmOrbitalCount);
+if (line.indexOf ("%F") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "F", this.params.fileName);
+if (line.indexOf ("%I") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "I", this.params.qm_moLinearCombination == null ? "" + this.params.qm_moNumber : org.jmol.constant.EnumQuantumShell.getMOString (this.params.qm_moLinearCombination));
+if (line.indexOf ("%N") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "N", "" + this.params.qmOrbitalCount);
 var energy = null;
 if (mo == null) {
 for (var i = 0; i < this.linearCombination.length; i += 2) if (this.linearCombination[i] != 0) {
@@ -106,11 +106,11 @@ break;
 }}
 } else {
 if (mo.containsKey ("energy")) energy = mo.get ("energy");
-}if (line.indexOf ("%E") >= 0) line = org.jmol.util.TextFormat.formatString (line, "E", energy != null && ++rep != 0 ? "" + energy : "");
-if (line.indexOf ("%U") >= 0) line = org.jmol.util.TextFormat.formatString (line, "U", energy != null && this.params.moData.containsKey ("energyUnits") && ++rep != 0 ? this.params.moData.get ("energyUnits") : "");
-if (line.indexOf ("%S") >= 0) line = org.jmol.util.TextFormat.formatString (line, "S", mo != null && mo.containsKey ("symmetry") && ++rep != 0 ? "" + mo.get ("symmetry") : "");
-if (line.indexOf ("%O") >= 0) line = org.jmol.util.TextFormat.formatString (line, "O", mo != null && mo.containsKey ("occupancy") && ++rep != 0 ? "" + mo.get ("occupancy") : "");
-if (line.indexOf ("%T") >= 0) line = org.jmol.util.TextFormat.formatString (line, "T", mo != null && mo.containsKey ("type") && ++rep != 0 ? "" + mo.get ("type") : "");
+}if (line.indexOf ("%E") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "E", energy != null && ++rep != 0 ? "" + energy : "");
+if (line.indexOf ("%U") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "U", energy != null && this.params.moData.containsKey ("energyUnits") && ++rep != 0 ? this.params.moData.get ("energyUnits") : "");
+if (line.indexOf ("%S") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "S", mo != null && mo.containsKey ("symmetry") && ++rep != 0 ? "" + mo.get ("symmetry") : "");
+if (line.indexOf ("%O") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "O", mo != null && mo.containsKey ("occupancy") && ++rep != 0 ? "" + mo.get ("occupancy") : "");
+if (line.indexOf ("%T") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "T", mo != null && mo.containsKey ("type") && ++rep != 0 ? "" + mo.get ("type") : "");
 var isOptional = (line.indexOf ("?") == 0);
 this.params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim ().endsWith ("=") ? line.substring (1) : "");
 }, $fz.isPrivate = true, $fz), "~N,java.util.Map");

@@ -58,7 +58,7 @@ c$.logLevel = Clazz.defineMethod (c$, "logLevel",
 function () {
 return org.jmol.util.Logger._logLevel;
 });
-c$.logLevel = Clazz.defineMethod (c$, "logLevel", 
+c$.doLogLevel = Clazz.defineMethod (c$, "doLogLevel", 
 function (log) {
 ($t$ = org.jmol.util.Logger._logLevel = log, org.jmol.util.Logger.prototype._logLevel = org.jmol.util.Logger._logLevel, $t$);
 }, "~B");
@@ -86,11 +86,11 @@ org.jmol.util.Logger._logger.warn (txt);
 }} catch (t) {
 }
 }, "~S");
-c$.warn = Clazz.defineMethod (c$, "warn", 
+c$.warnEx = Clazz.defineMethod (c$, "warnEx", 
 function (txt, e) {
 try {
 if (org.jmol.util.Logger.isActiveLevel (3)) {
-org.jmol.util.Logger._logger.warn (txt, e);
+org.jmol.util.Logger._logger.warnEx (txt, e);
 }} catch (t) {
 }
 }, "~S,Throwable");
@@ -102,11 +102,11 @@ org.jmol.util.Logger._logger.error (txt);
 }} catch (t) {
 }
 }, "~S");
-c$.error = Clazz.defineMethod (c$, "error", 
+c$.errorEx = Clazz.defineMethod (c$, "errorEx", 
 function (txt, e) {
 try {
 if (org.jmol.util.Logger.isActiveLevel (2)) {
-org.jmol.util.Logger._logger.error (txt, e);
+org.jmol.util.Logger._logger.errorEx (txt, e);
 }} catch (t) {
 }
 }, "~S,Throwable");
@@ -124,11 +124,11 @@ org.jmol.util.Logger._logger.fatal (txt);
 }} catch (t) {
 }
 }, "~S");
-c$.fatal = Clazz.defineMethod (c$, "fatal", 
+c$.fatalEx = Clazz.defineMethod (c$, "fatalEx", 
 function (txt, e) {
 try {
 if (org.jmol.util.Logger.isActiveLevel (1)) {
-org.jmol.util.Logger._logger.fatal (txt, e);
+org.jmol.util.Logger._logger.fatalEx (txt, e);
 }} catch (t) {
 }
 }, "~S,Throwable");

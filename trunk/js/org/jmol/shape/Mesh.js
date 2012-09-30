@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.util.MeshSurface", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Mesh", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "javax.vecmath.Matrix3f", "$.Matrix4f", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Measure", "$.Normix"], function () {
+Clazz.load (["org.jmol.util.MeshSurface", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Mesh", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Measure", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.title = null;
 this.meshColix = 0;
@@ -106,10 +106,10 @@ function (lighting, vertices, plane) {
 if (vertices == null) vertices = this.vertices;
 var normals = this.getNormals (vertices, plane);
 this.normixes =  Clazz.newArray (this.normixCount, 0);
-var bsTemp =  new java.util.BitSet ();
+var bsTemp =  new javax.util.BitSet ();
 if (this.haveXyPoints) for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = 9999;
 
- else for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = org.jmol.util.Normix.getNormix (normals[i], bsTemp);
+ else for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = org.jmol.util.Normix.getNormixV (normals[i], bsTemp);
 
 this.lighting = 1073741958;
 if (this.insideOut) this.invertNormixes ();
@@ -239,9 +239,9 @@ return this.altVertices;
 Clazz.defineMethod (c$, "setShowWithin", 
 function (showWithinPoints, showWithinDistance2, isWithinNot) {
 if (showWithinPoints.size () == 0) {
-this.bsDisplay = (isWithinNot ? org.jmol.util.BitSetUtil.newBitSet (0, this.vertexCount) : null);
+this.bsDisplay = (isWithinNot ? org.jmol.util.BitSetUtil.newBitSet2 (0, this.vertexCount) : null);
 return ;
-}this.bsDisplay =  new java.util.BitSet ();
+}this.bsDisplay =  new javax.util.BitSet ();
 for (var i = 0; i < this.vertexCount; i++) if (org.jmol.shape.Mesh.checkWithin (this.vertices[i], showWithinPoints, showWithinDistance2, isWithinNot)) this.bsDisplay.set (i);
 
 }, "java.util.List,~N,~B");
@@ -258,8 +258,8 @@ return (this.vertexCount <= vertexIndex ? this.vertexCount - 1 : vertexIndex < 0
 }, "~N");
 Clazz.defineMethod (c$, "getVisibleVertexBitSet", 
 function () {
-var bs =  new java.util.BitSet ();
-if (this.polygonCount == 0 && this.bsSlabDisplay != null) org.jmol.util.BitSetUtil.copy (this.bsSlabDisplay, bs);
+var bs =  new javax.util.BitSet ();
+if (this.polygonCount == 0 && this.bsSlabDisplay != null) org.jmol.util.BitSetUtil.copy2 (this.bsSlabDisplay, bs);
  else for (var i = this.polygonCount; --i >= 0; ) if (this.bsSlabDisplay == null || this.bsSlabDisplay.get (i)) {
 var vertexIndexes = this.polygonIndexes[i];
 if (vertexIndexes == null) continue ;bs.set (vertexIndexes[0]);
@@ -270,8 +270,8 @@ return bs;
 });
 Clazz.defineMethod (c$, "getVisibleGhostBitSet", 
 function () {
-var bs =  new java.util.BitSet ();
-if (this.polygonCount == 0 && this.bsSlabGhost != null) org.jmol.util.BitSetUtil.copy (this.bsSlabGhost, bs);
+var bs =  new javax.util.BitSet ();
+if (this.polygonCount == 0 && this.bsSlabGhost != null) org.jmol.util.BitSetUtil.copy2 (this.bsSlabGhost, bs);
  else for (var i = this.polygonCount; --i >= 0; ) if (this.bsSlabGhost == null || this.bsSlabGhost.get (i)) {
 var vertexIndexes = this.polygonIndexes[i];
 if (vertexIndexes == null) continue ;bs.set (vertexIndexes[0]);
@@ -321,9 +321,9 @@ info.put ("id", this.thisID);
 info.put ("vertexCount", Integer.$valueOf (this.vertexCount));
 info.put ("polygonCount", Integer.$valueOf (this.polygonCount));
 info.put ("haveQuads", Boolean.$valueOf (this.haveQuads));
-if (this.vertexCount > 0) info.put ("vertices", org.jmol.util.ArrayUtil.setLength (this.vertices, this.vertexCount));
-if (this.vertexValues != null) info.put ("vertexValues", org.jmol.util.ArrayUtil.setLength (this.vertexValues, this.vertexCount));
-if (this.polygonCount > 0) info.put ("polygons", org.jmol.util.ArrayUtil.setLength (this.polygonIndexes, this.polygonCount));
+if (this.vertexCount > 0) info.put ("vertices", org.jmol.util.ArrayUtil.arrayCopyPt (this.vertices, this.vertexCount));
+if (this.vertexValues != null) info.put ("vertexValues", org.jmol.util.ArrayUtil.arrayCopyF (this.vertexValues, this.vertexCount));
+if (this.polygonCount > 0) info.put ("polygons", org.jmol.util.ArrayUtil.arrayCopyII (this.polygonIndexes, this.polygonCount));
 return info;
 });
 Clazz.defineMethod (c$, "getBoundingBox", 

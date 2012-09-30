@@ -42,18 +42,17 @@ userInfo = null;
 }if (host != null) {
 if (host.length > 0 && ((host.charAt (0)).charCodeAt (0) == 91)) {
 throw  new IllegalArgumentException ("Invalid host: " + host);
-} else {
-ind = host.indexOf (':');
+}ind = host.indexOf (':');
 port = -1;
 if (ind >= 0) {
 if (host.length > (ind + 1)) {
 port = Integer.parseInt (host.substring (ind + 1));
 }host = host.substring (0, ind);
-}}} else {
+}} else {
 host = "";
 }if (port < -1) throw  new IllegalArgumentException ("Invalid port number :" + port);
 start = i;
-if (authority != null && authority.length > 0) path = "";
+if (authority.length > 0) path = "";
 }if (host == null) {
 host = "";
 }if (start < limit) {
@@ -135,7 +134,7 @@ return true;
 Clazz.defineMethod (c$, "hostsEqual", 
 function (u1, u2) {
 if (u1.getHost () != null && u2.getHost () != null) return u1.getHost ().equalsIgnoreCase (u2.getHost ());
- else return u1.getHost () == null && u2.getHost () == null;
+return u1.getHost () == null && u2.getHost () == null;
 }, "java.net.URL,java.net.URL");
 Clazz.defineMethod (c$, "toExternalForm", 
 function (u) {

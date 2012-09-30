@@ -245,7 +245,7 @@ vA.sub (ptNorP);
 var vB = javax.vecmath.Vector3f.newV (ptB);
 vB.sub (ptNorP);
 if (reverseY) vB.scale (-1);
-return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, yBased);
+return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, null, yBased);
 }, "~S");
 Clazz.overrideMethod (c$, "isCrossLinked", 
 function (g) {

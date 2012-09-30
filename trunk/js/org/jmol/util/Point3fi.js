@@ -9,7 +9,7 @@ this.screenDiameter = -1;
 this.modelIndex = -1;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "Point3fi", javax.vecmath.Point3f);
-c$.set = Clazz.defineMethod (c$, "set", 
+c$.set2 = Clazz.defineMethod (c$, "set2", 
 function (p3f, p3i) {
 p3f.x = p3i.x;
 p3f.y = p3i.y;

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["org.jmol.api.SmilesMatcherInterface"], "org.jmol.smiles.SmilesMatcher", ["java.util.BitSet", "org.jmol.smiles.InvalidSmilesException", "$.SmilesGenerator", "$.SmilesParser", "org.jmol.util.BitSetUtil", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.api.SmilesMatcherInterface"], "org.jmol.smiles.SmilesMatcher", ["javax.util.BitSet", "org.jmol.smiles.InvalidSmilesException", "$.SmilesGenerator", "$.SmilesParser", "org.jmol.util.BitSetUtil", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.smiles, "SmilesMatcher", null, org.jmol.api.SmilesMatcherInterface);
 Clazz.overrideMethod (c$, "getLastException", 
 function () {
@@ -36,7 +36,7 @@ return null;
 throw e;
 }
 }
-}, "~A,~N,java.util.BitSet,~B,~B,~B,~S");
+}, "~A,~N,javax.util.BitSet,~B,~B,~B,~S");
 Clazz.defineMethod (c$, "areEqual", 
 function (smiles1, smiles2) {
 var result = this.find (smiles1, smiles2, false, false);
@@ -98,7 +98,7 @@ return smiles;
 Clazz.overrideMethod (c$, "getSubstructureSet", 
 function (pattern, atoms, atomCount, bsSelected, isSmarts, firstMatchOnly) {
 return this.match (pattern, atoms, atomCount, bsSelected, null, isSmarts, false, firstMatchOnly, 1);
-}, "~S,~A,~N,java.util.BitSet,~B,~B");
+}, "~S,~A,~N,javax.util.BitSet,~B,~B");
 Clazz.overrideMethod (c$, "getSubstructureSets", 
 function (smarts, atoms, atomCount, flags, bsSelected, ret, vRings) {
 org.jmol.smiles.InvalidSmilesException.setLastError (null);
@@ -121,7 +121,7 @@ if (Clazz.exceptionOf (e, org.jmol.smiles.InvalidSmilesException)) {
 throw e;
 }
 }
-var bsDone =  new java.util.BitSet ();
+var bsDone =  new javax.util.BitSet ();
 for (var i = 0; i < smarts.length; i++) {
 if (smarts[i] == null || smarts[i].length == 0 || smarts[i].startsWith ("#")) {
 ret.add (null);
@@ -142,18 +142,18 @@ throw e;
 }
 }
 }
-}, "~A,~A,~N,~N,java.util.BitSet,java.util.List,~A");
+}, "~A,~A,~N,~N,javax.util.BitSet,java.util.List,~A");
 Clazz.overrideMethod (c$, "getSubstructureSetArray", 
 function (pattern, atoms, atomCount, bsSelected, bsAromatic, isSmarts, firstMatchOnly) {
 return this.match (pattern, atoms, atomCount, bsSelected, bsAromatic, isSmarts, false, firstMatchOnly, 2);
-}, "~S,~A,~N,java.util.BitSet,java.util.BitSet,~B,~B");
+}, "~S,~A,~N,javax.util.BitSet,javax.util.BitSet,~B,~B");
 Clazz.overrideMethod (c$, "getCorrelationMaps", 
 function (pattern, atoms, atomCount, bsSelected, isSmarts, firstMatchOnly) {
 return this.match (pattern, atoms, atomCount, bsSelected, null, isSmarts, false, firstMatchOnly, 3);
-}, "~S,~A,~N,java.util.BitSet,~B,~B");
+}, "~S,~A,~N,javax.util.BitSet,~B,~B");
 Clazz.defineMethod (c$, "find", 
 ($fz = function (pattern, search, isSmarts, matchAllAtoms, firstMatchOnly) {
-var bsAromatic =  new java.util.BitSet ();
+var bsAromatic =  new javax.util.BitSet ();
 search.createTopoMap (bsAromatic);
 return this.match (pattern, search.jmolAtoms, -search.jmolAtoms.length, null, bsAromatic, isSmarts, matchAllAtoms, firstMatchOnly, 2);
 }, $fz.isPrivate = true, $fz), "~S,org.jmol.smiles.SmilesSearch,~B,~B,~B");
@@ -193,7 +193,7 @@ throw e;
 }
 }
 return null;
-}, $fz.isPrivate = true, $fz), "~S,~A,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~N");
+}, $fz.isPrivate = true, $fz), "~S,~A,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~N");
 Clazz.defineMethod (c$, "countStereo", 
 ($fz = function (s) {
 s = org.jmol.util.TextFormat.simpleReplace (s, "@@", "@");

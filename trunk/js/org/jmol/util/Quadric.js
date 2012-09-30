@@ -49,7 +49,7 @@ mat[2][2] = coef[2];
 mat[0][1] = mat[1][0] = coef[3] / 2;
 mat[0][2] = mat[2][0] = coef[4] / 2;
 mat[1][2] = mat[2][1] = coef[5] / 2;
- new org.jmol.util.Eigen (mat, unitVectors, lengths);
+org.jmol.util.Eigen.getUnitVectors (mat, unitVectors, lengths);
 }, "~A,~A,~A");
 c$.setEllipsoidMatrix = Clazz.defineMethod (c$, "setEllipsoidMatrix", 
 function (unitAxes, lengths, vTemp, mat) {

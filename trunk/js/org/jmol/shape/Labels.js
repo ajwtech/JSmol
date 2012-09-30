@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable"], "org.jmol.shape.Labels", ["java.lang.StringBuffer", "java.util.BitSet", "org.jmol.constant.EnumPalette", "org.jmol.modelset.LabelToken", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.JmolFont"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable"], "org.jmol.shape.Labels", ["java.lang.StringBuffer", "javax.util.BitSet", "org.jmol.constant.EnumPalette", "org.jmol.modelset.LabelToken", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.JmolFont"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.strings = null;
 this.formats = null;
@@ -36,7 +36,7 @@ this.atomLabels =  new java.util.Hashtable ();
 Clazz.defineMethod (c$, "initShape", 
 function () {
 Clazz.superCall (this, org.jmol.shape.Labels, "initShape", []);
-this.defaultFontId = this.zeroFontId = this.gdata.getFont3D ("SansSerif", "Plain", 13).fid;
+this.defaultFontId = this.zeroFontId = this.gdata.getFont3DFSS ("SansSerif", "Plain", 13).fid;
 this.defaultColix = 0;
 this.defaultBgcolix = 0;
 this.defaultOffset = org.jmol.shape.Labels.zeroOffset;
@@ -86,13 +86,13 @@ return ;
 return ;
 }if ("bgcolor" === propertyName) {
 this.isActive = true;
-if (this.bsBgColixSet == null) this.bsBgColixSet =  new java.util.BitSet ();
+if (this.bsBgColixSet == null) this.bsBgColixSet =  new javax.util.BitSet ();
 var bgcolix = org.jmol.util.Colix.getColix (value);
 if (!this.setDefaults) for (var i = this.atomCount; --i >= 0; ) if (bsSelected.get (i)) this.setBgcolix (i, bgcolix);
 
 if (this.setDefaults || !this.defaultsOnlyForNone) this.defaultBgcolix = bgcolix;
 return ;
-}if (this.bsFontSet == null) this.bsFontSet =  new java.util.BitSet ();
+}if (this.bsFontSet == null) this.bsFontSet =  new javax.util.BitSet ();
 if ("fontsize" === propertyName) {
 var fontsize = (value).intValue ();
 if (fontsize < 0) {
@@ -157,12 +157,12 @@ var tokens;
 for (var atomIndex = this.atomCount; --atomIndex >= 0; ) {
 if (bsSelected.get (atomIndex)) {
 var atom = this.atoms[atomIndex];
-if (this.formats == null || atomIndex >= this.formats.length) this.formats = org.jmol.util.ArrayUtil.ensureLength (this.formats, atomIndex + 1);
+if (this.formats == null || atomIndex >= this.formats.length) this.formats = org.jmol.util.ArrayUtil.ensureLengthS (this.formats, atomIndex + 1);
 if (this.strings != null && this.strings.length > atomIndex && this.strings[atomIndex] != null) {
 this.mads[atomIndex] = (mode == 0 && this.mads[atomIndex] < 0 || mode == 1 ? 1 : -1);
 } else {
-if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
-this.strings = org.jmol.util.ArrayUtil.ensureLength (this.strings, atomIndex + 1);
+if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
+this.strings = org.jmol.util.ArrayUtil.ensureLengthS (this.strings, atomIndex + 1);
 if (atom.getGroup3 (false).equals ("UNK")) {
 if (strLabelUNK == null) {
 strLabelUNK = this.viewer.getStandardLabelFormat (1);
@@ -199,11 +199,11 @@ this.strings = org.jmol.util.ArrayUtil.deleteElements (this.strings, firstAtomDe
 org.jmol.util.BitSetUtil.deleteBits (this.bsFontSet, bsSelected);
 org.jmol.util.BitSetUtil.deleteBits (this.bsBgColixSet, bsSelected);
 }Clazz.superCall (this, org.jmol.shape.Labels, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setScaling", 
 ($fz = function () {
 this.isActive = true;
-if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
+if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
 this.isScaled = this.viewer.getFontScaling ();
 this.scalePixelsPerMicron = (this.isScaled ? this.viewer.getScalePixelsPerAngstrom (false) * 10000 : 0);
 }, $fz.isPrivate = true, $fz));
@@ -214,11 +214,11 @@ var tokens = temp[0];
 if (tokens == null) tokens = temp[0] = org.jmol.modelset.LabelToken.compile (this.viewer, strLabel, '\0', null);
 var label = (tokens == null ? null : org.jmol.modelset.LabelToken.formatLabelAtomArray (this.viewer, atom, tokens, '\0', null));
 atom.setShapeVisibility (this.myVisibilityFlag, label != null);
-if (this.strings == null || i >= this.strings.length) this.strings = org.jmol.util.ArrayUtil.ensureLength (this.strings, i + 1);
-if (this.formats == null || i >= this.formats.length) this.formats = org.jmol.util.ArrayUtil.ensureLength (this.formats, i + 1);
+if (this.strings == null || i >= this.strings.length) this.strings = org.jmol.util.ArrayUtil.ensureLengthS (this.strings, i + 1);
+if (this.formats == null || i >= this.formats.length) this.formats = org.jmol.util.ArrayUtil.ensureLengthS (this.formats, i + 1);
 this.strings[i] = label;
 this.formats[i] = (strLabel != null && strLabel.indexOf ("%{") >= 0 ? label : strLabel);
-this.bsSizeSet.set (i, (strLabel != null));
+this.bsSizeSet.setBitTo (i, (strLabel != null));
 this.text = this.getLabel (i);
 if (this.isScaled) {
 this.text =  new org.jmol.shape.Text (this.gdata, null, label, 0, 0, 0, 0, 0, 0, 0, this.scalePixelsPerMicron);
@@ -269,9 +269,9 @@ Clazz.defineMethod (c$, "setBgcolix",
 ($fz = function (i, bgcolix) {
 if (this.bgcolixes == null || i >= this.bgcolixes.length) {
 if (bgcolix == 0) return ;
-this.bgcolixes = org.jmol.util.ArrayUtil.ensureLength (this.bgcolixes, i + 1);
+this.bgcolixes = org.jmol.util.ArrayUtil.ensureLengthShort (this.bgcolixes, i + 1);
 }this.bgcolixes[i] = bgcolix;
-this.bsBgColixSet.set (i, bgcolix != 0);
+this.bsBgColixSet.setBitTo (i, bgcolix != 0);
 this.text = this.getLabel (i);
 if (this.text != null) this.text.setBgColix (bgcolix);
 }, $fz.isPrivate = true, $fz), "~N,~N");
@@ -279,7 +279,7 @@ Clazz.defineMethod (c$, "setOffsets",
 ($fz = function (i, offset, isExact) {
 if (this.offsets == null || i >= this.offsets.length) {
 if (offset == 0) return ;
-this.offsets = org.jmol.util.ArrayUtil.ensureLength (this.offsets, i + 1);
+this.offsets = org.jmol.util.ArrayUtil.ensureLengthI (this.offsets, i + 1);
 }this.offsets[i] = (this.offsets[i] & 255) | (offset << 8);
 if (isExact) this.offsets[i] |= 128;
 this.text = this.getLabel (i);
@@ -289,7 +289,7 @@ Clazz.defineMethod (c$, "setAlignment",
 ($fz = function (i, alignment) {
 if (this.offsets == null || i >= this.offsets.length) {
 if (alignment == 1) return ;
-this.offsets = org.jmol.util.ArrayUtil.ensureLength (this.offsets, i + 1);
+this.offsets = org.jmol.util.ArrayUtil.ensureLengthI (this.offsets, i + 1);
 }this.offsets[i] = (this.offsets[i] & -13) | (alignment << 2);
 this.text = this.getLabel (i);
 if (this.text != null) this.text.setAlignment (alignment);
@@ -302,7 +302,7 @@ Clazz.defineMethod (c$, "setPointer",
 ($fz = function (i, pointer) {
 if (this.offsets == null || i >= this.offsets.length) {
 if (pointer == 0) return ;
-this.offsets = org.jmol.util.ArrayUtil.ensureLength (this.offsets, i + 1);
+this.offsets = org.jmol.util.ArrayUtil.ensureLengthI (this.offsets, i + 1);
 }this.offsets[i] = (this.offsets[i] & -4) + pointer;
 this.text = this.getLabel (i);
 if (this.text != null) this.text.setPointer (pointer);
@@ -311,21 +311,21 @@ Clazz.defineMethod (c$, "setFront",
 ($fz = function (i, TF) {
 if (this.offsets == null || i >= this.offsets.length) {
 if (!TF) return ;
-this.offsets = org.jmol.util.ArrayUtil.ensureLength (this.offsets, i + 1);
+this.offsets = org.jmol.util.ArrayUtil.ensureLengthI (this.offsets, i + 1);
 }this.offsets[i] = (this.offsets[i] & -49) + (TF ? 32 : 0);
 }, $fz.isPrivate = true, $fz), "~N,~B");
 Clazz.defineMethod (c$, "setGroup", 
 ($fz = function (i, TF) {
 if (this.offsets == null || i >= this.offsets.length) {
 if (!TF) return ;
-this.offsets = org.jmol.util.ArrayUtil.ensureLength (this.offsets, i + 1);
+this.offsets = org.jmol.util.ArrayUtil.ensureLengthI (this.offsets, i + 1);
 }this.offsets[i] = (this.offsets[i] & -49) + (TF ? 16 : 0);
 }, $fz.isPrivate = true, $fz), "~N,~B");
 Clazz.defineMethod (c$, "setFont", 
 ($fz = function (i, fid) {
 if (this.fids == null || i >= this.fids.length) {
 if (fid == this.zeroFontId) return ;
-this.fids = org.jmol.util.ArrayUtil.ensureLength (this.fids, i + 1);
+this.fids = org.jmol.util.ArrayUtil.ensureLengthByte (this.fids, i + 1);
 }this.fids[i] = fid;
 this.bsFontSet.set (i);
 this.text = this.getLabel (i);
@@ -401,7 +401,7 @@ return false;
 }if (this.pickedAtom < 0) return false;
 this.move2D (this.pickedAtom, x, y);
 return true;
-}, "~N,~N,~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "findNearestLabel", 
 ($fz = function (x, y) {
 if (this.labelBoxes == null) return -1;

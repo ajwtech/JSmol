@@ -307,14 +307,14 @@ if (strLabel == null) t.text = strT;
 Clazz.defineMethod (c$, "format", 
 ($fz = function (floatT, strT, ptT) {
 if (!Float.isNaN (floatT)) {
-return org.jmol.util.TextFormat.format (floatT, this.width, this.precision, this.alignLeft, this.zeroPad);
+return org.jmol.util.TextFormat.formatF (floatT, this.width, this.precision, this.alignLeft, this.zeroPad);
 } else if (strT != null) {
-return org.jmol.util.TextFormat.format (strT, this.width, this.precision, this.alignLeft, this.zeroPad);
+return org.jmol.util.TextFormat.formatS (strT, this.width, this.precision, this.alignLeft, this.zeroPad);
 } else if (ptT != null) {
 if (this.width == 0 && this.precision == 2147483647) {
 this.width = 6;
 this.precision = 2;
-}return org.jmol.util.TextFormat.format (ptT.x, this.width, this.precision, false, false) + org.jmol.util.TextFormat.format (ptT.y, this.width, this.precision, false, false) + org.jmol.util.TextFormat.format (ptT.z, this.width, this.precision, false, false);
+}return org.jmol.util.TextFormat.formatF (ptT.x, this.width, this.precision, false, false) + org.jmol.util.TextFormat.formatF (ptT.y, this.width, this.precision, false, false) + org.jmol.util.TextFormat.formatF (ptT.z, this.width, this.precision, false, false);
 } else {
 return this.text;
 }}, $fz.isPrivate = true, $fz), "~N,~S,javax.vecmath.Tuple3f");

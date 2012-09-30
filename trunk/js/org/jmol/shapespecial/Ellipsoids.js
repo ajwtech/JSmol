@@ -25,10 +25,10 @@ this.madset[this.iSelect] = this.mads;
 for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) {
 if (size != 0) this.atoms[i].scaleEllipsoid (size, this.iSelect);
 var isVisible = (this.madset[0] != null && this.madset[0].length > i && this.madset[0][i] > 0 || this.madset[1] != null && this.madset[1].length > i && this.madset[1][i] > 0 || this.madset[2] != null && this.madset[2].length > i && this.madset[2][i] > 0);
-this.bsSizeSet.set (i, isVisible);
+this.bsSizeSet.setBitTo (i, isVisible);
 this.atoms[i].setShapeVisibility (this.myVisibilityFlag, isVisible);
 }
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
 if (propertyName === "thisID") {
@@ -123,7 +123,7 @@ if ("color" === propertyName || "translucency" === propertyName || "deleteModelA
 this.colixset[this.iSelect] = this.colixes;
 this.paletteIDset[this.iSelect] = this.paletteIDs;
 this.madset[this.iSelect] = this.mads;
-}}}, "~S,~O,java.util.BitSet");
+}}}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkSets", 
 ($fz = function () {
 if (this.colixset == null) {
@@ -186,7 +186,7 @@ while (e.hasNext ()) {
 var ellipsoid = e.next ();
 ellipsoid.visible = ellipsoid.isOn && (ellipsoid.modelIndex < 0 || bs.get (ellipsoid.modelIndex));
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
 this.id = null;

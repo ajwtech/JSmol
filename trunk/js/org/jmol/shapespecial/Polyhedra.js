@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.AtomShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shapespecial.Polyhedra", ["java.lang.StringBuffer", "java.util.BitSet", "javax.vecmath.Point3i", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Measure", "$.Normix"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shapespecial.Polyhedra", ["java.lang.StringBuffer", "javax.util.BitSet", "javax.vecmath.Point3i", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Measure", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.otherAtoms = null;
 this.polyhedronCount = 0;
@@ -46,7 +46,7 @@ this.radius = 0.0;
 this.nVertices = 0;
 this.bsVertices = null;
 this.centers = null;
-this.bsVertexCount =  new java.util.BitSet ();
+this.bsVertexCount =  new javax.util.BitSet ();
 this.bondedOnly = this.isCollapsed = this.iHaveCenterBitSet = false;
 this.drawEdges = 0;
 this.haveBitSetVertices = false;
@@ -128,7 +128,7 @@ this.polyhedrons = org.jmol.util.ArrayUtil.deleteElements (this.polyhedrons, i, 
 this.polyhedrons[i].modelIndex--;
 }}
 }Clazz.superCall (this, org.jmol.shapespecial.Polyhedra, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setLighting", 
 ($fz = function (isFullyLit, bs) {
 for (var i = this.polyhedronCount; --i >= 0; ) if (bs.get (this.polyhedrons[i].centralAtom.getIndex ())) {
@@ -138,15 +138,15 @@ for (var j = normixes.length; --j >= 0; ) {
 if (normixes[j] < 0 != isFullyLit) normixes[j] = ~normixes[j];
 }
 }
-}, $fz.isPrivate = true, $fz), "~B,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "andBitSet", 
 ($fz = function (bs) {
-var bsCenters =  new java.util.BitSet ();
+var bsCenters =  new javax.util.BitSet ();
 for (var i = this.polyhedronCount; --i >= 0; ) bsCenters.set (this.polyhedrons[i].centralAtom.getIndex ());
 
 bsCenters.and (bs);
 return bsCenters;
-}, $fz.isPrivate = true, $fz), "java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 Clazz.defineMethod (c$, "deletePolyhedra", 
 ($fz = function () {
 var newCount = 0;
@@ -233,7 +233,7 @@ dAverage += points[ptCenter].distance (points[i]);
 }
 dAverage = dAverage / ptCenter;
 var factor = this.distanceFactor;
-var bs =  new java.util.BitSet (ptCenter);
+var bs = org.jmol.util.BitSetUtil.newBitSet (ptCenter);
 var isOK = (dAverage == 0);
 while (!isOK && factor < 10.0) {
 distMax = dAverage * factor;
@@ -267,7 +267,7 @@ if (this.isAligned (points[j], points[k], points[ptCenter])) facetCatalog += thi
 }
 
 var ptRef =  new javax.vecmath.Point3f ();
-var bsTemp =  new java.util.BitSet ();
+var bsTemp =  new javax.util.BitSet ();
 for (var i = 0; i < ptCenter - 2; i++) for (var j = i + 1; j < ptCenter - 1; j++) {
 if (points[i].distance (points[j]) > distMax) continue ;for (var k = j + 1; k < ptCenter; k++) {
 if (points[i].distance (points[k]) > distMax || points[j].distance (points[k]) > distMax) continue ;if (planeCount >= 147) {
@@ -296,7 +296,7 @@ this.planesT[ipt++] = (isWindingOK ? i : j);
 this.planesT[ipt++] = (isWindingOK ? j : i);
 this.planesT[ipt++] = nRef;
 org.jmol.util.Measure.getNormalFromCenter (points[k], points[i], points[j], ptRef, false, normal);
-this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormix (normal, bsTemp));
+this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormixV (normal, bsTemp));
 }facet = this.faceId (i, k, -1);
 if (this.isCollapsed || isFlat && facetCatalog.indexOf (facet) < 0) {
 facetCatalog += facet;
@@ -304,7 +304,7 @@ this.planesT[ipt++] = (isWindingOK ? i : k);
 this.planesT[ipt++] = nRef;
 this.planesT[ipt++] = (isWindingOK ? k : i);
 org.jmol.util.Measure.getNormalFromCenter (points[j], points[i], ptRef, points[k], false, normal);
-this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormix (normal, bsTemp));
+this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormixV (normal, bsTemp));
 }facet = this.faceId (j, k, -1);
 if (this.isCollapsed || isFlat && facetCatalog.indexOf (facet) < 0) {
 facetCatalog += facet;
@@ -312,7 +312,7 @@ this.planesT[ipt++] = nRef;
 this.planesT[ipt++] = (isWindingOK ? j : k);
 this.planesT[ipt++] = (isWindingOK ? k : j);
 org.jmol.util.Measure.getNormalFromCenter (points[i], ptRef, points[j], points[k], false, normal);
-this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormix (normal, bsTemp));
+this.normixesT[planeCount++] = (isFlat ? org.jmol.util.Normix.get2SidedNormix (normal, bsTemp) : org.jmol.util.Normix.getNormixV (normal, bsTemp));
 }if (!isFlat) {
 if (this.isCollapsed) {
 nPoints++;
@@ -320,7 +320,7 @@ nPoints++;
 this.planesT[ipt++] = (isWindingOK ? i : j);
 this.planesT[ipt++] = (isWindingOK ? j : i);
 this.planesT[ipt++] = k;
-this.normixesT[planeCount++] = org.jmol.util.Normix.getNormix (normal, bsTemp);
+this.normixesT[planeCount++] = org.jmol.util.Normix.getNormixV (normal, bsTemp);
 }}}
 }
 
@@ -350,7 +350,7 @@ for (var i = this.polyhedronCount; --i >= 0; ) {
 var p = this.polyhedrons[i];
 p.visibilityFlags = (p.visible && bs.get (p.modelIndex) && !this.modelSet.isAtomHidden (p.centralAtom.getIndex ()) ? this.myVisibilityFlag : 0);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
 var s =  new StringBuffer ();
@@ -400,7 +400,7 @@ for (var j = d * 3; --j >= 0; ) this.planes[j] = g[j];
 }, "org.jmol.modelset.Atom,~N,~N,~N,~A,~A,~A");
 Clazz.defineMethod (c$, "getState", 
 function () {
-var a =  new java.util.BitSet ();
+var a =  new javax.util.BitSet ();
 for (var b = 0; b < this.ptCenter; b++) a.set ((this.vertices[b]).getIndex ());
 
 return "  polyhedra ({" + this.centralAtom.getIndex () + "}) " + (this.myDistanceFactor == 1.85 ? "" : " distanceFactor " + this.myDistanceFactor) + (this.myFaceCenterOffset == 0.25 ? "" : " faceCenterOffset " + this.myFaceCenterOffset) + " to " + org.jmol.util.Escape.escape (a) + (this.collapsed ? " collapsed" : "") + (this.isFullyLit ? " fullyLit" : "") + ";" + (this.visible ? "" : "polyhedra off;") + "\n";

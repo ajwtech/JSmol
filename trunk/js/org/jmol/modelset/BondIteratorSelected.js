@@ -19,7 +19,7 @@ this.bondType = bondType;
 this.bondSelectionModeOr = bondSelectionModeOr;
 this.isBondBitSet = false;
 this.iBond = 0;
-}, "~A,~N,~N,java.util.BitSet,~B");
+}, "~A,~N,~N,javax.util.BitSet,~B");
 Clazz.overrideMethod (c$, "hasNext", 
 function () {
 if (this.isBondBitSet) {

@@ -124,7 +124,7 @@ return atomSetCollectionReader;
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 var err = "File reader was not found:" + className;
-org.jmol.util.Logger.error (err, e);
+org.jmol.util.Logger.errorEx (err, e);
 return err;
 } else {
 throw e;

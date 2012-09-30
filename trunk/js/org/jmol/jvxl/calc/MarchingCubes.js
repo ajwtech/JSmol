@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.calc");
-Clazz.load (["org.jmol.util.TriangleData", "java.lang.StringBuffer", "java.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.calc.MarchingCubes", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.load (["org.jmol.util.TriangleData", "java.lang.StringBuffer", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.calc.MarchingCubes", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.surfaceReader = null;
 this.volumeData = null;
@@ -55,7 +55,7 @@ this.edgeVectors =  new Array (12);
 for (var i = 12; --i >= 0; ) this.edgeVectors[i] =  new javax.vecmath.Vector3f ();
 
 }this.edgePointIndexes =  Clazz.newArray (12, 0);
-this.bsValues =  new java.util.BitSet ();
+this.bsValues =  new javax.util.BitSet ();
 this.pt0 =  new javax.vecmath.Point3f ();
 this.pointA =  new javax.vecmath.Point3f ();
 this.fReturn =  Clazz.newArray (1, 0);
@@ -76,12 +76,12 @@ this.excludePartialCubes = true;
 this.surfaceReader = surfaceReader;
 this.bsVoxels = bsVoxels;
 var bsExcluded = params.bsExcluded;
-this.bsExcludedVertices = (bsExcluded[0] == null ? bsExcluded[0] =  new java.util.BitSet () : bsExcluded[0]);
-this.bsExcludedPlanes = (bsExcluded[2] == null ? bsExcluded[2] =  new java.util.BitSet () : bsExcluded[2]);
-this.bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] =  new java.util.BitSet () : bsExcluded[3]);
+this.bsExcludedVertices = (bsExcluded[0] == null ? bsExcluded[0] =  new javax.util.BitSet () : bsExcluded[0]);
+this.bsExcludedPlanes = (bsExcluded[2] == null ? bsExcluded[2] =  new javax.util.BitSet () : bsExcluded[2]);
+this.bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] =  new javax.util.BitSet () : bsExcluded[3]);
 this.mode = (volumeData.getVoxelData () != null || volumeData.mappingPlane != null ? 1 : bsVoxels != null ? 2 : 3);
 this.setParameters (volumeData, params);
-}, "org.jmol.jvxl.api.VertexDataServer,org.jmol.jvxl.data.VolumeData,org.jmol.jvxl.readers.Parameters,java.util.BitSet");
+}, "org.jmol.jvxl.api.VertexDataServer,org.jmol.jvxl.data.VolumeData,org.jmol.jvxl.readers.Parameters,javax.util.BitSet");
 Clazz.defineMethod (c$, "setParameters", 
 function (volumeData, params) {
 this.volumeData = volumeData;
@@ -103,7 +103,7 @@ this.cubeCountZ *= Math.abs (params.mapLattice.z);
 }this.nY = this.cubeCountY + 1;
 this.nZ = this.cubeCountZ + 1;
 this.yzCount = this.nY * this.nZ;
-if (this.bsVoxels == null) this.bsVoxels =  new java.util.BitSet ();
+if (this.bsVoxels == null) this.bsVoxels =  new javax.util.BitSet ();
 this.edgeVertexPointers = (this.isXLowToHigh ? org.jmol.jvxl.calc.MarchingCubes.edgeVertexPointersLowToHigh : org.jmol.jvxl.calc.MarchingCubes.edgeVertexPointersHighToLow);
 this.edgeVertexPlanes = (this.isXLowToHigh ? org.jmol.jvxl.calc.MarchingCubes.edgeVertexPlanesLowToHigh : org.jmol.jvxl.calc.MarchingCubes.edgeVertexPlanesHighToLow);
 this.isoPointIndexPlanes =  Clazz.newArray (2, this.yzCount, 3, 0);

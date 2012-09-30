@@ -177,7 +177,7 @@ a.setContentHandler (b);
 a.setErrorHandler (b);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error ("ERROR IN XmlReader.JmolXmlHandler.setHandler", e);
+org.jmol.util.Logger.errorEx ("ERROR IN XmlReader.JmolXmlHandler.setHandler", e);
 } else {
 throw e;
 }

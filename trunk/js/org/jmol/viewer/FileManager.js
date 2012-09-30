@@ -420,7 +420,7 @@ var doc =  new org.jmol.util.CompoundDocument (bis);
 return org.jmol.viewer.FileManager.getBufferedReaderForString (doc.getAllData ("Molecule", "Input").toString ());
 } else {
 bis = org.jmol.util.ZipUtil.checkPngZipStream (bis);
-if (org.jmol.util.ZipUtil.isZipFile (bis)) {
+if (org.jmol.util.ZipUtil.isZipStream (bis)) {
 if (allowZipStream) return  new java.util.zip.ZipInputStream (bis);
 if (asInputStream) return org.jmol.util.ZipUtil.getZipFileContents (bis, subFileList, 1, true);
 var s = org.jmol.util.ZipUtil.getZipFileContents (bis, subFileList, 1, false);
@@ -471,7 +471,7 @@ bis = t;
 if (org.jmol.util.CompoundDocument.isCompoundDocument (bis)) {
 var doc =  new org.jmol.util.CompoundDocument (bis);
 doc.getAllData (name.$replace ('\\', '/'), "Molecule", fileData);
-} else if (org.jmol.util.ZipUtil.isZipFile (bis)) {
+} else if (org.jmol.util.ZipUtil.isZipStream (bis)) {
 org.jmol.util.ZipUtil.getAllData (bis, subFileList, name.$replace ('\\', '/'), "Molecule", fileData);
 } else if (asBinaryString) {
 var bd =  new org.jmol.util.BinaryDocument ();
@@ -534,7 +534,7 @@ if (Clazz.instanceOf (t, String)) return "Error:" + t;
 if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
 try {
 var bis = t;
-var bytes = (os != null || subFileList == null || subFileList.length <= 1 || !allowZip || !org.jmol.util.ZipUtil.isZipFile (bis) && !org.jmol.util.ZipUtil.isPngZipStream (bis) ? org.jmol.viewer.FileManager.getStreamAsBytes (bis, os) : org.jmol.util.ZipUtil.getZipFileContentsAsBytes (bis, subFileList, 1));
+var bytes = (os != null || subFileList == null || subFileList.length <= 1 || !allowZip || !org.jmol.util.ZipUtil.isZipStream (bis) && !org.jmol.util.ZipUtil.isPngZipStream (bis) ? org.jmol.viewer.FileManager.getStreamAsBytes (bis, os) : org.jmol.util.ZipUtil.getZipFileContentsAsBytes (bis, subFileList, 1));
 bis.close ();
 return bytes;
 } catch (ioe) {
@@ -554,16 +554,14 @@ var totalLen = 0;
 while ((len = bis.read (buf)) > 0) {
 totalLen += len;
 if (os == null) {
-if (totalLen >= bytes.length) bytes = org.jmol.util.ArrayUtil.ensureLength (bytes, totalLen * 2);
+if (totalLen >= bytes.length) bytes = org.jmol.util.ArrayUtil.ensureLengthByte (bytes, totalLen * 2);
 System.arraycopy (buf, 0, bytes, totalLen - len, len);
 } else {
 os.write (buf, 0, len);
 }}
 bis.close ();
 if (os == null) {
-buf =  Clazz.newArray (totalLen, 0);
-System.arraycopy (bytes, 0, buf, 0, totalLen);
-return buf;
+return org.jmol.util.ArrayUtil.arrayCopyByte (bytes, totalLen);
 }return totalLen + " bytes";
 }, $fz.isPrivate = true, $fz), "java.io.BufferedInputStream,java.io.OutputStream");
 Clazz.defineMethod (c$, "getFileDataOrErrorAsString", 

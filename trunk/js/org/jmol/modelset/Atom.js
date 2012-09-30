@@ -51,7 +51,7 @@ if (isHetero) this.formalChargeAndFlags = 2;
 this.setFormalCharge (formalCharge);
 this.userDefinedVanDerWaalRadius = radius;
 this.set (x, y, z);
-}, "~N,~N,~N,~N,~N,~N,java.util.BitSet,~N,~N,~N,~B");
+}, "~N,~N,~N,~N,~N,~N,javax.util.BitSet,~N,~N,~N,~B");
 Clazz.defineMethod (c$, "setAltLoc", 
 function (altLoc) {
 this.alternateLocationID = altLoc;
@@ -301,7 +301,7 @@ bond.getOtherAtom (this).deleteBond (bond);
 bsBonds.set (bond.index);
 }
 this.bonds = null;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "isDeleted", 
 function () {
 return (this.valence < 0);
@@ -418,7 +418,7 @@ return this.atomSite;
 Clazz.defineMethod (c$, "setAtomSymmetry", 
 function (bsSymmetry) {
 this.atomSymmetry = bsSymmetry;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomSymmetry", 
 function () {
 return this.atomSymmetry;
@@ -434,7 +434,7 @@ return this.group;
 Clazz.overrideMethod (c$, "getGroupBits", 
 function (bs) {
 this.group.selectAtoms (bs);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getAtomName", 
 function () {
 return (this.atomID > 0 ? org.jmol.viewer.JmolConstants.getSpecialAtomName (this.atomID) : this.group.chain.model.modelSet.atomNames[this.index]);

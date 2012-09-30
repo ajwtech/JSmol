@@ -37,7 +37,7 @@ for (var i = this.bioShapes.length; --i >= 0; ) {
 var bioShape = this.bioShapes[i];
 if (bioShape.monomerCount > 0) bioShape.setMad (mad, bsSelected, (rd == null ? null : rd.values));
 }
-}, "~N,org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bsSelected) {
 if (propertyName === "refreshTrajectories") {
@@ -76,7 +76,7 @@ if (bioShape.monomerCount > 0) bioShape.setTranslucent (isTranslucent, bsSelecte
 }
 return ;
 }Clazz.superCall (this, org.jmol.shapebio.BioShapeCollection, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var temp =  new java.util.Hashtable ();
@@ -104,7 +104,7 @@ Clazz.overrideMethod (c$, "findNearestAtomIndex",
 function (xMouse, yMouse, closest, bsNot) {
 for (var i = this.bioShapes.length; --i >= 0; ) this.bioShapes[i].findNearestAtomIndex (xMouse, yMouse, closest, bsNot);
 
-}, "~N,~N,~A,java.util.BitSet");
+}, "~N,~N,~A,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 if (this.bioShapes == null) return ;
@@ -115,7 +115,7 @@ for (var i = this.bioShapes.length; --i >= 0; ) {
 var b = this.bioShapes[i];
 b.modelVisibilityFlags = (bs.get (b.modelIndex) ? this.myVisibilityFlag : 0);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "setModelClickability", 
 function () {
 if (this.bioShapes == null) return ;

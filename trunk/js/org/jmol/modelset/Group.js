@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.lang.Short", "java.util.Hashtable", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Group", ["java.lang.Float", "java.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.Quaternion"], function () {
+Clazz.load (["java.lang.Short", "java.util.Hashtable", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Group", ["java.lang.Float", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.Quaternion"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.groupIndex = 0;
 this.chain = null;
@@ -182,7 +182,7 @@ return false;
 });
 c$.addGroup3Name = Clazz.defineMethod (c$, "addGroup3Name", 
 function (group3) {
-if (org.jmol.modelset.Group.group3NameCount == org.jmol.modelset.Group.group3Names.length) ($t$ = org.jmol.modelset.Group.group3Names = org.jmol.util.ArrayUtil.doubleLength (org.jmol.modelset.Group.group3Names), org.jmol.modelset.Group.prototype.group3Names = org.jmol.modelset.Group.group3Names, $t$);
+if (org.jmol.modelset.Group.group3NameCount == org.jmol.modelset.Group.group3Names.length) ($t$ = org.jmol.modelset.Group.group3Names = org.jmol.util.ArrayUtil.doubleLengthS (org.jmol.modelset.Group.group3Names), org.jmol.modelset.Group.prototype.group3Names = org.jmol.modelset.Group.group3Names, $t$);
 var groupID = ($t$ = org.jmol.modelset.Group.group3NameCount ++, org.jmol.modelset.Group.prototype.group3NameCount = org.jmol.modelset.Group.group3NameCount, $t$);
 org.jmol.modelset.Group.group3Names[groupID] = group3;
 org.jmol.modelset.Group.htGroup.put (group3, Short.$valueOf (groupID));
@@ -262,20 +262,20 @@ return this.bsAdded != null && this.bsAdded.get (atomIndex);
 }, "~N");
 Clazz.defineMethod (c$, "addAtoms", 
 function (atomIndex) {
-if (this.bsAdded == null) this.bsAdded =  new java.util.BitSet ();
+if (this.bsAdded == null) this.bsAdded =  new javax.util.BitSet ();
 this.bsAdded.set (atomIndex);
 }, "~N");
 Clazz.defineMethod (c$, "selectAtoms", 
 function (bs) {
-bs.set (this.firstAtomIndex, this.lastAtomIndex + 1);
+bs.setBits (this.firstAtomIndex, this.lastAtomIndex + 1);
 if (this.bsAdded != null) bs.or (this.bsAdded);
 return this.lastAtomIndex;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "isSelected", 
 function (bs) {
 var pt = bs.nextSetBit (this.firstAtomIndex);
 return (pt >= 0 && pt <= this.lastAtomIndex || this.bsAdded != null && this.bsAdded.intersects (bs));
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "isHetero", 
 function () {
 return this.chain.getAtom (this.firstAtomIndex).isHetero ();
@@ -400,7 +400,7 @@ this.firstAtomIndex -= atomsDeleted;
 this.leadAtomIndex -= atomsDeleted;
 this.lastAtomIndex -= atomsDeleted;
 if (this.bsAdded != null) org.jmol.util.BitSetUtil.deleteBits (this.bsAdded, bsDeleted);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getGroupInfo", 
 function (igroup) {
 var infoGroup =  new java.util.Hashtable ();

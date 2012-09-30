@@ -79,7 +79,7 @@ renderer.setViewerG3dShapeID (this.viewer, shapeID);
 return this.renderers[shapeID] = renderer;
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error ("Could not instantiate renderer:" + className, e);
+org.jmol.util.Logger.errorEx ("Could not instantiate renderer:" + className, e);
 return null;
 } else {
 throw e;
