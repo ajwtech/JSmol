@@ -114,8 +114,8 @@ var iMid = Math.floor (dotCount / 2);
 var ptArc = this.measurement.getPointArc ();
 for (var i = dotCount; --i >= 0; ) {
 this.aaT.angle = i * stepAngle;
-this.matrixT.set (this.aaT);
-this.pointT.set (ptArc);
+this.matrixT.setAA (this.aaT);
+this.pointT.setT (ptArc);
 this.matrixT.transform (this.pointT);
 this.pointT.add (this.atomB);
 var point3iScreenTemp = this.viewer.transformPt (this.pointT);
@@ -123,7 +123,7 @@ var zArc = point3iScreenTemp.z - zOffset;
 if (zArc < 0) zArc = 0;
 this.g3d.drawPixel (point3iScreenTemp.x, point3iScreenTemp.y, zArc);
 if (i == iMid) {
-this.pointT.set (ptArc);
+this.pointT.setT (ptArc);
 this.pointT.scale (1.1);
 this.matrixT.transform (this.pointT);
 this.pointT.add (this.atomB);

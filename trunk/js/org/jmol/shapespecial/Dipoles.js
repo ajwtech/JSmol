@@ -60,7 +60,7 @@ org.jmol.util.Logger.info ("file molecular dipole = " + v + " " + (v != null ? "
 if (v == null) {
 org.jmol.util.Logger.warn ("No molecular dipole found for this model; setting to {0 0 0}");
 v =  new javax.vecmath.Vector3f ();
-}this.tempDipole.set ( new javax.vecmath.Point3f (0, 0, 0),  new javax.vecmath.Vector3f (-v.x, -v.y, -v.z));
+}this.tempDipole.set (javax.vecmath.Point3f.new3 (0, 0, 0), javax.vecmath.Vector3f.new3 (-v.x, -v.y, -v.z));
 this.tempDipole.type = 4;
 this.tempDipole.thisID = "molecular";
 this.setDipole ();
@@ -122,7 +122,7 @@ this.clear (true);
 }if ("startSet" === propertyName) {
 var atomset = value;
 this.startCoord = this.viewer.getAtomSetCenter (atomset);
-this.tempDipole.set (this.startCoord,  new javax.vecmath.Point3f (0, 0, 0), this.dipoleValue);
+this.tempDipole.set (this.startCoord, javax.vecmath.Point3f.new3 (0, 0, 0), this.dipoleValue);
 if (org.jmol.util.BitSetUtil.cardinalityOf (atomset) == 1) this.atomIndex1 = atomset.nextSetBit (0);
 return ;
 }if ("atomBitset" === propertyName) {
@@ -146,12 +146,12 @@ if (this.dipoleValue > 0) this.tempDipole.dipoleValue = this.dipoleValue;
 this.tempDipole.set (this.startCoord, this.viewer.getAtomSetCenter (atomset), this.dipoleValue);
 }return ;
 }if ("startCoord" === propertyName) {
-this.startCoord.set (value);
-this.tempDipole.set (this.startCoord,  new javax.vecmath.Point3f (0, 0, 0), this.dipoleValue);
+this.startCoord.setT (value);
+this.tempDipole.set (this.startCoord, javax.vecmath.Point3f.new3 (0, 0, 0), this.dipoleValue);
 return ;
 }if ("endCoord" === propertyName) {
 this.iHaveTwoEnds = true;
-this.endCoord.set (value);
+this.endCoord.setT (value);
 this.tempDipole.set (this.startCoord, this.endCoord, this.dipoleValue);
 this.dumpDipoles ("endCoord");
 return ;

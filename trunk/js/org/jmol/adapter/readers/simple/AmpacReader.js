@@ -35,7 +35,7 @@ while (this.readLine () != null) {
 var tokens = this.getTokens ();
 if (tokens.length < 5) break;
 if (haveFreq) {
-this.atomPositions[this.atomCount] =  new javax.vecmath.Point3f (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
+this.atomPositions[this.atomCount] = javax.vecmath.Point3f.new3 (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 } else {
 var symbol = tokens[1];
 var atom = this.atomSetCollection.addNewAtom ();
@@ -50,7 +50,7 @@ Clazz.defineMethod (c$, "setPositions",
 var maxAtom = this.atomSetCollection.getAtomCount ();
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = this.freqAtom0; i < maxAtom; i++) {
-atoms[i].set (this.atomPositions[i % this.atomCount]);
+atoms[i].setT (this.atomPositions[i % this.atomCount]);
 atoms[i].partialCharge = this.partialCharges[i % this.atomCount];
 }
 }, $fz.isPrivate = true, $fz));

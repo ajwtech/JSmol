@@ -46,8 +46,8 @@ var h4 = s3 - s2;
 var x = (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
 var y = (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
 var z = (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-if (Clazz.instanceOf (list, Array)) list[index0 + i] =  new javax.vecmath.Point3f (x, y, z);
- else list[index0 + i] =  new javax.vecmath.Vector3f (x, y, z);
+if (Clazz.instanceOf (list, Array)) list[index0 + i] = javax.vecmath.Point3f.new3 (x, y, z);
+ else list[index0 + i] = javax.vecmath.Vector3f.new3 (x, y, z);
 }
 }, "~N,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,~A,~N,~N");
 });

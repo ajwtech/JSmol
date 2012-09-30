@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,7 +23,7 @@
  */
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;

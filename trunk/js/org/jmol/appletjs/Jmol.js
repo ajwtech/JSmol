@@ -50,7 +50,8 @@ System.out.println ("Jmol applet " + this.fullName + " destroyed");
 });
 Clazz.defineMethod (c$, "setStereoGraphics", 
 function (isStereo) {
-return null;
+{
+}return null;
 }, "~B");
 Clazz.defineMethod (c$, "init", 
 function () {
@@ -137,9 +138,11 @@ this.viewer.setStringProperty (name, value);
 }, $fz.isPrivate = true, $fz), "~S,~S");
 Clazz.defineMethod (c$, "sendJsTextStatus", 
 function (message) {
+System.out.println (message);
 }, "~S");
 Clazz.defineMethod (c$, "sendJsTextareaStatus", 
 function (message) {
+System.out.println (message);
 }, "~S");
 Clazz.defineMethod (c$, "handleEvent", 
 function (e) {

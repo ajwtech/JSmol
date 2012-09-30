@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 11:33:55 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17582 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -67,7 +67,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-09-26 11:33:55 -0500 (Wed, 26 Sep 2012) $"
+        // $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do
@@ -117,13 +117,13 @@ public class JmolConstants {
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
-  public final static Vector3f center = new Vector3f(0, 0, 0);
-  public final static Vector3f axisX = new Vector3f(1, 0, 0);
-  public final static Vector3f axisY = new Vector3f(0, 1, 0);
-  public final static Vector3f axisZ = new Vector3f(0, 0, 1);
-  public final static Vector3f axisNX = new Vector3f(-1, 0, 0);
-  public final static Vector3f axisNY = new Vector3f(0, -1, 0);
-  public final static Vector3f axisNZ = new Vector3f(0, 0, -1);
+  public final static Vector3f center = Vector3f.new3(0, 0, 0);
+  public final static Vector3f axisX = Vector3f.new3(1, 0, 0);
+  public final static Vector3f axisY = Vector3f.new3(0, 1, 0);
+  public final static Vector3f axisZ = Vector3f.new3(0, 0, 1);
+  public final static Vector3f axisNX = Vector3f.new3(-1, 0, 0);
+  public final static Vector3f axisNY = Vector3f.new3(0, -1, 0);
+  public final static Vector3f axisNZ = Vector3f.new3(0, 0, -1);
   public final static Vector3f[] unitAxisVectors = {
     axisX, axisY, axisZ, axisNX, axisNY, axisNZ };
 

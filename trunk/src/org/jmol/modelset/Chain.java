@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2011-11-12 15:53:54 -0600 (Sat, 12 Nov 2011) $
- * $Revision: 16460 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 public final class Chain {
 

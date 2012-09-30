@@ -38,7 +38,7 @@ public class JSTest extends JSmol {
     jmolApp = new JSTest(args);
   }
 	
-	private static Point3f pt2 = new Point3f(2,3,4);
+	private static Point3f pt2 = Point3f.new3(2,3,4);
   
 	private JSTest(String[] args) {
   	super();

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-20 22:44:46 -0500 (Thu, 20 Sep 2012) $
- * $Revision: 17573 $
+ * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17591 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -26,7 +26,7 @@ package org.jmol.util;
 
 
 import javax.vecmath.Vector3f;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 
 /**
@@ -89,7 +89,7 @@ public class Normix {
   public static final short NORMIX_NULL = 9999;
      // graphics3D, Mesh
   
-  public static short getNormix(Vector3f v, BitSet bsTemp) {
+  public static short getNormixV(Vector3f v, BitSet bsTemp) {
     // envelope, mesh, polyhedra only
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
   }
@@ -110,7 +110,7 @@ public class Normix {
       champion = 11;
       t = z - (-1);
     }
-    bsConsidered.clear();
+    bsConsidered.clearAll();
     bsConsidered.set(champion);
     getVertexVectors();
     getNeighborVertexArrays();

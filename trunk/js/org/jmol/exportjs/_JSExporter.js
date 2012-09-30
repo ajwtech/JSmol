@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.exportjs");
-Clazz.load (["org.jmol.exportjs.__CartesianExporter", "java.util.Hashtable", "org.jmol.exportjs.Export3D", "$.___Exporter"], "org.jmol.exportjs._JSExporter", ["java.lang.Boolean", "$.Float", "org.jmol.exportjs.UseTable", "org.jmol.util.ColorUtil"], function () {
+Clazz.load (["org.jmol.exportjs.__CartesianExporter", "java.util.Hashtable", "org.jmol.exportjs.Export3D", "$.___Exporter"], "org.jmol.exportjs._JSExporter", ["java.lang.Boolean", "$.Float", "org.jmol.exportjs.UseTable"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.useTable = null;
 this.htSpheresRendered = null;
@@ -62,7 +62,7 @@ function (center, points, colix) {
 }, "javax.vecmath.Point3f,~A,~N");
 Clazz.defineMethod (c$, "getColor", 
 ($fz = function (colix) {
-return org.jmol.util.ColorUtil.colorPointFromInt2 (this.g3d.getColorArgbOrGray (colix));
+return Integer.$valueOf (this.g3d.getColorArgbOrGray (colix));
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "addObject", 
 function (id, o) {

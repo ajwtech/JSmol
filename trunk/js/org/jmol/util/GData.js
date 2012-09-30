@@ -214,7 +214,7 @@ org.jmol.util.Shader.flushSphereCache ();
 }, $fz.isPrivate = true, $fz));
 c$.getLightSource = Clazz.defineMethod (c$, "getLightSource", 
 function () {
-return  new javax.vecmath.Point3f (org.jmol.util.Shader.xLight, org.jmol.util.Shader.yLight, org.jmol.util.Shader.zLight);
+return javax.vecmath.Point3f.new3 (org.jmol.util.Shader.xLight, org.jmol.util.Shader.yLight, org.jmol.util.Shader.zLight);
 });
 Clazz.defineMethod (c$, "isClipped", 
 function (x, y, z) {

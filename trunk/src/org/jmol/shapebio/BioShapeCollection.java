@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -25,7 +25,7 @@
 
 package org.jmol.shapebio;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 

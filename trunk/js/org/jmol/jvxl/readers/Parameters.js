@@ -157,7 +157,7 @@ this.bsIgnore = null;
 this.bsSelected = null;
 this.bsSolvent = null;
 this.calculationType = "";
-this.center =  new javax.vecmath.Point3f (3.4028235E38, 3.4028235E38, 3.4028235E38);
+this.center = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
 this.colorBySign = this.colorByPhase = this.colorBySets = false;
 this.colorDensity = false;
 this.colorEncoder = null;
@@ -238,19 +238,19 @@ if (this.center.x == 3.4028235E38) this.center.set (0, 0, 0);
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setEccentricity", 
 function (info) {
-var ecc =  new javax.vecmath.Vector3f (info.x, info.y, info.z);
+var ecc = javax.vecmath.Vector3f.new3 (info.x, info.y, info.z);
 var c = (this.scale > 0 ? this.scale : info.w < 0 ? 1 : ecc.length ());
 var fab_c = Math.abs (info.w);
 ecc.normalize ();
-var z =  new javax.vecmath.Vector3f (0, 0, 1);
+var z = javax.vecmath.Vector3f.new3 (0, 0, 1);
 ecc.add (z);
 ecc.normalize ();
 if (Float.isNaN (ecc.x)) ecc.set (1, 0, 0);
 this.eccentricityMatrix =  new javax.vecmath.Matrix3f ();
 this.eccentricityMatrix.setIdentity ();
-this.eccentricityMatrix.set ( new javax.vecmath.AxisAngle4f (ecc, 3.141592653589793));
+this.eccentricityMatrix.setAA ( new javax.vecmath.AxisAngle4f (ecc, 3.141592653589793));
 this.eccentricityMatrixInverse =  new javax.vecmath.Matrix3f ();
-this.eccentricityMatrixInverse.invert (this.eccentricityMatrix);
+this.eccentricityMatrixInverse.invertM (this.eccentricityMatrix);
 this.isEccentric = this.isAnisotropic = true;
 this.eccentricityScale = c;
 this.eccentricityRatio = fab_c;
@@ -270,7 +270,7 @@ Clazz.defineMethod (c$, "setSphere",
 function (radius) {
 this.dataType = 65;
 this.distance = radius;
-this.setEccentricity ( new javax.vecmath.Point4f (0, 0, 1, 1));
+this.setEccentricity (javax.vecmath.Point4f.new4 (0, 0, 1, 1));
 this.cutoff = 1.4E-45;
 this.isCutoffAbsolute = false;
 this.isSilent = !this.logMessages;
@@ -396,7 +396,7 @@ this.isEccentric = this.isAnisotropic = false;
 Clazz.defineMethod (c$, "setAtomicOrbital", 
 function (nlmZprs) {
 this.dataType = 1294;
-this.setEccentricity ( new javax.vecmath.Point4f (0, 0, 1, 1));
+this.setEccentricity (javax.vecmath.Point4f.new4 (0, 0, 1, 1));
 this.psi_n = Math.round (nlmZprs[0]);
 this.psi_l = Math.round (nlmZprs[1]);
 this.psi_m = Math.round (nlmZprs[2]);

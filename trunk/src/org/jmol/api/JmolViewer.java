@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -27,7 +27,7 @@ package org.jmol.api;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;

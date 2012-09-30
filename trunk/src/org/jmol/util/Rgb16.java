@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -32,17 +32,19 @@ public final class Rgb16 {
   public Rgb16() {
   }
 
-  public Rgb16(int argb) {
-    set(argb);
+  public static Rgb16 newI(int argb) {
+    Rgb16 c = new Rgb16();
+    c.setInt(argb);
+    return c;
   }
 
-  public void set(int argb) {
+  public void setInt(int argb) {
     rScaled = ((argb >> 8) & 0xFF00) | 0x80;
     gScaled = ((argb     ) & 0xFF00) | 0x80;
     bScaled = ((argb << 8) & 0xFF00) | 0x80;
   }
 
-  public void set(Rgb16 other) {
+  public void setRgb(Rgb16 other) {
     rScaled = other.rScaled;
     gScaled = other.gScaled;
     bScaled = other.bScaled;

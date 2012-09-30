@@ -36,8 +36,8 @@ data[ipt] = value;
 dataInv[ipt] = -value;
 ipt++;
 }
-this.seitzMatrix.set (data);
-this.seitzMatrixInv.set (dataInv);
+this.seitzMatrix.setA (data);
+this.seitzMatrixInv.setA (dataInv);
 }, $fz.isPrivate = true, $fz), "~S,~S");
 c$.lookup = Clazz.defineMethod (c$, "lookup", 
 function (code) {

@@ -112,8 +112,8 @@ import java.util.ArrayList;
  * Note about <code>fileNameMap</code>: In versions prior to JDK 1.1.6, field
  * <code>fileNameMap</code> of <code>URLConnection</code> was public. In JDK
  * 1.1.6 and later, <code>fileNameMap</code> is private; accessor and mutator
- * methods {@link #getFileNameMap() getFileNameMap} and
- * {@link #setFileNameMap(java.net.FileNameMap) setFileNameMap} are added to
+ * methods {link #getFileNameMap() getFileNameMap} and
+ * {link #setFileNameMap(java.net.FileNameMap) setFileNameMap} are added to
  * access it. This change is also described on the <a href=
  * "http://java.sun.com/products/jdk/1.2/compatibility.html"> Compatibility</a>
  * page.
@@ -127,25 +127,25 @@ import java.util.ArrayList;
  * @version %I%, %G%
  * @see java.net.URL#openConnection()
  * @see java.net.URLConnection#connect()
- * @see java.net.URLConnection#getContent()
- * @see java.net.URLConnection#getContentEncoding()
- * @see java.net.URLConnection#getContentLength()
- * @see java.net.URLConnection#getContentType()
- * @see java.net.URLConnection#getDate()
- * @see java.net.URLConnection#getExpiration()
- * @see java.net.URLConnection#getHeaderField(int)
- * @see java.net.URLConnection#getHeaderField(java.lang.String)
+ * see java.net.URLConnection#getContent()
+ * see java.net.URLConnection#getContentEncoding()
+ * see java.net.URLConnection#getContentLength()
+ * see java.net.URLConnection#getContentType()
+ * see java.net.URLConnection#getDate()
+ * see java.net.URLConnection#getExpiration()
+ * see java.net.URLConnection#getHeaderField(int)
+ * see java.net.URLConnection#getHeaderField(java.lang.String)
  * @see java.net.URLConnection#getInputStream()
- * @see java.net.URLConnection#getLastModified()
+ * see java.net.URLConnection#getLastModified()
  * @see java.net.URLConnection#getOutputStream()
- * @see java.net.URLConnection#setAllowUserInteraction(boolean)
- * @see java.net.URLConnection#setDefaultUseCaches(boolean)
+ * see java.net.URLConnection#setAllowUserInteraction(boolean)
+ * see java.net.URLConnection#setDefaultUseCaches(boolean)
  * @see java.net.URLConnection#setDoInput(boolean)
  * @see java.net.URLConnection#setDoOutput(boolean)
- * @see java.net.URLConnection#setIfModifiedSince(long)
+ * see java.net.URLConnection#setIfModifiedSince(long)
  * @see java.net.URLConnection#setRequestProperty(java.lang.String,
  *      java.lang.String)
- * @see java.net.URLConnection#setUseCaches(boolean)
+ * see java.net.URLConnection#setUseCaches(boolean)
  * @since JDK1.0
  */
 public abstract class URLConnection {
@@ -288,8 +288,8 @@ public abstract class URLConnection {
 	 * @exception IOException
 	 *              if an I/O error occurs while opening the connection.
 	 * @see java.net.URLConnection#connected
-	 * @see #getConnectTimeout()
-	 * @see #setConnectTimeout(int)
+	 * see #getConnectTimeout()
+	 * see #setConnectTimeout(int)
 	 */
 	abstract public void connect() throws IOException;
 
@@ -327,8 +327,8 @@ public abstract class URLConnection {
 	 *              if an I/O error occurs while creating the input stream.
 	 * @exception UnknownServiceException
 	 *              if the protocol does not support input.
-	 * @see #setReadTimeout(int)
-	 * @see #getReadTimeout()
+	 * see #setReadTimeout(int)
+	 * see #getReadTimeout()
 	 */
 	public InputStream getInputStream() throws IOException {
 		throw new UnknownServiceException("protocol doesn't support input");
@@ -365,7 +365,7 @@ public abstract class URLConnection {
 	 *           if already connected
 	 * @throws NullPointerException
 	 *           if key is <CODE>null</CODE>
-	 * @see #getRequestProperty(java.lang.String)
+	 * see #getRequestProperty(java.lang.String)
 	 */
 	public void setRequestProperty(String key, String value) {
 		if (connected)

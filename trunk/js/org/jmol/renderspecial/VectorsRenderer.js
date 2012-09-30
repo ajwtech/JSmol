@@ -39,7 +39,7 @@ this.vectorSymmetry = this.viewer.getVectorSymmetry ();
 if (this.transform (mads[i], atom, vibrationVector) && this.g3d.setColix (org.jmol.shape.Shape.getColix (colixes, i, atom))) {
 this.renderVector (atom);
 if (this.vectorSymmetry) {
-this.vector2.set (vibrationVector);
+this.vector2.setT (vibrationVector);
 this.vector2.scale (-1);
 this.transform (mads[i], atom, this.vector2);
 this.renderVector (atom);
@@ -52,13 +52,13 @@ if (Math.abs (len * this.vectorScale) < 0.01) return false;
 this.headScale = -0.2;
 if (this.vectorScale < 0) this.headScale = -this.headScale;
 this.doShaft = (0.1 + Math.abs (this.headScale / len) < Math.abs (this.vectorScale));
-this.headOffsetVector.set (vibrationVector);
+this.headOffsetVector.setT (vibrationVector);
 this.headOffsetVector.scale (this.headScale / len);
-this.pointVectorEnd.scaleAdd (this.vectorScale, vibrationVector, atom);
-this.pointArrowHead.set (this.pointVectorEnd);
+this.pointVectorEnd.scaleAdd2 (this.vectorScale, vibrationVector, atom);
+this.pointArrowHead.setT (this.pointVectorEnd);
 this.pointArrowHead.add (this.headOffsetVector);
-this.screenArrowHead.set (this.viewer.transformPtVib (this.pointArrowHead, vibrationVector));
-this.screenVectorEnd.set (this.viewer.transformPtVib (this.pointVectorEnd, vibrationVector));
+this.screenArrowHead.setT (this.viewer.transformPtVib (this.pointArrowHead, vibrationVector));
+this.screenVectorEnd.setT (this.viewer.transformPtVib (this.pointVectorEnd, vibrationVector));
 this.diameter = (mad < 1 ? 1 : mad <= 20 ? mad : this.viewer.scaleToScreen (this.screenVectorEnd.z, mad));
 this.headWidthPixels = Math.round ((this.diameter * 2.0));
 if (this.headWidthPixels < this.diameter + 2) this.headWidthPixels = this.diameter + 2;

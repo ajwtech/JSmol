@@ -74,7 +74,7 @@ return true;
 if (haveVibration) {
 var atomVibs =  new Array (this.points.length);
 for (var i = this.points.length; --i >= 0; ) {
-atomVibs[i] =  new javax.vecmath.Point3f (this.points[i]);
+atomVibs[i] = javax.vecmath.Point3f.newP (this.points[i]);
 var v = this.atoms[i].getVibrationVector ();
 if (v != null) atomVibs[i].add (v);
 }
@@ -86,7 +86,7 @@ if (this.haveInversionCenter) {
 this.name = "D(infinity)h";
 } else {
 this.name = "C(infinity)v";
-}this.vTemp.sub (this.points[1], this.points[0]);
+}this.vTemp.sub2 (this.points[1], this.points[0]);
 this.addAxis (16, this.vTemp);
 this.principalAxis = this.axes[16][0];
 if (this.haveInversionCenter) {
@@ -198,7 +198,7 @@ this.elements =  Clazz.newArray (atomCount, 0);
 if (atomCount == 0) return true;
 this.nAtoms = 0;
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
-this.points[this.nAtoms] =  new javax.vecmath.Point3f (atomset[i]);
+this.points[this.nAtoms] = javax.vecmath.Point3f.newP (atomset[i]);
 this.atoms[this.nAtoms] = atomset[i];
 var bondIndex = 1 + Math.max (3, atomset[i].getCovalentBondCount ());
 this.elements[this.nAtoms] = atomset[i].getElementNumber () * bondIndex;
@@ -230,15 +230,15 @@ nFound++;
 var a1 = this.points[i];
 var e1 = this.elements[i];
 if (q != null) {
-pt.set (a1);
+pt.setT (a1);
 pt.sub (center);
 q.transform (pt, pt);
 pt.add (center);
 } else {
-pt.set (a1);
+pt.setT (a1);
 }if (isInversion) {
-this.vTemp.sub (center, pt);
-pt.scaleAdd (2, this.vTemp, pt);
+this.vTemp.sub2 (center, pt);
+pt.scaleAdd2 (2, this.vTemp, pt);
 }if ((q != null || isInversion) && pt.distance (a1) < this.distanceTolerance) {
 nFound++;
 continue ;}for (var j = this.points.length; --j >= 0; ) {
@@ -256,10 +256,10 @@ if (atoms.length < 2) return false;
 for (var i = atoms.length; --i >= 0; ) {
 if (i == this.centerAtomIndex) continue ;if (v1 == null) {
 v1 =  new javax.vecmath.Vector3f ();
-v1.sub (atoms[i], this.center);
+v1.sub2 (atoms[i], this.center);
 v1.normalize ();
-this.vTemp.set (v1);
-continue ;}this.vTemp.sub (atoms[i], this.center);
+this.vTemp.setT (v1);
+continue ;}this.vTemp.sub2 (atoms[i], this.center);
 this.vTemp.normalize ();
 if (!this.isParallel (v1, this.vTemp)) return false;
 }
@@ -293,14 +293,14 @@ if (i == this.centerAtomIndex) continue ;var a1 = this.points[i];
 var e1 = this.elements[i];
 for (var j = this.points.length; --j > i; ) {
 var a2 = this.points[j];
-if (this.elements[j] != e1) continue ;v1.sub (a1, this.center);
-v2.sub (a2, this.center);
+if (this.elements[j] != e1) continue ;v1.sub2 (a1, this.center);
+v2.sub2 (a2, this.center);
 v1.normalize ();
 v2.normalize ();
 if (this.isParallel (v1, v2)) {
 this.getAllAxes (v1);
 continue ;}if (this.nAxes[16] < org.jmol.symmetry.PointGroup.axesMaxN[16]) {
-v3.set (a1);
+v3.setT (a1);
 v3.add (a2);
 v3.scale (0.5);
 v3.sub (this.center);
@@ -318,12 +318,12 @@ for (var i = 0; i < vs.length; i++) vs[i] =  new javax.vecmath.Vector3f ();
 
 var n = 0;
 for (var i = 0; i < this.nAxes[16]; i++) {
-vs[n++].set (this.axes[16][i].normalOrAxis);
-vs[n].set (this.axes[16][i].normalOrAxis);
+vs[n++].setT (this.axes[16][i].normalOrAxis);
+vs[n].setT (this.axes[16][i].normalOrAxis);
 vs[n++].scale (-1);
 }
 for (var i = vs.length; --i >= 2; ) for (var j = i; --j >= 1; ) for (var k = j; --k >= 0; ) {
-v3.set (vs[i]);
+v3.setT (vs[i]);
 v3.add (vs[j]);
 v3.add (vs[k]);
 if (v3.length () < 1.0) continue ;this.checkAxisOrder (17, v3, this.center);
@@ -338,13 +338,13 @@ nMin = this.eCounts[i];
 iMin = i;
 }}
 out : for (var i = 0; i < this.points.length - 2; i++) if (this.elements[i] == iMin) for (var j = i + 1; j < this.points.length - 1; j++) if (this.elements[j] == iMin) for (var k = j + 1; k < this.points.length; k++) if (this.elements[k] == iMin) {
-v1.sub (this.points[i], this.points[j]);
-v2.sub (this.points[i], this.points[k]);
+v1.sub2 (this.points[i], this.points[j]);
+v2.sub2 (this.points[i], this.points[k]);
 v1.normalize ();
 v2.normalize ();
 v3.cross (v1, v2);
 this.getAllAxes (v3);
-v1.set (this.points[i]);
+v1.setT (this.points[i]);
 v1.add (this.points[j]);
 v1.add (this.points[k]);
 v1.normalize ();
@@ -365,7 +365,7 @@ for (var i = 0; i < this.maxElement; i++) if (vs[i] != null) for (var j = 0; j <
 if (i == j || vs[j] == null) continue ;if (this.haveInversionCenter) {
 v1.cross (vs[i], vs[j]);
 } else {
-v1.set (vs[i]);
+v1.setT (vs[i]);
 v1.sub (vs[j]);
 }this.checkAxisOrder (16, v1, this.center);
 }
@@ -467,15 +467,15 @@ if (i == this.centerAtomIndex) continue ;var a1 = this.points[i];
 var e1 = this.elements[i];
 for (var j = this.points.length; --j > i; ) {
 if (haveAxes && this.elements[j] != e1) continue ;var a2 = this.points[j];
-pt.add (a1, a2);
+pt.add2 (a1, a2);
 pt.scale (0.5);
-v1.sub (a1, this.center);
-v2.sub (a2, this.center);
+v1.sub2 (a1, this.center);
+v2.sub2 (a2, this.center);
 if (!this.isParallel (v1, v2)) {
 v3.cross (v1, v2);
 v3.normalize ();
 nPlanes = this.getPlane (v3);
-}v3.set (a2);
+}v3.setT (a2);
 v3.sub (a1);
 v3.normalize ();
 nPlanes = this.getPlane (v3);
@@ -504,7 +504,7 @@ this.checkAxisOrder (Cn - 1, this.vTemp, this.center);
 }}if (this.nAxes[16] == 0 && nPlanes > 2) {
 for (var i = 0; i < nPlanes - 1; i++) {
 for (var j = i + 1; j < nPlanes; j++) {
-this.vTemp.add (planes[1].normalOrAxis, planes[2].normalOrAxis);
+this.vTemp.add2 (planes[1].normalOrAxis, planes[2].normalOrAxis);
 this.checkAxisOrder (16, this.vTemp, this.center);
 }
 }
@@ -539,11 +539,11 @@ offset += 0.25;
 var scale = scaleFactor * this.radius + offset;
 if (!haveType || type.equalsIgnoreCase (label) || anyProperAxis && i >= 14 || anyImproperAxis && i < 14) for (var j = 0; j < this.nAxes[i]; j++) {
 if (index > 0 && j + 1 != index) continue ;op = this.axes[i][j];
-v.set (op.normalOrAxis);
+v.setT (op.normalOrAxis);
 v.add (this.center);
 if (op.type == 2) scale = -scale;
 sb.append ("draw pgva").append (m).append (label).append ("_").append (j + 1).append (" width 0.05 scale ").append (scale).append (" ").append (org.jmol.util.Escape.escapePt (v));
-v.scaleAdd (-2, op.normalOrAxis, v);
+v.scaleAdd2 (-2, op.normalOrAxis, v);
 var isPA = (this.principalAxis != null && op.index == this.principalAxis.index);
 sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).append (isPA ? "*" : "").append ("\" color ").append (isPA ? "red" : op.type == 2 ? "blue" : "yellow").append (";\n");
 }
@@ -551,13 +551,13 @@ sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).appen
 if (!haveType || type.equalsIgnoreCase ("Cs")) for (var j = 0; j < this.nAxes[0]; j++) {
 if (index > 0 && j + 1 != index) continue ;op = this.axes[0][j];
 sb.append ("draw pgvp").append (m).append (j + 1).append ("disk scale ").append (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escapePt (this.center));
-v.set (op.normalOrAxis);
+v.setT (op.normalOrAxis);
 v.add (this.center);
 sb.append (org.jmol.util.Escape.escapePt (v)).append (" color translucent yellow;\n");
-v.set (op.normalOrAxis);
+v.setT (op.normalOrAxis);
 v.add (this.center);
 sb.append ("draw pgvp").append (m).append (j + 1).append ("ring width 0.05 scale ").append (scaleFactor * this.radius * 2).append (" arc ").append (org.jmol.util.Escape.escapePt (v));
-v.scaleAdd (-2, op.normalOrAxis, v);
+v.scaleAdd2 (-2, op.normalOrAxis, v);
 sb.append (org.jmol.util.Escape.escapePt (v));
 v.x += 0.011;
 v.y += 0.012;

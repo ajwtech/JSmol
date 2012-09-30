@@ -523,7 +523,7 @@ Clazz.defineMethod (c$, "getFractionalCoordPt",
 ($fz = function (asAbsolute) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c == null) return this;
-var pt =  new javax.vecmath.Point3f (this);
+var pt = javax.vecmath.Point3f.newP (this);
 c.toFractional (pt, asAbsolute);
 return pt;
 }, $fz.isPrivate = true, $fz), "~B");
@@ -536,7 +536,7 @@ Clazz.defineMethod (c$, "getFractionalUnitCoordPt",
 function (asCartesian) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c == null) return this;
-var pt =  new javax.vecmath.Point3f (this);
+var pt = javax.vecmath.Point3f.newP (this);
 if (this.group.chain.model.isJmolDataFrame) {
 c.toFractional (pt, false);
 if (asCartesian) c.toCartesian (pt, false);
@@ -549,8 +549,8 @@ Clazz.defineMethod (c$, "getFractionalUnitDistance",
 function (pt, ptTemp1, ptTemp2) {
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c == null) return this.distance (pt);
-ptTemp1.set (this);
-ptTemp2.set (pt);
+ptTemp1.setT (this);
+ptTemp2.setT (pt);
 if (this.group.chain.model.isJmolDataFrame) {
 c.toFractional (ptTemp1, true);
 c.toFractional (ptTemp2, true);
@@ -585,7 +585,7 @@ this.setFractionalCoordPt (this, ptNew, asAbsolute);
 }, "javax.vecmath.Point3f,~B");
 Clazz.defineMethod (c$, "setFractionalCoordPt", 
 function (pt, ptNew, asAbsolute) {
-pt.set (ptNew);
+pt.setT (ptNew);
 var c = this.group.chain.model.modelSet.getUnitCell (this.modelIndex);
 if (c != null) c.toCartesian (pt, asAbsolute && !this.group.chain.model.isJmolDataFrame);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,~B");
@@ -844,7 +844,7 @@ Clazz.defineMethod (c$, "getInsertionCode",
 function () {
 return this.group.getInsertionCode ();
 });
-Clazz.defineMethod (c$, "equals", 
+Clazz.overrideMethod (c$, "equals", 
 function (obj) {
 return (this === obj);
 }, "~O");
@@ -1092,7 +1092,7 @@ return atom.getFractionalCoordPt (false);
 case 1146093582:
 return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt (false) : atom.getFractionalUnitCoordPt (false));
 case 1146095628:
-return  new javax.vecmath.Point3f (atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight () - atom.screenY, atom.screenZ);
+return javax.vecmath.Point3f.new3 (atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight () - atom.screenY, atom.screenZ);
 case 1146095631:
 var v = atom.getVibrationVector ();
 if (v == null) v =  new javax.vecmath.Vector3f ();

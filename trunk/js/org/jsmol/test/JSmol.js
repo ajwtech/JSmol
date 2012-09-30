@@ -35,5 +35,5 @@ c$.bs = c$.prototype.bs =  new java.util.BitSet ();
 {
 org.jsmol.test.JSmol.bs.set (5);
 org.jsmol.test.JSmol.bs.set (6);
-}c$.pt = c$.prototype.pt =  new javax.vecmath.Point3f (2, 3, 4);
+}c$.pt = c$.prototype.pt =  new javax.vecmath.Point3f ();
 });

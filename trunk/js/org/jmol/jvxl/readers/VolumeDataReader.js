@@ -73,7 +73,7 @@ this.setVolumeData (this.params.volumeData);
 return true;
 }if (!this.useOriginStepsPoints) {
 return false;
-}this.volumetricOrigin.set (this.params.origin);
+}this.volumetricOrigin.setT (this.params.origin);
 this.volumetricVectors[0].set (this.params.steps.x, 0, 0);
 this.volumetricVectors[1].set (0, this.params.steps.y, 0);
 this.volumetricVectors[2].set (0, 0, this.params.steps.z);

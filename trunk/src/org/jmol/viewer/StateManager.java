@@ -27,7 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -356,7 +356,7 @@ public class StateManager {
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
       zoom = viewer.getZoomSetting();
-      center.set(viewer.getRotationCenter());
+      center.setT(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
       navigationMode = viewer.getNavigationMode();
@@ -366,7 +366,7 @@ public class StateManager {
         xNav = viewer.getNavigationOffsetPercent('X');
         yNav = viewer.getNavigationOffsetPercent('Y');
         navDepth = viewer.getNavigationDepthPercent();
-        navCenter = new Point3f(viewer.getNavigationCenter());
+        navCenter = Point3f.newP(viewer.getNavigationCenter());
       }
     }
 
@@ -1105,7 +1105,7 @@ public class StateManager {
     }
 
     void setDefaultLattice(Point3f ptLattice) {
-      ptDefaultLattice.set(ptLattice);
+      ptDefaultLattice.setT(ptLattice);
     }
 
     Point3f getDefaultLattice() {
@@ -1741,7 +1741,7 @@ public class StateManager {
       bs = new BitSet();
       ht.put(key, bs);
     }
-    bs.set(i1, i2 + 1);
+    bs.setBits(i1, i2 + 1);
   }
 
   public static String varClip(String name, String sv, int nMax) {

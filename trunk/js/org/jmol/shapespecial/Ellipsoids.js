@@ -157,7 +157,7 @@ while (e.hasNext ()) {
 var ellipsoid = e.next ();
 if (ellipsoid.axes == null || ellipsoid.lengths == null) continue ;sb.append ("  Ellipsoid ID ").append (ellipsoid.id).append (" modelIndex ").append (ellipsoid.modelIndex).append (" center ").append (org.jmol.util.Escape.escapePt (ellipsoid.center)).append (" axes");
 for (var i = 0; i < 3; i++) {
-v1.set (ellipsoid.axes[i]);
+v1.setT (ellipsoid.axes[i]);
 v1.scale (ellipsoid.lengths[i]);
 sb.append (" ").append (org.jmol.util.Escape.escapePt (v1));
 }
@@ -203,7 +203,7 @@ this.isOn = true;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial.Ellipsoids, "Ellipsoid");
 Clazz.prepareFields (c$, function () {
-this.center =  new javax.vecmath.Point3f (0, 0, 0);
+this.center = javax.vecmath.Point3f.new3 (0, 0, 0);
 });
 Clazz.makeConstructor (c$, 
 function (a, b) {

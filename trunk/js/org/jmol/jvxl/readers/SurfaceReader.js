@@ -317,7 +317,7 @@ if (isCutoffAbsolute && (fraction < 0 || fraction > 1)) fraction = (-cutoff - va
 if (fraction < 0 || fraction > 1) {
 fraction = NaN;
 }fReturn[0] = fraction;
-ptReturn.scaleAdd (fraction, edgeVector, pointA);
+ptReturn.scaleAdd2 (fraction, edgeVector, pointA);
 return valueA + fraction * diff;
 }, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "addVertexCopy", 
@@ -567,7 +567,7 @@ this.setVectorAnisotropy (this.volumetricVectors[2]);
 });
 Clazz.defineMethod (c$, "setVolumetricOriginAnisotropy", 
 function () {
-this.volumetricOrigin.set (this.center);
+this.volumetricOrigin.setT (this.center);
 });
 Clazz.defineMethod (c$, "setBoundingBox", 
 ($fz = function () {
@@ -581,8 +581,8 @@ if (!Float.isNaN (p.x)) this.setBoundingBox (p, 0);
 Clazz.defineMethod (c$, "setBoundingBox", 
 function (pt, margin) {
 if (this.xyzMin == null) {
-this.xyzMin =  new javax.vecmath.Point3f (3.4028235E38, 3.4028235E38, 3.4028235E38);
-this.xyzMax =  new javax.vecmath.Point3f (-3.4028235E38, -3.4028235E38, -3.4028235E38);
+this.xyzMin = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
+this.xyzMax = javax.vecmath.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
 }org.jmol.util.BoxInfo.addPoint (pt, this.xyzMin, this.xyzMax, margin);
 }, "javax.vecmath.Point3f,~N");
 Clazz.defineMethod (c$, "getValueAtPoint", 

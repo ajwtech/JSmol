@@ -48,7 +48,7 @@ this.parent.setUnitCellItem (2, z);
 this.parent.setUnitCellItem (3, 90);
 this.parent.setUnitCellItem (4, 90);
 this.parent.setUnitCellItem (5, 90);
-var pt =  new javax.vecmath.Point3f (-x / 2, -y / 2, -z / 2);
+var pt = javax.vecmath.Point3f.new3 (-x / 2, -y / 2, -z / 2);
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("periodicOriginXyz", pt);
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = this.atomSetCollection.getAtomCount (); --i >= 0; ) {

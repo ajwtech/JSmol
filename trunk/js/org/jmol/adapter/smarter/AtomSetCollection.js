@@ -458,7 +458,7 @@ var atomIndex = this.getLastAtomSetAtomIndex ();
 this.newAtomSet ();
 for (var i = 0; i < count; ++i) {
 var atom = this.newCloneAtom (this.atoms[atomIndex++]);
-if (pts != null) atom.set (pts[i]);
+if (pts != null) atom.setT (pts[i]);
 }
 }, "~N,~A");
 Clazz.defineMethod (c$, "getFirstAtomSetAtomCount", 
@@ -649,7 +649,7 @@ this.fmatSupercell =  Clazz.newArray (16, 0);
 if (this.getSymmetry ().getMatrixFromString (supercell, this.fmatSupercell, true) == null) {
 this.fmatSupercell = null;
 return ;
-}org.jmol.util.Logger.info ("Using supercell \n" +  new javax.vecmath.Matrix4f (this.fmatSupercell));
+}org.jmol.util.Logger.info ("Using supercell \n" + javax.vecmath.Matrix4f.newA (this.fmatSupercell));
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSymmetry", 
 function () {
@@ -705,8 +705,8 @@ this.rmaxz = -3.4028235E38;
 var ptx = this.setSym (0, 1, 2);
 var pty = this.setSym (4, 5, 6);
 var ptz = this.setSym (8, 9, 10);
-this.minXYZ =  new javax.vecmath.Point3i (Math.round (this.rminx), Math.round (this.rminy), Math.round (this.rminz));
-this.maxXYZ =  new javax.vecmath.Point3i (Math.round (this.rmaxx), Math.round (this.rmaxy), Math.round (this.rmaxz));
+this.minXYZ = javax.vecmath.Point3i.new3 (Math.round (this.rminx), Math.round (this.rminy), Math.round (this.rminz));
+this.maxXYZ = javax.vecmath.Point3i.new3 (Math.round (this.rmaxx), Math.round (this.rmaxy), Math.round (this.rmaxz));
 this.applyAllSymmetry ();
 var iAtomFirst = this.getLastAtomSetAtomIndex ();
 for (var i = iAtomFirst; i < this.atomCount; i++) this.symmetry.toCartesian (this.atoms[i], true);
@@ -722,7 +722,7 @@ this.haveAnisou = false;
 this.atomSetAuxiliaryInfo[this.currentAtomSetIndex].remove ("matUnitCellOrientation");
 this.doPackUnitCell = false;
 }this.minXYZ =  new javax.vecmath.Point3i ();
-this.maxXYZ =  new javax.vecmath.Point3i (maxX, maxY, maxZ);
+this.maxXYZ = javax.vecmath.Point3i.new3 (maxX, maxY, maxZ);
 this.applyAllSymmetry ();
 this.fmatSupercell = null;
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
@@ -798,8 +798,8 @@ this.minXYZ.x *= Math.round (Math.abs (this.ptSupercell.x));
 this.maxXYZ.x *= Math.round (Math.abs (this.ptSupercell.x));
 }
 }if (this.doCentroidUnitCell || this.doPackUnitCell || this.symmetryRange != 0 && this.maxXYZ.x - this.minXYZ.x == 1 && this.maxXYZ.y - this.minXYZ.y == 1 && this.maxXYZ.z - this.minXYZ.z == 1) {
-this.minXYZ0 =  new javax.vecmath.Point3i (this.minXYZ.x, this.minXYZ.y, this.minXYZ.z);
-this.maxXYZ0 =  new javax.vecmath.Point3i (this.maxXYZ.x, this.maxXYZ.y, this.maxXYZ.z);
+this.minXYZ0 = javax.vecmath.Point3i.new3 (this.minXYZ.x, this.minXYZ.y, this.minXYZ.z);
+this.maxXYZ0 = javax.vecmath.Point3i.new3 (this.maxXYZ.x, this.maxXYZ.y, this.maxXYZ.z);
 switch (this.dtype) {
 case 3:
 this.minXYZ.z--;
@@ -835,16 +835,16 @@ this.rmaxz = -3.4028235E38;
 }var op = this.symmetry.getSpaceGroupOperation (0);
 if (this.doPackUnitCell) this.ptOffset.set (0, 0, 0);
 for (var tx = this.minXYZ.x; tx < this.maxXYZ.x; tx++) for (var ty = this.minXYZ.y; ty < this.maxXYZ.y; ty++) for (var tz = this.minXYZ.z; tz < this.maxXYZ.z; tz++) {
-this.unitCellTranslations[iCell] =  new javax.vecmath.Vector3f (tx, ty, tz);
+this.unitCellTranslations[iCell] = javax.vecmath.Vector3f.new3 (tx, ty, tz);
 unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
 if (tx != 0 || ty != 0 || tz != 0 || this.cartesians.length == 0) continue ;for (pt = 0; pt < noSymmetryCount; pt++) {
 var atom = this.atoms[iAtomFirst + pt];
-var c =  new javax.vecmath.Point3f (atom);
+var c = javax.vecmath.Point3f.newP (atom);
 op.transform (c);
 this.symmetry.toCartesian (c, false);
 if (this.doPackUnitCell) {
 this.symmetry.toUnitCell (c, this.ptOffset);
-atom.set (c);
+atom.setT (c);
 this.symmetry.toFractional (atom, false);
 }atom.bsSymmetry.set (iCell * operationCount);
 atom.bsSymmetry.set (0);
@@ -933,11 +933,11 @@ if (isBaseCell && this.symmetry.getSpaceGroupXyz (iSym, true).equals ("x,y,z")) 
 for (var i = iAtomFirst; i < atomMax; i++) {
 if (this.atoms[i].ignoreSymmetry) continue ;if (this.bsAtoms != null && !this.bsAtoms.get (i)) continue ;this.symmetry.newSpaceGroupPoint (iSym, this.atoms[i], ptAtom, transX, transY, transZ);
 var special = null;
-var cartesian =  new javax.vecmath.Point3f (ptAtom);
+var cartesian = javax.vecmath.Point3f.newP (ptAtom);
 this.symmetry.toCartesian (cartesian, false);
 if (this.doPackUnitCell) {
 this.symmetry.toUnitCell (cartesian, this.ptOffset);
-ptAtom.set (cartesian);
+ptAtom.setT (cartesian);
 this.symmetry.toFractional (ptAtom, false);
 if (!org.jmol.adapter.smarter.AtomSetCollection.isWithinCell (this.dtype, ptAtom, this.minXYZ0.x, this.maxXYZ0.x, this.minXYZ0.y, this.maxXYZ0.y, this.minXYZ0.z, this.maxXYZ0.z)) continue ;}if (checkSymmetryMinMax) this.setSymmetryMinMax (cartesian);
 if (checkDistances) {
@@ -957,7 +957,7 @@ special.bsSymmetry.set (iSym);
 } else {
 if (addBonds) atomMap[atomSite] = this.atomCount;
 var atom1 = this.newCloneAtom (this.atoms[i]);
-atom1.set (ptAtom);
+atom1.setT (ptAtom);
 atom1.atomSite = atomSite;
 atom1.bsSymmetry = org.jmol.util.BitSetUtil.setBit (iCellOpPt + iSym);
 atom1.bsSymmetry.set (iSym);
@@ -969,9 +969,9 @@ if (e == null) continue ;var axes = e.vectors;
 var lengths = e.lengths;
 if (axes != null) {
 if (addCartesian) {
-this.ptTemp.set (this.cartesians[i - iAtomFirst]);
+this.ptTemp.setT (this.cartesians[i - iAtomFirst]);
 } else {
-this.ptTemp.set (this.atoms[i]);
+this.ptTemp.setT (this.atoms[i]);
 this.symmetry.toCartesian (this.ptTemp, false);
 }axes = this.symmetry.rotateEllipsoid (iSym, this.ptTemp, axes, this.ptTemp1, this.ptTemp2);
 }atom1.ellipsoid[j] =  new org.jmol.util.Quadric (axes, lengths, e.isThermalEllipsoid);
@@ -1135,10 +1135,10 @@ var haveVibrations = (this.atomCount > 0 && !Float.isNaN (this.atoms[0].vectorX)
 var vibrationStep = (haveVibrations ?  new Array (this.atomCount) : null);
 var prevSteps = (this.trajectoryStepCount == 0 ? null : this.trajectorySteps.get (this.trajectoryStepCount - 1));
 for (var i = 0; i < this.atomCount; i++) {
-var pt =  new javax.vecmath.Point3f (this.atoms[i]);
+var pt = javax.vecmath.Point3f.newP (this.atoms[i]);
 if (this.doFixPeriodic && prevSteps != null) pt = org.jmol.adapter.smarter.AtomSetCollection.fixPeriodic (pt, prevSteps[i]);
 trajectoryStep[i] = pt;
-if (haveVibrations) vibrationStep[i] =  new javax.vecmath.Vector3f (this.atoms[i].vectorX, this.atoms[i].vectorY, this.atoms[i].vectorZ);
+if (haveVibrations) vibrationStep[i] = javax.vecmath.Vector3f.new3 (this.atoms[i].vectorX, this.atoms[i].vectorY, this.atoms[i].vectorZ);
 }
 if (haveVibrations) {
 if (this.vibrationSteps == null) {
@@ -1188,7 +1188,7 @@ if (vibrations != null) v = vibrations[i];
 this.atoms[i].vectorX = v.x;
 this.atoms[i].vectorY = v.y;
 this.atoms[i].vectorZ = v.z;
-}this.atoms[i].set (trajectory[i]);
+}this.atoms[i].setT (trajectory[i]);
 }
 this.setAtomSetCollectionAuxiliaryInfo ("trajectorySteps", this.trajectorySteps);
 if (this.vibrationSteps != null) this.setAtomSetCollectionAuxiliaryInfo ("vibrationSteps", this.vibrationSteps);

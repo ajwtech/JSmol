@@ -280,9 +280,9 @@ return null;
 var isWindingOK = (isFlat ? org.jmol.util.Measure.getNormalFromCenter (org.jmol.shapespecial.Polyhedra.randomPoint, points[i], points[j], points[k], false, normal) : org.jmol.util.Measure.getNormalFromCenter (points[ptCenter], points[i], points[j], points[k], true, normal));
 normal.scale (this.isCollapsed && !isFlat ? this.faceCenterOffset : 0.001);
 var nRef = nPoints;
-ptRef.set (points[ptCenter]);
+ptRef.setT (points[ptCenter]);
 if (this.isCollapsed && !isFlat) {
-points[nPoints] =  new javax.vecmath.Point3f (points[ptCenter]);
+points[nPoints] = javax.vecmath.Point3f.newP (points[ptCenter]);
 points[nPoints].add (normal);
 otherAtoms[nPoints] = points[nPoints];
 } else if (isFlat) {
@@ -328,12 +328,12 @@ return Clazz.innerTypeInstance (org.jmol.shapespecial.Polyhedra.Polyhedron, this
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,~N,~A");
 Clazz.defineMethod (c$, "faceId", 
 ($fz = function (i, j, k) {
-return ( new javax.vecmath.Point3i (i, j, k)).toString ();
+return (javax.vecmath.Point3i.new3 (i, j, k)).toString ();
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
 Clazz.defineMethod (c$, "isAligned", 
 ($fz = function (pt1, pt2, pt3) {
-this.align1.sub (pt1, pt3);
-this.align2.sub (pt2, pt3);
+this.align1.sub2 (pt1, pt3);
+this.align2.sub2 (pt2, pt3);
 var angle = this.align1.angle (this.align2);
 return (angle < 0.01 || angle > 3.13);
 }, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f");
@@ -415,7 +415,7 @@ Clazz.defineStatics (c$,
 "EDGES_FRONT", 2,
 "MAX_VERTICES", 150,
 "FACE_COUNT_MAX", 147);
-c$.randomPoint = c$.prototype.randomPoint =  new javax.vecmath.Point3f (3141, 2718, 1414);
+c$.randomPoint = c$.prototype.randomPoint = javax.vecmath.Point3f.new3 (3141, 2718, 1414);
 Clazz.defineStatics (c$,
 "minDistanceForPlanarity", 0.1);
 });

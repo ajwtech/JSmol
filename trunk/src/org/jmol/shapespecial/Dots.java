@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17591 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -28,7 +28,6 @@ import org.jmol.shape.AtomShape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
-import org.jmol.util.FastBitSet;
 import org.jmol.util.Logger;
 
 import org.jmol.atomdata.RadiusData;
@@ -36,7 +35,7 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.modelset.Atom;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -152,7 +151,7 @@ public class Dots extends AtomShape {
       if (m4 == null) // end of compare command
         return;
       Matrix3f m = new Matrix3f();
-      m4.get(m);
+      m4.getRotationScale(m);
       ec.reCalculate(bs, m);
       return;
     }
@@ -250,7 +249,7 @@ public class Dots extends AtomShape {
       int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
       for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected
           .nextSetBit(i + 1)))
-        bsOn.set(i, false);
+        bsOn.setBitTo(i, false);
     }
 
     for (int i = atomCount; --i >= 0;) {
@@ -264,7 +263,7 @@ public class Dots extends AtomShape {
     }
 
     // always delete old surfaces for selected atoms
-    FastBitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
+    BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps != null) {
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i)) {
@@ -299,7 +298,7 @@ public class Dots extends AtomShape {
 
   @Override
   public String getShapeState() {
-    FastBitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
+    BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
     StringBuffer s = new StringBuffer();
@@ -311,11 +310,11 @@ public class Dots extends AtomShape {
         continue;
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
-      FastBitSet bs = dotsConvexMaps[i];
+      BitSet bs = dotsConvexMaps[i];
       if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "
-            + Escape.escape(bs.toBitSet()));
+            + Escape.escape(bs));
       }
     }
     s.append(getShapeCommands(temp, null));

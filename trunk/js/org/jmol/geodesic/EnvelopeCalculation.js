@@ -114,7 +114,7 @@ if (i >= this.dotsConvexMax) return ;
 var map = this.dotsConvexMaps[i];
 if (map == null || map.isEmpty ()) continue ;var bsNew =  new org.jmol.util.FastBitSet ();
 for (var j = map.nextSetBit (0); j >= 0; j = map.nextSetBit (j + 1)) {
-pt.set (org.jmol.util.Geodesic.getVertexVector (j));
+pt.setT (org.jmol.util.Geodesic.getVertexVector (j));
 m.transform (pt);
 bsNew.set (org.jmol.util.Normix.getNormix (pt, bsTemp));
 }
@@ -177,7 +177,7 @@ var iDot = this.dotsConvexMaps[i].size ();
 if (iDot > dotCount) iDot = dotCount;
 while (--iDot >= 0) if (this.dotsConvexMaps[i].get (iDot)) {
 var pt =  new javax.vecmath.Point3f ();
-pt.scaleAdd (this.atomData.atomRadius[i], org.jmol.util.Geodesic.getVertexVector (iDot), this.atomData.atomXyz[i]);
+pt.scaleAdd2 (this.atomData.atomRadius[i], org.jmol.util.Geodesic.getVertexVector (iDot), this.atomData.atomXyz[i]);
 points[nPoints++] = pt;
 }
 }
@@ -262,7 +262,7 @@ var ok2;
 var ok3;
 this.mapT.clear ();
 for (var i = 0; i < 12; i++) {
-this.vertexTest[i].set (org.jmol.util.Geodesic.getVertexVector (i));
+this.vertexTest[i].setT (org.jmol.util.Geodesic.getVertexVector (i));
 this.vertexTest[i].scaleAdd (combinedRadii, this.centerI);
 }
 for (var f = 0; f < 20; f++) {
@@ -295,7 +295,7 @@ case 0:
 for (var j = 0; j < this.neighborCount; j++) {
 var maxDist = this.neighborPlusProbeRadii2[j];
 this.centerT = this.neighborCenters[j];
-this.pointT.set (org.jmol.util.Geodesic.getVertexVector (vect));
+this.pointT.setT (org.jmol.util.Geodesic.getVertexVector (vect));
 this.pointT.scaleAdd (combinedRadii, this.centerI);
 if (this.pointT.distanceSquared (this.centerT) < maxDist) this.geodesicMap.clear (vect);
 }

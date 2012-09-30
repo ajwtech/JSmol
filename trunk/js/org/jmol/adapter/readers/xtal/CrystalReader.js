@@ -141,21 +141,21 @@ b = this.directLatticeVectors[1];
 } else {
 if (this.primitiveToCryst == null) return true;
 var mp =  new javax.vecmath.Matrix3f ();
-mp.setColumn (0, this.directLatticeVectors[0]);
-mp.setColumn (1, this.directLatticeVectors[1]);
-mp.setColumn (2, this.directLatticeVectors[2]);
+mp.setColumnV (0, this.directLatticeVectors[0]);
+mp.setColumnV (1, this.directLatticeVectors[1]);
+mp.setColumnV (2, this.directLatticeVectors[2]);
 mp.mul (this.primitiveToCryst);
 a =  new javax.vecmath.Vector3f ();
 b =  new javax.vecmath.Vector3f ();
-mp.getColumn (0, a);
-mp.getColumn (1, b);
+mp.getColumnV (0, a);
+mp.getColumnV (1, b);
 }this.matUnitCellOrientation = org.jmol.util.Quaternion.getQuaternionFrame ( new javax.vecmath.Point3f (), a, b).getMatrix ();
 org.jmol.util.Logger.info ("oriented unit cell is in model " + this.atomSetCollection.getAtomSetCount ());
 return !this.isProperties;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readTransformationMatrix", 
 ($fz = function () {
-this.primitiveToCryst =  new javax.vecmath.Matrix3f (this.fillFloatArray (null, 0,  Clazz.newArray (9, 0)));
+this.primitiveToCryst = javax.vecmath.Matrix3f.newA (this.fillFloatArray (null, 0,  Clazz.newArray (9, 0)));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readShift", 
 ($fz = function () {

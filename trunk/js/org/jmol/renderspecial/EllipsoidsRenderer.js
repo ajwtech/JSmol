@@ -91,10 +91,8 @@ this.dotScale = this.viewer.getDotScale ();
 this.dotCount = (this.viewer.getParameter ("ellipsoidDotCount")).intValue ();
 if (this.coords == null || this.coords.length != this.dotCount * 3) this.coords =  Clazz.newArray (this.dotCount * 3, 0);
 }var m4 = this.viewer.getMatrixtransform ();
-this.mat.setRow (0, m4.m00, m4.m01, m4.m02);
-this.mat.setRow (1, m4.m10, m4.m11, m4.m12);
-this.mat.setRow (2, m4.m20, m4.m21, m4.m22);
-this.matScreenToCartesian.invert (this.mat);
+m4.setRotationScale (this.mat);
+this.matScreenToCartesian.invertM (this.mat);
 var atoms = this.modelSet.atoms;
 for (var i = this.modelSet.getAtomCount (); --i >= 0; ) {
 var atom = atoms[i];
@@ -145,18 +143,18 @@ if (this.drawArcs) this.renderArcs (atom);
 Clazz.defineMethod (c$, "setMatrices", 
 ($fz = function () {
 org.jmol.util.Quadric.setEllipsoidMatrix (this.axes, this.factoredLengths, this.v1, this.mat);
-this.matScreenToEllipsoid.mul (this.mat, this.matScreenToCartesian);
-this.matEllipsoidToScreen.invert (this.matScreenToEllipsoid);
+this.matScreenToEllipsoid.mul2 (this.mat, this.matScreenToCartesian);
+this.matEllipsoidToScreen.invertM (this.matScreenToEllipsoid);
 this.perspectiveFactor = this.viewer.scaleToPerspective (this.s0.z, 1.0);
-this.matScreenToEllipsoid.mul (1 / this.perspectiveFactor);
+this.matScreenToEllipsoid.mulf (1 / this.perspectiveFactor);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setAxes", 
 ($fz = function (f) {
 for (var i = 0; i < 6; i++) {
 var iAxis = org.jmol.renderspecial.EllipsoidsRenderer.axisPoints[i];
 var i012 = Math.abs (iAxis) - 1;
-this.points[i].scaleAdd (f * this.factoredLengths[i012] * (iAxis < 0 ? -1 : 1), this.axes[i012], this.center);
-this.pt1.set (org.jmol.renderspecial.EllipsoidsRenderer.unitAxisVectors[i]);
+this.points[i].scaleAdd2 (f * this.factoredLengths[i012] * (iAxis < 0 ? -1 : 1), this.axes[i012], this.center);
+this.pt1.setT (org.jmol.renderspecial.EllipsoidsRenderer.unitAxisVectors[i]);
 this.pt1.scale (f);
 this.matEllipsoidToScreen.transform (this.pt1);
 this.screens[i].set (Math.round ((this.s0.x + this.pt1.x * this.perspectiveFactor)), Math.round ((this.s0.y + this.pt1.y * this.perspectiveFactor)), Math.round ((this.pt1.z + this.s0.z)));
@@ -183,9 +181,9 @@ fx *= (Math.random () > 0.5 ? -1 : 1);
 fy *= (Math.random () > 0.5 ? -1 : 1);
 var fz = Math.sqrt (1 - fx * fx - fy * fy);
 if (Float.isNaN (fz)) continue ;fz = (Math.random () > 0.5 ? -1 : 1) * fz;
-this.pt1.scaleAdd (fx * this.factoredLengths[0], this.axes[0], ptAtom);
-this.pt1.scaleAdd (fy * this.factoredLengths[1], this.axes[1], this.pt1);
-this.pt1.scaleAdd (fz * this.factoredLengths[2], this.axes[2], this.pt1);
+this.pt1.scaleAdd2 (fx * this.factoredLengths[0], this.axes[0], ptAtom);
+this.pt1.scaleAdd2 (fy * this.factoredLengths[1], this.axes[1], this.pt1);
+this.pt1.scaleAdd2 (fz * this.factoredLengths[2], this.axes[2], this.pt1);
 this.viewer.transformPtScr (this.pt1, this.s1);
 this.coords[i++] = this.s1.x;
 this.coords[i++] = this.s1.y;
@@ -208,28 +206,28 @@ this.renderArc (ptAtom, org.jmol.renderspecial.EllipsoidsRenderer.octants[pt + 2
 }, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "renderArc", 
 ($fz = function (ptAtom, ptA, ptB) {
-this.v1.set (this.points[ptA]);
+this.v1.setT (this.points[ptA]);
 this.v1.sub (ptAtom);
-this.v2.set (this.points[ptB]);
+this.v2.setT (this.points[ptB]);
 this.v2.sub (ptAtom);
 var d1 = this.v1.length ();
 var d2 = this.v2.length ();
 this.v1.normalize ();
 this.v2.normalize ();
 this.v3.cross (this.v1, this.v2);
-this.pt1.set (this.points[ptA]);
-this.s1.set (this.screens[ptA]);
+this.pt1.setT (this.points[ptA]);
+this.s1.setT (this.screens[ptA]);
 var normix = org.jmol.util.Normix.get2SidedNormix (this.v3, this.bsTemp);
-if (!this.fillArc && !this.wireframeOnly) this.screens[6].set (this.s1);
+if (!this.fillArc && !this.wireframeOnly) this.screens[6].setT (this.s1);
 for (var i = 0, pt = 0; i < 18; i++, pt += 2) {
-this.pt2.scaleAdd (org.jmol.renderspecial.EllipsoidsRenderer.cossin[pt] * d1, this.v1, ptAtom);
-this.pt2.scaleAdd (org.jmol.renderspecial.EllipsoidsRenderer.cossin[pt + 1] * d2, this.v2, this.pt2);
+this.pt2.scaleAdd2 (org.jmol.renderspecial.EllipsoidsRenderer.cossin[pt] * d1, this.v1, ptAtom);
+this.pt2.scaleAdd2 (org.jmol.renderspecial.EllipsoidsRenderer.cossin[pt + 1] * d2, this.v2, this.pt2);
 this.viewer.transformPtScr (this.pt2, this.s2);
 if (this.fillArc) this.g3d.fillTriangle (this.s0, this.colix, normix, this.s1, this.colix, normix, this.s2, this.colix, normix);
  else if (this.wireframeOnly) this.g3d.fillCylinder (2, this.diameter, this.s1, this.s2);
- else this.screens[i + 7].set (this.s2);
-this.pt1.set (this.pt2);
-this.s1.set (this.s2);
+ else this.screens[i + 7].setT (this.s2);
+this.pt1.setT (this.pt2);
+this.s1.setT (this.s2);
 }
 if (!this.fillArc && !this.wireframeOnly) for (var i = 0; i < 18; i++) {
 this.g3d.fillHermite (5, this.diameter, this.diameter, this.diameter, this.screens[i == 0 ? i + 6 : i + 5], this.screens[i + 6], this.screens[i + 7], this.screens[i == 17 ? i + 7 : i + 8]);
@@ -269,7 +267,7 @@ if (z < zMin) {
 zMin = z;
 this.iCutout = i;
 }}
-this.s1.set (this.selectedPoints[0] = this.screens[org.jmol.renderspecial.EllipsoidsRenderer.octants[this.iCutout * 3]]);
+this.s1.setT (this.selectedPoints[0] = this.screens[org.jmol.renderspecial.EllipsoidsRenderer.octants[this.iCutout * 3]]);
 this.s1.add (this.selectedPoints[1] = this.screens[org.jmol.renderspecial.EllipsoidsRenderer.octants[this.iCutout * 3 + 1]]);
 this.s1.add (this.selectedPoints[2] = this.screens[org.jmol.renderspecial.EllipsoidsRenderer.octants[this.iCutout * 3 + 2]]);
 this.s1.scaleAdd (-3, this.s0, this.s1);

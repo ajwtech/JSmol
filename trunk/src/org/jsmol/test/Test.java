@@ -6,16 +6,16 @@
 //import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.net.URL;
+//import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
 //import javax.swing.JFrame;
 //import javax.swing.JPanel;
 
-import org.jmol.adapter.smarter.AtomSetCollection;
+//import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.api.JmolAdapter;
+//import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
@@ -26,7 +26,7 @@ public class Test implements JmolStatusListener{
 
   // Main application
   public static void main(String[] args) {
-    Test test = new Test();
+    new Test();
     //test.viewer.loadInline(strXyzHOH);
   }
 
@@ -35,7 +35,7 @@ public class Test implements JmolStatusListener{
   }
 
   private JmolViewer viewer;
-  private static JmolAdapter adapter;
+  //private static JmolAdapter adapter;
 
 	public Test(){
 		try {
@@ -69,67 +69,56 @@ public class Test implements JmolStatusListener{
   		"H  0.76923955 -0.59357141 0.0\n" +
   		"H -0.76923955 -0.59357141 0.0\n";
 
-	@Override
 	public String createImage(String fileName, String type, Object textOrBytes,
 			int quality) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String eval(String strEval) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public float[][] functionXY(String functionName, int x, int y) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public float[][][] functionXYZ(String functionName, int nx, int ny, int nz) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Map<String, Object> getProperty(String type) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public Map<String, Object> getRegistryInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void resizeInnerPanel(String data) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void showUrl(String url) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void notifyCallback(EnumCallback message, Object[] data) {
 		System.out.println("callback " + message + ": " + Escape.escape(data));
 	}
 
-	@Override
 	public boolean notifyEnabled(EnumCallback type) {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
-	@Override
 	public void setCallbackFunction(String callbackType, String callbackFunction) {
 		// TODO Auto-generated method stub
 		

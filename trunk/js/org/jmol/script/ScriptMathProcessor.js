@@ -752,8 +752,8 @@ var pt1 = this.ptValue (x1, true);
 var plane1 = this.planeValue (x1);
 if (tok == 1276117505) {
 if (plane1 != null && plane2 != null) return this.addXFloat (plane1.x * plane2.x + plane1.y * plane2.y + plane1.z * plane2.z + plane1.w * plane2.w);
-if (plane1 != null) pt1 =  new javax.vecmath.Point3f (plane1.x, plane1.y, plane1.z);
-if (plane2 != null) pt2 =  new javax.vecmath.Point3f (plane2.x, plane2.y, plane2.z);
+if (plane1 != null) pt1 = javax.vecmath.Point3f.new3 (plane1.x, plane1.y, plane1.z);
+if (plane2 != null) pt2 = javax.vecmath.Point3f.new3 (plane2.x, plane2.y, plane2.z);
 return this.addXFloat (pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z);
 }if (plane1 == null) return this.addXFloat (plane2 == null ? pt2.distance (pt1) : org.jmol.util.Measure.distanceToPlane (plane2, pt1));
 return this.addXFloat (org.jmol.util.Measure.distanceToPlane (plane1, pt2));
@@ -778,7 +778,7 @@ break;
 }
 if (!allowFloat) return null;
 var f = org.jmol.script.ScriptVariable.fValue (x);
-return  new javax.vecmath.Point3f (f, f, f);
+return javax.vecmath.Point3f.new3 (f, f, f);
 }, "org.jmol.script.ScriptVariable,~B");
 Clazz.defineMethod (c$, "planeValue", 
 ($fz = function (x) {
@@ -822,7 +822,8 @@ nPoints++;
 nBitSets++;
 break;
 case 8:
-var v =  new org.jmol.util.Point3fi (args[i].value);
+var v =  new org.jmol.util.Point3fi ();
+v.setT (args[i].value);
 points.add (v);
 nPoints++;
 break;
@@ -1022,12 +1023,12 @@ return this.addXPt (org.jmol.util.Measure.getIntersection (pt2, null, plane, pt3
 case 4:
 switch (tok) {
 case 135267841:
-return this.addXObj (this.eval.getHklPlane ( new javax.vecmath.Point3f (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]))));
+return this.addXObj (this.eval.getHklPlane (javax.vecmath.Point3f.new3 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]))));
 case 135267842:
 pt1 = this.ptValue (args[0], false);
 pt2 = this.ptValue (args[1], false);
 if (pt1 == null || pt2 == null) return this.addXStr ("");
-var vLine =  new javax.vecmath.Vector3f (pt2);
+var vLine = javax.vecmath.Vector3f.newV (pt2);
 vLine.normalize ();
 if (args[2].tok == 9) {
 pt3 =  new javax.vecmath.Point3f ();
@@ -1048,14 +1049,14 @@ if (args.length == 3) {
 var r = org.jmol.script.ScriptVariable.fValue (args[0]);
 var theta = org.jmol.script.ScriptVariable.fValue (args[1]);
 var phi = org.jmol.script.ScriptVariable.fValue (args[2]);
-norm =  new javax.vecmath.Vector3f (0, 0, 1);
-pt2 =  new javax.vecmath.Point3f (0, 1, 0);
+norm = javax.vecmath.Vector3f.new3 (0, 0, 1);
+pt2 = javax.vecmath.Point3f.new3 (0, 1, 0);
 var q =  new org.jmol.util.Quaternion (pt2, phi);
 q.getMatrix ().transform (norm);
 pt2.set (0, 0, 1);
 q =  new org.jmol.util.Quaternion (pt2, theta);
 q.getMatrix ().transform (norm);
-pt2.set (norm);
+pt2.setT (norm);
 pt2.scale (r);
 plane =  new javax.vecmath.Point4f ();
 org.jmol.util.Measure.getPlaneThroughPoint (pt2, norm, plane);
@@ -1067,11 +1068,11 @@ pt1 = this.ptValue (args[0], false);
 pt2 = this.ptValue (args[1], false);
 if (pt2 == null) return false;
 pt3 = (args.length > 2 && (args[2].tok == 10 || args[2].tok == 8) ? this.ptValue (args[2], false) : null);
-norm =  new javax.vecmath.Vector3f (pt2);
+norm = javax.vecmath.Vector3f.newV (pt2);
 if (pt3 == null) {
 plane =  new javax.vecmath.Point4f ();
 if (args.length == 2 || !org.jmol.script.ScriptVariable.bValue (args[2])) {
-pt3 =  new javax.vecmath.Point3f (pt1);
+pt3 = javax.vecmath.Point3f.newP (pt1);
 pt3.add (pt2);
 pt3.scale (0.5);
 norm.sub (pt1);
@@ -1083,7 +1084,7 @@ return this.addXObj (plane);
 }var vAB =  new javax.vecmath.Vector3f ();
 var vAC =  new javax.vecmath.Vector3f ();
 var nd = org.jmol.util.Measure.getDirectedNormalThroughPoints (pt1, pt2, pt3, (args.length == 4 ? this.ptValue (args[3], true) : null), norm, vAB, vAC);
-return this.addXObj ( new javax.vecmath.Point4f (norm.x, norm.y, norm.z, nd));
+return this.addXObj (javax.vecmath.Point4f.new4 (norm.x, norm.y, norm.z, nd));
 }
 }
 if (args.length != 4) return false;
@@ -1091,7 +1092,7 @@ var x = org.jmol.script.ScriptVariable.fValue (args[0]);
 var y = org.jmol.script.ScriptVariable.fValue (args[1]);
 var z = org.jmol.script.ScriptVariable.fValue (args[2]);
 var w = org.jmol.script.ScriptVariable.fValue (args[3]);
-return this.addXObj ( new javax.vecmath.Point4f (x, y, z, w));
+return this.addXObj (javax.vecmath.Point4f.new4 (x, y, z, w));
 }, $fz.isPrivate = true, $fz), "~A,~N");
 Clazz.defineMethod (c$, "evaluatePoint", 
 ($fz = function (args) {
@@ -1105,9 +1106,9 @@ var pt = org.jmol.util.Escape.unescapePoint (s);
 if (Clazz.instanceOf (pt, javax.vecmath.Point3f)) return this.addXPt (pt);
 return this.addXStr ("" + pt);
 case 3:
-return this.addXPt ( new javax.vecmath.Point3f (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])));
+return this.addXPt (javax.vecmath.Point3f.new3 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])));
 case 4:
-return this.addXObj ( new javax.vecmath.Point4f (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]), org.jmol.script.ScriptVariable.fValue (args[3])));
+return this.addXObj (javax.vecmath.Point4f.new4 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]), org.jmol.script.ScriptVariable.fValue (args[3])));
 }
 return false;
 }, $fz.isPrivate = true, $fz), "~A");
@@ -1325,8 +1326,8 @@ break;
 }
 }
 if (isMatrix) {
-if (len == 3) return this.addXObj ( new javax.vecmath.Matrix3f (m));
-return this.addXObj ( new javax.vecmath.Matrix4f (m));
+if (len == 3) return this.addXObj (javax.vecmath.Matrix3f.newA (m));
+return this.addXObj (javax.vecmath.Matrix4f.newA (m));
 }}}var a =  new Array (args.length);
 for (var i = a.length; --i >= 0; ) a[i] = org.jmol.script.ScriptVariable.newScriptVariableToken (args[i]);
 
@@ -1413,7 +1414,7 @@ p4 = args[0].value;
 var v = org.jmol.util.Escape.unescapePoint (org.jmol.script.ScriptVariable.sValue (args[0]));
 if (!(Clazz.instanceOf (v, javax.vecmath.Point4f))) return false;
 p4 = v;
-}if (tok == 135266307) q =  new org.jmol.util.Quaternion ( new javax.vecmath.Point3f (p4.x, p4.y, p4.z), p4.w);
+}if (tok == 135266307) q =  new org.jmol.util.Quaternion (javax.vecmath.Point3f.new3 (p4.x, p4.y, p4.z), p4.w);
 break;
 case 2:
 if (tok == 135270417) {
@@ -1429,7 +1430,7 @@ qs = org.jmol.util.Quaternion.div (data2, data1, nMax, isRelative);
 break;
 }}var pt1 = this.ptValue (args[1], false);
 p4 = this.planeValue (args[0]);
-if (pt1 != null) q = org.jmol.util.Quaternion.getQuaternionFrame ( new javax.vecmath.Point3f (0, 0, 0), pt0, pt1);
+if (pt1 != null) q = org.jmol.util.Quaternion.getQuaternionFrame (javax.vecmath.Point3f.new3 (0, 0, 0), pt0, pt1);
  else q =  new org.jmol.util.Quaternion (pt0, org.jmol.script.ScriptVariable.fValue (args[1]));
 break;
 case 3:
@@ -1442,8 +1443,8 @@ for (var i = 0; i < 3; i++) pts[i] = (args[i].tok == 8 ? args[i].value : this.vi
 q = org.jmol.util.Quaternion.getQuaternionFrame (pts[0], pts[1], pts[2]);
 break;
 case 4:
-if (tok == 135270417) p4 =  new javax.vecmath.Point4f (org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]), org.jmol.script.ScriptVariable.fValue (args[3]), org.jmol.script.ScriptVariable.fValue (args[0]));
- else q =  new org.jmol.util.Quaternion ( new javax.vecmath.Point3f (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])), org.jmol.script.ScriptVariable.fValue (args[3]));
+if (tok == 135270417) p4 = javax.vecmath.Point4f.new4 (org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]), org.jmol.script.ScriptVariable.fValue (args[3]), org.jmol.script.ScriptVariable.fValue (args[0]));
+ else q =  new org.jmol.util.Quaternion (javax.vecmath.Point3f.new3 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])), org.jmol.script.ScriptVariable.fValue (args[3]));
 break;
 }
 if (qs != null) {
@@ -1470,10 +1471,10 @@ if (args.length != 2) return false;
 var x1 = args[0];
 var x2 = args[1];
 if (x1.tok != 8 || x2.tok != 8) return false;
-var a =  new javax.vecmath.Vector3f (x1.value);
-var b =  new javax.vecmath.Vector3f (x2.value);
+var a = javax.vecmath.Vector3f.newV (x1.value);
+var b = javax.vecmath.Vector3f.newV (x2.value);
 a.cross (a, b);
-return this.addXPt ( new javax.vecmath.Point3f (a));
+return this.addXPt (javax.vecmath.Point3f.newP (a));
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "evaluateLoad", 
 ($fz = function (args, tok) {
@@ -1709,7 +1710,7 @@ Clazz.defineMethod (c$, "evaluateColor",
 ($fz = function (args) {
 var colorScheme = (args.length > 0 ? org.jmol.script.ScriptVariable.sValue (args[0]) : "");
 if (colorScheme.equalsIgnoreCase ("hsl") && args.length == 2) {
-var pt =  new javax.vecmath.Point3f (org.jmol.script.ScriptVariable.ptValue (args[1]));
+var pt = javax.vecmath.Point3f.newP (org.jmol.script.ScriptVariable.ptValue (args[1]));
 var hsl =  Clazz.newArray (3, 0);
 org.jmol.util.ColorEncoder.RGBtoHSL (pt.x, pt.y, pt.z, hsl);
 pt.set (hsl[0] * 360, hsl[1] * 100, hsl[2] * 100);
@@ -1840,11 +1841,11 @@ switch (x2.tok) {
 case 9:
 return this.addXObj (( new org.jmol.util.Quaternion (x2.value)).inv ().toPoint4f ());
 case 11:
-m =  new javax.vecmath.Matrix3f (x2.value);
+m = javax.vecmath.Matrix3f.newM (x2.value);
 m.invert ();
 return this.addXObj (m);
 case 12:
-var m4 =  new javax.vecmath.Matrix4f (x2.value);
+var m4 = javax.vecmath.Matrix4f.newM (x2.value);
 m4.invert ();
 return this.addXObj (m4);
 case 10:
@@ -2007,25 +2008,25 @@ case 9:
 return this.addXObj (q1.mul ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
 }
 case 8:
-pt =  new javax.vecmath.Point3f (x1.value);
+pt = javax.vecmath.Point3f.newP (x1.value);
 switch (x2.tok) {
 case 8:
 pt.add (x2.value);
 return this.addXPt (pt);
 case 9:
 pt4 = x2.value;
-pt.add ( new javax.vecmath.Point3f (pt4.x, pt4.y, pt4.z));
+pt.add (javax.vecmath.Point3f.new3 (pt4.x, pt4.y, pt4.z));
 return this.addXPt (pt);
 default:
 f = org.jmol.script.ScriptVariable.fValue (x2);
-return this.addXPt ( new javax.vecmath.Point3f (pt.x + f, pt.y + f, pt.z + f));
+return this.addXPt (javax.vecmath.Point3f.new3 (pt.x + f, pt.y + f, pt.z + f));
 }
 case 11:
 switch (x2.tok) {
 default:
 return this.addXFloat (org.jmol.script.ScriptVariable.fValue (x1) + org.jmol.script.ScriptVariable.fValue (x2));
 case 11:
-m =  new javax.vecmath.Matrix3f (x1.value);
+m = javax.vecmath.Matrix3f.newM (x1.value);
 m.add (x2.value);
 return this.addXObj (m);
 case 8:
@@ -2051,7 +2052,7 @@ switch (x2.tok) {
 default:
 return this.addXFloat (org.jmol.script.ScriptVariable.fValue (x1) - org.jmol.script.ScriptVariable.fValue (x2));
 case 11:
-m =  new javax.vecmath.Matrix3f (x1.value);
+m = javax.vecmath.Matrix3f.newM (x1.value);
 m.sub (x2.value);
 return this.addXObj (m);
 }
@@ -2060,22 +2061,22 @@ switch (x2.tok) {
 default:
 return this.addXFloat (org.jmol.script.ScriptVariable.fValue (x1) - org.jmol.script.ScriptVariable.fValue (x2));
 case 12:
-var m4 =  new javax.vecmath.Matrix4f (x1.value);
+var m4 = javax.vecmath.Matrix4f.newM (x1.value);
 m4.sub (x2.value);
 return this.addXObj (m4);
 }
 case 8:
-pt =  new javax.vecmath.Point3f (x1.value);
+pt = javax.vecmath.Point3f.newP (x1.value);
 switch (x2.tok) {
 default:
 f = org.jmol.script.ScriptVariable.fValue (x2);
-return this.addXPt ( new javax.vecmath.Point3f (pt.x - f, pt.y - f, pt.z - f));
+return this.addXPt (javax.vecmath.Point3f.new3 (pt.x - f, pt.y - f, pt.z - f));
 case 8:
 pt.sub (x2.value);
 return this.addXPt (pt);
 case 9:
 pt4 = x2.value;
-pt.sub ( new javax.vecmath.Point3f (pt4.x, pt4.y, pt4.z));
+pt.sub (javax.vecmath.Point3f.new3 (pt4.x, pt4.y, pt4.z));
 return this.addXPt (pt);
 }
 case 9:
@@ -2095,19 +2096,19 @@ return this.addXFloat (-org.jmol.script.ScriptVariable.fValue (x2));
 case 2:
 return this.addXInt (-org.jmol.script.ScriptVariable.iValue (x2));
 case 8:
-pt =  new javax.vecmath.Point3f (x2.value);
+pt = javax.vecmath.Point3f.newP (x2.value);
 pt.scale (-1.0);
 return this.addXPt (pt);
 case 9:
-pt4 =  new javax.vecmath.Point4f (x2.value);
+pt4 = javax.vecmath.Point4f.newPt (x2.value);
 pt4.scale (-1.0);
 return this.addXObj (pt4);
 case 11:
-m =  new javax.vecmath.Matrix3f (x2.value);
+m = javax.vecmath.Matrix3f.newM (x2.value);
 m.transpose ();
 return this.addXObj (m);
 case 12:
-var m4 =  new javax.vecmath.Matrix4f (x2.value);
+var m4 = javax.vecmath.Matrix4f.newM (x2.value);
 m4.transpose ();
 return this.addXObj (m4);
 case 10:
@@ -2120,7 +2121,7 @@ pt4 = (x1.tok == 12 ? this.planeValue (x2) : x2.tok == 12 ? this.planeValue (x1)
 switch (x2.tok) {
 case 11:
 if (pt != null) {
-var m3b =  new javax.vecmath.Matrix3f (x2.value);
+var m3b = javax.vecmath.Matrix3f.newM (x2.value);
 m3b.transpose ();
 m3b.transform (pt);
 if (x1.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable ([pt.x, pt.y, pt.z]));
@@ -2130,9 +2131,9 @@ return this.addXObj ((( new org.jmol.util.Quaternion (pt4)).mul ( new org.jmol.u
 }break;
 case 12:
 if (pt4 != null) {
-var m4b =  new javax.vecmath.Matrix4f (x2.value);
+var m4b = javax.vecmath.Matrix4f.newM (x2.value);
 m4b.transpose ();
-m4b.transform (pt4);
+m4b.transform4 (pt4);
 if (x1.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable ([pt4.x, pt4.y, pt4.z, pt4.w]));
 return this.addXObj (pt4);
 }break;
@@ -2148,8 +2149,8 @@ if (x2.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable
 return this.addXPt (pt);
 }switch (x2.tok) {
 case 11:
-m =  new javax.vecmath.Matrix3f (x2.value);
-m.mul (m3, m);
+m = javax.vecmath.Matrix3f.newM (x2.value);
+m.mul2 (m3, m);
 return this.addXObj (m);
 case 9:
 return this.addXObj (( new org.jmol.util.Quaternion (m3)).mul ( new org.jmol.util.Quaternion (x2.value)).getMatrix ());
@@ -2159,7 +2160,7 @@ var aa =  new javax.vecmath.AxisAngle4f ();
 aa.set (m3);
 aa.angle *= f;
 var m2 =  new javax.vecmath.Matrix3f ();
-m2.set (aa);
+m2.setAA (aa);
 return this.addXObj (m2);
 }
 case 12:
@@ -2169,26 +2170,26 @@ m4.transform (pt);
 if (x2.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable ([pt.x, pt.y, pt.z]));
 return this.addXPt (pt);
 }if (pt4 != null) {
-m4.transform (pt4);
+m4.transform4 (pt4);
 if (x2.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable ([pt4.x, pt4.y, pt4.z, pt4.w]));
 return this.addXObj (pt4);
 }switch (x2.tok) {
 case 12:
-var m4b =  new javax.vecmath.Matrix4f (x2.value);
-m4b.mul (m4, m4b);
+var m4b = javax.vecmath.Matrix4f.newM (x2.value);
+m4b.mul2 (m4, m4b);
 return this.addXObj (m4b);
 default:
 return this.addXStr ("NaN");
 }
 case 8:
-pt =  new javax.vecmath.Point3f (x1.value);
+pt = javax.vecmath.Point3f.newP (x1.value);
 switch (x2.tok) {
 case 8:
 var pt2 = (x2.value);
 return this.addXFloat (pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
 default:
 f = org.jmol.script.ScriptVariable.fValue (x2);
-return this.addXPt ( new javax.vecmath.Point3f (pt.x * f, pt.y * f, pt.z * f));
+return this.addXPt (javax.vecmath.Point3f.new3 (pt.x * f, pt.y * f, pt.z * f));
 }
 case 9:
 switch (x2.tok) {
@@ -2228,14 +2229,14 @@ if (n == 0) list[i] = list[i].trim ();
 }
 return this.addXObj (list);
 case 8:
-pt =  new javax.vecmath.Point3f (x1.value);
-this.viewer.toUnitCell (pt,  new javax.vecmath.Point3f (n, n, n));
+pt = javax.vecmath.Point3f.newP (x1.value);
+this.viewer.toUnitCell (pt, javax.vecmath.Point3f.new3 (n, n, n));
 return this.addXPt (pt);
 case 9:
 pt4 = x1.value;
 if (x2.tok == 8) return this.addXPt (( new org.jmol.util.Quaternion (pt4)).transform (x2.value));
 if (x2.tok == 9) {
-var v4 =  new javax.vecmath.Point4f (x2.value);
+var v4 = javax.vecmath.Point4f.newPt (x2.value);
 ( new org.jmol.util.Quaternion (pt4)).getThetaDirected (v4);
 return this.addXObj (v4);
 }switch (n) {
@@ -2261,7 +2262,7 @@ case -5:
 return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getVector (2));
 case -6:
 var ax = ( new org.jmol.util.Quaternion (pt4)).toAxisAngle4f ();
-return this.addXObj ( new javax.vecmath.Point4f (ax.x, ax.y, ax.z, (ax.angle * 180 / 3.141592653589793)));
+return this.addXObj (javax.vecmath.Point4f.new4 (ax.x, ax.y, ax.z, (ax.angle * 180 / 3.141592653589793)));
 case -9:
 return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getMatrix ());
 default:
@@ -2272,7 +2273,7 @@ var m4 = x1.value;
 switch (n) {
 case 1:
 var m3 =  new javax.vecmath.Matrix3f ();
-m4.get (m3);
+m4.getRotationScale (m3);
 return this.addXObj (m3);
 case 2:
 var v3 =  new javax.vecmath.Vector3f ();
@@ -2292,12 +2293,12 @@ default:
 var f1 = org.jmol.script.ScriptVariable.fValue (x1);
 return this.addXFloat (f1 / f2);
 case 8:
-pt =  new javax.vecmath.Point3f (x1.value);
-if (f2 == 0) return this.addXPt ( new javax.vecmath.Point3f (NaN, NaN, NaN));
-return this.addXPt ( new javax.vecmath.Point3f (pt.x / f2, pt.y / f2, pt.z / f2));
+pt = javax.vecmath.Point3f.newP (x1.value);
+if (f2 == 0) return this.addXPt (javax.vecmath.Point3f.new3 (NaN, NaN, NaN));
+return this.addXPt (javax.vecmath.Point3f.new3 (pt.x / f2, pt.y / f2, pt.z / f2));
 case 9:
 if (x2.tok == 9) return this.addXObj ( new org.jmol.util.Quaternion (x1.value).div ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
-if (f2 == 0) return this.addXObj ( new javax.vecmath.Point4f (NaN, NaN, NaN, NaN));
+if (f2 == 0) return this.addXObj (javax.vecmath.Point4f.new4 (NaN, NaN, NaN, NaN));
 return this.addXObj ( new org.jmol.util.Quaternion (x1.value).mul (1 / f2).toPoint4f ());
 }
 case 269484211:
@@ -2306,7 +2307,7 @@ switch (x1.tok) {
 default:
 return this.addXInt (f == 0 ? 0 : Math.round ((org.jmol.script.ScriptVariable.fValue (x1) / org.jmol.script.ScriptVariable.fValue (x2))));
 case 9:
-if (f == 0) return this.addXObj ( new javax.vecmath.Point4f (NaN, NaN, NaN, NaN));
+if (f == 0) return this.addXObj (javax.vecmath.Point4f.new4 (NaN, NaN, NaN, NaN));
 if (x2.tok == 9) return this.addXObj ( new org.jmol.util.Quaternion (x1.value).divLeft ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
 return this.addXObj ( new org.jmol.util.Quaternion (x1.value).mul (1 / f).toPoint4f ());
 }
@@ -2341,7 +2342,7 @@ return this.addXObj (ht);
 }, $fz.isPrivate = true, $fz), "org.jmol.script.ScriptVariable,~S");
 c$.getMatrix4f = Clazz.defineMethod (c$, "getMatrix4f", 
 function (matRotate, vTranslate) {
-return  new javax.vecmath.Matrix4f (matRotate, vTranslate == null ?  new javax.vecmath.Vector3f () :  new javax.vecmath.Vector3f (vTranslate), 1);
+return javax.vecmath.Matrix4f.newMV (matRotate, vTranslate == null ?  new javax.vecmath.Vector3f () : javax.vecmath.Vector3f.newV (vTranslate));
 }, "javax.vecmath.Matrix3f,javax.vecmath.Tuple3f");
 Clazz.defineMethod (c$, "getBoundBox", 
 ($fz = function (x2) {
@@ -2386,28 +2387,28 @@ case 1112541187:
 case 1112541207:
 return this.addXFloat ((x2.value).z);
 case 1146095626:
-var pt =  new javax.vecmath.Point3f (x2.value);
+var pt = javax.vecmath.Point3f.newP (x2.value);
 this.viewer.toCartesian (pt, true);
 return this.addXPt (pt);
 case 1112541188:
 case 1112541189:
 case 1112541190:
 case 1146095627:
-var ptf =  new javax.vecmath.Point3f (x2.value);
+var ptf = javax.vecmath.Point3f.newP (x2.value);
 this.viewer.toFractional (ptf, true);
 return (op.intValue == 1146095627 ? this.addXPt (ptf) : this.addXFloat (op.intValue == 1112541188 ? ptf.x : op.intValue == 1112541189 ? ptf.y : ptf.z));
 case 1112541191:
 case 1112541192:
 case 1112541193:
 case 1146095629:
-var ptfu =  new javax.vecmath.Point3f (x2.value);
+var ptfu = javax.vecmath.Point3f.newP (x2.value);
 this.viewer.toFractional (ptfu, false);
 return (op.intValue == 1146095627 ? this.addXPt (ptfu) : this.addXFloat (op.intValue == 1112541191 ? ptfu.x : op.intValue == 1112541192 ? ptfu.y : ptfu.z));
 case 1112539151:
 case 1112539152:
 case 1112539153:
 case 1146093582:
-var ptu =  new javax.vecmath.Point3f (x2.value);
+var ptu = javax.vecmath.Point3f.newP (x2.value);
 this.viewer.toUnitCell (ptu, null);
 this.viewer.toFractional (ptu, false);
 return (op.intValue == 1146093582 ? this.addXPt (ptu) : this.addXFloat (op.intValue == 1112539151 ? ptu.x : op.intValue == 1112539152 ? ptu.y : ptu.z));

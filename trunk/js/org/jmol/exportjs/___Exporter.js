@@ -65,7 +65,7 @@ this.viewer = viewer;
 this.g3d = g3d;
 this.privateKey = privateKey;
 this.backgroundColix = viewer.getObjectColix (0);
-this.center.set (viewer.getRotationCenter ());
+this.center.setT (viewer.getRotationCenter ());
 if ((this.screenWidth <= 0) || (this.screenHeight <= 0)) {
 this.screenWidth = viewer.getScreenWidth ();
 this.screenHeight = viewer.getScreenHeight ();
@@ -121,7 +121,7 @@ if (this.commentChar != null) this.output (this.commentChar + comment + "\n");
 }, "~S");
 c$.setTempVertex = Clazz.defineMethod (c$, "setTempVertex", 
 function (pt, offset, ptTemp) {
-ptTemp.set (pt);
+ptTemp.setT (pt);
 if (offset != null) ptTemp.add (offset);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "outputVertices", 
@@ -252,15 +252,15 @@ var d = ndeg / 180. * 3.141592653589793;
 for (var i = 0; i < n; i++) {
 var x = (Math.cos (i * d));
 var y = (Math.sin (i * d));
-ms.vertices[i] =  new javax.vecmath.Point3f (x, y, 0);
+ms.vertices[i] = javax.vecmath.Point3f.new3 (x, y, 0);
 }
-ms.vertices[n] =  new javax.vecmath.Point3f (0, 0, 1);
+ms.vertices[n] = javax.vecmath.Point3f.new3 (0, 0, 1);
 if (matRotateScale != null) {
 ms.normals =  new Array (ms.vertexCount);
 for (var i = 0; i < ms.vertexCount; i++) {
 matRotateScale.transform (ms.vertices[i]);
 ms.normals[i] =  new javax.vecmath.Vector3f ();
-ms.normals[i].set (ms.vertices[i]);
+ms.normals[i].setT (ms.vertices[i]);
 (ms.normals[i]).normalize ();
 ms.vertices[i].add (centerBase);
 }
@@ -275,7 +275,7 @@ m1 =  new javax.vecmath.Matrix3f ();
 m1.setIdentity ();
 if (pt1.z > pt2.z) m1.m11 = m1.m22 = -1;
 } else {
-this.tempV1.set (pt2);
+this.tempV1.setT (pt2);
 this.tempV1.sub (pt1);
 this.tempV2.set (0, 0, 1);
 this.tempV2.cross (this.tempV2, this.tempV1);

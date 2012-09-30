@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -71,7 +71,7 @@ public class EchoRenderer extends ShapeRenderer {
   private void renderFrameTitle(String frameTitle) {
     if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
+    byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
     int y = (int) (viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) (5 * imageFontScaling);

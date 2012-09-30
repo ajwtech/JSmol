@@ -75,7 +75,7 @@ return Boolean.TRUE;
 }, "~S");
 c$ = Clazz.p0p ();
 };
-c$.pt2 = c$.prototype.pt2 =  new javax.vecmath.Point3f (2, 3, 4);
+c$.pt2 = c$.prototype.pt2 =  new javax.vecmath.Point3f ();
 Clazz.defineStatics (c$,
 "testArray", ["a", "b", "c", "d"]);
 });

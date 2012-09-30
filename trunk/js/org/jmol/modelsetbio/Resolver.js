@@ -322,7 +322,7 @@ var atoms = this.modelSet.atoms;
 if (this.lastSetH == -2147483648 || atoms[iAtom].modelIndex != atoms[this.lastSetH].modelIndex) this.maxSerial = (this.modelSet.getModelAuxiliaryInfoValue (atoms[this.lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
 this.bsAddedHydrogens.clear (iAtom);
 this.modelSet.setAtomName (iAtom, name);
-atoms[iAtom].set (pt);
+atoms[iAtom].setT (pt);
 this.modelSet.setAtomNumber (iAtom, ++this.maxSerial);
 atoms[iAtom].setAtomSymmetry (atoms[iTo].getAtomSymmetry ());
 this.modelLoader.undeleteAtom (iAtom);

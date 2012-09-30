@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17591 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -25,7 +25,7 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
@@ -64,7 +64,7 @@ public class Balls extends AtomShape {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
-        bsColixSet.set(i, colix != Colix.USE_PALETTE
+        bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }
@@ -88,7 +88,7 @@ public class Balls extends AtomShape {
         byte pid = EnumPalette.pidOf(color);
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
-        bsColixSet.set(i, colix != Colix.USE_PALETTE
+        bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }

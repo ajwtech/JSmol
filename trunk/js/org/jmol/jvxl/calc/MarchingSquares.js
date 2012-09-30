@@ -177,8 +177,8 @@ var h = -1;
 if (f != g) {
 var i = (b - f) / (g - f);
 if (i >= 0 && i <= 1) {
-this.b$["org.jmol.jvxl.calc.MarchingSquares"].pointA.set (this.b$["org.jmol.jvxl.calc.MarchingSquares"].contourVertexes[c]);
-this.b$["org.jmol.jvxl.calc.MarchingSquares"].pointB.set (this.b$["org.jmol.jvxl.calc.MarchingSquares"].contourVertexes[d]);
+this.b$["org.jmol.jvxl.calc.MarchingSquares"].pointA.setT (this.b$["org.jmol.jvxl.calc.MarchingSquares"].contourVertexes[c]);
+this.b$["org.jmol.jvxl.calc.MarchingSquares"].pointB.setT (this.b$["org.jmol.jvxl.calc.MarchingSquares"].contourVertexes[d]);
 b = this.b$["org.jmol.jvxl.calc.MarchingSquares"].calcContourPoint (b, f, g, this.b$["org.jmol.jvxl.calc.MarchingSquares"].ptTemp);
 if (!Float.isNaN (b)) {
 h = this.b$["org.jmol.jvxl.calc.MarchingSquares"].addContourVertex (this.b$["org.jmol.jvxl.calc.MarchingSquares"].ptTemp, b);
@@ -231,7 +231,7 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function (a) {
 Clazz.superConstructor (this, org.jmol.jvxl.calc.MarchingSquares.ContourVertex, []);
-this.set (a);
+this.setT (a);
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setValue", 
 function (a) {

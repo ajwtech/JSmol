@@ -86,7 +86,7 @@ Clazz.defineMethod (c$, "addVertexCopy",
 function (vertex) {
 if (this.vertexCount == 0) this.vertices =  new Array (25);
  else if (this.vertexCount == this.vertices.length) this.vertices = org.jmol.util.ArrayUtil.doubleLength (this.vertices);
-this.vertices[this.vertexCount] =  new javax.vecmath.Point3f (vertex);
+this.vertices[this.vertexCount] = javax.vecmath.Point3f.newP (vertex);
 return this.vertexCount++;
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "addTriangle", 
@@ -593,7 +593,7 @@ if (f < 0.0001) f = 0;
  else if (f > 0.9999) f = 1;
 fracs[i] = f;
 values[i] = (val2 - val1) * f + val1;
-return  new javax.vecmath.Point3f (v1.x + (v2.x - v1.x) * f, v1.y + (v2.y - v1.y) * f, v1.z + (v2.z - v1.z) * f);
+return javax.vecmath.Point3f.new3 (v1.x + (v2.x - v1.x) * f, v1.y + (v2.y - v1.y) * f, v1.z + (v2.z - v1.z) * f);
 }, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~A,~A,~N");
 c$.getSphericalInterpolationFraction = Clazz.defineMethod (c$, "getSphericalInterpolationFraction", 
 function (r, valueA, valueB, d) {

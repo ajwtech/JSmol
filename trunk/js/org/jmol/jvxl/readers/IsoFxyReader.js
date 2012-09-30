@@ -41,7 +41,7 @@ function () {
 if (this.data == null) {
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoFxyReader, "setVolumeData", []);
 return ;
-}this.volumetricOrigin.set (this.params.functionInfo.get (1));
+}this.volumetricOrigin.setT (this.params.functionInfo.get (1));
 for (var i = 0; i < 3; i++) {
 var info = this.params.functionInfo.get (i + 2);
 this.voxelCounts[i] = Math.abs (Math.round (info.x));

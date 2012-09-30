@@ -100,7 +100,7 @@ if (!this.isNavigationMode) {
 var meshSlabValue = this.imesh.jvxlData.slabValue;
 if (meshSlabValue != -2147483648 && this.imesh.jvxlData.isSlabbable) {
 var points = this.imesh.jvxlData.boundingBox;
-this.pt2f.set (points[0]);
+this.pt2f.setT (points[0]);
 this.pt2f.add (points[1]);
 this.pt2f.scale (0.5);
 this.viewer.transformPt3f (this.pt2f, this.pt2f);
@@ -139,22 +139,22 @@ if (this.imesh.showContourLines) this.renderContourLines ();
 }, "~B");
 Clazz.defineMethod (c$, "renderLonePair", 
 ($fz = function (isRadical) {
-this.pt2f.set (this.vertices[1]);
+this.pt2f.setT (this.vertices[1]);
 this.viewer.transformPt3f (this.pt2f, this.pt2f);
 var r = this.viewer.scaleToScreen (Math.round (this.pt2f.z), 100);
 if (r < 1) r = 1;
 if (!isRadical) {
 var v1 =  new javax.vecmath.Vector3f ();
 var v2 =  new javax.vecmath.Vector3f ();
-this.pt1f.set (this.vertices[0]);
+this.pt1f.setT (this.vertices[0]);
 this.viewer.transformPt3f (this.pt1f, this.pt1f);
-v1.sub (this.pt2f, this.pt1f);
+v1.sub2 (this.pt2f, this.pt1f);
 v2.set (v1.x, v1.y, v1.z + 1);
 v2.cross (v2, v1);
 v2.normalize ();
 var f = this.viewer.scaleToScreen (Math.round (this.pt1f.z), 100);
 v2.scale (f);
-this.pt1f.set (this.pt2f);
+this.pt1f.setT (this.pt2f);
 this.pt1f.add (v2);
 this.pt2f.sub (v2);
 this.screens[0].set (Math.round (this.pt1f.x), Math.round (this.pt1f.y), Math.round (this.pt1f.z));
@@ -299,9 +299,9 @@ this.g3d.fillTriangle (this.screens[iA], colixA, nA, this.screens[iB], colixB, n
 } else {
 check &= polygon[3];
 if (iShowTriangles) check = 7;
-if (check == 0) continue ;this.pt1i.set (this.screens[iA]);
-this.pt2i.set (this.screens[iB]);
-this.pt3i.set (this.screens[iC]);
+if (check == 0) continue ;this.pt1i.setT (this.screens[iA]);
+this.pt2i.setT (this.screens[iB]);
+this.pt3i.setT (this.screens[iC]);
 this.pt1i.z -= 2;
 this.pt2i.z -= 2;
 this.pt3i.z -= 2;
@@ -320,7 +320,7 @@ if (!this.g3d.setColix (8)) return ;
 this.g3d.setFont (this.g3d.getFontFid ("Monospaced", 24));
 var vertexVectors = org.jmol.util.Normix.getVertexVectors ();
 for (var i = this.vertexCount; --i >= 0; ) {
-if (this.vertexValues != null && Float.isNaN (this.vertexValues[i])) continue ;if (i < 7117 || i > 7119) continue ;this.ptTemp.set (this.vertices[i]);
+if (this.vertexValues != null && Float.isNaN (this.vertexValues[i])) continue ;if (i < 7117 || i > 7119) continue ;this.ptTemp.setT (this.vertices[i]);
 var n = this.mesh.normixes[i];
 if (n >= 0) {
 this.ptTemp.add (vertexVectors[n]);

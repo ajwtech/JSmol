@@ -526,7 +526,7 @@ public class Event {
      * This field has been replaced by MouseEvent.getClickCount().
      *
      * @serial
-     * @see java.awt.event.MouseEvent#getClickCount().
+     * @see java.awt.event.MouseEvent#getClickCount
      */
     public int clickCount;
 
@@ -781,6 +781,7 @@ public class Event {
      * <b>NOTE:</b> The <code>Event</code> class is obsolete and is
      * available only for backwards compatilibility.  It has been replaced
      * by the <code>AWTEvent</code> class and its subclasses.
+     * @return consumed
      */
     boolean isConsumed() {
         return consumed;
@@ -801,7 +802,7 @@ public class Event {
                 return actionKeyCodes[i][1];
             }
         }
-        return (int)e.getKeyChar();
+        return e.getKeyChar();
     }
 
     /*
@@ -868,6 +869,7 @@ public class Event {
      * @see       java.awt.Event#paramString
      * @since     JDK1.1
      */
+    @Override
     public String toString() {
         return getClass().getName() + "[" + paramString() + "]";
     }

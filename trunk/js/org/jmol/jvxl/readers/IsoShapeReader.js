@@ -117,7 +117,7 @@ return this.getValueAtPoint (this.ptPsi);
 }, "~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "getValueAtPoint", 
 function (pt) {
-this.ptTemp.set (pt);
+this.ptTemp.setT (pt);
 this.ptTemp.sub (this.center);
 if (this.isEccentric) this.eccentricityMatrixInverse.transform (this.ptTemp);
 if (this.isAnisotropic) {
@@ -221,7 +221,7 @@ this.planeU =  new javax.vecmath.Vector3f ();
 org.jmol.util.Measure.getPlaneProjection (this.center, this.params.thePlane, this.planeCenter, this.planeU);
 this.planeU.set (this.params.thePlane.x, this.params.thePlane.y, this.params.thePlane.z);
 this.planeU.normalize ();
-this.planeV =  new javax.vecmath.Vector3f (1, 0, 0);
+this.planeV = javax.vecmath.Vector3f.new3 (1, 0, 0);
 if (Math.abs (this.planeU.dot (this.planeV)) > 0.5) this.planeV.set (0, 1, 0);
 this.planeV.cross (this.planeU, this.planeV);
 this.planeU.cross (this.planeU, this.planeV);
@@ -231,9 +231,9 @@ if (d < this.radius) {
 this.planeRadius = Math.sqrt (this.radius * this.radius - d * d);
 var ir = Math.round ((this.planeRadius * 10));
 for (var ix = -ir; ix <= ir; ix++) for (var iy = -ir; iy <= ir; iy++) {
-this.ptPsi.set (this.planeU);
+this.ptPsi.setT (this.planeU);
 this.ptPsi.scale (ix / 10);
-this.ptPsi.scaleAdd (iy / 10, this.planeV, this.ptPsi);
+this.ptPsi.scaleAdd2 (iy / 10, this.planeV, this.ptPsi);
 d = this.hydrogenAtomPsi (this.ptPsi);
 d = Math.abs (this.hydrogenAtomPsi (this.ptPsi));
 if (d > this.aoMax2) this.aoMax2 = d;
@@ -307,9 +307,9 @@ this.ptPsi.set (x, y, z);
 this.ptPsi.add (this.center);
 value = this.getValueAtPoint (this.ptPsi);
 } else {
-this.ptPsi.set (this.planeU);
+this.ptPsi.setT (this.planeU);
 this.ptPsi.scale (this.random.nextFloat () * this.planeRadius * 2 - this.planeRadius);
-this.ptPsi.scaleAdd (this.random.nextFloat () * this.planeRadius * 2 - this.planeRadius, this.planeV, this.ptPsi);
+this.ptPsi.scaleAdd2 (this.random.nextFloat () * this.planeRadius * 2 - this.planeRadius, this.planeV, this.ptPsi);
 this.ptPsi.add (this.planeCenter);
 value = this.getValueAtPoint (this.ptPsi);
 if (value * value <= this.aoMax2 * this.random.nextFloat ()) continue ;}rave += this.ptPsi.distance (this.center);

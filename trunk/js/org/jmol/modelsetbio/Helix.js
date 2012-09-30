@@ -17,7 +17,7 @@ this.apolymer.getLeadMidPoint (this.monomerIndexFirst + i, points[i]);
 this.axisA =  new javax.vecmath.Point3f ();
 this.axisUnitVector =  new javax.vecmath.Vector3f ();
 org.jmol.util.Measure.calcBestAxisThroughPoints (points, this.axisA, this.axisUnitVector, this.vectorProjection, 4);
-this.axisB =  new javax.vecmath.Point3f (points[this.monomerCount]);
+this.axisB = javax.vecmath.Point3f.newP (points[this.monomerCount]);
 org.jmol.util.Measure.projectOntoAxis (this.axisB, this.axisA, this.axisUnitVector, this.vectorProjection);
 });
 });

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -2462,10 +2462,10 @@ public class Token {
   }
 /*
   static {
-    Point3f a1 = new Point3f(1,0,0);
-    Point3f a2 = new Point3f(0,1,0);
-    Point3f a3 = new Point3f(0,0,1);
-    Point3f b1 = new Point3f(0.25f, 0.25f, 0.25f);
+    Point3f a1 = Point3f.new3(1,0,0);
+    Point3f a2 = Point3f.new3(0,1,0);
+    Point3f a3 = Point3f.new3(0,0,1);
+    Point3f b1 = Point3f.new3(0.25f, 0.25f, 0.25f);
     Vector3f vNorm = new Vector3f();
     Vector3f vTemp = new Vector3f();
     Vector3f vTemp2 = new Vector3f();
@@ -2476,7 +2476,7 @@ public class Token {
     Point3f ptRet = new Point3f();
 
     
-    Point3f b2 = new Point3f(1,-0.9f,-3);
+    Point3f b2 = Point3f.new3(1,-0.9f,-3);
 
     
     

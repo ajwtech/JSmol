@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
- * $Revision: 17556 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -29,7 +29,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class Hover extends TextShape {
   public void initShape() {
     super.initShape();
     isHover = true;
-    JmolFont font3d = gdata.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
+    JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = Colix.getColix("#FFFFC3"); // 255, 255, 195
     short colix = Colix.BLACK;
     currentObject = hoverText = new Text(gdata, font3d, null, colix, bgcolix, 0, 0,

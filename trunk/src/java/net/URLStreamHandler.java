@@ -187,7 +187,7 @@ public abstract class URLStreamHandler {
 						throw new IllegalArgumentException("Invalid authority field: "
 								+ authority);
 					}
-*/				} else {
+*/				} //else {
 					ind = host.indexOf(':');
 					port = -1;
 					if (ind >= 0) {
@@ -197,7 +197,7 @@ public abstract class URLStreamHandler {
 						}
 						host = host.substring(0, ind);
 					}
-				}
+				//}
 			} else {
 				host = "";
 			}
@@ -206,7 +206,7 @@ public abstract class URLStreamHandler {
 			start = i;
 			// If the authority is defined then the path is defined by the
 			// spec only; See RFC 2396 Section 5.2.4.
-			if (authority != null && authority.length() > 0)
+			if (/*authority != null && */authority.length() > 0)
 				path = "";
 		}
 
@@ -436,10 +436,11 @@ public abstract class URLStreamHandler {
 /*    if (a1 != null && a2 != null) {
         return a1.equals(a2);
         // else, if both have host names, compare them
-    } else */if (u1.getHost() != null && u2.getHost() != null) 
-            return u1.getHost().equalsIgnoreCase(u2.getHost());
-     else
-            return u1.getHost() == null && u2.getHost() == null;
+    } else */
+      if (u1.getHost() != null && u2.getHost() != null) 
+        return u1.getHost().equalsIgnoreCase(u2.getHost());
+    
+      return u1.getHost() == null && u2.getHost() == null;
     }
 
     /**

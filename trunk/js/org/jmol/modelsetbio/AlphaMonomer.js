@@ -137,8 +137,8 @@ if (this.monomerIndex == 0 || this.monomerIndex == this.bioPolymer.monomerCount 
 var ptCa = this.getLeadAtom ();
 var ptCaNext = this.bioPolymer.getLeadPoint (this.monomerIndex + 1);
 var ptCaPrev = this.bioPolymer.getLeadPoint (this.monomerIndex - 1);
-vA.sub (ptCaNext, ptCa);
-vB.sub (ptCaPrev, ptCa);
+vA.sub2 (ptCaNext, ptCa);
+vB.sub2 (ptCaPrev, ptCa);
 break;
 }
 return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, vC, false);

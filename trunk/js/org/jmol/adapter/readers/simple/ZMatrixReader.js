@@ -176,14 +176,14 @@ ia--;
 Clazz.defineMethod (c$, "setAtom", 
 function (atom, ia, ib, ic, d, theta1, theta2) {
 if (Float.isNaN (theta1) || Float.isNaN (theta2)) return null;
-this.pt0.set (this.vAtoms.get (ia));
-this.v1.sub (this.vAtoms.get (ib), this.pt0);
+this.pt0.setT (this.vAtoms.get (ia));
+this.v1.sub2 (this.vAtoms.get (ib), this.pt0);
 this.v1.normalize ();
 if (theta2 == 3.4028235E38) {
 this.v2.set (0, 0, 1);
 ( new org.jmol.util.Quaternion (this.v2, theta1)).transform (this.v1, this.v2);
 } else if (d >= 0) {
-this.v2.sub (this.vAtoms.get (ic), this.pt0);
+this.v2.sub2 (this.vAtoms.get (ic), this.pt0);
 this.v2.cross (this.v1, this.v2);
 ( new org.jmol.util.Quaternion (this.v2, theta1)).transform (this.v1, this.v2);
 ( new org.jmol.util.Quaternion (this.v1, -theta2)).transform (this.v2, this.v2);
@@ -192,10 +192,10 @@ org.jmol.util.Measure.getPlaneThroughPoint (this.setAtom (atom, ia, ib, ic, -d, 
 org.jmol.util.Measure.getPlaneThroughPoint (this.setAtom (atom, ia, ic, ib, -d, theta2, 0), this.v1, this.plane2);
 var list = org.jmol.util.Measure.getIntersection (this.plane1, this.plane2);
 if (list.size () == 0) return null;
-this.pt0.set (list.get (0));
+this.pt0.setT (list.get (0));
 d = Math.sqrt (d * d - this.pt0.distanceSquared (this.vAtoms.get (ia))) * Math.signum (theta1) * Math.signum (theta2);
-this.v2.set (list.get (1));
-}atom.scaleAdd (d, this.v2, this.pt0);
+this.v2.setT (list.get (1));
+}atom.scaleAdd2 (d, this.v2, this.pt0);
 return atom;
 }, "org.jmol.adapter.smarter.Atom,~N,~N,~N,~N,~N,~N");
 });

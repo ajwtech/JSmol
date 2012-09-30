@@ -120,7 +120,7 @@ import java.util.Hashtable;
  * Note, the {@link java.net.URI} class does perform escaping of its
  * component fields in certain circumstances. The recommended way
  * to manage the encoding and decoding of URLs is to use {@link java.net.URI},
- * and to convert between these two classes using {@link #toURI()} and
+ * and to convert between these two classes using {link #toURI()} and
  * {@link URI#toURL()}.
  * <p>
  * The {@link URLEncoder} and {@link URLDecoder} classes can also be
@@ -643,7 +643,7 @@ public final class URL implements java.io.Serializable {
     /*
      * Checks for permission to specify a stream handler.
      */
-    private void checkSpecifyHandler(SecurityManager sm) {
+    private void checkSpecifyHandler(@SuppressWarnings("unused") SecurityManager sm) {
         //sm.checkPermission(SecurityConstants.SPECIFY_HANDLER_PERMISSION);
     }
 
@@ -852,6 +852,7 @@ public final class URL implements java.io.Serializable {
      * @return  <code>true</code> if the objects are the same;
      *          <code>false</code> otherwise.
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof URL))
             return false;
@@ -868,6 +869,7 @@ public final class URL implements java.io.Serializable {
      *
      * @return  a hash code for this <code>URL</code>.
      */
+    @Override
     public synchronized int hashCode() {
         if (hashCode != -1)
             return hashCode;
@@ -901,6 +903,7 @@ public final class URL implements java.io.Serializable {
      *                  java.lang.String)
      * @see     java.net.URLStreamHandler#toExternalForm(java.net.URL)
      */
+    @Override
     public String toString() {
         return toExternalForm();
     }
@@ -1078,6 +1081,7 @@ public final class URL implements java.io.Serializable {
     /**
      * Returns the Stream Handler.
      * @param protocol the protocol to use
+     * @return handler
      */
     static URLStreamHandler getURLStreamHandler(String protocol) {
 
@@ -1102,6 +1106,8 @@ public final class URL implements java.io.Serializable {
      * WriteObject is called to save the state of the URL to an
      * ObjectOutputStream. The handler is not saved since it is
      * specific to this system.
+     * @param s 
+     * @throws IOException 
      *
      * @serialData the default write object value. When read back in,
      * the reader must ensure that calling getURLStreamHandler with
@@ -1118,6 +1124,9 @@ public final class URL implements java.io.Serializable {
      * readObject is called to restore the state of the URL from the
      * stream.  It reads the components of the URL and finds the local
      * stream handler.
+     * @param s 
+     * @throws IOException 
+     * @throws ClassNotFoundException 
      */
     private synchronized void readObject(java.io.ObjectInputStream s)
          throws IOException, ClassNotFoundException

@@ -33,11 +33,11 @@ if (!bsSelected.get (iAtom)) continue ;if (!bs.get (iAtom)) iSub = iAtom;
 org.jmol.smiles.SmilesAromatic.getNormalThroughPoints (atoms[r1], atoms[i], atoms[r2], vTemp, vA, vB);
 if (vMean == null) vMean =  new javax.vecmath.Vector3f ();
 if (!org.jmol.smiles.SmilesAromatic.addNormal (vTemp, vMean, maxDev)) return false;
-vNorms[nNorms++] =  new javax.vecmath.Vector3f (vTemp);
+vNorms[nNorms++] = javax.vecmath.Vector3f.newV (vTemp);
 if (iSub >= 0) {
 org.jmol.smiles.SmilesAromatic.getNormalThroughPoints (atoms[r1], atoms[iSub], atoms[r2], vTemp, vA, vB);
 if (!org.jmol.smiles.SmilesAromatic.addNormal (vTemp, vMean, maxDev)) return false;
-vNorms[nNorms++] =  new javax.vecmath.Vector3f (vTemp);
+vNorms[nNorms++] = javax.vecmath.Vector3f.newV (vTemp);
 }}
 var isFlat = org.jmol.smiles.SmilesAromatic.checkStandardDeviation (vNorms, vMean, nNorms, cutoff);
 return isFlat;
@@ -65,11 +65,11 @@ return (sum < cutoff);
 }, $fz.isPrivate = true, $fz), "~A,javax.vecmath.Vector3f,~N,~N");
 c$.getNormalThroughPoints = Clazz.defineMethod (c$, "getNormalThroughPoints", 
 function (pointA, pointB, pointC, vNorm, vAB, vAC) {
-vAB.sub (pointB, pointA);
-vAC.sub (pointC, pointA);
+vAB.sub2 (pointB, pointA);
+vAC.sub2 (pointC, pointA);
 vNorm.cross (vAB, vAC);
 vNorm.normalize ();
-vAB.set (pointA);
+vAB.setT (pointA);
 return -vAB.dot (vNorm);
 }, "org.jmol.util.JmolNode,org.jmol.util.JmolNode,org.jmol.util.JmolNode,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
 c$.checkAromaticDefined = Clazz.defineMethod (c$, "checkAromaticDefined", 

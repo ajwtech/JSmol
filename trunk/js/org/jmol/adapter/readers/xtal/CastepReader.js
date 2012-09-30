@@ -200,7 +200,9 @@ this.setUnitCell (this.a, this.b, this.c, this.alpha, this.beta, this.gamma);
 return ;
 }var lv =  Clazz.newArray (3, 0);
 for (var i = 0; i < 3; i++) {
-this.abc[i].get (lv);
+lv[0] = this.abc[i].x;
+lv[1] = this.abc[i].y;
+lv[2] = this.abc[i].z;
 this.addPrimitiveLatticeVector (i, lv, 0);
 }
 }, $fz.isPrivate = true, $fz));
@@ -235,7 +237,7 @@ if (this.tokens.length >= 3) {
 x = this.parseFloatStr (this.tokens[0]) * factor;
 y = this.parseFloatStr (this.tokens[1]) * factor;
 z = this.parseFloatStr (this.tokens[2]) * factor;
-this.abc[i] =  new javax.vecmath.Vector3f (x, y, z);
+this.abc[i] = javax.vecmath.Vector3f.new3 (x, y, z);
 } else {
 org.jmol.util.Logger.warn ("error reading coordinates of lattice vector " + Integer.toString (i + 1) + " in %BLOCK LATTICE_CART in CASTEP .cell file");
 return ;
@@ -381,14 +383,14 @@ atom.bfactor = this.parseFloatStr (this.tokens[5]);
 this.atomCount = this.atomSetCollection.getAtomCount ();
 this.atomPts =  new Array (this.atomCount);
 var atoms = this.atomSetCollection.getAtoms ();
-for (var i = 0; i < this.atomCount; i++) this.atomPts[i] =  new javax.vecmath.Point3f (atoms[i]);
+for (var i = 0; i < this.atomCount; i++) this.atomPts[i] = javax.vecmath.Point3f.newP (atoms[i]);
 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readPhononFrequencies", 
 ($fz = function () {
 this.tokens = this.getTokens ();
 var v =  new javax.vecmath.Vector3f ();
-var qvec =  new javax.vecmath.Vector3f (this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]));
+var qvec = javax.vecmath.Vector3f.new3 (this.parseFloatStr (this.tokens[2]), this.parseFloatStr (this.tokens[3]), this.parseFloatStr (this.tokens[4]));
 var fcoord = this.getFractionalCoord (qvec);
 var qtoks = "{" + this.tokens[2] + " " + this.tokens[3] + " " + this.tokens[4] + "}";
 if (fcoord == null) fcoord = qtoks;
@@ -399,7 +401,7 @@ this.qpt2 = (isSecond ? this.qpt2 + 1 : 1);
 this.lastQPt = this.tokens[1];
 if (this.filter != null && this.checkFilterKey ("Q=")) {
 if (this.desiredQpt != null) {
-v.sub (this.desiredQpt, qvec);
+v.sub2 (this.desiredQpt, qvec);
 if (v.length () < 0.001) fcoord = this.desiredQ;
 }isOK = (this.checkFilterKey ("Q=" + fcoord + "." + this.qpt2 + ";") || this.checkFilterKey ("Q=" + this.lastQPt + "." + this.qpt2 + ";") || !isSecond && this.checkFilterKey ("Q=" + fcoord + ";") || !isSecond && this.checkFilterKey ("Q=" + this.lastQPt + ";"));
 if (!isOK) return ;
@@ -451,7 +453,7 @@ var aCount = this.atomSetCollection.getAtomCount ();
 for (var j = 0; j < this.atomCount; j++) {
 this.fillFloatArray (null, 0, data);
 for (var k = iatom++; k < aCount; k++) if (atoms[k].atomSite == j) {
-t.sub (atoms[k], atoms[atoms[k].atomSite]);
+t.sub2 (atoms[k], atoms[atoms[k].atomSite]);
 t.x *= nx;
 t.y *= ny;
 t.z *= nz;

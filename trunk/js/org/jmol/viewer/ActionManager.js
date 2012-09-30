@@ -469,7 +469,7 @@ var a = this.viewer.getModelSet ().atoms[this.dragAtomIndex];
 if (a.getElementNumber () == 1) {
 this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"X\"");
 } else {
-var ptNew =  new javax.vecmath.Point3f (x, y, a.screenZ);
+var ptNew = javax.vecmath.Point3f.new3 (x, y, a.screenZ);
 this.viewer.unTransformPoint (ptNew, ptNew);
 this.viewer.script ("assign atom ({" + this.dragAtomIndex + "}) \"" + this.pickAtomAssignType + "\" " + org.jmol.util.Escape.escapePt (ptNew));
 }}}this.exitMeasurementMode ();
@@ -815,7 +815,8 @@ return false;
 }, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,~B,~N");
 Clazz.defineMethod (c$, "getPoint", 
 ($fz = function (t) {
-var pt =  new org.jmol.util.Point3fi (t.get ("pt"));
+var pt =  new org.jmol.util.Point3fi ();
+pt.setT (t.get ("pt"));
 pt.modelIndex = (t.get ("modelIndex")).intValue ();
 return pt;
 }, $fz.isPrivate = true, $fz), "java.util.Map");

@@ -177,7 +177,7 @@ for (var i = this.modelSet.getBondCount (); --i >= 0; ) {
 var bond = bonds[i];
 if (bond.getShapeVisibilityFlags () == 0) continue ;var atom1 = bond.getAtom1 ();
 var atom2 = bond.getAtom2 ();
-if (!atom1.isVisible (0) || !atom2.isVisible (0)) continue ;v.set (atom1);
+if (!atom1.isVisible (0) || !atom2.isVisible (0)) continue ;v.setT (atom1);
 v.add (atom2);
 v.scale (0.5);
 var d2 = this.coordinateInRange (x, y, v, dmin2, this.ptXY);
@@ -185,7 +185,7 @@ if (d2 >= 0) {
 var f = 1 * (this.ptXY.x - atom1.screenX) / (atom2.screenX - atom1.screenX);
 if (f < 0.4 || f > 0.6) continue ;dmin2 = d2;
 pickedBond = bond;
-pt.set (v);
+pt.setT (v);
 }}
 return pickedBond;
 }, $fz.isPrivate = true, $fz), "~N,~N,java.util.BitSet,javax.vecmath.Point3f");

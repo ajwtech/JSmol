@@ -108,7 +108,7 @@ if (this.assocGridPointMap != null && vectorSums.length > 0 && !this.isMerged) {
 if (this.assocGridPointNormals == null) this.assocGridPointNormals =  new java.util.Hashtable ();
 for (var entry, $entry = this.assocGridPointMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var gridPoint = entry.getValue ();
-if (!this.assocGridPointNormals.containsKey (gridPoint)) this.assocGridPointNormals.put (gridPoint,  new javax.vecmath.Vector3f (0, 0, 0));
+if (!this.assocGridPointNormals.containsKey (gridPoint)) this.assocGridPointNormals.put (gridPoint, javax.vecmath.Vector3f.new3 (0, 0, 0));
 this.assocGridPointNormals.get (gridPoint).add (vectorSums[entry.getKey ().intValue ()]);
 }
 for (var entry, $entry = this.assocGridPointMap.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) vectorSums[entry.getKey ().intValue ()] = this.assocGridPointNormals.get (entry.getValue ());
@@ -240,7 +240,7 @@ return (v == (v1 = vertexValues[i]) ? 0 : v == (v2 = vertexValues[j]) ? 1 : (v1 
 c$.getContourPoint = Clazz.defineMethod (c$, "getContourPoint", 
 ($fz = function (vertices, i, j, f) {
 var pt =  new javax.vecmath.Point3f ();
-pt.set (vertices[j]);
+pt.setT (vertices[j]);
 pt.sub (vertices[i]);
 pt.scale (f);
 pt.add (vertices[i]);
@@ -532,13 +532,13 @@ function (unitCellPoints) {
 var vectors = (unitCellPoints == null ? this.spanningVectors : unitCellPoints);
 if (vectors == null) return ;
 var pts =  new Array (27);
-pts[0] =  new javax.vecmath.Point3f (vectors[0]);
+pts[0] = javax.vecmath.Point3f.newP (vectors[0]);
 var pt = 0;
 for (var i = -1; i <= 1; i++) for (var j = -1; j <= 1; j++) for (var k = -1; k <= 1; k++) if (i != 0 || j != 0 || k != 0) {
-pts[++pt] =  new javax.vecmath.Point3f (pts[0]);
-pts[pt].scaleAdd (i, vectors[1], pts[pt]);
-pts[pt].scaleAdd (j, vectors[2], pts[pt]);
-pts[pt].scaleAdd (k, vectors[3], pts[pt]);
+pts[++pt] = javax.vecmath.Point3f.newP (pts[0]);
+pts[pt].scaleAdd2 (i, vectors[1], pts[pt]);
+pts[pt].scaleAdd2 (j, vectors[2], pts[pt]);
+pts[pt].scaleAdd2 (k, vectors[3], pts[pt]);
 }
 
 
@@ -553,7 +553,7 @@ var bsMoved =  new java.util.BitSet ();
 var mapEdge =  new java.util.Hashtable ();
 this.bsSlabGhost =  new java.util.BitSet ();
 for (var i = 1; i < 27; i++) {
-vGammaToKPoint.set (pts[i]);
+vGammaToKPoint.setT (pts[i]);
 org.jmol.util.Measure.getBisectingPlane (pts[0], vGammaToKPoint, ptTemp, vTemp, planeGammaK);
 this.getIntersection (1, planeGammaK, null, null, null, null, null, false, false, 135266319, true);
 bsMoved.clear ();
@@ -603,7 +603,7 @@ if (!doUpdate) return ;
 if (this.mat4 == null) {
 this.mat4 =  new javax.vecmath.Matrix4f ();
 this.mat4.setIdentity ();
-}this.mat4.mul (m, this.mat4);
+}this.mat4.mul2 (m, this.mat4);
 this.recalcAltVertices = true;
 }, "javax.vecmath.Matrix4f,java.util.BitSet");
 });

@@ -19,7 +19,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial, "DrawMesh", org.jmol.shape.Mesh);
 Clazz.prepareFields (c$, function () {
 this.drawType = org.jmol.shapespecial.Draw.EnumDrawType.NONE;
-this.axis =  new javax.vecmath.Vector3f (1, 0, 0);
+this.axis = javax.vecmath.Vector3f.new3 (1, 0, 0);
 this.bsMeshesVisible =  new java.util.BitSet ();
 });
 Clazz.defineMethod (c$, "setCenters", 
@@ -30,7 +30,7 @@ if (this.ptCenters == null) this.setCenter (-1);
 });
 Clazz.defineMethod (c$, "setCenter", 
 function (iModel) {
-var center =  new javax.vecmath.Point3f (0, 0, 0);
+var center = javax.vecmath.Point3f.new3 (0, 0, 0);
 var iptlast = -1;
 var ipt = 0;
 var n = 0;

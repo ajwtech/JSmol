@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -175,7 +175,7 @@ public class RepaintManager implements JmolRepaintInterface {
       renderer.setViewerG3dShapeID(viewer, shapeID);
       return renderers[shapeID] = renderer;
     } catch (Exception e) {
-      Logger.error("Could not instantiate renderer:" + className, e);
+      Logger.errorEx("Could not instantiate renderer:" + className, e);
       return null;
     }
   }

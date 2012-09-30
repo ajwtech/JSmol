@@ -31,7 +31,7 @@ this.doNormalize = doNormalize;
 this.xyzOriginal = op.xyzOriginal;
 this.xyz = op.xyz;
 this.opId = op.opId;
-this.set (op);
+this.setM (op);
 this.doFinalize ();
 if (doNormalize) this.setOffset (atoms, atomIndex, count);
 }, "org.jmol.symmetry.SymmetryOperation,~A,~N,~N,~B");
@@ -48,8 +48,8 @@ return (normalized || this.xyzOriginal == null ? this.xyz : this.xyzOriginal);
 }, "~B");
 Clazz.defineMethod (c$, "newPoint", 
 function (atom1, atom2, transX, transY, transZ) {
-this.temp3.set (atom1);
-this.transform (this.temp3, this.temp3);
+this.temp3.setT (atom1);
+this.transform2 (this.temp3, this.temp3);
 atom2.set (this.temp3.x + transX, this.temp3.y + transY, this.temp3.z + transZ);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N");
 Clazz.defineMethod (c$, "dumpInfo", 
@@ -83,9 +83,9 @@ if (i % 4 == 3) v = org.jmol.symmetry.SymmetryOperation.normalizeTwelfths ((v < 
 temp[i] = v;
 }
 temp[15] = 1;
-this.set (temp);
+this.setA (temp);
 this.isFinalized = true;
-if (isReverse) this.invert (this);
+if (isReverse) this.invertM (this);
 this.xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (this, true, false, false);
 return true;
 }if (xyz.indexOf ("[[") == 0) {
@@ -94,16 +94,16 @@ org.jmol.util.Parser.parseStringInfestedFloatArray (xyz, null, temp);
 for (var i = 0; i < 16; i++) {
 if (Float.isNaN (temp[i])) return false;
 }
-this.set (temp);
+this.setA (temp);
 this.isFinalized = true;
-if (isReverse) this.invert (this);
+if (isReverse) this.invertM (this);
 this.xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (this, false, false, false);
 return true;
 }var strOut = org.jmol.symmetry.SymmetryOperation.getMatrixFromString (xyz, temp, this.doNormalize, false);
 if (strOut == null) return false;
-this.set (temp);
+this.setA (temp);
 if (isReverse) {
-this.invert (this);
+this.invertM (this);
 this.xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (this, true, false, false);
 } else {
 this.xyz = strOut;
@@ -323,13 +323,13 @@ unitcell.toCartesian (pt, false);
 Clazz.defineMethod (c$, "rotateEllipsoid", 
 function (cartCenter, vectors, unitcell, ptTemp1, ptTemp2) {
 var vRot =  new Array (3);
-ptTemp2.set (cartCenter);
+ptTemp2.setT (cartCenter);
 this.transformCartesian (unitcell, ptTemp2);
 for (var i = vectors.length; --i >= 0; ) {
-ptTemp1.set (cartCenter);
+ptTemp1.setT (cartCenter);
 ptTemp1.add (vectors[i]);
 this.transformCartesian (unitcell, ptTemp1);
-vRot[i] =  new javax.vecmath.Vector3f (ptTemp1);
+vRot[i] = javax.vecmath.Vector3f.newV (ptTemp1);
 vRot[i].sub (ptTemp2);
 }
 return vRot;
@@ -352,8 +352,8 @@ var xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (m, false, false,
 var typeOnly = (id == null);
 if (pt00 == null || Float.isNaN (pt00.x)) pt00 =  new javax.vecmath.Point3f ();
 if (ptTarget != null) {
-pt01.set (pt00);
-pt02.set (ptTarget);
+pt01.setT (pt00);
+pt02.setT (ptTarget);
 uc.toUnitCell (pt01, ptemp);
 uc.toUnitCell (pt02, ptemp);
 uc.toFractional (pt01, false);
@@ -361,30 +361,30 @@ m.transform (pt01);
 uc.toCartesian (pt01, false);
 uc.toUnitCell (pt01, ptemp);
 if (pt01.distance (pt02) > 0.1) return null;
-pt01.set (pt00);
-pt02.set (ptTarget);
+pt01.setT (pt00);
+pt02.setT (ptTarget);
 uc.toFractional (pt01, false);
 uc.toFractional (pt02, false);
 m.transform (pt01);
-vtrans.sub (pt02, pt01);
+vtrans.sub2 (pt02, pt01);
 pt01.set (0, 0, 0);
 pt02.set (0, 0, 0);
 }pt01.x = pt02.y = pt03.z = 1;
 pt01.add (pt00);
 pt02.add (pt00);
 pt03.add (pt00);
-var p0 =  new javax.vecmath.Point3f (pt00);
-var p1 =  new javax.vecmath.Point3f (pt01);
-var p2 =  new javax.vecmath.Point3f (pt02);
-var p3 =  new javax.vecmath.Point3f (pt03);
+var p0 = javax.vecmath.Point3f.newP (pt00);
+var p1 = javax.vecmath.Point3f.newP (pt01);
+var p2 = javax.vecmath.Point3f.newP (pt02);
+var p3 = javax.vecmath.Point3f.newP (pt03);
 uc.toFractional (p0, false);
 uc.toFractional (p1, false);
 uc.toFractional (p2, false);
 uc.toFractional (p3, false);
-m.transform (p0, p0);
-m.transform (p1, p1);
-m.transform (p2, p2);
-m.transform (p3, p3);
+m.transform2 (p0, p0);
+m.transform2 (p1, p1);
+m.transform2 (p2, p2);
+m.transform2 (p3, p3);
 p0.add (vtrans);
 p1.add (vtrans);
 p2.add (vtrans);
@@ -395,17 +395,17 @@ uc.toCartesian (p1, false);
 uc.toCartesian (p2, false);
 uc.toCartesian (p3, false);
 var v01 =  new javax.vecmath.Vector3f ();
-v01.sub (p1, p0);
+v01.sub2 (p1, p0);
 var v02 =  new javax.vecmath.Vector3f ();
-v02.sub (p2, p0);
+v02.sub2 (p2, p0);
 var v03 =  new javax.vecmath.Vector3f ();
-v03.sub (p3, p0);
+v03.sub2 (p3, p0);
 vtemp.cross (v01, v02);
 var haveinversion = (vtemp.dot (v03) < 0);
 if (haveinversion) {
-p1.scaleAdd (-2, v01, p1);
-p2.scaleAdd (-2, v02, p2);
-p3.scaleAdd (-2, v03, p3);
+p1.scaleAdd2 (-2, v01, p1);
+p2.scaleAdd2 (-2, v02, p2);
+p3.scaleAdd2 (-2, v03, p3);
 }var info;
 info = org.jmol.util.Measure.computeHelicalAxis (null, 135266306, pt00, p0, org.jmol.util.Quaternion.getQuaternionFrame (p0, p1, p2).div (org.jmol.util.Quaternion.getQuaternionFrame (pt00, pt01, pt02)));
 var pa1 = info[0];
@@ -413,10 +413,10 @@ var ax1 = info[1];
 var ang1 = Math.round (Math.abs (org.jmol.symmetry.SymmetryOperation.approx ((info[3]).x, 1)));
 var pitch1 = org.jmol.symmetry.SymmetryOperation.approx ((info[3]).y);
 if (haveinversion) {
-p1.scaleAdd (2, v01, p1);
-p2.scaleAdd (2, v02, p2);
-p3.scaleAdd (2, v03, p3);
-}var trans =  new javax.vecmath.Vector3f (p0);
+p1.scaleAdd2 (2, v01, p1);
+p2.scaleAdd2 (2, v02, p2);
+p3.scaleAdd2 (2, v03, p3);
+}var trans = javax.vecmath.Vector3f.newV (p0);
 trans.sub (pt00);
 if (trans.length () < 0.1) trans = null;
 var ptinv = null;
@@ -428,7 +428,7 @@ var isinversion = false;
 var ismirrorplane = false;
 if (isrotation || haveinversion) trans = null;
 if (haveinversion && istranslation) {
-ipt =  new javax.vecmath.Point3f (pt00);
+ipt = javax.vecmath.Point3f.newP (pt00);
 ipt.add (p0);
 ipt.scale (0.5);
 ptinv = p0;
@@ -448,15 +448,15 @@ f = 1;
 break;
 case 180:
 pt0 =  new javax.vecmath.Point3f ();
-pt0.set (pt00);
+pt0.setT (pt00);
 pt0.add (d);
-pa1.scaleAdd (0.5, d, pt00);
+pa1.scaleAdd2 (0.5, d, pt00);
 if (pt0.distance (p0) > 0.1) {
-trans =  new javax.vecmath.Vector3f (p0);
+trans = javax.vecmath.Vector3f.newV (p0);
 trans.sub (pt0);
-ptemp.set (trans);
+ptemp.setT (trans);
 uc.toFractional (ptemp, false);
-ftrans.set (ptemp);
+ftrans.setT (ptemp);
 } else {
 trans = null;
 }isrotation = false;
@@ -464,7 +464,7 @@ haveinversion = false;
 ismirrorplane = true;
 }
 if (f != 0) {
-vtemp.set (pt00);
+vtemp.setT (pt00);
 vtemp.sub (pa1);
 vtemp.add (p0);
 vtemp.sub (pa1);
@@ -472,12 +472,12 @@ vtemp.sub (d);
 vtemp.scale (f);
 pa1.add (vtemp);
 ipt =  new javax.vecmath.Point3f ();
-ipt.scaleAdd (0.5, d, pa1);
+ipt.scaleAdd2 (0.5, d, pa1);
 ptinv =  new javax.vecmath.Point3f ();
-ptinv.scaleAdd (-2, ipt, pt00);
+ptinv.scaleAdd2 (-2, ipt, pt00);
 ptinv.scale (-1);
 }} else if (trans != null) {
-ptemp.set (trans);
+ptemp.setT (trans);
 uc.toFractional (ptemp, false);
 if (org.jmol.symmetry.SymmetryOperation.approx (ptemp.x) == 1) {
 ptemp.x = 0;
@@ -485,27 +485,27 @@ ptemp.x = 0;
 ptemp.y = 0;
 }if (org.jmol.symmetry.SymmetryOperation.approx (ptemp.z) == 1) {
 ptemp.z = 0;
-}ftrans.set (ptemp);
+}ftrans.setT (ptemp);
 uc.toCartesian (ptemp, false);
-trans.set (ptemp);
+trans.setT (ptemp);
 }var ang = ang1;
 org.jmol.symmetry.SymmetryOperation.approx0 (ax1);
 if (isrotation) {
 var pt1 =  new javax.vecmath.Point3f ();
-vtemp.set (ax1);
+vtemp.setT (ax1);
 var ang2 = ang1;
 if (haveinversion) {
-pt1.set (pa1);
+pt1.setT (pa1);
 pt1.add (vtemp);
 ang2 = Math.round (org.jmol.util.Measure.computeTorsion (ptinv, pa1, pt1, p0, true));
 } else if (pitch1 == 0) {
-pt1.set (pa1);
-ptemp.scaleAdd (1, pt1, vtemp);
+pt1.setT (pa1);
+ptemp.scaleAdd2 (1, pt1, vtemp);
 ang2 = Math.round (org.jmol.util.Measure.computeTorsion (pt00, pa1, ptemp, p0, true));
 } else {
-ptemp.set (pa1);
+ptemp.setT (pa1);
 ptemp.add (vtemp);
-pt1.scaleAdd (0.5, vtemp, pa1);
+pt1.scaleAdd2 (0.5, vtemp, pa1);
 ang2 = Math.round (org.jmol.util.Measure.computeTorsion (pt00, pa1, ptemp, p0, true));
 }if (ang2 != 0) ang1 = ang2;
 }if (isrotation && !haveinversion && pitch1 == 0) {
@@ -516,7 +516,7 @@ ang1 = -ang1;
 var draw1 =  new StringBuffer ();
 var drawid;
 if (isinversion) {
-ptemp.set (ipt);
+ptemp.setT (ipt);
 uc.toFractional (ptemp, false);
 info1 = "inversion center|" + org.jmol.symmetry.SymmetryOperation.fcoord (ptemp);
 } else if (isrotation) {
@@ -524,7 +524,7 @@ if (haveinversion) {
 info1 = "" + (Math.floor (360 / ang)) + "-bar axis";
 } else if (pitch1 != 0) {
 info1 = "" + (Math.floor (360 / ang)) + "-fold screw axis";
-ptemp.set (ax1);
+ptemp.setT (ax1);
 uc.toFractional (ptemp, false);
 info1 += "|translation: " + org.jmol.symmetry.SymmetryOperation.fcoord (ptemp);
 } else {
@@ -547,7 +547,7 @@ info1 += "glide plane |translation:" + s;
 }} else if (ismirrorplane) {
 info1 = "mirror plane";
 }if (haveinversion && !isinversion) {
-ptemp.set (ipt);
+ptemp.setT (ipt);
 uc.toFractional (ptemp, false);
 info1 += "|inversion center at " + org.jmol.symmetry.SymmetryOperation.fcoord (ptemp);
 }var cmds = null;
@@ -559,17 +559,17 @@ draw1.append (drawid).append ("* delete");
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame1X", 0.15, pt00, pt01, "red");
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame1Y", 0.15, pt00, pt02, "green");
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame1Z", 0.15, pt00, pt03, "blue");
-ptemp.set (p1);
+ptemp.setT (p1);
 ptemp.sub (p0);
-ptemp.scaleAdd (0.9, ptemp, p0);
+ptemp.scaleAdd2 (0.9, ptemp, p0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame2X", 0.2, p0, ptemp, "red");
-ptemp.set (p2);
+ptemp.setT (p2);
 ptemp.sub (p0);
-ptemp.scaleAdd (0.9, ptemp, p0);
+ptemp.scaleAdd2 (0.9, ptemp, p0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame2Y", 0.2, p0, ptemp, "green");
-ptemp.set (p3);
+ptemp.setT (p3);
 ptemp.sub (p0);
-ptemp.scaleAdd (0.9, ptemp, p0);
+ptemp.scaleAdd2 (0.9, ptemp, p0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame2Z", 0.2, p0, ptemp, "purple");
 var color;
 if (isrotation) {
@@ -577,14 +577,14 @@ var pt1 =  new javax.vecmath.Point3f ();
 color = "red";
 ang = ang1;
 var scale = 1.0;
-vtemp.set (ax1);
+vtemp.setT (ax1);
 if (haveinversion) {
-pt1.set (pa1);
+pt1.setT (pa1);
 pt1.add (vtemp);
 if (pitch1 == 0) {
-pt1.set (ipt);
+pt1.setT (ipt);
 vtemp.scale (3);
-ptemp.scaleAdd (-1, vtemp, pa1);
+ptemp.scaleAdd2 (-1, vtemp, pa1);
 draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
 }scale = p0.distance (pt1);
 draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color red");
@@ -595,25 +595,25 @@ if (!isSpecial) {
 draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
 draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escapePt (p0)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
 }vtemp.scale (3);
-ptemp.scaleAdd (-1, vtemp, pa1);
+ptemp.scaleAdd2 (-1, vtemp, pa1);
 draw1.append (drawid).append ("rotVector2 diameter 0.1 ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
-pt1.set (pa1);
-if (pitch1 == 0 && pt00.distance (p0) < 0.2) pt1.scaleAdd (0.5, pt1, vtemp);
+pt1.setT (pa1);
+if (pitch1 == 0 && pt00.distance (p0) < 0.2) pt1.scaleAdd2 (0.5, pt1, vtemp);
 } else {
 color = "orange";
 draw1.append (drawid).append ("rotLine1 ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pa1)).append (" color red");
-ptemp.set (pa1);
+ptemp.setT (pa1);
 ptemp.add (vtemp);
 draw1.append (drawid).append ("rotLine2 ").append (org.jmol.util.Escape.escapePt (p0)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color red");
-pt1.scaleAdd (0.5, vtemp, pa1);
-}ptemp.set (pt1);
+pt1.scaleAdd2 (0.5, vtemp, pa1);
+}ptemp.setT (pt1);
 ptemp.add (vtemp);
 if (haveinversion && pitch1 != 0) {
 draw1.append (drawid).append ("rotRotLine1").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color red");
 draw1.append (drawid).append ("rotRotLine2").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (p0)).append (" color red");
 }draw1.append (drawid).append ("rotRotArrow arrow width 0.10 scale " + scale + " arc ").append (org.jmol.util.Escape.escapePt (pt1)).append (org.jmol.util.Escape.escapePt (ptemp));
-if (haveinversion) ptemp.set (ptinv);
- else ptemp.set (pt00);
+if (haveinversion) ptemp.setT (ptinv);
+ else ptemp.setT (pt00);
 if (ptemp.distance (p0) < 0.1) ptemp.set (Math.random (), Math.random (), Math.random ());
 draw1.append (org.jmol.util.Escape.escapePt (ptemp));
 ptemp.set (0, ang, 0);
@@ -622,20 +622,20 @@ draw1.append (drawid).append ("rotVector1 vector diameter 0.1 ").append (org.jmo
 }if (ismirrorplane) {
 if (pt00.distance (pt0) > 0.2) draw1.append (drawid).append ("planeVector arrow ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (pt0)).append (" color indigo");
 if (trans != null) {
-ptemp.scaleAdd (-1, p0, p1);
+ptemp.scaleAdd2 (-1, p0, p1);
 ptemp.add (pt0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "planeFrameX", 0.15, pt0, ptemp, "translucent red");
-ptemp.scaleAdd (-1, p0, p2);
+ptemp.scaleAdd2 (-1, p0, p2);
 ptemp.add (pt0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "planeFrameY", 0.15, pt0, ptemp, "translucent green");
-ptemp.scaleAdd (-1, p0, p3);
+ptemp.scaleAdd2 (-1, p0, p3);
 ptemp.add (pt0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "planeFrameZ", 0.15, pt0, ptemp, "translucent blue");
 }color = (trans == null ? "green" : "blue");
-vtemp.set (ax1);
+vtemp.setT (ax1);
 vtemp.normalize ();
 var w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
-var plane =  new javax.vecmath.Point4f (vtemp.x, vtemp.y, vtemp.z, w);
+var plane = javax.vecmath.Point4f.new4 (vtemp.x, vtemp.y, vtemp.z, w);
 var v =  new java.util.ArrayList ();
 v.add (uc.getCanonicalCopy (1.05));
 org.jmol.util.TriangleData.intersectPlane (plane, v, 3);
@@ -646,27 +646,27 @@ if (pts.length == 3) draw1.append (org.jmol.util.Escape.escapePt (pts[2]));
 draw1.append (" color translucent ").append (color);
 }
 if (v.size () == 0) {
-ptemp.set (pa1);
+ptemp.setT (pa1);
 ptemp.add (ax1);
 draw1.append (drawid).append ("planeCircle scale 2.0 circle ").append (org.jmol.util.Escape.escapePt (pa1)).append (org.jmol.util.Escape.escapePt (ptemp)).append (" color translucent ").append (color).append (" mesh fill");
 }}if (haveinversion) {
 draw1.append (drawid).append ("invPoint diameter 0.4 ").append (org.jmol.util.Escape.escapePt (ipt));
 draw1.append (drawid).append ("invArrow arrow ").append (org.jmol.util.Escape.escapePt (pt00)).append (org.jmol.util.Escape.escapePt (ptinv)).append (" color indigo");
 if (!isinversion) {
-ptemp.set (ptinv);
+ptemp.setT (ptinv);
 ptemp.add (pt00);
 ptemp.sub (pt01);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "invFrameX", 0.15, ptinv, ptemp, "translucent red");
-ptemp.set (ptinv);
+ptemp.setT (ptinv);
 ptemp.add (pt00);
 ptemp.sub (pt02);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "invFrameY", 0.15, ptinv, ptemp, "translucent green");
-ptemp.set (ptinv);
+ptemp.setT (ptinv);
 ptemp.add (pt00);
 ptemp.sub (pt03);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "invFrameZ", 0.15, ptinv, ptemp, "translucent blue");
 }}if (trans != null) {
-if (pt0 == null) pt0 =  new javax.vecmath.Point3f (pt00);
+if (pt0 == null) pt0 = javax.vecmath.Point3f.newP (pt00);
 draw1.append (drawid).append ("transVector vector ").append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (trans));
 }draw1.append ("\nvar pt00 = " + org.jmol.util.Escape.escapePt (pt00));
 draw1.append ("\nvar p0 = " + org.jmol.util.Escape.escapePt (p0));
@@ -686,10 +686,10 @@ if (isrotation) {
 if (haveinversion) {
 } else if (pitch1 == 0) {
 } else {
-trans =  new javax.vecmath.Vector3f (ax1);
-ptemp.set (trans);
+trans = javax.vecmath.Vector3f.newV (ax1);
+ptemp.setT (trans);
 uc.toFractional (ptemp, false);
-ftrans =  new javax.vecmath.Vector3f (ptemp);
+ftrans = javax.vecmath.Vector3f.newV (ptemp);
 }if (haveinversion && pitch1 != 0) {
 }}if (ismirrorplane) {
 if (trans != null) {
@@ -705,7 +705,7 @@ pa1 = null;
 ax1 = null;
 }if (ax1 != null) ax1.normalize ();
 var m2 = null;
-m2 =  new javax.vecmath.Matrix4f (m);
+m2 = javax.vecmath.Matrix4f.newM (m);
 if (vtrans.length () != 0) {
 m2.m03 += vtrans.x;
 m2.m13 += vtrans.y;

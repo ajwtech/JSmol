@@ -218,6 +218,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns whether or not the Shift modifier is down on this event.
+	 * @return b
 	 */
 	public boolean isShiftDown() {
 		return (modifiers & SHIFT_MASK) != 0;
@@ -225,13 +226,15 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns whether or not the Control modifier is down on this event.
+	 * @return b 
 	 */
-	public boolean isControlDown() {
+	public boolean ibsControlDown() {
 		return (modifiers & CTRL_MASK) != 0;
 	}
 
 	/**
 	 * Returns whether or not the Meta modifier is down on this event.
+	 * @return b
 	 */
 	public boolean isMetaDown() {
 		return (modifiers & META_MASK) != 0;
@@ -239,6 +242,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns whether or not the Alt modifier is down on this event.
+	 * @return b
 	 */
 	public boolean isAltDown() {
 		return (modifiers & ALT_MASK) != 0;
@@ -246,6 +250,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns whether or not the AltGraph modifier is down on this event.
+	 * @return b
 	 */
 	public boolean isAltGraphDown() {
 		return (modifiers & ALT_GRAPH_MASK) != 0;
@@ -253,6 +258,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns the timestamp of when this event occurred.
+	 * @return when
 	 */
 	public long getWhen() {
 		return when;
@@ -260,6 +266,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns the modifier mask for this event.
+	 * @return b
 	 */
 	public int getModifiers() {
 		return modifiers & (JDK_1_3_MODIFIERS | HIGH_MODIFIERS);
@@ -297,6 +304,7 @@ public abstract class InputEvent {
 	 * </PRE>
 	 * 
 	 * The above code will work even if new modifiers are added.
+	 * @return mods
 	 * 
 	 * @since 1.4
 	 */
@@ -314,6 +322,7 @@ public abstract class InputEvent {
 
 	/**
 	 * Returns whether or not this event has been consumed.
+	 * @return b
 	 * 
 	 * @see #consume
 	 */

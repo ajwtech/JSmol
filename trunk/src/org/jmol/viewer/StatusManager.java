@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -29,7 +29,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;

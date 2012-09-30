@@ -157,10 +157,10 @@ this.getYzCount ();
 });
 Clazz.defineMethod (c$, "setMatrix", 
 ($fz = function () {
-for (var i = 0; i < 3; i++) this.volumetricMatrix.setColumn (i, this.volumetricVectors[i]);
+for (var i = 0; i < 3; i++) this.volumetricMatrix.setColumnV (i, this.volumetricVectors[i]);
 
 try {
-this.inverseMatrix.invert (this.volumetricMatrix);
+this.inverseMatrix.invertM (this.volumetricMatrix);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("VolumeData error setting matrix -- bad unit vectors? ");
@@ -173,7 +173,7 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.overrideMethod (c$, "transform", 
 function (v1, v2) {
-this.volumetricMatrix.transform (v1, v2);
+this.volumetricMatrix.transform2 (v1, v2);
 }, "javax.vecmath.Vector3f,javax.vecmath.Vector3f");
 Clazz.overrideMethod (c$, "setPlaneParameters", 
 function (plane) {
@@ -200,9 +200,9 @@ return (this.thePlane.x * pt.x + this.thePlane.y * pt.y + this.thePlane.z * pt.z
 }, "javax.vecmath.Point3f");
 Clazz.overrideMethod (c$, "voxelPtToXYZ", 
 function (x, y, z, pt) {
-pt.scaleAdd (x, this.volumetricVectors[0], this.volumetricOrigin);
-pt.scaleAdd (y, this.volumetricVectors[1], pt);
-pt.scaleAdd (z, this.volumetricVectors[2], pt);
+pt.scaleAdd2 (x, this.volumetricVectors[0], this.volumetricOrigin);
+pt.scaleAdd2 (y, this.volumetricVectors[1], pt);
+pt.scaleAdd2 (z, this.volumetricVectors[2], pt);
 }, "~N,~N,~N,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setUnitVectors", 
 function () {
@@ -213,17 +213,18 @@ var d = this.volumetricVectorLengths[i] = this.volumetricVectors[i].length ();
 if (d == 0) return false;
 if (d > this.maxVectorLength) this.maxVectorLength = d;
 this.voxelVolume *= d;
-this.unitVolumetricVectors[i].normalize (this.volumetricVectors[i]);
+this.unitVolumetricVectors[i].setT (this.volumetricVectors[i]);
+this.unitVolumetricVectors[i].normalize ();
 }
 this.minToPlaneDistance = this.maxVectorLength * 2;
 this.origin[0] = this.volumetricOrigin.x;
 this.origin[1] = this.volumetricOrigin.y;
 this.origin[2] = this.volumetricOrigin.z;
 this.spanningVectors =  new Array (4);
-this.spanningVectors[0] =  new javax.vecmath.Vector3f (this.volumetricOrigin);
+this.spanningVectors[0] = javax.vecmath.Vector3f.newV (this.volumetricOrigin);
 for (var i = 0; i < 3; i++) {
 var v = this.spanningVectors[i + 1] =  new javax.vecmath.Vector3f ();
-v.scaleAdd (this.voxelCounts[i] - 1, this.volumetricVectors[i], v);
+v.scaleAdd2 (this.voxelCounts[i] - 1, this.volumetricVectors[i], v);
 }
 return this.setMatrix ();
 });
@@ -240,7 +241,7 @@ if (this.mappingPlane != null) return this.distanceToMappingPlane (point);
 if (this.sr != null) {
 var v = this.sr.getValueAtPoint (point);
 return (this.isSquared ? v * v : v);
-}this.ptXyzTemp.sub (point, this.volumetricOrigin);
+}this.ptXyzTemp.sub2 (point, this.volumetricOrigin);
 this.inverseMatrix.transform (this.ptXyzTemp);
 var iMax;
 var xLower = this.indexLower (this.ptXyzTemp.x, iMax = this.voxelCounts[0] - 1);
@@ -288,10 +289,10 @@ return (!this.isPeriodic && x < 0 || xLower == xMax ? xLower : xLower + 1);
 Clazz.defineMethod (c$, "offsetCenter", 
 function (center) {
 var pt =  new javax.vecmath.Point3f ();
-pt.scaleAdd ((this.voxelCounts[0] - 1) / 2, this.volumetricVectors[0], pt);
-pt.scaleAdd ((this.voxelCounts[1] - 1) / 2, this.volumetricVectors[1], pt);
-pt.scaleAdd ((this.voxelCounts[2] - 1) / 2, this.volumetricVectors[2], pt);
-this.volumetricOrigin.sub (center, pt);
+pt.scaleAdd2 ((this.voxelCounts[0] - 1) / 2, this.volumetricVectors[0], pt);
+pt.scaleAdd2 ((this.voxelCounts[1] - 1) / 2, this.volumetricVectors[1], pt);
+pt.scaleAdd2 ((this.voxelCounts[2] - 1) / 2, this.volumetricVectors[2], pt);
+this.volumetricOrigin.sub2 (center, pt);
 }, "javax.vecmath.Point3f");
 Clazz.overrideMethod (c$, "setDataDistanceToPlane", 
 function (plane) {
@@ -329,7 +330,7 @@ if (this.voxelData == null) return ;
 var nx = this.voxelCounts[0];
 var ny = this.voxelCounts[1];
 var nz = this.voxelCounts[2];
-var normal =  new javax.vecmath.Vector3f (plane.x, plane.y, plane.z);
+var normal = javax.vecmath.Vector3f.new3 (plane.x, plane.y, plane.z);
 normal.normalize ();
 var f = 1;
 for (var x = 0; x < nx; x++) for (var y = 0; y < ny; y++) for (var z = 0; z < nz; z++) {
@@ -362,11 +363,11 @@ Clazz.defineMethod (c$, "calculateFractionalPoint",
 function (cutoff, pointA, pointB, valueA, valueB, pt) {
 var d = (valueB - valueA);
 var fraction = (cutoff - valueA) / d;
-this.edgeVector.sub (pointB, pointA);
-pt.scaleAdd (fraction, this.edgeVector, pointA);
+this.edgeVector.sub2 (pointB, pointA);
+pt.scaleAdd2 (fraction, this.edgeVector, pointA);
 if (this.sr == null || !this.doIterate || valueB == valueA || fraction < 0.01 || fraction > 0.99 || (this.edgeVector.length ()) < 0.01) return cutoff;
 var n = 0;
-this.ptTemp.set (pt);
+this.ptTemp.setT (pt);
 var v = this.lookupInterpolatedVoxelValue (this.ptTemp);
 var v0 = NaN;
 while (++n < 10) {
@@ -375,10 +376,10 @@ if (fnew < 0 || fnew > 1) break;
 var diff = (cutoff - v) / d / 2;
 fraction += diff;
 if (fraction < 0 || fraction > 1) break;
-pt.set (this.ptTemp);
+pt.setT (this.ptTemp);
 v0 = v;
 if (Math.abs (diff) < 0.005) break;
-this.ptTemp.scaleAdd (diff, this.edgeVector, pt);
+this.ptTemp.scaleAdd2 (diff, this.edgeVector, pt);
 v = this.lookupInterpolatedVoxelValue (this.ptTemp);
 }
 return v0;

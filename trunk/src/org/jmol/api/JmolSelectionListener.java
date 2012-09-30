@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: egonw $
- * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
- * $Revision: 4255 $
+ * $Author: hansonr $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2005 Jmol Development
  *
@@ -27,7 +27,7 @@
  */
 package org.jmol.api;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 /**
  * listen to atom selections in a Jmol Viewer

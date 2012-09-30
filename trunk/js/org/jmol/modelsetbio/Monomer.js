@@ -237,7 +237,7 @@ var prev = (mStep < 1 || this.monomerIndex <= 0 ? null : this.bioPolymer.monomer
 var q2 = this.getQuaternion (qType);
 var q1 = (mStep < 1 ? org.jmol.util.Quaternion.getQuaternionFrame (org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, false) : prev == null ? null : prev.getQuaternion (qType));
 if (q1 == null || q2 == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
-var a = (mStep < 1 ?  new javax.vecmath.Point3f (0, 0, 0) : prev.getQuaternionFrameCenter (qType));
+var a = (mStep < 1 ? javax.vecmath.Point3f.new3 (0, 0, 0) : prev.getQuaternionFrameCenter (qType));
 var b = this.getQuaternionFrameCenter (qType);
 if (a == null || b == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
 return org.jmol.util.Measure.computeHelicalAxis (tokType == 135176 ? "helixaxis" + this.getUniqueID () : null, tokType, a, b, q2.div (q1));

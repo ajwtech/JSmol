@@ -176,7 +176,7 @@ if (this.totEnergy != null) this.setEnergy ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "scalePrimitiveData", 
 ($fz = function (i, value) {
-var v =  new javax.vecmath.Vector3f (this.primitiveData[i], this.primitiveData[i + 1], this.primitiveData[i + 2]);
+var v = javax.vecmath.Vector3f.new3 (this.primitiveData[i], this.primitiveData[i + 1], this.primitiveData[i + 2]);
 v.normalize ();
 v.scale (value);
 this.primitiveData[i++] = v.x;

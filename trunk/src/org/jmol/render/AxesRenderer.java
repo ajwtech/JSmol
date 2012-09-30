@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -119,7 +119,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
           diameter += diameter;
       }
       g3d.setSlab(0);
-      pt0.set(viewer.transformPt(axes.axisXY));
+      pt0.setT(viewer.transformPt(axes.axisXY));
       originScreen.set(pt0.x, pt0.y, pt0.z);
       float zoomDimension = viewer.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;
@@ -128,7 +128,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       for (int i = 0; i < 3; i++) {
         viewer.rotatePoint(axes.getAxisPoint(i, false), screens[i]);
         screens[i].z *= -1;
-        screens[i].scaleAdd(scaleFactor, screens[i], originScreen);
+        screens[i].scaleAdd2(scaleFactor, screens[i], originScreen);
       }
     } else {
       drawTicks = (axes.tickInfos != null);
@@ -137,7 +137,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
           atomA = new Point3fi();
           atomB = new Point3fi();
         }
-        atomA.set(axes.getOriginPoint(isDataFrame));
+        atomA.setT(axes.getOriginPoint(isDataFrame));
       }
       viewer.transformPtNoClip(axes.getOriginPoint(isDataFrame),
           originScreen);
@@ -163,7 +163,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
         tickInfo = axes.tickInfos[(i % 3) + 1];
         if (tickInfo == null)
           tickInfo = axes.tickInfos[0];
-        atomB.set(axes.getAxisPoint(i, isDataFrame));
+        atomB.setT(axes.getAxisPoint(i, isDataFrame));
         if (tickInfo != null) {
           tickInfo.first = 0;
           tickInfo.signFactor = (i % 6 >= 3 ? -1 : 1);

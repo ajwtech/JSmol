@@ -531,7 +531,7 @@ Clazz.defineMethod (c$, "setVibrationVector",
 function (atomIndex, x, y, z) {
 if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) return ;
 if (this.vibrationVectors == null || this.vibrationVectors.length < atomIndex) this.vibrationVectors =  new Array (this.atoms.length);
-if (this.vibrationVectors[atomIndex] == null) this.vibrationVectors[atomIndex] =  new javax.vecmath.Vector3f (x, y, z);
+if (this.vibrationVectors[atomIndex] == null) this.vibrationVectors[atomIndex] = javax.vecmath.Vector3f.new3 (x, y, z);
  else this.vibrationVectors[atomIndex].set (x, y, z);
 this.atoms[atomIndex].setVibrationVector ();
 }, "~N,~N,~N,~N");
@@ -964,25 +964,25 @@ if (nBonds == 0) {
 switch (n) {
 case 4:
 z.set (0.635, 0.635, 0.635);
-pt =  new javax.vecmath.Point3f (z);
+pt = javax.vecmath.Point3f.newP (z);
 pt.add (atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 case 3:
 z.set (-0.635, -0.635, 0.635);
-pt =  new javax.vecmath.Point3f (z);
+pt = javax.vecmath.Point3f.newP (z);
 pt.add (atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 case 2:
 z.set (-0.635, 0.635, -0.635);
-pt =  new javax.vecmath.Point3f (z);
+pt = javax.vecmath.Point3f.newP (z);
 pt.add (atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 case 1:
 z.set (0.635, -0.635, -0.635);
-pt =  new javax.vecmath.Point3f (z);
+pt = javax.vecmath.Point3f.newP (z);
 pt.add (atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
@@ -994,30 +994,30 @@ break;
 case 3:
 this.getHybridizationAndAxes (i, atomicNumber, z, x, "sp3b", false, true);
 pt =  new javax.vecmath.Point3f ();
-pt.scaleAdd (dHX, z, atom);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 this.getHybridizationAndAxes (i, atomicNumber, z, x, "sp3c", false, true);
 pt =  new javax.vecmath.Point3f ();
-pt.scaleAdd (dHX, z, atom);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 this.getHybridizationAndAxes (i, atomicNumber, z, x, "sp3d", false, true);
 pt =  new javax.vecmath.Point3f ();
-pt.scaleAdd (dHX, z, atom);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 break;
 case 2:
 var isEne = (hybridization == 2 || atomicNumber == 5 || nBonds == 1 && targetValence == 4 || atomicNumber == 7 && this.isAdjacentSp2 (atom));
 this.getHybridizationAndAxes (i, atomicNumber, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3c" : "lpa"), false, true);
-pt =  new javax.vecmath.Point3f (z);
-pt.scaleAdd (dHX, z, atom);
+pt = javax.vecmath.Point3f.newP (z);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 this.getHybridizationAndAxes (i, atomicNumber, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3d" : "lpb"), false, true);
-pt =  new javax.vecmath.Point3f (z);
-pt.scaleAdd (dHX, z, atom);
+pt = javax.vecmath.Point3f.newP (z);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 break;
@@ -1027,8 +1027,8 @@ case 1:
 if (atomicNumber == 8 && atom === atom.getGroup ().getCarbonylOxygenAtom ()) {
 hAtoms[i] = null;
 continue ;}if (this.getHybridizationAndAxes (i, atomicNumber, z, x, (hybridization == 2 || atomicNumber == 5 || atomicNumber == 7 && this.isAdjacentSp2 (atom) ? "sp2c" : "sp3d"), true, false) != null) {
-pt =  new javax.vecmath.Point3f (z);
-pt.scaleAdd (dHX, z, atom);
+pt = javax.vecmath.Point3f.newP (z);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 } else {
@@ -1036,15 +1036,15 @@ hAtoms[i] =  new Array (0);
 }break;
 case 2:
 this.getHybridizationAndAxes (i, atomicNumber, z, x, (targetValence == 4 ? "sp2c" : "sp2b"), false, false);
-pt =  new javax.vecmath.Point3f (z);
-pt.scaleAdd (dHX, z, atom);
+pt = javax.vecmath.Point3f.newP (z);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 break;
 case 3:
 this.getHybridizationAndAxes (i, atomicNumber, z, x, "spb", false, true);
-pt =  new javax.vecmath.Point3f (z);
-pt.scaleAdd (dHX, z, atom);
+pt = javax.vecmath.Point3f.newP (z);
+pt.scaleAdd2 (dHX, z, atom);
 hAtoms[i][hPt++] = pt;
 if (vConnect != null) vConnect.add (atom);
 break;
@@ -1107,12 +1107,12 @@ z.set (0, 0, 0);
 x.set (0, 0, 0);
 var v =  new Array (4);
 for (var i = 0; i < nAttached; i++) {
-v[i] =  new javax.vecmath.Vector3f (atom);
+v[i] = javax.vecmath.Vector3f.newV (atom);
 v[i].sub (attached[i]);
 v[i].normalize ();
 z.add (v[i]);
 }
-if (nAttached > 0) x.set (v[0]);
+if (nAttached > 0) x.setT (v[0]);
 var isPlanar = false;
 if (nAttached >= 3) {
 if (x.angle (v[1]) < 2.984513) vTemp.cross (x, v[1]);
@@ -1185,7 +1185,7 @@ if (hybridization === "sp3") return null;
 } else if (lcaoType.indexOf (hybridization) < 0) {
 return null;
 }}if (pt < nAttached && !lcaoType.startsWith ("p") && !lcaoType.startsWith ("l")) {
-z.sub (attached[pt], atom);
+z.sub2 (attached[pt], atom);
 z.normalize ();
 return hybridization;
 }switch (nAttached) {
@@ -1204,32 +1204,32 @@ z.set (0, 0, 1);
 x.set (1, 0, 0);
 }break;
 case 1:
-vTemp.set (org.jmol.modelset.AtomCollection.vRef);
+vTemp.setT (org.jmol.modelset.AtomCollection.vRef);
 x.cross (vTemp, z);
 if (isSp3) {
 for (var i = 0; i < attached[0].bonds.length; i++) {
 if (attached[0].bonds[i].isCovalent () && attached[0].getBondedAtomIndex (i) != atom.index) {
-x.sub (attached[0], attached[0].bonds[i].getOtherAtom (attached[0]));
+x.sub2 (attached[0], attached[0].bonds[i].getOtherAtom (attached[0]));
 x.cross (z, x);
 if (x.length () == 0) continue ;x.cross (x, z);
 break;
 }}
 x.normalize ();
 if (Float.isNaN (x.x)) {
-x.set (org.jmol.modelset.AtomCollection.vRef);
+x.setT (org.jmol.modelset.AtomCollection.vRef);
 x.cross (x, z);
 }vTemp.cross (z, x);
 vTemp.normalize ();
 z.normalize ();
-x.scaleAdd (2.828, x, z);
+x.scaleAdd2 (2.828, x, z);
 if (pt != 3) {
 x.normalize ();
 var a =  new javax.vecmath.AxisAngle4f (z.x, z.y, z.z, (pt == 2 ? 1 : -1) * 2.09439507);
 var m =  new javax.vecmath.Matrix3f ();
 m.setIdentity ();
-m.set (a);
+m.setAA (a);
 m.transform (x);
-}z.set (x);
+}z.setT (x);
 x.cross (vTemp, z);
 break;
 }vTemp.cross (x, z);
@@ -1240,8 +1240,8 @@ break;
 }case 2:
 var isCumulated = false;
 var a0 = attached[0];
-x.set (z);
-vTemp.set (org.jmol.modelset.AtomCollection.vRef);
+x.setT (z);
+vTemp.setT (org.jmol.modelset.AtomCollection.vRef);
 while (a0 != null && a0.getCovalentBondCount () == 2) {
 var bonds = a0.bonds;
 var a = null;
@@ -1249,7 +1249,7 @@ isCumulated = !isCumulated;
 for (var i = 0; i < bonds.length; i++) if (bonds[i].isCovalent ()) {
 a = bonds[i].getOtherAtom (a0);
 if (a !== atom) {
-vTemp.sub (a, a0);
+vTemp.sub2 (a, a0);
 break;
 }}
 vTemp.cross (vTemp, x);
@@ -1262,27 +1262,27 @@ z.cross (vTemp, x);
 z.normalize ();
 if (pt == 1) z.scale (-1);
 z.scale (org.jmol.modelset.AtomCollection.sqrt3_2);
-z.scaleAdd (0.5, x, z);
+z.scaleAdd2 (0.5, x, z);
 if (isP) {
 vTemp.cross (z, x);
-z.set (vTemp);
-vTemp.set (x);
+z.setT (vTemp);
+vTemp.setT (x);
 }x.cross (vTemp, z);
 } else {
-z.set (x);
+z.setT (x);
 x.cross (org.jmol.modelset.AtomCollection.vRef, x);
 }break;
 case 3:
 this.getHybridizationAndAxes (attached[0].index, 0, x, vTemp, "pz", false, doAlignZ);
-vTemp.set (x);
+vTemp.setT (x);
 if (isSp2) {
 x.cross (x, z);
 if (pt == 1) x.scale (-1);
 x.scale (org.jmol.modelset.AtomCollection.sqrt3_2);
-z.scaleAdd (0.5, z, x);
+z.scaleAdd2 (0.5, z, x);
 } else {
-vTemp.set (z);
-z.set (x);
+vTemp.setT (z);
+z.setT (x);
 }x.cross (vTemp, z);
 break;
 }
@@ -1296,12 +1296,12 @@ if (!ok) ok = ((a = attached[1]).getCovalentBondCount () == 3);
 if (ok) {
 this.getHybridizationAndAxes (a.index, 0, x, z, "pz", false, doAlignZ);
 if (lcaoType.equals ("px")) x.scale (-1);
-z.set (v[0]);
+z.setT (v[0]);
 break;
-}vTemp.set (org.jmol.modelset.AtomCollection.vRef);
+}vTemp.setT (org.jmol.modelset.AtomCollection.vRef);
 z.cross (vTemp, x);
 vTemp.cross (z, x);
-}z.set (x);
+}z.setT (x);
 x.cross (vTemp, z);
 break;
 }vTemp.cross (z, x);
@@ -1312,12 +1312,12 @@ break;
 vTemp.normalize ();
 z.normalize ();
 if (!lcaoType.equals ("lp")) {
-if (pt == 0 || pt == 2) z.scaleAdd (-1.2, vTemp, z);
- else z.scaleAdd (1.2, vTemp, z);
+if (pt == 0 || pt == 2) z.scaleAdd2 (-1.2, vTemp, z);
+ else z.scaleAdd2 (1.2, vTemp, z);
 }x.cross (z, vTemp);
 break;
 }x.cross (z, vTemp);
-z.set (vTemp);
+z.setT (vTemp);
 if (z.z < 0) {
 z.scale (-1);
 x.scale (-1);
@@ -1327,7 +1327,7 @@ if (isSp3) break;
 if (!isPlanar) {
 x.cross (z, x);
 break;
-}z.set (vTemp);
+}z.setT (vTemp);
 if (z.z < 0 && doAlignZ) {
 z.scale (-1);
 x.scale (-1);
@@ -1434,24 +1434,24 @@ var bs;
 if (isTrigonal) {
 switch (ntypes[_120]) {
 case 0:
-z.sub (attached[angles[typePtrs[_90][0]][0]], atom);
-x.sub (attached[angles[typePtrs[_90][0]][1]], atom);
+z.sub2 (attached[angles[typePtrs[_90][0]][0]], atom);
+x.sub2 (attached[angles[typePtrs[_90][0]][1]], atom);
 z.cross (z, x);
 z.normalize ();
 if (pt == 4) z.scale (-1);
 bs = this.findNotAttached (nAttached, angles, typePtrs[_180], ntypes[_180]);
 var i = bs.nextSetBit (0);
-x.sub (attached[i], atom);
+x.sub2 (attached[i], atom);
 x.normalize ();
 x.scale (0.5);
-z.scaleAdd (org.jmol.modelset.AtomCollection.sqrt3_2, z, x);
+z.scaleAdd2 (org.jmol.modelset.AtomCollection.sqrt3_2, z, x);
 pt = -1;
 break;
 case 1:
 if (pt == 4) {
 a = angles[typePtrs[_120][0]];
-z.add (attached[a[0]], attached[a[1]]);
-z.scaleAdd (-2, atom, z);
+z.add2 (attached[a[0]], attached[a[1]]);
+z.scaleAdd2 (-2, atom, z);
 pt = -1;
 } else {
 bs = this.findNotAttached (nAttached, angles, typePtrs[_120], ntypes[_120]);
@@ -1482,12 +1482,12 @@ for (var j = nAttached; j < pt && i >= 0; j++) i = bs.nextSetBit (i + 1);
 if (i == -1) isPlanar = true;
  else pt = i;
 }if (isPlanar) {
-z.sub (attached[angles[typePtrs[_90][0]][0]], atom);
-x.sub (attached[angles[typePtrs[_90][0]][1]], atom);
+z.sub2 (attached[angles[typePtrs[_90][0]][0]], atom);
+x.sub2 (attached[angles[typePtrs[_90][0]][1]], atom);
 z.cross (z, x);
 if (pt == 4) z.scale (-1);
 pt = -1;
-}}}if (pt >= 0) z.sub (attached[pt], atom);
+}}}if (pt >= 0) z.sub2 (attached[pt], atom);
 if (isLP) z.scale (-1);
 z.normalize ();
 return (isTrigonal ? "dsp3" : "d2sp3");
@@ -1958,7 +1958,7 @@ Clazz.defineStatics (c$,
 {
 if (org.jmol.modelset.AtomCollection.userSettableValues.length != 14) org.jmol.util.Logger.error ("AtomCollection.java userSettableValues is not length TAINT_MAX!");
 }c$.sqrt3_2 = c$.prototype.sqrt3_2 = (Math.sqrt (3) / 2);
-c$.vRef = c$.prototype.vRef =  new javax.vecmath.Vector3f (3.14159, 2.71828, 1.41421);
+c$.vRef = c$.prototype.vRef = javax.vecmath.Vector3f.new3 (3.14159, 2.71828, 1.41421);
 Clazz.defineStatics (c$,
 "almost180", 2.984513);
 });

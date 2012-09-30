@@ -351,7 +351,7 @@ if (i == 4 || i == 8) this.readLine ();
 }
 mat[15] = 1;
 var m4 =  new javax.vecmath.Matrix4f ();
-m4.set (mat);
+m4.setA (mat);
 if (m4.equals (mIdent)) biomts.add (0, m4);
  else biomts.add (m4);
 continue ;}} catch (e) {

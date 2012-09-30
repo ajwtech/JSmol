@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -40,7 +40,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -597,7 +597,7 @@ public String getShapeState() {
     appendCmd(commands, getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    BitSet bs = new BitSet(measurementCount);
+    BitSet bs = BitSetUtil.newBitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = measurements.get(i);
       if (m.isHidden()) {

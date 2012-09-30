@@ -17,13 +17,8 @@
         <exclude name="**/popup/*"/>
       </fileset>
     </copy>
-    <copy todir="src/java" >
-      <fileset dir="../Jmol/src/java">
-        <include name="**/*.java" />
-      </fileset>
-    </copy>
-    <copy todir="src/javax" >
-      <fileset dir="../Jmol/src/javax">
+    <copy todir="src/javax/vecmath" >
+      <fileset dir="../Jmol/src/javax/vecmath">
         <include name="**/*.java" />
       </fileset>
     </copy>

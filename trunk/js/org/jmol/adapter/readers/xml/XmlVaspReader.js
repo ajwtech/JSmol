@@ -122,9 +122,9 @@ if (this.name == null) {
 } else if ("basis".equals (this.name) && !this.haveUnitCell) {
 this.haveUnitCell = true;
 var ijk = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensFloat (this.data.toString (), null, 9);
-var va =  new javax.vecmath.Vector3f (ijk[0], ijk[1], ijk[2]);
-var vb =  new javax.vecmath.Vector3f (ijk[3], ijk[4], ijk[5]);
-var vc =  new javax.vecmath.Vector3f (ijk[6], ijk[7], ijk[8]);
+var va = javax.vecmath.Vector3f.new3 (ijk[0], ijk[1], ijk[2]);
+var vb = javax.vecmath.Vector3f.new3 (ijk[3], ijk[4], ijk[5]);
+var vc = javax.vecmath.Vector3f.new3 (ijk[6], ijk[7], ijk[8]);
 this.a = va.length ();
 this.b = vb.length ();
 this.c = vc.length ();

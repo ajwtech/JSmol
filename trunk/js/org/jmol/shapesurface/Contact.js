@@ -399,9 +399,9 @@ if (displayType != 3145756) this.thisMesh.setMerged (true);
 }, $fz.isPrivate = true, $fz), "~N,org.jmol.util.ContactPair,java.util.BitSet,java.util.BitSet,org.jmol.atomdata.RadiusData,~A,~O,~B,org.jmol.jvxl.data.VolumeData,~N");
 Clazz.defineMethod (c$, "setVolumeData", 
 ($fz = function (type, volumeData, cp, resolution, nPairs) {
-this.pt1.set (cp.myAtoms[0]);
-this.pt2.set (cp.myAtoms[1]);
-this.vX.sub (this.pt2, this.pt1);
+this.pt1.setT (cp.myAtoms[0]);
+this.pt2.setT (cp.myAtoms[1]);
+this.vX.sub2 (this.pt2, this.pt1);
 var dAB = this.vX.length ();
 var dYZ = (cp.radii[0] * cp.radii[0] + dAB * dAB - cp.radii[1] * cp.radii[1]) / (2 * dAB * cp.radii[0]);
 dYZ = 2.1 * (cp.radii[0] * Math.sin (Math.acos (dYZ)));
@@ -412,17 +412,17 @@ this.vY.normalize ();
 this.vY.scale (dYZ);
 if (type != 4106) {
 this.vX.normalize ();
-this.pt1.scaleAdd ((dAB - cp.radii[1]) * 0.95, this.vX, this.pt1);
-this.pt2.scaleAdd ((cp.radii[0] - dAB) * 0.95, this.vX, this.pt2);
-this.vX.sub (this.pt2, this.pt1);
+this.pt1.scaleAdd2 ((dAB - cp.radii[1]) * 0.95, this.vX, this.pt1);
+this.pt2.scaleAdd2 ((cp.radii[0] - dAB) * 0.95, this.vX, this.pt2);
+this.vX.sub2 (this.pt2, this.pt1);
 }if (resolution == 3.4028235E38) resolution = (nPairs > 100 ? 3 : 10);
 var nX = Math.max (5, Math.round ((this.pt1.distance (this.pt2) * resolution + 1)));
 if ((nX % 2) == 0) nX++;
 var nYZ = Math.max (7, Math.round ((dYZ * resolution + 1)));
 if ((nYZ % 2) == 0) nYZ++;
 volumeData.setVoxelCounts (nX, nYZ, nYZ);
-this.pt1.scaleAdd (-0.5, this.vY, this.pt1);
-this.pt1.scaleAdd (-0.5, this.vZ, this.pt1);
+this.pt1.scaleAdd2 (-0.5, this.vY, this.pt1);
+this.pt1.scaleAdd2 (-0.5, this.vZ, this.pt1);
 volumeData.setVolumetricOrigin (this.pt1.x, this.pt1.y, this.pt1.z);
 this.vX.scale (1 / (nX - 1));
 this.vY.scale (1 / (nYZ - 1));

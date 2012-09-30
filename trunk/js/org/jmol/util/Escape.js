@@ -221,8 +221,8 @@ if (next[0] >= str.length || (str.charAt (next[0])).charCodeAt (0) != 44) break;
 next[0]++;
 nPoints--;
 }}
-if (nPoints == 3) return  new javax.vecmath.Point3f (points[0], points[1], points[2]);
-if (nPoints == 4) return  new javax.vecmath.Point4f (points[0], points[1], points[2], points[3]);
+if (nPoints == 3) return javax.vecmath.Point3f.new3 (points[0], points[1], points[2]);
+if (nPoints == 4) return javax.vecmath.Point4f.new4 (points[0], points[1], points[2], points[3]);
 return strPoint;
 }, "~S");
 c$.unescapeBitset = Clazz.defineMethod (c$, "unescapeBitset", 
@@ -290,8 +290,8 @@ if (Float.isNaN (points[nPoints])) {
 break;
 }}
 if (!Float.isNaN (org.jmol.util.Parser.parseFloatNext (str, next))) return strMatrix;
-if (nPoints == 9) return  new javax.vecmath.Matrix3f (points);
-if (nPoints == 16) return  new javax.vecmath.Matrix4f (points);
+if (nPoints == 9) return javax.vecmath.Matrix3f.newA (points);
+if (nPoints == 16) return javax.vecmath.Matrix4f.newA (points);
 return strMatrix;
 }, "~S");
 c$.escapeBs = Clazz.defineMethod (c$, "escapeBs", 

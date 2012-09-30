@@ -68,13 +68,13 @@ if (sg != null) this.name = sg.getName ();
 if (doNormalize && count > 0 && atoms != null) {
 this.finalOperations[0] =  new org.jmol.symmetry.SymmetryOperation (this.operations[0], atoms, atomIndex, count, true);
 var atom = atoms[atomIndex];
-var c =  new javax.vecmath.Point3f (atom);
+var c = javax.vecmath.Point3f.newP (atom);
 this.finalOperations[0].transform (c);
 if (c.distance (atom) > 0.0001) for (var i = 0; i < count; i++) {
 atom = atoms[atomIndex + i];
-c.set (atom);
+c.setT (atom);
 this.finalOperations[0].transform (c);
-atom.set (c);
+atom.setT (c);
 }
 }for (var i = 0; i < this.operationCount; i++) {
 this.finalOperations[i] =  new org.jmol.symmetry.SymmetryOperation (this.operations[i], atoms, atomIndex, count, doNormalize);
@@ -277,15 +277,15 @@ var newOps =  new Array (7);
 for (var i = 0; i < 7; i++) newOps[i] =  new javax.vecmath.Matrix4f ();
 
 for (var i = 0; i < h.nRotations; i++) {
-mat1.set (h.rotationTerms[i].seitzMatrix12ths);
+mat1.setM (h.rotationTerms[i].seitzMatrix12ths);
 var nRot = h.rotationTerms[i].order;
 newOps[0].setIdentity ();
 var nOps = this.operationCount;
 for (var j = 1; j <= nRot; j++) {
-newOps[j].mul (mat1, newOps[0]);
-newOps[0].set (newOps[j]);
+newOps[j].mul2 (mat1, newOps[0]);
+newOps[0].setM (newOps[j]);
 for (var k = 0; k < nOps; k++) {
-operation.mul (newOps[j], this.operations[k]);
+operation.mul2 (newOps[j], this.operations[k]);
 org.jmol.symmetry.SymmetryOperation.normalizeTranslation (operation);
 var xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (operation, true, true, true);
 this.addSymmetry (xyz, operation);
@@ -298,7 +298,7 @@ Clazz.defineMethod (c$, "addSymmetry",
 var iop = this.addOperation (xyz, 0);
 if (iop < 0) return ;
 var symmetryOperation = this.operations[iop];
-symmetryOperation.set (operation);
+symmetryOperation.setM (operation);
 }, $fz.isPrivate = true, $fz), "~S,javax.vecmath.Matrix4f");
 c$.determineSpaceGroup = Clazz.defineMethod (c$, "determineSpaceGroup", 
 ($fz = function (name) {

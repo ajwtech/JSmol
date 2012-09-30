@@ -167,7 +167,7 @@ this.meshColix = org.jmol.util.Colix.getColix (rgb);
 if (this.thisMesh != null) this.thisMesh.meshColix = this.meshColix;
 return ;
 }if ("offset" === propertyName) {
-var offset =  new javax.vecmath.Point3f (value);
+var offset = javax.vecmath.Point3f.newP (value);
 if (offset.equals (org.jmol.viewer.JmolConstants.center)) offset = null;
 if (this.thisMesh != null) {
 this.thisMesh.rotateTranslate (null, offset, true);
@@ -259,7 +259,7 @@ throw e;
 }} else if ("atomIndex" === propertyName) {
 this.atomIndex = (value).intValue ();
 } else if ("center" === propertyName) {
-this.center.set (value);
+this.center.setT (value);
 } else if ("colorRGB" === propertyName) {
 var rgb = (value).intValue ();
 this.defaultColix = org.jmol.util.Colix.getColix (rgb);
@@ -381,8 +381,8 @@ if (m == null || m.vertices == null) return false;
 data[2] = m.jvxlData.boundingBox;
 if (m.mat4 != null) {
 var d =  new Array (2);
-d[0] =  new javax.vecmath.Point3f (m.jvxlData.boundingBox[0]);
-d[1] =  new javax.vecmath.Point3f (m.jvxlData.boundingBox[1]);
+d[0] = javax.vecmath.Point3f.newP (m.jvxlData.boundingBox[0]);
+d[1] = javax.vecmath.Point3f.newP (m.jvxlData.boundingBox[1]);
 var v =  new javax.vecmath.Vector3f ();
 m.mat4.get (v);
 d[0].add (v);
@@ -398,7 +398,7 @@ if (index == -2147483648) {
 var id = data[0];
 var m = this.getMesh (id);
 if (m == null || m.vertices == null) return false;
-var p =  new javax.vecmath.Point3f (m.jvxlData.boundingBox[0]);
+var p = javax.vecmath.Point3f.newP (m.jvxlData.boundingBox[0]);
 p.add (m.jvxlData.boundingBox[1]);
 p.scale (0.5);
 if (m.mat4 != null) {
@@ -587,7 +587,7 @@ this.atomIndex = -1;
 this.colix = 5;
 this.defaultColix = this.meshColix = 0;
 this.isPhaseColored = this.isColorExplicit = false;
-this.center =  new javax.vecmath.Point3f (3.4028235E38, 3.4028235E38, 3.4028235E38);
+this.center = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
 this.scale3d = 0;
 this.withinPoints = null;
 this.cutoffRange = null;
@@ -614,7 +614,7 @@ if ((this.thisMesh.atomIndex = this.atomIndex) >= 0) this.thisMesh.modelIndex = 
  else if (this.modelIndex >= 0) this.thisMesh.modelIndex = this.modelIndex;
  else this.thisMesh.modelIndex = this.viewer.getCurrentModelIndex ();
 this.thisMesh.scriptCommand = this.script;
-this.thisMesh.ptCenter.set (this.center);
+this.thisMesh.ptCenter.setT (this.center);
 this.thisMesh.scale3d = (this.thisMesh.jvxlData.jvxlPlane == null ? 0 : this.scale3d);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "discardTempData", 
@@ -648,7 +648,7 @@ if (rotAxis.x != 0) a.set (x, rotRadians);
  else if (rotAxis.y != 0) a.set (y, rotRadians);
  else a.set (z, rotRadians);
 var m =  new javax.vecmath.Matrix3f ();
-m.set (a);
+m.setAA (a);
 m.transform (x);
 m.transform (y);
 m.transform (z);
@@ -1003,7 +1003,7 @@ this.pickedMesh = this.isomeshes[imesh];
 this.setPropertySuper ("thisID", this.pickedMesh.thisID, null);
 var iFace = this.pickedVertex = (pickFront ? jminz : jmaxz);
 var ptRet =  new javax.vecmath.Point3f ();
-ptRet.set ((pickFront ? this.pickedMesh.vertices[this.pickedVertex] : (this.pickedMesh).centers[iFace]));
+ptRet.setT ((pickFront ? this.pickedMesh.vertices[this.pickedVertex] : (this.pickedMesh).centers[iFace]));
 this.pickedModel = this.pickedMesh.modelIndex;
 if (pickFront) {
 this.setStatusPicked (-4, ptRet);
@@ -1021,7 +1021,7 @@ return m.visibilityFlags != 0 && (m.modelIndex < 0 || bsVisible.get (m.modelInde
 Clazz.defineMethod (c$, "navigate", 
 ($fz = function (dz) {
 if (this.thisMesh == null) return ;
-var navPt =  new javax.vecmath.Point3f (this.viewer.getNavigationOffset ());
+var navPt = javax.vecmath.Point3f.newP (this.viewer.getNavigationOffset ());
 var toPt =  new javax.vecmath.Point3f ();
 this.viewer.unTransformPoint (navPt, toPt);
 navPt.z += dz;
@@ -1029,7 +1029,7 @@ this.viewer.unTransformPoint (navPt, toPt);
 var ptRet =  new javax.vecmath.Point3f ();
 var vNorm =  new javax.vecmath.Vector3f ();
 if (!this.getClosestNormal (this.thisMesh, toPt, ptRet, vNorm)) return ;
-var pt2 =  new javax.vecmath.Point3f (ptRet);
+var pt2 = javax.vecmath.Point3f.newP (ptRet);
 pt2.add (vNorm);
 var pt2s =  new javax.vecmath.Point3f ();
 this.viewer.transformPt3f (pt2, pt2s);
@@ -1041,21 +1041,21 @@ Clazz.defineMethod (c$, "setHeading",
 var o1 = this.viewer.getOrientation ();
 this.viewer.navigatePt (0, pt);
 var toPts =  new javax.vecmath.Point3f ();
-var toPt =  new javax.vecmath.Point3f (vNorm);
+var toPt = javax.vecmath.Point3f.newP (vNorm);
 toPt.add (pt);
 this.viewer.transformPt3f (toPt, toPts);
-var navPt =  new javax.vecmath.Point3f (this.viewer.getNavigationOffset ());
+var navPt = javax.vecmath.Point3f.newP (this.viewer.getNavigationOffset ());
 toPts.sub (navPt);
 toPts.z = 0;
 var angle = org.jmol.util.Measure.computeTorsion (org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.center, org.jmol.viewer.JmolConstants.axisZ, toPts, true);
 this.viewer.navigateAxis (0, org.jmol.viewer.JmolConstants.axisZ, angle);
-toPt.set (vNorm);
+toPt.setT (vNorm);
 toPt.add (pt);
 this.viewer.transformPt3f (toPt, toPts);
 toPts.sub (navPt);
 angle = org.jmol.util.Measure.computeTorsion (org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.center, org.jmol.viewer.JmolConstants.axisX, toPts, true);
 this.viewer.navigateAxis (0, org.jmol.viewer.JmolConstants.axisX, 20 - angle);
-navPt =  new javax.vecmath.Point3f (this.viewer.getNavigationOffset ());
+navPt = javax.vecmath.Point3f.newP (this.viewer.getNavigationOffset ());
 if (nSeconds <= 0) return ;
 this.viewer.saveOrientation ("_navsurf");
 o1.restore (0, true);
@@ -1080,10 +1080,10 @@ Clazz.defineMethod (c$, "getClosestPoint",
 var plane = m.getFacePlane (imin, normalRet);
 var dist = org.jmol.util.Measure.distanceToPlane (plane, toPt);
 normalRet.scale (-dist);
-ptRet.set (toPt);
+ptRet.setT (toPt);
 ptRet.add (normalRet);
 dist = org.jmol.util.Measure.distanceToPlane (plane, ptRet);
-if (m.centers[imin].distance (toPt) < ptRet.distance (toPt)) ptRet.set (m.centers[imin]);
+if (m.centers[imin].distance (toPt) < ptRet.distance (toPt)) ptRet.setT (m.centers[imin]);
 }, $fz.isPrivate = true, $fz), "org.jmol.shapesurface.IsosurfaceMesh,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "findValue", 
 ($fz = function (x, y, isPicking, bsVisible) {

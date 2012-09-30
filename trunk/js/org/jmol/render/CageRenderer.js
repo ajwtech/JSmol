@@ -27,10 +27,10 @@ this.imageFontScaling = this.viewer.getImageFontScaling ();
 this.font3d = this.g3d.getFont3DScaled (fls.font3d, this.imageFontScaling);
 var zSum = 0;
 for (var i = 8; --i >= 0; ) {
-this.pt.set (vertices[i]);
+this.pt.setT (vertices[i]);
 if (scale != 1) {
 this.pt.sub (vertices[0]);
-this.pt.scaleAdd (scale, this.pt, vertices[0]);
+this.pt.scaleAdd2 (scale, this.pt, vertices[0]);
 }this.viewer.transformPtNoClip (this.pt, this.screens[i]);
 zSum += this.screens[i].z;
 }
@@ -48,8 +48,8 @@ if (drawTicks) {
 if (this.atomA == null) {
 this.atomA =  new org.jmol.util.Point3fi ();
 this.atomB =  new org.jmol.util.Point3fi ();
-}this.atomA.set (vertices[edge0]);
-this.atomB.set (vertices[edge1]);
+}this.atomA.setT (vertices[edge0]);
+this.atomB.setT (vertices[edge1]);
 var start = 0;
 if (Clazz.instanceOf (this.shape, org.jmol.shape.Bbcage)) switch (edge) {
 case 'x':

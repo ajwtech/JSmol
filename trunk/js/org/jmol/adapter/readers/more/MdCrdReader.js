@@ -46,7 +46,7 @@ Clazz.defineMethod (c$, "getPoint",
 var x = this.getFloat ();
 var y = this.getFloat ();
 var z = this.getFloat ();
-return (Float.isNaN (z) ? null :  new javax.vecmath.Point3f (x, y, z));
+return (Float.isNaN (z) ? null : javax.vecmath.Point3f.new3 (x, y, z));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getTrajectoryStep", 
 ($fz = function (trajectoryStep, isPeriodic) {

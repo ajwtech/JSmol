@@ -4,9 +4,9 @@ c$ = Clazz.declareType (org.jmol.modelsetbio, "AlphaPolymer", org.jmol.modelsetb
 Clazz.overrideMethod (c$, "getControlPoint", 
 function (i, v) {
 if (!this.monomers[i].isSheet ()) return this.leadPoints[i];
-v.sub (this.leadMidpoints[i], this.leadPoints[i]);
+v.sub2 (this.leadMidpoints[i], this.leadPoints[i]);
 v.scale (this.sheetSmoothing);
-var pt =  new javax.vecmath.Point3f (this.leadPoints[i]);
+var pt = javax.vecmath.Point3f.newP (this.leadPoints[i]);
 pt.add (v);
 return pt;
 }, "~N,javax.vecmath.Vector3f");

@@ -22,7 +22,7 @@ return this.referenceCenter;
 Clazz.defineMethod (c$, "getCameraPosition", 
 function () {
 var ptCamera =  new javax.vecmath.Point3f ();
-var pt =  new javax.vecmath.Point3f (Math.floor (this.screenWidth / 2), Math.floor (this.screenHeight / 2), 0);
+var pt = javax.vecmath.Point3f.new3 (Math.floor (this.screenWidth / 2), Math.floor (this.screenHeight / 2), 0);
 this.viewer.unTransformPoint (pt, ptCamera);
 ptCamera.sub (this.center);
 this.tempP3.set (Math.floor (this.screenWidth / 2), Math.floor (this.screenHeight / 2), this.cameraDistance * this.scalePixelsPerAngstrom);
@@ -35,8 +35,8 @@ return this.cameraPosition;
 Clazz.defineMethod (c$, "setTempPoints", 
 ($fz = function (ptA, ptB, isCartesian) {
 if (isCartesian) {
-this.tempP1.set (ptA);
-this.tempP2.set (ptB);
+this.tempP1.setT (ptA);
+this.tempP2.setT (ptB);
 } else {
 this.viewer.unTransformPoint (ptA, this.tempP1);
 this.viewer.unTransformPoint (ptB, this.tempP2);
@@ -92,16 +92,16 @@ this.outputCircle (this.tempP1, this.tempP3, radius, colix, doFill);
 }, "~N,~N,~N,~N,~N,~B");
 Clazz.overrideMethod (c$, "drawEllipse", 
 function (ptCenter, ptX, ptY, colix, doFill) {
-this.tempV1.set (ptX);
+this.tempV1.setT (ptX);
 this.tempV1.sub (ptCenter);
-this.tempV2.set (ptY);
+this.tempV2.setT (ptY);
 this.tempV2.sub (ptCenter);
 this.tempV2.cross (this.tempV1, this.tempV2);
 this.tempV2.normalize ();
 this.tempV2.scale (doFill ? 0.002 : 0.005);
-this.tempP1.set (ptCenter);
+this.tempP1.setT (ptCenter);
 this.tempP1.sub (this.tempV2);
-this.tempP2.set (ptCenter);
+this.tempP2.setT (ptCenter);
 this.tempP2.add (this.tempV2);
 return this.outputCylinder (ptCenter, this.tempP1, this.tempP2, colix, doFill ? 2 : 0, 1.01, ptX, ptY, true);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~B");
@@ -132,10 +132,10 @@ var radius = mad / 2000;
 if (colix1 == colix2) {
 this.outputCylinder (null, this.tempP1, this.tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
 } else {
-this.tempV2.set (this.tempP2);
+this.tempV2.setT (this.tempP2);
 this.tempV2.add (this.tempP1);
 this.tempV2.scale (0.5);
-this.tempP3.set (this.tempV2);
+this.tempP3.setT (this.tempV2);
 this.outputCylinder (null, this.tempP1, this.tempP3, colix1, (endcaps == 3 ? 0 : endcaps), radius, null, null, true);
 this.outputCylinder (null, this.tempP3, this.tempP2, colix2, (endcaps == 3 ? 0 : endcaps), radius, null, null, true);
 if (endcaps == 3) {
@@ -186,7 +186,7 @@ var m =  new javax.vecmath.Matrix3f ();
 m.m00 = rx;
 m.m11 = ry;
 m.m22 = rz;
-mq.set (a);
+mq.setAA (a);
 mq.mul (m);
 sphereMatrix.set (mq);
 } else {

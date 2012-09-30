@@ -36,27 +36,27 @@ if (dipole.visibilityFlags != 0 && this.transform (dipole)) this.renderDipoleVec
 Clazz.defineMethod (c$, "transform", 
 ($fz = function (dipole) {
 var vector = dipole.vector;
-this.offset.set (vector);
+this.offset.setT (vector);
 if (dipole.center == null) {
 this.offset.scale (dipole.offsetAngstroms / dipole.dipoleValue);
 if (this.dipoleVectorScale < 0) this.offset.add (vector);
-this.points[0].set (dipole.origin);
+this.points[0].setT (dipole.origin);
 this.points[0].add (this.offset);
 } else {
 this.offset.scale (-0.5 * this.dipoleVectorScale);
-this.points[0].set (dipole.center);
+this.points[0].setT (dipole.center);
 this.points[0].add (this.offset);
 if (dipole.offsetAngstroms != 0) {
-this.offset.set (vector);
+this.offset.setT (vector);
 this.offset.scale (dipole.offsetAngstroms / dipole.dipoleValue);
 this.points[0].add (this.offset);
-}}this.points[1].scaleAdd (this.dipoleVectorScale * 0.1, vector, this.points[0]);
-this.points[2].scaleAdd (this.dipoleVectorScale * (0.14), vector, this.points[0]);
-this.points[3].scaleAdd (this.dipoleVectorScale / 2, vector, this.points[0]);
-this.points[4].scaleAdd (this.dipoleVectorScale * 0.9, vector, this.points[0]);
-this.points[5].scaleAdd (this.dipoleVectorScale, vector, this.points[0]);
+}}this.points[1].scaleAdd2 (this.dipoleVectorScale * 0.1, vector, this.points[0]);
+this.points[2].scaleAdd2 (this.dipoleVectorScale * (0.14), vector, this.points[0]);
+this.points[3].scaleAdd2 (this.dipoleVectorScale / 2, vector, this.points[0]);
+this.points[4].scaleAdd2 (this.dipoleVectorScale * 0.9, vector, this.points[0]);
+this.points[5].scaleAdd2 (this.dipoleVectorScale, vector, this.points[0]);
 if (dipole.atoms[0] != null && this.modelSet.isAtomHidden (dipole.atoms[0].getIndex ())) return false;
-this.offset.set (this.points[3]);
+this.offset.setT (this.points[3]);
 this.offset.cross (this.offset, vector);
 if (this.offset.length () == 0) {
 this.offset.set (this.points[3].x + 0.2345, this.points[3].y + 0.1234, this.points[3].z + 0.4321);

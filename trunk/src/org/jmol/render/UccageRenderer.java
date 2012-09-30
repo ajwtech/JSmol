@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 19:02:08 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17502 $
+ * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
+ * $Revision: 17590 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -70,7 +70,7 @@ public class UccageRenderer extends CageRenderer {
     render1(mad);
   }
 
-  private Point3f fset0 = new Point3f(555,555,1);
+  private Point3f fset0 = Point3f.new3(555,555,1);
   private Point3f cell0 = new Point3f();
   private Point3f cell1 = new Point3f();
   private Point3f offset = new Point3f();
@@ -83,7 +83,7 @@ public class UccageRenderer extends CageRenderer {
     isPolymer = unitcell.isPolymer();
     isSlab = unitcell.isSlab();
     Point3f[] vertices = unitcell.getUnitCellVertices();
-    offset.set(unitcell.getCartesianOffset());
+    offset.setT(unitcell.getCartesianOffset());
     Point3f fset = unitcell.getUnitCellMultiplier();
     boolean haveMultiple = (fset != null);
     if (!haveMultiple) 
@@ -113,13 +113,13 @@ public class UccageRenderer extends CageRenderer {
             allow0 = 0xFF;
             allow1 = 0xFF;            
           } else {
-            offsetT.set(offset);
+            offsetT.setT(offset);
             firstLine = (drawAllLines ? 0 : 3);
             allow0 = 0xFF;
             allow1 = 0xFF;
           }
           for (int i = 8; --i >= 0;)
-            verticesT[i].add(vertices[i], offsetT);
+            verticesT[i].add2(vertices[i], offsetT);
           render(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
         }
       }
@@ -142,7 +142,7 @@ public class UccageRenderer extends CageRenderer {
       nf = NumberFormat.getInstance();
     }
 
-    fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
+    fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
 
     if (nf != null) {
       nf.setMaximumFractionDigits(3);

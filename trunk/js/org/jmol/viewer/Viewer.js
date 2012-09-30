@@ -3601,7 +3601,7 @@ function (x, y, text, id, pt) {
 if (!this.isHoverEnabled ()) return ;
 if (this.$eval != null && this.isScriptExecuting ()) return ;
 this.loadShape (33);
-this.setShapeProperty (33, "xy",  new javax.vecmath.Point3i (x, y, 0));
+this.setShapeProperty (33, "xy", javax.vecmath.Point3i.new3 (x, y, 0));
 this.setShapeProperty (33, "target", null);
 this.setShapeProperty (33, "specialLabel", null);
 this.setShapeProperty (33, "text", text);
@@ -6127,8 +6127,8 @@ this.transformManager.finalizeTransformParameters ();
 var f = (this.global.antialiasDisplay ? 2 : 1);
 var ptScreen = this.transformPt (ptCenter);
 var ptScreenNew;
-if (deltaZ != -2147483648) ptScreenNew =  new javax.vecmath.Point3f (ptScreen.x, ptScreen.y, ptScreen.z + deltaZ + 0.5);
- else ptScreenNew =  new javax.vecmath.Point3f (ptScreen.x + deltaX * f + 0.5, ptScreen.y + deltaY * f + 0.5, ptScreen.z);
+if (deltaZ != -2147483648) ptScreenNew = javax.vecmath.Point3f.new3 (ptScreen.x, ptScreen.y, ptScreen.z + deltaZ + 0.5);
+ else ptScreenNew = javax.vecmath.Point3f.new3 (ptScreen.x + deltaX * f + 0.5, ptScreen.y + deltaY * f + 0.5, ptScreen.z);
 var ptNew =  new javax.vecmath.Point3f ();
 this.unTransformPoint (ptScreenNew, ptNew);
 ptNew.sub (ptCenter);
@@ -6181,7 +6181,7 @@ var b = this.modelSet.getBonds ()[this.rotateBondIndex];
 atom1 = b.getAtom1 ();
 atom2 = b.getAtom2 ();
 this.undoMoveActionClear (atom1.index, 2, true);
-var pt =  new javax.vecmath.Point3f (x, y, Math.floor ((atom1.screenZ + atom2.screenZ) / 2));
+var pt = javax.vecmath.Point3f.new3 (x, y, Math.floor ((atom1.screenZ + atom2.screenZ) / 2));
 this.transformManager.unTransformPoint (pt, pt);
 if (atom2.getCovalentBondCount () == 1 || pt.distance (atom1) < pt.distance (atom2) && atom1.getCovalentBondCount () != 1) {
 var a = atom1;
@@ -6202,8 +6202,8 @@ this.rotatePrev2 = atom2.index;
 } else {
 atom1 = this.modelSet.atoms[this.rotatePrev1];
 atom2 = this.modelSet.atoms[this.rotatePrev2];
-}var v1 =  new javax.vecmath.Vector3f (atom2.screenX - atom1.screenX, atom2.screenY - atom1.screenY, 0);
-var v2 =  new javax.vecmath.Vector3f (deltaX, deltaY, 0);
+}var v1 = javax.vecmath.Vector3f.new3 (atom2.screenX - atom1.screenX, atom2.screenY - atom1.screenY, 0);
+var v2 = javax.vecmath.Vector3f.new3 (deltaX, deltaY, 0);
 v1.cross (v1, v2);
 var degrees = (v1.z > 0 ? 1 : -1) * v2.length ();
 var bs = org.jmol.util.BitSetUtil.copy (bsBranch);
@@ -6518,7 +6518,7 @@ if (key.equals ("spinXYBy")) this.spinXYBy (org.jmol.util.Parser.parseInt (token
  else if (key.equals ("rotateArcBall")) this.rotateArcBall (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), org.jmol.util.Parser.parseFloatStr (tokens[4]));
 break;
 case 7:
-if (key.equals ("centerAt")) this.centerAt (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]),  new javax.vecmath.Point3f (org.jmol.util.Parser.parseFloatStr (tokens[4]), org.jmol.util.Parser.parseFloatStr (tokens[5]), org.jmol.util.Parser.parseFloatStr (tokens[6])));
+if (key.equals ("centerAt")) this.centerAt (org.jmol.util.Parser.parseInt (tokens[2]), org.jmol.util.Parser.parseInt (tokens[3]), javax.vecmath.Point3f.new3 (org.jmol.util.Parser.parseFloatStr (tokens[4]), org.jmol.util.Parser.parseFloatStr (tokens[5]), org.jmol.util.Parser.parseFloatStr (tokens[6])));
 }
 if (disableSend) this.setSyncDriver (4);
 }, "~S,~S,~N");

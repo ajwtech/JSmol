@@ -123,7 +123,7 @@ var iAtom = Math.abs (valueA < valueB ? this.voxelSource[vA] : this.voxelSource[
 if (iAtom < 1 || iAtom - 1 >= this.atomIndex.length) System.out.println ("isosolv HHHHHMMMM");
 this.iAtomSurface = this.atomIndex[iAtom - 1];
 var fraction = fReturn[0] = org.jmol.util.MeshSurface.getSphericalInterpolationFraction ((this.voxelSource[vA] < 0 ? this.solventRadius : this.atomRadius[this.voxelSource[vA] - 1]), valueA, valueB, edgeVector.length ());
-ptReturn.scaleAdd (fraction, edgeVector, pointA);
+ptReturn.scaleAdd2 (fraction, edgeVector, pointA);
 var diff = valueB - valueA;
 return valueA + fraction * diff;
 }, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
@@ -333,23 +333,23 @@ var rCS = this.atomRadius[ic] + this.solventRadius;
 var dCT = org.jmol.util.Measure.distanceToPlane (this.plane, ptC);
 if (Math.abs (dCT) >= rCS) return false;
 var dST = Math.sqrt (rCS * rCS - dCT * dCT);
-this.ptTemp.scaleAdd (-dCT, this.vTemp, ptC);
+this.ptTemp.scaleAdd2 (-dCT, this.vTemp, ptC);
 var dpT = this.p.distance (this.ptTemp);
 var dsp2 = (dPS * dPS);
 var cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
 if (Math.abs (cosTheta) >= 1) return false;
 var vXS = this.vTemp2;
-vXS.set (this.ptTemp);
+vXS.setT (this.ptTemp);
 vXS.sub (this.p);
 vXS.normalize ();
 this.dPX = (dPS * cosTheta);
-this.ptTemp.scaleAdd (this.dPX, vXS, this.p);
+this.ptTemp.scaleAdd2 (this.dPX, vXS, this.p);
 vXS.cross (this.vTemp, vXS);
 vXS.normalize ();
 vXS.scale ((Math.sqrt (1 - cosTheta * cosTheta) * dPS));
-this.ptS1.set (this.ptTemp);
+this.ptS1.setT (this.ptTemp);
 this.ptS1.add (vXS);
-this.ptS2.set (this.ptTemp);
+this.ptS2.setT (this.ptTemp);
 this.ptS2.sub (vXS);
 return true;
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
@@ -388,10 +388,10 @@ var ptC = this.atomXyz[f.ic];
 var ptS = f.pS;
 if (org.jmol.util.Logger.debugging) {
 f.dump ();
-}for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[0], this.ptY0)) {
-this.ptY0.set (this.ptXyzTemp);
-for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[1], this.ptZ0)) {
-this.ptZ0.set (this.ptXyzTemp);
+}for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[0], this.ptY0)) {
+this.ptY0.setT (this.ptXyzTemp);
+for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[1], this.ptZ0)) {
+this.ptZ0.setT (this.ptXyzTemp);
 for (var k = this.pt0.z; k < this.pt1.z; k++, this.ptXyzTemp.add (this.volumetricVectors[2])) {
 var value = this.solventRadius - this.ptXyzTemp.distance (ptS);
 var v = this.voxelData[i][j][k];
@@ -429,10 +429,10 @@ this.setGridLimitsForAtom (ptB, this.atomRadius[ib] + this.solventRadius, ptB0, 
 org.jmol.jvxl.readers.IsoSolventReader.mergeLimits (ptA0, ptB0, this.pt0, null);
 org.jmol.jvxl.readers.IsoSolventReader.mergeLimits (ptA1, ptB1, null, this.pt1);
 this.volumeData.voxelPtToXYZ (this.pt0.x, this.pt0.y, this.pt0.z, this.ptXyzTemp);
-for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[0], this.ptY0)) {
-this.ptY0.set (this.ptXyzTemp);
-for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd (1, this.volumetricVectors[1], this.ptZ0)) {
-this.ptZ0.set (this.ptXyzTemp);
+for (var i = this.pt0.x; i < this.pt1.x; i++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[0], this.ptY0)) {
+this.ptY0.setT (this.ptXyzTemp);
+for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd2 (1, this.volumetricVectors[1], this.ptZ0)) {
+this.ptZ0.setT (this.ptXyzTemp);
 for (var k = this.pt0.z; k < this.pt1.z; k++, this.ptXyzTemp.add (this.volumetricVectors[2])) {
 var dVS = this.checkSpecialVoxel (ptA, rAS, ptB, rBS, dAB, this.ptXyzTemp);
 if (Float.isNaN (dVS)) continue ;var value = this.solventRadius - dVS;
@@ -522,7 +522,7 @@ var ptA = this.atomXyz[ia];
 var ptB = this.atomXyz[ib];
 var rAS = this.atomRadius[ia] + this.solventRadius;
 var rBS = this.atomRadius[ib] + this.solventRadius;
-this.vTemp.set (ptB);
+this.vTemp.setT (ptB);
 this.vTemp.sub (ptA);
 var dAB = this.vTemp.length ();
 this.vTemp.normalize ();
@@ -530,28 +530,28 @@ var rAS2 = rAS * rAS;
 var dAB2 = dAB * dAB;
 var cosAngleBAS = (dAB2 + rAS2 - rBS * rBS) / (2 * dAB * rAS);
 var angleBAS = Math.acos (cosAngleBAS);
-this.p.scaleAdd ((cosAngleBAS * rAS), this.vTemp, ptA);
+this.p.scaleAdd2 ((cosAngleBAS * rAS), this.vTemp, ptA);
 org.jmol.util.Measure.getPlaneThroughPoint (this.p, this.vTemp, this.plane);
 return Math.sin (angleBAS) * rAS;
 }, "~N,~N");
 Clazz.defineMethod (c$, "dumpLine", 
 function (pt1, pt2, label, color) {
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" +  new javax.vecmath.Point3f (pt1) + "} @{point" +  new javax.vecmath.Point3f (pt2) + "} color " + color);
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt1) + "} @{point" + javax.vecmath.Point3f.newP (pt2) + "} color " + color);
 }, "javax.vecmath.Point3f,javax.vecmath.Tuple3f,~S,~S");
 Clazz.defineMethod (c$, "dumpLine2", 
 function (pt1, pt2, label, d, color1, color2) {
 var pt =  new javax.vecmath.Vector3f ();
-pt.set (pt2);
+pt.setT (pt2);
 pt.sub (pt1);
 pt.normalize ();
 pt.scale (d);
 pt.add (pt1);
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" +  new javax.vecmath.Point3f (pt1) + "} @{point" +  new javax.vecmath.Point3f (pt) + "} color " + color1);
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" +  new javax.vecmath.Point3f (pt) + "} @{point" +  new javax.vecmath.Point3f (pt2) + "} color " + color2);
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt1) + "} @{point" + javax.vecmath.Point3f.newP (pt) + "} color " + color1);
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt) + "} @{point" + javax.vecmath.Point3f.newP (pt2) + "} color " + color2);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,~S,~N,~S,~S");
 Clazz.defineMethod (c$, "dumpPoint", 
 function (pt, label, color) {
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" +  new javax.vecmath.Point3f (pt) + "} color " + color);
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt) + "} color " + color);
 }, "javax.vecmath.Point3f,~S,~S");
 Clazz.overrideMethod (c$, "getValueAtPoint", 
 function (pt) {
@@ -630,7 +630,7 @@ function (a, b, c, d, e) {
 this.ia = a;
 this.ib = b;
 this.ic = c;
-this.pS =  new javax.vecmath.Point3f (e);
+this.pS = javax.vecmath.Point3f.newP (e);
 this.edges[0] = d;
 }, "~N,~N,~N,org.jmol.jvxl.readers.IsoSolventReader.Edge,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setEdges", 

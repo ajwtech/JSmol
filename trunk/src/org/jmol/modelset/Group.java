@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17591 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -34,7 +34,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;
 
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -247,7 +247,7 @@ public class Group {
   
   synchronized static short addGroup3Name(String group3) {
     if (group3NameCount == group3Names.length)
-      group3Names = ArrayUtil.doubleLength(group3Names);
+      group3Names = ArrayUtil.doubleLengthS(group3Names);
     short groupID = group3NameCount++;
     group3Names[groupID] = group3;
     htGroup.put(group3, Short.valueOf(groupID));
@@ -366,7 +366,7 @@ public class Group {
   }
   
   public int selectAtoms(BitSet bs) {
-    bs.set(firstAtomIndex, lastAtomIndex + 1);
+    bs.setBits(firstAtomIndex, lastAtomIndex + 1);
     if (bsAdded != null)
       bs.or(bsAdded);
     return lastAtomIndex;

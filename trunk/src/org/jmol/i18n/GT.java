@@ -34,6 +34,9 @@ import java.text.MessageFormat;
 public class GT {
 
 
+  /**
+   * @param la  
+   */
   public GT(String la) {
   }
   
@@ -44,6 +47,9 @@ public class GT {
   public static void ignoreApplicationBundle() {
   }
 
+  /**
+   * @param TF  
+   */
   public static void setDoTranslate(boolean TF) {
   }
 
@@ -70,20 +76,43 @@ public class GT {
 
   //forced translations
   
+  /**
+   * @param string 
+   * @param t  
+   * @return S
+   */
   public static String _(String string, boolean t) {
     return string;
   }
 
+  /**
+   * @param string 
+   * @param item 
+   * @param t  
+   * @return S
+   */
   public static String _(String string,
                          String item, boolean t) {
     return getString(string, new Object[] { item });
   }
 
+  /**
+   * @param string 
+   * @param item 
+   * @param t  
+   * @return S
+   */
   public static String _(String string,
                          int item, boolean t) {
     return getString(string, new Object[] { Integer.valueOf(item) });
   }
 
+  /**
+   * @param string 
+   * @param objects 
+   * @param t  
+   * @return S
+   */
   public static synchronized String _(String string,
                                       Object[] objects, boolean t) {
     return (objects == null ? string : getString(string, objects));

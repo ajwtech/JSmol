@@ -31,7 +31,7 @@ var eigenVectors = this.getEigenvectorsFloatTransposed ();
 var eigenValues = this.getRealEigenvalues ();
 for (var i = 0; i < this.n; i++) {
 if (unitVectors[i] == null) unitVectors[i] =  new javax.vecmath.Vector3f ();
-unitVectors[i].set (eigenVectors[i]);
+unitVectors[i].setA (eigenVectors[i]);
 lengths[i] = Math.sqrt (Math.abs (eigenValues[i]));
 }
 }, $fz.isPrivate = true, $fz), "~A,~A");
@@ -69,7 +69,7 @@ Clazz.defineMethod (c$, "getEigenVectors3",
 function () {
 var v =  new Array (3);
 for (var i = 0; i < 3; i++) {
-v[i] =  new javax.vecmath.Vector3f (this.V[0][i], this.V[1][i], this.V[2][i]);
+v[i] = javax.vecmath.Vector3f.new3 (this.V[0][i], this.V[1][i], this.V[2][i]);
 }
 return v;
 });
@@ -270,16 +270,16 @@ var mm =  Clazz.newArray (9, 0);
 for (var i = 0, p = 0; i < 3; i++) for (var j = 0; j < 3; j++) mm[p++] = a[i][j];
 
 
-m.set (mm);
+m.setA (mm);
 var evec = eigen.getEigenVectors3 ();
 var n =  new javax.vecmath.Vector3f ();
 var cross =  new javax.vecmath.Vector3f ();
 for (var i = 0; i < 3; i++) {
-n.set (evec[i]);
+n.setT (evec[i]);
 m.transform (n);
 cross.cross (n, evec[i]);
 org.jmol.util.Logger.info ("v[i], n, n x v[i]" + evec[i] + " " + n + " " + cross);
-n.set (evec[i]);
+n.setT (evec[i]);
 n.normalize ();
 cross.cross (evec[i], evec[(i + 1) % 3]);
 org.jmol.util.Logger.info ("draw id eigv" + i + " " + org.jmol.util.Escape.escapePt (evec[i]) + " color " + (i == 0 ? "red" : i == 1 ? "green" : "blue") + " # " + n + " " + cross);
@@ -302,7 +302,7 @@ c$.sort = Clazz.defineMethod (c$, "sort",
 var o = [[vectors[0], Float.$valueOf (Math.abs (lengths[0]))], [vectors[1], Float.$valueOf (Math.abs (lengths[1]))], [vectors[2], Float.$valueOf (Math.abs (lengths[2]))]];
 java.util.Arrays.sort (o,  new org.jmol.util.Eigen.EigenSort ());
 for (var i = 0; i < 3; i++) {
-vectors[i] =  new javax.vecmath.Vector3f (o[i][0]);
+vectors[i] = javax.vecmath.Vector3f.newV (o[i][0]);
 vectors[i].normalize ();
 lengths[i] = (o[i][1]).floatValue ();
 }

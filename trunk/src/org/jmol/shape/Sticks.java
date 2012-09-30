@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17591 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -30,7 +30,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -152,7 +152,7 @@ public class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.set(iBond, (colix != Colix.INHERIT_ALL
+        bsColixSet.setBitTo(iBond, (colix != Colix.INHERIT_ALL
             && colix != Colix.USE_PALETTE));
       }
       return;
@@ -303,7 +303,7 @@ public class Sticks extends Shape {
       Atom atom2 = bond.getAtom2();
       if (!atom1.isVisible(0) || !atom2.isVisible(0))
         continue;
-      v.set(atom1);
+      v.setT(atom1);
       v.add(atom2);
       v.scale(0.5f);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
@@ -313,7 +313,7 @@ public class Sticks extends Shape {
           continue;
         dmin2 = d2;
         pickedBond = bond;
-        pt.set(v);
+        pt.setT(v);
       }
     }
     return pickedBond;

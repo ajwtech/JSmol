@@ -25,7 +25,7 @@ Clazz.prepareFields (c$, function () {
 this.vAC =  new javax.vecmath.Vector3f ();
 this.vAB =  new javax.vecmath.Vector3f ();
 this.vNorm =  new javax.vecmath.Vector3f ();
-this.ptRef =  new javax.vecmath.Point3f (0, 0, 1e15);
+this.ptRef = javax.vecmath.Point3f.new3 (0, 0, 1e15);
 });
 Clazz.defineMethod (c$, "isValid", 
 function () {
@@ -211,7 +211,7 @@ this.params.boundingBox = (value)[1];
 return true;
 }if ("boundingBox" === propertyName) {
 var pts = value;
-this.params.boundingBox = [ new javax.vecmath.Point3f (pts[0]),  new javax.vecmath.Point3f (pts[pts.length - 1])];
+this.params.boundingBox = [javax.vecmath.Point3f.newP (pts[0]), javax.vecmath.Point3f.newP (pts[pts.length - 1])];
 return true;
 }if ("func" === propertyName) {
 this.params.func = value;
@@ -349,7 +349,7 @@ this.params.colorBySets = true;
 this.mapSurface ();
 return true;
 }if ("center" === propertyName) {
-this.params.center.set (value);
+this.params.center.setT (value);
 return true;
 }if ("volumeData" === propertyName) {
 this.params.volumeData = value;
@@ -502,7 +502,7 @@ this.processState ();
 return true;
 }if ("functionXY" === propertyName) {
 this.params.setFunctionXY (value);
-if (this.params.isContoured) this.volumeData.setPlaneParameters ( new javax.vecmath.Point4f (0, 0, 1, 0));
+if (this.params.isContoured) this.volumeData.setPlaneParameters (javax.vecmath.Point4f.new4 (0, 0, 1, 0));
 if ((this.params.functionInfo.get (0)).indexOf ("_xyz") >= 0) this.getFunctionZfromXY ();
 this.processState ();
 return true;
@@ -515,7 +515,7 @@ this.params.setLcao (value, this.colorPtr);
 return true;
 }if ("lcaoCartoonCenter" === propertyName) {
 if (++this.params.state != 2) return true;
-if (this.params.center.x == 3.4028235E38) this.params.center.set (value);
+if (this.params.center.x == 3.4028235E38) this.params.center.setT (value);
 return false;
 }if ("molecular" === propertyName || "solvent" === propertyName || "sasurface" === propertyName || "nomap" === propertyName) {
 this.params.setSolvent (propertyName, (value).floatValue ());
@@ -830,7 +830,7 @@ var vectors =  new Array (3);
 for (var i = 0; i < 3; i++) {
 var info = this.params.functionInfo.get (i + 2);
 counts[i] = Math.abs (Math.round (info.x));
-vectors[i] =  new javax.vecmath.Vector3f (info.y, info.z, info.w);
+vectors[i] = javax.vecmath.Vector3f.new3 (info.y, info.z, info.w);
 }
 var nx = counts[0];
 var ny = counts[1];
@@ -842,8 +842,8 @@ var data = this.params.functionInfo.get (5);
 var data2 =  Clazz.newArray (nx, ny, 0);
 var d;
 for (var i = 0; i < nx; i++) for (var j = 0; j < ny; j++) {
-pt.scaleAdd (i, vectors[0], origin);
-pt.scaleAdd (j, vectors[1], pt);
+pt.scaleAdd2 (i, vectors[0], origin);
+pt.scaleAdd2 (j, vectors[1], pt);
 var dist = org.jmol.jvxl.readers.SurfaceGenerator.findNearestThreePoints (pt.x, pt.y, data, nearest);
 pta.set ((d = data[nearest[0]])[0], d[1], d[2]);
 if (dist < 0.00001) {
