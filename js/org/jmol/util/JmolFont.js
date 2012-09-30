@@ -1,4 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.JmolFont", ["org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fid = 0;
 this.fontFace = null;
@@ -26,6 +27,10 @@ this.font = apiPlatform.newFont (org.jmol.util.JmolFont.fontFaces[idFontFace], (
 this.fontMetrics = apiPlatform.getFontMetrics (graphics, this.font);
 }, $fz.isPrivate = true, $fz), "org.jmol.api.ApiPlatform,~N,~N,~N,~N,~N,~O");
 c$.getFont3D = Clazz.defineMethod (c$, "getFont3D", 
+function (fontID) {
+return org.jmol.util.JmolFont.font3ds[fontID & 0xFF];
+}, "~N");
+c$.createFont3D = Clazz.defineMethod (c$, "createFont3D", 
 function (fontface, fontstyle, fontsize, fontsizeNominal, apiPlatform, graphicsForMetrics) {
 if (fontsize > 0xFF) fontsize = 0xFF;
 var fontsizeX16 = (Math.round (fontsize)) << 4;
@@ -33,14 +38,9 @@ var fontkey = ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
 for (var i = org.jmol.util.JmolFont.fontkeyCount; --i > 0; ) if (fontkey == org.jmol.util.JmolFont.fontkeys[i] && org.jmol.util.JmolFont.font3ds[i].fontSizeNominal == fontsizeNominal) return org.jmol.util.JmolFont.font3ds[i];
 
 var fontIndexNext = ($t$ = org.jmol.util.JmolFont.fontkeyCount ++, org.jmol.util.JmolFont.prototype.fontkeyCount = org.jmol.util.JmolFont.fontkeyCount, $t$);
-if (fontIndexNext == org.jmol.util.JmolFont.fontkeys.length) {
-var t0 =  Clazz.newArray (fontIndexNext + 8, 0);
-System.arraycopy (org.jmol.util.JmolFont.fontkeys, 0, t0, 0, fontIndexNext);
-($t$ = org.jmol.util.JmolFont.fontkeys = t0, org.jmol.util.JmolFont.prototype.fontkeys = org.jmol.util.JmolFont.fontkeys, $t$);
-var t1 =  new Array (fontIndexNext + 8);
-System.arraycopy (org.jmol.util.JmolFont.font3ds, 0, t1, 0, fontIndexNext);
-($t$ = org.jmol.util.JmolFont.font3ds = t1, org.jmol.util.JmolFont.prototype.font3ds = org.jmol.util.JmolFont.font3ds, $t$);
-}var font3d =  new org.jmol.util.JmolFont (apiPlatform, fontIndexNext, fontface, fontstyle, fontsize, fontsizeNominal, graphicsForMetrics);
+if (fontIndexNext == org.jmol.util.JmolFont.fontkeys.length) ($t$ = org.jmol.util.JmolFont.fontkeys = org.jmol.util.ArrayUtil.arrayCopyI (org.jmol.util.JmolFont.fontkeys, fontIndexNext + 8), org.jmol.util.JmolFont.prototype.fontkeys = org.jmol.util.JmolFont.fontkeys, $t$);
+($t$ = org.jmol.util.JmolFont.font3ds = org.jmol.util.ArrayUtil.arrayCopyOpt (org.jmol.util.JmolFont.font3ds, fontIndexNext + 8), org.jmol.util.JmolFont.prototype.font3ds = org.jmol.util.JmolFont.font3ds, $t$);
+var font3d =  new org.jmol.util.JmolFont (apiPlatform, fontIndexNext, fontface, fontstyle, fontsize, fontsizeNominal, graphicsForMetrics);
 org.jmol.util.JmolFont.font3ds[fontIndexNext] = font3d;
 org.jmol.util.JmolFont.fontkeys[fontIndexNext] = fontkey;
 return font3d;
@@ -57,10 +57,6 @@ for (var i = 4; --i >= 0; ) if (org.jmol.util.JmolFont.fontStyles[i].equalsIgnor
 
 return -1;
 }, "~S");
-c$.getFont3D = Clazz.defineMethod (c$, "getFont3D", 
-function (fontID) {
-return org.jmol.util.JmolFont.font3ds[fontID & 0xFF];
-}, "~N");
 Clazz.defineMethod (c$, "getAscent", 
 function () {
 return this.apiPlatform.getFontAscent (this.fontMetrics);
@@ -92,3 +88,4 @@ Clazz.defineStatics (c$,
 "FONT_STYLE_ITALIC", 2,
 "FONT_STYLE_BOLDITALIC", 3,
 "fontStyles", ["Plain", "Bold", "Italic", "BoldItalic"]);
+});

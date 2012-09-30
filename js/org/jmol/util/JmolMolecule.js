@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.Elements"], "org.jmol.util.JmolMolecule", ["java.util.BitSet"], function () {
+Clazz.load (["org.jmol.util.Elements"], "org.jmol.util.JmolMolecule", ["javax.util.BitSet", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nodes = null;
 this.moleculeIndex = 0;
@@ -26,12 +26,12 @@ function () {
 c$.getMolecules = Clazz.defineMethod (c$, "getMolecules", 
 function (atoms, bsModelAtoms, biobranches, bsExclude) {
 var bsToTest = null;
-var bsBranch =  new java.util.BitSet ();
+var bsBranch =  new javax.util.BitSet ();
 var thisModelIndex = -1;
 var indexInModel = 0;
 var moleculeCount = 0;
 var molecules =  new Array (4);
-if (bsExclude == null) bsExclude =  new java.util.BitSet ();
+if (bsExclude == null) bsExclude =  new javax.util.BitSet ();
 for (var i = 0; i < atoms.length; i++) if (!bsExclude.get (i) && !bsBranch.get (i)) {
 if (atoms[i].isDeleted ()) {
 bsExclude.set (i);
@@ -45,28 +45,28 @@ if (bsBranch.nextSetBit (0) >= 0) {
 molecules = org.jmol.util.JmolMolecule.addMolecule (molecules, moleculeCount++, atoms, i, bsBranch, modelIndex, indexInModel++, bsExclude);
 }}
 return org.jmol.util.JmolMolecule.allocateArray (molecules, moleculeCount);
-}, "~A,~A,java.util.List,java.util.BitSet");
+}, "~A,~A,java.util.List,javax.util.BitSet");
 c$.getBranchBitSet = Clazz.defineMethod (c$, "getBranchBitSet", 
 function (atoms, atomIndex, bsToTest, biobranches, atomIndexNot, allowCyclic, allowBioResidue) {
-var bs =  new java.util.BitSet (atoms.length);
+var bs = org.jmol.util.BitSetUtil.newBitSet (atoms.length);
 if (atomIndex < 0) return bs;
 if (atomIndexNot >= 0) bsToTest.clear (atomIndexNot);
-return (org.jmol.util.JmolMolecule.getCovalentlyConnectedBitSet (atoms, atoms[atomIndex], bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs :  new java.util.BitSet ());
-}, "~A,~N,java.util.BitSet,java.util.List,~N,~B,~B");
+return (org.jmol.util.JmolMolecule.getCovalentlyConnectedBitSet (atoms, atoms[atomIndex], bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs :  new javax.util.BitSet ());
+}, "~A,~N,javax.util.BitSet,java.util.List,~N,~B,~B");
 c$.addMolecule = Clazz.defineMethod (c$, "addMolecule", 
 function (molecules, iMolecule, atoms, iAtom, bsBranch, modelIndex, indexInModel, bsExclude) {
 bsExclude.or (bsBranch);
 if (iMolecule == molecules.length) molecules = org.jmol.util.JmolMolecule.allocateArray (molecules, iMolecule * 2 + 1);
-molecules[iMolecule] =  new org.jmol.util.JmolMolecule (atoms, iMolecule, iAtom, bsBranch, modelIndex, indexInModel);
+molecules[iMolecule] = org.jmol.util.JmolMolecule.initialize (atoms, iMolecule, iAtom, bsBranch, modelIndex, indexInModel);
 return molecules;
-}, "~A,~N,~A,~N,java.util.BitSet,~N,~N,java.util.BitSet");
+}, "~A,~N,~A,~N,javax.util.BitSet,~N,~N,javax.util.BitSet");
 c$.getMolecularFormula = Clazz.defineMethod (c$, "getMolecularFormula", 
 function (atoms, bsSelected, includeMissingHydrogens) {
 var m =  new org.jmol.util.JmolMolecule ();
 m.nodes = atoms;
 m.atomList = bsSelected;
 return m.getMolecularFormula (includeMissingHydrogens);
-}, "~A,java.util.BitSet,~B");
+}, "~A,javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "getMolecularFormula", 
 function (includeMissingHydrogens) {
 if (this.mf != null) return this.mf;
@@ -88,20 +88,22 @@ sep = " ";
 }}
 return mf;
 }, "~B");
-Clazz.makeConstructor (c$, 
+c$.initialize = Clazz.defineMethod (c$, "initialize", 
 ($fz = function (nodes, moleculeIndex, firstAtomIndex, atomList, modelIndex, indexInModel) {
-this.nodes = nodes;
-this.firstAtomIndex = firstAtomIndex;
-this.atomList = atomList;
-this.moleculeIndex = moleculeIndex;
-this.modelIndex = modelIndex;
-this.indexInModel = indexInModel;
-}, $fz.isPrivate = true, $fz), "~A,~N,~N,java.util.BitSet,~N,~N");
+var jm =  new org.jmol.util.JmolMolecule ();
+jm.nodes = nodes;
+jm.firstAtomIndex = firstAtomIndex;
+jm.atomList = atomList;
+jm.moleculeIndex = moleculeIndex;
+jm.modelIndex = modelIndex;
+jm.indexInModel = indexInModel;
+return jm;
+}, $fz.isPrivate = true, $fz), "~A,~N,~N,javax.util.BitSet,~N,~N");
 Clazz.defineMethod (c$, "getElementAndAtomCount", 
 ($fz = function (includeMissingHydrogens) {
 if (this.atomList == null) {
-this.atomList =  new java.util.BitSet ();
-this.atomList.set (0, this.nodes.length);
+this.atomList =  new javax.util.BitSet ();
+this.atomList.setBits (0, this.nodes.length);
 }this.elementCounts =  Clazz.newArray (org.jmol.util.Elements.elementNumberMax, 0);
 this.altElementCounts =  Clazz.newArray (org.jmol.util.Elements.altElementMax, 0);
 var count = 0;
@@ -153,12 +155,9 @@ var bond = bonds[i];
 if (bond.isCovalent () && !org.jmol.util.JmolMolecule.getCovalentlyConnectedBitSet (atoms, bond.getOtherAtomNode (atom), bsToTest, allowCyclic, allowBioResidue, biobranches, bsResult)) return false;
 }
 return true;
-}, $fz.isPrivate = true, $fz), "~A,org.jmol.util.JmolNode,java.util.BitSet,~B,~B,java.util.List,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,org.jmol.util.JmolNode,javax.util.BitSet,~B,~B,java.util.List,javax.util.BitSet");
 c$.allocateArray = Clazz.defineMethod (c$, "allocateArray", 
 ($fz = function (molecules, len) {
-if (molecules.length == len) return molecules;
-var jm =  new Array (len);
-System.arraycopy (molecules, 0, jm, 0, len < molecules.length ? len : molecules.length);
-return jm;
+return (len == molecules.length ? molecules : org.jmol.util.ArrayUtil.arrayCopyOpt (molecules, len));
 }, $fz.isPrivate = true, $fz), "~A,~N");
 });

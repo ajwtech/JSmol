@@ -47,7 +47,7 @@ c$.getPointGroup = Clazz.defineMethod (c$, "getPointGroup",
 function (pgLast, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance) {
 var pg =  new org.jmol.symmetry.PointGroup ();
 return (pg.set (pgLast, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance) ? pg : pgLast);
-}, "org.jmol.symmetry.PointGroup,~A,java.util.BitSet,~B,~N,~N");
+}, "org.jmol.symmetry.PointGroup,~A,javax.util.BitSet,~B,~N,~N");
 Clazz.makeConstructor (c$, 
 ($fz = function () {
 }, $fz.isPrivate = true, $fz));
@@ -157,7 +157,7 @@ if (n < 14) n /= 2;
  else n -= 14;
 this.name = "C" + n + "h";
 }}return true;
-}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.PointGroup,~A,java.util.BitSet,~B,~N,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.PointGroup,~A,javax.util.BitSet,~B,~N,~N");
 Clazz.defineMethod (c$, "setPrincipalAxis", 
 ($fz = function (n, nPlanes) {
 var principalPlane = this.setPrincipalPlane (n, nPlanes);
@@ -211,7 +211,7 @@ if (r < this.distanceTolerance) this.centerAtomIndex = i;
 this.radius = Math.max (this.radius, r);
 }
 return true;
-}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "findInversionCenter", 
 ($fz = function () {
 this.haveInversionCenter = this.checkOperation (null, this.center, -1);
@@ -232,7 +232,7 @@ var e1 = this.elements[i];
 if (q != null) {
 pt.setT (a1);
 pt.sub (center);
-q.transform (pt, pt);
+q.transformP2 (pt, pt);
 pt.add (center);
 } else {
 pt.setT (a1);
@@ -405,7 +405,7 @@ break;
 }
 v.normalize ();
 if (this.haveAxis (iOrder, v)) return false;
-var q =  new org.jmol.util.Quaternion (v, (iOrder < 14 ? 180 : 0) + Math.floor (360 / (iOrder % 14)));
+var q = org.jmol.util.Quaternion.newVA (v, (iOrder < 14 ? 180 : 0) + Math.floor (360 / (iOrder % 14)));
 if (!this.checkOperation (q, center, iOrder)) return false;
 this.addAxis (iOrder, v);
 switch (iOrder) {
@@ -489,7 +489,7 @@ return nPlanes;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getPlane", 
 ($fz = function (v3) {
-if (!this.haveAxis (0, v3) && this.checkOperation ( new org.jmol.util.Quaternion (v3, 180), this.center, -1)) this.axes[0][this.nAxes[0]++] = Clazz.innerTypeInstance (org.jmol.symmetry.PointGroup.Operation, this, null, v3);
+if (!this.haveAxis (0, v3) && this.checkOperation (org.jmol.util.Quaternion.newVA (v3, 180), this.center, -1)) this.axes[0][this.nAxes[0]++] = Clazz.innerTypeInstance (org.jmol.symmetry.PointGroup.Operation, this, null, v3);
 return this.nAxes[0];
 }, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "findAdditionalAxes", 
@@ -658,7 +658,7 @@ function (a, b) {
 this.index = ++this.b$["org.jmol.symmetry.PointGroup"].nOps;
 this.type = (b < 14 ? 2 : 1);
 this.order = b % 14;
-this.normalOrAxis =  new org.jmol.util.Quaternion (a, 180).getNormal ();
+this.normalOrAxis = org.jmol.util.Quaternion.newVA (a, 180).getNormal ();
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("new operation -- " + (this.order == b ? "S" : "C") + this.order + " " + this.normalOrAxis);
 }, "javax.vecmath.Vector3f,~N");
 Clazz.makeConstructor (c$, 
@@ -666,7 +666,7 @@ function (a) {
 if (a == null) return ;
 this.index = ++this.b$["org.jmol.symmetry.PointGroup"].nOps;
 this.type = 0;
-this.normalOrAxis =  new org.jmol.util.Quaternion (a, 180).getNormal ();
+this.normalOrAxis = org.jmol.util.Quaternion.newVA (a, 180).getNormal ();
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("new operation -- plane " + this.normalOrAxis);
 }, "javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "getLabel", 

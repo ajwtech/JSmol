@@ -199,7 +199,7 @@ this.setTokenProperty (tok, test, false);
 if (tok2 != 0) this.setTokenProperty (tok2, test, true);
 return ;
 }Clazz.superCall (this, org.jmol.shape.MeshCollection, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "checkExplicit", 
 function (id) {
 if (this.explicitID) return ;
@@ -374,7 +374,7 @@ for (var i = this.meshCount; --i >= 0; ) {
 var mesh = this.meshes[i];
 mesh.visibilityFlags = (mesh.visible && mesh.isValid && (mesh.modelIndex < 0 || bs.get (mesh.modelIndex) && (mesh.atomIndex < 0 || !this.modelSet.isAtomHidden (mesh.atomIndex) && !(bsDeleted != null && bsDeleted.get (mesh.atomIndex)))) ? this.myVisibilityFlag : 0);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setStatusPicked", 
 function (flag, v) {
 this.viewer.setStatusAtomPicked (flag, "[\"" + this.myType + "\"," + org.jmol.util.Escape.escapeStr (this.pickedMesh.thisID) + "," + +this.pickedModel + "," + this.pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," + (this.pickedMesh.title == null ? "\"\"" : org.jmol.util.Escape.escapeStr (this.pickedMesh.title[0])) + "]");

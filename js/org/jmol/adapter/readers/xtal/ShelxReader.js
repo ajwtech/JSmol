@@ -101,7 +101,7 @@ this.sfacElementSymbols = sfacTokens;
 } else {
 var oldCount = this.sfacElementSymbols.length;
 var tokenCount = sfacTokens.length;
-this.sfacElementSymbols = org.jmol.util.ArrayUtil.setLength (this.sfacElementSymbols, oldCount + tokenCount);
+this.sfacElementSymbols = org.jmol.util.ArrayUtil.arrayCopyS (this.sfacElementSymbols, oldCount + tokenCount);
 for (var i = tokenCount; --i >= 0; ) this.sfacElementSymbols[oldCount + i] = sfacTokens[i];
 
 }}, $fz.isPrivate = true, $fz), "~A");
@@ -119,7 +119,7 @@ if (this.sfacElementSymbols == null) {
 this.sfacElementSymbols =  new Array (1);
 } else {
 oldCount = this.sfacElementSymbols.length;
-this.sfacElementSymbols = org.jmol.util.ArrayUtil.setLength (this.sfacElementSymbols, oldCount + 1);
+this.sfacElementSymbols = org.jmol.util.ArrayUtil.arrayCopyS (this.sfacElementSymbols, oldCount + 1);
 this.sfacElementSymbols[oldCount] = elementSymbol;
 }this.sfacElementSymbols[oldCount] = elementSymbol;
 }, $fz.isPrivate = true, $fz), "~A");

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.renderbio");
-Clazz.load (["org.jmol.render.MeshRenderer", "java.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Point3i", "$.Vector3f"], "org.jmol.renderbio.BioShapeRenderer", ["org.jmol.constant.EnumStructure", "org.jmol.shape.Mesh", "org.jmol.util.Colix", "$.Hermite", "$.Logger"], function () {
+Clazz.load (["org.jmol.render.MeshRenderer", "javax.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Point3i", "$.Vector3f"], "org.jmol.renderbio.BioShapeRenderer", ["org.jmol.constant.EnumStructure", "org.jmol.shape.Mesh", "org.jmol.util.Colix", "$.Hermite", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.invalidateMesh = false;
 this.invalidateSheets = false;
@@ -58,7 +58,7 @@ this.mat = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.renderbio, "BioShapeRenderer", org.jmol.render.MeshRenderer);
 Clazz.prepareFields (c$, function () {
-this.bsVisible =  new java.util.BitSet ();
+this.bsVisible =  new javax.util.BitSet ();
 this.pointT =  new javax.vecmath.Point3f ();
 this.screenArrowTop =  new javax.vecmath.Point3i ();
 this.screenArrowTopPrev =  new javax.vecmath.Point3i ();
@@ -125,7 +125,7 @@ this.controlPoints = bioShape.bioPolymer.getControlPoints (this.isTraceAlpha, th
 }this.monomerCount = bioShape.monomerCount;
 this.monomers = bioShape.monomers;
 this.leadAtomIndices = bioShape.bioPolymer.getLeadAtomIndices ();
-this.bsVisible.clear ();
+this.bsVisible.clearAll ();
 var haveVisible = false;
 if (this.invalidateMesh) bioShape.falsifyMesh ();
 for (var i = this.monomerCount; --i >= 0; ) {
@@ -362,7 +362,7 @@ this.wing.normalize ();
 }var scale = (!variableRadius ? radius1 : p < iMid ? this.radiusHermites[p].x : this.radiusHermites[p - iMid].y);
 this.wing.scale (scale);
 this.wing1.scale (scale);
-this.aa.set (this.norm, (6.283185307179586 / nPer));
+this.aa.setVA (this.norm, (6.283185307179586 / nPer));
 this.mat.setAA (this.aa);
 this.pt1.setT (this.controlHermites[p]);
 for (var k = 0; k < nPer; k++) {

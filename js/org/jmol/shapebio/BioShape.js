@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapebio");
-Clazz.load (["java.util.BitSet", "org.jmol.modelset.Atom", "org.jmol.modelsetbio.NucleicMonomer", "org.jmol.viewer.JmolConstants"], "org.jmol.shapebio.BioShape", ["java.lang.Float", "org.jmol.constant.EnumStructure", "org.jmol.shape.Shape", "org.jmol.util.Colix", "$.Logger"], function () {
+Clazz.load (["javax.util.BitSet", "org.jmol.modelset.Atom", "org.jmol.modelsetbio.NucleicMonomer", "org.jmol.viewer.JmolConstants"], "org.jmol.shapebio.BioShape", ["java.lang.Float", "org.jmol.constant.EnumStructure", "org.jmol.shape.Shape", "org.jmol.util.Colix", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelIndex = 0;
 this.modelVisibilityFlags = 0;
@@ -26,7 +26,7 @@ this.floatRange = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shapebio, "BioShape");
 Clazz.prepareFields (c$, function () {
-this.bsSizeDefault =  new java.util.BitSet ();
+this.bsSizeDefault =  new javax.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
 function (shape, modelIndex, bioPolymer) {
@@ -64,12 +64,12 @@ return Math.round ((Math.sqrt (bFactor100 / 7895.6835208714865) * 1000));
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (xMouse, yMouse, closest, bsNot) {
 this.bioPolymer.findNearestAtomIndex (xMouse, yMouse, closest, this.mads, this.shape.myVisibilityFlag, bsNot);
-}, "~N,~N,~A,java.util.BitSet");
+}, "~N,~N,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "setMad", 
 function (mad, bsSelected, values) {
 if (this.monomerCount < 2) return ;
 this.isActive = true;
-if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
+if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
 var flag = this.shape.myVisibilityFlag;
 for (var i = this.monomerCount; --i >= 0; ) {
 var leadAtomIndex = this.leadAtomIndices[i];
@@ -77,16 +77,16 @@ if (bsSelected.get (leadAtomIndex)) {
 if (values != null) {
 if (Float.isNaN (values[leadAtomIndex])) continue ;mad = Math.round ((values[leadAtomIndex] * 2000));
 }var isVisible = ((this.mads[i] = this.getMad (i, mad)) > 0);
-this.bsSizeSet.set (i, isVisible);
+this.bsSizeSet.setBitTo (i, isVisible);
 this.monomers[i].setShapeVisibility (flag, isVisible);
 this.shape.atoms[leadAtomIndex].setShapeVisibility (flag, isVisible);
 this.falsifyNearbyMesh (i);
 }}
 if (this.monomerCount > 1) this.mads[this.monomerCount] = this.mads[this.monomerCount - 1];
-}, "~N,java.util.BitSet,~A");
+}, "~N,javax.util.BitSet,~A");
 Clazz.defineMethod (c$, "getMad", 
 ($fz = function (groupIndex, mad) {
-this.bsSizeDefault.set (groupIndex, mad == -1 || mad == -2);
+this.bsSizeDefault.setBitTo (groupIndex, mad == -1 || mad == -2);
 if (mad >= 0) return mad;
 switch (mad) {
 case -1:
@@ -136,24 +136,24 @@ if (index < this.monomerCount - 1) this.meshReady[index + 1] = false;
 Clazz.defineMethod (c$, "setColix", 
 function (colix, pid, bsSelected) {
 this.isActive = true;
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 for (var i = this.monomerCount; --i >= 0; ) {
 var atomIndex = this.leadAtomIndices[i];
 if (bsSelected.get (atomIndex)) {
 this.colixes[i] = this.shape.setColix (colix, pid, atomIndex);
 this.paletteIDs[i] = pid;
-this.bsColixSet.set (i, this.colixes[i] != 0);
+this.bsColixSet.setBitTo (i, this.colixes[i] != 0);
 }}
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "setTranslucent", 
 function (isTranslucent, bsSelected, translucentLevel) {
 this.isActive = true;
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 for (var i = this.monomerCount; --i >= 0; ) if (bsSelected.get (this.leadAtomIndices[i])) {
 this.colixes[i] = org.jmol.util.Colix.getColixTranslucent (this.colixes[i], isTranslucent, translucentLevel);
-this.bsColixSet.set (i, this.colixes[i] != 0);
+this.bsColixSet.setBitTo (i, this.colixes[i] != 0);
 }
-}, "~B,java.util.BitSet,~N");
+}, "~B,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "setShapeState", 
 function (temp, temp2) {
 if (!this.isActive || this.bsSizeSet == null && this.bsColixSet == null) return ;

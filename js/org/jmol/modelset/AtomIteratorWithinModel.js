@@ -33,7 +33,7 @@ this.isZeroBased = isZeroBased;
 this.hemisphereOnly = hemisphereOnly;
 this.threadSafe = threadSafe;
 this.cubeIterator = null;
-}, "org.jmol.bspt.Bspf,java.util.BitSet,~B,~B,~B,~B");
+}, "org.jmol.bspt.Bspf,javax.util.BitSet,~B,~B,~B,~B");
 Clazz.overrideMethod (c$, "setModel", 
 function (modelSet, modelIndex, firstModelAtom, atomIndex, center, distance, rd) {
 if (this.threadSafe) modelIndex = -1 - modelIndex;
@@ -101,7 +101,7 @@ d *= d;
 d = this.distanceSquared;
 }if (this.foundDistance2 () <= d) bsResult.set (iAtom);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "release", 
 function () {
 if (this.cubeIterator != null) {

@@ -59,7 +59,7 @@ Clazz.defineMethod (c$, "makeColorScheme",
 name = org.jmol.util.ColorEncoder.fixName (name);
 if (scale == null) {
 this.schemes.remove (name);
-var iScheme = this.getColorScheme (name, false, isOverloaded);
+var iScheme = this.createColorScheme (name, false, isOverloaded);
 if (isOverloaded) switch (iScheme) {
 case 10:
 this.paletteBW = this.getPaletteBW ();
@@ -91,7 +91,7 @@ break;
 return (iScheme == 2147483647 ? 0 : iScheme);
 }this.schemes.put (name, scale);
 this.setThisScheme (name, scale);
-var iScheme = this.getColorScheme (name, false, isOverloaded);
+var iScheme = this.createColorScheme (name, false, isOverloaded);
 if (isOverloaded) switch (iScheme) {
 case 10:
 this.paletteBW = this.thisScale;
@@ -122,7 +122,7 @@ break;
 }
 return -1;
 }, $fz.isPrivate = true, $fz), "~S,~A,~B");
-Clazz.defineMethod (c$, "getColorScheme", 
+Clazz.defineMethod (c$, "createColorScheme", 
 function (colorScheme, defaultToRoygb, isOverloaded) {
 colorScheme = colorScheme.toLowerCase ();
 var pt = Math.max (colorScheme.indexOf ("="), colorScheme.indexOf ("["));
@@ -176,11 +176,11 @@ return this.thisScale;
 case 0:
 return this.propertyColorEncoder.argbsRoygb;
 case 1:
-return org.jmol.util.ArrayUtil.arrayCopy (this.propertyColorEncoder.argbsRoygb, 0, -1, true);
+return org.jmol.util.ArrayUtil.arrayCopyRangeRevI (this.propertyColorEncoder.argbsRoygb, 0, -1);
 case 8:
-return org.jmol.util.ArrayUtil.arrayCopy (this.propertyColorEncoder.argbsRoygb, 0, this.propertyColorEncoder.ihalf, false);
+return org.jmol.util.ArrayUtil.arrayCopyRangeI (this.propertyColorEncoder.argbsRoygb, 0, this.propertyColorEncoder.ihalf);
 case 9:
-var a = org.jmol.util.ArrayUtil.arrayCopy (this.propertyColorEncoder.argbsRoygb, this.propertyColorEncoder.argbsRoygb.length - 2 * this.propertyColorEncoder.ihalf, -1, false);
+var a = org.jmol.util.ArrayUtil.arrayCopyRangeI (this.propertyColorEncoder.argbsRoygb, this.propertyColorEncoder.argbsRoygb.length - 2 * this.propertyColorEncoder.ihalf, -1);
 b =  Clazz.newArray (this.propertyColorEncoder.ihalf, 0);
 for (var i = b.length, j = a.length; --i >= 0 && --j >= 0; ) b[i] = a[j--];
 
@@ -192,7 +192,7 @@ return this.getPaletteWB ();
 case 6:
 return this.propertyColorEncoder.argbsRwb;
 case 7:
-return org.jmol.util.ArrayUtil.arrayCopy (this.propertyColorEncoder.argbsRwb, 0, -1, true);
+return org.jmol.util.ArrayUtil.arrayCopyRangeRevI (this.propertyColorEncoder.argbsRwb, 0, -1);
 case 2:
 return this.propertyColorEncoder.argbsCpk;
 case 3:
@@ -204,7 +204,7 @@ return this.propertyColorEncoder.argbsAmino;
 case -12:
 return this.propertyColorEncoder.userScale;
 case -13:
-return org.jmol.util.ArrayUtil.arrayCopy (this.propertyColorEncoder.userScale, 0, -1, true);
+return org.jmol.util.ArrayUtil.arrayCopyRangeRevI (this.propertyColorEncoder.userScale, 0, -1);
 default:
 return null;
 }
@@ -327,13 +327,13 @@ info.put ("colors", colors);
 info.put ("min", Float.$valueOf (this.lo));
 info.put ("max", Float.$valueOf (this.hi));
 info.put ("reversed", Boolean.$valueOf (this.isReversed));
-info.put ("name", this.getColorSchemeName ());
+info.put ("name", this.getCurrentColorSchemeName ());
 return info;
 });
 Clazz.defineMethod (c$, "setColorScheme", 
 function (colorScheme, isTranslucent) {
 this.isTranslucent = isTranslucent;
-if (colorScheme != null) this.currentPalette = this.getColorScheme (colorScheme, true, false);
+if (colorScheme != null) this.currentPalette = this.createColorScheme (colorScheme, true, false);
 }, "~S,~B");
 Clazz.defineMethod (c$, "setRange", 
 function (lo, hi, isReversed) {
@@ -344,7 +344,7 @@ hi = this.getPaletteColorCount (this.currentPalette) + 1;
 this.hi = Math.max (lo, hi);
 this.isReversed = isReversed;
 }, "~N,~N,~B");
-Clazz.defineMethod (c$, "getColorSchemeName", 
+Clazz.defineMethod (c$, "getCurrentColorSchemeName", 
 function () {
 return this.getColorSchemeName (this.currentPalette);
 });

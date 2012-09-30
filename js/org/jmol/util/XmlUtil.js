@@ -9,16 +9,16 @@ c$.openTag = Clazz.defineMethod (c$, "openTag",
 function (sb, name) {
 sb.append ("<").append (name).append (">\n");
 }, "StringBuffer,~S");
-c$.openTag = Clazz.defineMethod (c$, "openTag", 
+c$.openTagAttr = Clazz.defineMethod (c$, "openTagAttr", 
 function (sb, name, attributes) {
-org.jmol.util.XmlUtil.appendTag (sb, name, attributes, null, false, false);
+org.jmol.util.XmlUtil.appendTagAll (sb, name, attributes, null, false, false);
 sb.append ("\n");
 }, "StringBuffer,~S,~A");
 c$.closeTag = Clazz.defineMethod (c$, "closeTag", 
 function (sb, name) {
 sb.append ("</").append (name).append (">\n");
 }, "StringBuffer,~S");
-c$.appendTag = Clazz.defineMethod (c$, "appendTag", 
+c$.appendTagAll = Clazz.defineMethod (c$, "appendTagAll", 
 function (sb, name, attributes, data, isCdata, doClose) {
 var closer = ">";
 if (name.endsWith ("/")) {
@@ -48,18 +48,18 @@ c$.unwrapCdata = Clazz.defineMethod (c$, "unwrapCdata",
 function (s) {
 return (s.startsWith ("<![CDATA[") && s.endsWith ("]]>") ? s.substring (9, s.length - 3).$replace ("]]]]><![CDATA[>", "]]>") : s);
 }, "~S");
-c$.appendTag = Clazz.defineMethod (c$, "appendTag", 
+c$.appendTagObj = Clazz.defineMethod (c$, "appendTagObj", 
 function (sb, name, attributes, data) {
-org.jmol.util.XmlUtil.appendTag (sb, name, attributes, data, false, true);
+org.jmol.util.XmlUtil.appendTagAll (sb, name, attributes, data, false, true);
 }, "StringBuffer,~S,~A,~O");
 c$.appendTag = Clazz.defineMethod (c$, "appendTag", 
 function (sb, name, data) {
-if (Clazz.instanceOf (data, Array)) org.jmol.util.XmlUtil.appendTag (sb, name, data, null, false, true);
- else org.jmol.util.XmlUtil.appendTag (sb, name, null, data, false, true);
+if (Clazz.instanceOf (data, Array)) org.jmol.util.XmlUtil.appendTagAll (sb, name, data, null, false, true);
+ else org.jmol.util.XmlUtil.appendTagAll (sb, name, null, data, false, true);
 }, "StringBuffer,~S,~O");
 c$.appendCdata = Clazz.defineMethod (c$, "appendCdata", 
 function (sb, name, attributes, data) {
-org.jmol.util.XmlUtil.appendTag (sb, name, attributes, data, true, true);
+org.jmol.util.XmlUtil.appendTagAll (sb, name, attributes, data, true, true);
 }, "StringBuffer,~S,~A,~S");
 c$.appendAttrib = Clazz.defineMethod (c$, "appendAttrib", 
 function (sb, name, value) {
@@ -70,7 +70,7 @@ c$.toXml = Clazz.defineMethod (c$, "toXml",
 function (sb, name, properties) {
 for (var i = 0; i < properties.size (); i++) {
 var o = properties.get (i);
-org.jmol.util.XmlUtil.appendTag (sb, name, o[0], o[1]);
+org.jmol.util.XmlUtil.appendTagObj (sb, name, o[0], o[1]);
 }
 }, "StringBuffer,~S,java.util.List");
 c$.escape = Clazz.defineMethod (c$, "escape", 
@@ -84,7 +84,7 @@ value = org.jmol.script.Token.nameOf ((value).intValue ());
 type = type.substring (0, type.lastIndexOf ("[") + 1) + type.substring (type.lastIndexOf (".") + 1);
 if (Clazz.instanceOf (value, String)) {
 value = org.jmol.util.XmlUtil.wrapCdata (value);
-} else if (Clazz.instanceOf (value, java.util.BitSet)) {
+} else if (Clazz.instanceOf (value, javax.util.BitSet)) {
 value = org.jmol.util.Escape.escape (value);
 } else if (Clazz.instanceOf (value, java.util.List)) {
 var v = value;
@@ -141,7 +141,7 @@ if (atts != null) for (var i = 0; i < atts.size (); i++) attributes.add (atts.ge
 if (!asString) return [attributes.toArray (), value];
 sb =  new StringBuffer ();
 sb.append (indent);
-org.jmol.util.XmlUtil.appendTag (sb, "val", attributes.toArray (), null, false, false);
+org.jmol.util.XmlUtil.appendTagAll (sb, "val", attributes.toArray (), null, false, false);
 sb.append (value);
 if (Clazz.instanceOf (value, String) && (value).indexOf ("\n") >= 0) sb.append (indent);
 org.jmol.util.XmlUtil.closeTag (sb, "val");

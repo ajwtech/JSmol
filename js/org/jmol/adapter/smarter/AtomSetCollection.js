@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.BitSet", "$.Collections", "$.Properties", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.Collections", "$.Properties", "javax.util.BitSet", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileTypeName = null;
 this.collectionName = null;
@@ -214,7 +214,7 @@ function (collectionIndex, collection) {
 var existingAtomsCount = this.atomCount;
 this.setAtomSetCollectionAuxiliaryInfo ("loadState", collection.getAtomSetCollectionAuxiliaryInfo ("loadState"));
 if (collection.bsAtoms != null) {
-if (this.bsAtoms == null) this.bsAtoms =  new java.util.BitSet ();
+if (this.bsAtoms == null) this.bsAtoms =  new javax.util.BitSet ();
 for (var i = collection.bsAtoms.nextSetBit (0); i >= 0; i = collection.bsAtoms.nextSetBit (i + 1)) this.bsAtoms.set (existingAtomsCount + i);
 
 }var clonedAtoms = 0;
@@ -333,7 +333,7 @@ java.util.Collections.reverse (list);
 Clazz.defineMethod (c$, "reverseArray", 
 ($fz = function (a) {
 var n = this.atomSetCount;
-for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (a, i, n - 1 - i);
+for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swapInt (a, i, n - 1 - i);
 
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "getList", 
@@ -393,12 +393,12 @@ this.atomSetAuxiliaryInfo[i] = null;
 Clazz.defineMethod (c$, "removeAtomSet", 
 function (imodel) {
 if (this.bsAtoms == null) {
-this.bsAtoms =  new java.util.BitSet ();
-this.bsAtoms.set (0, this.atomCount);
+this.bsAtoms =  new javax.util.BitSet ();
+this.bsAtoms.setBits (0, this.atomCount);
 }var i0 = this.atomSetAtomIndexes[imodel];
 var nAtoms = this.atomSetAtomCounts[imodel];
 var i1 = i0 + nAtoms;
-this.bsAtoms.clear (i0, i1);
+this.bsAtoms.clearBits (i0, i1);
 for (var i = i1; i < this.atomCount; i++) this.atoms[i].atomSetIndex--;
 
 for (var i = imodel + 1; i < this.atomSetCount; i++) {
@@ -573,13 +573,13 @@ if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0 || bond.order < 0 || this.atoms[b
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug (">>>>>>BAD BOND:" + bond.atomIndex1 + "-" + bond.atomIndex2 + " order=" + bond.order);
 }return ;
-}if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.setLength (this.bonds, this.bondCount + 1024);
+}if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount + 1024);
 this.bonds[this.bondCount++] = bond;
 this.atomSetBondCounts[this.currentAtomSetIndex]++;
 }, "org.jmol.adapter.smarter.Bond");
 Clazz.defineMethod (c$, "addStructure", 
 function (structure) {
-if (this.structureCount == this.structures.length) this.structures = org.jmol.util.ArrayUtil.setLength (this.structures, this.structureCount + 32);
+if (this.structureCount == this.structures.length) this.structures = org.jmol.util.ArrayUtil.arrayCopyOpt (this.structures, this.structureCount + 32);
 structure.atomSetIndex = this.currentAtomSetIndex;
 this.structures[this.structureCount++] = structure;
 if (structure.strandCount >= 1) {
@@ -814,7 +814,7 @@ this.maxXYZ.x++;
 }var nCells = (this.maxXYZ.x - this.minXYZ.x) * (this.maxXYZ.y - this.minXYZ.y) * (this.maxXYZ.z - this.minXYZ.z);
 var cartesianCount = (this.checkSpecial ? noSymmetryCount * operationCount * nCells : this.symmetryRange > 0 ? noSymmetryCount * operationCount : this.symmetryRange < 0 ? 1 : 1);
 this.cartesians =  new Array (cartesianCount);
-for (var i = 0; i < noSymmetryCount; i++) this.atoms[i + iAtomFirst].bsSymmetry =  new java.util.BitSet (operationCount * (nCells + 1));
+for (var i = 0; i < noSymmetryCount; i++) this.atoms[i + iAtomFirst].bsSymmetry = org.jmol.util.BitSetUtil.newBitSet (operationCount * (nCells + 1));
 
 var pt = 0;
 var unitCells =  Clazz.newArray (nCells, 0);
@@ -959,7 +959,7 @@ if (addBonds) atomMap[atomSite] = this.atomCount;
 var atom1 = this.newCloneAtom (this.atoms[i]);
 atom1.setT (ptAtom);
 atom1.atomSite = atomSite;
-atom1.bsSymmetry = org.jmol.util.BitSetUtil.setBit (iCellOpPt + iSym);
+atom1.bsSymmetry = org.jmol.util.BitSetUtil.newAndSetBit (iCellOpPt + iSym);
 atom1.bsSymmetry.set (iSym);
 if (addCartesian) this.cartesians[pt++] = cartesian;
 if (this.atoms[i].ellipsoid != null) {
@@ -1011,7 +1011,7 @@ var atomMax = this.atomCount;
 if (filter.indexOf ("#<") >= 0) {
 len = Math.min (len, org.jmol.util.Parser.parseInt (filter.substring (filter.indexOf ("#<") + 2)) - 1);
 filter = org.jmol.util.TextFormat.simpleReplace (filter, "#<", "_<");
-}for (var iAtom = iAtomFirst; iAtom < atomMax; iAtom++) this.atoms[iAtom].bsSymmetry = org.jmol.util.BitSetUtil.setBit (0);
+}for (var iAtom = iAtomFirst; iAtom < atomMax; iAtom++) this.atoms[iAtom].bsSymmetry = org.jmol.util.BitSetUtil.newAndSetBit (0);
 
 for (var i = 1; i < len; i++) {
 if (filter.indexOf ("!#") >= 0) {
@@ -1026,7 +1026,7 @@ atom1 = this.newCloneAtom (this.atoms[iAtom]);
 if (this.bsAtoms != null) this.bsAtoms.set (atom1.atomIndex);
 atom1.atomSite = atomSite;
 mat.transform (atom1);
-atom1.bsSymmetry = org.jmol.util.BitSetUtil.setBit (i);
+atom1.bsSymmetry = org.jmol.util.BitSetUtil.newAndSetBit (i);
 if (addBonds) {
 for (var bondNum = this.bondIndex0; bondNum < this.bondCount0; bondNum++) {
 var bond = this.bonds[bondNum];
@@ -1201,13 +1201,13 @@ if (this.isTrajectory) {
 this.discardPreviousAtoms ();
 }this.currentAtomSetIndex = this.atomSetCount++;
 if (this.atomSetCount > this.atomSetNumbers.length) {
-this.atomSetAtomIndexes = org.jmol.util.ArrayUtil.doubleLength (this.atomSetAtomIndexes);
-this.atomSetAtomCounts = org.jmol.util.ArrayUtil.doubleLength (this.atomSetAtomCounts);
-this.atomSetBondCounts = org.jmol.util.ArrayUtil.doubleLength (this.atomSetBondCounts);
+this.atomSetAtomIndexes = org.jmol.util.ArrayUtil.doubleLengthI (this.atomSetAtomIndexes);
+this.atomSetAtomCounts = org.jmol.util.ArrayUtil.doubleLengthI (this.atomSetAtomCounts);
+this.atomSetBondCounts = org.jmol.util.ArrayUtil.doubleLengthI (this.atomSetBondCounts);
 this.atomSetAuxiliaryInfo = org.jmol.util.ArrayUtil.doubleLength (this.atomSetAuxiliaryInfo);
 }this.atomSetAtomIndexes[this.currentAtomSetIndex] = this.atomCount;
 if (this.atomSetCount + this.trajectoryStepCount > this.atomSetNumbers.length) {
-this.atomSetNumbers = org.jmol.util.ArrayUtil.doubleLength (this.atomSetNumbers);
+this.atomSetNumbers = org.jmol.util.ArrayUtil.doubleLengthI (this.atomSetNumbers);
 }if (this.isTrajectory) {
 this.atomSetNumbers[this.currentAtomSetIndex + this.trajectoryStepCount] = this.atomSetCount + this.trajectoryStepCount;
 } else {

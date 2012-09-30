@@ -35,7 +35,7 @@ this.renderFrameTitle (frameTitle);
 Clazz.defineMethod (c$, "renderFrameTitle", 
 ($fz = function (frameTitle) {
 if (this.isExport || !this.g3d.setColix (this.viewer.getColixBackgroundContrast ())) return ;
-var fid = this.g3d.getFontFid ("Monospaced", 14 * this.imageFontScaling);
+var fid = this.g3d.getFontFidFS ("Monospaced", 14 * this.imageFontScaling);
 this.g3d.setFont (fid);
 var y = Math.round ((this.viewer.getScreenHeight () * (this.g3d.isAntialiased () ? 2 : 1) - 10 * this.imageFontScaling));
 var x = Math.round ((5 * this.imageFontScaling));

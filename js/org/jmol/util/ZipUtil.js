@@ -1,7 +1,7 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.ZipUtil", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "java.lang.StringBuffer", "java.util.ArrayList", "java.util.zip.GZIPInputStream", "$.ZipInputStream", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.util, "ZipUtil");
-c$.isZipFile = Clazz.defineMethod (c$, "isZipFile", 
+c$.isZipStream = Clazz.defineMethod (c$, "isZipStream", 
 function (is) {
 var abMagic =  Clazz.newArray (4, 0);
 try {
@@ -18,7 +18,7 @@ return org.jmol.util.ZipUtil.isZipFile (abMagic);
 }, "java.io.InputStream");
 c$.isPngZipStream = Clazz.defineMethod (c$, "isPngZipStream", 
 function (is) {
-if (org.jmol.util.ZipUtil.isZipFile (is)) return false;
+if (org.jmol.util.ZipUtil.isZipStream (is)) return false;
 try {
 is.mark (56);
 var abMagic = org.jmol.util.ZipUtil.getStreamBytes (is, 55);
@@ -238,7 +238,7 @@ var len = 0;
 var totalLen = 0;
 while ((n < 0 || totalLen < n) && (len = is.read (buf)) > 0) {
 totalLen += len;
-if (totalLen > bytes.length) bytes = org.jmol.util.ArrayUtil.ensureLength (bytes, totalLen * 2);
+if (totalLen > bytes.length) bytes = org.jmol.util.ArrayUtil.ensureLengthByte (bytes, totalLen * 2);
 System.arraycopy (buf, 0, bytes, totalLen - len, len);
 }
 if (totalLen == bytes.length) return bytes;

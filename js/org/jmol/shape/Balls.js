@@ -1,35 +1,35 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.AtomShape"], "org.jmol.shape.Balls", ["java.util.BitSet", "$.Hashtable", "org.jmol.constant.EnumPalette", "org.jmol.util.Colix"], function () {
+Clazz.load (["org.jmol.shape.AtomShape"], "org.jmol.shape.Balls", ["java.util.Hashtable", "javax.util.BitSet", "org.jmol.constant.EnumPalette", "org.jmol.util.Colix"], function () {
 c$ = Clazz.declareType (org.jmol.shape, "Balls", org.jmol.shape.AtomShape);
 Clazz.overrideMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 this.isActive = true;
-if (this.bsSizeSet == null) this.bsSizeSet =  new java.util.BitSet ();
+if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
 var bsLength = Math.min (this.atoms.length, bsSelected.length ());
 for (var i = bsSelected.nextSetBit (0); i >= 0 && i < bsLength; i = bsSelected.nextSetBit (i + 1)) {
 var atom = this.atoms[i];
 atom.setMadAtom (this.viewer, rd);
 this.bsSizeSet.set (i);
 }
-}, "org.jmol.atomdata.RadiusData,java.util.BitSet");
+}, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
 if ("color" === propertyName) {
 var colix = org.jmol.util.Colix.getColix (value);
 if (colix == 0) colix = 2;
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 var pid = org.jmol.constant.EnumPalette.pidOf (value);
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 var atom = this.atoms[i];
 atom.setColixAtom (this.setColix (colix, pid, atom));
-this.bsColixSet.set (i, colix != 2 || pid != org.jmol.constant.EnumPalette.NONE.id);
+this.bsColixSet.setBitTo (i, colix != 2 || pid != org.jmol.constant.EnumPalette.NONE.id);
 atom.setPaletteID (pid);
 }
 return ;
 }if ("colorValues" === propertyName) {
 var values = value;
 if (values.length == 0) return ;
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 var n = 0;
 var color = null;
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
@@ -40,20 +40,20 @@ if (colix == 0) colix = 2;
 var pid = org.jmol.constant.EnumPalette.pidOf (color);
 var atom = this.atoms[i];
 atom.setColixAtom (this.setColix (colix, pid, atom));
-this.bsColixSet.set (i, colix != 2 || pid != org.jmol.constant.EnumPalette.NONE.id);
+this.bsColixSet.setBitTo (i, colix != 2 || pid != org.jmol.constant.EnumPalette.NONE.id);
 atom.setPaletteID (pid);
 }
 return ;
 }if ("translucency" === propertyName) {
 var isTranslucent = ((value).equals ("translucent"));
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
 this.atoms[i].setTranslucent (isTranslucent, this.translucentLevel);
 if (isTranslucent) this.bsColixSet.set (i);
 }
 return ;
 }Clazz.superCall (this, org.jmol.shape.Balls, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setModelClickability", 
 function () {
 var bsDeleted = this.viewer.getDeletedAtoms ();
@@ -77,7 +77,7 @@ if (bs.get (modelIndex)) {
 atom.setShapeVisibility (1, true);
 if (atom.madAtom != 0 && !this.modelSet.isAtomHidden (i)) atom.setShapeVisibility (this.myVisibilityFlag, true);
 }}
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var temp =  new java.util.Hashtable ();

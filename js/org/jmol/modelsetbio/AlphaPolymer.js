@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["java.lang.Enum", "org.jmol.modelsetbio.BioPolymer"], "org.jmol.modelsetbio.AlphaPolymer", ["java.util.ArrayList", "$.BitSet", "javax.vecmath.Point3f", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Helix", "$.Sheet", "$.Turn", "org.jmol.util.Logger", "$.Measure"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.modelsetbio.BioPolymer"], "org.jmol.modelsetbio.AlphaPolymer", ["java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Helix", "$.Sheet", "$.Turn", "org.jmol.util.Logger", "$.Measure"], function () {
 c$ = Clazz.declareType (org.jmol.modelsetbio, "AlphaPolymer", org.jmol.modelsetbio.BioPolymer);
 Clazz.overrideMethod (c$, "getControlPoint", 
 function (i, v) {
@@ -13,7 +13,7 @@ return pt;
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 org.jmol.modelsetbio.BioPolymer.getPdbData (viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,java.util.BitSet,java.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,javax.util.BitSet");
 Clazz.defineMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
 var indexStart;
@@ -55,16 +55,16 @@ for (var i = indexStart; i <= indexEnd; ++i) this.monomers[i].setStructure (prot
 Clazz.overrideMethod (c$, "calculateStruts", 
 function (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple) {
 return this.calculateStrutsStatic (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple);
-}, "org.jmol.modelset.ModelSet,java.util.BitSet,java.util.BitSet,java.util.List,~N,~N,~B");
+}, "org.jmol.modelset.ModelSet,javax.util.BitSet,javax.util.BitSet,java.util.List,~N,~N,~B");
 Clazz.defineMethod (c$, "calculateStrutsStatic", 
 ($fz = function (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple) {
 var vStruts =  new java.util.ArrayList ();
 var thresh2 = thresh * thresh;
 var n = vCA.size ();
 var nEndMin = 3;
-var bsStruts =  new java.util.BitSet ();
-var bsNotAvailable =  new java.util.BitSet ();
-var bsNearbyResidues =  new java.util.BitSet ();
+var bsStruts =  new javax.util.BitSet ();
+var bsNotAvailable =  new javax.util.BitSet ();
+var bsNearbyResidues =  new javax.util.BitSet ();
 var a1 = vCA.get (0);
 var a2;
 var nBiopolymers = modelSet.getBioPolymerCountInModel (a1.modelIndex);
@@ -140,7 +140,7 @@ if (okN) org.jmol.modelsetbio.AlphaPolymer.setStrut (iN, jN, n, vCA, bs1, bs2, v
 if (okC) org.jmol.modelsetbio.AlphaPolymer.setStrut (iC, jC, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable, bsNearbyResidues, delta);
 }
 return vStruts;
-}, $fz.isPrivate = true, $fz), "org.jmol.modelset.ModelSet,java.util.BitSet,java.util.BitSet,java.util.List,~N,~N,~B");
+}, $fz.isPrivate = true, $fz), "org.jmol.modelset.ModelSet,javax.util.BitSet,javax.util.BitSet,java.util.List,~N,~N,~B");
 c$.strutPoint = Clazz.defineMethod (c$, "strutPoint", 
 ($fz = function (i, j, n) {
 return (j < i ? Math.floor (j * (2 * n - j - 1) / 2) + i - j - 1 : Math.floor (i * (2 * n - i - 1) / 2) + j - i - 1);
@@ -161,7 +161,7 @@ if (!bsNearbyResidues.get (ipt)) {
 bsNotAvailable.set (ipt);
 }}
 }
-}, $fz.isPrivate = true, $fz), "~N,~N,~N,java.util.List,java.util.BitSet,java.util.BitSet,java.util.List,java.util.BitSet,java.util.BitSet,java.util.BitSet,~N");
+}, $fz.isPrivate = true, $fz), "~N,~N,~N,java.util.List,javax.util.BitSet,javax.util.BitSet,java.util.List,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (alphaOnly) {
 if (this.monomerCount < 4) return ;

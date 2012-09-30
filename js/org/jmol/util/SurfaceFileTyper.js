@@ -1,7 +1,7 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.SurfaceFileTyper", ["java.io.BufferedInputStream", "$.BufferedReader", "$.InputStreamReader", "org.jmol.util.LimitedLineReader", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.util, "SurfaceFileTyper");
-c$.determineSurfaceFileType = Clazz.defineMethod (c$, "determineSurfaceFileType", 
+c$.determineSurfaceTypeIs = Clazz.defineMethod (c$, "determineSurfaceTypeIs", 
 function (is) {
 var br;
 try {

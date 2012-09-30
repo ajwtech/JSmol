@@ -116,7 +116,7 @@ function (bsMoved) {
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.ATOMMOVED);
 this.setStatusChanged ("atomMoved", -1, bsMoved, false);
 if (this.notifyEnabled (org.jmol.constant.EnumCallback.ATOMMOVED)) this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.ATOMMOVED, [sJmol, bsMoved]);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setStatusAtomPicked", 
 function (atomIndex, strInfo) {
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.PICK);

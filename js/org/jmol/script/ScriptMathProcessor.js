@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
+Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isSyntaxCheck = false;
 this.wasSyntaxCheck = false;
@@ -105,7 +105,7 @@ Clazz.defineMethod (c$, "addXBs",
 function (bs) {
 this.putX (org.jmol.script.ScriptVariable.newScriptVariableObj (10, bs));
 return this.wasX = true;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "addXPt", 
 function (pt) {
 this.putX (org.jmol.script.ScriptVariable.newScriptVariableObj (8, pt));
@@ -702,7 +702,7 @@ if (args.length > 2) {
 var pta = this.ptValue (args[0], true);
 var ptb = this.ptValue (args[1], true);
 if (args[2].tok != 9) return false;
-var dq =  new org.jmol.util.Quaternion (args[2].value);
+var dq = org.jmol.util.Quaternion.newP4 (args[2].value);
 switch (tok) {
 case 0:
 break;
@@ -720,7 +720,7 @@ default:
 return this.addXObj (org.jmol.util.Measure.computeHelicalAxis (type, 135176, pta, ptb, dq));
 }
 } else {
-var bs = (Clazz.instanceOf (args[0].value, java.util.BitSet) ? args[0].value : this.eval.compareInt (1095761937, 269484436, org.jmol.script.ScriptVariable.iValue (args[0])));
+var bs = (Clazz.instanceOf (args[0].value, javax.util.BitSet) ? args[0].value : this.eval.compareInt (1095761937, 269484436, org.jmol.script.ScriptVariable.iValue (args[0])));
 switch (tok) {
 case 135266320:
 return this.addXObj (this.viewer.getHelixData (bs, 135266320));
@@ -863,7 +863,7 @@ switch (nPoints) {
 case 2:
 return this.addXFloat (pts[0].distance (pts[1]));
 case 3:
-return this.addXFloat (org.jmol.util.Measure.computeAngle (pts[0], pts[1], pts[2], true));
+return this.addXFloat (org.jmol.util.Measure.computeAngleABC (pts[0], pts[1], pts[2], true));
 case 4:
 return this.addXFloat (org.jmol.util.Measure.computeTorsion (pts[0], pts[1], pts[2], pts[3], true));
 }
@@ -938,7 +938,7 @@ throw e;
 }
 var list = org.jmol.script.ScriptVariable.listValue (x1);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("finding " + sFind);
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var ipt = 0;
 var n = 0;
 var matcher = null;
@@ -1014,7 +1014,7 @@ norm =  new javax.vecmath.Vector3f ();
 vTemp =  new javax.vecmath.Vector3f ();
 plane = args[1].value;
 if (args[0].tok == 9) {
-var list = org.jmol.util.Measure.getIntersection (args[0].value, plane);
+var list = org.jmol.util.Measure.getIntersectionPP (args[0].value, plane);
 return this.addXObj (list == null ? "" : list);
 }pt2 = this.ptValue (args[0], false);
 if (pt2 == null) return this.addXStr ("");
@@ -1051,10 +1051,10 @@ var theta = org.jmol.script.ScriptVariable.fValue (args[1]);
 var phi = org.jmol.script.ScriptVariable.fValue (args[2]);
 norm = javax.vecmath.Vector3f.new3 (0, 0, 1);
 pt2 = javax.vecmath.Point3f.new3 (0, 1, 0);
-var q =  new org.jmol.util.Quaternion (pt2, phi);
+var q = org.jmol.util.Quaternion.newVA (pt2, phi);
 q.getMatrix ().transform (norm);
 pt2.set (0, 0, 1);
-q =  new org.jmol.util.Quaternion (pt2, theta);
+q = org.jmol.util.Quaternion.newVA (pt2, theta);
 q.getMatrix ().transform (norm);
 pt2.setT (norm);
 pt2.scale (r);
@@ -1396,7 +1396,7 @@ var qs = null;
 var p4 = null;
 switch (nArgs) {
 case 0:
-return this.addXObj ( new org.jmol.util.Quaternion (this.viewer.getRotationQuaternion ()));
+return this.addXObj (org.jmol.util.Quaternion.newQ (this.viewer.getRotationQuaternion ()));
 case 1:
 default:
 if (tok == 135270417 && args[0].tok == 7) {
@@ -1407,14 +1407,14 @@ break;
 } else if (tok == 135270417 && args[0].tok == 10) {
 qs = this.viewer.getAtomGroupQuaternions (args[0].value, nMax);
 } else if (args[0].tok == 11) {
-q =  new org.jmol.util.Quaternion (args[0].value);
+q = org.jmol.util.Quaternion.newM (args[0].value);
 } else if (args[0].tok == 9) {
 p4 = args[0].value;
 } else {
 var v = org.jmol.util.Escape.unescapePoint (org.jmol.script.ScriptVariable.sValue (args[0]));
 if (!(Clazz.instanceOf (v, javax.vecmath.Point4f))) return false;
 p4 = v;
-}if (tok == 135266307) q =  new org.jmol.util.Quaternion (javax.vecmath.Point3f.new3 (p4.x, p4.y, p4.z), p4.w);
+}if (tok == 135266307) q = org.jmol.util.Quaternion.newVA (javax.vecmath.Point3f.new3 (p4.x, p4.y, p4.z), p4.w);
 break;
 case 2:
 if (tok == 135270417) {
@@ -1431,12 +1431,12 @@ break;
 }}var pt1 = this.ptValue (args[1], false);
 p4 = this.planeValue (args[0]);
 if (pt1 != null) q = org.jmol.util.Quaternion.getQuaternionFrame (javax.vecmath.Point3f.new3 (0, 0, 0), pt0, pt1);
- else q =  new org.jmol.util.Quaternion (pt0, org.jmol.script.ScriptVariable.fValue (args[1]));
+ else q = org.jmol.util.Quaternion.newVA (pt0, org.jmol.script.ScriptVariable.fValue (args[1]));
 break;
 case 3:
 if (args[0].tok == 9) {
 var pt = (args[2].tok == 8 ? args[2].value : this.viewer.getAtomSetCenter (args[2].value));
-return this.addXObj (( new org.jmol.util.Quaternion (args[0].value)).draw ("q", org.jmol.script.ScriptVariable.sValue (args[1]), pt, 1));
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (args[0].value)).draw ("q", org.jmol.script.ScriptVariable.sValue (args[1]), pt, 1));
 }var pts =  new Array (3);
 for (var i = 0; i < 3; i++) pts[i] = (args[i].tok == 8 ? args[i].value : this.viewer.getAtomSetCenter (args[i].value));
 
@@ -1444,7 +1444,7 @@ q = org.jmol.util.Quaternion.getQuaternionFrame (pts[0], pts[1], pts[2]);
 break;
 case 4:
 if (tok == 135270417) p4 = javax.vecmath.Point4f.new4 (org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2]), org.jmol.script.ScriptVariable.fValue (args[3]), org.jmol.script.ScriptVariable.fValue (args[0]));
- else q =  new org.jmol.util.Quaternion (javax.vecmath.Point3f.new3 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])), org.jmol.script.ScriptVariable.fValue (args[3]));
+ else q = org.jmol.util.Quaternion.newVA (javax.vecmath.Point3f.new3 (org.jmol.script.ScriptVariable.fValue (args[0]), org.jmol.script.ScriptVariable.fValue (args[1]), org.jmol.script.ScriptVariable.fValue (args[2])), org.jmol.script.ScriptVariable.fValue (args[3]));
 break;
 }
 if (qs != null) {
@@ -1455,7 +1455,7 @@ var list = org.jmol.util.ArrayUtil.createArrayOfArrayList (qs.length);
 for (var i = 0; i < qs.length; i++) list[i].add (qs[i].toPoint4f ());
 
 return this.addXObj (list);
-}}return this.addXObj ((q == null ?  new org.jmol.util.Quaternion (p4) : q).toPoint4f ());
+}}return this.addXObj ((q == null ? org.jmol.util.Quaternion.newP4 (p4) : q).toPoint4f ());
 }, $fz.isPrivate = true, $fz), "~A,~N");
 Clazz.defineMethod (c$, "evaluateRandom", 
 ($fz = function (args) {
@@ -1571,7 +1571,7 @@ var isDistance = (isVdw || tok == 3 || tok == 2);
 var rd = null;
 switch (tok) {
 case 1048580:
-if (i != 3 || !(Clazz.instanceOf (args[1].value, java.util.BitSet)) || !(Clazz.instanceOf (args[2].value, java.util.BitSet))) return false;
+if (i != 3 || !(Clazz.instanceOf (args[1].value, javax.util.BitSet)) || !(Clazz.instanceOf (args[2].value, javax.util.BitSet))) return false;
 return this.addXBs (this.viewer.getBranchBitSet ((args[2].value).nextSetBit (0), (args[1].value).nextSetBit (0)));
 case 135267336:
 case 1238369286:
@@ -1670,12 +1670,12 @@ plane = args[i].value;
 } else if (Clazz.instanceOf (args[i].value, javax.vecmath.Point3f)) {
 pt = args[i].value;
 if (org.jmol.script.ScriptVariable.sValue (args[1]).equalsIgnoreCase ("hkl")) plane = this.eval.getHklPlane (pt);
-}if (i > 0 && plane == null && pt == null && !(Clazz.instanceOf (args[i].value, java.util.BitSet))) return false;
+}if (i > 0 && plane == null && pt == null && !(Clazz.instanceOf (args[i].value, javax.util.BitSet))) return false;
 if (plane != null) return this.addXBs (this.viewer.getAtomsNearPlane (distance, plane));
 if (pt != null) return this.addXBs (this.viewer.getAtomsNearPt (distance, pt));
 bs = (args[i].tok == 10 ? org.jmol.script.ScriptVariable.bsSelectVar (args[i]) : null);
 if (tok == 1087373320) return this.addXBs (this.viewer.getSequenceBits (withinStr, bs));
-if (bs == null) bs =  new java.util.BitSet ();
+if (bs == null) bs =  new javax.util.BitSet ();
 if (!isDistance) return this.addXBs (this.viewer.getAtomBits (tok, bs));
 if (isWithinGroup) return this.addXBs (this.viewer.getGroupsWithin (Math.round (distance), bs));
 if (isVdw) rd =  new org.jmol.atomdata.RadiusData (null, (distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
@@ -1697,9 +1697,9 @@ break;
 default:
 return false;
 }
-if (i == args.length || !(Clazz.instanceOf (args[i].value, java.util.BitSet))) return false;
+if (i == args.length || !(Clazz.instanceOf (args[i].value, javax.util.BitSet))) return false;
 var bsA = org.jmol.util.BitSetUtil.copy (org.jmol.script.ScriptVariable.bsSelectVar (args[i++]));
-if (this.isSyntaxCheck) return this.addXBs ( new java.util.BitSet ());
+if (this.isSyntaxCheck) return this.addXBs ( new javax.util.BitSet ());
 var bsB = (i < args.length ? org.jmol.util.BitSetUtil.copy (org.jmol.script.ScriptVariable.bsSelectVar (args[i])) : null);
 var rd =  new org.jmol.atomdata.RadiusData (null, (distance > 10 ? distance / 100 : distance), (distance > 10 ? org.jmol.atomdata.RadiusData.EnumType.FACTOR : org.jmol.atomdata.RadiusData.EnumType.OFFSET), org.jmol.constant.EnumVdw.AUTO);
 bsB = this.eval.setContactBitSets (bsA, bsB, true, NaN, rd, false);
@@ -1793,7 +1793,7 @@ fmin = 0.1;
 }if (atoms1 == null) atoms1 = this.viewer.getModelUndeletedAtomsBitSet (-1);
 if (haveDecimal && atoms2 == null) atoms2 = atoms1;
 if (atoms2 != null) {
-var bsBonds =  new java.util.BitSet ();
+var bsBonds =  new javax.util.BitSet ();
 this.viewer.makeConnections (fmin, fmax, order, 1087373321, atoms1, atoms2, bsBonds, isBonds, false, 0);
 return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (10,  new org.jmol.modelset.Bond.BondSet (bsBonds, this.viewer.getAtomIndices (this.viewer.getAtomBits (1678770178, bsBonds)))));
 }return this.addXBs (this.viewer.getAtomsConnected (min, max, order, atoms1));
@@ -1801,7 +1801,7 @@ return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (10,  n
 Clazz.defineMethod (c$, "evaluateSubstructure", 
 ($fz = function (args, tok) {
 if (args.length == 0) return false;
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 var pattern = org.jmol.script.ScriptVariable.sValue (args[0]);
 if (pattern.length > 0) try {
 var bsSelected = (args.length == 2 && args[1].tok == 10 ? org.jmol.script.ScriptVariable.bsSelectVar (args[1]) : null);
@@ -1839,7 +1839,7 @@ return true;
 if (this.isSyntaxCheck) return this.addXBool (true);
 switch (x2.tok) {
 case 9:
-return this.addXObj (( new org.jmol.util.Quaternion (x2.value)).inv ().toPoint4f ());
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (x2.value)).inv ().toPoint4f ());
 case 11:
 m = javax.vecmath.Matrix3f.newM (x2.value);
 m.invert ();
@@ -2000,12 +2000,12 @@ return this.addXInt (x1.intValue + org.jmol.script.ScriptVariable.iValue (x2));
 case 4:
 return this.addXVar (org.jmol.script.ScriptVariable.newScriptVariableObj (4, org.jmol.script.ScriptVariable.sValue (x1) + org.jmol.script.ScriptVariable.sValue (x2)));
 case 9:
-var q1 =  new org.jmol.util.Quaternion (x1.value);
+var q1 = org.jmol.util.Quaternion.newP4 (x1.value);
 switch (x2.tok) {
 default:
 return this.addXObj (q1.add (org.jmol.script.ScriptVariable.fValue (x2)).toPoint4f ());
 case 9:
-return this.addXObj (q1.mul ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
+return this.addXObj (q1.mulQ (org.jmol.util.Quaternion.newP4 (x2.value)).toPoint4f ());
 }
 case 8:
 pt = javax.vecmath.Point3f.newP (x1.value);
@@ -2080,13 +2080,13 @@ pt.sub (javax.vecmath.Point3f.new3 (pt4.x, pt4.y, pt4.z));
 return this.addXPt (pt);
 }
 case 9:
-var q1 =  new org.jmol.util.Quaternion (x1.value);
+var q1 = org.jmol.util.Quaternion.newP4 (x1.value);
 switch (x2.tok) {
 default:
 return this.addXObj (q1.add (-org.jmol.script.ScriptVariable.fValue (x2)).toPoint4f ());
 case 9:
-var q2 =  new org.jmol.util.Quaternion (x2.value);
-return this.addXObj (q2.mul (q1.inv ()).toPoint4f ());
+var q2 = org.jmol.util.Quaternion.newP4 (x2.value);
+return this.addXObj (q2.mulQ (q1.inv ()).toPoint4f ());
 }
 }
 case 269484224:
@@ -2127,7 +2127,7 @@ m3b.transform (pt);
 if (x1.tok == 7) return this.addXVar (org.jmol.script.ScriptVariable.getVariable ([pt.x, pt.y, pt.z]));
 return this.addXPt (pt);
 }if (pt4 != null) {
-return this.addXObj ((( new org.jmol.util.Quaternion (pt4)).mul ( new org.jmol.util.Quaternion (x2.value))));
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4).mulQ (org.jmol.util.Quaternion.newM (x2.value))));
 }break;
 case 12:
 if (pt4 != null) {
@@ -2153,11 +2153,11 @@ m = javax.vecmath.Matrix3f.newM (x2.value);
 m.mul2 (m3, m);
 return this.addXObj (m);
 case 9:
-return this.addXObj (( new org.jmol.util.Quaternion (m3)).mul ( new org.jmol.util.Quaternion (x2.value)).getMatrix ());
+return this.addXObj (org.jmol.util.Quaternion.newM (m3).mulQ (org.jmol.util.Quaternion.newP4 (x2.value)).getMatrix ());
 default:
 f = org.jmol.script.ScriptVariable.fValue (x2);
 var aa =  new javax.vecmath.AxisAngle4f ();
-aa.set (m3);
+aa.setM (m3);
 aa.angle *= f;
 var m2 =  new javax.vecmath.Matrix3f ();
 m2.setAA (aa);
@@ -2194,9 +2194,9 @@ return this.addXPt (javax.vecmath.Point3f.new3 (pt.x * f, pt.y * f, pt.z * f));
 case 9:
 switch (x2.tok) {
 case 9:
-return this.addXObj (( new org.jmol.util.Quaternion (x1.value)).mul ( new org.jmol.util.Quaternion (x2.value)));
+return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).mulQ (org.jmol.util.Quaternion.newP4 (x2.value)));
 }
-return this.addXObj ( new org.jmol.util.Quaternion (x1.value).mul (org.jmol.script.ScriptVariable.fValue (x2)).toPoint4f ());
+return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).mul (org.jmol.script.ScriptVariable.fValue (x2)).toPoint4f ());
 }
 case 269484210:
 s = null;
@@ -2218,14 +2218,14 @@ s = x1.value;
 if (n == 0) return this.addXStr (org.jmol.util.TextFormat.trim (s, "\n\t "));
 if (n == 9999) return this.addXStr (s.toUpperCase ());
 if (n == -9999) return this.addXStr (s.toLowerCase ());
-if (n > 0) return this.addXStr (org.jmol.util.TextFormat.format (s, n, n, false, false));
-return this.addXStr (org.jmol.util.TextFormat.format (s, n, n - 1, true, false));
+if (n > 0) return this.addXStr (org.jmol.util.TextFormat.formatS (s, n, n, false, false));
+return this.addXStr (org.jmol.util.TextFormat.formatS (s, n, n - 1, true, false));
 case 7:
 var list = org.jmol.script.ScriptVariable.listValue (x1);
 for (var i = 0; i < list.length; i++) {
 if (n == 0) list[i] = list[i].trim ();
- else if (n > 0) list[i] = org.jmol.util.TextFormat.format (list[i], n, n, true, false);
- else list[i] = org.jmol.util.TextFormat.format (s, -n, n, false, false);
+ else if (n > 0) list[i] = org.jmol.util.TextFormat.formatS (list[i], n, n, true, false);
+ else list[i] = org.jmol.util.TextFormat.formatS (s, -n, n, false, false);
 }
 return this.addXObj (list);
 case 8:
@@ -2234,10 +2234,10 @@ this.viewer.toUnitCell (pt, javax.vecmath.Point3f.new3 (n, n, n));
 return this.addXPt (pt);
 case 9:
 pt4 = x1.value;
-if (x2.tok == 8) return this.addXPt (( new org.jmol.util.Quaternion (pt4)).transform (x2.value));
+if (x2.tok == 8) return this.addXPt ((org.jmol.util.Quaternion.newP4 (pt4)).transformPt (x2.value));
 if (x2.tok == 9) {
 var v4 = javax.vecmath.Point4f.newPt (x2.value);
-( new org.jmol.util.Quaternion (pt4)).getThetaDirected (v4);
+(org.jmol.util.Quaternion.newP4 (pt4)).getThetaDirected (v4);
 return this.addXObj (v4);
 }switch (n) {
 case 0:
@@ -2249,22 +2249,22 @@ return this.addXFloat (pt4.y);
 case 3:
 return this.addXFloat (pt4.z);
 case 4:
-return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getNormal ());
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4)).getNormal ());
 case -1:
-return this.addXObj ( new org.jmol.util.Quaternion (pt4).getVector (-1));
+return this.addXObj (org.jmol.util.Quaternion.newP4 (pt4).getVector (-1));
 case -2:
-return this.addXFloat (( new org.jmol.util.Quaternion (pt4)).getTheta ());
+return this.addXFloat ((org.jmol.util.Quaternion.newP4 (pt4)).getTheta ());
 case -3:
-return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getVector (0));
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4)).getVector (0));
 case -4:
-return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getVector (1));
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4)).getVector (1));
 case -5:
-return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getVector (2));
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4)).getVector (2));
 case -6:
-var ax = ( new org.jmol.util.Quaternion (pt4)).toAxisAngle4f ();
+var ax = (org.jmol.util.Quaternion.newP4 (pt4)).toAxisAngle4f ();
 return this.addXObj (javax.vecmath.Point4f.new4 (ax.x, ax.y, ax.z, (ax.angle * 180 / 3.141592653589793)));
 case -9:
-return this.addXObj (( new org.jmol.util.Quaternion (pt4)).getMatrix ());
+return this.addXObj ((org.jmol.util.Quaternion.newP4 (pt4)).getMatrix ());
 default:
 return this.addXObj (pt4);
 }
@@ -2297,9 +2297,9 @@ pt = javax.vecmath.Point3f.newP (x1.value);
 if (f2 == 0) return this.addXPt (javax.vecmath.Point3f.new3 (NaN, NaN, NaN));
 return this.addXPt (javax.vecmath.Point3f.new3 (pt.x / f2, pt.y / f2, pt.z / f2));
 case 9:
-if (x2.tok == 9) return this.addXObj ( new org.jmol.util.Quaternion (x1.value).div ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
+if (x2.tok == 9) return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).div (org.jmol.util.Quaternion.newP4 (x2.value)).toPoint4f ());
 if (f2 == 0) return this.addXObj (javax.vecmath.Point4f.new4 (NaN, NaN, NaN, NaN));
-return this.addXObj ( new org.jmol.util.Quaternion (x1.value).mul (1 / f2).toPoint4f ());
+return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).mul (1 / f2).toPoint4f ());
 }
 case 269484211:
 f = org.jmol.script.ScriptVariable.fValue (x2);
@@ -2308,8 +2308,8 @@ default:
 return this.addXInt (f == 0 ? 0 : Math.round ((org.jmol.script.ScriptVariable.fValue (x1) / org.jmol.script.ScriptVariable.fValue (x2))));
 case 9:
 if (f == 0) return this.addXObj (javax.vecmath.Point4f.new4 (NaN, NaN, NaN, NaN));
-if (x2.tok == 9) return this.addXObj ( new org.jmol.util.Quaternion (x1.value).divLeft ( new org.jmol.util.Quaternion (x2.value)).toPoint4f ());
-return this.addXObj ( new org.jmol.util.Quaternion (x1.value).mul (1 / f).toPoint4f ());
+if (x2.tok == 9) return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).divLeft (org.jmol.util.Quaternion.newP4 (x2.value)).toPoint4f ());
+return this.addXObj (org.jmol.util.Quaternion.newP4 (x1.value).mul (1 / f).toPoint4f ());
 }
 case 269484227:
 f = Math.pow (org.jmol.script.ScriptVariable.fValue (x1), org.jmol.script.ScriptVariable.fValue (x2));
@@ -2601,7 +2601,7 @@ data = quaternionOrSVData;
 } else if (Clazz.instanceOf (quaternionOrSVData, Array)) {
 var pts = quaternionOrSVData;
 data =  new Array (pts.length);
-for (var i = 0; i < pts.length; i++) data[i] =  new org.jmol.util.Quaternion (pts[i]);
+for (var i = 0; i < pts.length; i++) data[i] = org.jmol.util.Quaternion.newP4 (pts[i]);
 
 } else if (Clazz.instanceOf (quaternionOrSVData, java.util.List)) {
 var sv = quaternionOrSVData;
@@ -2609,7 +2609,7 @@ data =  new Array (sv.size ());
 for (var i = 0; i < sv.size (); i++) {
 var pt = org.jmol.script.ScriptVariable.pt4Value (sv.get (i));
 if (pt == null) return null;
-data[i] =  new org.jmol.util.Quaternion (pt);
+data[i] = org.jmol.util.Quaternion.newP4 (pt);
 }
 } else {
 return null;

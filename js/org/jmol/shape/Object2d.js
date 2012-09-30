@@ -245,7 +245,7 @@ if (this.gdata.isAntialiased ()) {
 x <<= 1;
 y <<= 1;
 }return (this.script != null && x >= this.boxX && x <= this.boxX + this.boxWidth && y >= this.boxY && y <= this.boxY + this.boxHeight);
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 c$.setProperty = Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, currentObject) {
 if ("script" === propertyName) {

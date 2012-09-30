@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "javax.vecmath.Point3f"], "org.jmol.adapter.readers.xtal.CrystalReader", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.BitSet", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "javax.vecmath.Point3f"], "org.jmol.adapter.readers.xtal.CrystalReader", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isVersion3 = false;
 this.isPrimitive = false;
@@ -289,7 +289,7 @@ Clazz.defineMethod (c$, "readPrimitiveMapping",
 ($fz = function () {
 if (this.vInputCoords == null) return false;
 this.havePrimitiveMapping = true;
-var bsInputAtomsIgnore =  new java.util.BitSet ();
+var bsInputAtomsIgnore =  new javax.util.BitSet ();
 var n = this.vInputCoords.size ();
 var indexToPrimitive =  Clazz.newArray (n, 0);
 this.primitiveToIndex =  Clazz.newArray (n, 0);

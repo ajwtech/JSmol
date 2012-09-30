@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (null, "org.jmol.smiles.SmilesAromatic", ["java.util.BitSet", "javax.vecmath.Vector3f"], function () {
+Clazz.load (null, "org.jmol.smiles.SmilesAromatic", ["javax.util.BitSet", "javax.vecmath.Vector3f"], function () {
 c$ = Clazz.declareType (org.jmol.smiles, "SmilesAromatic");
 c$.isFlatSp2Ring = Clazz.defineMethod (c$, "isFlatSp2Ring", 
 function (atoms, bsSelected, bs, cutoff) {
@@ -41,7 +41,7 @@ vNorms[nNorms++] = javax.vecmath.Vector3f.newV (vTemp);
 }}
 var isFlat = org.jmol.smiles.SmilesAromatic.checkStandardDeviation (vNorms, vMean, nNorms, cutoff);
 return isFlat;
-}, "~A,java.util.BitSet,java.util.BitSet,~N");
+}, "~A,javax.util.BitSet,javax.util.BitSet,~N");
 c$.addNormal = Clazz.defineMethod (c$, "addNormal", 
 ($fz = function (vTemp, vMean, maxDev) {
 var similarity = vMean.dot (vTemp);
@@ -74,7 +74,7 @@ return -vAB.dot (vNorm);
 }, "org.jmol.util.JmolNode,org.jmol.util.JmolNode,org.jmol.util.JmolNode,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
 c$.checkAromaticDefined = Clazz.defineMethod (c$, "checkAromaticDefined", 
 function (jmolAtoms, bsAtoms) {
-var bsDefined =  new java.util.BitSet ();
+var bsDefined =  new javax.util.BitSet ();
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
 var bonds = jmolAtoms[i].getEdges ();
 for (var j = 0; j < bonds.length; j++) {
@@ -88,11 +88,11 @@ bsDefined.set (bonds[j].getAtomIndex2 ());
 }
 }
 return bsDefined;
-}, "~A,java.util.BitSet");
+}, "~A,javax.util.BitSet");
 c$.checkAromaticStrict = Clazz.defineMethod (c$, "checkAromaticStrict", 
 function (jmolAtoms, bsAromatic, v5, v6) {
-var bsStrict =  new java.util.BitSet ();
-var bsTest =  new java.util.BitSet ();
+var bsStrict =  new javax.util.BitSet ();
+var bsTest =  new javax.util.BitSet ();
 for (var i = v5.size (); --i >= 0; ) {
 var bs = v5.get (i);
 if (org.jmol.smiles.SmilesAromatic.isAromaticRing (bsAromatic, bsTest, bs, 5)) org.jmol.smiles.SmilesAromatic.checkAromaticStrict (jmolAtoms, bsStrict, v5, v6, bs, true);
@@ -101,16 +101,16 @@ for (var i = v6.size (); --i >= 0; ) {
 var bs = v6.get (i);
 if (org.jmol.smiles.SmilesAromatic.isAromaticRing (bsAromatic, bsTest, bs, 6)) org.jmol.smiles.SmilesAromatic.checkAromaticStrict (jmolAtoms, bsStrict, v5, v6, bs, false);
 }
-bsAromatic.clear ();
+bsAromatic.clearAll ();
 bsAromatic.or (bsStrict);
-}, "~A,java.util.BitSet,java.util.List,java.util.List");
+}, "~A,javax.util.BitSet,java.util.List,java.util.List");
 c$.isAromaticRing = Clazz.defineMethod (c$, "isAromaticRing", 
 ($fz = function (bsAromatic, bsTest, bs, n) {
-bsTest.clear ();
+bsTest.clearAll ();
 bsTest.or (bs);
 bsTest.and (bsAromatic);
 return (bsTest.cardinality () == n);
-}, $fz.isPrivate = true, $fz), "java.util.BitSet,java.util.BitSet,java.util.BitSet,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~N");
 c$.checkAromaticStrict = Clazz.defineMethod (c$, "checkAromaticStrict", 
 ($fz = function (jmolAtoms, bsStrict, v5, v6, bsRing, is5) {
 var piElectronCount = org.jmol.smiles.SmilesAromatic.countInternalPairs (jmolAtoms, bsRing, is5) << 1;
@@ -139,7 +139,7 @@ piElectronCount++;
 break;
 }
 if (piElectronCount == 6) bsStrict.or (bsRing);
-}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet,java.util.List,java.util.List,java.util.BitSet,~B");
+}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet,java.util.List,java.util.List,javax.util.BitSet,~B");
 c$.countInternalPairs = Clazz.defineMethod (c$, "countInternalPairs", 
 ($fz = function (jmolAtoms, bsRing, is5) {
 var nDouble = 0;
@@ -173,5 +173,5 @@ break;
 }
 }}
 return (nAromatic == 0 ? Math.floor (nDouble / 2) + nLonePairs : nAromatic == (is5 ? 5 : 6) ? -3 : 0);
-}, $fz.isPrivate = true, $fz), "~A,java.util.BitSet,~B");
+}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet,~B");
 });

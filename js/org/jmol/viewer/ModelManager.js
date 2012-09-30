@@ -46,7 +46,7 @@ if (modelSetName.length == 0) modelSetName = null;
 }this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, modelSetName, loadScript, atomSetCollection, (isAppend ? this.modelSet : null), bsNew)).getModelSet ();
 }if (this.modelSet.getAtomCount () == 0) this.zap ();
 return this.modelSet;
-}, "~S,~S,StringBuffer,~O,java.util.BitSet,~B");
+}, "~S,~S,StringBuffer,~O,javax.util.BitSet,~B");
 c$.reduceFilename = Clazz.defineMethod (c$, "reduceFilename", 
 ($fz = function (fileName) {
 if (fileName == null) return null;

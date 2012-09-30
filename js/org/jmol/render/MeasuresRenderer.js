@@ -109,7 +109,7 @@ this.drawString (this.atomB.screenX + offset, this.atomB.screenY - offset, zB, r
 return ;
 }var dotCount = Math.round (((aa.angle / (6.283185307179586)) * 64));
 var stepAngle = aa.angle / dotCount;
-this.aaT.set (aa);
+this.aaT.setAA (aa);
 var iMid = Math.floor (dotCount / 2);
 var ptArc = this.measurement.getPointArc ();
 for (var i = dotCount; --i >= 0; ) {

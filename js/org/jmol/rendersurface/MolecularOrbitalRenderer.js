@@ -16,7 +16,7 @@ if (this.nf == null) this.nf = java.text.NumberFormat.getInstance ();
 if (this.nf != null) {
 this.nf.setMaximumFractionDigits (3);
 this.nf.setMinimumFractionDigits (3);
-}var fid = this.g3d.getFontFid ("Monospaced", 14 * this.imageFontScaling);
+}var fid = this.g3d.getFontFidFS ("Monospaced", 14 * this.imageFontScaling);
 this.g3d.setFont (fid);
 var lineheight = Math.round ((15 * this.imageFontScaling));
 var x = Math.round ((5 * this.imageFontScaling));

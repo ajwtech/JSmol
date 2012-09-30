@@ -18,7 +18,7 @@ return ;
 }this.tickInfos["xyz".indexOf (t.type) + 1] = t;
 return ;
 }Clazz.superCall (this, org.jmol.shape.FontLineShape, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
 var s = Clazz.superCall (this, org.jmol.shape.FontLineShape, "getShapeState", []);

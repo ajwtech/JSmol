@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["javax.vecmath.Point3i"], "org.jmol.util.TriangleData", ["java.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.BitSetUtil"], function () {
+Clazz.load (["javax.vecmath.Point3i"], "org.jmol.util.TriangleData", ["javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.BitSetUtil"], function () {
 c$ = Clazz.declareType (org.jmol.util, "TriangleData");
 c$.intersectPlane = Clazz.defineMethod (c$, "intersectPlane", 
 function (plane, v, flags) {
@@ -27,7 +27,7 @@ result.add (vertices[v1]);
 edgePoints[i >> 1] = result;
 }
 if (flags == 0) {
-var bsPoints =  new java.util.BitSet ();
+var bsPoints =  new javax.util.BitSet ();
 v.clear ();
 for (var i = 0; i < triangles.length; i++) {
 bsPoints.set (triangles[i]);

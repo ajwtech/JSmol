@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.api.VertexDataServer", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.SurfaceReader", ["java.lang.Float", "java.util.BitSet", "org.jmol.jvxl.calc.MarchingCubes", "$.MarchingSquares", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.util.BoxInfo", "$.Colix", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.api.VertexDataServer", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.SurfaceReader", ["java.lang.Float", "javax.util.BitSet", "org.jmol.jvxl.calc.MarchingCubes", "$.MarchingSquares", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.util.BoxInfo", "$.Colix", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.sg = null;
 this.meshDataServer = null;
@@ -511,7 +511,7 @@ Clazz.defineMethod (c$, "updateSurfaceData",
 function () {
 this.meshData.setVertexSets (true);
 this.updateTriangles ();
-if (this.params.bsExcluded[1] == null) this.params.bsExcluded[1] =  new java.util.BitSet ();
+if (this.params.bsExcluded[1] == null) this.params.bsExcluded[1] =  new javax.util.BitSet ();
 this.meshData.updateInvalidatedVertices (this.params.bsExcluded[1]);
 });
 Clazz.defineMethod (c$, "selectPocket", 
@@ -540,7 +540,7 @@ if (this.meshDataServer != null) this.meshDataServer.fillMeshData (this.meshData
 Clazz.defineMethod (c$, "slabIsosurface", 
 function (slabInfo) {
 if (this.meshDataServer != null) this.meshDataServer.fillMeshData (this.meshData, 1, null);
-this.meshData.slabPolygons (slabInfo, true);
+this.meshData.slabPolygonsList (slabInfo, true);
 if (this.meshDataServer != null) this.meshDataServer.fillMeshData (this.meshData, 4, null);
 }, "java.util.List");
 Clazz.defineMethod (c$, "setVertexAnisotropy", 

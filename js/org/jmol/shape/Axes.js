@@ -56,7 +56,7 @@ return ;
 this.labels = ["", "", ""];
 return ;
 }Clazz.superCall (this, org.jmol.shape.Axes, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "initShape", 
 function () {
 Clazz.superCall (this, org.jmol.shape.Axes, "initShape", []);

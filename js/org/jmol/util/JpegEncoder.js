@@ -58,7 +58,7 @@ try {
 this.outStream.flush ();
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -284,7 +284,7 @@ try {
 out.write (data, 0, 2);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -296,7 +296,7 @@ try {
 out.write (data);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -614,7 +614,7 @@ try {
 outStream.write (c);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -624,7 +624,7 @@ try {
 outStream.write (0);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -645,7 +645,7 @@ try {
 outStream.write (c);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -655,7 +655,7 @@ try {
 outStream.write (0);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }
@@ -669,7 +669,7 @@ try {
 outStream.write (c);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
-org.jmol.util.Logger.error ("IO Error", e);
+org.jmol.util.Logger.errorEx ("IO Error", e);
 } else {
 throw e;
 }

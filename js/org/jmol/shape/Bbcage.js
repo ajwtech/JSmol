@@ -20,5 +20,5 @@ if (bboxModels == null) return ;
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) if (bboxModels.get (i)) return ;
 
 this.isVisible = false;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 });

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Resolver", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Resolver", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bioPolymerCount = 0;
 this.bioPolymers = null;
@@ -14,7 +14,7 @@ this.clearBioPolymers ();
 Clazz.defineMethod (c$, "freeze", 
 function () {
 Clazz.superCall (this, org.jmol.modelsetbio.BioModel, "freeze", []);
-this.bioPolymers = org.jmol.util.ArrayUtil.setLength (this.bioPolymers, this.bioPolymerCount);
+this.bioPolymers = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bioPolymers, this.bioPolymerCount);
 });
 Clazz.overrideMethod (c$, "addSecondaryStructure", 
 function (type, structureID, serialID, strandCount, startChainID, startSeqcode, endChainID, endSeqcode) {
@@ -35,13 +35,13 @@ Clazz.overrideMethod (c$, "setConformation",
 function (bsConformation) {
 if (this.nAltLocs > 0) for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].setConformation (bsConformation);
 
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "getPdbConformation", 
 function (bsConformation, conformationIndex) {
 if (this.nAltLocs > 0) for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].getConformation (bsConformation, conformationIndex);
 
 return true;
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.overrideMethod (c$, "getBioPolymerCount", 
 function () {
 return this.bioPolymerCount;
@@ -50,19 +50,19 @@ Clazz.overrideMethod (c$, "calcSelectedMonomersCount",
 function (bsSelected) {
 for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].calcSelectedMonomersCount (bsSelected);
 
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getBioPolymer", 
 function (polymerIndex) {
 return this.bioPolymers[polymerIndex];
 }, "~N");
 Clazz.overrideMethod (c$, "getDefaultLargePDBRendering", 
 function (sb, maxAtoms) {
-var bs =  new java.util.BitSet ();
+var bs =  new javax.util.BitSet ();
 if (this.getBondCount () == 0) bs = this.bsAtoms;
 if (bs !== this.bsAtoms) for (var i = 0; i < this.bioPolymerCount; i++) this.bioPolymers[i].getRange (bs);
 
 if (bs.nextSetBit (0) < 0) return ;
-var bs2 =  new java.util.BitSet ();
+var bs2 =  new javax.util.BitSet ();
 if (bs === this.bsAtoms) {
 bs2 = bs;
 } else {
@@ -72,7 +72,7 @@ for (var i = 0; i < this.bioPolymerCount; i++) if (this.bioPolymers[i].getType (
 if (this.atomCount <= maxAtoms) return ;
 sb.append ("select ").append (org.jmol.util.Escape.escape (bs)).append (" & connected; wireframe only;");
 if (bs !== this.bsAtoms) {
-bs2.clear ();
+bs2.clearAll ();
 bs2.or (this.bsAtoms);
 bs2.andNot (bs);
 if (bs2.nextSetBit (0) >= 0) sb.append ("select " + org.jmol.util.Escape.escape (bs2) + " & !connected;stars 0.5;");
@@ -82,7 +82,7 @@ function (modelIndex, nAtomsDeleted, bsDeleted) {
 Clazz.superCall (this, org.jmol.modelsetbio.BioModel, "fixIndices", [modelIndex, nAtomsDeleted, bsDeleted]);
 for (var i = 0; i < this.bioPolymerCount; i++) this.bioPolymers[i].recalculateLeadMidpointsAndWingVectors ();
 
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "calculateStruts", 
 function (modelSet, bs1, bs2) {
 var vCA =  new java.util.ArrayList ();
@@ -109,16 +109,16 @@ var o = struts.get (i);
 modelSet.bondAtoms (o[0], o[1], 32768, mad, null, 0, false, true);
 }
 return struts.size ();
-}, "org.jmol.modelset.ModelSet,java.util.BitSet,java.util.BitSet");
+}, "org.jmol.modelset.ModelSet,javax.util.BitSet,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setStructureList", 
 function (structureList) {
-this.bioPolymers = org.jmol.util.ArrayUtil.setLength (this.bioPolymers, this.bioPolymerCount);
+this.bioPolymers = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bioPolymers, this.bioPolymerCount);
 for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].setStructureList (structureList);
 
 }, "java.util.Map");
 Clazz.overrideMethod (c$, "calculateStraightness", 
 function (viewer, ctype, qtype, mStep) {
-for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, 2, null, null, false, false, false, null, null, null,  new java.util.BitSet ());
+for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, 2, null, null, false, false, false, null, null, null,  new javax.util.BitSet ());
 
 }, "org.jmol.viewer.Viewer,~S,~S,~N");
 Clazz.overrideMethod (c$, "getPolymerPointsAndVectors", 
@@ -126,7 +126,7 @@ function (bs, vList, isTraceAlpha, sheetSmoothing) {
 var last = 2147483646;
 for (var ip = 0; ip < this.bioPolymerCount; ip++) last = this.bioPolymers[ip].getPolymerPointsAndVectors (last, bs, vList, isTraceAlpha, sheetSmoothing);
 
-}, "java.util.BitSet,java.util.List,~B,~N");
+}, "javax.util.BitSet,java.util.List,~B,~N");
 Clazz.overrideMethod (c$, "getPolymerLeadMidPoints", 
 function (iPolymer) {
 return this.bioPolymers[iPolymer].getLeadMidpoints ();
@@ -140,7 +140,7 @@ Clazz.overrideMethod (c$, "getBioBranches",
 function (biobranches) {
 var bsBranch;
 for (var j = 0; j < this.bioPolymerCount; j++) {
-bsBranch =  new java.util.BitSet ();
+bsBranch =  new javax.util.BitSet ();
 this.bioPolymers[j].getRange (bsBranch);
 var iAtom = bsBranch.nextSetBit (0);
 if (iAtom >= 0) {
@@ -153,7 +153,7 @@ Clazz.overrideMethod (c$, "getGroupsWithin",
 function (nResidues, bs, bsResult) {
 for (var i = this.bioPolymerCount; --i >= 0; ) this.bioPolymers[i].getRangeGroups (nResidues, bs, bsResult);
 
-}, "~N,java.util.BitSet,java.util.BitSet");
+}, "~N,javax.util.BitSet,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getSequenceBits", 
 function (specInfo, bs, bsResult) {
 var lenInfo = specInfo.length;
@@ -163,14 +163,14 @@ var j = -1;
 while ((j = sequence.indexOf (specInfo, ++j)) >= 0) this.bioPolymers[ip].getPolymerSequenceAtoms (j, lenInfo, bs, bsResult);
 
 }
-}, "~S,java.util.BitSet,java.util.BitSet");
+}, "~S,javax.util.BitSet,javax.util.BitSet");
 Clazz.overrideMethod (c$, "selectSeqcodeRange", 
 function (seqcodeA, seqcodeB, chainID, bs, caseSensitive) {
 var ch;
 for (var i = this.chainCount; --i >= 0; ) if (chainID.charCodeAt (0) == ((ch = this.chains[i].chainID)).charCodeAt (0) || chainID.charCodeAt (0) == 9 || !caseSensitive && chainID.charCodeAt (0) == (Character.toUpperCase (ch)).charCodeAt (0)) for (var index = 0; index >= 0; ) index = this.chains[i].selectSeqcodeRange (index, seqcodeA, seqcodeB, bs);
 
 
-}, "~N,~N,~S,java.util.BitSet,~B");
+}, "~N,~N,~S,javax.util.BitSet,~B");
 Clazz.overrideMethod (c$, "getRasmolHydrogenBonds", 
 function (bsA, bsB, vHBonds, nucleicOnly, nMax, dsspIgnoreHydrogens, bsHBonds) {
 var doAdd = (vHBonds == null);
@@ -202,10 +202,10 @@ var atom2 = bond.getAtom2 ();
 if (atom1.isBonded (atom2)) continue ;var index = this.modelSet.addHBond (atom1, atom2, bond.order, bond.getEnergy ());
 if (bsHBonds != null) bsHBonds.set (index);
 }
-}, "java.util.BitSet,java.util.BitSet,java.util.List,~B,~N,~B,java.util.BitSet");
+}, "javax.util.BitSet,javax.util.BitSet,java.util.List,~B,~N,~B,javax.util.BitSet");
 Clazz.overrideMethod (c$, "clearRasmolHydrogenBonds", 
 function (bsAtoms) {
-var bsDelete =  new java.util.BitSet ();
+var bsDelete =  new javax.util.BitSet ();
 this.hasRasmolHBonds = false;
 var models = this.modelSet.getModels ();
 var bonds = this.modelSet.getBonds ();
@@ -218,7 +218,7 @@ this.hasRasmolHBonds = true;
 continue ;}bsDelete.set (i);
 }
 if (bsDelete.nextSetBit (0) >= 0) this.modelSet.deleteBonds (bsDelete, false);
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "calculatePolymers", 
 function (groups, groupCount, baseGroupIndex, modelsExcluded) {
 if (groups == null) {
@@ -239,7 +239,7 @@ var bp = ((g).getBioPolymer () == null ? org.jmol.modelsetbio.Resolver.allocateB
 if (bp == null || bp.monomerCount == 0) continue ;(model).addBioPolymer (bp);
 i += bp.monomerCount - 1;
 }
-}, "~A,~N,~N,java.util.BitSet");
+}, "~A,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "addBioPolymer", 
 ($fz = function (polymer) {
 if (this.bioPolymers.length == 0) this.clearBioPolymers ();
@@ -264,7 +264,7 @@ if (info.size () > 0) {
 modelInfo.put ("modelIndex", Integer.$valueOf (this.modelIndex));
 modelInfo.put ("polymers", info);
 modelVector.add (modelInfo);
-}}, "java.util.BitSet,java.util.Map,java.util.List");
+}}, "javax.util.BitSet,java.util.Map,java.util.List");
 Clazz.defineMethod (c$, "getChimeInfo", 
 function (sb, nHetero) {
 var n = 0;
@@ -347,7 +347,7 @@ var atoms = this.modelSet.atoms;
 var atomCount = this.modelSet.getAtomCount ();
 if (taintedOnly) {
 if (!this.modelSet.proteinStructureTainted) return "";
-bsTainted =  new java.util.BitSet ();
+bsTainted =  new javax.util.BitSet ();
 for (var i = this.firstAtomIndex; i < atomCount; i++) if (models[atoms[i].modelIndex].isStructureTainted ()) bsTainted.set (i);
 
 bsTainted.set (atomCount);
@@ -376,7 +376,7 @@ var sb;
 switch (type) {
 case org.jmol.constant.EnumStructure.HELIX:
 nx = ++nHelix;
-if (sid == null || pdbFileMode) sid = org.jmol.util.TextFormat.formatString ("%3N %3N", "N", nx);
+if (sid == null || pdbFileMode) sid = org.jmol.util.TextFormat.formatStringI ("%3N %3N", "N", nx);
 str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
 sb = sbHelix;
 var stype = null;
@@ -397,26 +397,26 @@ break;
 case org.jmol.constant.EnumStructure.SHEET:
 nx = ++nSheet;
 if (sid == null || pdbFileMode) {
-sid = org.jmol.util.TextFormat.formatString ("%3N %3A 0", "N", nx);
-sid = org.jmol.util.TextFormat.formatString (sid, "A", "S" + nx);
+sid = org.jmol.util.TextFormat.formatStringI ("%3N %3A 0", "N", nx);
+sid = org.jmol.util.TextFormat.formatStringS (sid, "A", "S" + nx);
 }str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
 sb = sbSheet;
 break;
 case org.jmol.constant.EnumStructure.TURN:
 default:
 nx = ++nTurn;
-if (sid == null || pdbFileMode) sid = org.jmol.util.TextFormat.formatString ("%3N %3N", "N", nx);
+if (sid == null || pdbFileMode) sid = org.jmol.util.TextFormat.formatStringI ("%3N %3N", "N", nx);
 str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
 sb = sbTurn;
 break;
 }
-str = org.jmol.util.TextFormat.formatString (str, "ID", sid);
-str = org.jmol.util.TextFormat.formatString (str, "GROUPA", group1);
-str = org.jmol.util.TextFormat.formatString (str, "CA", chain1);
-str = org.jmol.util.TextFormat.formatString (str, "RESA", res1);
-str = org.jmol.util.TextFormat.formatString (str, "GROUPB", group2);
-str = org.jmol.util.TextFormat.formatString (str, "CB", chain2);
-str = org.jmol.util.TextFormat.formatString (str, "RESB", res2);
+str = org.jmol.util.TextFormat.formatStringS (str, "ID", sid);
+str = org.jmol.util.TextFormat.formatStringS (str, "GROUPA", group1);
+str = org.jmol.util.TextFormat.formatStringS (str, "CA", chain1);
+str = org.jmol.util.TextFormat.formatStringI (str, "RESA", res1);
+str = org.jmol.util.TextFormat.formatStringS (str, "GROUPB", group2);
+str = org.jmol.util.TextFormat.formatStringS (str, "CB", chain2);
+str = org.jmol.util.TextFormat.formatStringI (str, "RESB", res2);
 sb.append (str);
 if (showMode) sb.append (" strucno= ").append (lastId);
 sb.append ("\n");
@@ -425,7 +425,7 @@ bs = null;
 }if (id == 0 || bsAtoms != null && needPhiPsi && (Float.isNaN (atoms[i].getGroupParameter (1112539143)) || Float.isNaN (atoms[i].getGroupParameter (1112539144)))) continue ;}var ch = atoms[i].getChainID ();
 if (ch.charCodeAt (0) == 0) ch = ' ';
 if (bs == null) {
-bs =  new java.util.BitSet ();
+bs =  new javax.util.BitSet ();
 res1 = atoms[i].getResno ();
 group1 = atoms[i].getGroup3 (false);
 chain1 = "" + ch;
@@ -441,7 +441,7 @@ iLastAtom = i;
 }
 if (n > 0) cmd.append ("\n");
 return (scriptMode ? cmd.toString () : sbHelix.append (sbSheet).append (sbTurn).append (cmd).toString ());
-}, "java.util.BitSet,~B,~B,~N");
+}, "javax.util.BitSet,~B,~B,~N");
 Clazz.overrideMethod (c$, "getFullPDBHeader", 
 function () {
 if (this.modelIndex < 0) return "";
@@ -477,12 +477,12 @@ sb.append ("REMARK   6 Jmol PDB-encoded data: " + type + ";");
 if (ctype.charCodeAt (0) != 82) {
 sb.append ("  quaternionFrame = \"" + qtype + "\"");
 bothEnds = true;
-}sb.append ("\nREMARK   6 Jmol Version ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append ('\n');
+}sb.append ("\nREMARK   6 Jmol Version ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append ("\n");
 if (ctype.charCodeAt (0) == 82) sb.append ("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
  else sb.append ("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
 }for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, derivType, this.bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, pdbCONECT, bsWritten);
 
-}, "org.jmol.viewer.Viewer,~S,~S,~B,java.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,java.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,javax.util.BitSet");
 Clazz.defineStatics (c$,
 "pdbRecords", ["ATOM  ", "MODEL ", "HETATM"]);
 });

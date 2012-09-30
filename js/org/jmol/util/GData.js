@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.api.JmolGraphicsInterface"], "org.jmol.util.GData", ["javax.vecmath.Point3f", "org.jmol.util.Colix", "$.JmolFont", "$.Shader"], function () {
+Clazz.load (["org.jmol.api.JmolGraphicsInterface"], "org.jmol.util.GData", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.Colix", "$.JmolFont", "$.Shader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.apiPlatform = null;
 this.windowWidth = 0;
@@ -88,11 +88,8 @@ return this.antialiasThisFrame;
 });
 Clazz.defineMethod (c$, "getChangeableColix", 
 function (id, argb) {
-if (id >= this.changeableColixMap.length) {
-var t =  Clazz.newArray (id + 16, 0);
-System.arraycopy (this.changeableColixMap, 0, t, 0, this.changeableColixMap.length);
-this.changeableColixMap = t;
-}if (this.changeableColixMap[id] == 0) this.changeableColixMap[id] = org.jmol.util.Colix.getColix (argb);
+if (id >= this.changeableColixMap.length) this.changeableColixMap = org.jmol.util.ArrayUtil.arrayCopyShort (this.changeableColixMap, id + 16);
+if (this.changeableColixMap[id] == 0) this.changeableColixMap[id] = org.jmol.util.Colix.getColix (argb);
 return (id | -32768);
 }, "~N,~N");
 Clazz.defineMethod (c$, "changeColixArgb", 
@@ -216,7 +213,7 @@ c$.getLightSource = Clazz.defineMethod (c$, "getLightSource",
 function () {
 return javax.vecmath.Point3f.new3 (org.jmol.util.Shader.xLight, org.jmol.util.Shader.yLight, org.jmol.util.Shader.zLight);
 });
-Clazz.defineMethod (c$, "isClipped", 
+Clazz.defineMethod (c$, "isClipped3", 
 function (x, y, z) {
 return (x < 0 || x >= this.width || y < 0 || y >= this.height || z < this.slab || z > this.depth);
 }, "~N,~N,~N");
@@ -237,7 +234,7 @@ Clazz.overrideMethod (c$, "isClippedZ",
 function (z) {
 return (z != -2147483648 && (z < this.slab || z > this.depth));
 }, "~N");
-Clazz.defineMethod (c$, "clipCode", 
+Clazz.defineMethod (c$, "clipCode3", 
 function (x, y, z) {
 var code = 0;
 if (x < 0) code |= 8;
@@ -257,30 +254,30 @@ return code;
 }, "~N");
 Clazz.defineMethod (c$, "getFont3D", 
 function (fontSize) {
-return org.jmol.util.JmolFont.getFont3D (0, 0, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
+return org.jmol.util.JmolFont.createFont3D (0, 0, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
 }, "~N");
-Clazz.defineMethod (c$, "getFont3D", 
+Clazz.defineMethod (c$, "getFont3DFS", 
 function (fontFace, fontSize) {
-return org.jmol.util.JmolFont.getFont3D (org.jmol.util.JmolFont.getFontFaceID (fontFace), 0, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
+return org.jmol.util.JmolFont.createFont3D (org.jmol.util.JmolFont.getFontFaceID (fontFace), 0, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
 }, "~S,~N");
-Clazz.defineMethod (c$, "getFont3D", 
+Clazz.defineMethod (c$, "getFont3DFSS", 
 function (fontFace, fontStyle, fontSize) {
 var iStyle = org.jmol.util.JmolFont.getFontStyleID (fontStyle);
 if (iStyle < 0) iStyle = 0;
-return org.jmol.util.JmolFont.getFont3D (org.jmol.util.JmolFont.getFontFaceID (fontFace), iStyle, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
+return org.jmol.util.JmolFont.createFont3D (org.jmol.util.JmolFont.getFontFaceID (fontFace), iStyle, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
 }, "~S,~S,~N");
 Clazz.overrideMethod (c$, "getFont3DScaled", 
 function (font, scale) {
 var newScale = font.fontSizeNominal * scale;
-return (newScale == font.fontSize ? font : org.jmol.util.JmolFont.getFont3D (font.idFontFace, (this.antialiasThisFrame ? font.idFontStyle | 1 : font.idFontStyle), newScale, font.fontSizeNominal, this.apiPlatform, this.graphicsForMetrics));
+return (newScale == font.fontSize ? font : org.jmol.util.JmolFont.createFont3D (font.idFontFace, (this.antialiasThisFrame ? font.idFontStyle | 1 : font.idFontStyle), newScale, font.fontSizeNominal, this.apiPlatform, this.graphicsForMetrics));
 }, "org.jmol.util.JmolFont,~N");
-Clazz.defineMethod (c$, "getFontFid", 
+Clazz.overrideMethod (c$, "getFontFid", 
 function (fontSize) {
 return this.getFont3D (fontSize).fid;
 }, "~N");
-Clazz.defineMethod (c$, "getFontFid", 
+Clazz.defineMethod (c$, "getFontFidFS", 
 function (fontFace, fontSize) {
-return this.getFont3D (fontFace, fontSize).fid;
+return this.getFont3DFS (fontFace, fontSize).fid;
 }, "~S,~N");
 c$.getFontStyleID = Clazz.defineMethod (c$, "getFontStyleID", 
 function (fontStyle) {

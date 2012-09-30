@@ -214,7 +214,7 @@ offset -= this.nBytes;
 this.nBytes += offset;
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (null, e);
+org.jmol.util.Logger.errorEx (null, e);
 } else {
 throw e;
 }

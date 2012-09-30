@@ -166,7 +166,7 @@ this.getNHPoint (this.ptTemp, vC, true, false);
 vB.sub2 (ptCa, this.getNitrogenAtom ());
 vB.cross (vC, vB);
 var mat =  new javax.vecmath.Matrix3f ();
-mat.setAA ( new javax.vecmath.AxisAngle4f (vB, -0.29670596));
+mat.setAA (javax.vecmath.AxisAngle4f.newVA (vB, -0.29670596));
 mat.transform (vC);
 vA.cross (vB, vC);
 break;
@@ -191,7 +191,7 @@ break;
 default:
 return null;
 }
-return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, vC, false);
+return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, vC, false);
 }, "~S");
 Clazz.overrideMethod (c$, "isWithinStructure", 
 function (type) {
@@ -207,9 +207,9 @@ Clazz.overrideMethod (c$, "getProteinStructureTag",
 function () {
 if (this.proteinStructure == null || this.proteinStructure.structureID == null) return null;
 var tag = "%3N %3ID";
-tag = org.jmol.util.TextFormat.formatString (tag, "N", this.proteinStructure.serialID);
-tag = org.jmol.util.TextFormat.formatString (tag, "ID", this.proteinStructure.structureID);
-if (this.proteinStructure.type === org.jmol.constant.EnumStructure.SHEET) tag += org.jmol.util.TextFormat.formatString ("%2SC", "SC", this.proteinStructure.strandCount);
+tag = org.jmol.util.TextFormat.formatStringI (tag, "N", this.proteinStructure.serialID);
+tag = org.jmol.util.TextFormat.formatStringS (tag, "ID", this.proteinStructure.structureID);
+if (this.proteinStructure.type === org.jmol.constant.EnumStructure.SHEET) tag += org.jmol.util.TextFormat.formatStringI ("%2SC", "SC", this.proteinStructure.strandCount);
 return tag;
 });
 Clazz.defineStatics (c$,

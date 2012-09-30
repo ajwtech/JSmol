@@ -55,7 +55,7 @@ while (this.line.indexOf (closer) < 0 && (!selfClosed || this.line.indexOf ("/>"
 data = sb.toString ();
 }return org.jmol.util.XmlReader.extractTag (data, tag, closer, withTag);
 }, "~S,~S,~B,~B");
-c$.extractTag = Clazz.defineMethod (c$, "extractTag", 
+c$.extractTagOnly = Clazz.defineMethod (c$, "extractTagOnly", 
 function (data, tag) {
 return org.jmol.util.XmlReader.extractTag (data, "<" + tag + ">", "</" + tag + ">", false);
 }, "~S,~S");

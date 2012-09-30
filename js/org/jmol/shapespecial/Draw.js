@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmeshes = null;
 this.thisMesh = null;
@@ -70,7 +70,7 @@ function (propertyName, value, bs) {
 this.currentMesh = this.thisMesh;
 Clazz.superCall (this, org.jmol.shapespecial.Draw, "setProperty", [propertyName, value, bs]);
 this.thisMesh = this.currentMesh;
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "initShape", 
 function () {
 Clazz.superCall (this, org.jmol.shapespecial.Draw, "initShape", []);
@@ -119,7 +119,7 @@ if (meshIndex < 0) {
 return ;
 }var m = this.meshes[meshIndex];
 if (m.checkByteCount != 1) return ;
-this.slabData =  new org.jmol.util.MeshSurface (m.vertices,  Clazz.newArray (m.vertexCount, 0), m.vertexCount, m.polygonIndexes, m.polygonCount, 1);
+this.slabData = org.jmol.util.MeshSurface.newSlab (m.vertices, m.vertexCount,  Clazz.newArray (m.vertexCount, 0), m.polygonIndexes, m.polygonCount, 1);
 return ;
 }if ("lineData" === propertyName) {
 this.lineData =  new java.util.ArrayList ();
@@ -276,7 +276,7 @@ this.meshes[i].modelIndex--;
 this.resetObjects ();
 return ;
 }this.setPropertySuper (propertyName, value, bs);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "resetObjects", 
 ($fz = function () {
 this.htObjects.clear ();
@@ -379,7 +379,7 @@ this.setPolygon (0);
 this.thisMesh.modelIndex = -1;
 this.thisMesh.setPolygonCount (modelCount);
 this.thisMesh.ptCenters =  new Array (modelCount);
-this.thisMesh.modelFlags =  new java.util.BitSet ();
+this.thisMesh.modelFlags =  new javax.util.BitSet ();
 this.thisMesh.drawTypes =  new Array (modelCount);
 this.thisMesh.drawVertexCounts =  Clazz.newArray (modelCount, 0);
 this.thisMesh.vertexCount = 0;
@@ -500,7 +500,7 @@ var m = this.dmeshes[idInfo[0]];
 var isReversed = (idInfo[1] == 1);
 var isVertices = (idInfo[2] == 1);
 if (m.modelIndex > 0 && m.modelIndex != iModel) return false;
-if (this.bsAllModels == null) this.bsAllModels =  new java.util.BitSet ();
+if (this.bsAllModels == null) this.bsAllModels =  new javax.util.BitSet ();
 if (this.isPlane && !this.isCircle || this.isPerpendicular || isVertices) {
 if (isReversed) {
 if (iModel < 0 || iModel >= m.polygonCount) for (var ipt = m.drawVertexCount; --ipt >= 0; ) this.addPoint (m.vertices[ipt], iModel);
@@ -518,13 +518,13 @@ if (iModel < 0 || m.ptCenters == null || m.ptCenters[iModel] == null) this.addPo
 }break;
 case 5:
 var modelBasedPoints = info[1];
-if (this.bsAllModels == null) this.bsAllModels =  new java.util.BitSet ();
+if (this.bsAllModels == null) this.bsAllModels =  new javax.util.BitSet ();
 for (var j = 0; j < modelBasedPoints.length; j++) if (iModel < 0 || j == iModel) {
 var point = org.jmol.util.Escape.unescapePointOrBitsetOrMatrixOrArray (modelBasedPoints[j]);
 this.bsAllModels.set (j);
 if (Clazz.instanceOf (point, javax.vecmath.Point3f)) {
 this.addPoint (point, j);
-} else if (Clazz.instanceOf (point, java.util.BitSet)) {
+} else if (Clazz.instanceOf (point, javax.util.BitSet)) {
 bs = point;
 if (bsModel != null) bs.and (bsModel);
 if (bs.length () > 0) this.addPoint (this.viewer.getAtomSetCenter (bs), j);
@@ -745,11 +745,11 @@ continue ;}m.visibilityFlags = (m.isValid && m.visible ? this.myVisibilityFlag :
 if (m.modelIndex >= 0 && !bs.get (m.modelIndex) || m.modelFlags != null && !org.jmol.util.BitSetUtil.haveCommon (bs, m.modelFlags)) {
 m.visibilityFlags = 0;
 } else if (m.modelFlags != null) {
-m.bsMeshesVisible.clear ();
+m.bsMeshesVisible.clearAll ();
 m.bsMeshesVisible.or (m.modelFlags);
 m.bsMeshesVisible.and (bs);
 }}
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
 function (x, y, action, bsVisible) {
 var isPickingMode = (this.viewer.getPickingMode () == 4);
@@ -772,7 +772,7 @@ this.viewer.startSpinningAxis (this.pickedMesh.vertices[this.pickedMesh.polygonI
 } else {
 this.viewer.startSpinningAxis (this.pickedMesh.vertices[this.pickedMesh.polygonIndexes[this.pickedModel][0]], this.pickedMesh.vertices[this.pickedMesh.polygonIndexes[this.pickedModel][1]], isClockwise);
 }return this.getPickedPoint (null, 0);
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (!this.viewer.getDrawHover ()) return false;
@@ -785,7 +785,7 @@ y <<= 1;
 if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == 62) s = s.substring (1);
 this.viewer.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectDragged", 
 function (prevX, prevY, x, y, action, bsVisible) {
 if (this.viewer.getPickingMode () != 4) return false;
@@ -801,7 +801,7 @@ var dm = this.pickedMesh;
 this.move2D (dm, dm.polygonIndexes[this.pickedModel], this.pickedVertex, x, y, moveAll);
 this.thisMesh = dm;
 return true;
-}, "~N,~N,~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "move2D", 
 ($fz = function (mesh, vertexes, iVertex, x, y, moveAll) {
 if (vertexes == null || vertexes.length == 0) return ;
@@ -821,7 +821,7 @@ move.setT (newcoord);
 move.sub (coord);
 if (mesh.isTriangleSet) iVertex = ptVertex;
 var n = (!moveAll ? iVertex + 1 : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
-var bsMoved =  new java.util.BitSet ();
+var bsMoved =  new javax.util.BitSet ();
 for (var i = (moveAll ? 0 : iVertex); i < n; i++) if (moveAll || i == iVertex) {
 var k = (mesh.isTriangleSet ? i : vertexes[i]);
 if (bsMoved.get (k)) continue ;bsMoved.set (k);
@@ -865,7 +865,7 @@ throw e;
 }
 }}
 return (this.pickedMesh != null);
-}, $fz.isPrivate = true, $fz), "~N,~N,~B,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "getDrawCommand", 
 ($fz = function (mesh) {
 if (mesh != null) return this.getDrawCommand (mesh, mesh.modelIndex);

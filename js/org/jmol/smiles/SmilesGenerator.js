@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["java.util.BitSet", "$.Hashtable", "org.jmol.smiles.SmilesSearch"], "org.jmol.smiles.SmilesGenerator", ["java.lang.StringBuffer", "java.util.ArrayList", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesParser", "org.jmol.util.Elements", "$.JmolMolecule", "$.Logger"], function () {
+Clazz.load (["java.util.Hashtable", "javax.util.BitSet", "org.jmol.smiles.SmilesSearch"], "org.jmol.smiles.SmilesGenerator", ["java.lang.StringBuffer", "java.util.ArrayList", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesParser", "org.jmol.util.Elements", "$.JmolMolecule", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atoms = null;
 this.atomCount = 0;
@@ -20,8 +20,8 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.smiles, "SmilesGenerator");
 Clazz.prepareFields (c$, function () {
 this.vTemp =  new org.jmol.smiles.SmilesSearch.VTemp ();
-this.bsBondsUp =  new java.util.BitSet ();
-this.bsBondsDn =  new java.util.BitSet ();
+this.bsBondsUp =  new javax.util.BitSet ();
+this.bsBondsDn =  new javax.util.BitSet ();
 this.htRingsSequence =  new java.util.Hashtable ();
 this.htRings =  new java.util.Hashtable ();
 });
@@ -33,7 +33,7 @@ this.atoms = atoms;
 this.atomCount = atomCount;
 this.bsSelected = bsSelected = bsSelected.clone ();
 return this.getSmilesComponent (atoms[i], bsSelected, false);
-}, "~A,~N,java.util.BitSet");
+}, "~A,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getBioSmiles", 
 function (atoms, atomCount, bsSelected, allowUnmatchedRings, addCrossLinks, comment) {
 this.atoms = atoms;
@@ -42,7 +42,7 @@ var sb =  new StringBuffer ();
 var bs = bsSelected.clone ();
 if (comment != null) sb.append ("//* Jmol bioSMILES ").append (comment.$replace ('*', '_')).append (" *//");
 var end = "\n";
-var bsIgnore =  new java.util.BitSet ();
+var bsIgnore =  new javax.util.BitSet ();
 var lastComponent = null;
 var s;
 var vLinks =  new java.util.ArrayList ();
@@ -116,7 +116,7 @@ throw  new org.jmol.smiles.InvalidSmilesException ("//* ?ring error? *//");
 }s = sb.toString ();
 if (s.endsWith (".\n")) s = s.substring (0, s.length - 2);
 return s;
-}, "~A,~N,java.util.BitSet,~B,~B,~S");
+}, "~A,~N,javax.util.BitSet,~B,~B,~S");
 Clazz.defineMethod (c$, "addBracketedBioName", 
 ($fz = function (sb, a, atomName) {
 sb.append ("[");
@@ -153,7 +153,7 @@ this.bsAromatic = search.bsAromatic;
 this.ringSets = search.ringSets;
 this.setBondDirections ();
 } else {
-this.bsAromatic =  new java.util.BitSet ();
+this.bsAromatic =  new javax.util.BitSet ();
 }this.bsToDo = this.bsSelected.clone ();
 var sb =  new StringBuffer ();
 for (var i = this.bsToDo.nextSetBit (0); i >= 0; i = this.bsToDo.nextSetBit (i + 1)) if (this.atoms[i].getCovalentBondCount () > 4) {
@@ -179,7 +179,7 @@ if (!this.htRings.isEmpty ()) {
 this.dumpRingKeys (sb, this.htRings);
 throw  new org.jmol.smiles.InvalidSmilesException ("//* ?ring error? *//\n" + sb);
 }return sb.toString ();
-}, $fz.isPrivate = true, $fz), "org.jmol.util.JmolNode,java.util.BitSet,~B");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.JmolNode,javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "getBondStereochemistry", 
 ($fz = function (bond, atomFrom) {
 if (bond == null) return '\0';
@@ -189,7 +189,7 @@ return (this.bsBondsUp.get (i) ? (isFirst ? '/' : '\\') : this.bsBondsDn.get (i)
 }, $fz.isPrivate = true, $fz), "org.jmol.util.JmolEdge,org.jmol.util.JmolNode");
 Clazz.defineMethod (c$, "setBondDirections", 
 ($fz = function () {
-var bsDone =  new java.util.BitSet ();
+var bsDone =  new javax.util.BitSet ();
 var edges =  Clazz.newArray (2, 3, null);
 for (var i = this.bsSelected.nextSetBit (0); i >= 0; i = this.bsSelected.nextSetBit (i + 1)) {
 var atom1 = this.atoms[i];
@@ -285,7 +285,7 @@ if (this.prevSp2Atoms == null) sp2Atoms[nSp2Atoms++] = this.prevAtom;
  else nSp2Atoms = 2;
 }nSp2Atoms += nH;
 var nMax = 0;
-var bsBranches =  new java.util.BitSet ();
+var bsBranches =  new javax.util.BitSet ();
 if (allowBranches) for (var i = 0; i < v.size (); i++) {
 var bond = v.get (i);
 var a = bond.getOtherAtomNode (atom);
@@ -386,7 +386,7 @@ var a1;
 var a2;
 var bond1;
 var bond2;
-var bsDone =  new java.util.BitSet ();
+var bsDone =  new javax.util.BitSet ();
 var pair0 = null;
 var stereo =  new Array (6);
 var isOK = true;

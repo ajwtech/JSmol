@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "$.StringBuffer", "org.jmol.constant.EnumPalette", "org.jmol.util.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader"], function () {
+Clazz.load (["org.jmol.util.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "$.StringBuffer", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Colix");
 Clazz.makeConstructor (c$, 
 function () {
@@ -24,21 +24,11 @@ if (org.jmol.util.Colix.colixMax == org.jmol.util.Colix.argbs.length) {
 var oldSize = org.jmol.util.Colix.colixMax;
 var newSize = oldSize * 2;
 if (newSize > 2048) newSize = 2048;
-var t0 =  Clazz.newArray (newSize, 0);
-System.arraycopy (org.jmol.util.Colix.argbs, 0, t0, 0, oldSize);
-($t$ = org.jmol.util.Colix.argbs = t0, org.jmol.util.Colix.prototype.argbs = org.jmol.util.Colix.argbs, $t$);
-if (org.jmol.util.Colix.argbsGreyscale != null) {
-t0 =  Clazz.newArray (newSize, 0);
-System.arraycopy (org.jmol.util.Colix.argbsGreyscale, 0, t0, 0, oldSize);
-($t$ = org.jmol.util.Colix.argbsGreyscale = t0, org.jmol.util.Colix.prototype.argbsGreyscale = org.jmol.util.Colix.argbsGreyscale, $t$);
-}var t2 =  Clazz.newArray (newSize, 0);
-System.arraycopy (org.jmol.util.Colix.ashades, 0, t2, 0, oldSize);
-($t$ = org.jmol.util.Colix.ashades = t2, org.jmol.util.Colix.prototype.ashades = org.jmol.util.Colix.ashades, $t$);
-if (org.jmol.util.Colix.ashadesGreyscale != null) {
-t2 =  Clazz.newArray (newSize, 0);
-System.arraycopy (org.jmol.util.Colix.ashadesGreyscale, 0, t2, 0, oldSize);
-($t$ = org.jmol.util.Colix.ashadesGreyscale = t2, org.jmol.util.Colix.prototype.ashadesGreyscale = org.jmol.util.Colix.ashadesGreyscale, $t$);
-}}org.jmol.util.Colix.argbs[org.jmol.util.Colix.colixMax] = argb;
+($t$ = org.jmol.util.Colix.argbs = org.jmol.util.ArrayUtil.arrayCopyI (org.jmol.util.Colix.argbs, newSize), org.jmol.util.Colix.prototype.argbs = org.jmol.util.Colix.argbs, $t$);
+if (org.jmol.util.Colix.argbsGreyscale != null) ($t$ = org.jmol.util.Colix.argbsGreyscale = org.jmol.util.ArrayUtil.arrayCopyI (org.jmol.util.Colix.argbsGreyscale, newSize), org.jmol.util.Colix.prototype.argbsGreyscale = org.jmol.util.Colix.argbsGreyscale, $t$);
+($t$ = org.jmol.util.Colix.ashades = org.jmol.util.ArrayUtil.arrayCopyII (org.jmol.util.Colix.ashades, newSize), org.jmol.util.Colix.prototype.ashades = org.jmol.util.Colix.ashades, $t$);
+if (org.jmol.util.Colix.ashadesGreyscale != null) ($t$ = org.jmol.util.Colix.ashadesGreyscale = org.jmol.util.ArrayUtil.arrayCopyII (org.jmol.util.Colix.ashadesGreyscale, newSize), org.jmol.util.Colix.prototype.ashadesGreyscale = org.jmol.util.Colix.ashadesGreyscale, $t$);
+}org.jmol.util.Colix.argbs[org.jmol.util.Colix.colixMax] = argb;
 if (org.jmol.util.Colix.argbsGreyscale != null) org.jmol.util.Colix.argbsGreyscale[org.jmol.util.Colix.colixMax] = org.jmol.util.ColorUtil.calcGreyscaleRgbFromRgb (argb);
 org.jmol.util.Colix.colixHash.put (argb, org.jmol.util.Colix.colixMax);
 return (org.jmol.util.Colix.colixMax < 2047 ? ($t$ = org.jmol.util.Colix.colixMax ++, org.jmol.util.Colix.prototype.colixMax = org.jmol.util.Colix.colixMax, $t$) : org.jmol.util.Colix.colixMax);
@@ -224,7 +214,7 @@ Clazz.defineStatics (c$,
 "argbsGreyscale", null,
 "ashades",  Clazz.newArray (128, 0),
 "ashadesGreyscale", null);
-c$.colixHash = c$.prototype.colixHash =  new org.jmol.util.Int2IntHash ();
+c$.colixHash = c$.prototype.colixHash =  new org.jmol.util.Int2IntHash (256);
 Clazz.defineStatics (c$,
 "RAW_RGB_INT", 3,
 "UNMASK_CHANGEABLE_TRANSLUCENT", 0x07FF,

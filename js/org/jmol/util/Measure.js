@@ -8,7 +8,7 @@ vectorBC.sub2 (pointC, pointB);
 var angle = vectorBA.angle (vectorBC);
 return (asDegrees ? angle / 0.017453292 : angle);
 }, "javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~B");
-c$.computeAngle = Clazz.defineMethod (c$, "computeAngle", 
+c$.computeAngleABC = Clazz.defineMethod (c$, "computeAngleABC", 
 function (pointA, pointB, pointC, asDegrees) {
 var vectorBA =  new javax.vecmath.Vector3f ();
 var vectorBC =  new javax.vecmath.Vector3f ();
@@ -80,7 +80,7 @@ return pt_a_prime;
 var pt_b_prime = javax.vecmath.Point3f.newP (pt_a_prime);
 pt_b_prime.add (n);
 theta = org.jmol.util.Measure.computeTorsion (a, pt_a_prime, pt_b_prime, b, true);
-if (Float.isNaN (theta) || r.length () < 0.0001) theta = dq.getThetaDirected (n);
+if (Float.isNaN (theta) || r.length () < 0.0001) theta = dq.getThetaDirectedV (n);
 if (tokType == 135266305) return  new Float (theta);
 if (tokType == 135176) return "draw ID \"" + id + "\" VECTOR " + org.jmol.util.Escape.escapePt (pt_a_prime) + " " + org.jmol.util.Escape.escapePt (n) + " color " + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
 if (tokType == 1746538509) return "measure " + org.jmol.util.Escape.escapePt (a) + org.jmol.util.Escape.escapePt (pt_a_prime) + org.jmol.util.Escape.escapePt (pt_b_prime) + org.jmol.util.Escape.escapePt (b);
@@ -108,7 +108,7 @@ c$.distanceToPlane = Clazz.defineMethod (c$, "distanceToPlane",
 function (plane, pt) {
 return (plane == null ? NaN : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w) / Math.sqrt (plane.x * plane.x + plane.y * plane.y + plane.z * plane.z));
 }, "javax.vecmath.Point4f,javax.vecmath.Point3f");
-c$.distanceToPlane = Clazz.defineMethod (c$, "distanceToPlane", 
+c$.distanceToPlaneD = Clazz.defineMethod (c$, "distanceToPlaneD", 
 function (plane, d, pt) {
 return (plane == null ? NaN : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w) / d);
 }, "javax.vecmath.Point4f,~N,javax.vecmath.Point3f");
@@ -311,9 +311,9 @@ N[1][3] = N[3][1] = Szx + Sxz;
 N[2][2] = -Sxx + Syy - Szz;
 N[2][3] = N[3][2] = Syz + Szy;
 N[3][3] = -Sxx - Syy + Szz;
-var eigen =  new org.jmol.util.Eigen (N);
+var eigen = org.jmol.util.Eigen.newM (N);
 var v = eigen.getEigenvectorsFloatTransposed ()[3];
-q =  new org.jmol.util.Quaternion (javax.vecmath.Point4f.new4 (v[1], v[2], v[3], v[0]));
+q = org.jmol.util.Quaternion.newP4 (javax.vecmath.Point4f.new4 (v[1], v[2], v[3], v[0]));
 retStddev[1] = org.jmol.util.Measure.getRmsd (centerAndPoints, q);
 return q;
 }, "~A,~A,~B");
@@ -326,7 +326,7 @@ var ptAnew =  new javax.vecmath.Point3f ();
 for (var i = n + 1; --i >= 1; ) {
 ptAnew.setT (centerAndPoints[0][i]);
 ptAnew.sub (centerAndPoints[0][0]);
-q.transform (ptAnew, ptAnew);
+q.transformP2 (ptAnew, ptAnew);
 ptAnew.add (centerAndPoints[1][0]);
 var d = ptAnew.distance (centerAndPoints[1][i]);
 sum += d;
@@ -360,7 +360,7 @@ if (fullyEnclosed) return (b == (d >= 0));
 var d1 = org.jmol.util.Measure.distanceToPlane (plane, ptD);
 return d1 * d <= 0 || Math.abs (d1) > Math.abs (d);
 }, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point4f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~B");
-c$.getIntersection = Clazz.defineMethod (c$, "getIntersection", 
+c$.getIntersectionPP = Clazz.defineMethod (c$, "getIntersectionPP", 
 function (plane1, plane2) {
 var a1 = plane1.x;
 var b1 = plane1.y;

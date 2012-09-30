@@ -27,5 +27,5 @@ e.next ().setFont (this.currentFont);
 (this.currentObject).setFontScale (0);
 return ;
 }Clazz.superCall (this, org.jmol.shape.TextShape, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 });

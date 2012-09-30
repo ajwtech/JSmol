@@ -17,7 +17,7 @@ Clazz.defineMethod (c$, "initShape",
 function () {
 Clazz.superCall (this, org.jmol.shape.Frank, "initShape", []);
 this.myType = "frank";
-this.baseFont3d = this.font3d = this.gdata.getFont3D ("SansSerif", "Bold", 16);
+this.baseFont3d = this.font3d = this.gdata.getFont3DFSS ("SansSerif", "Bold", 16);
 this.calcMetrics ();
 });
 Clazz.overrideMethod (c$, "wasClicked", 
@@ -34,7 +34,7 @@ x <<= 1;
 y <<= 1;
 }this.viewer.hoverOnPt (x, y, org.jmol.i18n.GT._ ("Click for menu..."), null, null);
 return true;
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "calcMetrics", 
 function () {
 if (this.viewer.isSignedApplet ()) this.frankString = "Jmol_S";

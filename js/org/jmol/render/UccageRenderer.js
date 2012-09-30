@@ -99,7 +99,7 @@ Clazz.defineMethod (c$, "renderInfo",
 if (this.isExport || !this.g3d.setColix (this.viewer.getColixBackgroundContrast ())) return ;
 if (this.nf == null) {
 this.nf = java.text.NumberFormat.getInstance ();
-}this.fid = this.g3d.getFontFid ("Monospaced", 14 * this.imageFontScaling);
+}this.fid = this.g3d.getFontFidFS ("Monospaced", 14 * this.imageFontScaling);
 if (this.nf != null) {
 this.nf.setMaximumFractionDigits (3);
 this.nf.setMinimumFractionDigits (3);

@@ -9,17 +9,19 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function () {
 });
-Clazz.makeConstructor (c$, 
+c$.newI = Clazz.defineMethod (c$, "newI", 
 function (argb) {
-this.set (argb);
+var c =  new org.jmol.util.Rgb16 ();
+c.setInt (argb);
+return c;
 }, "~N");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setInt", 
 function (argb) {
 this.rScaled = ((argb >> 8) & 0xFF00) | 0x80;
 this.gScaled = ((argb) & 0xFF00) | 0x80;
 this.bScaled = ((argb << 8) & 0xFF00) | 0x80;
 }, "~N");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setRgb", 
 function (other) {
 this.rScaled = other.rScaled;
 this.gScaled = other.gScaled;

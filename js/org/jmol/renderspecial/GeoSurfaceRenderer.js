@@ -26,7 +26,7 @@ if (this.iShowSolid) {
 if (this.g3d.setColix (colix)) this.renderSurface (visibilityMap);
 return ;
 }this.renderDots (nPoints);
-}, "~N,org.jmol.util.FastBitSet,~N");
+}, "~N,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "renderSurface", 
 ($fz = function (points) {
 if (this.faceMap == null) return ;
@@ -46,5 +46,5 @@ this.facePt2.set (coords[this.faceMap[p2]], coords[this.faceMap[p2] + 1], coords
 this.facePt3.set (coords[this.faceMap[p3]], coords[this.faceMap[p3] + 1], coords[this.faceMap[p3] + 2]);
 this.g3d.fillTriangle (this.facePt1, this.colix, p1, this.facePt2, this.colix, p2, this.facePt3, this.colix, p3);
 }
-}, $fz.isPrivate = true, $fz), "org.jmol.util.FastBitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
 });

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (["org.jmol.util.MeshSurface"], "org.jmol.jvxl.data.MeshData", ["java.lang.Float", "java.util.Arrays", "$.BitSet", "javax.vecmath.Vector3f", "org.jmol.util.ArrayUtil"], function () {
+Clazz.load (["org.jmol.util.MeshSurface"], "org.jmol.jvxl.data.MeshData", ["java.lang.Float", "java.util.Arrays", "javax.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.setsSuccessful = false;
 this.vertexIncrement = 1;
@@ -15,7 +15,7 @@ Clazz.instantialize (this, arguments);
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertex, value, assocVertex) {
 if (assocVertex < 0) this.vertexIncrement = -assocVertex;
-return this.addVertexCopy (vertex, value);
+return this.addVertexCopyVal (vertex, value);
 }, "javax.vecmath.Point3f,~N,~N");
 Clazz.defineMethod (c$, "getSurfaceSet", 
 function () {
@@ -103,7 +103,7 @@ var i;
 for (i = 0; i < this.nSets; i++) if (this.surfaceSet[i] == null) break;
 
 if (i == this.surfaceSet.length) this.surfaceSet = org.jmol.util.ArrayUtil.ensureLength (this.surfaceSet, this.surfaceSet.length + 100);
-this.surfaceSet[i] =  new java.util.BitSet ();
+this.surfaceSet[i] =  new javax.util.BitSet ();
 this.surfaceSet[i].set (v1);
 this.surfaceSet[i].set (v2);
 this.surfaceSet[i].set (v3);
@@ -159,15 +159,15 @@ return v;
 }, "~N,~B,~B");
 Clazz.defineMethod (c$, "updateInvalidatedVertices", 
 function (bs) {
-bs.clear ();
+bs.clearAll ();
 for (var i = 0, ipt = 0; i < this.vertexCount; i += this.vertexIncrement, ipt++) if (Float.isNaN (this.vertexValues[i])) bs.set (i);
 
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "invalidateVertices", 
 function (bsInvalid) {
 for (var i = bsInvalid.nextSetBit (0); i >= 0; i = bsInvalid.nextSetBit (i + 1)) this.vertexValues[i] = NaN;
 
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 c$.$MeshData$SSet$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
@@ -180,7 +180,7 @@ Clazz.makeConstructor (c$,
 function (a) {
 this.bs = a;
 this.n = a.cardinality ();
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 c$ = Clazz.p0p ();
 };
 c$.$MeshData$SortSet$ = function () {

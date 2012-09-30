@@ -237,7 +237,7 @@ list.add (color);
 htColixes.put (color, Integer.$valueOf (i00 + nColix++));
 }}
 return list;
-}, "~N,~A,~N,java.util.BitSet,java.util.Map");
+}, "~N,~A,~N,javax.util.BitSet,java.util.Map");
 c$.getConeMesh = Clazz.defineMethod (c$, "getConeMesh", 
 function (centerBase, matRotateScale, colix) {
 var ms =  new org.jmol.util.MeshSurface ();
@@ -280,7 +280,7 @@ this.tempV1.sub (pt1);
 this.tempV2.set (0, 0, 1);
 this.tempV2.cross (this.tempV2, this.tempV1);
 this.tempV1.cross (this.tempV1, this.tempV2);
-var q = org.jmol.util.Quaternion.getQuaternionFrame (this.tempV2, this.tempV1, null, false);
+var q = org.jmol.util.Quaternion.getQuaternionFrameV (this.tempV2, this.tempV1, null, false);
 m1 = q.getMatrix ();
 }m.m00 = radius;
 m.m11 = radius;
@@ -326,7 +326,7 @@ this.outputSurface (vertices, normals, colixes, indices, polygonColixes, nVertic
 }, "org.jmol.util.MeshSurface,~N");
 Clazz.defineMethod (c$, "outputSurface", 
 function (vertices, normals, colixes, indices, polygonColixes, nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix, colorList, htColixes, offset) {
-}, "~A,~A,~A,~A,~A,~N,~N,~N,java.util.BitSet,~N,~N,java.util.List,java.util.Map,javax.vecmath.Point3f");
+}, "~A,~A,~A,~A,~A,~N,~N,~N,javax.util.BitSet,~N,~N,java.util.List,java.util.Map,javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "drawFilledCircle", 
 function (colixRing, colixFill, diameter, x, y, z) {
 if (colixRing != 0) this.drawCircle (x, y, z, diameter, colixRing, false);

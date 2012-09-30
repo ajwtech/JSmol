@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.SimpleUnitCell", ["java.lang.Float", "javax.vecmath.Matrix4f", "$.Point3f", "$.Vector3f"], function () {
+Clazz.load (null, "org.jmol.util.SimpleUnitCell", ["java.lang.Float", "javax.vecmath.Matrix4f", "$.Point3f", "$.Vector3f", "org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.notionalUnitcell = null;
 this.matrixCartesianToFractional = null;
@@ -41,15 +41,16 @@ return (parameters != null && (parameters[0] > 0 || parameters.length > 14 && !F
 Clazz.makeConstructor (c$, 
 function () {
 });
-Clazz.makeConstructor (c$, 
+c$.newA = Clazz.defineMethod (c$, "newA", 
 function (parameters) {
-this.set (parameters);
+var c =  new org.jmol.util.SimpleUnitCell ();
+c.set (parameters);
+return c;
 }, "~A");
 Clazz.defineMethod (c$, "set", 
 function (parameters) {
 if (!org.jmol.util.SimpleUnitCell.isValid (parameters)) return ;
-this.notionalUnitcell =  Clazz.newArray (parameters.length, 0);
-System.arraycopy (parameters, 0, this.notionalUnitcell, 0, parameters.length);
+this.notionalUnitcell = org.jmol.util.ArrayUtil.arrayCopyF (parameters, parameters.length);
 this.a = parameters[0];
 this.b = parameters[1];
 this.c = parameters[2];

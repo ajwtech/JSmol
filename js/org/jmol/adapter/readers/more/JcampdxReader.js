@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "$.StringBuffer", "java.util.BitSet", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "$.StringBuffer", "javax.util.BitSet", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelID = null;
 this.models = null;
@@ -173,7 +173,7 @@ return true;
 Clazz.defineMethod (c$, "processPeakData", 
 ($fz = function () {
 if (this.peakData.size () == 0) return ;
-var bsModels =  new java.util.BitSet ();
+var bsModels =  new javax.util.BitSet ();
 var n = this.peakData.size ();
 var havePeaks = (n > 0);
 for (var p = 0; p < n; p++) {

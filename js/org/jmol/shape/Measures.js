@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.api.JmolMeasurementClient", "org.jmol.shape.Shape", "java.util.ArrayList"], "org.jmol.shape.Measures", ["java.lang.Float", "$.StringBuffer", "java.util.BitSet", "$.Hashtable", "org.jmol.modelset.Measurement", "$.MeasurementData", "org.jmol.shape.FontLineShape", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape"], function () {
+Clazz.load (["org.jmol.api.JmolMeasurementClient", "org.jmol.shape.Shape", "java.util.ArrayList"], "org.jmol.shape.Measures", ["java.lang.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "org.jmol.modelset.Measurement", "$.MeasurementData", "org.jmol.shape.FontLineShape", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsColixSet = null;
 this.bsSelected = null;
@@ -39,7 +39,7 @@ this.font3d = this.gdata.getFont3D (15);
 Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
 this.mad = size;
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setProperty", 
 function (propertyName, value, bsIgnored) {
 var mt;
@@ -73,7 +73,7 @@ var bs = value;
 if (bs == null || org.jmol.util.BitSetUtil.cardinalityOf (bs) == 0) {
 this.bsSelected = null;
 } else {
-this.bsSelected =  new java.util.BitSet ();
+this.bsSelected =  new javax.util.BitSet ();
 this.bsSelected.or (bs);
 }return ;
 }if ("setFormats" === propertyName) {
@@ -169,7 +169,7 @@ return ;
 }if ("toggleOn" === propertyName) {
 this.toggleOn (value);
 return ;
-}}, "~S,~O,java.util.BitSet");
+}}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setSingleItem", 
 ($fz = function (vector) {
 var points =  new Array (4);
@@ -177,7 +177,7 @@ var indices =  Clazz.newArray (5, 0);
 indices[0] = vector.size ();
 for (var i = vector.size (); --i >= 0; ) {
 var value = vector.get (i);
-if (Clazz.instanceOf (value, java.util.BitSet)) {
+if (Clazz.instanceOf (value, javax.util.BitSet)) {
 var atomIndex = (value).nextSetBit (0);
 if (atomIndex < 0) return null;
 indices[i + 1] = atomIndex;
@@ -207,7 +207,7 @@ this.viewer.setStatusMeasuring ("measureDeleted", -1, "all", 0);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setColor", 
 ($fz = function (colix) {
-if (this.bsColixSet == null) this.bsColixSet =  new java.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
 if (this.bsSelected == null) this.colix = colix;
 var mt;
 for (var i = this.measurements.size (); --i >= 0; ) if ((mt = this.measurements.get (i)) != null && (this.bsSelected != null && this.bsSelected.get (i) || this.bsSelected == null && (colix == 0 || mt.getColix () == 0))) {
@@ -243,7 +243,7 @@ this.setIndices ();
 Clazz.defineMethod (c$, "toggleOn", 
 ($fz = function (indices) {
 this.radiusData = null;
-this.bsSelected =  new java.util.BitSet ();
+this.bsSelected =  new javax.util.BitSet ();
 this.define (-2147483648,  new org.jmol.modelset.Measurement (this.modelSet, indices, null, this.defaultTickInfo), false, true, true);
 this.setIndices ();
 this.reformatDistances ();
@@ -416,7 +416,7 @@ org.jmol.shape.Shape.appendCmd (commands, "select *; set measures " + this.viewe
 org.jmol.shape.Shape.appendCmd (commands, org.jmol.shape.Shape.getFontCommand ("measures", this.font3d));
 var nHidden = 0;
 var temp =  new java.util.Hashtable ();
-var bs =  new java.util.BitSet (this.measurementCount);
+var bs = org.jmol.util.BitSetUtil.newBitSet (this.measurementCount);
 for (var i = 0; i < this.measurementCount; i++) {
 var m = this.measurements.get (i);
 if (m.isHidden ()) {

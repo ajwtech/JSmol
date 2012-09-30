@@ -507,7 +507,7 @@ Clazz.defineMethod (c$, "minimize",
 this.viewer.stopMinimization ();
 var iAtom = this.dragAtomIndex;
 if (dragDone) this.dragAtomIndex = -1;
-var bs = (this.viewer.getMotionFixedAtoms ().cardinality () == 0 ? this.viewer.getAtomBits ((this.viewer.isAtomPDB (iAtom) ? 1087373318 : 1095761934), org.jmol.util.BitSetUtil.setBit (iAtom)) : org.jmol.util.BitSetUtil.setAll (this.viewer.getAtomCount ()));
+var bs = (this.viewer.getMotionFixedAtoms ().cardinality () == 0 ? this.viewer.getAtomBits ((this.viewer.isAtomPDB (iAtom) ? 1087373318 : 1095761934), org.jmol.util.BitSetUtil.newAndSetBit (iAtom)) : org.jmol.util.BitSetUtil.setAll (this.viewer.getAtomCount ()));
 this.viewer.minimize (2147483647, 0, bs, null, 0, false, false, false);
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "getExitRate", 
@@ -574,14 +574,14 @@ case 30:
 if (this.dragGesture.getPointCount () == 1) this.viewer.undoMoveActionClear (this.dragAtomIndex, 2, true);
 this.checkMotion (3);
 if (this.isBound (action, 25)) {
-bs = this.viewer.getAtomBits (1095761934, org.jmol.util.BitSetUtil.setBit (this.dragAtomIndex));
+bs = this.viewer.getAtomBits (1095761934, org.jmol.util.BitSetUtil.newAndSetBit (this.dragAtomIndex));
 this.viewer.rotateSelected (this.getDegrees (deltaX, 0), this.getDegrees (deltaY, 1), bs);
 } else {
 bs = null;
 switch (this.atomPickingMode) {
 case 27:
 case 30:
-bs = this.viewer.getAtomBits (1095761934, org.jmol.util.BitSetUtil.setBit (this.dragAtomIndex));
+bs = this.viewer.getAtomBits (1095761934, org.jmol.util.BitSetUtil.newAndSetBit (this.dragAtomIndex));
 this.viewer.select (bs, false, null, true);
 break;
 }
@@ -785,7 +785,7 @@ case 34:
 this.viewer.setRotateBondIndex (index);
 break;
 case 8:
-this.viewer.deleteBonds (org.jmol.util.BitSetUtil.setBit (index));
+this.viewer.deleteBonds (org.jmol.util.BitSetUtil.newAndSetBit (index));
 }
 return false;
 }} else if (isIsosurface) {

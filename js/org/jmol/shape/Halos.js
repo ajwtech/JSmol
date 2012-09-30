@@ -26,7 +26,7 @@ return ;
 }if (propertyName === "deleteModelAtoms") {
 org.jmol.util.BitSetUtil.deleteBits (this.bsHighlight, bs);
 }Clazz.superCall (this, org.jmol.shape.Halos, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 var bsSelected = (this.viewer.getSelectionHaloEnabled (false) ? this.viewer.getSelectionSet (false) : null);
@@ -34,7 +34,7 @@ for (var i = this.atomCount; --i >= 0; ) {
 var isVisible = bsSelected != null && bsSelected.get (i) || (this.mads != null && this.mads[i] != 0);
 this.atoms[i].setShapeVisibility (this.myVisibilityFlag, isVisible);
 }
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
 var state = Clazz.superCall (this, org.jmol.shape.Halos, "getShapeState", []) + (this.colixSelection == 2 ? "" : this.colixSelection == 0 ? "  color SelectionHalos NONE;\n" : this.getColorCommand ("selectionHalos", this.colixSelection) + ";\n");

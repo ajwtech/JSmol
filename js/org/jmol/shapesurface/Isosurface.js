@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.BitSet", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isomeshes = null;
 this.thisMesh = null;
@@ -176,7 +176,7 @@ this.thisMesh.altVertices = null;
 }if ("rotate" === propertyName) {
 var pt4 = value;
 if (this.thisMesh != null) {
-this.thisMesh.rotateTranslate ( new org.jmol.util.Quaternion (pt4), null, true);
+this.thisMesh.rotateTranslate (org.jmol.util.Quaternion.newP4 (pt4), null, true);
 this.thisMesh.altVertices = null;
 }return ;
 }if ("bsDisplay" === propertyName) {
@@ -345,7 +345,7 @@ if (m.atomIndex >= firstAtomDeleted) m.atomIndex -= nAtomsDeleted;
 }}
 return ;
 }this.setPropertySuper (propertyName, value, bs);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "slabPolygons", 
 function (slabInfo) {
 this.thisMesh.slabPolygons (slabInfo, false);
@@ -361,7 +361,7 @@ Clazz.superCall (this, org.jmol.shapesurface.Isosurface, "setProperty", [propert
 this.thisMesh = this.currentMesh;
 this.jvxlData = (this.thisMesh == null ? null : this.thisMesh.jvxlData);
 if (this.sg != null) this.sg.setJvxlData (this.jvxlData);
-}, $fz.isPrivate = true, $fz), "~S,~O,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "colorEncoder") {
@@ -488,7 +488,7 @@ count++;
 }}
 list1.append ("\n");
 return list1.toString ();
-}, "~N,~A,java.util.BitSet");
+}, "~N,~A,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 this.clean ();
@@ -644,9 +644,9 @@ var sense = (isReverse ? -1 : 1);
 y.cross (z, x);
 if (rotRadians != 0) {
 var a =  new javax.vecmath.AxisAngle4f ();
-if (rotAxis.x != 0) a.set (x, rotRadians);
- else if (rotAxis.y != 0) a.set (y, rotRadians);
- else a.set (z, rotRadians);
+if (rotAxis.x != 0) a.setVA (x, rotRadians);
+ else if (rotAxis.y != 0) a.setVA (y, rotRadians);
+ else a.setVA (z, rotRadians);
 var m =  new javax.vecmath.Matrix3f ();
 m.setAA (a);
 m.transform (x);
@@ -825,7 +825,7 @@ this.setPropertySuper ("token", Integer.$valueOf (this.explicitContours ? 107374
 this.setPropertySuper ("token", Integer.$valueOf (this.explicitContours ? 1073741898 : 1073742039), null);
 var slabInfo = this.sg.getSlabInfo ();
 if (slabInfo != null) {
-this.thisMesh.slabPolygons (slabInfo, false);
+this.thisMesh.slabPolygonsList (slabInfo, false);
 this.thisMesh.reinitializeLightingAndColor ();
 }this.thisMesh.setColorCommand ();
 });
@@ -833,13 +833,13 @@ Clazz.defineMethod (c$, "setBsVdw",
 ($fz = function () {
 var bs = this.sg.geVdwBitSet ();
 if (bs == null) return ;
-if (this.thisMesh.bsVdw == null) this.thisMesh.bsVdw =  new java.util.BitSet ();
+if (this.thisMesh.bsVdw == null) this.thisMesh.bsVdw =  new javax.util.BitSet ();
 this.thisMesh.bsVdw.or (bs);
 }, $fz.isPrivate = true, $fz));
 Clazz.overrideMethod (c$, "calculateGeodesicSurface", 
 function (bsSelected, envelopeRadius) {
 return this.viewer.calculateSurface (bsSelected, envelopeRadius);
-}, "java.util.BitSet,~N");
+}, "javax.util.BitSet,~N");
 Clazz.overrideMethod (c$, "getSurfacePointIndexAndFraction", 
 function (cutoff, isCutoffAbsolute, x, y, z, offset, vA, vB, valueA, valueB, pointA, edgeVector, isContourType, fReturn) {
 return 0;
@@ -934,7 +934,7 @@ x <<= 1;
 y <<= 1;
 }this.viewer.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "hoverKey", 
 ($fz = function (x, y) {
 try {
@@ -1013,11 +1013,11 @@ var vNorm =  new javax.vecmath.Vector3f ();
 vNorm.scale (-1);
 this.setHeading (ptRet, vNorm, 2);
 }return this.getPickedPoint (ptRet, this.pickedModel);
-}, "~N,~N,~N,java.util.BitSet");
+}, "~N,~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "isPickable", 
 ($fz = function (m, bsVisible) {
 return m.visibilityFlags != 0 && (m.modelIndex < 0 || bsVisible.get (m.modelIndex)) && !org.jmol.util.Colix.isColixTranslucent (m.colix);
-}, $fz.isPrivate = true, $fz), "org.jmol.shapesurface.IsosurfaceMesh,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.shapesurface.IsosurfaceMesh,javax.util.BitSet");
 Clazz.defineMethod (c$, "navigate", 
 ($fz = function (dz) {
 if (this.thisMesh == null) return ;
@@ -1141,7 +1141,7 @@ this.pickedPt = v;
 if (pickedVertex != -1) break;
 }}
 return (pickedVertex == -1 ? null : (org.jmol.util.Logger.debugging ? "$" + m.thisID + "[" + (pickedVertex + 1) + "] " + m.vertices[pickedVertex] + ": " : m.thisID + ": ") + m.vertexValues[pickedVertex]);
-}, $fz.isPrivate = true, $fz), "~N,~N,~B,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "getCmd", 
 function (index) {
 var sb =  new StringBuffer ("\n");

@@ -333,7 +333,7 @@ return ;
 this.arcBall1.set (x, -y, z);
 this.arcBall1.normalize ();
 this.arcBallAxis.cross (this.arcBall0, this.arcBall1);
-this.axisangleT.set (this.arcBallAxis, factor * Math.acos (this.arcBall0.dot (this.arcBall1)));
+this.axisangleT.setVA (this.arcBallAxis, factor * Math.acos (this.arcBall0.dot (this.arcBall1)));
 this.matrixRotate.set (this.arcBall0Rotation);
 this.rotateAxisAngle (this.axisangleT, null);
 }, "~N,~N,~N");
@@ -341,7 +341,7 @@ Clazz.defineMethod (c$, "rotateXYBy",
 function (xDelta, yDelta, bsAtoms) {
 this.rotateXRadians (yDelta * 0.017453292, bsAtoms);
 this.rotateYRadians (xDelta * 0.017453292, bsAtoms);
-}, "~N,~N,java.util.BitSet");
+}, "~N,~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateZBy", 
 function (zDelta, x, y) {
 if (x != 2147483647 && y != 2147483647) this.resetXYCenter (x, y);
@@ -371,17 +371,17 @@ return ;
 }this.viewer.moveAtoms (mNew, this.matrixRotate, translation, this.internalRotationCenter, isInternal, bsAtoms);
 if (translation != null) {
 this.internalRotationCenter.add (translation);
-}}, $fz.isPrivate = true, $fz), "javax.vecmath.Matrix3f,~B,java.util.BitSet,javax.vecmath.Vector3f");
+}}, $fz.isPrivate = true, $fz), "javax.vecmath.Matrix3f,~B,javax.util.BitSet,javax.vecmath.Vector3f");
 Clazz.defineMethod (c$, "rotateXRadians", 
 function (angleRadians, bsAtoms) {
 this.matrixTemp3.rotX (angleRadians);
 this.applyRotation (this.matrixTemp3, false, bsAtoms, null);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateYRadians", 
 function (angleRadians, bsAtoms) {
 this.matrixTemp3.rotY (angleRadians);
 this.applyRotation (this.matrixTemp3, false, bsAtoms, null);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateZRadians", 
 function (angleRadians) {
 this.matrixTemp3.rotZ (angleRadians);
@@ -389,14 +389,14 @@ this.applyRotation (this.matrixTemp3, false, null, null);
 }, "~N");
 Clazz.defineMethod (c$, "rotateAxisAngle", 
 function (rotAxis, radians) {
-this.axisangleT.set (rotAxis, radians);
+this.axisangleT.setVA (rotAxis, radians);
 this.rotateAxisAngle (this.axisangleT, null);
 }, "javax.vecmath.Vector3f,~N");
 Clazz.defineMethod (c$, "rotateAxisAngle", 
 function (axisAngle, bsAtoms) {
 this.matrixTemp3.setAA (axisAngle);
 this.applyRotation (this.matrixTemp3, false, bsAtoms, null);
-}, "javax.vecmath.AxisAngle4f,java.util.BitSet");
+}, "javax.vecmath.AxisAngle4f,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateAxisAngleAtCenter", 
 function (rotCenter, rotAxis, degreesPerSecond, endDegrees, isSpin, bsAtoms) {
 if (rotCenter != null) this.moveRotationCenter (rotCenter, true);
@@ -412,23 +412,23 @@ this.setRotationPointXY (rotCenter);
 this.rotationAxis.setT (rotAxis);
 this.rotationRate = degreesPerSecond;
 if (isSpin) {
-this.fixedRotationAxis.set (rotAxis, degreesPerSecond * 0.017453292);
+this.fixedRotationAxis.setVA (rotAxis, degreesPerSecond * 0.017453292);
 this.isSpinInternal = false;
 this.isSpinFixed = true;
 this.isSpinSelected = (bsAtoms != null);
 this.setSpinOn (true, endDegrees, null, bsAtoms, false);
 return false;
 }var radians = endDegrees * 0.017453292;
-this.fixedRotationAxis.set (rotAxis, endDegrees);
+this.fixedRotationAxis.setVA (rotAxis, endDegrees);
 this.rotateAxisAngleRadiansFixed (radians, bsAtoms);
 return true;
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~B,java.util.BitSet");
+}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateAxisAngleRadiansFixed", 
 function (angleRadians, bsAtoms) {
-this.axisangleT.set (this.fixedRotationAxis);
+this.axisangleT.setAA (this.fixedRotationAxis);
 this.axisangleT.angle = angleRadians;
 this.rotateAxisAngle (this.axisangleT, bsAtoms);
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "rotateAboutPointsInternal", 
 function (point1, point2, degreesPerSecond, endDegrees, isClockwise, isSpin, bsAtoms, isGesture, translation, finalPoints) {
 this.setSpinOn (false);
@@ -453,30 +453,30 @@ var nFrames = Math.round ((Math.abs (endDegrees) / Math.abs (degreesPerSecond) *
 if (!Float.isNaN (endDegrees)) {
 this.rotationRate = degreesPerSecond = endDegrees / nFrames * this.spinFps;
 if (translation != null) this.internalTranslation.scale (1 / (nFrames));
-}this.internalRotationAxis.set (axis, this.rotationRate * 0.017453292);
+}this.internalRotationAxis.setVA (axis, this.rotationRate * 0.017453292);
 this.isSpinInternal = true;
 this.isSpinFixed = false;
 this.isSpinSelected = isSelected;
 this.setSpinOn (true, endDegrees, finalPoints, bsAtoms, isGesture);
 return false;
 }var radians = endDegrees * 0.017453292;
-this.internalRotationAxis.set (axis, radians);
+this.internalRotationAxis.setVA (axis, radians);
 this.rotateAxisAngleRadiansInternal (radians, bsAtoms);
 return true;
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~B,~B,java.util.BitSet,~B,javax.vecmath.Vector3f,java.util.List");
+}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~B,~B,javax.util.BitSet,~B,javax.vecmath.Vector3f,java.util.List");
 Clazz.defineMethod (c$, "rotateAxisAngleRadiansInternal", 
 function (radians, bsAtoms) {
 this.internalRotationAngle = radians;
 this.vectorT.set (this.internalRotationAxis.x, this.internalRotationAxis.y, this.internalRotationAxis.z);
 this.matrixRotate.transform2 (this.vectorT, this.vectorT2);
-this.axisangleT.set (this.vectorT2, radians);
+this.axisangleT.setVA (this.vectorT2, radians);
 this.matrixTemp3.setAA (this.axisangleT);
 this.applyRotation (this.matrixTemp3, true, bsAtoms, this.internalTranslation);
 if (bsAtoms == null) this.getNewFixedRotationCenter ();
-}, "~N,java.util.BitSet");
+}, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getNewFixedRotationCenter", 
 function () {
-this.axisangleT.set (this.internalRotationAxis);
+this.axisangleT.setAA (this.internalRotationAxis);
 this.axisangleT.angle = -this.internalRotationAngle;
 this.matrixTemp4.setAA (this.axisangleT);
 this.vectorT.setT (this.internalRotationCenter);
@@ -586,7 +586,7 @@ info.put ("centerPt", this.fixedRotationCenter);
 var aa =  new javax.vecmath.AxisAngle4f ();
 this.getAxisAngle (aa);
 info.put ("axisAngle", aa);
-info.put ("quaternion",  new org.jmol.util.Quaternion (aa).toPoint4f ());
+info.put ("quaternion", org.jmol.util.Quaternion.newAA (aa).toPoint4f ());
 info.put ("rotationMatrix", this.matrixRotate);
 info.put ("rotateZYZ", this.getRotateZyzText (false));
 info.put ("rotateXYZ", this.getRotateXyzText ());
@@ -603,7 +603,7 @@ info.put ("navigationDepthPercent",  new Float (this.getNavigationDepthPercent (
 });
 Clazz.defineMethod (c$, "getAxisAngle", 
 function (axisAngle) {
-axisAngle.set (this.matrixRotate);
+axisAngle.setM (this.matrixRotate);
 }, "javax.vecmath.AxisAngle4f");
 Clazz.defineMethod (c$, "getTransformText", 
 function () {
@@ -1138,7 +1138,7 @@ this.viewer.setInMotion (false);
 Clazz.defineMethod (c$, "isInPosition", 
 function (axis, degrees) {
 if (Float.isNaN (degrees)) return true;
-this.aaTest1.set (axis, (degrees / 57.29577951308232));
+this.aaTest1.setVA (axis, (degrees / 57.29577951308232));
 this.ptTest1.set (4.321, 1.23456, 3.14159);
 this.getRotation (this.matrixTest);
 this.matrixTest.transform2 (this.ptTest1, this.ptTest2);
@@ -1159,7 +1159,7 @@ matrixEnd.setIdentity ();
 if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
 return ;
 }var aaMoveTo =  new javax.vecmath.AxisAngle4f ();
-aaMoveTo.set (axis, (degrees / 57.29577951308232));
+aaMoveTo.setVA (axis, (degrees / 57.29577951308232));
 matrixEnd.setAA (aaMoveTo);
 }}try {
 if (this.motion == null) this.motion =  new org.jmol.thread.MotionThread (this, this.viewer);
@@ -1182,11 +1182,11 @@ this.motion = null;
 });
 Clazz.defineMethod (c$, "getRotationQuaternion", 
 function () {
-return  new org.jmol.util.Quaternion (this.matrixRotate);
+return org.jmol.util.Quaternion.newM (this.matrixRotate);
 });
 Clazz.defineMethod (c$, "getRotationText", 
 function () {
-this.axisangleT.set (this.matrixRotate);
+this.axisangleT.setM (this.matrixRotate);
 var degrees = (this.axisangleT.angle * 57.29577951308232);
 var sb =  new StringBuffer ();
 this.vectorT.set (this.axisangleT.x, this.axisangleT.y, this.axisangleT.z);
@@ -1381,7 +1381,7 @@ if (bsAtoms == null) this.spinThread.start ();
 }} else if (this.spinThread != null) {
 this.spinThread.reset ();
 this.spinThread = null;
-}}, $fz.isPrivate = true, $fz), "~B,~N,java.util.List,java.util.BitSet,~B");
+}}, $fz.isPrivate = true, $fz), "~B,~N,java.util.List,javax.util.BitSet,~B");
 Clazz.defineMethod (c$, "setNavOn", 
 function (navOn) {
 if (Float.isNaN (this.navFps)) return ;
@@ -1633,7 +1633,7 @@ case 'z':
 this.ptOffset.z += xy;
 break;
 }
-}, "java.util.BitSet,~S,~N");
+}, "javax.util.BitSet,~S,~N");
 Clazz.defineStatics (c$,
 "twoPI", 6.283185307179586,
 "degreesPerRadian", 57.29577951308232,

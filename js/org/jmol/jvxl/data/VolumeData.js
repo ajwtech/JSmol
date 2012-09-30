@@ -348,7 +348,7 @@ var sb =  new StringBuffer ();
 if (this.voxelCounts[0] == 0) {
 org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeData", null);
 } else {
-org.jmol.util.XmlUtil.openTag (sb, "jvxlVolumeData", ["origin", org.jmol.util.Escape.escapePt (this.volumetricOrigin)]);
+org.jmol.util.XmlUtil.openTagAttr (sb, "jvxlVolumeData", ["origin", org.jmol.util.Escape.escapePt (this.volumetricOrigin)]);
 for (var i = 0; i < 3; i++) org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeVector", ["type", "" + i, "count", "" + this.voxelCounts[i], "vector", org.jmol.util.Escape.escapePt (this.volumetricVectors[i])]);
 
 org.jmol.util.XmlUtil.closeTag (sb, "jvxlVolumeData");

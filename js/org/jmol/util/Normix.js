@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Normix", ["java.util.BitSet", "org.jmol.util.Geodesic"], function () {
+Clazz.load (null, "org.jmol.util.Normix", ["javax.util.BitSet", "org.jmol.util.Geodesic"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Normix");
 c$.getNormixCount = Clazz.defineMethod (c$, "getNormixCount", 
 function () {
@@ -17,7 +17,7 @@ if (org.jmol.util.Normix.inverseNormixes != null) return ;
 org.jmol.util.Normix.getNormixCount ();
 org.jmol.util.Normix.getVertexVectors ();
 ($t$ = org.jmol.util.Normix.inverseNormixes =  Clazz.newArray (org.jmol.util.Normix.normixCount, 0), org.jmol.util.Normix.prototype.inverseNormixes = org.jmol.util.Normix.inverseNormixes, $t$);
-var bsTemp =  new java.util.BitSet ();
+var bsTemp =  new javax.util.BitSet ();
 for (var n = org.jmol.util.Normix.normixCount; --n >= 0; ) {
 var v = org.jmol.util.Normix.vertexVectors[n];
 org.jmol.util.Normix.inverseNormixes[n] = org.jmol.util.Normix.getNormix (-v.x, -v.y, -v.z, 3, bsTemp);
@@ -33,14 +33,14 @@ if (org.jmol.util.Normix.neighborVertexesArrays == null) {
 ($t$ = org.jmol.util.Normix.neighborVertexesArrays = org.jmol.util.Geodesic.getNeighborVertexesArrays (), org.jmol.util.Normix.prototype.neighborVertexesArrays = org.jmol.util.Normix.neighborVertexesArrays, $t$);
 }return org.jmol.util.Normix.neighborVertexesArrays;
 }, $fz.isPrivate = true, $fz));
-c$.getNormix = Clazz.defineMethod (c$, "getNormix", 
+c$.getNormixV = Clazz.defineMethod (c$, "getNormixV", 
 function (v, bsTemp) {
 return org.jmol.util.Normix.getNormix (v.x, v.y, v.z, 3, bsTemp);
-}, "javax.vecmath.Vector3f,java.util.BitSet");
+}, "javax.vecmath.Vector3f,javax.util.BitSet");
 c$.get2SidedNormix = Clazz.defineMethod (c$, "get2SidedNormix", 
 function (v, bsTemp) {
 return ~org.jmol.util.Normix.getNormix (v.x, v.y, v.z, 3, bsTemp);
-}, "javax.vecmath.Vector3f,java.util.BitSet");
+}, "javax.vecmath.Vector3f,javax.util.BitSet");
 c$.getNormix = Clazz.defineMethod (c$, "getNormix", 
 ($fz = function (x, y, z, geodesicLevel, bsConsidered) {
 var champion;
@@ -51,7 +51,7 @@ t = z - 1;
 } else {
 champion = 11;
 t = z - (-1);
-}bsConsidered.clear ();
+}bsConsidered.clearAll ();
 bsConsidered.set (champion);
 org.jmol.util.Normix.getVertexVectors ();
 org.jmol.util.Normix.getNeighborVertexArrays ();
@@ -74,7 +74,7 @@ championDist2 = d2;
 }
 }
 return champion;
-}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,javax.util.BitSet");
 Clazz.defineStatics (c$,
 "NORMIX_GEODESIC_LEVEL", 3,
 "normixCount", 0,

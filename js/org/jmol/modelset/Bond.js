@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.util.BitSet", "org.jmol.util.JmolEdge", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Bond", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
+Clazz.load (["javax.util.BitSet", "org.jmol.util.JmolEdge", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Bond", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atom1 = null;
 this.atom2 = null;
@@ -174,7 +174,7 @@ Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
 this.associatedAtoms = null;
 Clazz.instantialize (this, arguments);
-}, org.jmol.modelset.Bond, "BondSet", java.util.BitSet);
+}, org.jmol.modelset.Bond, "BondSet", javax.util.BitSet);
 Clazz.makeConstructor (c$, 
 function () {
 Clazz.superConstructor (this, org.jmol.modelset.Bond.BondSet, []);
@@ -186,13 +186,13 @@ return this.associatedAtoms;
 Clazz.makeConstructor (c$, 
 function (a) {
 Clazz.superConstructor (this, org.jmol.modelset.Bond.BondSet, []);
-org.jmol.util.BitSetUtil.copy (a, this);
-}, "java.util.BitSet");
+org.jmol.util.BitSetUtil.copy2 (a, this);
+}, "javax.util.BitSet");
 Clazz.makeConstructor (c$, 
 function (a, b) {
 this.construct (a);
 this.associatedAtoms = b;
-}, "java.util.BitSet,~A");
+}, "javax.util.BitSet,~A");
 c$ = Clazz.p0p ();
 c$.myVisibilityFlag = c$.prototype.myVisibilityFlag = org.jmol.viewer.JmolConstants.getShapeVisibilityFlag (1);
 });

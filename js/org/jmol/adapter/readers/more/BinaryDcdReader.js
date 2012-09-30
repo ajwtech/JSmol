@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.more.BinaryReader"], "org.jmol.adapter.readers.more.BinaryDcdReader", ["java.lang.StringBuffer", "java.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.adapter.readers.more.BinaryReader"], "org.jmol.adapter.readers.more.BinaryDcdReader", ["java.lang.StringBuffer", "javax.vecmath.Point3f", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nModels = 0;
 this.nAtoms = 0;
@@ -47,7 +47,7 @@ n = this.binaryDoc.readInt ();
 this.nFree = this.nAtoms - nFixed;
 if (nFixed != 0) {
 this.binaryDoc.readInt ();
-this.bsFree =  new java.util.BitSet (this.nFree);
+this.bsFree = org.jmol.util.BitSetUtil.newBitSet (this.nFree);
 for (var i = 0; i < this.nFree; i++) this.bsFree.set (this.binaryDoc.readInt () - 1);
 
 n = Math.floor (this.binaryDoc.readInt () / 4);

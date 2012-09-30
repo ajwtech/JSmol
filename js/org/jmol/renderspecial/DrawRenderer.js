@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.renderspecial");
-Clazz.load (["org.jmol.render.MeshRenderer", "java.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f"], "org.jmol.renderspecial.DrawRenderer", ["javax.vecmath.AxisAngle4f", "$.Matrix3f", "org.jmol.shapespecial.Draw", "org.jmol.util.Colix", "$.Hermite", "$.Measure"], function () {
+Clazz.load (["org.jmol.render.MeshRenderer", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f"], "org.jmol.renderspecial.DrawRenderer", ["javax.vecmath.AxisAngle4f", "$.Matrix3f", "org.jmol.shapespecial.Draw", "org.jmol.util.Colix", "$.Hermite", "$.Measure"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.drawType = null;
 this.dmesh = null;
@@ -22,7 +22,7 @@ this.vTemp =  new javax.vecmath.Vector3f ();
 this.vTemp2 =  new javax.vecmath.Vector3f ();
 this.pt0f =  new javax.vecmath.Point3f ();
 this.pt0i =  new javax.vecmath.Point3i ();
-this.bsHandles =  new java.util.BitSet ();
+this.bsHandles =  new javax.util.BitSet ();
 });
 Clazz.defineMethod (c$, "render", 
 function () {
@@ -105,7 +105,7 @@ this.vTemp.setT (this.vertices[1]);
 this.vTemp.sub (this.vertices[0]);
 this.pt1f.scaleAdd2 (fractionalOffset, this.vTemp, this.vertices[0]);
 var mat =  new javax.vecmath.Matrix3f ();
-mat.setAA ( new javax.vecmath.AxisAngle4f (this.vTemp, (nDegreesOffset * 3.141592653589793 / 180)));
+mat.setAA (javax.vecmath.AxisAngle4f.newVA (this.vTemp, (nDegreesOffset * 3.141592653589793 / 180)));
 if (this.vertexCount > 2) this.vTemp2.setT (this.vertices[2]);
  else this.vTemp2.setT (org.jmol.shapespecial.Draw.randomPoint ());
 this.vTemp2.sub (this.vertices[0]);
@@ -122,7 +122,7 @@ while (nPoints < 10) {
 degrees /= 2;
 nPoints = Math.round ((theta / degrees + 0.5)) + 1;
 }
-mat.setAA ( new javax.vecmath.AxisAngle4f (this.vTemp, (degrees * 3.141592653589793 / 180)));
+mat.setAA (javax.vecmath.AxisAngle4f.newVA (this.vTemp, (degrees * 3.141592653589793 / 180)));
 this.screens = this.viewer.allocTempScreens (nPoints);
 var iBase = nPoints - (this.dmesh.scale < 2 ? 3 : 3);
 for (var i = 0; i < nPoints; i++) {
@@ -299,7 +299,7 @@ case org.jmol.shapespecial.Draw.EnumDrawType.NONE:
 return ;
 default:
 var colixFill = org.jmol.util.Colix.getColixTranslucent (23, true, 0.5);
-this.bsHandles.clear ();
+this.bsHandles.clearAll ();
 for (var i = this.dmesh.polygonCount; --i >= 0; ) {
 if (!this.isPolygonDisplayable (i)) continue ;var vertexIndexes = this.dmesh.polygonIndexes[i];
 if (vertexIndexes == null) continue ;for (var j = (this.dmesh.isTriangleSet ? 3 : vertexIndexes.length); --j >= 0; ) {

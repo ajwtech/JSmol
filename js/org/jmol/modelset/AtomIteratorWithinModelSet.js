@@ -10,7 +10,7 @@ Clazz.makeConstructor (c$,
 function (bsModels) {
 Clazz.superConstructor (this, org.jmol.modelset.AtomIteratorWithinModelSet, []);
 this.bsModels = bsModels;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.defineMethod (c$, "setCenter", 
 function (center, distance) {
 this.center = center;

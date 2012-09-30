@@ -14,7 +14,7 @@ Clazz.overrideMethod (c$, "setPointGroup",
 function (siLast, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance) {
 this.pointGroup = org.jmol.symmetry.PointGroup.getPointGroup (siLast == null ? null : (siLast).pointGroup, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance);
 return this;
-}, "org.jmol.api.SymmetryInterface,~A,java.util.BitSet,~B,~N,~N");
+}, "org.jmol.api.SymmetryInterface,~A,javax.util.BitSet,~B,~N,~N");
 Clazz.overrideMethod (c$, "getPointGroupName", 
 function () {
 return this.pointGroup.getName ();
@@ -151,7 +151,7 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("symmetryInfos["
 }, "~N,java.util.Map");
 Clazz.overrideMethod (c$, "setUnitCell", 
 function (notionalUnitCell) {
-this.unitCell =  new org.jmol.symmetry.UnitCell (notionalUnitCell);
+this.unitCell = org.jmol.symmetry.UnitCell.newA (notionalUnitCell);
 }, "~A");
 Clazz.overrideMethod (c$, "haveUnitCell", 
 function () {
@@ -191,7 +191,7 @@ return this.unitCell.getUnitCellAsArray (vectorsOnly);
 }, "~B");
 Clazz.overrideMethod (c$, "getEllipsoid", 
 function (parBorU) {
-if (this.unitCell == null) this.unitCell =  new org.jmol.symmetry.UnitCell ([1, 1, 1, 90, 90, 90]);
+if (this.unitCell == null) this.unitCell = org.jmol.symmetry.UnitCell.newA ([1, 1, 1, 90, 90, 90]);
 return this.unitCell.getEllipsoid (parBorU);
 }, "~A");
 Clazz.overrideMethod (c$, "getUnitCellVertices", 
@@ -265,7 +265,7 @@ return this.unitCell.getUnitCellVectors ();
 Clazz.overrideMethod (c$, "getUnitCell", 
 function (points) {
 var sym =  new org.jmol.symmetry.Symmetry ();
-sym.unitCell =  new org.jmol.symmetry.UnitCell (points, false);
+sym.unitCell = org.jmol.symmetry.UnitCell.newP (points);
 return sym;
 }, "~A");
 Clazz.overrideMethod (c$, "isSupercell", 

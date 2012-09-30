@@ -68,12 +68,12 @@ this.screenCoordinates[i++] = z + Math.round (((scaledRadius * vertex.z) + (vert
 ++nPoints;
 }
 return nPoints;
-}, $fz.isPrivate = true, $fz), "org.jmol.util.FastBitSet,~N,~N,~N,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.BitSet,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "renderConvex", 
 function (colix, map, nPoints) {
 this.colix = org.jmol.util.Colix.getColixTranslucent (colix, false, 0);
 this.renderDots (nPoints);
-}, "~N,org.jmol.util.FastBitSet,~N");
+}, "~N,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "renderDots", 
 function (nPoints) {
 this.g3d.setColix (this.colix);

@@ -58,15 +58,15 @@ if (pt < len) sb.append (s1.charAt (pt));
 s1 = (isNeg ? "-" : "") + sb;
 return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
 }, "~N,~N");
-c$.format = Clazz.defineMethod (c$, "format", 
+c$.formatF = Clazz.defineMethod (c$, "formatF", 
 function (value, width, precision, alignLeft, zeroPad) {
-return org.jmol.util.TextFormat.format (org.jmol.util.TextFormat.formatDecimal (value, precision), width, 0, alignLeft, zeroPad);
+return org.jmol.util.TextFormat.formatS (org.jmol.util.TextFormat.formatDecimal (value, precision), width, 0, alignLeft, zeroPad);
 }, "~N,~N,~N,~B,~B");
-c$.format = Clazz.defineMethod (c$, "format", 
+c$.formatD = Clazz.defineMethod (c$, "formatD", 
 function (value, width, precision, alignLeft, zeroPad, allowOverflow) {
-return org.jmol.util.TextFormat.format (org.jmol.util.TextFormat.formatDecimal (value, -1 - precision), width, 0, alignLeft, zeroPad);
+return org.jmol.util.TextFormat.formatS (org.jmol.util.TextFormat.formatDecimal (value, -1 - precision), width, 0, alignLeft, zeroPad);
 }, "~N,~N,~N,~B,~B,~B");
-c$.format = Clazz.defineMethod (c$, "format", 
+c$.formatS = Clazz.defineMethod (c$, "formatS", 
 function (value, width, precision, alignLeft, zeroPad) {
 if (value == null) return "";
 var len = value.length;
@@ -85,15 +85,15 @@ for (var i = padLength; --i > 0; ) sb.append (padChar);
 if (!alignLeft) sb.append (isNeg ? padChar + value.substring (1) : value);
 return sb.toString ();
 }, "~S,~N,~N,~B,~B");
-c$.formatString = Clazz.defineMethod (c$, "formatString", 
+c$.formatStringS = Clazz.defineMethod (c$, "formatStringS", 
 function (strFormat, key, strT) {
 return org.jmol.util.TextFormat.formatString (strFormat, key, strT, NaN, NaN, false);
 }, "~S,~S,~S");
-c$.formatString = Clazz.defineMethod (c$, "formatString", 
+c$.formatStringF = Clazz.defineMethod (c$, "formatStringF", 
 function (strFormat, key, floatT) {
 return org.jmol.util.TextFormat.formatString (strFormat, key, null, floatT, NaN, false);
 }, "~S,~S,~N");
-c$.formatString = Clazz.defineMethod (c$, "formatString", 
+c$.formatStringI = Clazz.defineMethod (c$, "formatStringI", 
 function (strFormat, key, intT) {
 return org.jmol.util.TextFormat.formatString (strFormat, key, "" + intT, NaN, NaN, false);
 }, "~S,~S,~N");
@@ -188,9 +188,9 @@ if (!st.equals (key)) {
 ich = ichPercent + 1;
 strLabel += ('%').charCodeAt (0);
 continue ;}ich += len;
-if (!Float.isNaN (floatT)) strLabel += org.jmol.util.TextFormat.format (floatT, width, precision, alignLeft, zeroPad);
- else if (strT != null) strLabel += org.jmol.util.TextFormat.format (strT, width, precision, alignLeft, zeroPad);
- else if (!Double.isNaN (doubleT)) strLabel += org.jmol.util.TextFormat.format (doubleT, width, precision, alignLeft, zeroPad, true);
+if (!Float.isNaN (floatT)) strLabel += org.jmol.util.TextFormat.formatF (floatT, width, precision, alignLeft, zeroPad);
+ else if (strT != null) strLabel += org.jmol.util.TextFormat.formatS (strT, width, precision, alignLeft, zeroPad);
+ else if (!Double.isNaN (doubleT)) strLabel += org.jmol.util.TextFormat.formatD (doubleT, width, precision, alignLeft, zeroPad, true);
 if (doOne) break;
 } catch (ioobe) {
 if (Clazz.exceptionOf (ioobe, IndexOutOfBoundsException)) {
@@ -278,7 +278,7 @@ str = org.jmol.util.TextFormat.simpleReplace (str, chFrom, strTo);
 }
 return str;
 }, "~S,~S,~S");
-c$.replaceAllCharacters = Clazz.defineMethod (c$, "replaceAllCharacters", 
+c$.replaceAllCharacter = Clazz.defineMethod (c$, "replaceAllCharacter", 
 function (str, strFrom, chTo) {
 if (str == null) return null;
 for (var i = strFrom.length; --i >= 0; ) str = str.$replace (strFrom.charAt (i), chTo);

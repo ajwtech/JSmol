@@ -25,7 +25,7 @@ function (viewer, points, tokAction, radiusData, strFormat, units, tickInfo, mus
 this.viewer = viewer;
 this.tokAction = tokAction;
 this.points = points;
-if (points.size () >= 2 && Clazz.instanceOf (points.get (0), java.util.BitSet) && Clazz.instanceOf (points.get (1), java.util.BitSet)) {
+if (points.size () >= 2 && Clazz.instanceOf (points.get (0), javax.util.BitSet) && Clazz.instanceOf (points.get (1), javax.util.BitSet)) {
 this.justOneModel = org.jmol.util.BitSetUtil.haveCommon (viewer.getModelBitSet (points.get (0), false), viewer.getModelBitSet (points.get (1), false));
 }this.radiusData = radiusData;
 this.strFormat = strFormat;
@@ -74,7 +74,7 @@ m.setCount (nPoints);
 var ptLastAtom = -1;
 for (var i = 0; i < nPoints; i++) {
 var obj = this.points.get (i);
-if (Clazz.instanceOf (obj, java.util.BitSet)) {
+if (Clazz.instanceOf (obj, javax.util.BitSet)) {
 var bs = obj;
 var nAtoms = bs.cardinality ();
 if (nAtoms == 0) return ;

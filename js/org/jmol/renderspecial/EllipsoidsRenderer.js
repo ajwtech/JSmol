@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.renderspecial");
-Clazz.load (["org.jmol.render.ShapeRenderer", "java.util.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.viewer.JmolConstants"], "org.jmol.renderspecial.EllipsoidsRenderer", ["java.lang.Float", "org.jmol.shape.Shape", "org.jmol.util.Normix", "$.Quadric"], function () {
+Clazz.load (["org.jmol.render.ShapeRenderer", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.viewer.JmolConstants"], "org.jmol.renderspecial.EllipsoidsRenderer", ["java.lang.Float", "org.jmol.shape.Shape", "org.jmol.util.Normix", "$.Quadric"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ellipsoids = null;
 this.drawDots = false;
@@ -67,7 +67,7 @@ for (var i = 0; i < this.points.length; i++) this.points[i] =  new javax.vecmath
 
 for (var i = 0; i < this.screens.length; i++) this.screens[i] =  new javax.vecmath.Point3i ();
 
-}this.bsTemp =  new java.util.BitSet ();
+}this.bsTemp =  new javax.util.BitSet ();
 });
 Clazz.defineMethod (c$, "render", 
 function () {

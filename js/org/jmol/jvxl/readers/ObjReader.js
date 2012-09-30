@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.ObjReader", ["java.util.BitSet", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.util.ColorUtil", "$.Parser"], function () {
+Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.ObjReader", ["java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.ColorUtil", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "ObjReader", org.jmol.jvxl.readers.PmeshReader);
 Clazz.makeConstructor (c$, 
 function (sg, br) {
@@ -22,7 +22,7 @@ var htPymol =  new java.util.Hashtable ();
 var ipt = null;
 var spt = null;
 var pymolMap =  Clazz.newArray (3, 0);
-var bsOK =  new java.util.BitSet ();
+var bsOK =  new javax.util.BitSet ();
 while (this.readLine () != null) {
 if (this.line.length < 2 || (this.line.charAt (1)).charCodeAt (0) != 32) {
 if (this.params.readAllData && this.line.startsWith ("usemtl")) color = org.jmol.util.ColorUtil.getArgbFromString ("[x" + this.line.substring (8) + "]");

@@ -47,20 +47,4 @@ throw e;
 }
 return (this.bw == null ? this.sb.toString () : this.nBytes + " bytes");
 });
-Clazz.defineMethod (c$, "append", 
-function (c) {
-if (this.bw == null) {
-this.sb.append (c);
-} else {
-this.nBytes += 1;
-try {
-this.bw.write (c.charCodeAt (0));
-} catch (e) {
-if (Clazz.exceptionOf (e, java.io.IOException)) {
-} else {
-throw e;
-}
-}
-}return this;
-}, "~S");
 });

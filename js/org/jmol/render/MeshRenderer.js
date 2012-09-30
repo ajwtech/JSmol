@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.render.ShapeRenderer", "java.util.BitSet", "javax.vecmath.Point3f", "$.Point3i"], "org.jmol.render.MeshRenderer", ["org.jmol.util.Colix"], function () {
+Clazz.load (["org.jmol.render.ShapeRenderer", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i"], "org.jmol.render.MeshRenderer", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.mesh = null;
 this.vertices = null;
@@ -38,7 +38,7 @@ this.pt2f =  new javax.vecmath.Point3f ();
 this.pt1i =  new javax.vecmath.Point3i ();
 this.pt2i =  new javax.vecmath.Point3i ();
 this.pt3i =  new javax.vecmath.Point3i ();
-this.bsPolygons =  new java.util.BitSet ();
+this.bsPolygons =  new javax.util.BitSet ();
 });
 Clazz.defineMethod (c$, "render", 
 function () {
@@ -128,9 +128,9 @@ Clazz.defineMethod (c$, "renderPoints",
 function () {
 if (this.mesh.isTriangleSet) {
 var polygonIndexes = this.mesh.polygonIndexes;
-var bsPoints =  new java.util.BitSet (this.mesh.vertexCount);
+var bsPoints = org.jmol.util.BitSetUtil.newBitSet (this.mesh.vertexCount);
 if (this.haveBsDisplay) {
-bsPoints.set (0, this.mesh.vertexCount);
+bsPoints.setBits (0, this.mesh.vertexCount);
 bsPoints.andNot (this.mesh.bsDisplay);
 }for (var i = this.mesh.polygonCount; --i >= 0; ) {
 if (!this.isPolygonDisplayable (i)) continue ;var p = polygonIndexes[i];
@@ -151,7 +151,7 @@ this.colix = (this.haveBsSlabGhost ? this.mesh.slabColix : this.mesh.colix);
 this.g3d.setColix (this.colix);
 if (generateSet) {
 if (this.frontOnly && fill) this.frontOnly = false;
-this.bsPolygons.clear ();
+this.bsPolygons.clearAll ();
 }for (var i = this.mesh.polygonCount; --i >= 0; ) {
 if (!this.isPolygonDisplayable (i)) continue ;var vertexIndexes = polygonIndexes[i];
 var iA = vertexIndexes[0];

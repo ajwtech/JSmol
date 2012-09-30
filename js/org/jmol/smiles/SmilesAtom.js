@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["javax.vecmath.Point3f", "org.jmol.util.JmolNode"], "org.jmol.smiles.SmilesAtom", ["org.jmol.util.Elements", "$.Logger"], function () {
+Clazz.load (["javax.vecmath.Point3f", "org.jmol.util.JmolNode"], "org.jmol.smiles.SmilesAtom", ["org.jmol.util.ArrayUtil", "$.Elements", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomsOr = null;
 this.nAtomsOr = 0;
@@ -80,11 +80,8 @@ this.bonds = bonds;
 Clazz.defineMethod (c$, "addAtomOr", 
 function () {
 if (this.atomsOr == null) this.atomsOr =  new Array (2);
-if (this.nAtomsOr >= this.atomsOr.length) {
-var tmp =  new Array (this.atomsOr.length * 2);
-System.arraycopy (this.atomsOr, 0, tmp, 0, this.atomsOr.length);
-this.atomsOr = tmp;
-}var sAtom =  new org.jmol.smiles.SmilesAtom (this.index);
+if (this.nAtomsOr >= this.atomsOr.length) this.atomsOr = org.jmol.util.ArrayUtil.doubleLength (this.atomsOr);
+var sAtom =  new org.jmol.smiles.SmilesAtom (this.index);
 sAtom.parent = this;
 this.atomsOr[this.nAtomsOr] = sAtom;
 this.nAtomsOr++;
@@ -330,28 +327,16 @@ return this.residueChar == null ? "" : this.residueChar;
 }, "~S");
 Clazz.defineMethod (c$, "addBond", 
 function (bond) {
-if (this.bondCount >= this.bonds.length) {
-var tmp =  new Array (this.bonds.length * 2);
-System.arraycopy (this.bonds, 0, tmp, 0, this.bonds.length);
-this.bonds = tmp;
-}this.bonds[this.bondCount] = bond;
+if (this.bondCount >= this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.doubleLength (this.bonds);
+this.bonds[this.bondCount] = bond;
 this.bondCount++;
 }, "org.jmol.smiles.SmilesBond");
 Clazz.defineMethod (c$, "setBondArray", 
 function () {
-if (this.bonds.length > this.bondCount) {
-var tmp =  new Array (this.bondCount);
-System.arraycopy (this.bonds, 0, tmp, 0, this.bondCount);
-this.bonds = tmp;
-}if (this.atomsOr != null && this.atomsOr.length > this.nAtomsOr) {
-var tmp =  new Array (this.atomsOr.length);
-System.arraycopy (this.atomsOr, 0, tmp, 0, this.nAtomsOr);
-this.atomsOr = tmp;
-}if (this.primitives != null && this.primitives.length > this.nPrimitives) {
-var tmp =  new Array (this.primitives.length);
-System.arraycopy (this.primitives, 0, tmp, 0, this.nPrimitives);
-this.primitives = tmp;
-}for (var i = 0; i < this.bonds.length; i++) {
+if (this.bonds.length > this.bondCount) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount);
+if (this.atomsOr != null && this.atomsOr.length > this.nAtomsOr) this.atomsOr = org.jmol.util.ArrayUtil.arrayCopyOpt (this.atomsOr, this.atomsOr.length);
+if (this.primitives != null && this.primitives.length > this.nPrimitives) this.primitives = org.jmol.util.ArrayUtil.arrayCopyOpt (this.primitives, this.primitives.length);
+for (var i = 0; i < this.bonds.length; i++) {
 if (this.isBioAtom && this.bonds[i].order == 17) this.bonds[i].order = 112;
 if (this.bonds[i].getAtom1 ().index > this.bonds[i].getAtom2 ().index) {
 this.bonds[i].switchAtoms ();
@@ -434,7 +419,7 @@ Clazz.overrideMethod (c$, "getGroupBits",
 function (bs) {
 bs.set (this.index);
 return ;
-}, "java.util.BitSet");
+}, "javax.util.BitSet");
 Clazz.overrideMethod (c$, "isCrossLinked", 
 function (node) {
 var bond = this.getBondTo (node);

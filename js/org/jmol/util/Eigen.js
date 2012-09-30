@@ -14,15 +14,15 @@ this.V =  Clazz.newArray (n, n, 0);
 this.d =  Clazz.newArray (n, 0);
 this.e =  Clazz.newArray (n, 0);
 }, "~N");
-Clazz.makeConstructor (c$, 
-function (A) {
-this.construct (A.length);
-this.calc (A);
+c$.newM = Clazz.defineMethod (c$, "newM", 
+function (m) {
+var e =  new org.jmol.util.Eigen (m.length);
+e.calc (m);
+return e;
 }, "~A");
-Clazz.makeConstructor (c$, 
-function (mat, unitVectors, lengths) {
-this.construct (mat);
-this.set (unitVectors, lengths);
+c$.getUnitVectors = Clazz.defineMethod (c$, "getUnitVectors", 
+function (m, unitVectors, lengths) {
+org.jmol.util.Eigen.newM (m).set (unitVectors, lengths);
 org.jmol.util.Eigen.sort (unitVectors, lengths);
 }, "~A,~A,~A");
 Clazz.defineMethod (c$, "set", 
@@ -261,7 +261,7 @@ r = Math.abs (b) * Math.sqrt (1 + r * r);
 r = 0.0;
 }return r;
 }, $fz.isPrivate = true, $fz), "~N,~N");
-c$.getEllipsoid = Clazz.defineMethod (c$, "getEllipsoid", 
+c$.getEllipsoidDD = Clazz.defineMethod (c$, "getEllipsoidDD", 
 function (a) {
 var eigen =  new org.jmol.util.Eigen (3);
 eigen.calc (a);

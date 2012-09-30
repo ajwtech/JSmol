@@ -50,7 +50,7 @@ if (bsValid != null) bsValid.clear (i);
 continue ;}coordMap[i] = n++;
 }
 return n;
-}, "~A,~A,java.util.BitSet");
+}, "~A,~A,javax.util.BitSet");
 Clazz.defineMethod (c$, "getNormalMap", 
 function (normals, nNormals, bsValid, vNormals) {
 var htNormals =  new java.util.Hashtable ();
@@ -68,14 +68,14 @@ vNormals.add (s);
 htNormals.put (s, Integer.$valueOf (normalMap[i]));
 }}
 return normalMap;
-}, "~A,~N,java.util.BitSet,java.util.List");
+}, "~A,~N,javax.util.BitSet,java.util.List");
 Clazz.defineMethod (c$, "outputIndices", 
 function (indices, map, nPolygons, bsPolygons, faceVertexMax) {
 var isAll = (bsPolygons == null);
 var i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit (i + 1))) this.outputFace (indices[i], map, faceVertexMax);
 
-}, "~A,~A,~N,java.util.BitSet,~N");
+}, "~A,~A,~N,javax.util.BitSet,~N");
 Clazz.overrideMethod (c$, "drawAtom", 
 function (atom) {
 var colix = atom.getColix ();

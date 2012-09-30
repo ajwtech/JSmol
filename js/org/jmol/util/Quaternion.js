@@ -12,38 +12,50 @@ Clazz.makeConstructor (c$,
 function () {
 this.q0 = 1;
 });
-Clazz.makeConstructor (c$, 
+c$.newQ = Clazz.defineMethod (c$, "newQ", 
 function (q) {
-this.set (q);
+var q1 =  new org.jmol.util.Quaternion ();
+q1.set (q);
+return q1;
 }, "org.jmol.util.Quaternion");
-Clazz.makeConstructor (c$, 
+c$.newVA = Clazz.defineMethod (c$, "newVA", 
 function (pt, theta) {
-this.set (pt, theta);
+var q =  new org.jmol.util.Quaternion ();
+q.setTA (pt, theta);
+return q;
 }, "javax.vecmath.Tuple3f,~N");
-Clazz.makeConstructor (c$, 
+c$.newM = Clazz.defineMethod (c$, "newM", 
 function (mat) {
-this.set (mat);
+var q =  new org.jmol.util.Quaternion ();
+q.setM (mat);
+return q;
 }, "javax.vecmath.Matrix3f");
-Clazz.makeConstructor (c$, 
+c$.newAA = Clazz.defineMethod (c$, "newAA", 
 function (a) {
-this.set (a);
+var q =  new org.jmol.util.Quaternion ();
+q.setAA (a);
+return q;
 }, "javax.vecmath.AxisAngle4f");
-Clazz.makeConstructor (c$, 
+c$.newP4 = Clazz.defineMethod (c$, "newP4", 
 function (pt) {
-this.set (pt);
+var q =  new org.jmol.util.Quaternion ();
+q.setP4 (pt);
+return q;
 }, "javax.vecmath.Point4f");
-Clazz.makeConstructor (c$, 
+c$.new4 = Clazz.defineMethod (c$, "new4", 
 function (q0, q1, q2, q3) {
+var q =  new org.jmol.util.Quaternion ();
 if (q0 < -1) {
-this.q0 = -1;
-return ;
+q.q0 = -1;
+return q;
 }if (q0 > 1) {
-this.q0 = 1;
-return ;
-}this.q0 = q0;
-this.q1 = q1;
-this.q2 = q2;
-this.q3 = q3;
+q.q0 = 1;
+return q;
+}q.q0 = q0;
+q.q1 = q1;
+q.q2 = q2;
+q.q3 = q3;
+return q;
 }, "~N,~N,~N,~N");
 Clazz.defineMethod (c$, "set", 
 function (q) {
@@ -52,7 +64,7 @@ this.q1 = q.q1;
 this.q2 = q.q2;
 this.q3 = q.q3;
 }, "org.jmol.util.Quaternion");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setP4", 
 ($fz = function (pt) {
 var factor = (pt == null ? 0 : pt.distance (org.jmol.util.Quaternion.qZero));
 if (factor == 0) {
@@ -63,7 +75,7 @@ this.q1 = pt.x / factor;
 this.q2 = pt.y / factor;
 this.q3 = pt.z / factor;
 }, $fz.isPrivate = true, $fz), "javax.vecmath.Point4f");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setTA", 
 function (pt, theta) {
 if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
 this.q0 = 1;
@@ -74,15 +86,15 @@ this.q1 = (pt.x * fact);
 this.q2 = (pt.y * fact);
 this.q3 = (pt.z * fact);
 }, "javax.vecmath.Tuple3f,~N");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setAA", 
 function (a) {
-var aa =  new javax.vecmath.AxisAngle4f (a);
+var aa = javax.vecmath.AxisAngle4f.newAA (a);
 if (aa.angle == 0) aa.y = 1;
 var m3 =  new javax.vecmath.Matrix3f ();
 m3.setAA (aa);
-this.set (m3);
+this.setM (m3);
 }, "javax.vecmath.AxisAngle4f");
-Clazz.defineMethod (c$, "set", 
+Clazz.defineMethod (c$, "setM", 
 function (mat) {
 this.mat = mat;
 var trace = mat.m00 + mat.m11 + mat.m22;
@@ -133,9 +145,9 @@ var vA = javax.vecmath.Vector3f.newV (x);
 vA.sub (center);
 var vB = javax.vecmath.Vector3f.newV (xy);
 vB.sub (center);
-return org.jmol.util.Quaternion.getQuaternionFrame (vA, vB, null, false);
+return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, null, false);
 }, "javax.vecmath.Point3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f");
-c$.getQuaternionFrame = Clazz.defineMethod (c$, "getQuaternionFrame", 
+c$.getQuaternionFrameV = Clazz.defineMethod (c$, "getQuaternionFrameV", 
 function (vA, vB, vC, yBased) {
 if (vC == null) {
 vC =  new javax.vecmath.Vector3f ();
@@ -150,7 +162,7 @@ var mat =  new javax.vecmath.Matrix3f ();
 mat.setColumnV (0, vA);
 mat.setColumnV (1, vBprime);
 mat.setColumnV (2, vC);
-var q =  new org.jmol.util.Quaternion (mat);
+var q = org.jmol.util.Quaternion.newM (mat);
 return q;
 }, "javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~B");
 Clazz.defineMethod (c$, "getMatrix", 
@@ -173,23 +185,23 @@ this.mat.m22 = this.q0 * this.q0 - this.q1 * this.q1 - this.q2 * this.q2 + this.
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "add", 
 function (x) {
-return  new org.jmol.util.Quaternion (this.getNormal (), this.getTheta () + x);
+return org.jmol.util.Quaternion.newVA (this.getNormal (), this.getTheta () + x);
 }, "~N");
 Clazz.defineMethod (c$, "mul", 
 function (x) {
-return (x == 1 ?  new org.jmol.util.Quaternion (this.q0, this.q1, this.q2, this.q3) :  new org.jmol.util.Quaternion (this.getNormal (), this.getTheta () * x));
+return (x == 1 ? org.jmol.util.Quaternion.new4 (this.q0, this.q1, this.q2, this.q3) : org.jmol.util.Quaternion.newVA (this.getNormal (), this.getTheta () * x));
 }, "~N");
-Clazz.defineMethod (c$, "mul", 
+Clazz.defineMethod (c$, "mulQ", 
 function (p) {
-return  new org.jmol.util.Quaternion (this.q0 * p.q0 - this.q1 * p.q1 - this.q2 * p.q2 - this.q3 * p.q3, this.q0 * p.q1 + this.q1 * p.q0 + this.q2 * p.q3 - this.q3 * p.q2, this.q0 * p.q2 + this.q2 * p.q0 + this.q3 * p.q1 - this.q1 * p.q3, this.q0 * p.q3 + this.q3 * p.q0 + this.q1 * p.q2 - this.q2 * p.q1);
+return org.jmol.util.Quaternion.new4 (this.q0 * p.q0 - this.q1 * p.q1 - this.q2 * p.q2 - this.q3 * p.q3, this.q0 * p.q1 + this.q1 * p.q0 + this.q2 * p.q3 - this.q3 * p.q2, this.q0 * p.q2 + this.q2 * p.q0 + this.q3 * p.q1 - this.q1 * p.q3, this.q0 * p.q3 + this.q3 * p.q0 + this.q1 * p.q2 - this.q2 * p.q1);
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "div", 
 function (p) {
-return this.mul (p.inv ());
+return this.mulQ (p.inv ());
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "divLeft", 
 function (p) {
-return this.inv ().mul (p);
+return this.inv ().mulQ (p);
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "dot", 
 function (q) {
@@ -197,11 +209,11 @@ return this.q0 * q.q0 + this.q1 * q.q1 + this.q2 * q.q2 + this.q3 * q.q3;
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "inv", 
 function () {
-return  new org.jmol.util.Quaternion (this.q0, -this.q1, -this.q2, -this.q3);
+return org.jmol.util.Quaternion.new4 (this.q0, -this.q1, -this.q2, -this.q3);
 });
 Clazz.defineMethod (c$, "negate", 
 function () {
-return  new org.jmol.util.Quaternion (-this.q0, -this.q1, -this.q2, -this.q3);
+return org.jmol.util.Quaternion.new4 (-this.q0, -this.q1, -this.q2, -this.q3);
 });
 Clazz.defineMethod (c$, "getFixFactor", 
 ($fz = function () {
@@ -209,9 +221,9 @@ return (this.q0 < 0 || this.q0 == 0 && (this.q1 < 0 || this.q1 == 0 && (this.q2 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getVector", 
 function (i) {
-return this.getVector (i, 1);
+return this.getVectorS (i, 1);
 }, "~N");
-Clazz.defineMethod (c$, "getVector", 
+Clazz.defineMethod (c$, "getVectorS", 
 ($fz = function (i, scale) {
 if (i == -1) {
 scale *= this.getFixFactor ();
@@ -265,7 +277,7 @@ theta = -theta;
 }axisAngle.set (v.x, v.y, v.z, theta);
 return axisAngle;
 }, "javax.vecmath.Point4f");
-Clazz.defineMethod (c$, "getThetaDirected", 
+Clazz.defineMethod (c$, "getThetaDirectedV", 
 function (vector) {
 var theta = this.getTheta ();
 var v = this.getNormal ();
@@ -286,16 +298,16 @@ var v = this.getNormal ();
 if (sinTheta2 < 0) {
 v.scale (-1);
 theta = 3.141592653589793 - theta;
-}return  new javax.vecmath.AxisAngle4f (v, theta);
+}return javax.vecmath.AxisAngle4f.newVA (v, theta);
 });
-Clazz.defineMethod (c$, "transform", 
+Clazz.defineMethod (c$, "transformPt", 
 function (pt) {
 if (this.mat == null) this.setMatrix ();
 var ptNew = javax.vecmath.Point3f.newP (pt);
 this.mat.transform (ptNew);
 return ptNew;
 }, "javax.vecmath.Point3f");
-Clazz.defineMethod (c$, "transform", 
+Clazz.defineMethod (c$, "transformP2", 
 function (pt, ptNew) {
 if (this.mat == null) this.setMatrix ();
 this.mat.transform2 (pt, ptNew);
@@ -310,12 +322,12 @@ return vNew;
 Clazz.defineMethod (c$, "leftDifference", 
 function (q2) {
 var q2adjusted = (this.dot (q2) < 0 ? q2.negate () : q2);
-return this.inv ().mul (q2adjusted);
+return this.inv ().mulQ (q2adjusted);
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "rightDifference", 
 function (q2) {
 var q2adjusted = (this.dot (q2) < 0 ? q2.negate () : q2);
-return this.mul (q2adjusted.inv ());
+return this.mulQ (q2adjusted.inv ());
 }, "org.jmol.util.Quaternion");
 Clazz.defineMethod (c$, "getInfo", 
 function () {
@@ -326,7 +338,7 @@ Clazz.defineMethod (c$, "draw",
 function (prefix, id, ptCenter, scale) {
 var strV = " VECTOR " + org.jmol.util.Escape.escapePt (ptCenter) + " ";
 if (scale == 0) scale = 1;
-return "draw " + prefix + "x" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (0, scale)) + " color red\n" + "draw " + prefix + "y" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (1, scale)) + " color green\n" + "draw " + prefix + "z" + id + strV + org.jmol.util.Escape.escapePt (this.getVector (2, scale)) + " color blue\n";
+return "draw " + prefix + "x" + id + strV + org.jmol.util.Escape.escapePt (this.getVectorS (0, scale)) + " color red\n" + "draw " + prefix + "y" + id + strV + org.jmol.util.Escape.escapePt (this.getVectorS (1, scale)) + " color green\n" + "draw " + prefix + "z" + id + strV + org.jmol.util.Escape.escapePt (this.getVectorS (2, scale)) + " color blue\n";
 }, "~S,~S,javax.vecmath.Point3f,~N");
 Clazz.overrideMethod (c$, "toString", 
 function () {
@@ -350,7 +362,7 @@ if (data == null || data.length == 0) return  new org.jmol.util.Quaternion ();
 if (retStddev == null) retStddev =  Clazz.newArray (1, 0);
 if (data.length == 1) {
 retStddev[0] = 0;
-return  new org.jmol.util.Quaternion (data[0]);
+return org.jmol.util.Quaternion.newQ (data[0]);
 }var diff = 3.4028235E38;
 var lastStddev = 3.4028235E38;
 var qMean = org.jmol.util.Quaternion.simpleAverage (data);
@@ -380,7 +392,7 @@ for (var i = ndata.length; --i >= 0; ) f += Math.abs (ndata[i].get3dProjection (
 if (f != 0) mean.scale (f / ndata.length);
 f = Math.sqrt (1 - mean.lengthSquared ());
 if (Float.isNaN (f)) f = 0;
-return  new org.jmol.util.Quaternion (javax.vecmath.Point4f.new4 (mean.x, mean.y, mean.z, f));
+return org.jmol.util.Quaternion.newP4 (javax.vecmath.Point4f.new4 (mean.x, mean.y, mean.z, f));
 }, $fz.isPrivate = true, $fz), "~A");
 c$.newMean = Clazz.defineMethod (c$, "newMean", 
 ($fz = function (data, mean) {
@@ -396,8 +408,8 @@ v.scale (dq.getTheta ());
 sum.add (v);
 }
 sum.scale (1 / data.length);
-var dqMean =  new org.jmol.util.Quaternion (sum, sum.length ());
-return dqMean.mul (mean);
+var dqMean = org.jmol.util.Quaternion.newVA (sum, sum.length ());
+return dqMean.mulQ (mean);
 }, $fz.isPrivate = true, $fz), "~A,org.jmol.util.Quaternion");
 c$.stdDev = Clazz.defineMethod (c$, "stdDev", 
 ($fz = function (data, mean) {

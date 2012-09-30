@@ -64,7 +64,7 @@ f = 0.04;
 for (var i = 0, pt = 0; i < 3; i++) for (var j = 0; j < 3; j++) a[i][j] = data[pt++];
 
 
-this.atom.setEllipsoid (org.jmol.util.Eigen.getEllipsoid (a));
+this.atom.setEllipsoid (org.jmol.util.Eigen.getEllipsoidDD (a));
 this.atom.ellipsoid[0].scale (f);
 }, $fz.isPrivate = true, $fz));
 });

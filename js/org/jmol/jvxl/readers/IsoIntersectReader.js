@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "java.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "javax.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.myBsA = null;
 this.myBsB = null;
@@ -11,8 +11,8 @@ this.values = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoIntersectReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.prepareFields (c$, function () {
-this.myBsA =  new java.util.BitSet ();
-this.myBsB =  new java.util.BitSet ();
+this.myBsA =  new javax.util.BitSet ();
+this.myBsB =  new javax.util.BitSet ();
 this.bsAtomMinMax =  new Array (2);
 this.values =  Clazz.newArray (2, 0);
 });
@@ -43,7 +43,7 @@ this.func = this.params.func;
 }if (this.contactPair == null) {
 var bsA = this.params.intersection[0];
 var bsB = this.params.intersection[1];
-var bsSelected =  new java.util.BitSet ();
+var bsSelected =  new javax.util.BitSet ();
 bsSelected.or (bsA);
 bsSelected.or (bsB);
 this.doUseIterator = true;
@@ -126,7 +126,7 @@ var r = pt.distance (this.atomXyz[iAtom]) - this.atomRadius[iAtom];
 if (r < value) value = r;
 }
 return (value == 3.4028235E38 ? NaN : value);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.util.BitSet");
 Clazz.defineStatics (c$,
 "TYPE_FUNCTION", 0,
 "TYPE_SUM", 1,

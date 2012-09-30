@@ -14,7 +14,7 @@ Clazz.defineMethod (c$, "initShape",
 function () {
 Clazz.superCall (this, org.jmol.shape.Hover, "initShape", []);
 this.isHover = true;
-var font3d = this.gdata.getFont3D ("SansSerif", "Plain", 12);
+var font3d = this.gdata.getFont3DFSS ("SansSerif", "Plain", 12);
 var bgcolix = org.jmol.util.Colix.getColix ("#FFFFC3");
 var colix = 4;
 this.currentObject = this.hoverText =  new org.jmol.shape.Text (this.gdata, font3d, null, colix, bgcolix, 0, 0, 1, -2147483648, 1, 0);
@@ -57,7 +57,7 @@ this.atomFormats = org.jmol.util.ArrayUtil.deleteElements (this.atomFormats, fir
 }this.atomIndex = -1;
 return ;
 }Clazz.superCall (this, org.jmol.shape.Hover, "setProperty", [propertyName, value, null]);
-}, "~S,~O,java.util.BitSet");
+}, "~S,~O,javax.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var temp =  new java.util.Hashtable ();

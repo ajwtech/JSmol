@@ -201,7 +201,7 @@ var vectorBC =  new javax.vecmath.Vector3f ();
 var radians = org.jmol.util.Measure.computeAngle (this.getAtom (1), this.getAtom (2), this.getAtom (3), vectorBA, vectorBC, false);
 var vectorAxis =  new javax.vecmath.Vector3f ();
 vectorAxis.cross (vectorBA, vectorBC);
-this.aa =  new javax.vecmath.AxisAngle4f (vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
+this.aa = javax.vecmath.AxisAngle4f.new4 (vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 vectorBA.normalize ();
 vectorBA.scale (0.5);
 this.pointArc = javax.vecmath.Point3f.newP (vectorBA);
@@ -333,7 +333,7 @@ case 2:
 return ptA.distance (ptB);
 case 3:
 ptC = this.getAtom (3);
-return org.jmol.util.Measure.computeAngle (ptA, ptB, ptC, true);
+return org.jmol.util.Measure.computeAngleABC (ptA, ptB, ptC, true);
 case 4:
 ptC = this.getAtom (3);
 ptD = this.getAtom (4);

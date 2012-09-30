@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Float", "java.util.BitSet", "$.Hashtable", "javax.vecmath.Matrix4f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.api.JmolLineReader", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.util.CifDataReader"], "org.jmol.adapter.readers.cifpdb.CifReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Float", "java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix4f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tokenizer = null;
 this.thisDataSetName = "";
@@ -160,7 +160,7 @@ var m = this.htBiomts.get (ops[j]);
 if (m != null && !m.equals (mident)) this.vBiomts.add (m);
 }
 if (this.vBiomts.size () < 2) return ;
-var bsAll =  new java.util.BitSet ();
+var bsAll =  new javax.util.BitSet ();
 for (var j = assemblies.length - 1; --j >= 0; ) if ((assemblies.charAt (j)).charCodeAt (0) == 36) {
 var bs = this.assemblyIdAtoms.get ("" + assemblies.charAt (j + 1));
 if (bs != null) bsAll.or (bs);
@@ -522,7 +522,7 @@ this.atomSetCollection.addAtomWithMappedName (atom);
 if (assemblyId.charCodeAt (0) != 0) {
 if (this.assemblyIdAtoms == null) this.assemblyIdAtoms =  new java.util.Hashtable ();
 var bs = this.assemblyIdAtoms.get ("" + assemblyId);
-if (bs == null) this.assemblyIdAtoms.put ("" + assemblyId, bs =  new java.util.BitSet ());
+if (bs == null) this.assemblyIdAtoms.put ("" + assemblyId, bs =  new javax.util.BitSet ());
 bs.set (atom.atomIndex);
 }if (atom.isHetero && this.htHetero != null) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("hetNames", this.htHetero);
@@ -1033,7 +1033,7 @@ this.bsSets =  new Array (nAtoms);
 this.symmetry = this.atomSetCollection.getSymmetry ();
 for (var i = this.firstAtom; i < this.atomCount; i++) {
 var ipt = this.atomSetCollection.getAtomIndexFromName (this.atoms[i].atomName) - this.firstAtom;
-if (this.bsSets[ipt] == null) this.bsSets[ipt] =  new java.util.BitSet ();
+if (this.bsSets[ipt] == null) this.bsSets[ipt] =  new javax.util.BitSet ();
 this.bsSets[ipt].set (i - this.firstAtom);
 }
 if (this.isMolecular) {
@@ -1044,17 +1044,17 @@ var charge = (this.atoms[i].formalCharge == -2147483648 ? 0 : this.atoms[i].form
 if (elemnoWithIsotope > 0) this.atomRadius[i] = org.jmol.api.JmolAdapter.getBondingRadiusFloat (elemnoWithIsotope, charge);
 }
 this.bsConnected =  new Array (this.atomCount);
-for (var i = this.firstAtom; i < this.atomCount; i++) this.bsConnected[i] =  new java.util.BitSet ();
+for (var i = this.firstAtom; i < this.atomCount; i++) this.bsConnected[i] =  new javax.util.BitSet ();
 
-this.bsMolecule =  new java.util.BitSet ();
-this.bsExclude =  new java.util.BitSet ();
+this.bsMolecule =  new javax.util.BitSet ();
+this.bsExclude =  new javax.util.BitSet ();
 }var isFirst = true;
 while (this.createBonds (isFirst)) {
 isFirst = false;
 }
 if (this.isMolecular) {
-if (this.atomSetCollection.bsAtoms == null) this.atomSetCollection.bsAtoms =  new java.util.BitSet ();
-this.atomSetCollection.bsAtoms.clear (this.firstAtom, this.atomCount);
+if (this.atomSetCollection.bsAtoms == null) this.atomSetCollection.bsAtoms =  new javax.util.BitSet ();
+this.atomSetCollection.bsAtoms.clearBits (this.firstAtom, this.atomCount);
 this.atomSetCollection.bsAtoms.or (this.bsMolecule);
 this.atomSetCollection.bsAtoms.andNot (this.bsExclude);
 for (var i = this.firstAtom; i < this.atomCount; i++) {
@@ -1100,7 +1100,7 @@ if (!this.isMolecular) return false;
 if (doInit) for (var i = this.firstAtom; i < this.atomCount; i++) if (this.atoms[i].atomSite + this.firstAtom == i && !this.bsMolecule.get (i)) this.setBs (this.atoms, i, this.bsConnected, this.bsMolecule);
 
 var bondTolerance = this.viewer.getBondTolerance ();
-var bsBranch =  new java.util.BitSet ();
+var bsBranch =  new javax.util.BitSet ();
 var cart1 =  new javax.vecmath.Point3f ();
 var cart2 =  new javax.vecmath.Point3f ();
 var nFactor = 2;
@@ -1139,7 +1139,7 @@ bs.set (iatom);
 for (var i = bsBond.nextSetBit (0); i >= 0; i = bsBond.nextSetBit (i + 1)) {
 if (!bs.get (i)) this.setBs (atoms, i, bsBonds, bs);
 }
-}, $fz.isPrivate = true, $fz), "~A,~N,~A,java.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,~N,~A,javax.util.BitSet");
 Clazz.defineStatics (c$,
 "cellParamNames", ["_cell_length_a", "_cell_length_b", "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"],
 "TransformFields", ["x[1][1]", "x[1][2]", "x[1][3]", "r[1]", "x[2][1]", "x[2][2]", "x[2][3]", "r[2]", "x[3][1]", "x[3][2]", "x[3][3]", "r[3]"],

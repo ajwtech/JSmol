@@ -1,12 +1,9 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Geodesic", ["java.lang.NullPointerException", "$.Short", "java.util.Hashtable", "javax.vecmath.Vector3f"], function () {
+Clazz.load (null, "org.jmol.util.Geodesic", ["java.lang.NullPointerException", "$.Short", "java.util.Hashtable", "javax.vecmath.Vector3f", "org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Geodesic");
-c$.getFaceVertexesArrays = Clazz.defineMethod (c$, "getFaceVertexesArrays", 
-function () {
-return org.jmol.util.Geodesic.faceVertexesArrays;
-});
 c$.getNeighborVertexesArrays = Clazz.defineMethod (c$, "getNeighborVertexesArrays", 
 function () {
+if (org.jmol.util.Geodesic.vertexCounts == null) org.jmol.util.Geodesic.createGeodesic ();
 return org.jmol.util.Geodesic.neighborVertexesArrays;
 });
 c$.getVertexCount = Clazz.defineMethod (c$, "getVertexCount", 
@@ -58,9 +55,7 @@ var oldFaceCount = Math.floor (oldFaceVertexesLength / 3);
 var oldEdgesCount = oldVertexCount + oldFaceCount - 2;
 var newVertexCount = oldVertexCount + oldEdgesCount;
 var newFaceCount = 4 * oldFaceCount;
-var newVertexVectors =  new Array (newVertexCount);
-System.arraycopy (org.jmol.util.Geodesic.vertexVectors, 0, newVertexVectors, 0, oldVertexCount);
-($t$ = org.jmol.util.Geodesic.vertexVectors = newVertexVectors, org.jmol.util.Geodesic.prototype.vertexVectors = org.jmol.util.Geodesic.vertexVectors, $t$);
+($t$ = org.jmol.util.Geodesic.vertexVectors = org.jmol.util.ArrayUtil.arrayCopyOpt (org.jmol.util.Geodesic.vertexVectors, newVertexCount), org.jmol.util.Geodesic.prototype.vertexVectors = org.jmol.util.Geodesic.vertexVectors, $t$);
 var newFacesVertexes =  Clazz.newArray (3 * newFaceCount, 0);
 org.jmol.util.Geodesic.faceVertexesArrays[level + 1] = newFacesVertexes;
 var neighborVertexes =  Clazz.newArray (6 * newVertexCount, 0);

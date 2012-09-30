@@ -27,7 +27,7 @@ this.bsAtoms = bsAtoms;
 this.isNav = isNav;
 this.$isGesture = isGesture;
 this.setMyName ("SpinThread" +  new java.util.Date ());
-}, "org.jmol.viewer.TransformManager,org.jmol.viewer.Viewer,~N,java.util.List,java.util.BitSet,~B,~B");
+}, "org.jmol.viewer.TransformManager,org.jmol.viewer.Viewer,~N,java.util.List,javax.util.BitSet,~B,~B");
 Clazz.overrideMethod (c$, "run", 
 function () {
 var myFps = (this.isNav ? this.transformManager.navFps : this.transformManager.spinFps);

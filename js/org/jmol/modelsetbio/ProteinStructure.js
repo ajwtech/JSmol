@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.modelsetbio.ProteinStructure", ["javax.vecmath.Point3f", "org.jmol.util.Logger"], function () {
+Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.modelsetbio.ProteinStructure", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.apolymer = null;
 this.type = null;
@@ -117,8 +117,7 @@ Clazz.defineMethod (c$, "getInfo",
 function (info) {
 info.put ("type", this.type.getBioStructureTypeName (false));
 var leadAtomIndices = this.apolymer.getLeadAtomIndices ();
-var iArray =  Clazz.newArray (this.monomerCount, 0);
-System.arraycopy (leadAtomIndices, this.monomerIndexFirst, iArray, 0, this.monomerCount);
+var iArray = org.jmol.util.ArrayUtil.arrayCopyRangeI (leadAtomIndices, this.monomerIndexFirst, this.monomerIndexFirst + this.monomerCount);
 info.put ("leadAtomIndices", iArray);
 this.calcAxis ();
 if (this.axisA == null) return ;
