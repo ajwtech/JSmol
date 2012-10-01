@@ -131,7 +131,6 @@ break;
 default:
 maxRadius = this.modelSet.getMaxVanderwaalsRadius ();
 }
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ();
 var newSet = (this.rdLast.value != rd.value || this.rdLast.valueExtended != rd.valueExtended || this.rdLast.factorType !== rd.factorType || this.rdLast.vdwType !== rd.vdwType || this.ec.getDotsConvexMax () == 0);
 if (isVisible) {
 for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) if (!this.bsOn.get (i)) {
@@ -160,7 +159,6 @@ this.colixes =  Clazz.newArray (this.atomCount, 0);
 this.paletteIDs =  Clazz.newArray (this.atomCount, 0);
 }this.ec.calculate (rd, maxRadius, this.bsOn, this.bsIgnore, !this.viewer.getDotSurfaceFlag (), this.viewer.getDotsSelectedOnlyFlag (), this.isSurface, true);
 this.rdLast = rd;
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.checkTimer ("dots generation time");
 }, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
 Clazz.overrideMethod (c$, "setModelClickability", 
 function () {

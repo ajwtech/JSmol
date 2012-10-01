@@ -12,8 +12,12 @@ this.useOriginStepsPoints = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "VolumeDataReader", org.jmol.jvxl.readers.SurfaceReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.VolumeDataReader, []);
+});
+Clazz.defineMethod (c$, "init", 
 function (sg) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.VolumeDataReader, [sg]);
+Clazz.superCall (this, org.jmol.jvxl.readers.VolumeDataReader, "init", [sg]);
 this.useOriginStepsPoints = (this.params.origin != null && this.params.points != null && this.params.steps != null);
 this.dataType = this.params.dataType;
 this.precalculateVoxelData = true;
@@ -144,7 +148,6 @@ return this.voxelCounts[index];
 }, "~N,~N,~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "readSurfaceData", 
 function (isMapData) {
-org.jmol.util.Logger.startTimer ();
 if (this.isProgressive && !isMapData) {
 this.nDataPoints = this.volumeData.setVoxelCounts (this.nPointsX, this.nPointsY, this.nPointsZ);
 this.voxelData = null;

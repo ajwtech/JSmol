@@ -5,14 +5,19 @@ this.labels = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "MrcBinaryReader", org.jmol.jvxl.readers.MapFileReader);
 Clazz.makeConstructor (c$, 
-function (sg, fileName) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.MrcBinaryReader, [sg, null]);
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.MrcBinaryReader, []);
+});
+Clazz.overrideMethod (c$, "init", 
+function (sg) {
+var fileName = sg.getReaderData ();
+Clazz.superCall (this, org.jmol.jvxl.readers.MrcBinaryReader, "init2", [sg, null]);
 this.binarydoc =  new org.jmol.util.BinaryDocument ();
 this.binarydoc.setStream (sg.getAtomDataServer ().getBufferedInputStream (fileName), true);
 this.nSurfaces = 1;
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 this.allowSigma = true;
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~S");
+}, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 var ispg;

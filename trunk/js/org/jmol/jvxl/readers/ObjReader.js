@@ -2,8 +2,12 @@
 Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.ObjReader", ["java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.ColorUtil", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "ObjReader", org.jmol.jvxl.readers.PmeshReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.ObjReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.ObjReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.ObjReader, "init2", [sg, br]);
 this.type = "obj";
 this.setHeader ();
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");

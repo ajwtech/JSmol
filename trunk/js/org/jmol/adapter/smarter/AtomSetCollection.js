@@ -246,7 +246,7 @@ for (var bondNum = 0; bondNum < collection.bondCount; bondNum++) {
 var bond = collection.bonds[bondNum];
 this.addNewBondWithOrder (bond.atomIndex1 + existingAtomsCount, bond.atomIndex2 + existingAtomsCount, bond.order);
 }
-for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (Boolean.TRUE.equals (collection.getAtomSetCollectionAuxiliaryInfo (org.jmol.adapter.smarter.AtomSetCollection.globalBooleans[i]))) this.setGlobalBoolean (i);
+for (var i = org.jmol.adapter.smarter.AtomSetCollection.globalBooleans.length; --i >= 0; ) if (collection.getGlobalBoolean (i)) this.setGlobalBoolean (i);
 
 }, "~N,org.jmol.adapter.smarter.AtomSetCollection");
 Clazz.defineMethod (c$, "setNoAutoBond", 

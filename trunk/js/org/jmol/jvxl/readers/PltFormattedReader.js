@@ -2,8 +2,12 @@
 Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.PltFormattedReader", ["java.lang.StringBuffer", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "PltFormattedReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.PltFormattedReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.PltFormattedReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.PltFormattedReader, "init2", [sg, br]);
 this.isAngstroms = true;
 this.jvxlData.wasCubic = true;
 this.jvxlFileHeaderBuffer =  new StringBuffer ();

@@ -6,8 +6,12 @@ this.nSkip = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "CastepDensityReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.CastepDensityReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.CastepDensityReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.CastepDensityReader, "init2", [sg, br]);
 this.canDownsample = this.isProgressive = false;
 this.isAngstroms = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");

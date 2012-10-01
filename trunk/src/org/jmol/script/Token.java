@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 06:27:31 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17604 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1023,6 +1023,7 @@ public class Token {
   public final static int showmultiplebonds              = booleanparam | 152;
   public final static int shownavigationpointalways      = booleanparam | 154;
 // see intparam  public final static int showscript                     = booleanparam | 156;
+  public final static int showtiming                     = booleanparam | 158;
   public final static int showunitcell                   = booleanparam | 160;
   public final static int slabbyatom                     = booleanparam | 162;
   public final static int slabbymolecule                 = booleanparam | 164;
@@ -2402,6 +2403,7 @@ public class Token {
       "showMultipleBonds",                        new Token(showmultiplebonds),
       "showNavigationPointAlways",                new Token(shownavigationpointalways),
 // see intparam      "showScript",                               new Token(showscript),
+      "showTiming",                               new Token(showtiming),
       "showUnitcell",                             new Token(showunitcell),
       "slabByAtom",                               new Token(slabbyatom),
       "slabByMolecule",                           new Token(slabbymolecule),

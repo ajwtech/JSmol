@@ -2,8 +2,12 @@
 Clazz.load (["org.jmol.jvxl.readers.JvxlXmlReader"], "org.jmol.jvxl.readers.JvxlReader", ["java.lang.NullPointerException", "$.StringBuffer", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Colix", "$.Escape", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "JvxlReader", org.jmol.jvxl.readers.JvxlXmlReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.JvxlReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.JvxlReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.JvxlReader, "init2", [sg, br]);
 this.isXmlFile = false;
 this.JVXL_VERSION = "2.0";
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");

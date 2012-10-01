@@ -136,7 +136,7 @@ final public class ArrayUtil {
     /**
      * @j2sNative
      * 
-     * return Clazz.newArrayBH(array, newLength);
+     * return Clazz.newArrayBH(array, n);
      * 
      */
     {

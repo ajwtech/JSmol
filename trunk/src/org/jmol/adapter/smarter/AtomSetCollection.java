@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-09-30 18:02:17 -0500 (Sun, 30 Sep 2012) $
+ * $Revision: 17603 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -312,8 +312,7 @@ public class AtomSetCollection {
     }
     // Set globals
     for (int i = globalBooleans.length; --i >= 0;)
-      if (Boolean.TRUE.equals(collection
-          .getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
+      if (collection.getGlobalBoolean(i))
         setGlobalBoolean(i);
 
   }

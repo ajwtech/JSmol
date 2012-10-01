@@ -31,6 +31,7 @@ this.trajectorySteps = null;
 this.vibrationSteps = null;
 this.selectedMolecules = null;
 this.selectedMoleculeCount = 0;
+this.showRebondTimes = true;
 this.bsAll = null;
 this.shapeManager = null;
 this.proteinStructureTainted = false;
@@ -1283,9 +1284,9 @@ return this.molecules;
 Clazz.defineMethod (c$, "initializeBspf", 
 function () {
 if (this.bspf != null && this.bspf.isInitialized ()) return ;
-if (true && org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ();
+if (this.showRebondTimes) org.jmol.util.Logger.startTimer ("build bspf");
 var bspf =  new org.jmol.bspt.Bspf (3);
-org.jmol.util.Logger.debug ("sequential bspt order");
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("sequential bspt order");
 var bsNew = org.jmol.util.BitSetUtil.newBitSet (this.modelCount);
 for (var i = this.atomCount; --i >= 0; ) {
 var atom = this.atoms[i];
@@ -1293,8 +1294,8 @@ if (!atom.isDeleted ()) {
 bspf.addTuple (this.models[atom.modelIndex].trajectoryBaseIndex, atom);
 bsNew.set (atom.modelIndex);
 }}
-if (true && org.jmol.util.Logger.debugging) {
-org.jmol.util.Logger.checkTimer ("Time to build bspf");
+if (this.showRebondTimes) {
+org.jmol.util.Logger.checkTimer ("build bspf", false);
 bspf.stats ();
 }for (var i = bsNew.nextSetBit (0); i >= 0; i = bsNew.nextSetBit (i + 1)) bspf.validateModel (i, true);
 
@@ -1666,7 +1667,7 @@ var bondTolerance = this.viewer.getBondTolerance ();
 var minBondDistance = this.viewer.getMinBondDistance ();
 var minBondDistance2 = minBondDistance * minBondDistance;
 var nNew = 0;
-if (true) org.jmol.util.Logger.startTimer ();
+if (this.showRebondTimes) org.jmol.util.Logger.startTimer ("autobond");
 var lastModelIndex = -1;
 var isAll = (bsA == null);
 var bsCheck;
@@ -1705,7 +1706,7 @@ if (order > 0 && this.checkValencesAndBond (atom, atomNear, order, mad, bsBonds)
 }
 iter.release ();
 }
-if (true) org.jmol.util.Logger.checkTimer ("Time to autoBond");
+if (this.showRebondTimes) org.jmol.util.Logger.checkTimer ("autoBond", false);
 return nNew;
 }, "javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~N,~B");
 Clazz.defineMethod (c$, "autoBond_Pre_11_9_24", 
@@ -1718,7 +1719,6 @@ var minBondDistance = this.viewer.getMinBondDistance ();
 var minBondDistance2 = minBondDistance * minBondDistance;
 var nNew = 0;
 this.initializeBspf ();
-if (true && org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ();
 var lastModelIndex = -1;
 for (var i = this.atomCount; --i >= 0; ) {
 var isAtomInSetA = (bsA == null || bsA.get (i));
@@ -1747,7 +1747,6 @@ if (this.checkValencesAndBond (atom, atomNear, order, mad, bsBonds)) nNew++;
 }}
 iter.release ();
 }
-if (true && org.jmol.util.Logger.debugging) org.jmol.util.Logger.checkTimer ("Time to autoBond");
 return nNew;
 }, $fz.isPrivate = true, $fz), "javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~N");
 Clazz.defineMethod (c$, "autoBond", 
@@ -1808,7 +1807,7 @@ var nNew = 0;
 var d2 = 0;
 var v1 =  new javax.vecmath.Vector3f ();
 var v2 =  new javax.vecmath.Vector3f ();
-if (true && org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ();
+if (this.showRebondTimes && org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ("hbond");
 var C = null;
 var D = null;
 var iter = this.getSelectedAtomIterator (bsB, false, false, false, false);
@@ -1858,7 +1857,7 @@ nNew++;
 }
 iter.release ();
 this.shapeManager.setShapeSizeBs (1, -2147483648, null, bsHBonds);
-if (true && org.jmol.util.Logger.debugging) org.jmol.util.Logger.checkTimer ("Time to hbond");
+if (this.showRebondTimes) org.jmol.util.Logger.checkTimer ("hbond", false);
 return (haveHAtoms ? nNew : -nNew);
 }, "javax.util.BitSet,javax.util.BitSet,~B");
 c$.checkMinAttachedAngle = Clazz.defineMethod (c$, "checkMinAttachedAngle", 
@@ -2923,6 +2922,5 @@ this.modelIndex = a;
 }, "~N");
 c$ = Clazz.p0p ();
 Clazz.defineStatics (c$,
-"showRebondTimes", true,
 "hbondMin", 2.5);
 });

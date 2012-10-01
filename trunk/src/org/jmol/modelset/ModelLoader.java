@@ -101,6 +101,7 @@ public final class ModelLoader {
       viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
+    modelSet.showRebondTimes = viewer.getShowTiming();
     if (bsNew == null) {
       initializeInfo(modelSetName, null);
       createModelSet(null, null, null);
@@ -565,7 +566,7 @@ public final class ModelLoader {
                                                Map<String, Object> modelAuxiliaryInfo,
                                                String jmolData) {
     boolean modelIsPDB = (modelAuxiliaryInfo != null 
-        && Boolean.TRUE.equals(modelAuxiliaryInfo.get("isPDB")));
+        && Boolean.TRUE == modelAuxiliaryInfo.get("isPDB"));
     if (appendNew) {
       modelSet.models[modelIndex] = (modelIsPDB ? 
           jbr.getBioModel(modelSet, modelIndex, trajectoryBaseIndex,

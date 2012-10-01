@@ -10,6 +10,10 @@ Clazz.prepareFields (c$, function () {
 this.vertexMap =  new java.util.Hashtable ();
 this.pt =  new javax.vecmath.Point3f ();
 });
+Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.NffFileReader, []);
+});
 Clazz.defineMethod (c$, "setHeader", 
 function () {
 this.jvxlFileHeaderBuffer.append ("NFF file format\nvertices and triangles only\n");

@@ -5,8 +5,12 @@ this.type = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoMepReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoMepReader, []);
+});
+Clazz.defineMethod (c$, "init", 
 function (sg) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoMepReader, [sg]);
+Clazz.superCall (this, org.jmol.jvxl.readers.IsoMepReader, "init", [sg]);
 this.type = "Mep";
 }, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.defineMethod (c$, "setup", 

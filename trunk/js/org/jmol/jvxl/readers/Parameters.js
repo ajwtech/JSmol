@@ -139,6 +139,7 @@ this.volumeData = null;
 this.contactPair = null;
 this.mapLattice = null;
 this.isMapped = false;
+this.showTiming = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "Parameters");
 Clazz.prepareFields (c$, function () {

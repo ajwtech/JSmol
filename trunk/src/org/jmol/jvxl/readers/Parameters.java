@@ -815,6 +815,7 @@ public class Parameters {
   public ContactPair contactPair;
   public Point3f mapLattice;
   public boolean isMapped;
+  public boolean showTiming;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

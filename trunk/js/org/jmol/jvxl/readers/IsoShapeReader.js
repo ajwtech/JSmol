@@ -33,20 +33,24 @@ this.ptPsi =  new javax.vecmath.Point3f ();
 this.psi_normalization = 1 / (2 * Math.sqrt (3.141592653589793));
 });
 Clazz.makeConstructor (c$, 
-function (sg, radius) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoShapeReader, [sg]);
-this.sphere_radiusAngstroms = radius;
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~N");
-Clazz.makeConstructor (c$, 
-function (sg, n, l, m, z_eff, monteCarloCount) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoShapeReader, [sg]);
-this.psi_n = n;
-this.psi_l = l;
-this.psi_m = m;
-this.psi_Znuc = z_eff;
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoShapeReader, []);
+});
+Clazz.defineMethod (c$, "init", 
+function (sg) {
+Clazz.superCall (this, org.jmol.jvxl.readers.IsoShapeReader, "init", [sg]);
+var o = sg.getReaderData ();
+if (Clazz.instanceOf (o, Float)) {
+this.sphere_radiusAngstroms = (o).floatValue ();
+} else {
 this.sphere_radiusAngstroms = 0;
-this.monteCarloCount = monteCarloCount;
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~N,~N,~N,~N,~N");
+var data = o;
+this.psi_n = Math.round (data[0]);
+this.psi_l = Math.round (data[1]);
+this.psi_m = Math.round (data[2]);
+this.psi_Znuc = data[3];
+this.monteCarloCount = Math.round (data[4]);
+}}, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.overrideMethod (c$, "setup", 
 function (isMapData) {
 this.volumeData.sr = this;

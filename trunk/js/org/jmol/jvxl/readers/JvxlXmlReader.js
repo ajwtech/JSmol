@@ -25,8 +25,12 @@ this.haveReadColorData = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "JvxlXmlReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.JvxlXmlReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.JvxlXmlReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.JvxlXmlReader, "init2", [sg, br]);
 this.jvxlData.wasJvxl = this.isJvxl = true;
 this.isXLowToHigh = false;
 this.xr =  new org.jmol.util.XmlReader (br);

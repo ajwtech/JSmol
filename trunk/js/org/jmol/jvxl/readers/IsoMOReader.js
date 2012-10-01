@@ -20,8 +20,12 @@ Clazz.prepareFields (c$, function () {
 this.vDist =  Clazz.newArray (3, 0);
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoMOReader, []);
+});
+Clazz.defineMethod (c$, "init", 
 function (sg) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoMOReader, [sg]);
+Clazz.superCall (this, org.jmol.jvxl.readers.IsoMOReader, "init", [sg]);
 this.isNci = (this.params.qmOrbitalType == 3);
 if (this.isNci) {
 this.isXLowToHigh = this.hasColorData = true;

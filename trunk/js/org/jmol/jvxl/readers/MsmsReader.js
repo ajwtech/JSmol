@@ -5,15 +5,19 @@ this.fileName = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "MsmsReader", org.jmol.jvxl.readers.PmeshReader);
 Clazz.makeConstructor (c$, 
-function (sg, fileName, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.MsmsReader, [sg, br]);
-this.fileName = fileName;
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.MsmsReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
+function (sg, br) {
+Clazz.superCall (this, org.jmol.jvxl.readers.MsmsReader, "init2", [sg, br]);
+this.fileName = (sg.getReaderData ())[0];
 this.type = "msms";
 this.onePerLine = true;
 this.fixedCount = 3;
 this.vertexBase = 1;
 this.setHeader ();
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~S,java.io.BufferedReader");
+}, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.defineMethod (c$, "readVertices", 
 function () {
 this.skipHeader ();

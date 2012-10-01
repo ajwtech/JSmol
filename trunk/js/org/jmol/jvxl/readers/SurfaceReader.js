@@ -71,6 +71,12 @@ Clazz.prepareFields (c$, function () {
 this.ptTemp =  new javax.vecmath.Point3f ();
 });
 Clazz.makeConstructor (c$, 
+function () {
+});
+Clazz.defineMethod (c$, "init2", 
+function (surfaceGenerator, br) {
+}, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
+Clazz.defineMethod (c$, "init", 
 function (sg) {
 this.sg = sg;
 this.params = sg.getParams ();
@@ -120,6 +126,7 @@ return (this.volumeData.setUnitVectors ());
 Clazz.defineMethod (c$, "createIsosurface", 
 function (justForPlane) {
 this.resetIsosurface ();
+if (this.params.showTiming) org.jmol.util.Logger.startTimer ("isosurface creation");
 this.jvxlData.cutoff = NaN;
 if (!this.readAndSetVolumeParameters (justForPlane)) return false;
 if (!justForPlane && !Float.isNaN (this.params.sigma) && !this.allowSigma) {
@@ -185,7 +192,8 @@ this.meshDataServer.fillMeshData (this.meshData, 2, null);
 }this.jvxlData.jvxlColorData = this.readColorData ();
 this.updateSurfaceData ();
 if (this.meshDataServer != null) this.meshDataServer.notifySurfaceMappingCompleted ();
-}return true;
+}if (this.params.showTiming) org.jmol.util.Logger.checkTimer ("isosurface creation", false);
+return true;
 }, "~B");
 Clazz.defineMethod (c$, "resetIsosurface", 
 function () {

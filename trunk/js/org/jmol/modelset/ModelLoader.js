@@ -63,6 +63,7 @@ this.modelSet.canSkipLoad = false;
 } else {
 viewer.resetShapes (false);
 }this.modelSet.preserveState = viewer.getPreserveState ();
+this.modelSet.showRebondTimes = viewer.getShowTiming ();
 if (bsNew == null) {
 this.initializeInfo (modelSetName, null);
 this.createModelSet (null, null, null);
@@ -353,7 +354,7 @@ this.structuresDefinedInFile.set (i);
 }, $fz.isPrivate = true, $fz), "org.jmol.api.JmolAdapter,~O");
 Clazz.defineMethod (c$, "setModelNameNumberProperties", 
 ($fz = function (modelIndex, trajectoryBaseIndex, modelName, modelNumber, modelProperties, modelAuxiliaryInfo, jmolData) {
-var modelIsPDB = (modelAuxiliaryInfo != null && Boolean.TRUE.equals (modelAuxiliaryInfo.get ("isPDB")));
+var modelIsPDB = (modelAuxiliaryInfo != null && Boolean.TRUE === modelAuxiliaryInfo.get ("isPDB"));
 if (this.appendNew) {
 this.modelSet.models[modelIndex] = (modelIsPDB ? this.jbr.getBioModel (this.modelSet, modelIndex, trajectoryBaseIndex, jmolData, modelProperties, modelAuxiliaryInfo) :  new org.jmol.modelset.Model (this.modelSet, modelIndex, trajectoryBaseIndex, jmolData, modelProperties, modelAuxiliaryInfo));
 this.modelSet.modelNumbers[modelIndex] = modelNumber;

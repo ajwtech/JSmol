@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.InputStreamReader", "$.StringReader", "javax.util.BitSet", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.ApbsReader", "$.AtomPropertyMapper", "$.CastepDensityReader", "$.CubeReader", "$.Dsn6BinaryReader", "$.EfvetReader", "$.IsoFxyReader", "$.IsoFxyzReader", "$.IsoIntersectReader", "$.IsoMOReader", "$.IsoMepReader", "$.IsoMlpReader", "$.IsoPlaneReader", "$.IsoShapeReader", "$.IsoSolventReader", "$.JaguarReader", "$.JvxlReader", "$.JvxlXmlReader", "$.KinemageReader", "$.MrcBinaryReader", "$.MsmsReader", "$.NffFileReader", "$.ObjReader", "$.Parameters", "$.PltFormattedReader", "$.PmeshReader", "$.SurfaceReader", "$.VolumeDataReader", "$.XplorReader", "$.XsfReader", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Parser", "$.SurfaceFileTyper", "$.TextFormat"], function () {
+Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.InputStreamReader", "$.StringReader", "java.lang.Float", "javax.util.BitSet", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.Parameters", "$.SurfaceReader", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Parser", "$.SurfaceFileTyper", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.jvxlData = null;
 this.meshData = null;
@@ -19,6 +19,7 @@ this.vAB = null;
 this.vNorm = null;
 this.ptRef = null;
 this.bsVdw = null;
+this.readerData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "SurfaceGenerator");
 Clazz.prepareFields (c$, function () {
@@ -40,15 +41,7 @@ function (version) {
 this.version = version;
 }, "~S");
 Clazz.makeConstructor (c$, 
-function () {
-this.setup (null, null, null, null);
-});
-Clazz.makeConstructor (c$, 
 function (atomDataServer, meshDataServer, meshData, jvxlData) {
-this.setup (atomDataServer, meshDataServer, meshData, jvxlData);
-}, "org.jmol.atomdata.AtomDataServer,org.jmol.jvxl.api.MeshDataServer,org.jmol.jvxl.data.MeshData,org.jmol.jvxl.data.JvxlData");
-Clazz.defineMethod (c$, "setup", 
-($fz = function (atomDataServer, meshDataServer, meshData, jvxlData) {
 this.atomDataServer = atomDataServer;
 this.meshDataServer = meshDataServer;
 this.params =  new org.jmol.jvxl.readers.Parameters ();
@@ -56,7 +49,7 @@ this.meshData = (meshData == null ?  new org.jmol.jvxl.data.MeshData () : meshDa
 this.jvxlData = (jvxlData == null ?  new org.jmol.jvxl.data.JvxlData () : jvxlData);
 this.volumeData =  new org.jmol.jvxl.data.VolumeData ();
 this.initializeIsosurface ();
-}, $fz.isPrivate = true, $fz), "org.jmol.atomdata.AtomDataServer,org.jmol.jvxl.api.MeshDataServer,org.jmol.jvxl.data.MeshData,org.jmol.jvxl.data.JvxlData");
+}, "org.jmol.atomdata.AtomDataServer,org.jmol.jvxl.api.MeshDataServer,org.jmol.jvxl.data.MeshData,org.jmol.jvxl.data.JvxlData");
 Clazz.defineMethod (c$, "isStateDataRead", 
 function () {
 return this.params.state == 2;
@@ -463,41 +456,48 @@ this.mapSurface ();
 return true;
 }if ("sphere" === propertyName) {
 this.params.setSphere ((value).floatValue ());
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, this.params.distance);
+this.readerData =  new Float (this.params.distance);
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("ellipsoid" === propertyName) {
 if (Clazz.instanceOf (value, javax.vecmath.Point4f)) this.params.setEllipsoid (value);
  else if (Clazz.instanceOf (value, Array)) this.params.setEllipsoid (value);
  else return true;
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, this.params.distance);
+this.readerData =  new Float (this.params.distance);
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("ellipsoid3" === propertyName) {
 this.params.setEllipsoid (value);
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, this.params.distance);
+this.readerData =  new Float (this.params.distance);
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("lp" === propertyName) {
 this.params.setLp (value);
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, 3, 2, 0, 15, 0);
+this.readerData = [3, 2, 0, 15, 0];
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("rad" === propertyName) {
 this.params.setRadical (value);
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, 3, 2, 0, 15, 0);
+this.readerData = [3, 2, 0, 15, 0];
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("lobe" === propertyName) {
 this.params.setLobe (value);
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, 3, 2, 0, 15, 0);
+this.readerData = [3, 2, 0, 15, 0];
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("hydrogenOrbital" === propertyName) {
 if (!this.params.setAtomicOrbital (value)) {
 this.$isValid = false;
 return true;
-}this.surfaceReader =  new org.jmol.jvxl.readers.IsoShapeReader (this, this.params.psi_n, this.params.psi_l, this.params.psi_m, this.params.psi_Znuc, this.params.psi_monteCarloCount);
+}this.readerData = [this.params.psi_n, this.params.psi_l, this.params.psi_m, this.params.psi_Znuc, this.params.psi_monteCarloCount];
+this.surfaceReader = this.newReader ("IsoShape");
 this.processState ();
 return true;
 }if ("functionXY" === propertyName) {
@@ -591,6 +591,32 @@ return true;
 this.params.isPeriodic = true;
 }return false;
 }, "~S,~O,javax.util.BitSet");
+Clazz.defineMethod (c$, "newReader", 
+($fz = function (name) {
+var sr = org.jmol.jvxl.readers.SurfaceGenerator.getInterface (name);
+if (sr != null) sr.init (this);
+return sr;
+}, $fz.isPrivate = true, $fz), "~S");
+Clazz.defineMethod (c$, "newReaderBr", 
+($fz = function (name, br) {
+var sr = org.jmol.jvxl.readers.SurfaceGenerator.getInterface (name);
+if (sr != null) sr.init2 (this, br);
+return sr;
+}, $fz.isPrivate = true, $fz), "~S,java.io.BufferedReader");
+c$.getInterface = Clazz.defineMethod (c$, "getInterface", 
+($fz = function (name) {
+try {
+var x = Class.forName ("org.jmol.jvxl.readers." + name);
+return (x == null ? null : x.newInstance ());
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+org.jmol.util.Logger.error ("Interface.java Error creating instance for " + name + ": \n" + e.getMessage ());
+return null;
+} else {
+throw e;
+}
+}
+}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSurfaceSets", 
 ($fz = function () {
 if (this.meshDataServer == null) {
@@ -610,39 +636,40 @@ this.generateSurface ();
 }}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setReader", 
 ($fz = function () {
+this.readerData = null;
 if (this.surfaceReader != null) return !this.surfaceReader.vertexDataOnly;
 switch (this.params.dataType) {
 case 1205:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoPlaneReader (this);
+this.surfaceReader = this.newReader ("IsoPlaneReader");
 break;
 case 1206:
-this.surfaceReader =  new org.jmol.jvxl.readers.AtomPropertyMapper (this, null);
+this.surfaceReader = this.newReader ("AtomPropertyMapper");
 break;
+case 1328:
+case 1329:
+this.readerData = (this.params.dataType == 1328 ? "Mep" : "Mlp");
+if (this.params.state == 3) {
+this.surfaceReader = this.newReader ("AtomPropertyMapper");
+} else {
+this.surfaceReader = this.newReader ("Iso" + this.readerData + "Reader");
+}break;
 case 1333:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoIntersectReader (this);
+this.surfaceReader = this.newReader ("IsoIntersectReader");
 break;
 case 1195:
 case 1203:
 case 1196:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoSolventReader (this);
+this.surfaceReader = this.newReader ("IsoSolventReader");
 break;
 case 1844:
 case 1837:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoMOReader (this);
+this.surfaceReader = this.newReader ("IsoMOReader");
 break;
 case 8:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoFxyReader (this);
+this.surfaceReader = this.newReader ("IsoFxyReader");
 break;
 case 9:
-this.surfaceReader =  new org.jmol.jvxl.readers.IsoFxyzReader (this);
-break;
-case 1328:
-if (this.params.state == 3) this.surfaceReader =  new org.jmol.jvxl.readers.AtomPropertyMapper (this, "Mep");
- else this.surfaceReader =  new org.jmol.jvxl.readers.IsoMepReader (this);
-break;
-case 1329:
-if (this.params.state == 3) this.surfaceReader =  new org.jmol.jvxl.readers.AtomPropertyMapper (this, "Mlp");
- else this.surfaceReader =  new org.jmol.jvxl.readers.IsoMlpReader (this);
+this.surfaceReader = this.newReader ("IsoFxyzReader");
 break;
 }
 org.jmol.util.Logger.info ("Using surface reader " + this.surfaceReader);
@@ -739,10 +766,10 @@ var fileType = this.fileType;
 this.fileType = null;
 if (Clazz.instanceOf (value, org.jmol.jvxl.data.VolumeData)) {
 this.volumeData = value;
-return  new org.jmol.jvxl.readers.VolumeDataReader (this);
+return this.newReader ("VolumeDataReader");
 }if (Clazz.instanceOf (value, java.util.Map)) {
 this.volumeData = (value).get ("volumeData");
-return  new org.jmol.jvxl.readers.VolumeDataReader (this);
+return this.newReader ("VolumeDataReader");
 }var data = null;
 if (Clazz.instanceOf (value, String)) {
 data = value;
@@ -762,15 +789,15 @@ return null;
 fileType = org.jmol.util.SurfaceFileTyper.determineSurfaceFileType (br);
 }if (fileType == null) fileType = "UNKNOWN";
 org.jmol.util.Logger.info ("data file type was determined to be " + fileType);
-if (fileType.equals ("Jvxl+")) return  new org.jmol.jvxl.readers.JvxlReader (this, br);
-if (fileType.equals ("Jvxl")) return  new org.jmol.jvxl.readers.JvxlReader (this, br);
-if (fileType.equals ("JvxlXML")) return  new org.jmol.jvxl.readers.JvxlXmlReader (this, br);
-if (fileType.equals ("Apbs")) return  new org.jmol.jvxl.readers.ApbsReader (this, br);
-if (fileType.equals ("Cube")) return  new org.jmol.jvxl.readers.CubeReader (this, br);
-if (fileType.equals ("Jaguar")) return  new org.jmol.jvxl.readers.JaguarReader (this, br);
-if (fileType.equals ("Xplor")) return  new org.jmol.jvxl.readers.XplorReader (this, br);
-if (fileType.equals ("Xsf")) return  new org.jmol.jvxl.readers.XsfReader (this, br);
-if (fileType.equals ("PltFormatted")) return  new org.jmol.jvxl.readers.PltFormattedReader (this, br);
+if (fileType.equals ("Jvxl+")) return this.newReaderBr ("JvxlReader", br);
+if (fileType.equals ("Jvxl")) return this.newReaderBr ("JvxlReader", br);
+if (fileType.equals ("JvxlXML")) return this.newReaderBr ("JvxlXmlReader", br);
+if (fileType.equals ("Apbs")) return this.newReaderBr ("ApbsReader", br);
+if (fileType.equals ("Cube")) return this.newReaderBr ("CubeReader", br);
+if (fileType.equals ("Jaguar")) return this.newReaderBr ("JaguarReader", br);
+if (fileType.equals ("Xplor")) return this.newReaderBr ("XplorReader", br);
+if (fileType.equals ("Xsf")) return this.newReaderBr ("XsfReader", br);
+if (fileType.equals ("PltFormatted")) return this.newReaderBr ("PltFormattedReader", br);
 if (fileType.equals ("MRC")) {
 try {
 br.close ();
@@ -781,8 +808,10 @@ throw e;
 }
 }
 br = null;
-return  new org.jmol.jvxl.readers.MrcBinaryReader (this, this.params.fileName);
-}if (fileType.equals ("DSN6")) {
+this.readerData = this.params.fileName;
+return this.newReader ("MrcBinaryReader");
+}this.readerData = [this.params.fileName, data];
+if (fileType.equals ("DSN6")) {
 try {
 br.close ();
 } catch (e) {
@@ -792,15 +821,22 @@ throw e;
 }
 }
 br = null;
-return  new org.jmol.jvxl.readers.Dsn6BinaryReader (this, this.params.fileName, data);
-}if (fileType.equals ("Efvet")) return  new org.jmol.jvxl.readers.EfvetReader (this, br);
-if (fileType.equals ("Pmesh")) return  new org.jmol.jvxl.readers.PmeshReader (this, this.params.fileName, br);
-if (fileType.equals ("Obj")) return  new org.jmol.jvxl.readers.ObjReader (this, br);
-if (fileType.equals ("Msms")) return  new org.jmol.jvxl.readers.MsmsReader (this, this.params.fileName, br);
-if (fileType.equals ("Kinemage")) return  new org.jmol.jvxl.readers.KinemageReader (this, br);
-if (fileType.equals ("CastepDensity")) return  new org.jmol.jvxl.readers.CastepDensityReader (this, br);
-if (fileType.equals ("Nff")) return  new org.jmol.jvxl.readers.NffFileReader (this, br);
-return null;
+return this.newReader ("Dsn6BinaryReader");
+}if (fileType.equals ("Efvet")) {
+return this.newReaderBr ("EfvetReader", br);
+}if (fileType.equals ("Pmesh")) {
+return this.newReaderBr ("PmeshReader", br);
+}if (fileType.equals ("Obj")) {
+return this.newReaderBr ("ObjReader", br);
+}if (fileType.equals ("Msms")) {
+return this.newReaderBr ("MsmsReader", br);
+}if (fileType.equals ("Kinemage")) {
+return this.newReaderBr ("KinemageReader", br);
+}if (fileType.equals ("CastepDensity")) {
+return this.newReaderBr ("CastepDensityReader", br);
+}if (fileType.equals ("Nff")) {
+return this.newReaderBr ("NffFileReader", br);
+}return null;
 }, $fz.isPrivate = true, $fz), "~O");
 Clazz.defineMethod (c$, "initializeIsosurface", 
 function () {
@@ -929,5 +965,11 @@ this.bsVdw.or (atomData.bsSelected);
 Clazz.defineMethod (c$, "getSpanningVectors", 
 function () {
 return this.surfaceReader.getSpanningVectors ();
+});
+Clazz.defineMethod (c$, "getReaderData", 
+function () {
+var o = this.readerData;
+this.readerData = null;
+return o;
 });
 });

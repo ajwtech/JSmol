@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 06:27:31 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17604 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -226,9 +226,6 @@ public class Dots extends AtomShape {
       maxRadius = modelSet.getMaxVanderwaalsRadius();
     }
 
-    if (Logger.debugging)
-      Logger.startTimer();
-
     // combine current and selected set
     boolean newSet = (rdLast.value != rd.value
         || rdLast.valueExtended != rd.valueExtended || rdLast.factorType != rd.factorType
@@ -281,8 +278,6 @@ public class Dots extends AtomShape {
 
     rdLast = rd;
 
-    if (Logger.debugging)
-      Logger.checkTimer("dots generation time");
   }
 
   @Override

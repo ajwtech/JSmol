@@ -2242,7 +2242,6 @@ return this.shapeManager.getShapePropertyIndex (shapeType, propertyName, index);
 Clazz.defineMethod (c$, "addShapeProperty", 
 ($fz = function (propertyList, key, value) {
 if (this.isSyntaxCheck) return ;
-System.out.println ("addshapeprop " + key + " " + value);
 propertyList.add ([key, value]);
 }, $fz.isPrivate = true, $fz), "java.util.List,~S,~O");
 Clazz.defineMethod (c$, "setObjectMad", 

@@ -35,7 +35,6 @@ this.translucentLevel = 0;
 }, "~S,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setContacts", 
 ($fz = function (value, doEditCpList) {
-org.jmol.util.Logger.startTimer ();
 var contactType = (value[0]).intValue ();
 var displayType = (value[1]).intValue ();
 var colorDensity = (value[2]).booleanValue ();
@@ -185,7 +184,6 @@ ce = this.viewer.getColorEncoder ("rgb");
 if (colorDensity) ce.setRange (-0.3, 0.3, false);
  else ce.setRange (-0.5, 1, false);
 }if (ce != null) this.thisMesh.remapColors (ce, this.translucentLevel);
-org.jmol.util.Logger.checkTimer ("contact");
 }, $fz.isPrivate = true, $fz), "~A,~B");
 Clazz.defineMethod (c$, "combineSurfaces", 
 ($fz = function (pairs, contactType, displayType, parameters, func, isColorDensity, colorByType) {

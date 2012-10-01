@@ -7,8 +7,12 @@ this.nRead = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "XplorReader", org.jmol.jvxl.readers.MapFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.XplorReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.XplorReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.XplorReader, "init2", [sg, br]);
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");

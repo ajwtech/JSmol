@@ -6,7 +6,6 @@ this.shapeManager = null;
 this.renderers = null;
 this.holdRepaint = 0;
 this.repaintPending = false;
-this.logTime = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.render, "RepaintManager", null, org.jmol.api.JmolRepaintInterface);
 Clazz.makeConstructor (c$, 
@@ -88,8 +87,7 @@ throw e;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.overrideMethod (c$, "render", 
 function (gdata, modelSet, isFirstPass, minMax) {
-this.logTime = false;
-if (this.logTime) org.jmol.util.Logger.startTimer ();
+var logTime = this.viewer.getShowTiming ();
 try {
 var g3d = gdata;
 g3d.renderBackground (null);
@@ -98,10 +96,14 @@ if (minMax != null) g3d.renderCrossHairs (minMax, this.viewer.getScreenWidth (),
 var band = this.viewer.getRubberBandSelection ();
 if (band != null && g3d.setColix (this.viewer.getColixRubberband ())) g3d.drawRect (band.x, band.y, 0, 0, band.width, band.height);
 }if (this.renderers == null) this.renderers =  new Array (35);
+var msg = null;
 for (var i = 0; i < 35 && g3d.currentlyRendering (); ++i) {
 var shape = this.shapeManager.getShape (i);
-if (shape == null) continue ;this.getRenderer (i).render (g3d, modelSet, shape);
-if (this.logTime) org.jmol.util.Logger.checkTimer ("render time " + org.jmol.viewer.JmolConstants.getShapeClassName (i, false));
+if (shape == null) continue ;if (logTime) {
+msg = "rendering " + org.jmol.viewer.JmolConstants.getShapeClassName (i, false);
+org.jmol.util.Logger.startTimer (msg);
+}this.getRenderer (i).render (g3d, modelSet, shape);
+if (logTime) org.jmol.util.Logger.checkTimer (msg, false);
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
@@ -115,6 +117,7 @@ throw e;
 Clazz.overrideMethod (c$, "renderExport", 
 function (type, gdata, modelSet, fileName) {
 var isOK;
+var logTime = this.viewer.getShowTiming ();
 this.viewer.finalizeTransformParameters ();
 this.shapeManager.finalizeAtoms (null, null);
 this.shapeManager.transformAtoms ();
@@ -125,9 +128,14 @@ org.jmol.util.Logger.error ("Cannot export " + type);
 return null;
 }g3dExport.renderBackground (g3dExport);
 if (this.renderers == null) this.renderers =  new Array (35);
+var msg = null;
 for (var i = 0; i < 35; ++i) {
 var shape = this.shapeManager.getShape (i);
-if (shape != null) this.getRenderer (i).render (g3dExport, modelSet, shape);
+if (shape == null) continue ;if (logTime) {
+msg = "rendering " + org.jmol.viewer.JmolConstants.getShapeClassName (i, false);
+org.jmol.util.Logger.startTimer (msg);
+}this.getRenderer (i).render (g3dExport, modelSet, shape);
+if (logTime) org.jmol.util.Logger.checkTimer (msg, false);
 }
 return g3dExport.finalizeOutput ();
 }, "~S,org.jmol.util.GData,org.jmol.modelset.ModelSet,~S");

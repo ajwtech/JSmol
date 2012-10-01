@@ -6,8 +6,12 @@ this.nTriangles = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "PolygonFileReader", org.jmol.jvxl.readers.SurfaceFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.PolygonFileReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.PolygonFileReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.PolygonFileReader, "init2", [sg, br]);
 this.jvxlFileHeaderBuffer =  new StringBuffer ();
 this.jvxlFileHeaderBuffer.append ("#created ").append ( new java.util.Date ()).append ("\n");
 this.vertexDataOnly = true;

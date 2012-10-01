@@ -1414,7 +1414,7 @@ return ;
 }}if (allowScript && this.scriptEditorVisible && cmd == null) this.showEditor ([fileName, this.getFileAsString (fileName)]);
  else this.evalString ((cmd == null ? "script " : cmd) + org.jmol.util.Escape.escapeStr (fileName));
 }, "~S,~B");
-Clazz.overrideMethod (c$, "openFile", 
+Clazz.defineMethod (c$, "openFile", 
 function (fileName) {
 this.zap (true, true, false);
 return this.loadModelFromFile (null, fileName, null, null, false, null, null, 0);
@@ -1462,7 +1462,7 @@ s = org.jmol.util.TextFormat.simpleReplace (s, "$FILENAME" + (i + 1) + "$", org.
 loadScript =  new StringBuffer (s);
 } else if (reader == null) {
 if (loadScript == null) loadScript =  new StringBuffer ("load /*file*/$FILENAME$");
-atomSetCollection = this.getAtomSetCollection (fileName, isAppend, htParams, loadScript);
+atomSetCollection = this.openFile (fileName, isAppend, htParams, loadScript);
 } else if (Clazz.instanceOf (reader, java.io.Reader)) {
 atomSetCollection = this.fileManager.createAtomSetCollectionFromReader (fullPathName, fileName, reader, htParams);
 } else {
@@ -1528,13 +1528,14 @@ this.ligandModels.put (id, Boolean.FALSE);
 return null;
 }return model;
 }, "~S");
-Clazz.defineMethod (c$, "getAtomSetCollection", 
+Clazz.defineMethod (c$, "openFile", 
 ($fz = function (fileName, isAppend, htParams, loadScript) {
 if (fileName == null) return null;
 if (fileName.indexOf ("[]") >= 0) {
 return null;
 }var atomSetCollection;
-org.jmol.util.Logger.startTimer ();
+var msg = "openFile(" + fileName + ")";
+org.jmol.util.Logger.startTimer (msg);
 htParams = this.setLoadParameters (htParams, isAppend);
 var isLoadVariable = fileName.startsWith ("@");
 var haveFileData = (htParams.containsKey ("fileData"));
@@ -1555,7 +1556,7 @@ if (!isAppend) this.zap (true, false, false);
 atomSetCollection = this.fileManager.createAtomSetCollectionFromString (strModel, loadScript, htParams, isAppend, isLoadVariable || haveFileData && !isString);
 } else {
 atomSetCollection = this.fileManager.createAtomSetCollectionFromFile (fileName, htParams, isAppend);
-}org.jmol.util.Logger.checkTimer ("openFile(" + fileName + ")");
+}org.jmol.util.Logger.checkTimer (msg, false);
 return atomSetCollection;
 }, $fz.isPrivate = true, $fz), "~S,~B,java.util.Map,StringBuffer");
 Clazz.overrideMethod (c$, "openStringInline", 
@@ -4562,6 +4563,9 @@ Clazz.defineMethod (c$, "setBooleanPropertyTok",
 ($fz = function (key, tok, value) {
 var doRepaint = true;
 switch (tok) {
+case 603979934:
+this.global.showTiming = value;
+break;
 case 603979973:
 this.global.vectorSymmetry = value;
 break;
@@ -5142,6 +5146,10 @@ return this.global.solventOn ? this.global.solventProbeRadius : 0;
 Clazz.defineMethod (c$, "getSolventOn", 
 function () {
 return this.global.solventOn;
+});
+Clazz.defineMethod (c$, "getShowTiming", 
+function () {
+return this.global.showTiming;
 });
 Clazz.defineMethod (c$, "getTestFlag", 
 function (i) {

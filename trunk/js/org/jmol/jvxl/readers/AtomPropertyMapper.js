@@ -11,10 +11,14 @@ this.iAtomSurface = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "AtomPropertyMapper", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.makeConstructor (c$, 
-function (sg, mepType) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.AtomPropertyMapper, [sg]);
-this.mepType = mepType;
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~S");
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.AtomPropertyMapper, []);
+});
+Clazz.defineMethod (c$, "init", 
+function (sg) {
+Clazz.superCall (this, org.jmol.jvxl.readers.AtomPropertyMapper, "init", [sg]);
+this.mepType = sg.getReaderData ();
+}, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.defineMethod (c$, "setup", 
 function (isMapData) {
 Clazz.superCall (this, org.jmol.jvxl.readers.AtomPropertyMapper, "setup", [isMapData]);
@@ -58,7 +62,7 @@ if (this.params.thePlane != null) Clazz.superCall (this, org.jmol.jvxl.readers.A
 });
 Clazz.overrideMethod (c$, "initializeMapping", 
 function () {
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.startTimer ();
+if (this.params.showTiming) org.jmol.util.Logger.startTimer ("property mapping");
 if (this.bsNearby != null) this.bsMySelected.or (this.bsNearby);
 this.iter = this.atomDataServer.getSelectedAtomIterator (this.bsMySelected, false, false, false);
 });
@@ -66,7 +70,7 @@ Clazz.overrideMethod (c$, "finalizeMapping",
 function () {
 this.iter.release ();
 this.iter = null;
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.checkTimer ("property mapping time");
+if (this.params.showTiming) org.jmol.util.Logger.checkTimer ("property mapping", false);
 });
 Clazz.overrideMethod (c$, "generateCube", 
 function () {

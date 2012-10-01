@@ -18,13 +18,19 @@ Clazz.prepareFields (c$, function () {
 this.tokens =  new Array (0);
 });
 Clazz.makeConstructor (c$, 
-function (sg, fileName, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.PmeshReader, [sg, br]);
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.PmeshReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
+function (sg, br) {
+Clazz.superCall (this, org.jmol.jvxl.readers.PmeshReader, "init2", [sg, br]);
+var fileName = (sg.getReaderData ())[0];
+if (fileName == null) return ;
 this.type = "pmesh";
 this.setHeader ();
 this.isBinary = this.checkBinary (fileName);
 this.isClosedFace = !this.isBinary;
-}, "org.jmol.jvxl.readers.SurfaceGenerator,~S,java.io.BufferedReader");
+}, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.defineMethod (c$, "setHeader", 
 function () {
 this.jvxlFileHeaderBuffer.append (this.type + " file format\nvertices and triangles only\n");

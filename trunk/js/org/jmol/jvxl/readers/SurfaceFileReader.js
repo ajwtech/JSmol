@@ -12,8 +12,12 @@ Clazz.prepareFields (c$, function () {
 this.next =  Clazz.newArray (1, 0);
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.SurfaceFileReader, []);
+});
+Clazz.overrideMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.SurfaceFileReader, [sg]);
+this.init (sg);
 this.br = br;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "setOutputStream", 
