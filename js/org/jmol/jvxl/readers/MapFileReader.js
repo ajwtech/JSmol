@@ -34,8 +34,12 @@ this.adjustment =  new javax.vecmath.Point3f ();
 this.vectors =  new Array (3);
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.MapFileReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.MapFileReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.MapFileReader, "init2", [sg, br]);
 this.isAngstroms = true;
 this.adjustment = sg.getParams ().center;
 if (this.adjustment.x == 3.4028235E38) this.adjustment =  new javax.vecmath.Point3f ();

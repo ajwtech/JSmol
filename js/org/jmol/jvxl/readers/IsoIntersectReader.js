@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "javax.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "javax.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.myBsA = null;
 this.myBsB = null;
@@ -16,9 +16,12 @@ this.myBsB =  new javax.util.BitSet ();
 this.bsAtomMinMax =  new Array (2);
 this.values =  Clazz.newArray (2, 0);
 });
+Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoIntersectReader, []);
+});
 Clazz.overrideMethod (c$, "readVolumeParameters", 
 function (isMapData) {
-org.jmol.util.Logger.startTimer ();
 this.setup (isMapData);
 if (isMapData) return false;
 this.initializeVolumetricData ();
@@ -82,10 +85,6 @@ if (!this.setVoxels ()) this.resetPlane (0);
 if (this.contactPair == null) this.unsetVoxelData ();
 return this.thisPlane;
 }, "~N");
-Clazz.overrideMethod (c$, "postProcessVertices", 
-function () {
-org.jmol.util.Logger.checkTimer ("solvent surface time");
-});
 Clazz.defineMethod (c$, "setVoxels", 
 ($fz = function () {
 for (var i = 0; i < this.yzCount; i++) {

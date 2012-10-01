@@ -48,6 +48,10 @@ this.vTemp2 =  new javax.vecmath.Vector3f ();
 this.vTemp3 =  new javax.vecmath.Vector3f ();
 this.p =  new javax.vecmath.Point3f ();
 });
+Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoSolventReader, []);
+});
 Clazz.overrideMethod (c$, "readVolumeParameters", 
 function (isMapData) {
 this.setup (isMapData);
@@ -195,7 +199,6 @@ if (this.meshDataServer != null) {
 this.meshDataServer.fillMeshData (this.meshData, 3, null);
 this.meshData =  new org.jmol.jvxl.data.MeshData ();
 }}if (this.params.thePlane != null && this.params.slabInfo == null) this.params.addSlabInfo (org.jmol.util.MeshSurface.getSlabWithinRange (-100, 0));
-org.jmol.util.Logger.checkTimer ("solvent surface time");
 });
 Clazz.defineMethod (c$, "generateSolventCavity", 
 ($fz = function () {

@@ -8,8 +8,12 @@ Clazz.prepareFields (c$, function () {
 this.extents =  Clazz.newArray (3, 0);
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.JaguarReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.JaguarReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.JaguarReader, "init2", [sg, br]);
 this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 

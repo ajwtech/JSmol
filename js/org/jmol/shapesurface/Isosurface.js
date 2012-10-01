@@ -55,6 +55,7 @@ this.newSg ();
 Clazz.defineMethod (c$, "newSg", 
 function () {
 this.sg =  new org.jmol.jvxl.readers.SurfaceGenerator (this.viewer, this, null, this.jvxlData =  new org.jmol.jvxl.data.JvxlData ());
+this.sg.getParams ().showTiming = this.viewer.getShowTiming ();
 this.sg.setVersion ("Jmol " + org.jmol.viewer.Viewer.getJmolVersion ());
 });
 Clazz.defineMethod (c$, "clearSg", 

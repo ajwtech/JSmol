@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 07:05:49 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17605 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -3299,7 +3299,7 @@ public class ScriptEvaluator {
                                 Object value) {
     if (isSyntaxCheck)
       return;
-    System.out.println("addshapeprop " + key + " " + value);
+    //System.out.println("addshapeprop " + key + " " + value);
     propertyList.add(new Object[] { key, value });
   }
 

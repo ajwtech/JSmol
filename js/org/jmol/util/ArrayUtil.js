@@ -84,7 +84,7 @@ return t;
 c$.newInstance = Clazz.defineMethod (c$, "newInstance", 
 ($fz = function (array, n) {
 {
-return Clazz.newArrayBH(array, newLength);
+return Clazz.newArrayBH(array, n);
 }}, $fz.isPrivate = true, $fz), "~O,~N");
 c$.getLength = Clazz.defineMethod (c$, "getLength", 
 ($fz = function (array) {

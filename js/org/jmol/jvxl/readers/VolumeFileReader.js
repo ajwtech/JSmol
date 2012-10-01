@@ -23,8 +23,12 @@ this.isScaledAlready = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "VolumeFileReader", org.jmol.jvxl.readers.SurfaceFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.VolumeFileReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.VolumeFileReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.VolumeFileReader, "init2", [sg, br]);
 this.canDownsample = this.isProgressive = this.isXLowToHigh = true;
 this.jvxlData.wasCubic = true;
 this.boundingBox = this.params.boundingBox;

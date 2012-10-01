@@ -10,8 +10,12 @@ this.lastAtom = "";
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "KinemageReader", org.jmol.jvxl.readers.PmeshReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.KinemageReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.KinemageReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.KinemageReader, "init2", [sg, br]);
 this.type = "kinemage";
 this.setHeader ();
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");

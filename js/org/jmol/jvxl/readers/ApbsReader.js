@@ -2,8 +2,12 @@
 Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.ApbsReader", ["java.lang.StringBuffer", "org.jmol.util.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "ApbsReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.ApbsReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.ApbsReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.ApbsReader, "init2", [sg, br]);
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 this.isAngstroms = true;
 this.nSurfaces = 1;

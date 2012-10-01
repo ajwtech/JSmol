@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.DefaultLogger"], "org.jmol.util.Logger", ["java.lang.Runtime"], function () {
+Clazz.load (["java.util.Hashtable", "org.jmol.util.DefaultLogger"], "org.jmol.util.Logger", ["java.lang.Long", "$.Runtime"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Logger");
 c$.getProperty = Clazz.defineMethod (c$, "getProperty", 
 ($fz = function (level, defaultValue) {
@@ -133,15 +133,20 @@ org.jmol.util.Logger._logger.fatalEx (txt, e);
 }
 }, "~S,Throwable");
 c$.startTimer = Clazz.defineMethod (c$, "startTimer", 
-function () {
-($t$ = org.jmol.util.Logger.startTime = System.currentTimeMillis (), org.jmol.util.Logger.prototype.startTime = org.jmol.util.Logger.startTime, $t$);
-});
-c$.checkTimer = Clazz.defineMethod (c$, "checkTimer", 
 function (msg) {
-var time = System.currentTimeMillis () - org.jmol.util.Logger.startTime;
-if (msg != null) org.jmol.util.Logger.info (msg + ": " + (time) + " ms");
-return time;
+if (msg == null) return ;
+org.jmol.util.Logger.htTiming.put (msg, Long.$valueOf (System.currentTimeMillis ()));
 }, "~S");
+c$.checkTimer = Clazz.defineMethod (c$, "checkTimer", 
+function (msg, andReset) {
+if (msg == null) return -1;
+var t = org.jmol.util.Logger.htTiming.get (msg);
+if (t == null) return -1;
+var time = System.currentTimeMillis () - t.longValue ();
+if (!msg.startsWith ("(")) org.jmol.util.Logger.info ("Time for " + msg + ": " + (time) + " ms");
+if (andReset) org.jmol.util.Logger.startTimer (msg);
+return time;
+}, "~S,~B");
 c$.checkMemory = Clazz.defineMethod (c$, "checkMemory", 
 function () {
 var bTotal = 0;
@@ -180,6 +185,5 @@ org.jmol.util.Logger._activeLevels[1] = org.jmol.util.Logger.getProperty ("fatal
 ($t$ = org.jmol.util.Logger._logLevel = org.jmol.util.Logger.getProperty ("logLevel", false), org.jmol.util.Logger.prototype._logLevel = org.jmol.util.Logger._logLevel, $t$);
 ($t$ = org.jmol.util.Logger.debugging = (org.jmol.util.Logger._logger != null && (org.jmol.util.Logger._activeLevels[5] || org.jmol.util.Logger._activeLevels[6])), org.jmol.util.Logger.prototype.debugging = org.jmol.util.Logger.debugging, $t$);
 ($t$ = org.jmol.util.Logger.debuggingHigh = (org.jmol.util.Logger.debugging && org.jmol.util.Logger._activeLevels[6]), org.jmol.util.Logger.prototype.debuggingHigh = org.jmol.util.Logger.debuggingHigh, $t$);
-}Clazz.defineStatics (c$,
-"startTime", 0);
+}c$.htTiming = c$.prototype.htTiming =  new java.util.Hashtable ();
 });

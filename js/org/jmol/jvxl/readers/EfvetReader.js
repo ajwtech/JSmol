@@ -2,8 +2,12 @@
 Clazz.load (["org.jmol.jvxl.readers.PolygonFileReader"], "org.jmol.jvxl.readers.EfvetReader", ["javax.vecmath.Point3f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "EfvetReader", org.jmol.jvxl.readers.PolygonFileReader);
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.EfvetReader, []);
+});
+Clazz.defineMethod (c$, "init2", 
 function (sg, br) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.EfvetReader, [sg, br]);
+Clazz.superCall (this, org.jmol.jvxl.readers.EfvetReader, "init2", [sg, br]);
 this.jvxlFileHeaderBuffer.append ("efvet file format\nvertices and triangles only\n");
 org.jmol.jvxl.data.JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms (this.volumeData, this.jvxlFileHeaderBuffer);
 this.hasColorData = true;

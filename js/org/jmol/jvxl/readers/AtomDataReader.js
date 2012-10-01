@@ -50,8 +50,12 @@ this.pt1 =  new javax.vecmath.Point3i ();
 this.ptXyzTemp =  new javax.vecmath.Point3f ();
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.AtomDataReader, []);
+});
+Clazz.defineMethod (c$, "init", 
 function (sg) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.AtomDataReader, [sg]);
+Clazz.superCall (this, org.jmol.jvxl.readers.AtomDataReader, "init", [sg]);
 this.precalculateVoxelData = true;
 this.atomDataServer = sg.getAtomDataServer ();
 }, "org.jmol.jvxl.readers.SurfaceGenerator");

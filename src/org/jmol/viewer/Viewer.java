@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 07:05:49 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17605 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -2104,7 +2104,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (loadScript == null)
         loadScript = new StringBuffer("load /*file*/$FILENAME$");
 
-      atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
+      atomSetCollection = openFile(fileName, isAppend, htParams,
           loadScript);
 
     } else if (reader instanceof Reader) {
@@ -2239,7 +2239,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        only necessary for string reading
    * @return an AtomSetCollection or a String (error)
    */
-  private Object getAtomSetCollection(String fileName, boolean isAppend,
+  private Object openFile(String fileName, boolean isAppend,
                                       Map<String, Object> htParams,
                                       StringBuffer loadScript) {
     if (fileName == null)
@@ -2249,7 +2249,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     }
     Object atomSetCollection;
-    Logger.startTimer();
+    String msg = "openFile(" + fileName + ")";
+    Logger.startTimer(msg);
     htParams = setLoadParameters(htParams, isAppend);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
@@ -2291,7 +2292,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, isAppend);
     }
-    Logger.checkTimer("openFile(" + fileName + ")");
+    Logger.checkTimer(msg, false);
     return atomSetCollection;
   }
 
@@ -4074,10 +4075,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void refresh(int mode, String strWhy) {
-    // System.out.println("viewer refresh " + mode +
-    // "-----------------------------------------------------------"
+    //System.out.flush();    
+    //System.out.println("viewer refresh " + mode +
+    //"-------------------"
     // + Thread.currentThread().getName() + " " + strWhy);
-    // System.out.flush();
+    //System.out.flush();
     // refresh(2) indicates this is a mouse motion -- not going through Eval
     // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint
@@ -4107,6 +4109,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * }
      */
     { 
+      if (mode == 7)
+        return;
       if (mode > 0)
         repaintManager.repaintIfReady();
     }
@@ -6611,6 +6615,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.showtiming:
+      // 12.3.6
+      global.showTiming = value;
+      break;
     case Token.vectorsymmetry:
       // 12.3.2
       global.vectorSymmetry = value;
@@ -7304,6 +7312,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.solventOn;
   }
 
+  public boolean getShowTiming() {
+    return global.showTiming;
+  }
+  
   public boolean getTestFlag(int i) {
     switch (i) {
     case 1:

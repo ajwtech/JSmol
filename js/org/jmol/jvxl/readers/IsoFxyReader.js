@@ -11,8 +11,12 @@ Clazz.prepareFields (c$, function () {
 this.values =  Clazz.newArray (3, 0);
 });
 Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoFxyReader, []);
+});
+Clazz.defineMethod (c$, "init", 
 function (sg) {
-Clazz.superConstructor (this, org.jmol.jvxl.readers.IsoFxyReader, [sg]);
+Clazz.superCall (this, org.jmol.jvxl.readers.IsoFxyReader, "init", [sg]);
 this.isXLowToHigh = true;
 this.precalculateVoxelData = false;
 this.atomDataServer = sg.getAtomDataServer ();

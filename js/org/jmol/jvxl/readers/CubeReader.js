@@ -1,6 +1,10 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
 Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CubeReader", ["java.lang.StringBuffer", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "CubeReader", org.jmol.jvxl.readers.VolumeFileReader);
+Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.CubeReader, []);
+});
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 this.jvxlFileHeaderBuffer =  new StringBuffer ();

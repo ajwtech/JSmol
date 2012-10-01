@@ -4,6 +4,10 @@ c$ = Clazz.decorateAsClass (function () {
 this.isBXSF = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "XsfReader", org.jmol.jvxl.readers.VolumeFileReader);
+Clazz.makeConstructor (c$, 
+function () {
+Clazz.superConstructor (this, org.jmol.jvxl.readers.XsfReader, []);
+});
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 this.isAngstroms = false;
