@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["org.jmol.util.ColorEncoder"], "org.jmol.viewer.ColorManager", ["java.lang.Float", "$.StringBuffer", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Elements", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.util.ColorEncoder"], "org.jmol.viewer.ColorManager", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Elements", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.propertyColorEncoder = null;
 this.viewer = null;
@@ -212,11 +212,11 @@ this.propertyColorEncoder.isTranslucent = isTranslucent;
 }, "~S,~B,~B");
 Clazz.defineMethod (c$, "getState", 
 function (sfunc) {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var n = this.propertyColorEncoder.getState (s);
 if (n > 0 && sfunc != null) sfunc.append ("\n  _setColorState\n");
 return (n > 0 && sfunc != null ? "function _setColorState() {\n" + s.append ("}\n\n").toString () : s.toString ());
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "setUserScale", 
 function (scale) {
 this.propertyColorEncoder.setUserScale (scale);

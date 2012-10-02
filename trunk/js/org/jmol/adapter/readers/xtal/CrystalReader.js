@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "javax.vecmath.Point3f"], "org.jmol.adapter.readers.xtal.CrystalReader", ["java.lang.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "javax.vecmath.Point3f"], "org.jmol.adapter.readers.xtal.CrystalReader", ["java.lang.Character", "$.Double", "$.Float", "java.util.ArrayList", "$.Arrays", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isVersion3 = false;
 this.isPrimitive = false;
@@ -434,7 +434,7 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readTotalAtomicCharges", 
 ($fz = function () {
-var data =  new StringBuffer ();
+var data =  new javax.util.StringXBuilder ();
 while (this.readLine () != null && this.line.indexOf ("T") < 0) data.append (this.line);
 
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (data.toString ());

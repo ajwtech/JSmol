@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 18:02:17 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17603 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -49,6 +49,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+
+import javax.util.StringXBuilder;
 
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
@@ -1770,7 +1772,7 @@ public class AtomSetCollection {
     for (Map.Entry<String, String> entry : p.entrySet()) {
       String key = entry.getKey();
       String data = entry.getValue();
-      StringBuilder s = new StringBuilder();
+      StringXBuilder s = new StringXBuilder();
       for (int i = nTimes; --i >= 0; )
         s.append(data);   
       p.put(key, s.toString());

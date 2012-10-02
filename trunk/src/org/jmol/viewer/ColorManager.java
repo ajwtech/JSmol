@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -40,6 +40,8 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
+
+import javax.util.StringXBuilder;
 
 class ColorManager {
 
@@ -343,8 +345,8 @@ class ColorManager {
     propertyColorEncoder.isTranslucent = isTranslucent;
   }
 
-  String getState(StringBuffer sfunc) {
-    StringBuffer s = new StringBuffer();
+  String getState(StringXBuilder sfunc) {
+    StringXBuilder s = new StringXBuilder();
     int n = propertyColorEncoder.getState(s);
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)

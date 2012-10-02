@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["javax.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.animationReplayMode = null;
@@ -147,12 +147,12 @@ Clazz.defineMethod (c$, "getState",
 function (sfunc) {
 var modelCount = this.viewer.getModelCount ();
 if (modelCount < 2) return "";
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 if (sfunc != null) {
 sfunc.append ("  _setFrameState;\n");
 commands.append ("function _setFrameState() {\n");
 }commands.append ("# frame state;\n");
-commands.append ("# modelCount ").append (modelCount).append (";\n# first ").append (this.viewer.getModelNumberDotted (0)).append (";\n# last ").append (this.viewer.getModelNumberDotted (modelCount - 1)).append (";\n");
+commands.append ("# modelCount ").appendI (modelCount).append (";\n# first ").append (this.viewer.getModelNumberDotted (0)).append (";\n# last ").append (this.viewer.getModelNumberDotted (modelCount - 1)).append (";\n");
 if (this.backgroundModelIndex >= 0) org.jmol.viewer.StateManager.appendCmd (commands, "set backgroundModel " + this.viewer.getModelNumberDotted (this.backgroundModelIndex));
 var bs = this.viewer.getFrameOffsets ();
 if (bs != null) org.jmol.viewer.StateManager.appendCmd (commands, "frame align " + org.jmol.util.Escape.escape (bs));
@@ -165,7 +165,7 @@ org.jmol.viewer.StateManager.appendCmd (commands, "animation " + (!this.$animati
 if (this.$animationOn && this.animationPaused) org.jmol.viewer.StateManager.appendCmd (commands, "animation PAUSE");
 if (sfunc != null) commands.append ("}\n\n");
 return commands.toString ();
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "setAnimationDirection", 
 function (animationDirection) {
 this.animationDirection = animationDirection;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -32,6 +32,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
+import javax.util.StringXBuilder;
 
 public class Axes extends FontLineShape {
 
@@ -177,15 +178,15 @@ public class Axes extends FontLineShape {
   
  @Override
 public String getShapeState() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("  axes scale ").append(viewer.getAxesScale()).append(";\n"); 
+    StringXBuilder sb = new StringXBuilder();
+    sb.append("  axes scale ").appendF(viewer.getAxesScale()).append(";\n"); 
     if (fixedOrigin != null)
       sb.append("  axes center ")
           .append(Escape.escapePt(fixedOrigin)).append(";\n");
     if (axisXY.z != 0)
       sb.append("  axes position [")
-          .append((int) axisXY.x).append(" ")
-          .append((int) axisXY.y).append(" ")
+          .appendI((int) axisXY.x).append(" ")
+          .appendI((int) axisXY.y).append(" ")
           .append(axisXY.z < 0 ? " %" : "").append("];\n");
     if (labels != null) {
       sb.append("  axes labels ");

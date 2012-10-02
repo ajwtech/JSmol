@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "$.StringBuffer", "java.util.Arrays", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.api.JmolBioResolver"], "org.jmol.modelsetbio.Resolver", ["java.lang.Boolean", "$.NullPointerException", "java.util.Arrays", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.Group", "org.jmol.modelsetbio.AlphaMonomer", "$.AlphaPolymer", "$.AminoMonomer", "$.AminoPolymer", "$.BioModel", "$.CarbohydrateMonomer", "$.CarbohydratePolymer", "$.NucleicMonomer", "$.NucleicPolymer", "$.PhosphorusMonomer", "$.PhosphorusPolymer", "org.jmol.util.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelLoader = null;
 this.modelSet = null;
@@ -283,7 +283,7 @@ for (var i = this.baseBondIndex; i < bondCount; i++) {
 var a1 = bonds[i].getAtom1 ();
 var a2 = bonds[i].getAtom2 ();
 var g = a1.getGroup ();
-if (g !== a2.getGroup ()) continue ;var key =  new StringBuffer (g.getGroup3 ());
+if (g !== a2.getGroup ()) continue ;var key =  new javax.util.StringXBuilder ().append (g.getGroup3 ());
 key.append (":");
 var n1 = a1.getAtomName ();
 var n2 = a2.getAtomName ();

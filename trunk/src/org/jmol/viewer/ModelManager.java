@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
@@ -55,7 +56,7 @@ class ModelManager {
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
-                          StringBuffer loadScript, Object atomSetCollection,
+                          StringXBuilder loadScript, Object atomSetCollection,
                           BitSet bsNew, boolean isAppend) {
     String modelSetName = null;
     if (isAppend) {

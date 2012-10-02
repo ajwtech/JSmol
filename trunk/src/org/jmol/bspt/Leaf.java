@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,9 +22,11 @@
  */
 package org.jmol.bspt;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.Escape;
 
 /**
  * A leaf of Point3f objects in the bsp tree
@@ -76,12 +78,12 @@ class Leaf extends Element {
     
  
   @Override
-  void dump(int level, StringBuffer sb) {
+  void dump(int level, StringXBuilder sb) {
     for (int i = 0; i < count; ++i) {
       Point3f t = tuples[i];
       for (int j = 0; j < level; ++j)
         sb.append(".");
-      sb.append(t).append("Leaf ").append(i).append(": ").append(((Atom) t).getInfo());
+      sb.append(Escape.escape(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
     }
   }
 

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.XmlReader", ["java.lang.Character", "$.StringBuffer", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.XmlUtil"], function () {
+Clazz.load (null, "org.jmol.util.XmlReader", ["java.lang.Character", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.XmlUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.br = null;
 this.line = null;
@@ -32,7 +32,7 @@ function (name, data, withTag, allowSelfCloseOption) {
 var closer = "</" + name + ">";
 var tag = "<" + name;
 if (data == null) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 try {
 if (this.line == null) this.line = this.br.readLine ();
 while (this.line.indexOf (tag) < 0) {

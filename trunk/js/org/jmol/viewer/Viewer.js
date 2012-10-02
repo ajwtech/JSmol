@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.StringBuffer", "$.Thread", "java.util.Date", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.thread.ScriptParallelProcessor", "$.TimeoutThread", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuffer", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.api.JmolViewer", "org.jmol.atomdata.AtomDataServer", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.i18n.GT", "org.jmol.util.CommandHistory", "$.Dimension"], "org.jmol.viewer.Viewer", ["java.io.BufferedOutputStream", "$.BufferedReader", "$.BufferedWriter", "$.File", "$.FileWriter", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.Runtime", "$.Thread", "java.util.Date", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.constant.EnumAxesMode", "$.EnumFileStatus", "$.EnumStereoMode", "$.EnumVdw", "org.jmol.modelset.Group", "org.jmol.script.ScriptCompiler", "$.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Shape", "org.jmol.thread.ScriptParallelProcessor", "$.TimeoutThread", "org.jmol.util.Base64", "$.BitSetUtil", "$.CifDataReader", "$.Colix", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolMolecule", "$.Logger", "$.Measure", "$.OutputStringBuilder", "$.Parser", "$.SurfaceFileTyper", "$.TempArray", "$.TextFormat", "org.jmol.viewer.ActionManager", "$.AnimationManager", "$.ColorManager", "$.DataManager", "$.FileManager", "$.JmolConstants", "$.ModelManager", "$.PropertyManager", "$.ScriptManager", "$.SelectionManager", "$.ShapeManager", "$.StateManager", "$.StatusManager", "$.TransformManager10", "$.TransformManager11", "org.jmol.viewer.binding.Binding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$display = null;
 this.gdata = null;
@@ -1114,7 +1114,7 @@ function (name) {
 var objId = org.jmol.viewer.StateManager.getObjectIdFromName (name.equalsIgnoreCase ("axes") ? "axis" : name);
 if (objId < 0) return "";
 var mad = this.getObjectMad (objId);
-var s =  new StringBuffer ("\n");
+var s =  new javax.util.StringXBuilder ().append ("\n");
 org.jmol.shape.Shape.appendCmd (s, name + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" : mad < 20 ? " " + mad : " " + (mad / 2000)));
 return s.toString ();
 }, "~S");
@@ -1441,7 +1441,7 @@ var atomSetCollection;
 var saveInfo = this.fileManager.getFileInfo ();
 if (fileNames != null) {
 if (loadScript == null) {
-loadScript =  new StringBuffer ("load files");
+loadScript =  new javax.util.StringXBuilder ().append ("load files");
 for (var i = 0; i < fileNames.length; i++) loadScript.append (" /*file*/$FILENAME" + (i + 1) + "$");
 
 }var timeBegin = System.currentTimeMillis ();
@@ -1459,9 +1459,9 @@ var fname = fileNames[i];
 if (fileTypes != null && fileTypes[i] != null) fname = fileTypes[i] + "::" + fname;
 s = org.jmol.util.TextFormat.simpleReplace (s, "$FILENAME" + (i + 1) + "$", org.jmol.util.Escape.escapeStr (fname.$replace ('\\', '/')));
 }
-loadScript =  new StringBuffer (s);
+loadScript =  new javax.util.StringXBuilder ().append (s);
 } else if (reader == null) {
-if (loadScript == null) loadScript =  new StringBuffer ("load /*file*/$FILENAME$");
+if (loadScript == null) loadScript =  new javax.util.StringXBuilder ().append ("load /*file*/$FILENAME$");
 atomSetCollection = this.openFile (fileName, isAppend, htParams, loadScript);
 } else if (Clazz.instanceOf (reader, java.io.Reader)) {
 atomSetCollection = this.fileManager.createAtomSetCollectionFromReader (fullPathName, fileName, reader, htParams);
@@ -1475,9 +1475,9 @@ if (loadScript != null) {
 var fname = htParams.get ("fullPathName");
 if (fname == null) fname = "";
 if (htParams.containsKey ("loadScript")) loadScript = htParams.get ("loadScript");
-htParams.put ("loadScript", loadScript =  new StringBuffer (org.jmol.util.TextFormat.simpleReplace (loadScript.toString (), "$FILENAME$", org.jmol.util.Escape.escapeStr (fname.$replace ('\\', '/')))));
+htParams.put ("loadScript", loadScript =  new javax.util.StringXBuilder ().append (org.jmol.util.TextFormat.simpleReplace (loadScript.toString (), "$FILENAME$", org.jmol.util.Escape.escapeStr (fname.$replace ('\\', '/')))));
 }return this.createModelSetAndReturnError (atomSetCollection, isAppend, loadScript);
-}, "~S,~S,~A,~O,~B,java.util.Map,StringBuffer,~N");
+}, "~S,~S,~A,~O,~B,java.util.Map,javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "setLigandModel", 
 function (id, data) {
 id = id.toUpperCase ();
@@ -1550,7 +1550,7 @@ return this.loadInlineScript (strModel, '\0', isAppend, htParams);
 strModel = this.modelSet.getInlineData (-1);
 if (strModel == null) if (this.isModelKitMode ()) strModel = "1 0 C 0 0";
  else return "cannot find string data";
-if (loadScript != null) htParams.put ("loadScript", loadScript =  new StringBuffer (org.jmol.util.TextFormat.simpleReplace (loadScript.toString (), "$FILENAME$", "data \"model inline\"\n" + strModel + "end \"model inline\"")));
+if (loadScript != null) htParams.put ("loadScript", loadScript =  new javax.util.StringXBuilder ().append (org.jmol.util.TextFormat.simpleReplace (loadScript.toString (), "$FILENAME$", "data \"model inline\"\n" + strModel + "end \"model inline\"")));
 }if (strModel != null) {
 if (!isAppend) this.zap (true, false, false);
 atomSetCollection = this.fileManager.createAtomSetCollectionFromString (strModel, loadScript, htParams, isAppend, isLoadVariable || haveFileData && !isString);
@@ -1558,7 +1558,7 @@ atomSetCollection = this.fileManager.createAtomSetCollectionFromString (strModel
 atomSetCollection = this.fileManager.createAtomSetCollectionFromFile (fileName, htParams, isAppend);
 }org.jmol.util.Logger.checkTimer (msg, false);
 return atomSetCollection;
-}, $fz.isPrivate = true, $fz), "~S,~B,java.util.Map,StringBuffer");
+}, $fz.isPrivate = true, $fz), "~S,~B,java.util.Map,javax.util.StringXBuilder");
 Clazz.overrideMethod (c$, "openStringInline", 
 function (strModel) {
 return this.openStringInlineParams (strModel, null, false);
@@ -1645,14 +1645,14 @@ return "cannot open script inline";
 }htParams = this.setLoadParameters (htParams, isAppend);
 var loadScript = htParams.get ("loadScript");
 var isLoadCommand = htParams.containsKey ("isData");
-if (loadScript == null) loadScript =  new StringBuffer ();
+if (loadScript == null) loadScript =  new javax.util.StringXBuilder ();
 if (!isAppend) this.zap (true, false, false);
 var atomSetCollection = this.fileManager.createAtomSetCollectionFromString (strModel, loadScript, htParams, isAppend, isLoadCommand);
 return this.createModelSetAndReturnError (atomSetCollection, isAppend, loadScript);
 }, $fz.isPrivate = true, $fz), "~S,java.util.Map,~B");
 Clazz.defineMethod (c$, "openStringsInline", 
 ($fz = function (arrayModels, htParams, isAppend) {
-var loadScript =  new StringBuffer ();
+var loadScript =  new javax.util.StringXBuilder ();
 if (!isAppend) this.zap (true, false, false);
 var atomSetCollection = this.fileManager.createAtomSeCollectionFromStrings (arrayModels, loadScript, this.setLoadParameters (htParams, isAppend), isAppend);
 return this.createModelSetAndReturnError (atomSetCollection, isAppend, loadScript);
@@ -1672,7 +1672,7 @@ var fileName = this.fileManager.getFileName ();
 var errMsg;
 if (loadScript == null) {
 this.setBooleanProperty ("preserveState", false);
-loadScript =  new StringBuffer ("load \"???\"");
+loadScript =  new javax.util.StringXBuilder ().append ("load \"???\"");
 }if (Clazz.instanceOf (atomSetCollection, String)) {
 errMsg = atomSetCollection;
 this.setFileLoadStatus (org.jmol.constant.EnumFileStatus.NOT_LOADED, fullPathName, null, null, errMsg);
@@ -1713,7 +1713,7 @@ this.axesAreTainted = true;
 }atomSetCollection = null;
 System.gc ();
 return errMsg;
-}, $fz.isPrivate = true, $fz), "~O,~B,StringBuffer");
+}, $fz.isPrivate = true, $fz), "~O,~B,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "loadAtomDataAndReturnError", 
 ($fz = function (atomSetCollection, tokType) {
 if (Clazz.instanceOf (atomSetCollection, String)) return atomSetCollection;
@@ -1748,7 +1748,7 @@ var filename = this.getFullPathName ();
 if (filename.equals ("string") || filename.indexOf ("[]") >= 0 || filename.equals ("JSNode")) {
 var str = this.getCurrentFileAsString ();
 var bos =  new java.io.BufferedOutputStream (os);
-var sb =  new org.jmol.util.OutputStringBuffer (bos);
+var sb =  new org.jmol.util.OutputStringBuilder (bos);
 sb.append (str);
 return sb.toString ();
 }var pathName = this.modelManager.getModelSetPathName ();
@@ -2488,8 +2488,8 @@ Clazz.defineMethod (c$, "getStateInfo",
 function (type, width, height) {
 if (!this.global.preserveState) return "";
 var isAll = (type == null || type.equalsIgnoreCase ("all"));
-var s =  new StringBuffer ("");
-var sfunc = (isAll ?  new StringBuffer ("function _setState() {\n") : null);
+var s =  new javax.util.StringXBuilder ();
+var sfunc = (isAll ?  new javax.util.StringXBuilder ().append ("function _setState() {\n") : null);
 if (isAll) s.append ("# Jmol state version " + org.jmol.viewer.Viewer.getJmolVersion () + ";\n");
 if (this.$isApplet && isAll) {
 org.jmol.viewer.StateManager.appendCmd (s, "# fullName = " + org.jmol.util.Escape.escapeStr (this.fullName));
@@ -2513,7 +2513,7 @@ org.jmol.viewer.StateManager.appendCmd (sfunc, "set antialiasTranslucent " + thi
 org.jmol.viewer.StateManager.appendCmd (sfunc, "set antialiasImages " + this.global.antialiasImages);
 if (this.getSpinOn ()) org.jmol.viewer.StateManager.appendCmd (sfunc, "spin on");
 sfunc.append ("}\n\n_setState;\n");
-}if (isAll) s.append (sfunc);
+}if (isAll) s.appendSB (sfunc);
 return s.toString ();
 }, "~S,~N,~N");
 Clazz.defineMethod (c$, "getStructureState", 
@@ -3282,7 +3282,7 @@ function (returnType, strScript, statusList, isScriptFile, isQuiet, isQueued) {
 if (strScript == null) return null;
 var str = this.checkScriptExecution (strScript, false);
 if (str != null) return str;
-var outputBuffer = (statusList == null || statusList.equals ("output") ?  new StringBuffer () : null);
+var outputBuffer = (statusList == null || statusList.equals ("output") ?  new javax.util.StringXBuilder () : null);
 var oldStatusList = this.statusManager.getStatusList ();
 this.getProperty ("String", "jmolStatus", statusList);
 if (this.isSyntaxCheck) org.jmol.util.Logger.info ("--checking script:\n" + this.$eval.getScript () + "\n----\n");
@@ -3543,14 +3543,14 @@ var bsA = this.getModelUndeletedAtomsBitSet (modelIndex);
 this.setAppendNew (false);
 var atomIndex = this.modelSet.getAtomCount ();
 var atomno = this.modelSet.getAtomCountInModel (modelIndex);
-var sbConnect =  new StringBuffer ();
+var sbConnect =  new javax.util.StringXBuilder ();
 for (var i = 0; i < vConnections.size (); i++) {
 var a = vConnections.get (i);
 sbConnect.append (";  connect 0 100 ").append ("({" + (atomIndex++) + "}) ").append ("({" + a.index + "}) group;");
 }
-var sb =  new StringBuffer ();
-sb.append (pts.length).append ("\n").append ("Viewer.AddHydrogens").append ("#noautobond").append ("\n");
-for (var i = 0; i < pts.length; i++) sb.append ("H ").append (pts[i].x).append (" ").append (pts[i].y).append (" ").append (pts[i].z).append (" - - - - ").append (++atomno).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+sb.appendI (pts.length).append ("\n").append ("Viewer.AddHydrogens").append ("#noautobond").append ("\n");
+for (var i = 0; i < pts.length; i++) sb.append ("H ").appendF (pts[i].x).append (" ").appendF (pts[i].y).append (" ").appendF (pts[i].z).append (" - - - - ").appendI (++atomno).appendC ('\n');
 
 this.loadInlineScript (sb.toString (), '\n', true, null);
 this.$eval.runScriptBuffer (sbConnect.toString (), null);
@@ -5990,7 +5990,7 @@ Clazz.defineMethod (c$, "getPdbData",
 function (bs, sb) {
 if (bs == null) bs = this.getSelectionSet (true);
 return this.modelSet.getPdbAtomData (bs, sb);
-}, "javax.util.BitSet,org.jmol.util.OutputStringBuffer");
+}, "javax.util.BitSet,org.jmol.util.OutputStringBuilder");
 Clazz.defineMethod (c$, "isJmolDataFrameForModel", 
 function (modelIndex) {
 return this.modelSet.isJmolDataFrameForModel (modelIndex);
@@ -6341,11 +6341,11 @@ var ptDot = fileName.indexOf (".");
 if (ptDot < 0) ptDot = fileName.length;
 var froot = fileName.substring (0, ptDot);
 var fext = fileName.substring (ptDot);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 text_or_bytes = [""];
 if (bsFrames == null) {
 this.transformManager.vibrationOn = true;
-sb =  new StringBuffer ();
+sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < nVibes; i++) {
 for (var j = 0; j < 20; j++) {
 this.transformManager.setVibrationT (j / 20 + 0.2501);
@@ -6370,7 +6370,7 @@ var msg = this.createImagePathCheck (fileName, type, text_or_bytes, null, qualit
 this.scriptEcho (msg);
 sb.append (msg).append ("\n");
 return msg.startsWith ("OK");
-}, $fz.isPrivate = true, $fz), "~N,~S,~S,~A,~S,~O,~N,~N,~N,StringBuffer");
+}, $fz.isPrivate = true, $fz), "~N,~S,~S,~A,~S,~O,~N,~N,~N,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getCreatingImage", 
 function () {
 return this.creatingImage;
@@ -7001,7 +7001,7 @@ this.refresh (2, this.statusManager.syncingMouse ? "Mouse: rotateArcBall " + x +
 Clazz.defineMethod (c$, "getAtomicPropertyState", 
 function (commands, type, bs, name, data) {
 this.modelSet.getAtomicPropertyStateBuffer (commands, type, bs, name, data);
-}, "StringBuffer,~N,javax.util.BitSet,~S,~A");
+}, "javax.util.StringXBuilder,~N,javax.util.BitSet,~S,~A");
 Clazz.defineMethod (c$, "getCenterAndPoints", 
 function (atomSets, addCenter) {
 return this.modelSet.getCenterAndPoints (atomSets, addCenter);
@@ -7018,13 +7018,13 @@ var os = this.getOutputStream (fileName, fullPath);
 if (os == null) return "";
 var sb;
 if (type.equals ("PDB") || type.equals ("PQR")) {
-sb =  new org.jmol.util.OutputStringBuffer ( new java.io.BufferedOutputStream (os));
+sb =  new org.jmol.util.OutputStringBuilder ( new java.io.BufferedOutputStream (os));
 sb.type = type;
 msg = this.getPdbData (null, sb);
 } else if (type.equals ("FILE")) {
 msg = this.writeCurrentFile (os);
 } else if (type.equals ("PLOT")) {
-sb =  new org.jmol.util.OutputStringBuffer ( new java.io.BufferedOutputStream (os));
+sb =  new org.jmol.util.OutputStringBuilder ( new java.io.BufferedOutputStream (os));
 msg = this.modelSet.getPdbData (modelIndex, type2, this.getSelectionSet (false), parameters, sb);
 }if (msg != null) msg = "OK " + msg + " " + fullPath[0];
 try {
@@ -7148,7 +7148,7 @@ this.shapeManager.deleteShapeAtoms (value, bs);
 Clazz.defineMethod (c$, "getShapeState", 
 function (commands, isAll, iShape) {
 this.shapeManager.getShapeState (commands, isAll, iShape);
-}, "StringBuffer,~B,~N");
+}, "javax.util.StringXBuilder,~B,~N");
 Clazz.defineMethod (c$, "resetBioshapes", 
 function (bsAllAtoms) {
 this.shapeManager.resetBioshapes (bsAllAtoms);
@@ -7254,7 +7254,7 @@ default:
 if (this.undoWorking && clearRedo) return ;
 this.undoWorking = true;
 var bs;
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append ("#" + type + " " + taintedAtom + " " + ( new java.util.Date ()) + "\n");
 if (taintedAtom >= 0) {
 bs = this.getModelUndeletedAtomsBitSet (modelIndex);
@@ -7345,14 +7345,14 @@ function (commands) {
 if (this.ligandModelSet != null) {
 for (var key, $key = this.ligandModelSet.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {
 var data = this.ligandModels.get (key + "_data");
-if (data != null) commands.append ("  ").append (org.jmol.util.Escape.encapsulateData ("ligand_" + key, data.trim () + "\n"));
+if (data != null) commands.append ("  ").appendO (org.jmol.util.Escape.encapsulateData ("ligand_" + key, data.trim () + "\n"));
 }
 }this.modelSet.appendLoadStates (commands);
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 c$.getInlineData = Clazz.defineMethod (c$, "getInlineData", 
 function (loadScript, strModel, isAppend) {
 org.jmol.viewer.DataManager.getInlineData (loadScript, strModel, isAppend, null);
-}, "StringBuffer,~S,~B");
+}, "javax.util.StringXBuilder,~S,~B");
 Clazz.defineMethod (c$, "isAtomPDB", 
 function (i) {
 return this.modelSet.isAtomPDB (i);
@@ -7453,7 +7453,7 @@ Clazz.defineMethod (c$, "initializeExporter",
 function (type, fileName) {
 if (this.jsExporter != null) return this.jsExporter;
 var isJS = type.equals ("JS");
-var output = (fileName == null ?  new StringBuffer () : fileName);
+var output = (fileName == null ?  new javax.util.StringXBuilder () : fileName);
 var g3dExport = null;
 try {
 var export3Dclass = Class.forName (isJS ? "org.jmol.exportjs.Export3D" : "org.jmol.export.Export3D");

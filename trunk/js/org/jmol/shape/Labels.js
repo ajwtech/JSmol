@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable"], "org.jmol.shape.Labels", ["java.lang.StringBuffer", "javax.util.BitSet", "org.jmol.constant.EnumPalette", "org.jmol.modelset.LabelToken", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.JmolFont"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable"], "org.jmol.shape.Labels", ["javax.util.BitSet", "$.StringXBuilder", "org.jmol.constant.EnumPalette", "org.jmol.modelset.LabelToken", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.JmolFont"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.strings = null;
 this.formats = null;
@@ -342,7 +342,7 @@ if (label != null && this.modelSet.atoms.length > i && !this.modelSet.isAtomHidd
 });
 Clazz.defineMethod (c$, "getDefaultState", 
 ($fz = function () {
-var s =  new StringBuffer ("\n# label defaults;\n");
+var s =  new javax.util.StringXBuilder ().append ("\n# label defaults;\n");
 org.jmol.shape.Shape.appendCmd (s, "select none");
 org.jmol.shape.Shape.appendCmd (s, this.getColorCommand ("label", this.defaultPaletteID, this.defaultColix));
 org.jmol.shape.Shape.appendCmd (s, "background label " + org.jmol.shape.Shape.encodeColor (this.defaultBgcolix));

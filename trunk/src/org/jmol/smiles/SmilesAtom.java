@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -72,7 +72,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
-  char bioType; //* p n r d 
+  char bioType = '\0'; //* p n r d 
   boolean isLeadAtom;
   int notBondedIndex = -1;
   boolean notCrossLinked;

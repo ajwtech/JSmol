@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -45,6 +45,7 @@ import javax.vecmath.Point3i;
 import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import javax.util.StringXBuilder;
 
 /**
  * Shape now encompasses:
@@ -239,7 +240,7 @@ public abstract class Shape {
   static private String getXmlPropertyString(Vector xmlProperties, String type) {
     if (xmlProperties == null || xmlProperties.size() == 0)
       return null;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     XmlUtil.openTag(sb, "shape", new String[] { "type", type });
     XmlUtil.toXml(sb, "property", xmlProperties);
     XmlUtil.closeTag(sb, "shape");
@@ -435,7 +436,7 @@ public abstract class Shape {
     return StateManager.getCommands(htDefine, htMore, selectCmd);
   }
 
-  static public void appendCmd(StringBuffer s, String cmd) {
+  static public void appendCmd(StringXBuilder s, String cmd) {
     StateManager.appendCmd(s, cmd);
   }
 

@@ -256,6 +256,10 @@ Clazz.defineMethod (c$, "openStream",
 function () {
 return this.openConnection ().getInputStream ();
 });
+Clazz.defineMethod (c$, "getContent", 
+function () {
+return this.openConnection ().getInputStream ();
+});
 c$.setURLStreamHandlerFactory = Clazz.defineMethod (c$, "setURLStreamHandlerFactory", 
 function (fac) {
 {

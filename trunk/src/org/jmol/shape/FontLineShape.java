@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -28,6 +28,8 @@ import javax.util.BitSet;
 
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Escape;
+
+import javax.util.StringXBuilder;
 
 public abstract class FontLineShape extends FontShape {
 
@@ -60,7 +62,8 @@ public abstract class FontLineShape extends FontShape {
     String s = super.getShapeState();
     if (tickInfos == null)
       return s;
-    StringBuffer sb = new StringBuffer(s);
+    StringXBuilder sb = new StringXBuilder();
+    sb.append(s);
     if (tickInfos[0] != null)
       appendTickInfo(sb, 0);
     if (tickInfos[1] != null)
@@ -74,14 +77,14 @@ public abstract class FontLineShape extends FontShape {
     return sb.toString();
   }
   
-  private void appendTickInfo(StringBuffer sb, int i) {
+  private void appendTickInfo(StringXBuilder sb, int i) {
     sb.append("  ");
     sb.append(myType);
     addTickInfo(sb, tickInfos[i], false);
     sb.append(";\n");
   }
 
-  public static void addTickInfo(StringBuffer sb, TickInfo tickInfo, boolean addFirst) {
+  public static void addTickInfo(StringXBuilder sb, TickInfo tickInfo, boolean addFirst) {
     sb.append(" ticks ").append(tickInfo.type).append(" ").append(Escape.escapePt(tickInfo.ticks));
     boolean isUnitCell = (tickInfo.scale != null && Float.isNaN(tickInfo.scale.x));
     if (isUnitCell)
@@ -91,7 +94,7 @@ public abstract class FontLineShape extends FontShape {
     if (!isUnitCell && tickInfo.scale != null)
       sb.append(" scale ").append(Escape.escapePt(tickInfo.scale));
     if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
-      sb.append(" first ").append(tickInfo.first);
+      sb.append(" first ").appendF(tickInfo.first);
     if (tickInfo.reference != null) // not implemented
       sb.append(" point ").append(Escape.escapePt(tickInfo.reference)); 
   }

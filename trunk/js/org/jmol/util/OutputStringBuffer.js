@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.OutputStringBuffer", ["java.io.BufferedWriter", "$.OutputStreamWriter", "java.lang.StringBuffer"], function () {
+Clazz.load (null, "org.jmol.util.OutputStringBuffer", ["java.io.BufferedWriter", "$.OutputStreamWriter", "javax.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.type = null;
 this.sb = null;
@@ -10,7 +10,7 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function (os) {
 if (os == null) {
-this.sb =  new StringBuffer ();
+this.sb =  new javax.util.StringXBuilder ();
 } else {
 var osw =  new java.io.OutputStreamWriter (os);
 this.bw =  new java.io.BufferedWriter (osw, 8192);

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["java.lang.StringBuffer", "org.jmol.script.ScriptVariable", "$.ScriptVariableInt", "$.Token"], function () {
+Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["javax.util.StringXBuilder", "org.jmol.script.ScriptVariable", "$.ScriptVariableInt", "$.Token"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.pt0 = 0;
 this.chpt0 = 0;
@@ -89,8 +89,7 @@ if (this.script != null && this.script !== "" && !this.script.endsWith ("\n")) t
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSignature", 
 function () {
-var s =  new StringBuffer (this.typeName);
-s.append (" ").append (this.name).append (" (");
+var s =  new javax.util.StringXBuilder ().append (this.typeName).append (" ").append (this.name).append (" (");
 for (var i = 0; i < this.nParameters; i++) {
 if (i > 0) s.append (", ");
 s.append (this.names.get (i));
@@ -100,8 +99,7 @@ return s.toString ();
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
-var s =  new StringBuffer ("/*\n * ");
-s.append (this.name).append ("\n */\n").append (this.getSignature ()).append ("{\n");
+var s =  new javax.util.StringXBuilder ().append ("/*\n * ").append (this.name).append ("\n */\n").append (this.getSignature ()).append ("{\n");
 if (this.script != null) s.append (this.script);
 s.append ("}\n");
 return s.toString ();

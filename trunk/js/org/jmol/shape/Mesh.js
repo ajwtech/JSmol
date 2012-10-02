@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.util.MeshSurface", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Mesh", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Measure", "$.Normix"], function () {
+Clazz.load (["org.jmol.util.MeshSurface", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Mesh", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix3f", "$.Matrix4f", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Measure", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.title = null;
 this.meshColix = 0;
@@ -186,7 +186,7 @@ return 0.0001;
 });
 Clazz.defineMethod (c$, "getState", 
 function (type) {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 s.append (type);
 if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escapeStr (this.thisID));
 if (this.lattice != null) s.append (" lattice ").append (org.jmol.util.Escape.escapePt (this.lattice));
@@ -201,7 +201,7 @@ s.append (" display " + org.jmol.util.Escape.escape (this.bsDisplay));
 }, "~S");
 Clazz.defineMethod (c$, "getRendering", 
 function () {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 s.append (this.fillTriangles ? " fill" : " noFill");
 s.append (this.drawTriangles ? " mesh" : " noMesh");
 s.append (this.showPoints ? " dots" : " noDots");

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.ZipUtil", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "java.lang.StringBuffer", "java.util.ArrayList", "java.util.zip.GZIPInputStream", "$.ZipInputStream", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (null, "org.jmol.util.ZipUtil", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "java.util.ArrayList", "java.util.zip.GZIPInputStream", "$.ZipInputStream", "javax.util.StringXBuilder", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.util, "ZipUtil");
 c$.isZipStream = Clazz.defineMethod (c$, "isZipStream", 
 function (is) {
@@ -67,7 +67,7 @@ c$.getAllData = Clazz.defineMethod (c$, "getAllData",
 function (is, subfileList, name0, binaryFileList, fileData) {
 var zis = org.jmol.util.ZipUtil.getStream (is);
 var ze;
-var listing =  new StringBuffer ();
+var listing =  new javax.util.StringXBuilder ();
 binaryFileList = "|" + binaryFileList + "|";
 var prefix = org.jmol.util.TextFormat.join (subfileList, '/', 1);
 var prefixd = null;
@@ -77,7 +77,7 @@ if (prefixd.length == 0) prefixd = null;
 }try {
 while ((ze = zis.getNextEntry ()) != null) {
 var name = ze.getName ();
-if (prefix != null && prefixd != null && !(name.equals (prefix) || name.startsWith (prefixd))) continue ;listing.append (name).append ('\n');
+if (prefix != null && prefixd != null && !(name.equals (prefix) || name.startsWith (prefixd))) continue ;listing.append (name).appendC ('\n');
 var sname = "|" + name.substring (name.lastIndexOf ("/") + 1) + "|";
 var asBinaryString = (binaryFileList.indexOf (sname) >= 0);
 var bytes = org.jmol.util.ZipUtil.getStreamBytes (zis, ze.getSize ());
@@ -100,8 +100,8 @@ fileData.put ("#Directory_Listing", listing.toString ());
 }, "java.io.InputStream,~A,~S,~S,java.util.Map");
 c$.getBinaryStringForBytes = Clazz.defineMethod (c$, "getBinaryStringForBytes", 
 function (bytes) {
-var ret =  new StringBuffer ();
-for (var i = 0; i < bytes.length; i++) ret.append (Integer.toHexString (bytes[i] & 0xFF)).append (' ');
+var ret =  new javax.util.StringXBuilder ();
+for (var i = 0; i < bytes.length; i++) ret.append (Integer.toHexString (bytes[i] & 0xFF)).appendC (' ');
 
 return ret.toString ();
 }, "~A");
@@ -115,10 +115,10 @@ var ze;
 try {
 var isAll = (fileName.equals ("."));
 if (isAll || fileName.lastIndexOf ("/") == fileName.length - 1) {
-ret =  new StringBuffer ();
+ret =  new javax.util.StringXBuilder ();
 while ((ze = zis.getNextEntry ()) != null) {
 var name = ze.getName ();
-if (isAll || name.startsWith (fileName)) ret.append (name).append ('\n');
+if (isAll || name.startsWith (fileName)) ret.append (name).appendC ('\n');
 }
 var str = ret.toString ();
 if (asBufferedInputStream) return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (str.getBytes ()));
@@ -132,8 +132,8 @@ if (!fileName.equals (ze.getName ())) continue ;var bytes = org.jmol.util.ZipUti
 if (org.jmol.util.ZipUtil.isZipFile (bytes)) return org.jmol.util.ZipUtil.getZipFileContents ( new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (bytes)), list, ++listPtr, asBufferedInputStream);
 if (asBufferedInputStream) return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (bytes));
 if (asBinaryString) {
-ret =  new StringBuffer ();
-for (var i = 0; i < bytes.length; i++) ret.append (Integer.toHexString (bytes[i] & 0xFF)).append (' ');
+ret =  new javax.util.StringXBuilder ();
+for (var i = 0; i < bytes.length; i++) ret.append (Integer.toHexString (bytes[i] & 0xFF)).appendC (' ');
 
 return ret.toString ();
 }return  String.instantialize (bytes);
@@ -170,7 +170,7 @@ return ret;
 }, "java.io.BufferedInputStream,~A,~N");
 c$.getZipDirectoryAsStringAndClose = Clazz.defineMethod (c$, "getZipDirectoryAsStringAndClose", 
 function (bis) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var s =  new Array (0);
 try {
 s = org.jmol.util.ZipUtil.getZipDirectoryOrErrorAndClose (bis, false);
@@ -182,7 +182,7 @@ org.jmol.util.Logger.error (e.getMessage ());
 throw e;
 }
 }
-for (var i = 0; i < s.length; i++) sb.append (s[i]).append ('\n');
+for (var i = 0; i < s.length; i++) sb.append (s[i]).appendC ('\n');
 
 return sb.toString ();
 }, "java.io.BufferedInputStream");
@@ -223,7 +223,7 @@ return v.toArray ( new Array (v.size ()));
 }, $fz.isPrivate = true, $fz), "java.io.BufferedInputStream,~B");
 c$.getZipEntryAsString = Clazz.defineMethod (c$, "getZipEntryAsString", 
 ($fz = function (is) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var buf =  Clazz.newArray (1024, 0);
 var len;
 while (is.available () >= 1 && (len = is.read (buf)) > 0) sb.append ( String.instantialize (buf, 0, len));
@@ -313,12 +313,12 @@ c$.cacheZipContents = Clazz.defineMethod (c$, "cacheZipContents",
 function (bis, fileName, cache) {
 var zis = org.jmol.util.ZipUtil.getStream (bis);
 var ze;
-var listing =  new StringBuffer ();
+var listing =  new javax.util.StringXBuilder ();
 var n = 0;
 try {
 while ((ze = zis.getNextEntry ()) != null) {
 var name = ze.getName ();
-listing.append (name).append ('\n');
+listing.append (name).appendC ('\n');
 var nBytes = ze.getSize ();
 var bytes = org.jmol.util.ZipUtil.getStreamBytes (zis, nBytes);
 n += bytes.length;

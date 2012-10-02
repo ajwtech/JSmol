@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.TimeoutThread", ["java.lang.StringBuffer", "$.Thread", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.TimeoutThread", ["java.lang.Thread", "javax.util.StringXBuilder", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.script = null;
 this.ms = 0;
@@ -96,7 +96,7 @@ if (t != null) t.trigger ();
 }, "java.util.Map,~S");
 c$.showTimeout = Clazz.defineMethod (c$, "showTimeout", 
 function (timeouts, name) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (timeouts != null) {
 var e = timeouts.values ().iterator ();
 while (e.hasNext ()) {

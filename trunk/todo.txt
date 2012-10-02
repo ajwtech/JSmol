@@ -1,0 +1,230 @@
+StringBuffer
+e.printStackTrace()
+
+note that 
+
+char x;
+
+does not work! -- sets to 0, not "\0"
+
+
+--------------------
+
+BitSet x = new BitSet()
+x.set(100) // requires array doubling
+
+
+Java  0.029 mms
+J2S  35.300 mms
+
+
+-------------------
+
+BitSet x = new BitSet()
+
+J2S  28.67 mms
+
+delegation issues:
+
+delegating Number hashCode
+delegating Integer construct
+delegating Integer parseInt
+delegating Integer $valueOf
+delegating Integer equals
+delegating Long construct
+delegating Long parseLong
+delegating Long $valueOf
+delegating Long equals
+delegating Float construct
+delegating Float $valueOf
+delegating Float equals
+delegating Double construct
+delegating Double $valueOf
+delegating Double equals
+delegating Byte construct
+delegating Byte parseByte
+delegating Byte $valueOf
+delegating Byte equals
+delegating Boolean construct
+delegating Boolean $valueOf
+delegating Boolean toString
+delegating java.lang.Character toString
+delegating java.util.Date clone
+delegating java.util.Date equals
+delegating java.util.Date compareTo
+delegating java.util.Date hashCode
+delegating java.lang.Throwable construct
+delegating java.lang.Throwable printStackTrace
+delegating java.lang.AssertionError construct
+delegating java.lang.ExceptionInInitializerError construct
+delegating java.lang.ThreadDeath construct
+delegating java.lang.ArrayIndexOutOfBoundsException construct
+delegating java.lang.ClassNotFoundException construct
+delegating java.lang.IllegalArgumentException construct
+delegating java.lang.IllegalStateException construct
+delegating java.lang.SecurityException construct
+delegating java.lang.StringIndexOutOfBoundsException construct
+delegating java.lang.UnsupportedOperationException construct
+delegating java.lang.reflect.InvocationTargetException construct
+delegating java.lang.reflect.UndeclaredThrowableException construct
+delegating java.io.InvalidClassException construct
+delegating java.io.InvalidClassException getMessage
+delegating java.io.WriteAbortedException construct
+delegating java.io.WriteAbortedException getMessage
+delegating java.util.ConcurrentModificationException construct
+delegating java.util.MissingResourceException construct
+delegating java.lang.reflect.AccessibleObject setAccessible
+delegating java.lang.reflect.Modifier toString
+delegating java.lang.reflect.Constructor construct
+delegating java.lang.reflect.Method construct
+delegating java.net.URLEncoder encode
+delegating net.sf.j2s.ajax.CompoundPipeSession isPipeLive
+delegating net.sf.j2s.ajax.CompoundPipeSession pipeCreated
+delegating net.sf.j2s.ajax.CompoundPipeSession pipeDestroy
+delegating net.sf.j2s.ajax.CompoundPipeSession deal
+delegating net.sf.j2s.ajax.CompoundPipeRunnable pipeDestroy
+delegating net.sf.j2s.ajax.CompoundPipeRunnable pipeInit
+delegating net.sf.j2s.ajax.CompoundPipeRunnable isPipeLive
+delegating net.sf.j2s.ajax.CompoundPipeRunnable pipeClosed
+delegating net.sf.j2s.ajax.CompoundPipeRunnable pipeLost
+delegating net.sf.j2s.ajax.CompoundPipeRunnable keepPipeLive
+delegating net.sf.j2s.ajax.CompoundPipeRunnable updateStatus
+delegating net.sf.j2s.ajax.SimplePipeRequest switchToQueryMode
+loading bin/org/jsmol/test/Test_loop.js
+testing 10000 total sb
+59 for 100100
+59 for 200100
+58 for 300100
+60 for 400100
+59 for 500100
+58 for 600100
+58 for 700100
+59 for 800100
+58 for 900100
+58 for 1000100
+60.5 microseconds
+delegating java.util.MapEntry construct
+delegating java.util.MapEntry clone
+delegating java.util.Hashtable construct
+delegating java.util.Hashtable clone
+delegating java.util.Hashtable.Entry construct
+delegating java.util.Hashtable.Entry clone
+delegating java.net.URL construct
+delegating java.net.URL set
+delegating java.net.URL getContent
+delegating java.net.URLDecoder decode
+delegating java.net.URLStreamHandler equals
+delegating java.net.URLStreamHandler hashCode
+delegating java.net.URLStreamHandler setURL
+delegating java.lang.AbstractStringBuilder construct
+delegating java.lang.AbstractStringBuilder append0
+delegating java.lang.AbstractStringBuilder insert0
+delegating java.lang.AbstractStringBuilder substring
+delegating java.lang.AbstractStringBuilder indexOf
+delegating java.lang.AbstractStringBuilder lastIndexOf
+delegating java.lang.StringBuffer construct
+delegating java.lang.StringBuffer append
+delegating java.lang.StringBuffer insert
+delegating java.lang.StringBuilder construct
+delegating java.lang.StringBuilder append
+delegating java.lang.StringBuilder insert
+delegating java.util.AbstractCollection toArray
+delegating java.util.AbstractMap clone
+delegating java.util.AbstractList add
+delegating java.util.AbstractList addAll
+delegating java.util.AbstractList listIterator
+delegating java.util.AbstractList remove
+delegating java.util.AbstractList.FullListIterator construct
+delegating java.util.AbstractList.SubAbstractList construct
+delegating java.util.AbstractList.SubAbstractList add
+delegating java.util.AbstractList.SubAbstractList addAll
+delegating java.util.AbstractList.SubAbstractList listIterator
+delegating java.util.AbstractList.SubAbstractList remove
+delegating java.util.AbstractList.SubAbstractList removeRange
+delegating java.util.AbstractList.SubAbstractList set
+delegating java.util.Arrays sort
+delegating java.util.Arrays binarySearch
+delegating java.util.Arrays equals
+delegating java.util.Arrays fill
+delegating java.util.Arrays.ArrayList construct
+delegating java.util.Arrays.ArrayList toArray
+delegating java.util.Collections binarySearch
+delegating java.util.Collections max
+delegating java.util.Collections min
+delegating java.util.Collections reverseOrder
+delegating java.util.Collections shuffle
+delegating java.util.Collections sort
+delegating java.util.Collections.CopiesList construct
+delegating java.util.Collections.SingletonSet construct
+delegating java.util.Collections.SingletonList construct
+delegating java.util.Collections.SingletonMap construct
+delegating java.util.Collections.SynchronizedCollection construct
+delegating java.util.Collections.SynchronizedCollection toString
+delegating java.util.Collections.SynchronizedCollection toArray
+delegating java.util.Collections.SynchronizedList construct
+delegating java.util.Collections.SynchronizedList add
+delegating java.util.Collections.SynchronizedList addAll
+delegating java.util.Collections.SynchronizedList equals
+delegating java.util.Collections.SynchronizedList hashCode
+delegating java.util.Collections.SynchronizedList listIterator
+delegating java.util.Collections.SynchronizedList remove
+delegating java.util.Collections.SynchronizedMap construct
+delegating java.util.Collections.SynchronizedMap equals
+delegating java.util.Collections.SynchronizedMap hashCode
+delegating java.util.Collections.SynchronizedMap toString
+delegating java.util.Collections.SynchronizedSortedMap construct
+delegating java.util.Collections.SynchronizedSortedSet construct
+delegating java.util.Collections.UnmodifiableCollection toArray
+delegating java.util.Collections.UnmodifiableCollection toString
+delegating java.util.Collections.UnmodifiableList construct
+delegating java.util.Collections.UnmodifiableList add
+delegating java.util.Collections.UnmodifiableList addAll
+delegating java.util.Collections.UnmodifiableList equals
+delegating java.util.Collections.UnmodifiableList hashCode
+delegating java.util.Collections.UnmodifiableList listIterator
+delegating java.util.Collections.UnmodifiableList remove
+delegating java.util.Collections.UnmodifiableMap equals
+delegating java.util.Collections.UnmodifiableMap hashCode
+delegating java.util.Collections.UnmodifiableMap toString
+delegating java.util.Collections.UnmodifiableMap.UnmodifiableEntrySet toArray
+delegating java.util.Collections.UnmodifiableMap.UnmodifiableEntrySet.UnmodifiableMapEntry equals
+delegating java.util.Collections.UnmodifiableMap.UnmodifiableEntrySet.UnmodifiableMapEntry hashCode
+delegating java.util.Collections.UnmodifiableMap.UnmodifiableEntrySet.UnmodifiableMapEntry toString
+delegating java.util.Collections.UnmodifiableSortedMap construct
+delegating java.util.Collections.UnmodifiableSortedSet construct
+delegating java.util.Collections.CheckedCollection toArray
+delegating java.util.Collections.CheckedCollection toString
+delegating java.util.Collections.CheckedList construct
+delegating java.util.Collections.CheckedList addAll
+delegating java.util.Collections.CheckedList add
+delegating java.util.Collections.CheckedList remove
+delegating java.util.Collections.CheckedList listIterator
+delegating java.util.Collections.CheckedList equals
+delegating java.util.Collections.CheckedList hashCode
+delegating java.util.Collections.CheckedMap equals
+delegating java.util.Collections.CheckedMap hashCode
+delegating java.util.Collections.CheckedMap toString
+delegating java.util.Collections.CheckedMap.CheckedEntry equals
+delegating java.util.Collections.CheckedMap.CheckedEntry hashCode
+delegating java.util.Collections.CheckedMap.CheckedEntrySet toArray
+delegating java.util.Collections.CheckedMap.CheckedEntrySet hashCode
+delegating java.util.Collections.CheckedMap.CheckedEntrySet equals
+delegating java.util.Collections.CheckedSortedSet construct
+delegating java.util.Collections.CheckedSortedMap construct
+delegating java.util.ArrayList construct
+delegating java.util.ArrayList add
+delegating java.util.ArrayList addAll
+delegating java.util.ArrayList clone
+delegating java.util.ArrayList remove
+delegating java.util.ArrayList toArray
+delegating java.util.ResourceBundle getBundle
+delegating java.util.ResourceBundle.TextResourceBundle construct
+delegating java.util.Locale construct
+delegating java.util.Locale getDisplayLanguage
+delegating java.util.Locale getDisplayCountry
+delegating java.util.Locale getDisplayVariant
+delegating java.util.Locale getDisplayName
+delegating java.util.Locale clone
+delegating org.apache.harmony.luni.util.Msg getString
+delegating java.util.Random construct
+delegating java.util.Random nextInt

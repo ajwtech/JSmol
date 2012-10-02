@@ -10,14 +10,23 @@
       	<exclude name="**/export/**/*"/>
       	<exclude name="**/g3d/*"/>
       	<exclude name="**/i18n/*"/>
-      	<exclude name="**/minimize/**/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/quantum/*"/>
         <exclude name="**/popup/*"/>
       </fileset>
     </copy>
-    <copy todir="src/javax/vecmath" >
+    <copy todir="src/org/jmol/minimize/forcefield/mmff" >
+      <fileset dir="../Jmol/src/org/jmol/minimize/forcefield/mmff">
+        <include name="*.txt" />
+      </fileset>
+    </copy>
+  	<copy todir="src/javax/util" >
+      <fileset dir="../Jmol/src/javax/util">
+        <include name="StringXBuilder.java" />
+      </fileset>
+    </copy>
+  	<copy todir="src/javax/vecmath" >
       <fileset dir="../Jmol/src/javax/vecmath">
         <include name="**/*.java" />
       </fileset>

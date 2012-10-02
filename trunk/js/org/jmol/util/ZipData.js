@@ -26,5 +26,5 @@ return nBytesRemaining - nToAdd;
 Clazz.defineMethod (c$, "addTo", 
 function (data) {
 data.append (org.jmol.util.ZipUtil.getGzippedBytesAsString (this.buf));
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 });

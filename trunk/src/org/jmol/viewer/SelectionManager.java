@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development
  *
@@ -33,6 +33,8 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.ModelSet;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -286,8 +288,8 @@ class SelectionManager {
         listeners[i].selectionChanged(bsSelection);
   }
 
-  String getState(StringBuffer sfunc) {
-    StringBuffer commands = new StringBuffer();
+  String getState(StringXBuilder sfunc) {
+    StringXBuilder commands = new StringXBuilder();
     if (sfunc != null) {
       sfunc.append("  _setSelectionState;\n");
       commands.append("function _setSelectionState() {\n");
@@ -306,7 +308,7 @@ class SelectionManager {
     else
       commands.append(cmd);
     StateManager.appendCmd(commands, "set hideNotSelected " + hideNotSelected);
-    commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
+    commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
         "selectionState"));
     if (viewer.getSelectionHaloEnabled(false))
       StateManager.appendCmd(commands, "SelectionHalos ON");
@@ -315,7 +317,7 @@ class SelectionManager {
     return commands.toString();
   }
 
-  private static void addBs(StringBuffer sb, String key, 
+  private static void addBs(StringXBuilder sb, String key, 
                             BitSet bs) {
     if (bs == null || bs.length() == 0)
       return;

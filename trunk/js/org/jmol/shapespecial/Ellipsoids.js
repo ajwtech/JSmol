@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.shapespecial.Ellipsoids", ["java.lang.StringBuffer", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Colix", "$.Escape", "$.Quadric", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.shapespecial.Ellipsoids", ["javax.util.StringXBuilder", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Colix", "$.Escape", "$.Quadric", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.htEllipsoids = null;
 this.haveEllipsoids = false;
@@ -143,7 +143,7 @@ ellipsoid.isValid = true;
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.Ellipsoids.Ellipsoid");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 this.getStateID (sb);
 this.getStateAtoms (sb);
 return sb.toString ();
@@ -155,7 +155,7 @@ var e = this.htEllipsoids.values ().iterator ();
 var v1 =  new javax.vecmath.Vector3f ();
 while (e.hasNext ()) {
 var ellipsoid = e.next ();
-if (ellipsoid.axes == null || ellipsoid.lengths == null) continue ;sb.append ("  Ellipsoid ID ").append (ellipsoid.id).append (" modelIndex ").append (ellipsoid.modelIndex).append (" center ").append (org.jmol.util.Escape.escapePt (ellipsoid.center)).append (" axes");
+if (ellipsoid.axes == null || ellipsoid.lengths == null) continue ;sb.append ("  Ellipsoid ID ").append (ellipsoid.id).append (" modelIndex ").appendI (ellipsoid.modelIndex).append (" center ").append (org.jmol.util.Escape.escapePt (ellipsoid.center)).append (" axes");
 for (var i = 0; i < 3; i++) {
 v1.setT (ellipsoid.axes[i]);
 v1.scale (ellipsoid.lengths[i]);
@@ -165,7 +165,7 @@ sb.append (" " + this.getColorCommand ("", ellipsoid.colix));
 if (!ellipsoid.isOn) sb.append (" off");
 sb.append (";\n");
 }
-}, $fz.isPrivate = true, $fz), "StringBuffer");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getStateAtoms", 
 ($fz = function (sb) {
 for (var ii = 0; ii < 3; ii++) {
@@ -178,7 +178,7 @@ if (this.bsColixSet != null && this.colixset[ii] != null) for (var i = this.bsCo
 
 sb.append (org.jmol.shape.Shape.getShapeCommands (temp, temp2));
 }
-}, $fz.isPrivate = true, $fz), "StringBuffer");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder");
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 var e = this.htEllipsoids.values ().iterator ();

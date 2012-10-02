@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoFxyReader", ["java.lang.StringBuffer", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoFxyReader", ["javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.data = null;
 this.isPlanarMapping = false;
@@ -33,7 +33,7 @@ Clazz.defineMethod (c$, "setup",
 function (type) {
 this.func = this.params.func;
 var functionName = this.params.functionInfo.get (0);
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append (type).append ("\n").append (functionName).append ("\n");
 if (this.params.thePlane != null || this.data == null && !this.useOriginStepsPoints) this.setVolumeForPlane ();
  else if (this.data == null) this.setVolumeDataParams ();

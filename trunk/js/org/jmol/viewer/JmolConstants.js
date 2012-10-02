@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedInputStream", "java.lang.StringBuffer", "java.util.Properties", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["java.io.BufferedInputStream", "java.util.Properties", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "JmolConstants");
 c$.embedScript = Clazz.defineMethod (c$, "embedScript", 
 function (s) {
@@ -137,7 +137,7 @@ return (group3 != null && ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA
 c$.getGroup3List = Clazz.defineMethod (c$, "getGroup3List", 
 function () {
 if (org.jmol.viewer.JmolConstants.group3List != null) return org.jmol.viewer.JmolConstants.group3List;
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 for (var i = 1; i < 42; i++) s.append (",[").append ((org.jmol.viewer.JmolConstants.predefinedGroup3Names[i] + "   ").substring (0, 3) + "]");
 
 s.append (",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]");
@@ -151,7 +151,7 @@ return org.jmol.viewer.JmolConstants.getGroup3Pt (group3) >= 42;
 c$.getGroup3Pt = Clazz.defineMethod (c$, "getGroup3Pt", 
 ($fz = function (group3) {
 org.jmol.viewer.JmolConstants.getGroup3List ();
-var sb =  new StringBuffer ("[");
+var sb =  new javax.util.StringXBuilder ().append ("[");
 sb.append (group3);
 switch (group3.length) {
 case 1:

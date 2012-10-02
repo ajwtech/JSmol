@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.IsoShapeReader", ["java.lang.StringBuffer", "java.util.Random", "javax.vecmath.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger", "$.Measure"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.IsoShapeReader", ["java.util.Random", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger", "$.Measure"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.psi_n = 2;
 this.psi_l = 1;
@@ -138,11 +138,12 @@ return (this.allowNegative || value >= 0 ? value : 0);
 }, "javax.vecmath.Point3f");
 Clazz.defineMethod (c$, "setHeader", 
 ($fz = function (line1) {
-this.jvxlFileHeaderBuffer =  new StringBuffer (line1);
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer.append (line1);
 if (this.sphere_radiusAngstroms > 0) {
-this.jvxlFileHeaderBuffer.append (" rad=").append (this.sphere_radiusAngstroms);
+this.jvxlFileHeaderBuffer.append (" rad=").appendF (this.sphere_radiusAngstroms);
 } else {
-this.jvxlFileHeaderBuffer.append (" n=").append (this.psi_n).append (", l=").append (this.psi_l).append (", m=").append (this.psi_m).append (" Znuc=").append (this.psi_Znuc).append (" res=").append (this.ptsPerAngstrom).append (" rad=").append (this.radius);
+this.jvxlFileHeaderBuffer.append (" n=").appendI (this.psi_n).append (", l=").appendI (this.psi_l).append (", m=").appendI (this.psi_m).append (" Znuc=").appendF (this.psi_Znuc).append (" res=").appendF (this.ptsPerAngstrom).append (" rad=").appendF (this.radius);
 }this.jvxlFileHeaderBuffer.append (this.isAnisotropic ? " anisotropy=(" + this.anisotropy[0] + "," + this.anisotropy[1] + "," + this.anisotropy[2] + ")\n" : "\n");
 org.jmol.jvxl.data.JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms (this.volumeData, this.jvxlFileHeaderBuffer);
 }, $fz.isPrivate = true, $fz), "~S");

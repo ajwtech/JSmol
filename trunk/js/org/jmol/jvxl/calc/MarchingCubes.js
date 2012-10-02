@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.calc");
-Clazz.load (["org.jmol.util.TriangleData", "java.lang.StringBuffer", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.calc.MarchingCubes", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.load (["org.jmol.util.TriangleData", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.calc.MarchingCubes", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.surfaceReader = null;
 this.volumeData = null;
@@ -47,7 +47,7 @@ this.linearOffsets = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.calc, "MarchingCubes", org.jmol.util.TriangleData);
 Clazz.prepareFields (c$, function () {
-this.edgeData =  new StringBuffer ();
+this.edgeData =  new javax.util.StringXBuilder ();
 this.vertexValues =  Clazz.newArray (8, 0);
 this.voxelVertexVectors =  new Array (8);
 this.edgeVectors =  new Array (12);
@@ -306,7 +306,7 @@ return !isNaN;
 Clazz.defineMethod (c$, "addEdgeData", 
 function (f) {
 var ch = org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (f);
-this.edgeData.append (ch);
+this.edgeData.appendC (ch);
 }, "~N");
 Clazz.defineMethod (c$, "calcVertexPoint", 
 function (x, y, z, vertex, pt) {

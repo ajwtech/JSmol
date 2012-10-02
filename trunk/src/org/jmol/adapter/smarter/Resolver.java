@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.util.StringXBuilder;
 
 import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Escape;
@@ -172,7 +174,7 @@ public class Resolver {
    * @param zipDirectory
    * @return String data for processing
    */  
-  static StringBuffer checkSpecialData(InputStream is, String[] zipDirectory) {
+  static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
   	return null;
 /*  	
     boolean isSpartan = false;
@@ -186,7 +188,7 @@ public class Resolver {
     }
     if (!isSpartan)
       return null;
-    StringBuffer data = new StringBuffer();
+    StringXBuilder data = new StringXBuilder();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escape(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();

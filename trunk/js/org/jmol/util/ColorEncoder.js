@@ -440,7 +440,7 @@ var name = entry.getKey ();
 if ( new Boolean (name.length > 0 & n++ >= 0).valueOf ()) s.append ("color \"" + name + "=" + org.jmol.util.ColorEncoder.getColorSchemeList (entry.getValue ()) + "\";\n");
 }
 return n;
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getColorScheme", 
 function () {
 return (this.isTranslucent ? "translucent " : "") + (this.currentPalette < 0 ? org.jmol.util.ColorEncoder.getColorSchemeList (this.getColorSchemeArray (this.currentPalette)) : this.getColorSchemeName (this.currentPalette));

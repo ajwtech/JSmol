@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.PltFormattedReader", ["java.lang.StringBuffer", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.PltFormattedReader", ["javax.util.StringXBuilder", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "PltFormattedReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -10,7 +10,7 @@ function (sg, br) {
 Clazz.superCall (this, org.jmol.jvxl.readers.PltFormattedReader, "init2", [sg, br]);
 this.isAngstroms = true;
 this.jvxlData.wasCubic = true;
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 

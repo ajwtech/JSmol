@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -27,6 +27,8 @@ package org.jmol.smiles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +53,7 @@ public class SmilesSearch extends JmolMolecule {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder(pattern);
+    StringXBuilder sb = new StringXBuilder().append(pattern);
     sb.append("\nmolecular formula: " + getMolecularFormula(true));
     return sb.toString();    
   }
@@ -90,7 +92,7 @@ public class SmilesSearch extends JmolMolecule {
   List<SmilesMeasure> measures = new ArrayList<SmilesMeasure>();
   
   int flags;
-  StringBuffer ringSets;
+  StringXBuilder ringSets;
   BitSet bsAromatic = new BitSet();
   BitSet bsAromatic5 = new BitSet();
   BitSet bsAromatic6 = new BitSet();
@@ -207,7 +209,7 @@ public class SmilesSearch extends JmolMolecule {
       ringData = new BitSet[ringDataMax + 1];
     }
 
-    ringSets = new StringBuffer();
+    ringSets = new StringXBuilder();
     String s = "****";
     while (s.length() < ringDataMax)
       s += s;
@@ -749,7 +751,7 @@ public class SmilesSearch extends JmolMolecule {
     if (isRingCheck) {
       ringSets.append(" ");
       for (int k = atomNum * 3 + 2; --k > atomNum;)
-        ringSets.append("-").append(
+        ringSets.append("-").appendI(
             patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
                 % atomNum].getMatchingAtom());
       ringSets.append("- ");
@@ -1092,7 +1094,7 @@ public class SmilesSearch extends JmolMolecule {
     return bondFound != patternBond.isNot;
   }
 
-  static boolean isRingBond(StringBuffer ringSets, int i, int j) {
+  static boolean isRingBond(StringXBuilder ringSets, int i, int j) {
     return (ringSets != null && ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
   }
   

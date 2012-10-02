@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["java.util.Hashtable", "javax.util.BitSet", "org.jmol.smiles.SmilesSearch"], "org.jmol.smiles.SmilesGenerator", ["java.lang.StringBuffer", "java.util.ArrayList", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesParser", "org.jmol.util.Elements", "$.JmolMolecule", "$.Logger"], function () {
+Clazz.load (["java.util.Hashtable", "javax.util.BitSet", "org.jmol.smiles.SmilesSearch"], "org.jmol.smiles.SmilesGenerator", ["java.util.ArrayList", "javax.util.StringXBuilder", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesParser", "org.jmol.util.Elements", "$.JmolMolecule", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atoms = null;
 this.atomCount = 0;
@@ -38,7 +38,7 @@ Clazz.defineMethod (c$, "getBioSmiles",
 function (atoms, atomCount, bsSelected, allowUnmatchedRings, addCrossLinks, comment) {
 this.atoms = atoms;
 this.atomCount = atomCount;
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var bs = bsSelected.clone ();
 if (comment != null) sb.append ("//* Jmol bioSMILES ").append (comment.$replace ('*', '_')).append (" *//");
 var end = "\n";
@@ -63,7 +63,7 @@ if (id.charCodeAt (0) != 0) {
 s = "//* chain " + id + " " + bioStructureName + " " + a.getResno () + " *// ";
 len = s.length;
 sb.append (s);
-}sb.append ("~").append (bioStructureName.charAt (0)).append ("~");
+}sb.append ("~").appendC (bioStructureName.charAt (0)).append ("~");
 len++;
 } else {
 s = this.getSmilesComponent (a, bs, true);
@@ -97,7 +97,7 @@ vLinks.clear ();
 bs.andNot (bsIgnore);
 var i2 = a.getOffsetResidueAtom ("0", 1);
 if (i2 < 0 || !bs.get (i2)) {
-sb.append (" //* ").append (a.getResno ()).append (" *//");
+sb.append (" //* ").appendI (a.getResno ()).append (" *//");
 if (i2 < 0 && (i2 = bs.nextSetBit (i + 1)) < 0) break;
 if (len > 0) end = ".\n";
 }i = i2 - 1;
@@ -123,14 +123,14 @@ sb.append ("[");
 if (atomName != null) {
 var chChain = a.getChainID ();
 sb.append (a.getGroup3 (false));
-if (!atomName.equals (".0")) sb.append (atomName).append ("#").append (a.getElementNumber ());
-sb.append ("//* ").append (a.getResno ());
-if (chChain.charCodeAt (0) != 0) sb.append (":").append (chChain);
+if (!atomName.equals (".0")) sb.append (atomName).append ("#").appendI (a.getElementNumber ());
+sb.append ("//* ").appendI (a.getResno ());
+if (chChain.charCodeAt (0) != 0) sb.append (":").appendC (chChain);
 sb.append (" *//");
 } else {
 sb.append (org.jmol.util.Elements.elementNameFromNumber (a.getElementNumber ()));
 }sb.append ("]");
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.util.JmolNode,~S");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.util.JmolNode,~S");
 Clazz.defineMethod (c$, "getSmilesComponent", 
 ($fz = function (atom, bs, allowConnectionsToOutsideWorld) {
 if (atom.getElementNumber () == 1 && atom.getEdges ().length > 0) atom = this.atoms[atom.getBondedAtomIndex (0)];
@@ -155,7 +155,7 @@ this.setBondDirections ();
 } else {
 this.bsAromatic =  new javax.util.BitSet ();
 }this.bsToDo = this.bsSelected.clone ();
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = this.bsToDo.nextSetBit (0); i >= 0; i = this.bsToDo.nextSetBit (i + 1)) if (this.atoms[i].getCovalentBondCount () > 4) {
 this.getSmiles (sb, this.atoms[i], allowConnectionsToOutsideWorld, false);
 atom = null;
@@ -308,11 +308,11 @@ stereo[stereoFlag++] = this.prevAtom;
 }}if (stereoFlag < 7 && nH == 1) stereo[stereoFlag++] = aH;
 var deferStereo = (orderNext == 1 && this.prevSp2Atoms == null);
 var chBond = this.getBondStereochemistry (bondPrev, this.prevAtom);
-var sMore =  new StringBuffer ();
+var sMore =  new javax.util.StringXBuilder ();
 for (var i = 0; i < v.size (); i++) {
 var bond = v.get (i);
 if (!bsBranches.get (bond.index)) continue ;var a = bond.getOtherAtomNode (atom);
-var s2 =  new StringBuffer ();
+var s2 =  new javax.util.StringXBuilder ();
 s2.append ("(");
 this.prevAtom = atom;
 this.prevSp2Atoms = null;
@@ -321,7 +321,7 @@ this.getSmiles (s2, a, allowConnectionsToOutsideWorld, allowBranches);
 bond0 = bond0t;
 s2.append (")");
 if (sMore.indexOf (s2.toString ()) >= 0) stereoFlag = 10;
-sMore.append (s2);
+sMore.appendSB (s2);
 v.remove (i--);
 if (stereoFlag < 7) stereo[stereoFlag++] = a;
 if (nSp2Atoms < 5) sp2Atoms[nSp2Atoms++] = a;
@@ -364,7 +364,7 @@ var groupType = atom.getBioStructureTypeName ();
 if (org.jmol.util.Logger.debugging) sb.append ("\n//* " + atom + " *//\t");
 if (isExtension && groupType.length != 0 && atomName.length != 0) this.addBracketedBioName (sb, atom, "." + atomName);
  else sb.append (org.jmol.smiles.SmilesAtom.getAtomLabel (atomicNumber, isotope, valence, charge, nH, isAromatic, atat != null ? atat : this.checkStereoPairs (atom, atomIndex, stereo, stereoFlag)));
-sb.append (sMore);
+sb.appendSB (sMore);
 if (bond0 == null) return null;
 if (orderNext == 2 && (nSp2Atoms == 1 || nSp2Atoms == 2)) {
 if (sp2Atoms[0] == null) sp2Atoms[0] = atom;
@@ -375,7 +375,7 @@ nSp2Atoms = 0;
 }this.prevSp2Atoms = sp2Atoms;
 this.prevAtom = atom;
 return atomNext;
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.util.JmolNode,~B,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.util.JmolNode,~B,~B");
 Clazz.defineMethod (c$, "sortInorganic", 
 ($fz = function (atom, v) {
 var atomIndex = atom.getIndex ();
@@ -505,7 +505,7 @@ var e = ht.keySet ().iterator ();
 while (e.hasNext ()) {
 org.jmol.util.Logger.info ("unmatched ring key: " + e.next ());
 }
-}, $fz.isPrivate = true, $fz), "StringBuffer,java.util.Map");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,java.util.Map");
 c$.getRingKey = Clazz.defineMethod (c$, "getRingKey", 
 function (i0, i1) {
 return Math.min (i0, i1) + "_" + Math.max (i0, i1);

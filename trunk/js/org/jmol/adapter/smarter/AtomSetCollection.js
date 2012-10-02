@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "$.StringBuilder", "java.util.ArrayList", "$.Collections", "$.Properties", "javax.util.BitSet", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Collections", "$.Properties", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileTypeName = null;
 this.collectionName = null;
@@ -1283,7 +1283,7 @@ return ;
 }for (var entry, $entry = p.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var data = entry.getValue ();
-var s =  new StringBuilder ();
+var s =  new javax.util.StringXBuilder ();
 for (var i = nTimes; --i >= 0; ) s.append (data);
 
 p.put (key, s.toString ());

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.VolumeDataReader", ["java.lang.StringBuffer", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.VolumeDataReader", ["javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dataType = 0;
 this.precalculateVoxelData = false;
@@ -25,7 +25,7 @@ this.allowMapData = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.defineMethod (c$, "setup", 
 function (isMapData) {
-this.jvxlFileHeaderBuffer =  new StringBuffer ("volume data read from file\n\n");
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ().append ("volume data read from file\n\n");
 org.jmol.jvxl.data.JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms (this.volumeData, this.jvxlFileHeaderBuffer);
 }, "~B");
 Clazz.overrideMethod (c$, "readVolumeParameters", 

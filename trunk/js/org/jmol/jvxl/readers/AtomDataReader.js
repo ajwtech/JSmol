@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "org.jmol.atomdata.AtomData"], "org.jmol.jvxl.readers.AtomDataReader", ["java.lang.Float", "$.StringBuffer", "java.util.Date", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point3i", "org.jmol.atomdata.AtomData"], "org.jmol.jvxl.readers.AtomDataReader", ["java.lang.Float", "java.util.Date", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.maxDistance = 0;
 this.contactPair = null;
@@ -210,8 +210,8 @@ return (Float.isNaN (marginAtoms) ? Math.max (r, 0.1) : r + marginAtoms);
 }, $fz.isPrivate = true, $fz), "~N,~N");
 Clazz.defineMethod (c$, "setHeader", 
 function (calcType, line2) {
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
-if (this.atomData.programInfo != null) this.jvxlFileHeaderBuffer.append ("#created by ").append (this.atomData.programInfo).append (" on ").append ( new java.util.Date ()).append ("\n");
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+if (this.atomData.programInfo != null) this.jvxlFileHeaderBuffer.append ("#created by ").append (this.atomData.programInfo).append (" on ").appendO ( new java.util.Date ()).append ("\n");
 this.jvxlFileHeaderBuffer.append (calcType).append ("\n").append (line2).append ("\n");
 }, "~S,~S");
 Clazz.defineMethod (c$, "setRanges", 

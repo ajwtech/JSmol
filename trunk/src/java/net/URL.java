@@ -1030,6 +1030,15 @@ public final class URL implements java.io.Serializable {
         return openConnection().getInputStream();
     }
 
+    /** same as openStream()
+     * 
+     * @return  input stream
+     * @throws IOException
+     */
+    public Object getContent() throws IOException {
+      return openConnection().getInputStream();
+    }    
+
     /**
      * The URLStreamHandler factory.
      */
@@ -1168,6 +1177,7 @@ public final class URL implements java.io.Serializable {
             } else
                 path = file;
         }
-    }    
+    }
+
 }
 

@@ -358,7 +358,7 @@ bothEnds = false;
 for (var j = 0; j < (bothEnds ? 2 : 1); j++, factor *= -1) for (var i = 0; i < (mStep < 1 ? 1 : mStep); i++) org.jmol.modelsetbio.BioPolymer.getData (viewer, i, mStep, p, ctype, qtype, derivType, bsAtoms, bsSelected, isDraw, isRamachandran, calcRamachandranStraightness, useQuaternionStraightness, writeRamachandranStraightness, quaternionStraightness, factor, isAmino, isRelativeAlias, tokens, pdbATOM, pdbCONECT, bsWritten);
 
 
-}, "org.jmol.viewer.Viewer,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuilder,javax.util.StringXBuilder,javax.util.BitSet");
 c$.getData = Clazz.defineMethod (c$, "getData", 
 ($fz = function (viewer, m0, mStep, p, ctype, qtype, derivType, bsAtoms, bsSelected, isDraw, isRamachandran, calcRamachandranStraightness, useQuaternionStraightness, writeRamachandranStraightness, quaternionStraightness, factor, isAmino, isRelativeAlias, tokens, pdbATOM, pdbCONECT, bsWritten) {
 var prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
@@ -497,10 +497,10 @@ strExtra += org.jmol.util.TextFormat.sprintf (" %10.5f %10.5f", [[val1, val2]]);
 pdbATOM.append (org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, a, tokens, '\0', null));
 pdbATOM.append (org.jmol.util.TextFormat.sprintf ("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", [a.getElementSymbolIso (false).toUpperCase (), strExtra, [x * factor, y * factor, z * factor, w * factor]]));
 if (atomLast != null && atomLast.getPolymerIndexInModel () == a.getPolymerIndexInModel ()) {
-pdbCONECT.append ("CONECT").append (org.jmol.util.TextFormat.formatStringI ("%5i", "i", atomLast.getAtomNumber ())).append (org.jmol.util.TextFormat.formatStringI ("%5i", "i", a.getAtomNumber ())).append ('\n');
+pdbCONECT.append ("CONECT").append (org.jmol.util.TextFormat.formatStringI ("%5i", "i", atomLast.getAtomNumber ())).append (org.jmol.util.TextFormat.formatStringI ("%5i", "i", a.getAtomNumber ())).appendC ('\n');
 }atomLast = a;
 }}
-}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~N,~N,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~B,~B,~B,~N,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~N,~N,org.jmol.modelsetbio.BioPolymer,~S,~S,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~B,~B,~B,~N,~B,~B,~A,org.jmol.util.OutputStringBuilder,javax.util.StringXBuilder,javax.util.BitSet");
 Clazz.defineMethod (c$, "calculateRamachandranHelixAngle", 
 function (m, qtype) {
 return NaN;
@@ -554,7 +554,7 @@ function (structureList) {
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 return ;
-}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuffer,StringBuffer,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuilder,javax.util.StringXBuilder,javax.util.BitSet");
 Clazz.defineMethod (c$, "getType", 
 function () {
 return this.type;

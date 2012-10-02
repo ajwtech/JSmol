@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.constant.EnumStereoMode"], "org.jmol.viewer.TransformManager", ["java.lang.Float", "$.StringBuffer", "$.Thread", "java.util.Hashtable", "javax.vecmath.Point4f", "org.jmol.thread.MotionThread", "$.SpinThread", "$.VibrationThread", "org.jmol.util.Escape", "$.Quaternion", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point3i", "$.Vector3f", "org.jmol.constant.EnumStereoMode"], "org.jmol.viewer.TransformManager", ["java.lang.Float", "$.Thread", "java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Point4f", "org.jmol.thread.MotionThread", "$.SpinThread", "$.VibrationThread", "org.jmol.util.Escape", "$.Quaternion", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.perspectiveModel = 11;
@@ -237,7 +237,7 @@ this.resetNavigationPoint (true);
 });
 Clazz.defineMethod (c$, "getState", 
 function (sfunc) {
-var commands =  new StringBuffer ("");
+var commands =  new javax.util.StringXBuilder ();
 if (sfunc != null) {
 sfunc.append ("  _setPerspectiveState;\n");
 commands.append ("function _setPerspectiveState() {\n");
@@ -254,8 +254,8 @@ commands.append (this.viewer.getSavedOrienationText (null));
 org.jmol.viewer.StateManager.appendCmd (commands, this.getMoveToText (0, false));
 if (this.stereoMode !== org.jmol.constant.EnumStereoMode.NONE) org.jmol.viewer.StateManager.appendCmd (commands, "stereo " + (this.stereoColors == null ? this.stereoMode.getName () : org.jmol.util.Escape.escapeColor (this.stereoColors[0]) + " " + org.jmol.util.Escape.escapeColor (this.stereoColors[1])) + " " + this.stereoDegrees);
 if (this.mode != 1 && !this.zoomEnabled) org.jmol.viewer.StateManager.appendCmd (commands, "zoom off");
-commands.append ("  slab ").append (this.slabPercentSetting).append (";depth ").append (this.depthPercentSetting).append (this.slabEnabled && this.mode != 1 ? ";slab on" : "").append (";\n");
-commands.append ("  set slabRange ").append (this.slabRange).append (";\n");
+commands.append ("  slab ").appendI (this.slabPercentSetting).append (";depth ").appendI (this.depthPercentSetting).append (this.slabEnabled && this.mode != 1 ? ";slab on" : "").append (";\n");
+commands.append ("  set slabRange ").appendF (this.slabRange).append (";\n");
 if (this.zShadeEnabled) commands.append ("  set zShade;\n");
 try {
 if (this.zSlabPoint != null) commands.append ("  set zSlab ").append (org.jmol.util.Escape.escapePt (this.zSlabPoint)).append (";\n");
@@ -274,7 +274,7 @@ commands.append (this.getNavigationState ());
 if (this.depthPlane != null || this.slabPlane != null) commands.append ("  slab on;\n");
 }if (sfunc != null) commands.append ("}\n\n");
 return commands.toString ();
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getSpinState", 
 function (isAll) {
 var s = "  set spinX " + Math.round (this.spinX) + "; set spinY " + Math.round (this.spinY) + "; set spinZ " + Math.round (this.spinZ) + "; set spinFps " + Math.round (this.spinFps) + ";";
@@ -569,7 +569,7 @@ return this.getMoveToText (1, false);
 case 1073742132:
 return this.getRotationQuaternion ().toString ();
 case 1073742178:
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 org.jmol.viewer.TransformManager.truncate2 (sb, this.getTranslationXPercent ());
 org.jmol.viewer.TransformManager.truncate2 (sb, this.getTranslationYPercent ());
 return sb.toString ();
@@ -1188,7 +1188,7 @@ Clazz.defineMethod (c$, "getRotationText",
 function () {
 this.axisangleT.setM (this.matrixRotate);
 var degrees = (this.axisangleT.angle * 57.29577951308232);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 this.vectorT.set (this.axisangleT.x, this.axisangleT.y, this.axisangleT.z);
 if (degrees < 0.01) return "{0 0 1 0}";
 this.vectorT.normalize ();
@@ -1203,10 +1203,10 @@ return sb.toString ();
 });
 Clazz.defineMethod (c$, "getMoveToText", 
 function (timespan, addComments) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append ("moveto ");
 if (addComments) sb.append ("/* time, axisAngle */ ");
-sb.append (timespan);
+sb.appendF (timespan);
 sb.append (" ").append (this.getRotationText ());
 if (addComments) sb.append (" /* zoom, translation */ ");
 org.jmol.viewer.TransformManager.truncate2 (sb, this.zoomPercentSetting);
@@ -1215,7 +1215,7 @@ org.jmol.viewer.TransformManager.truncate2 (sb, this.getTranslationYPercent ());
 sb.append (" ");
 if (addComments) sb.append (" /* center, rotationRadius */ ");
 sb.append (this.getCenterText ());
-sb.append (" ").append (this.modelRadius);
+sb.append (" ").appendF (this.modelRadius);
 sb.append (this.getNavigationText (addComments));
 sb.append (";");
 return sb.toString ();
@@ -1226,7 +1226,7 @@ return org.jmol.util.Escape.escapePt (this.fixedRotationCenter);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getRotateXyzText", 
 ($fz = function () {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var m20 = this.matrixRotate.m20;
 var rY = -(Math.asin (m20) * 57.29577951308232);
 var rX;
@@ -1280,10 +1280,10 @@ org.jmol.viewer.TransformManager.truncate2 (sb, this.getNavigationOffsetPercent 
 sb.append (";navigate 0 depth ");
 org.jmol.viewer.TransformManager.truncate2 (sb, this.getNavigationDepthPercent ());
 sb.append (";");
-}}, $fz.isPrivate = true, $fz), "StringBuffer");
+}}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getRotateZyzText", 
 ($fz = function (iAddComment) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var m = this.viewer.getModelSetAuxiliaryInfoValue ("defaultOrientationMatrix");
 if (m == null) {
 m = this.matrixRotate;
@@ -1319,14 +1319,14 @@ return sb.toString ();
 }, $fz.isPrivate = true, $fz), "~B");
 c$.truncate0 = Clazz.defineMethod (c$, "truncate0", 
 ($fz = function (sb, val) {
-sb.append (' ');
-sb.append (Math.round (val));
-}, $fz.isPrivate = true, $fz), "StringBuffer,~N");
+sb.appendC (' ');
+sb.appendI (Math.round (val));
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~N");
 c$.truncate2 = Clazz.defineMethod (c$, "truncate2", 
 ($fz = function (sb, val) {
-sb.append (' ');
-sb.append (Math.round (val * 100) / 100);
-}, $fz.isPrivate = true, $fz), "StringBuffer,~N");
+sb.appendC (' ');
+sb.appendF (Math.round (val * 100) / 100);
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "setSpinXYZ", 
 function (x, y, z) {
 if (!Float.isNaN (x)) this.spinX = x;

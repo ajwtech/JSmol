@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JaguarReader", ["java.lang.StringBuffer", "org.jmol.util.Parser"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JaguarReader", ["javax.util.StringXBuilder", "org.jmol.util.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.extents = null;
 Clazz.instantialize (this, arguments);
@@ -18,7 +18,7 @@ this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("Jaguar data\n");
 this.jvxlFileHeaderBuffer.append ("\n");
 var atomLine;

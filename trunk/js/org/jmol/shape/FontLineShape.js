@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.FontShape"], "org.jmol.shape.FontLineShape", ["java.lang.Float", "$.StringBuffer", "org.jmol.util.Escape"], function () {
+Clazz.load (["org.jmol.shape.FontShape"], "org.jmol.shape.FontLineShape", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.util.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tickInfos = null;
 Clazz.instantialize (this, arguments);
@@ -23,7 +23,8 @@ Clazz.defineMethod (c$, "getShapeState",
 function () {
 var s = Clazz.superCall (this, org.jmol.shape.FontLineShape, "getShapeState", []);
 if (this.tickInfos == null) return s;
-var sb =  new StringBuffer (s);
+var sb =  new javax.util.StringXBuilder ();
+sb.append (s);
 if (this.tickInfos[0] != null) this.appendTickInfo (sb, 0);
 if (this.tickInfos[1] != null) this.appendTickInfo (sb, 1);
 if (this.tickInfos[2] != null) this.appendTickInfo (sb, 2);
@@ -37,7 +38,7 @@ sb.append ("  ");
 sb.append (this.myType);
 org.jmol.shape.FontLineShape.addTickInfo (sb, this.tickInfos[i], false);
 sb.append (";\n");
-}, $fz.isPrivate = true, $fz), "StringBuffer,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~N");
 c$.addTickInfo = Clazz.defineMethod (c$, "addTickInfo", 
 function (sb, tickInfo, addFirst) {
 sb.append (" ticks ").append (tickInfo.type).append (" ").append (org.jmol.util.Escape.escapePt (tickInfo.ticks));
@@ -45,7 +46,7 @@ var isUnitCell = (tickInfo.scale != null && Float.isNaN (tickInfo.scale.x));
 if (isUnitCell) sb.append (" UNITCELL");
 if (tickInfo.tickLabelFormats != null) sb.append (" format ").append (org.jmol.util.Escape.escapeStrA (tickInfo.tickLabelFormats, false));
 if (!isUnitCell && tickInfo.scale != null) sb.append (" scale ").append (org.jmol.util.Escape.escapePt (tickInfo.scale));
-if (addFirst && !Float.isNaN (tickInfo.first) && tickInfo.first != 0) sb.append (" first ").append (tickInfo.first);
+if (addFirst && !Float.isNaN (tickInfo.first) && tickInfo.first != 0) sb.append (" first ").appendF (tickInfo.first);
 if (tickInfo.reference != null) sb.append (" point ").append (org.jmol.util.Escape.escapePt (tickInfo.reference));
-}, "StringBuffer,org.jmol.modelset.TickInfo,~B");
+}, "javax.util.StringXBuilder,org.jmol.modelset.TickInfo,~B");
 });

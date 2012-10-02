@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-27 01:51:06 -0500 (Thu, 27 Sep 2012) $
- * $Revision: 17585 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -41,6 +41,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
+
+import javax.util.StringXBuilder;
 
 /**
  * 
@@ -466,8 +468,8 @@ public class PropertyManager {
               : ""));
     }
     Arrays.sort(data);
-    StringBuffer info = new StringBuffer("getProperty ERROR\n" + infoType
-        + "?\nOptions include:\n");
+    StringXBuilder info = new StringXBuilder();
+    info.append("getProperty ERROR\n").append(infoType).append("?\nOptions include:\n");
     for (int i = 0; i < PROP_COUNT; i++)
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
@@ -485,7 +487,7 @@ public class PropertyManager {
     }
     String[] lines = TextFormat.split((String)objHeader, '\n');
     String keyLast = "";
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     if (haveType)
       type = type.toUpperCase();
     String key = "";
@@ -502,12 +504,12 @@ public class PropertyManager {
           return sb.toString();
         if (!haveType) {
           ht.put(keyLast, sb.toString());
-          sb = new StringBuilder();
+          sb = new StringXBuilder();
         }
         keyLast = key;
       }
       if (!haveType || key.equals(type))
-        sb.append(line.substring(10).trim()).append('\n');      
+        sb.append(line.substring(10).trim()).appendC('\n');      
     }
     if (!haveType) {
       ht.put(keyLast, sb.toString());

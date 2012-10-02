@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CubeReader", ["java.lang.StringBuffer", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CubeReader", ["javax.util.StringXBuilder", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "CubeReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -7,9 +7,9 @@ Clazz.superConstructor (this, org.jmol.jvxl.readers.CubeReader, []);
 });
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
-this.jvxlFileHeaderBuffer.append (this.readLine ()).append ('\n');
-this.jvxlFileHeaderBuffer.append (this.readLine ()).append ('\n');
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer.append (this.readLine ()).appendC ('\n');
+this.jvxlFileHeaderBuffer.append (this.readLine ()).appendC ('\n');
 var atomLine = this.readLine ();
 var tokens = org.jmol.util.Parser.getTokensAt (atomLine, 0);
 this.atomCount = this.parseIntStr (tokens[0]);

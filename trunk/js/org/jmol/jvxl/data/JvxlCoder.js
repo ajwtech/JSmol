@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (null, "org.jmol.jvxl.data.JvxlCoder", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.jvxl.data.VolumeData", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.XmlUtil"], function () {
+Clazz.load (null, "org.jmol.jvxl.data.JvxlCoder", ["java.lang.Character", "$.Float", "java.util.ArrayList", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.jvxl.data.VolumeData", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.XmlUtil"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.data, "JvxlCoder");
 c$.jvxlGetFile = Clazz.defineMethod (c$, "jvxlGetFile", 
 function (volumeData, jvxlData, title) {
@@ -16,7 +16,7 @@ return org.jmol.jvxl.data.JvxlCoder.jvxlGetFileXml (jvxlData, meshData, title, m
 }, "org.jmol.jvxl.data.JvxlData,org.jmol.jvxl.data.MeshData,~A,~S,~B,~N,~S,~S");
 c$.jvxlGetFileXml = Clazz.defineMethod (c$, "jvxlGetFileXml", 
 ($fz = function (jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment) {
-var data =  new StringBuffer ();
+var data =  new javax.util.StringXBuilder ();
 if ("TRAILERONLY".equals (msg)) {
 org.jmol.util.XmlUtil.closeTag (data, "jvxlSurfaceSet");
 org.jmol.util.XmlUtil.closeTag (data, "jvxl");
@@ -40,12 +40,12 @@ org.jmol.util.XmlUtil.openTagAttr (data, "jvxlSurface", ["type", type]);
 data.append (org.jmol.jvxl.data.JvxlCoder.jvxlGetInfoData (jvxlData, vertexDataOnly));
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCommandState (data, comment, state);
 if (title != null || msg != null && msg.length > 0) {
-sb =  new StringBuffer ();
+sb =  new javax.util.StringXBuilder ();
 if (msg != null && msg.length > 0) sb.append (msg).append ("\n");
-if (title != null) for (var i = 0; i < title.length; i++) sb.append (title[i]).append ('\n');
+if (title != null) for (var i = 0; i < title.length; i++) sb.append (title[i]).appendC ('\n');
 
 org.jmol.util.XmlUtil.appendCdata (data, "jvxlSurfaceTitle", null, sb.toString ());
-}sb =  new StringBuffer ();
+}sb =  new javax.util.StringXBuilder ();
 org.jmol.util.XmlUtil.openTagAttr (sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null : jvxlData.mapLattice == null ? ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane)] : ["plane", org.jmol.util.Escape.escape (jvxlData.jvxlPlane), "maplattice", org.jmol.util.Escape.escapePt (jvxlData.mapLattice)]));
 if (vertexDataOnly) {
 org.jmol.jvxl.data.JvxlCoder.appendXmlVertexOnlyData (sb, jvxlData, meshData, true);
@@ -62,7 +62,7 @@ org.jmol.jvxl.data.JvxlCoder.appendEncodedBitSetTag (sb, "jvxlExcludedPlaneData"
 }org.jmol.jvxl.data.JvxlCoder.appendEncodedBitSetTag (sb, "jvxlExcludedTriangleData", jvxlData.jvxlExcluded[3], jvxlData.excludedTriangleCount, null);
 org.jmol.util.XmlUtil.closeTag (sb, "jvxlSurfaceData");
 var len = sb.length ();
-data.append (sb);
+data.appendSB (sb);
 if (jvxlData.vContours != null && jvxlData.vContours.length > 0) {
 org.jmol.jvxl.data.JvxlCoder.jvxlEncodeContourData (jvxlData.vContours, data);
 }if (jvxlData.vertexColorMap != null) {
@@ -81,20 +81,21 @@ c$.appendEncodedBitSetTag = Clazz.defineMethod (c$, "appendEncodedBitSetTag",
 ($fz = function (sb, name, bs, count, attribs) {
 if (count < 0) count = org.jmol.util.BitSetUtil.cardinalityOf (bs);
 if (count == 0) return ;
-var sb1 =  new StringBuffer ("\n ");
+var sb1 =  new javax.util.StringXBuilder ();
+sb1.append ("\n ");
 org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, -1, sb1);
 org.jmol.util.XmlUtil.appendTagObj (sb, name, [attribs, "bsEncoding", "base90+35", "count", "" + count, "len", "" + bs.length ()], org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (sb1.toString (), true));
-}, $fz.isPrivate = true, $fz), "StringBuffer,~S,javax.util.BitSet,~N,~A");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,javax.util.BitSet,~N,~A");
 c$.jvxlSetCompressionRatio = Clazz.defineMethod (c$, "jvxlSetCompressionRatio", 
 ($fz = function (data, jvxlData, len) {
 var s = data.toString ();
 var r = Math.round ((jvxlData.nBytes > 0 ? (jvxlData.nBytes) / len : ((jvxlData.nPointsX * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len));
 return org.jmol.util.TextFormat.simpleReplace (s, "\"not calculated\"", (r > 0 ? "\"" + r + ":1\"" : "\"?\""));
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.jvxl.data.JvxlData,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.jvxl.data.JvxlData,~N");
 c$.appendXmlEdgeData = Clazz.defineMethod (c$, "appendXmlEdgeData", 
 ($fz = function (sb, jvxlData) {
 org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlEdgeData", ["count", "" + (jvxlData.jvxlEdgeData.length - 1), "encoding", "base90f1", "bsEncoding", "base90+35c", "isXLowToHigh", "" + jvxlData.isXLowToHigh, "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (jvxlData.jvxlEdgeData, true)], "\n" + org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (jvxlData.jvxlSurfaceData, true));
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.jvxl.data.JvxlData");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.jvxl.data.JvxlData");
 c$.jvxlAppendCommandState = Clazz.defineMethod (c$, "jvxlAppendCommandState", 
 ($fz = function (data, cmd, state) {
 if (cmd != null) org.jmol.util.XmlUtil.appendCdata (data, "jvxlIsosurfaceCommand", null, "\n" + (cmd.indexOf ("#") < 0 ? cmd : cmd.substring (0, cmd.indexOf ("#"))) + "\n");
@@ -104,14 +105,14 @@ state = org.jmol.util.TextFormat.splitChars (state, "** XML **")[1].trim ();
 org.jmol.util.XmlUtil.appendTag (data, "jvxlIsosurfaceState", "\n" + state + "\n");
 } else {
 org.jmol.util.XmlUtil.appendCdata (data, "jvxlIsosurfaceState", null, "\n" + state);
-}}}, $fz.isPrivate = true, $fz), "StringBuffer,~S,~S");
+}}}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,~S");
 c$.appendXmlColorData = Clazz.defineMethod (c$, "appendXmlColorData", 
 ($fz = function (sb, key, data, isPrecisionColor, value1, value2) {
 var n;
 if (data == null || (n = data.length - 1) < 0) return ;
 if (isPrecisionColor) n /= 2;
 org.jmol.util.XmlUtil.appendTagObj (sb, key, ["count", "" + n, "encoding", "base90f" + (isPrecisionColor ? "2" : "1"), "min", "" + value1, "max", "" + value2, "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (data, true)], null);
-}, $fz.isPrivate = true, $fz), "StringBuffer,~S,~S,~B,~N,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,~S,~B,~N,~N");
 c$.jvxlGetInfo = Clazz.defineMethod (c$, "jvxlGetInfo", 
 function (jvxlData) {
 return org.jmol.jvxl.data.JvxlCoder.jvxlGetInfoData (jvxlData, jvxlData.vertexDataOnly);
@@ -193,7 +194,7 @@ org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMin", org.jmol.util.Esc
 org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  xyzMax", org.jmol.util.Escape.escapePt (jvxlData.boundingBox[1]));
 org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  approximateCompressionRatio", "not calculated");
 org.jmol.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  jmolVersion", jvxlData.version);
-var info =  new StringBuffer ();
+var info =  new javax.util.StringXBuilder ();
 org.jmol.util.XmlUtil.openTagAttr (info, "jvxlSurfaceInfo", attribs.toArray ());
 org.jmol.util.XmlUtil.closeTag (info, "jvxlSurfaceInfo");
 return info.toString ();
@@ -208,13 +209,14 @@ org.jmol.util.XmlUtil.openTagAttr (sb, "jvxlContourData", ["count", "" + contour
 for (var i = 0; i < contours.length; i++) {
 if (contours[i].size () < 6) {
 continue ;}var nPolygons = (contours[i].get (0)).intValue ();
-var sb1 =  new StringBuffer ("\n");
+var sb1 =  new javax.util.StringXBuilder ();
+sb1.append ("\n");
 var bs = contours[i].get (1);
 org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, nPolygons, sb1);
 org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlContour", ["index", "" + i, "value", "" + contours[i].get (2), "color", org.jmol.util.Escape.escapeColor ((contours[i].get (4))[0]), "count", "" + bs.length (), "encoding", "base90iff1", "bsEncoding", "base90+35c", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (contours[i].get (5).toString (), true)], org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (sb1.toString (), true));
 }
 org.jmol.util.XmlUtil.closeTag (sb, "jvxlContourData");
-}, $fz.isPrivate = true, $fz), "~A,StringBuffer");
+}, $fz.isPrivate = true, $fz), "~A,javax.util.StringXBuilder");
 c$.set3dContourVector = Clazz.defineMethod (c$, "set3dContourVector", 
 function (v, polygonIndexes, vertices) {
 if (v.size () < 6) return ;
@@ -268,10 +270,10 @@ return pt;
 }, $fz.isPrivate = true, $fz), "~A,~N,~N,~N");
 c$.appendContourTriangleIntersection = Clazz.defineMethod (c$, "appendContourTriangleIntersection", 
 function (type, f1, f2, fData) {
-fData.append (type);
-fData.append (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (f1));
-fData.append (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (f2));
-}, "~N,~N,~N,StringBuffer");
+fData.appendI (type);
+fData.appendC (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (f1));
+fData.appendC (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacter (f2));
+}, "~N,~N,~N,javax.util.StringXBuilder");
 c$.jvxlCreateColorData = Clazz.defineMethod (c$, "jvxlCreateColorData", 
 function (jvxlData, vertexValues) {
 if (vertexValues == null) {
@@ -287,27 +289,27 @@ var vertexCount = (jvxlData.saveVertexCount > 0 ? jvxlData.saveVertexCount : jvx
 if (vertexCount > vertexValues.length) System.out.println ("JVXLCODER ERROR");
 var min = jvxlData.mappedDataMin;
 var max = jvxlData.mappedDataMax;
-var list1 =  new StringBuffer ();
-var list2 =  new StringBuffer ();
+var list1 =  new javax.util.StringXBuilder ();
+var list2 =  new javax.util.StringXBuilder ();
 if (vertexValues.length < vertexCount) System.out.println ("JVXLCOLOR OHOHO");
 for (var i = 0; i < vertexCount; i++) {
 var value = vertexValues[i];
 if (Float.isNaN (value)) value = min;
 if (doTruncate) value = (value > 0 ? 0.999 : -0.999);
 if (writePrecisionColor) org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, min, max, colorFractionBase, colorFractionRange, list1, list2);
- else list1.append (org.jmol.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, valueRed, valueBlue, colorFractionBase, colorFractionRange));
+ else list1.appendC (org.jmol.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, valueRed, valueBlue, colorFractionBase, colorFractionRange));
 }
-jvxlData.jvxlColorData = list1.append (list2).append ('\n').toString ();
+jvxlData.jvxlColorData = list1.appendSB (list2).appendC ('\n').toString ();
 }, "org.jmol.jvxl.data.JvxlData,~A");
 c$.appendXmlVertexOnlyData = Clazz.defineMethod (c$, "appendXmlVertexOnlyData", 
 ($fz = function (sb, jvxlData, meshData, escapeXml) {
 var vertexIdNew =  Clazz.newArray (meshData.vertexCount, 0);
 if (org.jmol.jvxl.data.JvxlCoder.appendXmlTriangleData (sb, meshData.polygonIndexes, meshData.polygonCount, meshData.bsSlabDisplay, vertexIdNew, escapeXml)) org.jmol.jvxl.data.JvxlCoder.appendXmlVertexData (sb, jvxlData, vertexIdNew, meshData.vertices, meshData.vertexValues, meshData.vertexCount, meshData.polygonColorData, meshData.polygonCount, meshData.bsSlabDisplay, jvxlData.jvxlColorData.length > 0, escapeXml);
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.jvxl.data.JvxlData,org.jmol.jvxl.data.MeshData,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.jvxl.data.JvxlData,org.jmol.jvxl.data.MeshData,~B");
 c$.appendXmlTriangleData = Clazz.defineMethod (c$, "appendXmlTriangleData", 
 ($fz = function (sb, triangles, nData, bsSlabDisplay, vertexIdNew, escapeXml) {
-var list1 =  new StringBuffer ();
-var list2 =  new StringBuffer ();
+var list1 =  new javax.util.StringXBuilder ();
+var list2 =  new javax.util.StringXBuilder ();
 var ilast = 1;
 var p = 0;
 var inew = 0;
@@ -325,20 +327,20 @@ idata = vertexIdNew[idata] = ++inew;
 }var diff = idata - ilast;
 ilast = idata;
 if (diff == 0) {
-list1.append ('!');
+list1.appendC ('!');
 addPlus = false;
 } else if (diff > 32) {
-if (addPlus) list1.append ('+');
-list1.append (diff);
+if (addPlus) list1.appendC ('+');
+list1.appendI (diff);
 addPlus = true;
 } else if (diff < -32) {
-list1.append (diff);
+list1.appendI (diff);
 addPlus = true;
 } else {
-list1.append (String.fromCharCode ((92 + diff)));
+list1.appendC (String.fromCharCode ((92 + diff)));
 addPlus = false;
 }if (++p % 3 == 0) {
-list2.append (triangles[i][3]);
+list2.appendI (triangles[i][3]);
 p = 0;
 i++;
 nTri++;
@@ -347,7 +349,7 @@ if (list1.length () == 0) return true;
 org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlTriangleData", ["count", "" + nTri, "encoding", "jvxltdiff", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (list1.toString (), escapeXml)], null);
 org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlTriangleEdgeData", ["count", "" + nTri, "encoding", "jvxlsc", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (list2.toString (), escapeXml)], null);
 return true;
-}, $fz.isPrivate = true, $fz), "StringBuffer,~A,~N,javax.util.BitSet,~A,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~A,~N,javax.util.BitSet,~A,~B");
 c$.appendXmlVertexData = Clazz.defineMethod (c$, "appendXmlVertexData", 
 ($fz = function (sb, jvxlData, vertexIdNew, vertices, vertexValues, vertexCount, polygonColorData, polygonCount, bsSlabDisplay, addColorData, escapeXml) {
 var colorFractionBase = jvxlData.colorFractionBase;
@@ -355,8 +357,8 @@ var colorFractionRange = jvxlData.colorFractionRange;
 var p;
 var min = jvxlData.boundingBox[0];
 var max = jvxlData.boundingBox[1];
-var list1 =  new StringBuffer ();
-var list2 =  new StringBuffer ();
+var list1 =  new javax.util.StringXBuilder ();
+var list2 =  new javax.util.StringXBuilder ();
 var vertexIdOld = null;
 var removeSlabbed = (bsSlabDisplay != null);
 if (polygonCount > 0) {
@@ -373,18 +375,18 @@ org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (p.x, min.x, max.x, colorFract
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (p.y, min.y, max.y, colorFractionBase, colorFractionRange, list1, list2);
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (p.z, min.z, max.z, colorFractionBase, colorFractionRange, list1, list2);
 }
-list1.append (list2);
+list1.appendSB (list2);
 org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlVertexData", ["count", "" + n, "min", org.jmol.util.Escape.escapePt (min), "max", org.jmol.util.Escape.escapePt (max), "encoding", "base90xyz2", "data", org.jmol.jvxl.data.JvxlCoder.jvxlCompressString (list1.toString (), escapeXml)], null);
 if (polygonColorData != null) org.jmol.util.XmlUtil.appendTagObj (sb, "jvxlPolygonColorData", ["encoding", "jvxlnc", "count", "" + polygonCount], "\n" + polygonColorData);
 if (!addColorData) return ;
-list1 =  new StringBuffer ();
-list2 =  new StringBuffer ();
+list1 =  new javax.util.StringXBuilder ();
+list2 =  new javax.util.StringXBuilder ();
 for (var i = 0; i < vertexCount; i++) {
 var value = vertexValues[polygonCount == 0 ? i : vertexIdOld[i]];
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, jvxlData.mappedDataMin, jvxlData.mappedDataMax, colorFractionBase, colorFractionRange, list1, list2);
 }
-org.jmol.jvxl.data.JvxlCoder.appendXmlColorData (sb, "jvxlColorData", list1.append (list2).append ("\n").toString (), true, jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.jvxl.data.JvxlData,~A,~A,~A,~N,~S,~N,javax.util.BitSet,~B,~B");
+org.jmol.jvxl.data.JvxlCoder.appendXmlColorData (sb, "jvxlColorData", list1.appendSB (list2).append ("\n").toString (), true, jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.jvxl.data.JvxlData,~A,~A,~A,~N,~S,~N,javax.util.BitSet,~B,~B");
 c$.jvxlFractionAsCharacter = Clazz.defineMethod (c$, "jvxlFractionAsCharacter", 
 function (fraction) {
 return org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction, 35, 90);
@@ -402,10 +404,10 @@ c$.jvxlAppendCharacter2 = Clazz.defineMethod (c$, "jvxlAppendCharacter2",
 ($fz = function (value, min, max, base, range, list1, list2) {
 var fraction = (min == max ? value : (value - min) / (max - min));
 var ch1 = org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction, base, range);
-list1.append (ch1);
+list1.appendC (ch1);
 fraction -= org.jmol.jvxl.data.JvxlCoder.jvxlFractionFromCharacter (ch1.charCodeAt (0), base, range, 0);
-list2.append (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction * range, base, range));
-}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,StringBuffer,StringBuffer");
+list2.appendC (org.jmol.jvxl.data.JvxlCoder.jvxlFractionAsCharacterRange (fraction * range, base, range));
+}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,javax.util.StringXBuilder,javax.util.StringXBuilder");
 c$.jvxlFractionFromCharacter = Clazz.defineMethod (c$, "jvxlFractionFromCharacter", 
 function (ich, base, range, fracOffset) {
 if (ich == base + range) return NaN;
@@ -448,21 +450,21 @@ if (dataCount == prevCount && i != lastPoint) {
 nPrev++;
 } else {
 if (nPrev > 0) {
-sb.append (' ').append (-nPrev);
+sb.appendC (' ').appendI (-nPrev);
 nPrev = 0;
 n++;
-}sb.append (' ').append (dataCount);
+}sb.appendC (' ').appendI (dataCount);
 n++;
 prevCount = dataCount;
 }dataCount = 1;
 isset = !isset;
 }}
-sb.append (' ').append (dataCount).append ('\n');
+sb.appendC (' ').appendI (dataCount).appendC ('\n');
 return n;
-}, "javax.util.BitSet,~N,StringBuffer");
+}, "javax.util.BitSet,~N,javax.util.StringXBuilder");
 c$.jvxlEncodeBitSet = Clazz.defineMethod (c$, "jvxlEncodeBitSet", 
 function (bs) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, -1, sb);
 return sb.toString ();
 }, "javax.util.BitSet");
@@ -484,23 +486,23 @@ dataCount = 1;
 isset = !isset;
 }}
 org.jmol.jvxl.data.JvxlCoder.jvxlAppendEncodedNumber (sb, dataCount, 35, 90);
-sb.append ('\n');
+sb.appendC ('\n');
 return n;
-}, "javax.util.BitSet,~N,StringBuffer");
+}, "javax.util.BitSet,~N,javax.util.StringXBuilder");
 c$.jvxlAppendEncodedNumber = Clazz.defineMethod (c$, "jvxlAppendEncodedNumber", 
 function (sb, n, base, range) {
 var isInRange = (n < range);
-if (n == 0) sb.append (String.fromCharCode (base));
- else if (!isInRange) sb.append (String.fromCharCode ((base + range)));
+if (n == 0) sb.appendC (String.fromCharCode (base));
+ else if (!isInRange) sb.appendC (String.fromCharCode ((base + range)));
 while (n > 0) {
 var n1 = Math.floor (n / range);
 var x = base + n - n1 * range;
 if (x == 92) x = 33;
-sb.append (String.fromCharCode (x));
+sb.appendC (String.fromCharCode (x));
 n = n1;
 }
 if (!isInRange) sb.append (" ");
-}, "StringBuffer,~N,~N,~N");
+}, "javax.util.StringXBuilder,~N,~N,~N");
 c$.jvxlDecodeBitSetRange = Clazz.defineMethod (c$, "jvxlDecodeBitSetRange", 
 function (data, base, range) {
 var bs =  new javax.util.BitSet ();
@@ -567,7 +569,7 @@ return bs;
 c$.jvxlCompressString = Clazz.defineMethod (c$, "jvxlCompressString", 
 function (data, escapeXml) {
 if (data.indexOf ("~") >= 0) return data;
-var dataOut =  new StringBuffer ();
+var dataOut =  new javax.util.StringXBuilder ();
 var chLast = '\0';
 var escaped = false;
 var lastEscaped = false;
@@ -590,31 +592,31 @@ if (ch.charCodeAt (0) == chLast.charCodeAt (0)) {
 ch = '\0';
 } else if (nLast > 0 || lastEscaped) {
 if (nLast < 4 && !lastEscaped || chLast.charCodeAt (0) == 32 || chLast.charCodeAt (0) == 9) {
-while (--nLast >= 0) dataOut.append (chLast);
+while (--nLast >= 0) dataOut.appendC (chLast);
 
 } else {
 if (lastEscaped) lastEscaped = false;
- else dataOut.append ('~');
-dataOut.append (nLast);
-dataOut.append (' ');
+ else dataOut.appendC ('~');
+dataOut.appendI (nLast);
+dataOut.appendC (' ');
 }nLast = 0;
 }if (ch.charCodeAt (0) != 0) {
 if (escaped) {
 lastEscaped = true;
 escaped = false;
-dataOut.append ('~');
+dataOut.appendC ('~');
 chLast = ch;
 (ch = String.fromCharCode (ch.charCodeAt (0) - 1));
 } else {
 chLast = ch;
-}dataOut.append (ch);
+}dataOut.appendC (ch);
 }}
 return dataOut.toString ();
 }, "~S,~B");
 c$.jvxlUncompressString = Clazz.defineMethod (c$, "jvxlUncompressString", 
 function (data) {
 if (data.indexOf ("~") < 0) return data;
-var dataOut =  new StringBuffer ();
+var dataOut =  new javax.util.StringXBuilder ();
 var chLast = '\0';
 var next =  Clazz.newArray (1, 0);
 for (var i = 0; i < data.length; i++) {
@@ -625,7 +627,7 @@ switch (ch = data.charAt (i)) {
 case ';':
 case '%':
 next[0]++;
-dataOut.append (chLast = String.fromCharCode (  ((ch = String.fromCharCode (ch.charCodeAt (0) + 1))).charCodeAt (0)));
+dataOut.appendC (chLast = String.fromCharCode (  ((ch = String.fromCharCode (ch.charCodeAt (0) + 1))).charCodeAt (0)));
 case '1':
 case '2':
 case '3':
@@ -636,7 +638,7 @@ case '7':
 case '8':
 case '9':
 var nChar = org.jmol.util.Parser.parseIntNext (data, next);
-for (var c = 0; c < nChar; c++) dataOut.append (chLast);
+for (var c = 0; c < nChar; c++) dataOut.appendC (chLast);
 
 i = next[0];
 continue ;case '~':
@@ -645,7 +647,7 @@ break;
 default:
 org.jmol.util.Logger.error ("Error uncompressing string " + data.substring (0, i) + "?");
 }
-}dataOut.append (ch);
+}dataOut.appendC (ch);
 chLast = ch;
 }
 return dataOut.toString ();
@@ -653,12 +655,12 @@ return dataOut.toString ();
 c$.jvxlCreateHeaderWithoutTitleOrAtoms = Clazz.defineMethod (c$, "jvxlCreateHeaderWithoutTitleOrAtoms", 
 function (v, bs) {
 org.jmol.jvxl.data.JvxlCoder.jvxlCreateHeader (v, bs);
-}, "org.jmol.jvxl.data.VolumeData,StringBuffer");
+}, "org.jmol.jvxl.data.VolumeData,javax.util.StringXBuilder");
 c$.jvxlCreateHeader = Clazz.defineMethod (c$, "jvxlCreateHeader", 
 function (v, sb) {
 v.setVolumetricXml ();
 if (sb.length () == 0) sb.append ("Line 1\nLine 2\n");
-}, "org.jmol.jvxl.data.VolumeData,StringBuffer");
+}, "org.jmol.jvxl.data.VolumeData,javax.util.StringXBuilder");
 Clazz.defineStatics (c$,
 "JVXL_VERSION1", "2.0",
 "JVXL_VERSION_XML", "2.2",

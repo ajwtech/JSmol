@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-01 06:27:31 -0500 (Mon, 01 Oct 2012) $
- * $Revision: 17604 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -41,6 +41,9 @@ import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
+
+import javax.util.StringXBuilder;
+
 
 public class Dots extends AtomShape {
 
@@ -296,7 +299,7 @@ public class Dots extends AtomShape {
     BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");

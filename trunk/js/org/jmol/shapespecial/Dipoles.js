@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.Shape", "javax.vecmath.Point3f"], "org.jmol.shapespecial.Dipoles", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Vector3f", "org.jmol.script.Token", "org.jmol.shapespecial.Dipole", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.shape.Shape", "javax.vecmath.Point3f"], "org.jmol.shapespecial.Dipoles", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.script.Token", "org.jmol.shapespecial.Dipole", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dipoleCount = 0;
 this.dipoles = null;
@@ -416,7 +416,7 @@ dipole.visibilityFlags = ((dipole.modelIndex < 0 || bs.get (dipole.modelIndex)) 
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 if (this.dipoleCount == 0) return "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var thisModel = -1;
 var modelCount = this.viewer.getModelCount ();
 for (var i = 0; i < this.dipoleCount; i++) {

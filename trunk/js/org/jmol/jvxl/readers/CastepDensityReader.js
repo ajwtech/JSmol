@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CastepDensityReader", ["java.lang.Character", "$.StringBuffer"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CastepDensityReader", ["java.lang.Character", "javax.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nFilePoints = 0;
 this.nSkip = 0;
@@ -17,7 +17,7 @@ this.isAngstroms = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 while (this.readLine () != null && this.line.indexOf (".") < 0) {
 }
 for (var i = 0; i < 3; ++i) {

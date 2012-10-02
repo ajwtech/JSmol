@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.bspt");
-Clazz.load (null, "org.jmol.bspt.Bspt", ["java.lang.StringBuffer", "org.jmol.bspt.CubeIterator", "$.Leaf", "org.jmol.util.Logger"], function () {
+Clazz.load (null, "org.jmol.bspt.Bspt", ["javax.util.StringXBuilder", "org.jmol.bspt.CubeIterator", "$.Leaf", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.treeDepth = 0;
 this.dimMax = 0;
@@ -27,7 +27,7 @@ function () {
 });
 Clazz.defineMethod (c$, "dump", 
 function () {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 this.eleRoot.dump (0, sb);
 org.jmol.util.Logger.info (sb.toString ());
 });

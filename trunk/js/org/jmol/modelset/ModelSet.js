@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["org.jmol.modelset.ModelCollection", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Vector3f"], "org.jmol.modelset.ModelSet", ["java.lang.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.api.Interface", "org.jmol.atomdata.RadiusData", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.JmolEdge", "$.JmolMolecule", "$.Measure", "$.Quaternion", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.modelset.ModelCollection", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Vector3f"], "org.jmol.modelset.ModelSet", ["java.util.ArrayList", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.api.Interface", "org.jmol.atomdata.RadiusData", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.JmolEdge", "$.JmolMolecule", "$.Measure", "$.Quaternion", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.selectionHaloEnabled = false;
 this.echoShapeActive = false;
@@ -243,7 +243,7 @@ return bsModels;
 Clazz.defineMethod (c$, "getDefaultStructure", 
 function (bsAtoms, bsAllAtoms) {
 var bsModels = this.modelsOf (bsAtoms, bsAllAtoms);
-var ret =  new StringBuffer ();
+var ret =  new javax.util.StringXBuilder ();
 for (var i = bsModels.nextSetBit (0); i >= 0; i = bsModels.nextSetBit (i + 1)) if (this.models[i].isBioModel && this.models[i].defaultStructure != null) ret.append (this.models[i].defaultStructure);
 
 return ret.toString ();
@@ -306,7 +306,7 @@ function (sfunc, isAll) {
 var len = this.stateScripts.size ();
 if (len == 0) return "";
 var haveDefs = false;
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 var cmd;
 for (var i = 0; i < len; i++) {
 var ss = this.stateScripts.get (i);
@@ -321,10 +321,10 @@ sfunc.append ("  _setDefinedState;\n");
 cmd = "function _setDefinedState() {\n\n";
 }if (sfunc != null) commands.append ("\n}\n\n");
 return cmd + commands.toString ();
-}, "StringBuffer,~B");
+}, "javax.util.StringXBuilder,~B");
 Clazz.defineMethod (c$, "getState", 
 function (sfunc, isAll, withProteinStructure) {
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 if (isAll && sfunc != null) {
 sfunc.append ("  _setModelState;\n");
 commands.append ("function _setModelState() {\n");
@@ -336,14 +336,14 @@ var ss = this.stateScripts.get (i);
 if (!ss.inDefinedStateBlock && (cmd = ss.toString ()).length > 0) {
 commands.append ("  ").append (cmd).append ("\n");
 }}
-var sb =  new StringBuilder ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < this.bondCount; i++) if (!this.models[this.bonds[i].atom1.modelIndex].isModelKit) if (this.bonds[i].isHydrogen () || (this.bonds[i].order & 131072) != 0) {
 var bond = this.bonds[i];
 var index = bond.atom1.index;
 if (bond.atom1.getGroup ().isAdded (index)) index = -1 - index;
-sb.append (index).append ('\t').append (bond.atom2.index).append ('\t').append (bond.order & -131073).append ('\t').append (bond.mad / 1000).append ('\t').append (bond.getEnergy ()).append ('\t').append (org.jmol.util.JmolEdge.getBondOrderNameFromOrder (bond.order)).append (";\n");
+sb.appendI (index).appendC ('\t').appendI (bond.atom2.index).appendC ('\t').appendI (bond.order & -131073).appendC ('\t').appendF (bond.mad / 1000).appendC ('\t').appendF (bond.getEnergy ()).appendC ('\t').append (org.jmol.util.JmolEdge.getBondOrderNameFromOrder (bond.order)).append (";\n");
 }
-if (sb.length () > 0) commands.append ("data \"connect_atoms\"\n").append (sb).append ("end \"connect_atoms\";\n");
+if (sb.length () > 0) commands.append ("data \"connect_atoms\"\n").appendSB (sb).append ("end \"connect_atoms\";\n");
 commands.append ("\n");
 }if (this.haveHiddenBonds) {
 var bs =  new org.jmol.modelset.Bond.BondSet ();
@@ -367,7 +367,7 @@ if (s != null && !s.equals (this.getModelAuxiliaryInfoValue (i, "modelID0"))) co
 var t = this.frameTitles[i];
 if (t != null && t.length > 0) commands.append (fcmd).append ("; frame title ").append (org.jmol.util.Escape.escapeStr (t)).append (";\n");
 if (needOrientations && this.models[i].orientation != null && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; ").append (this.models[i].orientation.getMoveToText (false)).append (";\n");
-if (this.models[i].frameDelay != 0 && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; frame delay ").append (this.models[i].frameDelay / 1000).append (";\n");
+if (this.models[i].frameDelay != 0 && !this.isTrajectorySubFrame (i)) commands.append (fcmd).append ("; frame delay ").appendF (this.models[i].frameDelay / 1000).append (";\n");
 if (this.models[i].unitCell != null) {
 commands.append (fcmd).append ("; unitcell ").append (org.jmol.util.Escape.escape (this.models[i].unitCell.getUnitCellVectors ())).append (";\n");
 this.viewer.getShapeState (commands, isAll, 32);
@@ -387,7 +387,7 @@ this.viewer.getShapeState (commands, isAll, 32);
 if (this.viewer.isModelKitMode ()) commands.append ("  set modelKitMode true;\n");
 }if (sfunc != null) commands.append ("\n}\n\n");
 return commands.toString ();
-}, "StringBuffer,~B,~B");
+}, "javax.util.StringXBuilder,~B,~B");
 Clazz.defineMethod (c$, "includeAllRelatedFrames", 
 ($fz = function (bsModels) {
 var j;

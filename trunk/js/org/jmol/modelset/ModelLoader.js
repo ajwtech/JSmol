@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.util.Hashtable", "javax.util.BitSet", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.ModelLoader", ["java.lang.Boolean", "$.Float", "$.NullPointerException", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.constant.EnumStructure", "org.jmol.modelset.Chain", "$.Group", "$.Model", "$.ModelSet", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.JmolMolecule", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable", "javax.util.BitSet", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.ModelLoader", ["java.lang.Boolean", "$.Float", "$.NullPointerException", "java.util.ArrayList", "$.Arrays", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.constant.EnumStructure", "org.jmol.modelset.Chain", "$.Group", "$.Model", "$.ModelSet", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.JmolMolecule", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.modelSet = null;
@@ -75,7 +75,7 @@ var info = adapter.getAtomSetCollectionAuxiliaryInfo (atomSetCollection);
 info.put ("loadScript", loadScript);
 this.initializeInfo (adapter.getFileTypeName (atomSetCollection).toLowerCase ().intern (), info);
 this.createModelSet (adapter, atomSetCollection, bsNew);
-}, "org.jmol.viewer.Viewer,~S,StringBuffer,~O,org.jmol.modelset.ModelSet,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,javax.util.StringXBuilder,~O,org.jmol.modelset.ModelSet,javax.util.BitSet");
 Clazz.defineMethod (c$, "initializeInfo", 
 ($fz = function (name, info) {
 this.modelSet.g3d = this.viewer.getGraphicsData ();
@@ -220,7 +220,7 @@ this.mergeModelSet.releaseModelSet ();
 }, $fz.isPrivate = true, $fz), "org.jmol.api.JmolAdapter,~O,javax.util.BitSet");
 Clazz.defineMethod (c$, "setDefaultRendering", 
 ($fz = function (maxAtoms) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var modelCount = this.modelSet.modelCount;
 var models = this.modelSet.models;
 for (var i = this.baseModelIndex; i < modelCount; i++) if (models[i].isBioModel) models[i].getDefaultLargePDBRendering (sb, maxAtoms);
@@ -332,14 +332,14 @@ var loadState = this.modelSet.modelSetAuxiliaryInfo.remove ("loadState");
 var loadScript = this.modelSet.modelSetAuxiliaryInfo.remove ("loadScript");
 if (loadScript.indexOf ("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
 var lines = org.jmol.util.TextFormat.split (loadState, '\n');
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < lines.length; i++) {
 var pt = m.loadState.indexOf (lines[i]);
-if (pt < 0 || pt != m.loadState.lastIndexOf (lines[i])) sb.append (lines[i]).append ('\n');
+if (pt < 0 || pt != m.loadState.lastIndexOf (lines[i])) sb.append (lines[i]).appendC ('\n');
 }
 m.loadState += m.loadScript.toString () + sb.toString ();
-m.loadScript =  new StringBuffer ();
-m.loadScript.append ("  ").append (loadScript).append (";\n");
+m.loadScript =  new javax.util.StringXBuilder ();
+m.loadScript.append ("  ").appendSB (loadScript).append (";\n");
 }if (this.isTrajectory) {
 var n = (this.modelSet.modelCount - ipt + 1);
 org.jmol.util.Logger.info (n + " trajectory steps read");

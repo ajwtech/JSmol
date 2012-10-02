@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2010-04-17 18:24:30 -0500 (Sat, 17 Apr 2010) $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,6 +24,8 @@ package org.jmol.bspt;
 
 import javax.vecmath.Point3f;
 
+import javax.util.StringXBuilder;
+
 /**
  * the internal tree is made up of elements ... either Node or Leaf
  *
@@ -34,7 +36,7 @@ abstract class Element {
   int count;
   abstract Element addTuple(int level, Point3f tuple);
   
-  abstract void dump(int level, StringBuffer sb);
+  abstract void dump(int level, StringXBuilder sb);
   
 }
 

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (null, "org.jmol.jvxl.data.JvxlData", ["java.lang.Float", "$.StringBuffer", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.load (null, "org.jmol.jvxl.data.JvxlData", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.wasJvxl = false;
 this.wasCubic = false;
@@ -125,7 +125,7 @@ this.setSurfaceInfoFromBitSetPts (bs, thePlane, null);
 }, "javax.util.BitSet,javax.vecmath.Point4f");
 Clazz.defineMethod (c$, "setSurfaceInfoFromBitSetPts", 
 function (bs, thePlane, mapLattice) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var nSurfaceInts = (thePlane != null ? 0 : org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, this.nPointsX * this.nPointsY * this.nPointsZ, sb));
 this.setSurfaceInfo (thePlane, mapLattice, nSurfaceInts, sb.toString ());
 }, "javax.util.BitSet,javax.vecmath.Point4f,javax.vecmath.Point3f");

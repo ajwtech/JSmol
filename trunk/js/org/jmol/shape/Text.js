@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Object2d"], "org.jmol.shape.Text", ["java.lang.StringBuffer", "org.jmol.shape.Shape", "org.jmol.util.Colix", "$.Escape", "$.JmolFont", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.shape.Object2d"], "org.jmol.shape.Text", ["javax.util.StringXBuilder", "org.jmol.shape.Shape", "org.jmol.util.Colix", "$.Escape", "$.JmolFont", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fontScale = 0;
 this.text = null;
@@ -191,7 +191,7 @@ boxXY[3] = boxHeight;
 }, "~N,~N,~N,~N,~A,~B");
 Clazz.defineMethod (c$, "getState", 
 function () {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 if (this.text == null || this.isLabelOrHover || this.target.equals ("error")) return "";
 var isImage = (this.image != null);
 var strOff = null;
@@ -210,12 +210,12 @@ break;
 default:
 s.append ("  set echo ").append (org.jmol.shape.Object2d.vAlignNames[this.valign]).append (" ").append (org.jmol.shape.Object2d.hAlignNames[this.align]);
 }
-if (this.valign == 0 && this.movableZPercent != 2147483647) s.append (";  ").append (echoCmd).append (" depth ").append (this.movableZPercent);
+if (this.valign == 0 && this.movableZPercent != 2147483647) s.append (";  ").append (echoCmd).append (" depth ").appendI (this.movableZPercent);
 if (isImage) s.append ("; ").append (echoCmd).append (" IMAGE /*file*/");
  else s.append ("; echo ");
 s.append (org.jmol.util.Escape.escapeStr (this.text));
 s.append (";\n");
-if (isImage && this.imageScale != 1) s.append ("  ").append (echoCmd).append (" scale ").append (this.imageScale).append (";\n");
+if (isImage && this.imageScale != 1) s.append ("  ").append (echoCmd).append (" scale ").appendF (this.imageScale).append (";\n");
 if (this.script != null) s.append ("  ").append (echoCmd).append (" script ").append (org.jmol.util.Escape.escapeStr (this.script)).append (";\n");
 if (this.modelIndex >= 0) s.append ("  ").append (echoCmd).append (" model ").append (this.viewer.getModelNumberDotted (this.modelIndex)).append (";\n");
 s.append ("  " + org.jmol.shape.Shape.getFontCommand ("echo", this.font));

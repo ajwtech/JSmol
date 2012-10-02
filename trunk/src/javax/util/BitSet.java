@@ -27,7 +27,7 @@ package javax.util;
 
 /**
  * 
- * a fast BitSet optimized for Java2Script -- about 25 times faster than
+ * a fast 32-bit BitSet optimized for Java2Script -- about 25 times faster than
  * java.util.BitSet
  * 
  * @author Bob Hanson hansonr@stolaf.edu
@@ -597,7 +597,7 @@ public class BitSet implements Cloneable {
 
 		while (true) {
 			if (word != 0)
-				return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
+				return (u * BITS_PER_WORD) + Integer.numberOfTrailingZeros(word);
 			if (++u == wordsInUse)
 				return -1;
 			word = words[u];
@@ -631,7 +631,7 @@ public class BitSet implements Cloneable {
 
 		while (true) {
 			if (word != 0)
-				return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
+				return (u * BITS_PER_WORD) + Integer.numberOfTrailingZeros(word);
 			if (++u == wordsInUse)
 				return wordsInUse * BITS_PER_WORD;
 			word = ~words[u];
@@ -651,7 +651,7 @@ public class BitSet implements Cloneable {
 			return 0;
 
 		return BITS_PER_WORD * (wordsInUse - 1)
-				+ (BITS_PER_WORD - Long.numberOfLeadingZeros(words[wordsInUse - 1]));
+				+ (BITS_PER_WORD - Integer.numberOfLeadingZeros(words[wordsInUse - 1]));
 	}
 
 	/**
@@ -972,21 +972,21 @@ public class BitSet implements Cloneable {
 
 		int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
 				* BITS_PER_WORD;
-		StringBuilder b = new StringBuilder(6 * numBits + 2);
-		b.append('{');
+		StringXBuilder b = StringXBuilder.newN(6 * numBits + 2);
+		b.appendC('{');
 
 		int i = nextSetBit(0);
 		if (i != -1) {
-			b.append(i);
+			b.appendI(i);
 			for (i = nextSetBit(i + 1); i >= 0; i = nextSetBit(i + 1)) {
 				int endOfRun = nextClearBit(i);
 				do {
-					b.append(", ").append(i);
+					b.append(", ").appendI(i);
 				} while (++i < endOfRun);
 			}
 		}
 
-		b.append('}');
+		b.appendC('}');
 		return b.toString();
 	}
 	

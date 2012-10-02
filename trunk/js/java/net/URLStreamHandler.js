@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("java.net");
-Clazz.load (null, "java.net.URLStreamHandler", ["java.lang.IllegalArgumentException", "$.SecurityException", "$.StringBuffer", "$.UnsupportedOperationException"], function () {
+Clazz.load (null, "java.net.URLStreamHandler", ["java.lang.IllegalArgumentException", "$.SecurityException", "$.UnsupportedOperationException", "javax.util.StringXBuilder"], function () {
 c$ = Clazz.declareType (java.net, "URLStreamHandler");
 Clazz.defineMethod (c$, "openConnection", 
 function (u, p) {
@@ -145,7 +145,7 @@ len += u.getPath ().length;
 }if (u.getQuery () != null) {
 len += 1 + u.getQuery ().length;
 }if (u.getRef () != null) len += 1 + u.getRef ().length;
-var result =  new StringBuffer (len);
+var result = javax.util.StringXBuilder.newN (len);
 result.append (u.getProtocol ());
 result.append (":");
 if (u.getAuthority () != null && u.getAuthority ().length > 0) {
@@ -154,7 +154,7 @@ result.append (u.getAuthority ());
 }if (u.getPath () != null) {
 result.append (u.getPath ());
 }if (u.getQuery () != null) {
-result.append ('?');
+result.appendC ('?');
 result.append (u.getQuery ());
 }if (u.getRef () != null) {
 result.append ("#");

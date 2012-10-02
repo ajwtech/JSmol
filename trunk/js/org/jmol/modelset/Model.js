@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.lang.StringBuffer", "javax.util.BitSet"], "org.jmol.modelset.Model", ["java.util.Hashtable", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
+Clazz.load (["javax.util.BitSet", "$.StringXBuilder"], "org.jmol.modelset.Model", ["java.util.Hashtable", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelSet = null;
 this.modelIndex = 0;
@@ -43,7 +43,7 @@ this.unitCell = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelset, "Model");
 Clazz.prepareFields (c$, function () {
-this.loadScript =  new StringBuffer ();
+this.loadScript =  new javax.util.StringXBuilder ();
 this.bsAtoms =  new javax.util.BitSet ();
 this.bsAtomsDeleted =  new javax.util.BitSet ();
 this.chains =  new Array (8);
@@ -176,10 +176,10 @@ for (var i = 0; i < this.chainCount; ++i) this.chains[i].groups = org.jmol.util.
 });
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, type, ctype, isDraw, bsSelected, sb, tokens, pdbCONECT, bsWritten) {
-}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuilder,~A,javax.util.StringXBuilder,javax.util.BitSet");
 Clazz.defineMethod (c$, "getDefaultLargePDBRendering", 
 function (sb, maxAtoms) {
-}, "StringBuffer,~N");
+}, "javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "getBioBranches", 
 function (bioBranches) {
 return bioBranches;
@@ -238,7 +238,7 @@ sb.append ("\nNumber of Atoms ..... " + (this.modelSet.atomCount - nHetero));
 if (nHetero > 0) sb.append (" (" + nHetero + ")");
 sb.append ("\nNumber of Bonds ..... " + this.modelSet.bondCount);
 sb.append ("\nNumber of Models ...... " + this.modelSet.modelCount);
-}, "StringBuffer,~N");
+}, "javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "calculateStruts", 
 function (modelSet, bs1, bs2) {
 return 0;

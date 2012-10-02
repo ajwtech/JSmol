@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shape.Mesh", "org.jmol.jvxl.data.JvxlData"], "org.jmol.shapesurface.IsosurfaceMesh", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.shape.Mesh", "org.jmol.jvxl.data.JvxlData"], "org.jmol.shapesurface.IsosurfaceMesh", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.jvxlData = null;
 this.vertexIncrement = 1;
@@ -175,7 +175,7 @@ return this.jvxlData.vContours = vContours;
 Clazz.defineMethod (c$, "get3dContour", 
 ($fz = function (v, value, colix) {
 var bsContour = org.jmol.util.BitSetUtil.newBitSet (this.polygonCount);
-var fData =  new StringBuffer ();
+var fData =  new javax.util.StringXBuilder ();
 var color = org.jmol.util.Colix.getArgb (colix);
 org.jmol.shapesurface.IsosurfaceMesh.setContourVector (v, this.polygonCount, bsContour, value, colix, color, fData);
 for (var i = 0; i < this.polygonCount; i++) if (this.setABC (i)) org.jmol.shapesurface.IsosurfaceMesh.addContourPoints (v, bsContour, i, fData, this.vertices, this.vertexValues, this.iA, this.iB, this.iC, value);
@@ -189,7 +189,7 @@ v.add (2,  new Float (value));
 v.add (3, [colix]);
 v.add (4, [color]);
 v.add (5, fData);
-}, "java.util.List,~N,javax.util.BitSet,~N,~N,~N,StringBuffer");
+}, "java.util.List,~N,javax.util.BitSet,~N,~N,~N,javax.util.StringXBuilder");
 c$.addContourPoints = Clazz.defineMethod (c$, "addContourPoints", 
 function (v, bsContour, i, fData, vertices, vertexValues, iA, iB, iC, value) {
 var pt1 = null;
@@ -230,7 +230,7 @@ bsContour.set (i);
 org.jmol.jvxl.data.JvxlCoder.appendContourTriangleIntersection (type, f1, f2, fData);
 v.add (pt1);
 v.add (pt2);
-}, "java.util.List,javax.util.BitSet,~N,StringBuffer,~A,~A,~N,~N,~N,~N");
+}, "java.util.List,javax.util.BitSet,~N,javax.util.StringXBuilder,~A,~A,~N,~N,~N,~N");
 c$.checkPt = Clazz.defineMethod (c$, "checkPt", 
 ($fz = function (vertexValues, i, j, v) {
 var v1;

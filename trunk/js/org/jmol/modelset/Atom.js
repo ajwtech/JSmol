@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["org.jmol.util.JmolNode", "$.Point3fi", "org.jmol.constant.EnumPalette", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Atom", ["java.lang.Float", "$.StringBuffer", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.util.Colix", "$.ColorUtil", "$.Elements"], function () {
+Clazz.load (["org.jmol.util.JmolNode", "$.Point3fi", "org.jmol.constant.EnumPalette", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Atom", ["java.lang.Float", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.util.Colix", "$.ColorUtil", "$.Elements"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.alternateLocationID = '\0';
 this.atomID = 0;
@@ -634,7 +634,7 @@ return this.getIdentity (allInfo) + " " + pt.x + " " + pt.y + " " + pt.z;
 }, "~B");
 Clazz.defineMethod (c$, "getIdentity", 
 function (allInfo) {
-var info =  new StringBuffer ();
+var info =  new javax.util.StringXBuilder ();
 var group3 = this.getGroup3 (true);
 if (group3 != null && group3.length > 0) {
 info.append ("[");
@@ -645,22 +645,22 @@ if (seqcodeString != null) info.append (seqcodeString);
 var chainID = this.getChainID ();
 if (chainID.charCodeAt (0) != 0 && chainID.charCodeAt (0) != 32) {
 info.append (":");
-info.append (chainID);
+info.appendC (chainID);
 }if (!allInfo) return info.toString ();
 info.append (".");
 }info.append (this.getAtomName ());
 if (info.length () == 0) {
 info.append (this.getElementSymbolIso (false));
 info.append (" ");
-info.append (this.getAtomNumber ());
+info.appendI (this.getAtomNumber ());
 }if (this.alternateLocationID.charCodeAt (0) != 0) {
 info.append ("%");
-info.append (this.alternateLocationID);
+info.appendC (this.alternateLocationID);
 }if (this.group.chain.model.modelSet.getModelCount () > 1) {
 info.append ("/");
 info.append (this.getModelNumberForLabel ());
 }info.append (" #");
-info.append (this.getAtomNumber ());
+info.appendI (this.getAtomNumber ());
 return info.toString ();
 }, "~B");
 Clazz.overrideMethod (c$, "getGroup3", 

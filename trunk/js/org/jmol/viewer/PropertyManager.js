@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "$.StringBuffer", "$.StringBuilder", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "PropertyManager");
 c$.getPropertyNumber = Clazz.defineMethod (c$, "getPropertyNumber", 
 function (infoType) {
@@ -249,7 +249,8 @@ var name = org.jmol.viewer.PropertyManager.getPropertyName (i);
 data[i] = ((name.charAt (0)).charCodeAt (0) == 88 ? "" : name + (paramType !== "" ? " " + org.jmol.viewer.PropertyManager.getParamType (i) + (paramDefault !== "" ? " #default: " + org.jmol.viewer.PropertyManager.getDefaultParam (i) : "") : ""));
 }
 java.util.Arrays.sort (data);
-var info =  new StringBuffer ("getProperty ERROR\n" + infoType + "?\nOptions include:\n");
+var info =  new javax.util.StringXBuilder ();
+info.append ("getProperty ERROR\n").append (infoType).append ("?\nOptions include:\n");
 for (var i = 0; i < 38; i++) if (data[i].length > 0) info.append ("\n getProperty ").append (data[i]);
 
 return info.toString ();
@@ -263,7 +264,7 @@ if (Clazz.instanceOf (objHeader, java.util.Map)) {
 return (haveType ? (objHeader).get (type) : objHeader);
 }var lines = org.jmol.util.TextFormat.split (objHeader, '\n');
 var keyLast = "";
-var sb =  new StringBuilder ();
+var sb =  new javax.util.StringXBuilder ();
 if (haveType) type = type.toUpperCase ();
 var key = "";
 for (var i = 0; i < lines.length; i++) {
@@ -276,9 +277,9 @@ key += cont;
 if (haveType && keyLast.equals (type)) return sb.toString ();
 if (!haveType) {
 ht.put (keyLast, sb.toString ());
-sb =  new StringBuilder ();
+sb =  new javax.util.StringXBuilder ();
 }keyLast = key;
-}if (!haveType || key.equals (type)) sb.append (line.substring (10).trim ()).append ('\n');
+}if (!haveType || key.equals (type)) sb.append (line.substring (10).trim ()).appendC ('\n');
 }
 if (!haveType) {
 ht.put (keyLast, sb.toString ());

@@ -19,7 +19,7 @@ try {
 var conn = url.openConnection ();
 if (outputBytes != null) conn.outputBytes (outputBytes);
  else if (post != null) conn.outputString (post);
-return conn.getStringBuffer ();
+return conn.getStringXBuilder ();
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
 return e.getMessage ();

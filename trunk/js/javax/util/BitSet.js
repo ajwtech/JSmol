@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("javax.util");
-Clazz.load (null, "javax.util.BitSet", ["java.lang.IndexOutOfBoundsException", "$.InternalError", "$.Long", "$.NegativeArraySizeException", "$.StringBuilder"], function () {
+Clazz.load (null, "javax.util.BitSet", ["java.lang.IndexOutOfBoundsException", "$.InternalError", "$.NegativeArraySizeException", "javax.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.words = null;
 this.wordsInUse = 0;
@@ -126,7 +126,7 @@ var u = javax.util.BitSet.wordIndex (fromIndex);
 if (u >= this.wordsInUse) return -1;
 var word = this.words[u] & (-1 << fromIndex);
 while (true) {
-if (word != 0) return (u * 32) + Long.numberOfTrailingZeros (word);
+if (word != 0) return (u * 32) + Integer.numberOfTrailingZeros (word);
 if (++u == this.wordsInUse) return -1;
 word = this.words[u];
 }
@@ -138,7 +138,7 @@ var u = javax.util.BitSet.wordIndex (fromIndex);
 if (u >= this.wordsInUse) return fromIndex;
 var word = ~this.words[u] & (-1 << fromIndex);
 while (true) {
-if (word != 0) return (u * 32) + Long.numberOfTrailingZeros (word);
+if (word != 0) return (u * 32) + Integer.numberOfTrailingZeros (word);
 if (++u == this.wordsInUse) return this.wordsInUse * 32;
 word = ~this.words[u];
 }
@@ -146,7 +146,7 @@ word = ~this.words[u];
 Clazz.defineMethod (c$, "length", 
 function () {
 if (this.wordsInUse == 0) return 0;
-return 32 * (this.wordsInUse - 1) + (32 - Long.numberOfLeadingZeros (this.words[this.wordsInUse - 1]));
+return 32 * (this.wordsInUse - 1) + (32 - Integer.numberOfLeadingZeros (this.words[this.wordsInUse - 1]));
 });
 Clazz.defineMethod (c$, "isEmpty", 
 function () {
@@ -247,18 +247,18 @@ this.words = a;
 Clazz.overrideMethod (c$, "toString", 
 function () {
 var numBits = (this.wordsInUse > 128) ? this.cardinality () : this.wordsInUse * 32;
-var b =  new StringBuilder (6 * numBits + 2);
-b.append ('{');
+var b = javax.util.StringXBuilder.newN (6 * numBits + 2);
+b.appendC ('{');
 var i = this.nextSetBit (0);
 if (i != -1) {
-b.append (i);
+b.appendI (i);
 for (i = this.nextSetBit (i + 1); i >= 0; i = this.nextSetBit (i + 1)) {
 var endOfRun = this.nextClearBit (i);
 do {
-b.append (", ").append (i);
+b.append (", ").appendI (i);
 } while (++i < endOfRun);
 }
-}b.append ('}');
+}b.appendC ('}');
 return b.toString ();
 });
 c$.copy = Clazz.defineMethod (c$, "copy", 

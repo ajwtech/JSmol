@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.JvxlXmlReader"], "org.jmol.jvxl.readers.JvxlReader", ["java.lang.NullPointerException", "$.StringBuffer", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Colix", "$.Escape", "$.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.jvxl.readers.JvxlXmlReader"], "org.jmol.jvxl.readers.JvxlReader", ["java.lang.NullPointerException", "javax.util.StringXBuilder", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Colix", "$.Escape", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "JvxlReader", org.jmol.jvxl.readers.JvxlXmlReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -13,11 +13,11 @@ this.JVXL_VERSION = "2.0";
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new StringBuffer (this.skipComments (false));
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ().append (this.skipComments (false));
 if (this.line == null || this.line.length == 0) this.line = "Line 1";
-this.jvxlFileHeaderBuffer.append (this.line).append ('\n');
+this.jvxlFileHeaderBuffer.append (this.line).appendC ('\n');
 if (this.readLine () == null || this.line.length == 0) this.line = "Line 2";
-this.jvxlFileHeaderBuffer.append (this.line).append ('\n');
+this.jvxlFileHeaderBuffer.append (this.line).appendC ('\n');
 this.jvxlFileHeaderBuffer.append (this.skipComments (false));
 var atomLine = this.line;
 var tokens = org.jmol.util.Parser.getTokensAt (atomLine, 0);

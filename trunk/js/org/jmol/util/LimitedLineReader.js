@@ -1,5 +1,4 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.LimitedLineReader", ["java.lang.StringBuffer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.buf = null;
 this.cchBuf = 0;
@@ -27,10 +26,7 @@ while (this.ichCurrent < this.cchBuf && ((ch = this.buf[this.ichCurrent++])).cha
 }
 if (ch.charCodeAt (0) == 13 && this.ichCurrent < this.cchBuf && (this.buf[this.ichCurrent]).charCodeAt (0) == 10) ++this.ichCurrent;
 var cchLine = this.ichCurrent - ichBeginningOfLine;
-if ((this.buf[ichBeginningOfLine]).charCodeAt (0) == 35) continue ;var sb =  new StringBuffer (cchLine);
-sb.append (this.buf, ichBeginningOfLine, cchLine);
-return sb.toString ();
+if ((this.buf[ichBeginningOfLine]).charCodeAt (0) == 35) continue ;return  String.instantialize (this.buf, ichBeginningOfLine, cchLine);
 }
 return "";
-});
 });

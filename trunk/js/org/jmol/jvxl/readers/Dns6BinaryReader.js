@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.Dsn6BinaryReader", ["java.io.ByteArrayInputStream", "$.DataInputStream", "java.lang.StringBuffer", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.Dsn6BinaryReader", ["java.io.ByteArrayInputStream", "$.DataInputStream", "javax.util.StringXBuilder", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.byteFactor = 0;
 this.xyCount = 0;
@@ -86,7 +86,7 @@ this.nBrickY = Math.floor ((this.ny + 7) / 8);
 this.brickRowByteCount = this.nBrickX * 512;
 this.brickLayerByteCount = this.brickRowByteCount * this.nBrickY;
 this.brickLayer =  Clazz.newArray (this.brickLayerByteCount, 0);
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("DNS6/O progressive brick data reader\n");
 this.jvxlFileHeaderBuffer.append ("see http://www.uoxray.uoregon.edu/tnt/manual/node104.html\n");
 });

@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -25,6 +25,8 @@ package org.jmol.bspt;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
+
+import javax.util.StringXBuilder;
 
 //import org.jmol.util.Logger;
 
@@ -121,7 +123,7 @@ public final class Bspt {
   }
 
   public void dump() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     eleRoot.dump(0, sb);
     Logger.info(sb.toString());
   }

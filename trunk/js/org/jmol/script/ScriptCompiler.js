@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "java.util.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -1474,7 +1474,7 @@ this.cchToken = ++ichT - this.ichToken;
 Clazz.defineMethod (c$, "getUnescapedStringLiteral", 
 function () {
 if (this.cchToken < 2) return "";
-var sb =  new StringBuffer (this.cchToken - 2);
+var sb = javax.util.StringXBuilder.newN (this.cchToken - 2);
 var ichMax = this.ichToken + this.cchToken - 1;
 var ich = this.ichToken + 1;
 while (ich < ichMax) {
@@ -1512,7 +1512,7 @@ unicode += hexit;
 }
 ch = String.fromCharCode (unicode);
 }}
-}sb.append (ch);
+}sb.appendC (ch);
 }
 return sb.toString ();
 });

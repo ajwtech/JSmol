@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,8 @@
  */
 
 package org.jmol.util;
+
+import javax.util.StringXBuilder;
 
 import org.jmol.constant.EnumPalette;
 
@@ -467,7 +469,7 @@ public class Colix {
   public static String getHexCodes(short[] colixes) {
     if (colixes == null)
       return null;
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < colixes.length; i++)
       s.append(i == 0 ? "" : " ").append(getHexCode(colixes[i]));
     return s.toString();

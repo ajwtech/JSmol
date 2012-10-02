@@ -48,6 +48,8 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
+import javax.util.StringXBuilder;
+
 public abstract class SurfaceReader implements VertexDataServer {
 
   /*
@@ -313,8 +315,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected int colorFractionBase;
   protected int colorFractionRange;
 
-  protected StringBuffer jvxlFileHeaderBuffer;
-  protected StringBuffer fractionData;
+  protected StringXBuilder jvxlFileHeaderBuffer;
+  protected StringXBuilder fractionData;
   protected String jvxlEdgeDataRead = "";
   protected String jvxlColorDataRead = "";
   protected BitSet jvxlVoxelBitSet;
@@ -324,7 +326,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean jvxlDataIsColorDensity;
   protected float jvxlCutoff;
   protected int jvxlNSurfaceInts;
-  protected char cJvxlEdgeNaN;
+  protected char cJvxlEdgeNaN = '\0';
 
   protected int contourVertexCount;
 

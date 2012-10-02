@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.api.JmolMeasurementClient", "org.jmol.shape.Shape", "java.util.ArrayList"], "org.jmol.shape.Measures", ["java.lang.Float", "$.StringBuffer", "java.util.Hashtable", "javax.util.BitSet", "org.jmol.modelset.Measurement", "$.MeasurementData", "org.jmol.shape.FontLineShape", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape"], function () {
+Clazz.load (["org.jmol.api.JmolMeasurementClient", "org.jmol.shape.Shape", "java.util.ArrayList"], "org.jmol.shape.Measures", ["java.lang.Float", "java.util.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.modelset.Measurement", "$.MeasurementData", "org.jmol.shape.FontLineShape", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsColixSet = null;
 this.bsSelected = null;
@@ -408,7 +408,7 @@ m.setVisible (true);
 });
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var commands =  new StringBuffer ("");
+var commands =  new javax.util.StringXBuilder ();
 org.jmol.shape.Shape.appendCmd (commands, "measures delete");
 for (var i = 0; i < this.measurementCount; i++) org.jmol.shape.Shape.appendCmd (commands, this.getState (i));
 
@@ -443,7 +443,7 @@ Clazz.defineMethod (c$, "getState",
 ($fz = function (index) {
 var m = this.measurements.get (index);
 var count = m.getCount ();
-var sb =  new StringBuffer ("measure");
+var sb =  new javax.util.StringXBuilder ().append ("measure");
 var tickInfo = m.getTickInfo ();
 if (tickInfo != null) org.jmol.shape.FontLineShape.addTickInfo (sb, tickInfo, true);
 for (var i = 1; i <= count; i++) sb.append (" ").append (m.getLabel (i, true, true));

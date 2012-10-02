@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
+Clazz.load (null, "org.jmol.script.ScriptMathProcessor", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Arrays", "$.Date", "$.Hashtable", "java.util.regex.Pattern", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.Bond", "$.MeasurementData", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.JmolMolecule", "$.Logger", "$.Measure", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.PropertyManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isSyntaxCheck = false;
 this.wasSyntaxCheck = false;
@@ -1492,7 +1492,7 @@ Clazz.defineMethod (c$, "evaluateScript",
 ($fz = function (args, tok) {
 if (tok == 135287308 && args.length != 1 || args.length == 0 || args.length > 2) return false;
 var s = org.jmol.script.ScriptVariable.sValue (args[0]);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 switch (tok) {
 case 135271429:
 var appID = (args.length == 2 ? org.jmol.script.ScriptVariable.sValue (args[1]) : ".");

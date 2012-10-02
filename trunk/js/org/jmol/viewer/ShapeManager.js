@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.ShapeManager", ["java.lang.Boolean", "$.StringBuffer", "java.util.Hashtable", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "$.EnumVdw", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.ShapeManager", ["java.lang.Boolean", "java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "$.EnumVdw", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.gdata = null;
 this.modelSet = null;
@@ -203,7 +203,7 @@ return (this.shapes == null ? null : this.shapes[i]);
 Clazz.defineMethod (c$, "getShapeInfo", 
 function () {
 var info =  new java.util.Hashtable ();
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 if (this.shapes != null) for (var i = 0; i < 35; ++i) {
 var shape = this.shapes[i];
 if (shape != null) {
@@ -223,7 +223,7 @@ if (iShape != 2147483647 && i != iShape) continue ;var shape = this.shapes[i];
 if (shape != null && (isAll || org.jmol.viewer.JmolConstants.isShapeSecondary (i)) && (cmd = shape.getShapeState ()) != null && cmd.length > 1) commands.append (cmd);
 }
 commands.append ("  select *;\n");
-}, "StringBuffer,~B,~N");
+}, "javax.util.StringXBuilder,~B,~N");
 Clazz.defineMethod (c$, "mergeShapes", 
 function (newShapes) {
 if (newShapes == null) return ;

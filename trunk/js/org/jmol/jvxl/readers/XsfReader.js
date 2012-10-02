@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.XsfReader", ["java.lang.StringBuffer", "org.jmol.util.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.XsfReader", ["javax.util.StringXBuilder", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBXSF = false;
 Clazz.instantialize (this, arguments);
@@ -12,7 +12,7 @@ Clazz.overrideMethod (c$, "readParameters",
 function () {
 this.isAngstroms = false;
 this.params.blockCubeData = true;
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("XsfReader file\n");
 var needCutoff = this.params.cutoffAutomatic;
 this.isAngstroms = true;
