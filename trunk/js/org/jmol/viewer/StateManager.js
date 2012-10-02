@@ -1313,7 +1313,7 @@ if (i.length > 0) {
 c.append ("\n#user-defined atom sets; \n");
 c.append (i);
 }this.b$["org.jmol.viewer.StateManager"].viewer.loadShape (5);
-c.appendO (this.b$["org.jmol.viewer.StateManager"].viewer.getShapeProperty (5, "defaultState"));
+c.append (this.b$["org.jmol.viewer.StateManager"].viewer.getShapeProperty (5, "defaultState"));
 if (this.haveSetStructureList) {
 c.append ("struture HELIX set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.HELIX)));
 c.append ("struture SHEET set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.SHEET)));

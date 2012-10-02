@@ -7345,7 +7345,7 @@ function (commands) {
 if (this.ligandModelSet != null) {
 for (var key, $key = this.ligandModelSet.keySet ().iterator (); $key.hasNext () && ((key = $key.next ()) || true);) {
 var data = this.ligandModels.get (key + "_data");
-if (data != null) commands.append ("  ").appendO (org.jmol.util.Escape.encapsulateData ("ligand_" + key, data.trim () + "\n"));
+if (data != null) commands.append ("  ").append (org.jmol.util.Escape.encapsulateData ("ligand_" + key, data.trim () + "\n"));
 }
 }this.modelSet.appendLoadStates (commands);
 }, "javax.util.StringXBuilder");

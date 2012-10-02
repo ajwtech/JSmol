@@ -1074,8 +1074,8 @@ if (infolist[i] == null || symOp >= 0 && symOp != i) continue ;if (drawID != nul
 if (sb.length () > 0) sb.appendC ('\n');
 if (!labelOnly) {
 if (symOp < 0) sb.appendI (i + 1).append ("\t");
-sb.appendO (infolist[i][0]).append ("\t");
-}sb.appendO (infolist[i][2]);
+sb.append (infolist[i][0]).append ("\t");
+}sb.append (infolist[i][2]);
 }
 if (sb.length () == 0 && drawID != null) sb.append ("draw " + drawID + "* delete");
 return sb.toString ();

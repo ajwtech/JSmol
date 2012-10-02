@@ -2,7 +2,6 @@ LoadClazz = function() {
 
 window["j2s.object.native"] = true;
 
-// BH added Integer.bitCount in core.z.js
  // BH changed alert to Clazz.alert in java.lang.Class.js *.ClassLoader.js, java.lang.thread.js
  // BH removed toString from innerFunctionNames due to infinite recursion
  // BH note: Logger.error(null, e) does not work -- get no constructor for (String) (TypeError)
@@ -879,7 +878,7 @@ Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
  * following variable is used to make optimization.
  */
 /* private */
-//Clazz.ie$plit = "\\2".split (/\\/).length == 1;
+Clazz.ie$plit = "\\2".split (/\\/).length == 1;
 
 /*# {$no.debug.support} >>x #*/
 Clazz.tracingCalling = false;
@@ -895,7 +894,7 @@ Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funPa
 	for (var fn in clazzFun) {
 		//if (fn.indexOf ('\\') == 0) {
 		if (fn.charCodeAt (0) == 92) { // 92 == '\\'.charCodeAt (0)
-			var ps = fn.substring (1).split ("\\");
+			var ps = (Clazz.ie$plit ? fn : fn.substring (1)).split (/\\/);
 			if (ps.length == params.length) {
 				methods[methods.length] = ps;
 			}
@@ -920,8 +919,7 @@ Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funPa
 		if (generic && fn == "funParams" && clazzFun.funParams != null) {
 			//xfparams = clazzFun.funParams;
 			fn = clazzFun.funParams;
-			var ps = fn.substring (1).split ("\\");
-			//var ps = (Clazz.ie$plit ? fn : fn.substring (1)).split (/\\/);
+			var ps = (Clazz.ie$plit ? fn : fn.substring (1)).split (/\\/);
 			if (ps.length == params.length) {
 				methods[0] = ps;
 			}
@@ -6779,23 +6777,5 @@ window.assert = function () {
 
 })(Clazz.Console);
 
-if (!self.Int32Array)
-	self.Int32Array = Array;
-if (!self.Float32Array)
-	self.Float32Array = Array;
-
-Clazz.haveInt32 = (self.Int32Array != Array)
-Clazz.newArrayBH = function(A, n) {
-  if (Clazz._hasIFArrays) {
-    if (typeof A == Int32Array)
-    	return new Int32Array(n);
-    if (typeof A == Float32Array)
-    	return new Float32Array(n);    
-  }
-  return new Array(n);
-}
-
-
 };
 
- 

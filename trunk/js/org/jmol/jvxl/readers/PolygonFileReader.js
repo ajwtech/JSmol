@@ -13,7 +13,7 @@ Clazz.defineMethod (c$, "init2",
 function (sg, br) {
 Clazz.superCall (this, org.jmol.jvxl.readers.PolygonFileReader, "init2", [sg, br]);
 this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
-this.jvxlFileHeaderBuffer.append ("#created ").appendO ( new java.util.Date ()).append ("\n");
+this.jvxlFileHeaderBuffer.append ("#created ").append ("" +  new java.util.Date ()).append ("\n");
 this.vertexDataOnly = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readVolumeParameters", 

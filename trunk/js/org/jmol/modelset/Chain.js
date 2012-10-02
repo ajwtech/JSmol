@@ -1,7 +1,7 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
 c$ = Clazz.decorateAsClass (function () {
 this.model = null;
-this.chainID = 0;
+this.chainID = '\0';
 this.isDna = false;
 this.isRna = false;
 this.groupCount = 0;

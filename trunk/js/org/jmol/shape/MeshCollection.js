@@ -301,7 +301,7 @@ sb.append (s);
 }sb.appendC ('\n');
 if (id != null) {
 var info = this.getProperty ("jvxlFileInfo", 0);
-if (info != null) sb.appendO (info).appendC ('\n');
+if (info != null) sb.append (info).appendC ('\n');
 }}
 return sb.toString ();
 }if (property === "vertices") return this.getVertices (this.currentMesh);

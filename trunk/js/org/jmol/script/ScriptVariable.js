@@ -442,7 +442,7 @@ sep = ", ";
 sb.append (" }");
 break;
 }for (var i = 0; i < keys.length; i++) {
-sb.appendO (keys[i]).append ("\t:");
+sb.append (keys[i]).append ("\t:");
 var v = org.jmol.script.ScriptVariable.getVariable (ht.get (keys[i]));
 var sb2 =  new javax.util.StringXBuilder ();
 org.jmol.script.ScriptVariable.sValueArray (sb2, v, map, level + 1, isEscaped);
@@ -794,7 +794,7 @@ if (Clazz.instanceOf (ret, Array)) {
 var list = ret;
 for (var j = 0; j < list.length; j++) sb.append (list[j]).append ("\n");
 
-continue ;}sb.appendO (ret);
+continue ;}sb.append (ret);
 }
 return sb.toString ();
 }, "~A");

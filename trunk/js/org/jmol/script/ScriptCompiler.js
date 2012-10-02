@@ -44,7 +44,7 @@ this.isUserToken = false;
 this.tokInitialPlusPlus = 0;
 this.vPush = null;
 this.pushCount = 0;
-this.chFirst = 0;
+this.chFirst = '\0';
 Clazz.instantialize (this, arguments);
 }, org.jmol.script, "ScriptCompiler", org.jmol.script.ScriptCompilationTokenParser);
 Clazz.prepareFields (c$, function () {
