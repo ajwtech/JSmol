@@ -28,7 +28,7 @@ c$.getAminoAcidValenceAndCharge = Clazz.defineMethod (c$, "getAminoAcidValenceAn
 function (res, name, ret) {
 if (res == null || res.length == 0 || res.length > 3 || name.equals ("CA") || name.equals ("CB")) return false;
 var ch0 = name.charAt (0);
-var ch1 = (name.length == 1 ? 0 : name.charAt (1));
+var ch1 = (name.length == 1 ? '\0' : name.charAt (1));
 var isSp2 = false;
 var bondCount = ret[3];
 switch (res.length) {

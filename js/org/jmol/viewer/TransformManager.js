@@ -542,11 +542,11 @@ return ;
 }, "~S,~N");
 Clazz.defineMethod (c$, "getTranslationXPercent", 
 function () {
-return (this.fixedTranslation.x - this.width / 2) * 100 / this.width;
+return (this.width == 0 ? 0 : (this.fixedTranslation.x - this.width / 2) * 100 / this.width);
 });
 Clazz.defineMethod (c$, "getTranslationYPercent", 
 function () {
-return (this.fixedTranslation.y - this.height / 2) * 100 / this.height;
+return (this.height == 0 ? 0 : (this.fixedTranslation.y - this.height / 2) * 100 / this.height);
 });
 Clazz.defineMethod (c$, "getTranslationZPercent", 
 function () {

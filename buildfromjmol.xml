@@ -12,7 +12,6 @@
       	<exclude name="**/i18n/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/multitouch/**/*"/>
-        <exclude name="**/quantum/*"/>
         <exclude name="**/popup/*"/>
       </fileset>
     </copy>

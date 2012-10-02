@@ -42,7 +42,19 @@ this.s += b
 Clazz.defineMethod (c$, "appendF", 
 function (f) {
 {
-this.s += f
+var sf = "" + f;
+if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+sf += ".0" ;
+this.s += sf;
+}return this;
+}, "~N");
+Clazz.defineMethod (c$, "appendD", 
+function (d) {
+{
+var sf = "" + d;
+if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+sf += ".0" ;
+this.s += sf;
 }return this;
 }, "~N");
 Clazz.defineMethod (c$, "append", 
