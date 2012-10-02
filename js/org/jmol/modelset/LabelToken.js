@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (null, "org.jmol.modelset.LabelToken", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.modelset.Atom", "org.jmol.script.Token", "org.jmol.util.TextFormat"], function () {
+Clazz.load (null, "org.jmol.modelset.LabelToken", ["java.lang.Character", "$.Float", "java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.modelset.Atom", "org.jmol.script.Token", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.text = null;
 this.key = null;
@@ -55,14 +55,14 @@ return org.jmol.modelset.LabelToken.formatLabelAtomArray (viewer, atom, tokens, 
 c$.formatLabelAtomArray = Clazz.defineMethod (c$, "formatLabelAtomArray", 
 function (viewer, atom, tokens, chAtom, indices) {
 if (atom == null) return null;
-var strLabel = (chAtom > '0' ? null :  new StringBuffer ());
+var strLabel = (chAtom > '0' ? null :  new javax.util.StringXBuilder ());
 if (tokens != null) for (var i = 0; i < tokens.length; i++) {
 var t = tokens[i];
 if (t == null) break;
 if (chAtom > '0' && t.ch1.charCodeAt (0) != chAtom.charCodeAt (0)) continue ;if (t.tok <= 0 || t.key != null) {
 if (strLabel != null) {
 strLabel.append (t.text);
-if (t.ch1.charCodeAt (0) != 0) strLabel.append (t.ch1);
+if (t.ch1.charCodeAt (0) != 0) strLabel.appendC (t.ch1);
 }} else {
 org.jmol.modelset.LabelToken.appendAtomTokenValue (viewer, atom, t, strLabel, indices);
 }}
@@ -116,7 +116,7 @@ lt.text = (Clazz.instanceOf (value, Float) ? lt.format ((value).floatValue (), n
 }, "~A,java.util.Map");
 c$.getLabel = Clazz.defineMethod (c$, "getLabel", 
 function (tokens) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < tokens.length; i++) {
 var lt = tokens[i];
 if (lt == null) break;
@@ -303,7 +303,7 @@ throw ioobe;
 strT = t.format (floatT, strT, ptT);
 if (strLabel == null) t.text = strT;
  else strLabel.append (strT);
-}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,org.jmol.modelset.Atom,org.jmol.modelset.LabelToken,StringBuffer,~A");
+}, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,org.jmol.modelset.Atom,org.jmol.modelset.LabelToken,javax.util.StringXBuilder,~A");
 Clazz.defineMethod (c$, "format", 
 ($fz = function (floatT, strT, ptT) {
 if (!Float.isNaN (floatT)) {

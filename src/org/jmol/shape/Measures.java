@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -41,6 +41,8 @@ import org.jmol.script.Token;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -589,7 +591,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   
  @Override
 public String getShapeState() {
-    StringBuffer commands = new StringBuffer("");
+    StringXBuilder commands = new StringXBuilder();
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)
       appendCmd(commands, getState(i));
@@ -636,7 +638,7 @@ public String getShapeState() {
   private String getState(int index) {
     Measurement m = measurements.get(index);
     int count = m.getCount();
-    StringBuffer sb = new StringBuffer("measure");
+    StringXBuilder sb = new StringXBuilder().append("measure");
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null)
       FontLineShape.addTickInfo(sb, tickInfo, true);

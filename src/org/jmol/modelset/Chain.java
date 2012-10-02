@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:27:42 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17607 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -28,7 +28,7 @@ import javax.util.BitSet;
 public final class Chain {
 
   public Model model;
-  public char chainID;
+  public char chainID = '\0';
   public boolean isDna, isRna;
   
   int groupCount;

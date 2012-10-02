@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.appletjs");
-Clazz.load (["org.jmol.api.JmolStatusListener", "$.JmolSyncInterface", "java.util.Hashtable"], "org.jmol.appletjs.Jmol", ["java.lang.Boolean", "$.StringBuffer", "java.net.URL", "java.util.ArrayList", "org.jmol.appletjs.JmolAppletRegistry", "org.jmol.constant.EnumCallback", "org.jmol.i18n.GT", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.api.JmolStatusListener", "$.JmolSyncInterface", "java.util.Hashtable"], "org.jmol.appletjs.Jmol", ["java.lang.Boolean", "java.net.URL", "java.util.ArrayList", "javax.util.StringXBuilder", "org.jmol.appletjs.JmolAppletRegistry", "org.jmol.constant.EnumCallback", "org.jmol.i18n.GT", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.language = null;
 this.doTranslate = true;
@@ -191,7 +191,7 @@ return this.scriptProcessor (script, statusParams, 1);
 Clazz.defineMethod (c$, "scriptWaitOutput", 
 function (script) {
 if (script == null || script.length == 0) return "";
-this.outputBuffer =  new StringBuffer ();
+this.outputBuffer =  new javax.util.StringXBuilder ();
 this.viewer.scriptWaitStatus (script, "");
 var str = (this.outputBuffer == null ? "" : this.outputBuffer.toString ());
 this.outputBuffer = null;
@@ -408,7 +408,7 @@ throw e;
 }, "org.jmol.constant.EnumCallback,~A");
 Clazz.defineMethod (c$, "output", 
 ($fz = function (a) {
-if (this.b$["org.jmol.appletjs.Jmol"].outputBuffer != null && a != null) this.b$["org.jmol.appletjs.Jmol"].outputBuffer.append (a).append ('\n');
+if (this.b$["org.jmol.appletjs.Jmol"].outputBuffer != null && a != null) this.b$["org.jmol.appletjs.Jmol"].outputBuffer.append (a).appendC ('\n');
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "notifyScriptTermination", 
 ($fz = function () {
@@ -567,7 +567,7 @@ var f = e.size ();
 if (f == 0) {
 if (!d && !b.equals ("*")) org.jmol.util.Logger.error (this.b$["org.jmol.appletjs.Jmol"].fullName + " couldn't find applet " + b);
 return "";
-}var g = (c ? null :  new StringBuffer ());
+}var g = (c ? null :  new javax.util.StringXBuilder ());
 var h = (c && a.equals ("GET_GRAPHICS"));
 var i = (c && a.equals ("SET_GRAPHICS_OFF"));
 if (h) this.b$["org.jmol.appletjs.Jmol"].gRight = null;

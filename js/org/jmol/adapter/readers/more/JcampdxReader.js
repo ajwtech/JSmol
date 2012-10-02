@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "$.StringBuffer", "javax.util.BitSet", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelID = null;
 this.models = null;
@@ -107,8 +107,8 @@ var modelType = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.l
 var vibScale = org.jmol.util.Parser.parseFloatStr (org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "vibrationScale"));
 if (modelType.equals ("xyzvib")) modelType = "xyz";
  else if (modelType.length == 0) modelType = null;
-var sb =  new StringBuffer ();
-while (this.readLine () != null && !this.line.contains ("</ModelData>")) sb.append (this.line).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+while (this.readLine () != null && !this.line.contains ("</ModelData>")) sb.append (this.line).appendC ('\n');
 
 var data = sb.toString ();
 var ret = org.jmol.adapter.smarter.SmarterJmolAdapter.staticGetAtomSetCollectionReader (this.filePath, modelType,  new java.io.BufferedReader ( new java.io.StringReader (data)), this.htParams);

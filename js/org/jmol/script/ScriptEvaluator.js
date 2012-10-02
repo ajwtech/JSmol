@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.lang.Exception"], "org.jmol.script.ScriptEvaluator", ["java.lang.Boolean", "$.Float", "$.NullPointerException", "$.Short", "$.StringBuffer", "$.Thread", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumAnimationMode", "$.EnumAxesMode", "$.EnumPalette", "$.EnumStereoMode", "$.EnumStructure", "$.EnumVdw", "org.jmol.i18n.GT", "org.jmol.modelset.Atom", "$.AtomCollection", "$.Bond", "$.Group", "$.LabelToken", "$.MeasurementData", "$.ModelCollection", "$.TickInfo", "org.jmol.script.ScriptCompiler", "$.ScriptContext", "$.ScriptMathProcessor", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Object2d", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolEdge", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.ActionManager", "$.FileManager", "$.JmolConstants", "$.PropertyManager", "$.StateManager", "$.Viewer"], function () {
+Clazz.load (["java.lang.Exception"], "org.jmol.script.ScriptEvaluator", ["java.lang.Boolean", "$.Float", "$.NullPointerException", "$.Short", "$.Thread", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix3f", "$.Matrix4f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumAnimationMode", "$.EnumAxesMode", "$.EnumPalette", "$.EnumStereoMode", "$.EnumStructure", "$.EnumVdw", "org.jmol.i18n.GT", "org.jmol.modelset.Atom", "$.AtomCollection", "$.Bond", "$.Group", "$.LabelToken", "$.MeasurementData", "$.ModelCollection", "$.TickInfo", "org.jmol.script.ScriptCompiler", "$.ScriptContext", "$.ScriptMathProcessor", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.shape.Object2d", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Elements", "$.Escape", "$.GData", "$.JmolEdge", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Point3fi", "$.Quaternion", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.ActionManager", "$.FileManager", "$.JmolConstants", "$.PropertyManager", "$.StateManager", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tQuiet = false;
 this.isSyntaxCheck = false;
@@ -147,7 +147,7 @@ if (this.errorMessage == null && this.interruptExecution) this.setErrorMessage (
 this.isExecuting = this.isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
 this.viewer.setTainted (true);
 this.viewer.popHoldRepaintWhy ("runEval");
-}, "~B,~B,~B,~B,StringBuffer");
+}, "~B,~B,~B,~B,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "runScriptBuffer", 
 function (script, outputBuffer) {
 this.pushContext (null);
@@ -155,7 +155,7 @@ this.contextPath += " >> script() ";
 this.outputBuffer = outputBuffer;
 if (this.compileScript (null, script + "\u0001## EDITOR_IGNORE ##", false)) this.instructionDispatchLoop (false);
 this.popContext (false, false);
-}, "~S,StringBuffer");
+}, "~S,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "checkScriptSilent", 
 function (script) {
 var sc = this.compiler.compile (null, script, false, true, false, true);
@@ -265,7 +265,7 @@ for (var i = 1; i < this.statementLength; ++i) org.jmol.util.Logger.debug (this.
 
 }this.iToken = -9999;
 if (this.logMessages) {
-var strbufLog =  new StringBuffer (80);
+var strbufLog =  new javax.util.StringXBuilder ();
 var s = (ifLevel > 0 ? "                          ".substring (0, ifLevel * 2) : "");
 strbufLog.append (s).append (org.jmol.script.ScriptEvaluator.statementAsString (this.statement, this.iToken, this.logMessages));
 this.viewer.scriptStatus (strbufLog.toString ());
@@ -1102,7 +1102,7 @@ break;
 }
 return fout;
 }if (tok == 1087373320) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < len; i++) sb.append (vout.get (i));
 
 return sb.toString ();
@@ -1337,8 +1337,8 @@ return org.jmol.script.ScriptVariable.getVariable (v);
 case 4:
 if (!(Clazz.instanceOf (v, java.util.List))) break;
 var sv = v;
-var sb =  new StringBuffer ();
-for (var i = 0; i < sv.size (); i++) sb.append (sv.get (i).asString ()).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+for (var i = 0; i < sv.size (); i++) sb.append (sv.get (i).asString ()).appendC ('\n');
 
 return sb.toString ();
 }
@@ -1779,7 +1779,7 @@ this.errorType = context.errorType;
 }}, $fz.isPrivate = true, $fz), "org.jmol.script.ScriptContext,~B,~B,~B");
 Clazz.defineMethod (c$, "getContext", 
 ($fz = function (withVariables) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var context = this.thisContext;
 while (context != null) {
 if (withVariables) {
@@ -2082,20 +2082,20 @@ return err;
 }, "~S,~S,~N,~N,~S");
 Clazz.defineMethod (c$, "toString", 
 function () {
-var str =  new StringBuffer ();
+var str =  new javax.util.StringXBuilder ();
 str.append ("Eval\n pc:");
-str.append (this.pc);
+str.appendI (this.pc);
 str.append ("\n");
-str.append (this.aatoken.length);
+str.appendI (this.aatoken.length);
 str.append (" statements\n");
 for (var i = 0; i < this.aatoken.length; ++i) {
 str.append ("----\n");
 var atoken = this.aatoken[i];
 for (var j = 0; j < atoken.length; ++j) {
-str.append (atoken[j]);
-str.append ('\n');
+str.appendO (atoken[j]);
+str.appendC ('\n');
 }
-str.append ('\n');
+str.appendC ('\n');
 }
 str.append ("END\n");
 return str.toString ();
@@ -2103,7 +2103,7 @@ return str.toString ();
 c$.statementAsString = Clazz.defineMethod (c$, "statementAsString", 
 function (statement, iTok, doLogMessages) {
 if (statement.length == 0) return "";
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var tok = statement[0].tok;
 switch (tok) {
 case 0:
@@ -2122,7 +2122,7 @@ if (token == null) {
 len = i;
 break;
 }if (iTok == i - 1) sb.append (" <<");
-if (i != 0) sb.append (' ');
+if (i != 0) sb.appendC (' ');
 if (i == 2 && setEquals) {
 if ((setEquals = (token.tok != 269484436)) || statement[0].intValue == 35) {
 sb.append (setEquals ? "= " : "== ");
@@ -2154,7 +2154,7 @@ sb.append ("false");
 continue ;case 135280132:
 break;
 case 2:
-sb.append (token.intValue);
+sb.appendI (token.intValue);
 continue ;case 8:
 case 9:
 case 10:
@@ -2163,19 +2163,19 @@ continue ;case 7:
 case 6:
 sb.append ((token).escape ());
 continue ;case 5:
-sb.append ('^');
+sb.appendC ('^');
 continue ;case 1048615:
-if (token.intValue != 2147483647) sb.append (token.intValue);
+if (token.intValue != 2147483647) sb.appendI (token.intValue);
  else sb.append (org.jmol.modelset.Group.getSeqcodeString (org.jmol.script.ScriptEvaluator.getSeqCode (token)));
 token = statement[++i];
-sb.append (' ');
+sb.appendC (' ');
 sb.append (inBrace ? "-" : "- ");
 case 1048614:
-if (token.intValue != 2147483647) sb.append (token.intValue);
+if (token.intValue != 2147483647) sb.appendI (token.intValue);
  else sb.append (org.jmol.modelset.Group.getSeqcodeString (org.jmol.script.ScriptEvaluator.getSeqCode (token)));
 continue ;case 1048609:
 sb.append ("*:");
-sb.append (String.fromCharCode (token.intValue));
+sb.appendC (String.fromCharCode (token.intValue));
 continue ;case 1048607:
 sb.append ("*%");
 if (token.value != null) sb.append (token.value.toString ());
@@ -2188,13 +2188,13 @@ sb.append (org.jmol.util.Escape.escapeModelFileNumber (token.intValue));
 } else {
 sb.append ("" + token.value);
 }continue ;case 1048613:
-sb.append ('[');
+sb.appendC ('[');
 sb.append (org.jmol.modelset.Group.getGroup3 (token.intValue));
-sb.append (']');
+sb.appendC (']');
 continue ;case 1048612:
-sb.append ('[');
-sb.append (token.value);
-sb.append (']');
+sb.appendC ('[');
+sb.appendO (token.value);
+sb.appendC (']');
 continue ;case 1048608:
 sb.append ("*.");
 break;
@@ -2204,7 +2204,7 @@ var pt = token.value;
 sb.append ("cell=").append (org.jmol.util.Escape.escapePt (pt));
 continue ;}break;
 case 4:
-sb.append ("\"").append (token.value).append ("\"");
+sb.append ("\"").appendO (token.value).append ("\"");
 continue ;case 269484436:
 case 269484434:
 case 269484433:
@@ -2220,7 +2220,7 @@ continue ;case 1150985:
 sb.append ("end");
 continue ;default:
 if (org.jmol.script.Token.tokAttr (token.tok, 1073741824) || !doLogMessages) break;
-sb.append ('\n').append (token.toString ()).append ('\n');
+sb.appendC ('\n').append (token.toString ()).appendC ('\n');
 continue ;}
 if (token.value != null) sb.append (token.value.toString ());
 }
@@ -2299,14 +2299,14 @@ this.showStringPrint (str, false);
 Clazz.defineMethod (c$, "showStringPrint", 
 ($fz = function (str, isPrint) {
 if (this.isSyntaxCheck || str == null) return ;
-if (this.outputBuffer != null) this.outputBuffer.append (str).append ('\n');
+if (this.outputBuffer != null) this.outputBuffer.append (str).appendC ('\n');
  else this.viewer.showString (str, isPrint);
 }, $fz.isPrivate = true, $fz), "~S,~B");
 Clazz.defineMethod (c$, "scriptStatusOrBuffer", 
 ($fz = function (s) {
 if (this.isSyntaxCheck) return ;
 if (this.outputBuffer != null) {
-this.outputBuffer.append (s).append ('\n');
+this.outputBuffer.append (s).appendC ('\n');
 return ;
 }this.viewer.scriptStatus (s);
 }, $fz.isPrivate = true, $fz), "~S");
@@ -5981,8 +5981,8 @@ if (isProperty) this.viewer.setData (property2, [property2, dataOut, bsOut], thi
 }}if (bsOut == null) {
 var format = "{" + mapKey + "=%[" + mapKey + "]}." + property2 + " = %[" + property1 + "]";
 var data = this.getBitsetIdent (bsFrom, format, null, false, 2147483647, false);
-var sb =  new StringBuffer ();
-for (var i = 0; i < data.length; i++) if (data[i].indexOf ("null") < 0) sb.append (data[i]).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+for (var i = 0; i < data.length; i++) if (data[i].indexOf ("null") < 0) sb.append (data[i]).appendC ('\n');
 
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (sb.toString ());
 var bsSubset = org.jmol.util.BitSetUtil.copy (this.viewer.getSelectionSubset ());
@@ -6215,7 +6215,7 @@ var filter = null;
 var firstLastSteps = null;
 var modelCount0 = this.viewer.getModelCount () - (this.viewer.getFileName ().equals ("zapped") ? 1 : 0);
 var atomCount0 = this.viewer.getAtomCount ();
-var loadScript =  new StringBuffer ("load");
+var loadScript =  new javax.util.StringXBuilder ().append ("load");
 var nFiles = 1;
 var htParams =  new java.util.Hashtable ();
 if (this.isStateScript && this.forceNoAddHydrogens) htParams.put ("doNotAddHydrogens", Boolean.TRUE);
@@ -6249,7 +6249,7 @@ var strModel = (key.indexOf ("@") >= 0 ? "" + this.getParameter (key.substring (
 strModel = this.viewer.fixInlineString (strModel, this.viewer.getInlineChar ());
 htParams.put ("fileData", strModel);
 htParams.put ("isData", Boolean.TRUE);
-loadScript.append ('\n');
+loadScript.appendC ('\n');
 loadScript.append (strModel);
 if (key.indexOf ("@") < 0) {
 loadScript.append (" end ").append (org.jmol.util.Escape.escapeStr (key));
@@ -6535,7 +6535,7 @@ htParams.put ("fileData", filename);
 isVariable = true;
 var s = this.getStringParameter (filename.substring (1), false);
 htParams.put ("fileData", s);
-loadScript =  new StringBuffer ("{\n    var " + filename.substring (1) + " = " + org.jmol.util.Escape.escapeStr (s) + ";\n    " + loadScript);
+loadScript =  new javax.util.StringXBuilder ().append ("{\n    var ").append (filename.substring (1)).append (" = ").append (org.jmol.util.Escape.escapeStr (s)).append (";\n    ").appendSB (loadScript);
 }}var os = null;
 if (localName != null) {
 if (localName.equals (".")) localName = this.viewer.getFilePath (filename, true);
@@ -6604,12 +6604,12 @@ if (script.length > 0 && !this.isCmdLine_c_or_C_Option) this.runScript (script);
 Clazz.defineMethod (c$, "logLoadInfo", 
 ($fz = function (msg) {
 if (msg.length > 0) org.jmol.util.Logger.info (msg);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var modelCount = this.viewer.getModelCount ();
-if (modelCount > 1) sb.append (modelCount).append (" models\n");
+if (modelCount > 1) sb.appendI (modelCount).append (" models\n");
 for (var i = 0; i < modelCount; i++) {
 var moData = this.viewer.getModelAuxiliaryInfoValue (i, "moData");
-if (moData == null) continue ;sb.append ((moData.get ("mos")).size ()).append (" molecular orbitals in model ").append (this.viewer.getModelNumberDotted (i)).append ("\n");
+if (moData == null) continue ;sb.appendI ((moData.get ("mos")).size ()).append (" molecular orbitals in model ").append (this.viewer.getModelNumberDotted (i)).append ("\n");
 }
 if (sb.length () > 0) this.showString (sb.toString ());
 }, $fz.isPrivate = true, $fz), "~S");
@@ -10708,8 +10708,8 @@ if (name.equals ("/") && (len = this.statementLength) == 4) {
 name = this.parameterAsString (3).toLowerCase ();
 if (!this.isSyntaxCheck) {
 var info = org.jmol.util.TextFormat.split (this.viewer.getStateInfo (), '\n');
-var sb =  new StringBuffer ();
-for (var i = 0; i < info.length; i++) if (info[i].toLowerCase ().indexOf (name) >= 0) sb.append (info[i]).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+for (var i = 0; i < info.length; i++) if (info[i].toLowerCase ().indexOf (name) >= 0) sb.append (info[i]).appendC ('\n');
 
 msg = sb.toString ();
 }break;
@@ -11445,7 +11445,7 @@ var bs = null;
 var rd = null;
 var params = null;
 var colorDensity = false;
-var sbCommand =  new StringBuffer ();
+var sbCommand =  new javax.util.StringXBuilder ();
 var minSet = 2147483647;
 var displayType = 135266319;
 var contactType = 0;
@@ -11515,25 +11515,25 @@ sbCommand.append (" " + -params[0]);
 case 1073742122:
 var resolution = this.floatParameter (++i);
 if (resolution > 0) {
-sbCommand.append (" resolution ").append (resolution);
+sbCommand.append (" resolution ").appendF (resolution);
 this.setShapeProperty (24, "resolution", Float.$valueOf (resolution));
 }break;
 case 135266324:
 case 1276118018:
 distance = this.floatParameter (++i);
-sbCommand.append (" within ").append (distance);
+sbCommand.append (" within ").appendF (distance);
 break;
 case 269484193:
 case 2:
 case 3:
 rd = this.encodeRadiusParameter (i, false, false);
-sbCommand.append (" ").append (rd);
+sbCommand.append (" ").appendO (rd);
 i = this.iToken;
 break;
 case 1073741990:
 case 1073741989:
 intramolecular = (tok == 1073741989 ? Boolean.TRUE : Boolean.FALSE);
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 break;
 case 1073742020:
 minSet = this.intParameter (++i);
@@ -11542,7 +11542,7 @@ case 1612189718:
 case 1073741881:
 case 1649412112:
 contactType = tok;
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 break;
 case 1073742136:
 if (this.isFloatParameter (i + 1)) saProbeRadius = this.floatParameter (++i);
@@ -11555,8 +11555,8 @@ case 1073741961:
 case 135266319:
 case 4106:
 displayType = tok;
-sbCommand.append (" ").append (this.theToken.value);
-if (tok == 1073742136) sbCommand.append (" ").append (saProbeRadius);
+sbCommand.append (" ").appendO (this.theToken.value);
+if (tok == 1073742136) sbCommand.append (" ").appendF (saProbeRadius);
 break;
 case 1073742083:
 params = this.floatParameterSet (++i, 1, 10);
@@ -11594,7 +11594,7 @@ break;
 case 1073742036:
 if (minSet == 2147483647) minSet = 100;
 this.setShapeProperty (24, "minset", Integer.$valueOf (minSet));
-sbCommand.append (" minSet ").append (minSet);
+sbCommand.append (" minSet ").appendI (minSet);
 if (params == null) params = [0.5, 2];
 }
 if (intramolecular != null) {
@@ -12053,7 +12053,7 @@ var value = (this.isFloatParameter (index + 1) ? this.floatParameter (++index) :
 this.setShapeTranslucency (iShape, null, "translucent", value, null);
 if (sb != null) {
 sb.append (" translucent");
-if (value != 3.4028235E38) sb.append (" ").append (value);
+if (value != 3.4028235E38) sb.append (" ").appendF (value);
 }} else {
 this.setMeshDisplayProperty (iShape, index, this.theTok);
 }} else if (this.theTok == 1073742074) {
@@ -12072,7 +12072,7 @@ this.error (22);
 break;
 }}
 return translucency;
-}, $fz.isPrivate = true, $fz), "StringBuffer,~N,~N,~N");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~N,~N,~N");
 Clazz.defineMethod (c$, "moOffset", 
 ($fz = function (index) {
 var isHomo = (this.getToken (index).tok == 1073741973);
@@ -12203,7 +12203,7 @@ var smoothingPower = 2147483647;
 var bs = null;
 var bsSelect = null;
 var bsIgnore = null;
-var sbCommand =  new StringBuffer ();
+var sbCommand =  new javax.util.StringXBuilder ();
 var pt;
 var plane = null;
 var lattice = null;
@@ -12261,7 +12261,7 @@ case 1073742078:
 case 266298:
 case 135266320:
 propertyName = this.theToken.value.toString ();
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 propertyValue = this.centerParameter (++i);
 sbCommand.append (" ").append (org.jmol.util.Escape.escape (propertyValue));
 i = this.iToken;
@@ -12360,7 +12360,7 @@ if (bs != null && modelIndex >= 0) {
 bs.and (this.viewer.getModelUndeletedAtomsBitSet (modelIndex));
 }if (ptc == null) ptc = this.viewer.getAtomSetCenter (bs);
 this.getWithinDistanceVector (propertyList, distance, ptc, bs, isDisplay);
-sbCommand.append (" within ").append (distance).append (" ").append (bs == null ? org.jmol.util.Escape.escapePt (ptc) : org.jmol.util.Escape.escape (bs));
+sbCommand.append (" within ").appendF (distance).append (" ").append (bs == null ? org.jmol.util.Escape.escapePt (ptc) : org.jmol.util.Escape.escape (bs));
 }continue ;case 1073742083:
 propertyName = "parameters";
 var fparams = this.floatParameterSet (++i, 1, 10);
@@ -12500,7 +12500,7 @@ continue ;}var min = this.floatParameter (++i);
 var max = this.floatParameter (++i);
 this.addShapeProperty (propertyList, "red", Float.$valueOf (min));
 this.addShapeProperty (propertyList, "blue", Float.$valueOf (max));
-sbCommand.append (" ").append (min).append (" ").append (max);
+sbCommand.append (" ").appendF (min).append (" ").appendF (max);
 continue ;}
 if (this.isColorParam (i + 1)) {
 color = this.getArgbParam (i + 1);
@@ -12532,9 +12532,9 @@ continue ;case 1229984263:
 if (this.tokAt (i + 1) != 4) this.error (23);
 continue ;case 1112541195:
 case 1649412112:
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 var rd = this.encodeRadiusParameter (i, false, true);
-sbCommand.append (" ").append (rd);
+sbCommand.append (" ").appendO (rd);
 if (Float.isNaN (rd.value)) rd.value = 100;
 propertyValue = rd;
 propertyName = "radius";
@@ -12552,7 +12552,7 @@ break;
 case 1073742138:
 propertyName = "scale";
 propertyValue = Float.$valueOf (this.floatParameter (++i));
-sbCommand.append (" scale ").append (propertyValue);
+sbCommand.append (" scale ").appendO (propertyValue);
 break;
 case 1048579:
 if (idSeen) this.error (22);
@@ -12615,7 +12615,7 @@ bs = this.atomExpressionAt (i);
 i = this.iToken;
 if (this.isSyntaxCheck) continue ;var atomIndex = bs.nextSetBit (0);
 if (atomIndex < 0) this.error (14);
-sbCommand.append (" ({").append (atomIndex).append ("})");
+sbCommand.append (" ({").appendI (atomIndex).append ("})");
 modelIndex = this.viewer.getAtomModelIndex (atomIndex);
 this.addShapeProperty (propertyList, "modelIndex", Integer.$valueOf (modelIndex));
 var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (), javax.vecmath.Vector3f.newV (this.viewer.getAtomPoint3f (atomIndex)),  new javax.vecmath.Vector3f ()];
@@ -12643,11 +12643,11 @@ moNumber = 0;
 i = this.iToken;
 sbCommand.append (" mo " + (isNegOffset ? "-" : "") + "HOMO ");
 if (offset > 0) sbCommand.append ("+");
-if (offset != 0) sbCommand.append (offset);
+if (offset != 0) sbCommand.appendI (offset);
 break;
 case 2:
 moNumber = this.intParameter (i);
-sbCommand.append (" mo ").append (moNumber);
+sbCommand.append (" mo ").appendI (moNumber);
 break;
 default:
 if (this.isArrayParameter (i)) {
@@ -12660,7 +12660,7 @@ var monteCarloCount = this.intParameter (++i);
 var seed = (this.tokAt (i + 1) == 2 ? this.intParameter (++i) : (-System.currentTimeMillis ()) % 10000);
 this.addShapeProperty (propertyList, "monteCarloCount", Integer.$valueOf (monteCarloCount));
 this.addShapeProperty (propertyList, "randomSeed", Integer.$valueOf (seed));
-sbCommand.append (" points ").append (monteCarloCount).append (' ').append (seed);
+sbCommand.append (" points ").appendI (monteCarloCount).appendC (' ').appendI (seed);
 }this.setMoData (propertyList, moNumber, linearCombination, offset, isNegOffset, modelIndex, null);
 surfaceObjectSeen = true;
 continue ;case 1073742036:
@@ -12749,13 +12749,13 @@ nlmZprs[0] = this.intParameter (++i);
 nlmZprs[1] = this.intParameter (++i);
 nlmZprs[2] = this.intParameter (++i);
 nlmZprs[3] = (this.isFloatParameter (i + 1) ? this.floatParameter (++i) : 6);
-sbCommand.append (" atomicOrbital ").append (Math.round (nlmZprs[0])).append (" ").append (Math.round (nlmZprs[1])).append (" ").append (Math.round (nlmZprs[2])).append (" ").append (nlmZprs[3]);
+sbCommand.append (" atomicOrbital ").appendI (Math.round (nlmZprs[0])).append (" ").appendI (Math.round (nlmZprs[1])).append (" ").appendI (Math.round (nlmZprs[2])).append (" ").appendF (nlmZprs[3]);
 if (this.tokAt (i + 1) == 135266320) {
 i += 2;
 nlmZprs[4] = this.intParameter (i);
 nlmZprs[5] = (this.tokAt (i + 1) == 3 ? this.floatParameter (++i) : 0);
 nlmZprs[6] = (this.tokAt (i + 1) == 2 ? this.intParameter (++i) : (-System.currentTimeMillis ()) % 10000);
-sbCommand.append (" points ").append (Math.round (nlmZprs[4])).append (' ').append (nlmZprs[5]).append (' ').append (Math.round (nlmZprs[6]));
+sbCommand.append (" points ").appendI (Math.round (nlmZprs[4])).appendC (' ').appendF (nlmZprs[5]).appendC (' ').appendI (Math.round (nlmZprs[6]));
 }propertyName = "hydrogenOrbital";
 propertyValue = nlmZprs;
 break;
@@ -12779,7 +12779,7 @@ isCavity = true;
 if (this.isSyntaxCheck) continue ;var cavityRadius = (this.isFloatParameter (i + 1) ? this.floatParameter (++i) : 1.2);
 var envelopeRadius = (this.isFloatParameter (i + 1) ? this.floatParameter (++i) : 10);
 if (envelopeRadius > 10) this.integerOutOfRange (0, 10);
-sbCommand.append (" cavity ").append (cavityRadius).append (" ").append (envelopeRadius);
+sbCommand.append (" cavity ").appendF (cavityRadius).append (" ").appendF (envelopeRadius);
 this.addShapeProperty (propertyList, "envelopeRadius", Float.$valueOf (envelopeRadius));
 this.addShapeProperty (propertyList, "cavityRadius", Float.$valueOf (cavityRadius));
 propertyName = "cavity";
@@ -12804,7 +12804,7 @@ sbCommand.append (" increment ").append (org.jmol.util.Escape.escapePt (pt));
 break;
 default:
 propertyValue = Integer.$valueOf (this.tokAt (i + 1) == 2 ? this.intParameter (++i) : 0);
-sbCommand.append (" ").append (propertyValue);
+sbCommand.append (" ").appendO (propertyValue);
 }
 break;
 case 3:
@@ -12816,11 +12816,11 @@ if (this.theTok == 1073741910) i++;
 if (this.tokAt (i) == 269484193) {
 propertyName = "cutoffPositive";
 propertyValue = Float.$valueOf (cutoff = this.floatParameter (++i));
-sbCommand.append ("+").append (propertyValue);
+sbCommand.append ("+").appendO (propertyValue);
 } else if (this.isFloatParameter (i)) {
 propertyName = "cutoff";
 propertyValue = Float.$valueOf (cutoff = this.floatParameter (i));
-sbCommand.append (propertyValue);
+sbCommand.appendO (propertyValue);
 } else {
 propertyName = "cutoffRange";
 propertyValue = this.floatParameterSet (i, 2, 2);
@@ -12831,7 +12831,7 @@ i = this.iToken;
 case 1073741928:
 propertyName = "downsample";
 propertyValue = Integer.$valueOf (this.intParameter (++i));
-sbCommand.append (" downsample ").append (propertyValue);
+sbCommand.append (" downsample ").appendO (propertyValue);
 break;
 case 1073741930:
 propertyName = "eccentricity";
@@ -12845,7 +12845,7 @@ this.setMoData (propertyList, -1, null, 0, false, modelIndex, null);
 surfaceObjectSeen = true;
 continue ;case 536870916:
 case 1073742041:
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 propertyName = "debug";
 propertyValue = (this.theTok == 536870916 ? Boolean.TRUE : Boolean.FALSE);
 break;
@@ -12971,7 +12971,7 @@ break;
 case 1073741988:
 case 1073741986:
 case 1073742100:
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 propertyName = "pocket";
 propertyValue = (this.theTok == 1073742100 ? Boolean.TRUE : Boolean.FALSE);
 break;
@@ -13015,12 +13015,12 @@ break;
 case 1073742014:
 propertyName = "maxset";
 propertyValue = Integer.$valueOf (this.intParameter (++i));
-sbCommand.append (" maxSet ").append (propertyValue);
+sbCommand.append (" maxSet ").appendO (propertyValue);
 break;
 case 1073742020:
 propertyName = "minset";
 propertyValue = Integer.$valueOf (this.intParameter (++i));
-sbCommand.append (" minSet ").append (propertyValue);
+sbCommand.append (" minSet ").appendO (propertyValue);
 break;
 case 1073742112:
 surfaceObjectSeen = true;
@@ -13046,9 +13046,9 @@ radius = 1.4;
 } else {
 this.addShapeProperty (propertyList, "bsSolvent", this.lookupIdentifierValue ("solvent"));
 propertyName = (this.theTok == 1073742136 ? "sasurface" : "solvent");
-sbCommand.append (" ").append (this.theToken.value);
+sbCommand.append (" ").appendO (this.theToken.value);
 radius = (this.isFloatParameter (i + 1) ? this.floatParameter (++i) : this.viewer.getSolventProbeRadius ());
-sbCommand.append (" ").append (radius);
+sbCommand.append (" ").appendF (radius);
 }propertyValue = Float.$valueOf (radius);
 if (this.tokAt (i + 1) == 1073741961) {
 this.addShapeProperty (propertyList, "doFullMolecular", null);
@@ -13077,7 +13077,7 @@ case 1073742104:
 case 1073742122:
 propertyName = "resolution";
 propertyValue = Float.$valueOf (this.floatParameter (++i));
-sbCommand.append (" resolution ").append (propertyValue);
+sbCommand.append (" resolution ").appendO (propertyValue);
 break;
 case 1073742124:
 propertyName = "reverseColor";
@@ -13087,12 +13087,12 @@ break;
 case 1073742146:
 propertyName = "sigma";
 propertyValue = Float.$valueOf (sigma = this.floatParameter (++i));
-sbCommand.append (" sigma ").append (propertyValue);
+sbCommand.append (" sigma ").appendO (propertyValue);
 break;
 case 1073742154:
 propertyName = "sphere";
 propertyValue = Float.$valueOf (this.floatParameter (++i));
-sbCommand.append (" sphere ").append (propertyValue);
+sbCommand.append (" sphere ").appendO (propertyValue);
 surfaceObjectSeen = true;
 break;
 case 1073742156:
@@ -13131,7 +13131,7 @@ cutoff *= sigma;
 sigma = NaN;
 this.addShapeProperty (propertyList, "sigma", Float.$valueOf (sigma));
 }this.addShapeProperty (propertyList, "cutoff", Float.$valueOf (cutoff));
-sbCommand.append (" cutoff ").append (cutoff);
+sbCommand.append (" cutoff ").appendF (cutoff);
 }}if (ptWithin == 0) {
 onlyOneModel = "=xxxx";
 if (modelIndex < 0) modelIndex = this.viewer.getCurrentModelIndex ();
@@ -13182,7 +13182,7 @@ if (fullPathNameOrError[1] != null) this.errorStr (17, filename + ":" + fullPath
 this.addShapeProperty (propertyList, "fileName", filename);
 if (localName != null) filename = localName;
 sbCommand.append (" /*file*/").append (org.jmol.util.Escape.escapeStr (filename));
-}if (fileIndex >= 0) sbCommand.append (" ").append (fileIndex);
+}if (fileIndex >= 0) sbCommand.append (" ").appendI (fileIndex);
 }if (sType != null) sbCommand.append (" ").append (org.jmol.util.Escape.escapeStr (sType));
 surfaceObjectSeen = true;
 break;
@@ -13267,7 +13267,7 @@ if (bsModels.cardinality () != 1) this.errorStr (30, "ISOSURFACE " + onlyOneMode
 if (needSelect) {
 propertyList.add (0, ["select", bsSelect]);
 if (sbCommand.indexOf ("; isosurface map") == 0) {
-sbCommand =  new StringBuffer ("; isosurface map select " + org.jmol.util.Escape.escape (bsSelect) + sbCommand.substring (16));
+sbCommand =  new javax.util.StringXBuilder ().append ("; isosurface map select ").append (org.jmol.util.Escape.escape (bsSelect)).append (sbCommand.substring (16));
 }}}}if (haveIntersection && !haveSlab) {
 if (!surfaceObjectSeen) this.addShapeProperty (propertyList, "sasurface", Float.$valueOf (0));
 if (!isMapped) {

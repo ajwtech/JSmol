@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.SelectionManager", ["java.lang.StringBuffer", "java.util.Hashtable", "org.jmol.i18n.GT", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["javax.util.BitSet"], "org.jmol.viewer.SelectionManager", ["java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.i18n.GT", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.listeners = null;
@@ -206,7 +206,7 @@ for (var i = this.listeners.length; --i >= 0; ) if (this.listeners[i] != null) t
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "getState", 
 function (sfunc) {
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 if (sfunc != null) {
 sfunc.append ("  _setSelectionState;\n");
 commands.append ("function _setSelectionState() {\n");
@@ -222,16 +222,16 @@ cmd = org.jmol.viewer.StateManager.getCommands (temp, null);
 if (cmd == null) org.jmol.viewer.StateManager.appendCmd (commands, "select none");
  else commands.append (cmd);
 org.jmol.viewer.StateManager.appendCmd (commands, "set hideNotSelected " + this.hideNotSelected);
-commands.append (this.viewer.getShapeProperty (1, "selectionState"));
+commands.appendO (this.viewer.getShapeProperty (1, "selectionState"));
 if (this.viewer.getSelectionHaloEnabled (false)) org.jmol.viewer.StateManager.appendCmd (commands, "SelectionHalos ON");
 if (sfunc != null) commands.append ("}\n\n");
 return commands.toString ();
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 c$.addBs = Clazz.defineMethod (c$, "addBs", 
 ($fz = function (sb, key, bs) {
 if (bs == null || bs.length () == 0) return ;
 org.jmol.viewer.StateManager.appendCmd (sb, key + org.jmol.util.Escape.escape (bs));
-}, $fz.isPrivate = true, $fz), "StringBuffer,~S,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,javax.util.BitSet");
 Clazz.defineMethod (c$, "deleteAtoms", 
 function (bs) {
 var bsNew = org.jmol.util.BitSetUtil.copy (bs);

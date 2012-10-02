@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.lang.Float", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.modelset.AtomCollection", ["java.lang.Character", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "$.EnumStructure", "$.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.modelset.Group", "$.LabelToken", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.lang.Float", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.modelset.AtomCollection", ["java.lang.Character", "java.util.ArrayList", "$.Arrays", "javax.util.StringXBuilder", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumPalette", "$.EnumStructure", "$.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.modelset.Group", "$.LabelToken", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.g3d = null;
@@ -796,7 +796,7 @@ Clazz.defineMethod (c$, "getAtomicPropertyState",
 function (taintWhat, bsSelected) {
 if (!this.preserveState) return "";
 var bs;
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 for (var i = 0; i < 14; i++) if (taintWhat < 0 || i == taintWhat) if ((bs = (bsSelected != null ? bsSelected : this.getTaintedAtoms (i))) != null) this.getAtomicPropertyStateBuffer (commands, i, bs, null, null);
 
 return commands.toString ();
@@ -804,18 +804,18 @@ return commands.toString ();
 Clazz.defineMethod (c$, "getAtomicPropertyStateBuffer", 
 function (commands, type, bs, label, fData) {
 if (!this.viewer.getPreserveState ()) return ;
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var dataLabel = (label == null ? org.jmol.modelset.AtomCollection.userSettableValues[type] : label) + " set";
 var n = 0;
 var isDefault = (type == 2);
 if (bs != null) for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) {
-s.append (i + 1).append (" ").append (this.atoms[i].getElementSymbol ()).append (" ").append (this.atoms[i].getInfo ().$replace (' ', '_')).append (" ");
+s.appendI (i + 1).append (" ").append (this.atoms[i].getElementSymbol ()).append (" ").append (this.atoms[i].getInfo ().$replace (' ', '_')).append (" ");
 switch (type) {
 case 14:
-if (i < fData.length) s.append (fData[i]);
+if (i < fData.length) s.appendF (fData[i]);
 break;
 case 13:
-s.append (this.atoms[i].getAtomNumber ());
+s.appendI (this.atoms[i].getAtomNumber ());
 break;
 case 0:
 s.append (this.atoms[i].getAtomName ());
@@ -825,36 +825,36 @@ s.append (this.atoms[i].getAtomType ());
 break;
 case 2:
 if (this.isTainted (i, 2)) isDefault = false;
-s.append (this.atoms[i].x).append (" ").append (this.atoms[i].y).append (" ").append (this.atoms[i].z);
+s.appendF (this.atoms[i].x).append (" ").appendF (this.atoms[i].y).append (" ").appendF (this.atoms[i].z);
 break;
 case 12:
 var v = this.atoms[i].getVibrationVector ();
 if (v == null) v =  new javax.vecmath.Vector3f ();
-s.append (v.x).append (" ").append (v.y).append (" ").append (v.z);
+s.appendF (v.x).append (" ").appendF (v.y).append (" ").appendF (v.z);
 break;
 case 3:
-s.append (this.atoms[i].getAtomicAndIsotopeNumber ());
+s.appendI (this.atoms[i].getAtomicAndIsotopeNumber ());
 break;
 case 4:
-s.append (this.atoms[i].getFormalCharge ());
+s.appendI (this.atoms[i].getFormalCharge ());
 break;
 case 6:
-s.append (this.atoms[i].getBondingRadiusFloat ());
+s.appendF (this.atoms[i].getBondingRadiusFloat ());
 break;
 case 7:
-s.append (this.atoms[i].getOccupancy100 ());
+s.appendI (this.atoms[i].getOccupancy100 ());
 break;
 case 8:
-s.append (this.atoms[i].getPartialCharge ());
+s.appendF (this.atoms[i].getPartialCharge ());
 break;
 case 9:
-s.append (this.atoms[i].getBfactor100 () / 100);
+s.appendF (this.atoms[i].getBfactor100 () / 100);
 break;
 case 10:
-s.append (this.atoms[i].getValence ());
+s.appendI (this.atoms[i].getValence ());
 break;
 case 11:
-s.append (this.atoms[i].getVanderwaalsRadiusFloat (this.viewer, org.jmol.constant.EnumVdw.AUTO));
+s.appendF (this.atoms[i].getVanderwaalsRadiusFloat (this.viewer, org.jmol.constant.EnumVdw.AUTO));
 break;
 }
 s.append (" ;\n");
@@ -862,10 +862,10 @@ s.append (" ;\n");
 }
 if (n == 0) return ;
 if (isDefault) dataLabel += "(default)";
-commands.append ("\n  DATA \"" + dataLabel + "\"\n").append (n).append (" ;\nJmol Property Data Format 1 -- Jmol ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append (";\n");
-commands.append (s);
+commands.append ("\n  DATA \"" + dataLabel + "\"\n").appendI (n).append (" ;\nJmol Property Data Format 1 -- Jmol ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append (";\n");
+commands.appendSB (s);
 commands.append ("  end \"" + dataLabel + "\";\n");
-}, "StringBuffer,~N,javax.util.BitSet,~S,~A");
+}, "javax.util.StringXBuilder,~N,javax.util.BitSet,~S,~A");
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (x, y, closest, bsNot) {
 var champion = null;
@@ -1518,7 +1518,8 @@ return bs;
 }, $fz.isPrivate = true, $fz), "~N,~A,~A,~N");
 Clazz.defineMethod (c$, "getChimeInfo", 
 function (tok, bs) {
-var info =  new StringBuffer ("\n");
+var info =  new javax.util.StringXBuilder ();
+info.append ("\n");
 var id;
 var s = "";
 var clast = null;
@@ -1545,29 +1546,29 @@ s = "[" + this.atoms[i].getGroup3 (false) + "]" + this.atoms[i].getSeqcodeString
 break;
 case 1087373320:
 if (this.atoms[i].getModelIndex () != modelLast) {
-info.append ('\n');
+info.appendC ('\n');
 n = 0;
 modelLast = this.atoms[i].getModelIndex ();
 info.append ("Model " + this.atoms[i].getModelNumber ());
 glast = null;
 clast = null;
 }if (this.atoms[i].getChain () !== clast) {
-info.append ('\n');
+info.appendC ('\n');
 n = 0;
 clast = this.atoms[i].getChain ();
 info.append ("Chain " + s + ":\n");
 glast = null;
 }var g = this.atoms[i].getGroup ();
 if (g !== glast) {
-if ((n++) % 5 == 0 && n > 1) info.append ('\n');
+if ((n++) % 5 == 0 && n > 1) info.appendC ('\n');
 org.jmol.util.TextFormat.lFill (info, "          ", "[" + this.atoms[i].getGroup3 (false) + "]" + this.atoms[i].getResno () + " ");
 glast = g;
 }continue ;default:
 return "";
 }
-if (info.indexOf ("\n" + s + "\n") < 0) info.append (s).append ('\n');
+if (info.indexOf ("\n" + s + "\n") < 0) info.append (s).appendC ('\n');
 }
-if (tok == 1087373320) info.append ('\n');
+if (tok == 1087373320) info.appendC ('\n');
 return info.toString ().substring (1);
 }, "~N,javax.util.BitSet");
 Clazz.defineMethod (c$, "getAtomBitsMaybeDeleted", 

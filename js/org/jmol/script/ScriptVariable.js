@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "$.Collections", "$.Hashtable", "javax.util.BitSet", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.script.Token", "javax.vecmath.Point3f"], "org.jmol.script.ScriptVariable", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Arrays", "$.Collections", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.modelset.Bond", "org.jmol.util.BitSetUtil", "$.Escape", "$.Measure", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 2147483647;
 this.flags = 2;
@@ -399,7 +399,7 @@ i = x.intValue;
 if (i <= 0) i = sv.size () - i;
 if (i != 2147483647) return (i < 1 || i > sv.size () ? "" : org.jmol.script.ScriptVariable.sValue (sv.get (i - 1)));
 case 6:
-sb =  new StringBuffer ();
+sb =  new javax.util.StringXBuilder ();
 map =  new java.util.Hashtable ();
 org.jmol.script.ScriptVariable.sValueArray (sb, x, map, 0, false);
 return sb.toString ();
@@ -435,16 +435,16 @@ sb.append ("{ ");
 var sep = "";
 for (var i = 0; i < keys.length; i++) {
 var key = keys[i];
-sb.append (sep).append (org.jmol.util.Escape.escapeStr (key)).append (':');
+sb.append (sep).append (org.jmol.util.Escape.escapeStr (key)).appendC (':');
 org.jmol.script.ScriptVariable.sValueArray (sb, ht.get (key), map, level + 1, true);
 sep = ", ";
 }
 sb.append (" }");
 break;
 }for (var i = 0; i < keys.length; i++) {
-sb.append (keys[i]).append ("\t:");
+sb.appendO (keys[i]).append ("\t:");
 var v = org.jmol.script.ScriptVariable.getVariable (ht.get (keys[i]));
-var sb2 =  new StringBuffer ();
+var sb2 =  new javax.util.StringXBuilder ();
 org.jmol.script.ScriptVariable.sValueArray (sb2, v, map, level + 1, isEscaped);
 var value = sb2.toString ();
 sb.append (value.indexOf ("\n") >= 0 ? "\n" : "\t");
@@ -471,7 +471,7 @@ if (!isEscaped) for (var j = 0; j < level - 1; j++) sb.append ("\t");
 
 sb.append (isEscaped ? vx.escape () : org.jmol.script.ScriptVariable.sValue (vx));
 }
-}, $fz.isPrivate = true, $fz), "StringBuffer,org.jmol.script.ScriptVariable,java.util.Map,~N,~B");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,org.jmol.script.ScriptVariable,java.util.Map,~N,~B");
 c$.ptValue = Clazz.defineMethod (c$, "ptValue", 
 function (x) {
 switch (x.tok) {
@@ -705,7 +705,7 @@ case 4:
 return org.jmol.util.Escape.escape (this.value);
 case 7:
 case 6:
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var map =  new java.util.Hashtable ();
 org.jmol.script.ScriptVariable.sValueArray (sb, this, map, 0, true);
 return sb.toString ();
@@ -786,7 +786,7 @@ case 1:
 return org.jmol.script.ScriptVariable.sValue (args[0]);
 }
 var format = org.jmol.util.TextFormat.split (org.jmol.util.TextFormat.simpleReplace (org.jmol.script.ScriptVariable.sValue (args[0]), "%%", "\1"), '%');
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append (format[0]);
 for (var i = 1; i < format.length; i++) {
 var ret = org.jmol.script.ScriptVariable.sprintf (org.jmol.util.TextFormat.formatCheck ("%" + format[i]), (i < args.length ? args[i] : null));
@@ -794,7 +794,7 @@ if (Clazz.instanceOf (ret, Array)) {
 var list = ret;
 for (var j = 0; j < list.length; j++) sb.append (list[j]).append ("\n");
 
-continue ;}sb.append (ret);
+continue ;}sb.appendO (ret);
 }
 return sb.toString ();
 }, "~A");

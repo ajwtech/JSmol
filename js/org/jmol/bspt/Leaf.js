@@ -47,9 +47,9 @@ for (var i = 0; i < this.count; ++i) {
 var t = this.tuples[i];
 for (var j = 0; j < level; ++j) sb.append (".");
 
-sb.append (t).append ("Leaf ").append (i).append (": ").append ((t).getInfo ());
+sb.appendO (t).append ("Leaf ").appendI (i).append (": ").append ((t).getInfo ());
 }
-}, "~N,StringBuffer");
+}, "~N,javax.util.StringXBuilder");
 Clazz.overrideMethod (c$, "toString", 
 function () {
 return "leaf:" + this.count + "\n";

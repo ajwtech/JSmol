@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.MrcBinaryReader", ["java.lang.Exception", "$.Float", "$.StringBuffer", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.MrcBinaryReader", ["java.lang.Exception", "$.Float", "javax.util.StringXBuilder", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.labels = null;
 Clazz.instantialize (this, arguments);
@@ -105,7 +105,7 @@ if (this.params.thePlane == null && (this.params.cutoffAutomatic || !Float.isNaN
 var sigma = (Float.isNaN (this.params.sigma) ? 1 : this.params.sigma);
 this.params.cutoff = rmsDeviation * sigma + this.dmean;
 org.jmol.util.Logger.info ("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + this.params.cutoff + ")\n");
-}this.jvxlFileHeaderBuffer =  new StringBuffer ();
+}this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("MRC DATA ").append (nlabel > 0 ? this.labels[0] : "").append ("\n");
 this.jvxlFileHeaderBuffer.append ("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
 });

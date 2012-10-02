@@ -9,6 +9,9 @@ package java.net;
 
 
 import java.io.IOException;
+
+import javax.util.StringXBuilder;
+
 //import java.io.InputStream;
 //import java.io.OutputStream;
 //import java.util.Hashtable;
@@ -452,7 +455,7 @@ public abstract class URLStreamHandler {
      */
     protected String toExternalForm(URL u) {
 
-    // pre-compute length of StringBuffer
+    // pre-compute length of StringBuilder
     int len = u.getProtocol().length() + 1;
     if (u.getAuthority() != null && u.getAuthority().length() > 0)
         len += 2 + u.getAuthority().length();
@@ -465,7 +468,7 @@ public abstract class URLStreamHandler {
     if (u.getRef() != null) 
         len += 1 + u.getRef().length();
 
-    StringBuffer result = new StringBuffer(len);
+    StringXBuilder result = StringXBuilder.newN(len);
     result.append(u.getProtocol());
         result.append(":");
         if (u.getAuthority() != null && u.getAuthority().length() > 0) {
@@ -476,7 +479,7 @@ public abstract class URLStreamHandler {
             result.append(u.getPath());
         }
         if (u.getQuery() != null) {
-            result.append('?');
+            result.appendC('?');
             result.append(u.getQuery());
         }
     if (u.getRef() != null) {

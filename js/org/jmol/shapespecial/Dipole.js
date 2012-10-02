@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (null, "org.jmol.shapespecial.Dipole", ["java.lang.StringBuffer", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.util.Colix", "$.Escape"], function () {
+Clazz.load (null, "org.jmol.shapespecial.Dipole", ["javax.util.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.util.Colix", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.thisID = "";
 this.mad = 0;
@@ -135,16 +135,16 @@ return (this.type == 2 || this.type == 3);
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
 if (!this.isValid) return "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 s.append ("dipole ID ").append (this.thisID);
-if (this.haveAtoms) s.append (" ({").append (this.atoms[0].getIndex ()).append (" ").append (this.atoms[1].getIndex ()).append ("})");
+if (this.haveAtoms) s.append (" ({").appendI (this.atoms[0].getIndex ()).append (" ").appendI (this.atoms[1].getIndex ()).append ("})");
  else if (this.coords[0] == null) return "";
  else s.append (" ").append (org.jmol.util.Escape.escapePt (this.coords[0])).append (" ").append (org.jmol.util.Escape.escapePt (this.coords[1]));
-if (this.isUserValue) s.append (" value ").append (this.dipoleValue);
-if (this.mad != 5) s.append (" width ").append (this.mad / 1000);
-if (this.offsetAngstroms != 0) s.append (" offset ").append (this.offsetAngstroms);
- else if (this.offsetPercent != 0) s.append (" offset ").append (this.offsetPercent);
-if (this.offsetSide != 0.4) s.append (" offsetSide ").append (this.offsetSide);
+if (this.isUserValue) s.append (" value ").appendF (this.dipoleValue);
+if (this.mad != 5) s.append (" width ").appendF (this.mad / 1000);
+if (this.offsetAngstroms != 0) s.append (" offset ").appendF (this.offsetAngstroms);
+ else if (this.offsetPercent != 0) s.append (" offset ").appendI (this.offsetPercent);
+if (this.offsetSide != 0.4) s.append (" offsetSide ").appendF (this.offsetSide);
 if (this.noCross) s.append (" nocross");
 if (!this.visible) s.append (" off");
 s.append (";\n");

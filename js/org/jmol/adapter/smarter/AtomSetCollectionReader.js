@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.lang.StringBuffer"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["javax.util.StringXBuilder"], "org.jmol.adapter.smarter.AtomSetCollectionReader", ["java.lang.Boolean", "$.Character", "$.Float", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.AtomSetCollection", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.util.BitSetUtil", "$.Logger", "$.Parser", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBinary = false;
 this.atomSetCollection = null;
@@ -94,7 +94,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.smarter, "AtomSetCollectionReader");
 Clazz.prepareFields (c$, function () {
 this.next =  Clazz.newArray (1, 0);
-this.loadNote =  new StringBuffer ();
+this.loadNote =  new javax.util.StringXBuilder ();
 });
 Clazz.defineMethod (c$, "setup", 
 function (fullPath, htParams, reader) {
@@ -206,7 +206,15 @@ return this.atomSetCollection;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setError", 
 ($fz = function (e) {
+try {
 e.printStackTrace ();
+} catch (ee) {
+if (Clazz.exceptionOf (ee, Exception)) {
+org.jmol.util.Logger.error (e.toString ());
+} else {
+throw ee;
+}
+}
 if (this.line == null) this.atomSetCollection.errorMessage = "Unexpected end of file after line " + --this.ptLine + ":\n" + this.prevline;
  else this.atomSetCollection.errorMessage = "Error reading file at line " + this.ptLine + ":\n" + this.line + "\n" + e.getMessage ();
 }, $fz.isPrivate = true, $fz), "Throwable");

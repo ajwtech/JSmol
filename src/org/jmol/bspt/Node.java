@@ -1,6 +1,6 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2010-07-31 04:51:00 -0500 (Sat, 31 Jul 2010) $
+ * $Author: hansonr $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,6 +22,7 @@
  */
 package org.jmol.bspt;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
@@ -115,7 +116,7 @@ class Node extends Element {
   }
   
   @Override
-  void dump(int level, StringBuffer sb) {
+  void dump(int level, StringXBuilder sb) {
     sb.append("\nnode LEFT" + level);
     eleLeft.dump(level + 1, sb);
     for (int i = 0; i < level; ++i)

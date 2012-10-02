@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "org.jmol.constant.EnumVdw"], "org.jmol.viewer.DataManager", ["java.lang.StringBuffer", "javax.util.BitSet", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Parser"], function () {
+Clazz.load (["java.util.Hashtable", "org.jmol.constant.EnumVdw"], "org.jmol.viewer.DataManager", ["javax.util.BitSet", "$.StringXBuilder", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dataValues = null;
 this.viewer = null;
@@ -149,7 +149,7 @@ Clazz.defineMethod (c$, "getDataState",
 function (state, sfunc, atomProps) {
 if (this.dataValues == null) return ;
 var e = this.dataValues.keySet ().iterator ();
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var n = 0;
 if (atomProps.length > 0) {
 n = 1;
@@ -164,12 +164,12 @@ if (Clazz.instanceOf (data, Array)) {
 this.viewer.getAtomicPropertyState (sb, 14, obj[2], name, data);
 sb.append ("\n");
 } else {
-sb.append ("\n").append (org.jmol.util.Escape.encapsulateData (name, data));
+sb.append ("\n").appendO (org.jmol.util.Escape.encapsulateData (name, data));
 }} else if (name.indexOf ("data2d") == 0) {
 var data = this.dataValues.get (name)[1];
 if (Clazz.instanceOf (data, Array)) {
 n++;
-sb.append ("\n").append (org.jmol.util.Escape.encapsulateData (name, data));
+sb.append ("\n").appendO (org.jmol.util.Escape.encapsulateData (name, data));
 }}}
 if (this.userVdws != null) {
 var info = this.getDefaultVdwNameOrData (0, org.jmol.constant.EnumVdw.USER, this.bsUserVdws);
@@ -178,11 +178,11 @@ n++;
 sb.append (info);
 }}if (n == 0) return ;
 if (sfunc != null) state.append ("function _setDataState() {\n");
-state.append (sb);
+state.appendSB (sb);
 if (sfunc != null) {
 sfunc.append ("  _setDataState;\n");
 state.append ("}\n\n");
-}}, "StringBuffer,StringBuffer,~S");
+}}, "javax.util.StringXBuilder,javax.util.StringXBuilder,~S");
 Clazz.defineMethod (c$, "setUserVdw", 
 ($fz = function (mode) {
 this.userVdwMars =  Clazz.newArray (org.jmol.util.Elements.elementNumberMax, 0);
@@ -221,11 +221,12 @@ break;
 }
 if (type == null || type === org.jmol.constant.EnumVdw.AUTO) type = this.defaultVdw;
 if (type === org.jmol.constant.EnumVdw.USER && this.bsUserVdws == null) this.setUserVdw (this.defaultVdw);
-var sb =  new StringBuffer (type.getVdwLabel () + "\n");
+var sb =  new javax.util.StringXBuilder ();
+sb.append (type.getVdwLabel ()).append ("\n");
 var isAll = (bs == null);
 var i0 = (isAll ? 1 : bs.nextSetBit (0));
 var i1 = (isAll ? org.jmol.util.Elements.elementNumberMax : bs.length ());
-for (var i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs.nextSetBit (i + 1))) sb.append (i).append ('\t').append (type === org.jmol.constant.EnumVdw.USER ? this.userVdws[i] : org.jmol.util.Elements.getVanderwaalsMar (i, type) / 1000).append ('\t').append (org.jmol.util.Elements.elementSymbolFromNumber (i)).append ('\n');
+for (var i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs.nextSetBit (i + 1))) sb.appendI (i).appendC ('\t').appendF (type === org.jmol.constant.EnumVdw.USER ? this.userVdws[i] : org.jmol.util.Elements.getVanderwaalsMar (i, type) / 1000).appendC ('\t').append (org.jmol.util.Elements.elementSymbolFromNumber (i)).appendC ('\n');
 
 return (bs == null ? sb.toString () : "\n  DATA \"element_vdw\"\n" + sb.append ("  end \"element_vdw\";\n\n").toString ());
 }, "~N,org.jmol.constant.EnumVdw,javax.util.BitSet");
@@ -233,5 +234,5 @@ c$.getInlineData = Clazz.defineMethod (c$, "getInlineData",
 function (loadScript, strModel, isAppend, loadFilter) {
 var tag = (isAppend ? "append" : "model") + " inline";
 loadScript.append ("load /*data*/ data \"").append (tag).append ("\"\n").append (strModel).append ("end \"").append (tag).append (loadFilter == null || loadFilter.length == 0 ? "" : " filter" + org.jmol.util.Escape.escapeStr (loadFilter)).append ("\";");
-}, "StringBuffer,~S,~B,~S");
+}, "javax.util.StringXBuilder,~S,~B,~S");
 });

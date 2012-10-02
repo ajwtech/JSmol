@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -30,6 +30,8 @@ import org.jmol.util.TextFormat;
 
 import javax.util.BitSet;
 import java.util.Iterator;
+
+import javax.util.StringXBuilder;
 
 public class Echo extends TextShape {
 
@@ -190,7 +192,8 @@ public class Echo extends TextShape {
 
   @Override
   public String getShapeState() {
-    StringBuffer s = new StringBuffer("\n  set echo off;\n");
+    StringXBuilder s = new StringXBuilder();
+    s.append("\n  set echo off;\n");
     Iterator<Text> e = objects.values().iterator();
     while (e.hasNext()) {
       Text t = e.next();

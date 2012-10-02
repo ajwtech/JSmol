@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptContext", ["java.lang.StringBuffer", "org.jmol.script.ScriptEvaluator"], function () {
+Clazz.load (null, "org.jmol.script.ScriptContext", ["javax.util.StringXBuilder", "org.jmol.script.ScriptEvaluator"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fullpath = "";
 this.scriptFileName = null;
@@ -38,9 +38,9 @@ function () {
 });
 Clazz.defineMethod (c$, "getContextTrace", 
 function (sb, isTop) {
-if (sb == null) sb =  new StringBuffer ();
+if (sb == null) sb =  new javax.util.StringXBuilder ();
 sb.append (org.jmol.script.ScriptEvaluator.setErrorLineMessage (this.functionName, this.scriptFileName, this.lineNumbers[this.pc], this.pc, org.jmol.script.ScriptEvaluator.statementAsString (this.statement, (isTop ? this.iToken : 9999), false)));
 if (this.parentContext != null) this.parentContext.getContextTrace (sb, false);
 return sb;
-}, "StringBuffer,~B");
+}, "javax.util.StringXBuilder,~B");
 });

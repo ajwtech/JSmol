@@ -13,6 +13,7 @@ return org.jmol.util.Geodesic.vertexCounts[level];
 }, "~N");
 c$.getVertexVectors = Clazz.defineMethod (c$, "getVertexVectors", 
 function () {
+if (org.jmol.util.Geodesic.vertexCounts == null) org.jmol.util.Geodesic.createGeodesic ();
 return org.jmol.util.Geodesic.vertexVectors;
 });
 c$.getVertexVector = Clazz.defineMethod (c$, "getVertexVector", 

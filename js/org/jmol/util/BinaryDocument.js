@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.BinaryDocument", ["java.io.DataInputStream", "java.lang.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Logger"], function () {
+Clazz.load (null, "org.jmol.util.BinaryDocument", ["java.io.DataInputStream", "java.lang.Double", "$.Float", "javax.util.StringXBuilder", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.stream = null;
 this.isRandom = false;
@@ -101,8 +101,8 @@ Clazz.defineMethod (c$, "readString",
 function (nChar) {
 var temp =  Clazz.newArray (nChar, 0);
 this.readByteArray (temp);
-var s =  new StringBuffer ();
-for (var j = 0; j < nChar; j++) s.append (String.fromCharCode (temp[j]));
+var s =  new javax.util.StringXBuilder ();
+for (var j = 0; j < nChar; j++) s.appendC (String.fromCharCode (temp[j]));
 
 return s.toString ();
 }, "~N");

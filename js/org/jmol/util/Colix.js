@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "$.StringBuffer", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader"], function () {
+Clazz.load (["org.jmol.util.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "javax.util.StringXBuilder", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Colix");
 Clazz.makeConstructor (c$, 
 function () {
@@ -192,7 +192,7 @@ return org.jmol.util.Escape.escapeColor (org.jmol.util.Colix.getArgb (colix));
 c$.getHexCodes = Clazz.defineMethod (c$, "getHexCodes", 
 function (colixes) {
 if (colixes == null) return null;
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 for (var i = 0; i < colixes.length; i++) s.append (i == 0 ? "" : " ").append (org.jmol.util.Colix.getHexCode (colixes[i]));
 
 return s.toString ();

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelsetbio.AlphaPolymer"], "org.jmol.modelsetbio.AminoPolymer", ["java.lang.Boolean", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.i18n.GT", "org.jmol.modelset.HBond", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jmol.modelsetbio.AminoPolymer.Bridge")) {
 org.jmol.modelsetbio.AminoPolymer.$AminoPolymer$Bridge$ ();
@@ -160,7 +160,7 @@ c$.calculateStructuresDssp = Clazz.defineMethod (c$, "calculateStructuresDssp",
 function (bioPolymers, bioPolymerCount, vHBonds, doReport, dsspIgnoreHydrogens, setStructure) {
 if (bioPolymerCount == 0) return "";
 var m = bioPolymers[0].model;
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append ("Jmol ").append (org.jmol.viewer.Viewer.getJmolVersion ()).append (" DSSP analysis for model ").append (m.getModelNumberDotted ()).append (" - ").append (m.getModelTitle ()).append ("\n");
 if (m.modelIndex == 0) sb.append ("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n").append ("\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n").append ("and we thank the CMBI for maintaining it to the extent that it was easy to\n").append ("re-engineer for our purposes. At this point in time, we make no guarantee\n").append ("that this code gives precisely the same analysis as the code available via license\n").append ("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n");
 if (setStructure && m.modelIndex == 0) sb.append ("\nAll bioshapes have been deleted and must be regenerated.\n");
@@ -192,7 +192,7 @@ var reports =  new Array (bioPolymerCount);
 for (var i = 0; i < bioPolymerCount; i++) if (min[i] != null) reports[i] = (bioPolymers[i]).findHelixes (min[i], i, bsDone[i], labels[i], doReport, setStructure, vHBonds, bsBad);
 
 if (doReport) {
-var sbSummary =  new StringBuffer ();
+var sbSummary =  new javax.util.StringXBuilder ();
 sb.append ("\n------------------------------\n");
 for (var i = 0; i < bioPolymerCount; i++) if (labels[i] != null) {
 var ap = bioPolymers[i];
@@ -427,7 +427,7 @@ Clazz.defineMethod (c$, "dumpSummary",
 ($fz = function (labels) {
 var id = this.monomers[0].getLeadAtom ().getChainID ();
 var prefix = (id.charCodeAt (0) == 0 ? "" : String.valueOf (id) + ":");
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var lastChar = '\0';
 var insCode1 = '\0';
 var insCode2 = '\0';
@@ -435,7 +435,7 @@ var firstResno = -1;
 var lastResno = -1;
 for (var i = 0; i <= this.monomerCount; i++) {
 if (i == this.monomerCount || (labels[i]).charCodeAt (0) != lastChar.charCodeAt (0)) {
-if (lastChar.charCodeAt (0) != 0) sb.append ('\n').append (lastChar).append (" : ").append (prefix).append (firstResno).append (insCode1.charCodeAt (0) == 0 ? "" : String.valueOf (insCode1)).append ("_").append (prefix).append (lastResno).append (insCode2.charCodeAt (0) == 0 ? "" : String.valueOf (insCode2));
+if (lastChar.charCodeAt (0) != 0) sb.appendC ('\n').appendC (lastChar).append (" : ").append (prefix).appendI (firstResno).append (insCode1.charCodeAt (0) == 0 ? "" : String.valueOf (insCode1)).append ("_").append (prefix).appendI (lastResno).append (insCode2.charCodeAt (0) == 0 ? "" : String.valueOf (insCode2));
 if (i == this.monomerCount) break;
 lastChar = labels[i];
 firstResno = this.monomers[i].getResno ();
@@ -451,24 +451,24 @@ var prefix = this.monomers[0].getLeadAtom ().getChainID () + "." + (this.bioPoly
 lines = org.jmol.util.TextFormat.simpleReplace (lines, "$", prefix);
 var iFirst = this.monomers[0].getResno ();
 var pre = "\n" + prefix;
-var sb =  new StringBuffer ();
-var sb0 =  new StringBuffer (pre + ".8: ");
-var sb1 =  new StringBuffer (pre + ".7: ");
-var sb2 =  new StringBuffer (pre + ".6: ");
-var sb3 =  new StringBuffer (pre + ".0: ");
+var sb =  new javax.util.StringXBuilder ();
+var sb0 =  new javax.util.StringXBuilder ().append (pre + ".8: ");
+var sb1 =  new javax.util.StringXBuilder ().append (pre + ".7: ");
+var sb2 =  new javax.util.StringXBuilder ().append (pre + ".6: ");
+var sb3 =  new javax.util.StringXBuilder ().append (pre + ".0: ");
 var i = iFirst;
 for (var ii = 0; ii < this.monomerCount; ii++) {
 i = this.monomers[ii].getResno ();
 sb0.append (i % 100 == 0 ? "" + ((Math.floor (i / 100)) % 100) : " ");
 sb1.append (i % 10 == 0 ? "" + ((Math.floor (i / 10)) % 10) : " ");
-sb2.append (i % 10);
-sb3.append (bsBad.get (this.monomers[ii].leadAtomIndex) ? '!' : this.monomers[ii].getGroup1 ());
+sb2.appendI (i % 10);
+sb3.appendC (bsBad.get (this.monomers[ii].leadAtomIndex) ? '!' : this.monomers[ii].getGroup1 ());
 }
-if ((mode & 1) == 1) sb.append (sb0).append (sb1).append (sb2);
+if ((mode & 1) == 1) sb.appendSB (sb0).appendSB (sb1).appendSB (sb2);
 sb.append ("\n");
 sb.append (lines);
 if ((mode & 2) == 2) {
-sb.append (sb3);
+sb.appendSB (sb3);
 sb.append ("\n\n");
 }return sb.toString ().$replace ('\0', '.');
 }, $fz.isPrivate = true, $fz), "~S,javax.util.BitSet,~N");

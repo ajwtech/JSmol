@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (null, "org.jmol.modelset.Measurement", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.LabelToken", "org.jmol.util.Escape", "$.Measure"], function () {
+Clazz.load (null, "org.jmol.modelset.Measurement", ["java.lang.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.LabelToken", "org.jmol.util.Escape", "$.Measure"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.modelSet = null;
@@ -379,9 +379,9 @@ return true;
 Clazz.defineMethod (c$, "getInfoAsString", 
 function (units) {
 var f = this.fixValue (units, true);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append (this.count == 2 ? "distance" : this.count == 3 ? "angle" : "dihedral");
-sb.append (" \t").append (f);
+sb.append (" \t").appendF (f);
 sb.append (" \t").append (this.getString ());
 for (var i = 1; i <= this.count; i++) sb.append (" \t").append (this.getLabel (i, false, false));
 

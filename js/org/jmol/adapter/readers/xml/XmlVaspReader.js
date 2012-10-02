@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.xml");
-Clazz.load (["org.jmol.adapter.readers.xml.XmlReader"], "org.jmol.adapter.readers.xml.XmlVaspReader", ["java.lang.Double", "$.StringBuffer", "javax.vecmath.Vector3f", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.adapter.readers.xml.XmlReader"], "org.jmol.adapter.readers.xml.XmlVaspReader", ["java.lang.Double", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.vaspImplementedAttributes = null;
 this.data = null;
@@ -81,7 +81,7 @@ this.keepChars = (this.iAtom < this.atomCount);
 return ;
 }if ("varray".equals (localName)) {
 this.name = atts.get ("name");
-if (this.name != null && org.jmol.util.Parser.isOneOf (this.name, "basis;positions;forces")) this.data =  new StringBuffer ();
+if (this.name != null && org.jmol.util.Parser.isOneOf (this.name, "basis;positions;forces")) this.data =  new javax.util.StringXBuilder ();
 return ;
 }if ("atoms".equals (localName)) {
 this.keepChars = true;

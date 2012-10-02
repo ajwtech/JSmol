@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -36,9 +36,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Vector3f;
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javax.util.StringXBuilder.class})
 public class JmolConstants {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
@@ -67,7 +68,7 @@ public class JmolConstants {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(7, 23);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $"
+        // $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $"
       }
     } catch (Exception e) {
       // Nothing to do
@@ -1079,7 +1080,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public static String getGroup3List() {
     if (group3List != null)
       return group3List;
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     //for menu presentation order
     for (int i = 1; i < GROUPID_WATER; i++)
       s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
@@ -1094,7 +1095,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   private static int getGroup3Pt(String group3) {
     getGroup3List();
-    StringBuffer sb = new StringBuffer("[");
+    StringXBuilder sb = new StringXBuilder().append("[");
     sb.append(group3);
     switch (group3.length()){
     case 1:

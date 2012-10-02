@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.XmlReader"], function () {
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "$.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorEncoder", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.XmlReader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.JVXL_VERSION = "2.2";
 this.surfaceDataCount = 0;
@@ -83,7 +83,7 @@ return true;
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 var s = this.xr.getXmlData ("jvxlFileTitle", null, false, false);
-this.jvxlFileHeaderBuffer =  new StringBuffer (s);
+this.jvxlFileHeaderBuffer = javax.util.StringXBuilder.newS (s);
 this.xr.toTag ("jvxlVolumeData");
 var data = this.tempDataXml = this.xr.getXmlData ("jvxlVolumeData", null, true, false);
 this.volumetricOrigin.setT (this.xr.getXmlPoint (data, "origin"));
@@ -528,8 +528,8 @@ return triangles;
 Clazz.defineMethod (c$, "jvxlDecodeContourData", 
 function (jvxlData, data) {
 var vs =  new java.util.ArrayList ();
-var values =  new StringBuffer ();
-var colors =  new StringBuffer ();
+var values =  new javax.util.StringXBuilder ();
+var colors =  new javax.util.StringXBuilder ();
 var pt = -1;
 jvxlData.vContours = null;
 if (data == null) return ;
@@ -537,14 +537,14 @@ while ((pt = data.indexOf ("<jvxlContour", pt + 1)) >= 0) {
 var v =  new java.util.ArrayList ();
 var s = this.xr.getXmlData ("jvxlContour", data.substring (pt), true, false);
 var value = this.parseFloatStr (org.jmol.util.XmlReader.getXmlAttrib (s, "value"));
-values.append (" ").append (value);
+values.append (" ").appendF (value);
 var colix = org.jmol.util.Colix.getColix (org.jmol.util.ColorUtil.getArgbFromString (org.jmol.util.XmlReader.getXmlAttrib (s, "color")));
 var color = org.jmol.util.Colix.getArgb (colix);
 colors.append (" ").append (org.jmol.util.Escape.escapeColor (color));
 var fData = org.jmol.jvxl.data.JvxlCoder.jvxlUncompressString (org.jmol.util.XmlReader.getXmlAttrib (s, "data"));
 var bs = org.jmol.jvxl.data.JvxlCoder.jvxlDecodeBitSet (this.xr.getXmlData ("jvxlContour", s, false, false));
 var n = bs.length ();
-org.jmol.shapesurface.IsosurfaceMesh.setContourVector (v, n, bs, value, colix, color,  new StringBuffer (fData));
+org.jmol.shapesurface.IsosurfaceMesh.setContourVector (v, n, bs, value, colix, color, javax.util.StringXBuilder.newS (fData));
 vs.add (v);
 }
 var n = vs.size ();

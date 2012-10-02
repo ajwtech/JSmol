@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.LcaoCartoon", ["java.lang.Float", "$.StringBuffer", "javax.vecmath.Vector3f", "org.jmol.util.Colix", "$.Escape", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.LcaoCartoon", ["java.lang.Float", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.util.Colix", "$.Escape", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.thisType = null;
 this.myColorPt = 0;
@@ -191,7 +191,7 @@ return (id != null ? id : (this.isLonePair || this.isRadical ? "lp_" : "lcao_") 
 }, $fz.isPrivate = true, $fz), "~S,~N");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (this.lcaoScale != null) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon scale " + this.lcaoScale.floatValue ());
 if (this.lcaoColorNeg != null) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon color " + org.jmol.util.Escape.escapeColor (this.lcaoColorNeg.intValue ()) + " " + org.jmol.util.Escape.escapeColor (this.lcaoColorPos.intValue ()));
 if (this.isTranslucent) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon translucent " + this.$translucentLevel);

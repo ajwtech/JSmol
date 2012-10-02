@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.TlsDataOnlyReader", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.TlsDataOnlyReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.util.Escape", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.vTlsModels = null;
 this.sbTlsErrors = null;
@@ -75,8 +75,8 @@ this.htParams.put ("vTlsModels", this.vTlsModels);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "tlsAddError", 
 ($fz = function (error) {
-if (this.sbTlsErrors == null) this.sbTlsErrors =  new StringBuffer ();
-this.sbTlsErrors.append (this.fileName).append ('\t').append ("TLS group ").append (this.tlsGroupID).append ('\t').append (error).append ('\n');
+if (this.sbTlsErrors == null) this.sbTlsErrors =  new javax.util.StringXBuilder ();
+this.sbTlsErrors.append (this.fileName).appendC ('\t').append ("TLS group ").appendI (this.tlsGroupID).appendC ('\t').append (error).appendC ('\n');
 }, $fz.isPrivate = true, $fz), "~S");
 c$.TLnn = c$.prototype.TLnn = ["11", "22", "33", "12", "13", "23"];
 c$.Snn = c$.prototype.Snn = ["22", "11", "12", "13", "23", "21", "31", "32"];

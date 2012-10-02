@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
+Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmeshes = null;
 this.thisMesh = null;
@@ -869,7 +869,7 @@ return (this.pickedMesh != null);
 Clazz.defineMethod (c$, "getDrawCommand", 
 ($fz = function (mesh) {
 if (mesh != null) return this.getDrawCommand (mesh, mesh.modelIndex);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var key = (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID.toUpperCase () : null);
 if (key != null && key.length == 0) key = null;
 for (var i = 0; i < this.meshCount; i++) {
@@ -881,7 +881,7 @@ return sb.toString ();
 Clazz.defineMethod (c$, "getDrawCommand", 
 ($fz = function (mesh, iModel) {
 if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.NONE && mesh.lineData == null && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null) return "";
-var str =  new StringBuffer ();
+var str =  new javax.util.StringXBuilder ();
 var modelCount = this.viewer.getModelCount ();
 if (!mesh.isFixed && iModel >= 0 && modelCount > 1) org.jmol.shape.Shape.appendCmd (str, "frame " + this.viewer.getModelNumberDotted (iModel));
 str.append ("  draw ID ").append (org.jmol.util.Escape.escapeStr (mesh.thisID));
@@ -889,9 +889,9 @@ if (mesh.isFixed) str.append (" fixed");
 if (iModel < 0) iModel = 0;
 if (mesh.noHead) str.append (" noHead");
  else if (mesh.isBarb) str.append (" barb");
-if (mesh.scale != 1 && (mesh.haveXyPoints || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCLE || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC)) str.append (" scale ").append (mesh.scale);
-if (mesh.width != 0) str.append (" diameter ").append ((mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CYLINDER ? Math.abs (mesh.width) : mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE ? Math.abs (mesh.width * mesh.scale) : mesh.width));
- else if (mesh.diameter > 0) str.append (" diameter ").append (mesh.diameter);
+if (mesh.scale != 1 && (mesh.haveXyPoints || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCLE || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC)) str.append (" scale ").appendF (mesh.scale);
+if (mesh.width != 0) str.append (" diameter ").appendF ((mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CYLINDER ? Math.abs (mesh.width) : mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE ? Math.abs (mesh.width * mesh.scale) : mesh.width));
+ else if (mesh.diameter > 0) str.append (" diameter ").appendI (mesh.diameter);
 if (mesh.lineData != null) {
 str.append ("  lineData [");
 var n = mesh.lineData.size ();
@@ -910,7 +910,7 @@ case org.jmol.shapespecial.Draw.EnumDrawType.NONE:
 case org.jmol.shapespecial.Draw.EnumDrawType.MULTIPLE:
 break;
 case org.jmol.shapespecial.Draw.EnumDrawType.POLYGON:
-str.append (" POLYGON ").append (nVertices);
+str.append (" POLYGON ").appendI (nVertices);
 break;
 case org.jmol.shapespecial.Draw.EnumDrawType.PLANE:
 if (nVertices == 4) str.append (" PLANE");
@@ -954,7 +954,7 @@ str.append (" ] ");
 } else if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.POLYGON) {
 for (var i = 0; i < mesh.vertexCount; i++) str.append (" ").append (org.jmol.util.Escape.escapePt (mesh.vertices[i]));
 
-str.append (" ").append (mesh.polygonCount);
+str.append (" ").appendI (mesh.polygonCount);
 for (var i = 0; i < mesh.polygonCount; i++) if (mesh.polygonIndexes[i] == null) str.append (" [0 0 0 0]");
  else str.append (" ").append (org.jmol.util.Escape.escapeArray (mesh.polygonIndexes[i]));
 
@@ -1054,7 +1054,8 @@ return V;
 });
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var s =  new StringBuffer ("\n");
+var s =  new javax.util.StringXBuilder ();
+s.append ("\n");
 org.jmol.shape.Shape.appendCmd (s, "draw delete");
 for (var i = 0; i < this.meshCount; i++) {
 var mesh = this.dmeshes[i];

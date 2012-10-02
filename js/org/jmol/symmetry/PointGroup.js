@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.symmetry.PointGroup", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.symmetry.PointGroup", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.drawInfo = null;
 this.info = null;
@@ -520,7 +520,7 @@ var nType =  Clazz.newArray (4, 2, 0);
 for (var i = 1; i < org.jmol.symmetry.PointGroup.maxAxis; i++) for (var j = this.nAxes[i]; --j >= 0; ) nType[this.axes[i][j].type][0]++;
 
 
-var sb =  new StringBuffer ("# " + this.nAtoms + " atoms\n");
+var sb =  new javax.util.StringXBuilder ().append ("# ").appendI (this.nAtoms).append (" atoms\n");
 if (asDraw) {
 var haveType = (type != null && type.length > 0);
 this.drawType = type = (haveType ? type : "");
@@ -542,7 +542,7 @@ if (index > 0 && j + 1 != index) continue ;op = this.axes[i][j];
 v.setT (op.normalOrAxis);
 v.add (this.center);
 if (op.type == 2) scale = -scale;
-sb.append ("draw pgva").append (m).append (label).append ("_").append (j + 1).append (" width 0.05 scale ").append (scale).append (" ").append (org.jmol.util.Escape.escapePt (v));
+sb.append ("draw pgva").append (m).append (label).append ("_").appendI (j + 1).append (" width 0.05 scale ").appendF (scale).append (" ").append (org.jmol.util.Escape.escapePt (v));
 v.scaleAdd2 (-2, op.normalOrAxis, v);
 var isPA = (this.principalAxis != null && op.index == this.principalAxis.index);
 sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).append (isPA ? "*" : "").append ("\" color ").append (isPA ? "red" : op.type == 2 ? "blue" : "yellow").append (";\n");
@@ -550,13 +550,13 @@ sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).appen
 }
 if (!haveType || type.equalsIgnoreCase ("Cs")) for (var j = 0; j < this.nAxes[0]; j++) {
 if (index > 0 && j + 1 != index) continue ;op = this.axes[0][j];
-sb.append ("draw pgvp").append (m).append (j + 1).append ("disk scale ").append (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escapePt (this.center));
+sb.append ("draw pgvp").append (m).appendI (j + 1).append ("disk scale ").appendF (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escapePt (this.center));
 v.setT (op.normalOrAxis);
 v.add (this.center);
 sb.append (org.jmol.util.Escape.escapePt (v)).append (" color translucent yellow;\n");
 v.setT (op.normalOrAxis);
 v.add (this.center);
-sb.append ("draw pgvp").append (m).append (j + 1).append ("ring width 0.05 scale ").append (scaleFactor * this.radius * 2).append (" arc ").append (org.jmol.util.Escape.escapePt (v));
+sb.append ("draw pgvp").append (m).appendI (j + 1).append ("ring width 0.05 scale ").appendF (scaleFactor * this.radius * 2).append (" arc ").append (org.jmol.util.Escape.escapePt (v));
 v.scaleAdd2 (-2, op.normalOrAxis, v);
 sb.append (org.jmol.util.Escape.escapePt (v));
 v.x += 0.011;
@@ -565,14 +565,14 @@ v.z += 0.013;
 sb.append (org.jmol.util.Escape.escapePt (v)).append ("{0 360 0.5} color ").append (this.principalPlane != null && op.index == this.principalPlane.index ? "red" : "blue").append (";\n");
 }
 sb.append ("# name=").append (this.name);
-sb.append (", nCi=").append (this.haveInversionCenter ? 1 : 0);
-sb.append (", nCs=").append (this.nAxes[0]);
-sb.append (", nCn=").append (nType[1][0]);
-sb.append (", nSn=").append (nType[2][0]);
+sb.append (", nCi=").appendI (this.haveInversionCenter ? 1 : 0);
+sb.append (", nCs=").appendI (this.nAxes[0]);
+sb.append (", nCn=").appendI (nType[1][0]);
+sb.append (", nSn=").appendI (nType[2][0]);
 sb.append (": ");
 for (var i = org.jmol.symmetry.PointGroup.maxAxis; --i >= 2; ) if (this.nAxes[i] > 0) {
-sb.append (" n").append (i < 14 ? "S" : "C").append (i % 14);
-sb.append ("=").append (this.nAxes[i]);
+sb.append (" n").append (i < 14 ? "S" : "C").appendI (i % 14);
+sb.append ("=").appendI (this.nAxes[i]);
 }
 sb.append (";\n");
 this.drawInfo = sb.toString ();
@@ -587,14 +587,14 @@ for (var i = org.jmol.symmetry.PointGroup.maxAxis; --i >= 0; ) {
 if (this.nAxes[i] > 0) {
 n = org.jmol.symmetry.PointGroup.nUnique[i];
 var label = this.axes[i][0].getLabel ();
-if (this.info == null) sb.append ("\n\n").append (this.name).append ("\tn").append (label).append ("\t").append (this.nAxes[i]).append ("\t").append (n);
+if (this.info == null) sb.append ("\n\n").append (this.name).append ("\tn").append (label).append ("\t").appendI (this.nAxes[i]).append ("\t").appendI (n);
  else this.info.put ("n" + label, Integer.$valueOf (this.nAxes[i]));
 n *= this.nAxes[i];
 nTotal += n;
 nType[this.axes[i][0].type][1] += n;
 var vinfo = (this.info == null ? null :  new java.util.ArrayList ());
 for (var j = 0; j < this.nAxes[i]; j++) {
-if (vinfo == null) sb.append ("\n").append (this.name).append ("\t").append (label).append ("_").append (j + 1).append ("\t").append (this.axes[i][j].normalOrAxis);
+if (vinfo == null) sb.append ("\n").append (this.name).append ("\t").append (label).append ("_").appendI (j + 1).append ("\t").appendO (this.axes[i][j].normalOrAxis);
  else vinfo.add (this.axes[i][j].normalOrAxis);
 }
 if (this.info != null) this.info.put (label, vinfo);
@@ -604,7 +604,7 @@ sb.append ("\n");
 sb.append ("\n").append (this.name).append ("\ttype\tnType\tnUnique");
 sb.append ("\n").append (this.name).append ("\tE\t  1\t  1");
 n = (this.haveInversionCenter ? 1 : 0);
-sb.append ("\n").append (this.name).append ("\tCi\t  ").append (n).append ("\t  ").append (n);
+sb.append ("\n").append (this.name).append ("\tCi\t  ").appendI (n).append ("\t  ").appendI (n);
 sb.append ("\n").append (this.name).append ("\tCs\t");
 org.jmol.util.TextFormat.rFill (sb, "    ", this.nAxes[0] + "\t");
 org.jmol.util.TextFormat.rFill (sb, "    ", this.nAxes[0] + "\n");

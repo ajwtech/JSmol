@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["java.util.Hashtable"], "org.jmol.symmetry.SpaceGroup", ["java.lang.Character", "$.StringBuilder", "java.util.Arrays", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.symmetry.HallInfo", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.ArrayUtil", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.symmetry.SpaceGroup", ["java.lang.Character", "java.util.Arrays", "javax.util.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.symmetry.HallInfo", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.ArrayUtil", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 0;
 this.name = "unknown!";
@@ -116,7 +116,7 @@ sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (spaceGroup);
 if (sg == null) {
 sg = org.jmol.symmetry.SpaceGroup.createSpaceGroup (spaceGroup);
 } else {
-var sb =  new StringBuilder ();
+var sb =  new javax.util.StringXBuilder ();
 while (sg != null) {
 sb.append (sg.dumpInfo (null));
 sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (spaceGroup, sg);
@@ -128,8 +128,8 @@ Clazz.defineMethod (c$, "dumpInfo",
 function (cellInfo) {
 var info = this.dumpCanonicalSeitzList ();
 if (Clazz.instanceOf (info, org.jmol.symmetry.SpaceGroup)) return (info).dumpInfo (null);
-var sb =  new StringBuilder ("\nHermann-Mauguin symbol: ");
-sb.append (this.hmSymbol).append (this.hmSymbolExt.length > 0 ? ":" + this.hmSymbolExt : "").append ("\ninternational table number: ").append (this.intlTableNumber).append (this.intlTableNumberExt.length > 0 ? ":" + this.intlTableNumberExt : "").append ("\n\n").append (this.operationCount).append (" operators").append (!this.hallInfo.hallSymbol.equals ("--") ? " from Hall symbol " + this.hallInfo.hallSymbol : "").append (": ");
+var sb =  new javax.util.StringXBuilder ().append ("\nHermann-Mauguin symbol: ");
+sb.append (this.hmSymbol).append (this.hmSymbolExt.length > 0 ? ":" + this.hmSymbolExt : "").append ("\ninternational table number: ").append (this.intlTableNumber).append (this.intlTableNumberExt.length > 0 ? ":" + this.intlTableNumberExt : "").append ("\n\n").appendI (this.operationCount).append (" operators").append (!this.hallInfo.hallSymbol.equals ("--") ? " from Hall symbol " + this.hallInfo.hallSymbol : "").append (": ");
 for (var i = 0; i < this.operationCount; i++) {
 sb.append ("\n").append (this.operations[i].xyz);
 }
@@ -175,7 +175,7 @@ var list =  new Array (this.operationCount);
 for (var i = 0; i < this.operationCount; i++) list[i] = org.jmol.symmetry.SymmetryOperation.dumpCanonicalSeitz (this.operations[i]);
 
 java.util.Arrays.sort (list, 0, this.operationCount);
-var sb =  new StringBuilder ("\n[");
+var sb =  new javax.util.StringXBuilder ().append ("\n[");
 for (var i = 0; i < this.operationCount; i++) sb.append (list[i].$replace ('\t', ' ').$replace ('\n', ' ')).append ("; ");
 
 sb.append ("]");
@@ -192,15 +192,15 @@ return null;
 }, $fz.isPrivate = true, $fz), "~S");
 c$.dumpAll = Clazz.defineMethod (c$, "dumpAll", 
 ($fz = function () {
-var sb =  new StringBuilder ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions.length; i++) sb.append ("\n----------------------\n" + org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i].dumpInfo (null));
 
 return sb.toString ();
 }, $fz.isPrivate = true, $fz));
 c$.dumpAllSeitz = Clazz.defineMethod (c$, "dumpAllSeitz", 
 ($fz = function () {
-var sb =  new StringBuilder ();
-for (var i = 0; i < org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions.length; i++) sb.append ("\n").append (org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i].dumpCanonicalSeitzList ());
+var sb =  new javax.util.StringXBuilder ();
+for (var i = 0; i < org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions.length; i++) sb.append ("\n").appendO (org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i].dumpCanonicalSeitzList ());
 
 return sb.toString ();
 }, $fz.isPrivate = true, $fz));

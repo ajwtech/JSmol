@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.AtomShape", "javax.util.BitSet", "org.jmol.atomdata.RadiusData"], "org.jmol.shapespecial.Dots", ["java.lang.StringBuffer", "java.util.Hashtable", "javax.vecmath.Matrix3f", "org.jmol.constant.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "javax.util.BitSet", "org.jmol.atomdata.RadiusData"], "org.jmol.shapespecial.Dots", ["java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Matrix3f", "org.jmol.constant.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ec = null;
 this.isSurface = false;
@@ -171,7 +171,7 @@ Clazz.overrideMethod (c$, "getShapeState",
 function () {
 var dotsConvexMaps = this.ec.getDotsConvexMaps ();
 if (dotsConvexMaps == null || this.ec.getDotsConvexMax () == 0) return "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var temp =  new java.util.Hashtable ();
 var atomCount = this.viewer.getAtomCount ();
 var type = (this.isSurface ? "geoSurface " : "dots ");

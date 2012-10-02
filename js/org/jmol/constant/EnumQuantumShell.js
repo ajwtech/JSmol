@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.constant");
-Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumQuantumShell", ["java.lang.StringBuffer"], function () {
+Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumQuantumShell", ["javax.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tag = null;
 this.tag2 = null;
@@ -72,14 +72,14 @@ return "" + id;
 }, "~N");
 c$.getMOString = Clazz.defineMethod (c$, "getMOString", 
 function (lc) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (lc.length == 2) return "" + Math.round ((lc[0] < 0 ? -lc[1] : lc[1]));
-sb.append ('[');
+sb.appendC ('[');
 for (var i = 0; i < lc.length; i += 2) {
 if (i > 0) sb.append (", ");
-sb.append (lc[i]).append (" ").append (Math.round (lc[i + 1]));
+sb.appendF (lc[i]).append (" ").appendI (Math.round (lc[i + 1]));
 }
-sb.append (']');
+sb.appendC (']');
 return sb.toString ();
 }, "~A");
 c$.SUPPORTED_BASIS_FUNCTIONS = "SPLDF";

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.SurfaceFileReader"], "org.jmol.jvxl.readers.VolumeFileReader", ["java.lang.Float", "$.StringBuffer", "org.jmol.api.Interface", "org.jmol.atomdata.AtomData", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.load (["org.jmol.jvxl.readers.SurfaceFileReader"], "org.jmol.jvxl.readers.VolumeFileReader", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.api.Interface", "org.jmol.atomdata.AtomData", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.endOfData = false;
 this.negativeAtomCount = false;
@@ -92,7 +92,7 @@ org.jmol.util.Logger.info ("downsampling axis " + (i + 1) + " from " + n + " to 
 }for (var i = 0; i < 3; ++i) {
 if (!this.isAngstroms) this.volumetricVectors[i].scale (0.5291772);
 this.line = this.voxelCounts[i] + " " + this.volumetricVectors[i].x + " " + this.volumetricVectors[i].y + " " + this.volumetricVectors[i].z;
-this.jvxlFileHeaderBuffer.append (this.line).append ('\n');
+this.jvxlFileHeaderBuffer.append (this.line).appendC ('\n');
 org.jmol.util.Logger.info ("voxel grid count/vector:" + this.line);
 }
 this.scaleIsosurface (this.params.scale);
@@ -109,8 +109,8 @@ throw e;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "skipComments", 
 function (allowBlankLines) {
-var sb =  new StringBuffer ();
-while (this.readLine () != null && (allowBlankLines && this.line.length == 0 || this.line.indexOf ("#") == 0)) sb.append (this.line).append ('\n');
+var sb =  new javax.util.StringXBuilder ();
+while (this.readLine () != null && (allowBlankLines && this.line.length == 0 || this.line.indexOf ("#") == 0)) sb.append (this.line).appendC ('\n');
 
 return sb.toString ();
 }, "~B");
@@ -349,7 +349,7 @@ if (atomLine.indexOf ("BOHR") < 0) atomLine += " BOHR";
 }atomLine = (atomCount == -2147483648 ? "" : (isXLowToHigh ? "+" : "-") + Math.abs (atomCount)) + atomLine + "\n";
 bs.append (atomLine);
 return isAngstroms;
-}, "~B,~B,~S,~S,StringBuffer");
+}, "~B,~B,~S,~S,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getSurfacePointAndFraction", 
 function (cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn) {
 var zero = Clazz.superCall (this, org.jmol.jvxl.readers.VolumeFileReader, "getSurfacePointAndFraction", [cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn]);

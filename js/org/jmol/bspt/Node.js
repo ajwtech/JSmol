@@ -67,7 +67,7 @@ for (var i = 0; i < level; ++i) sb.append ("->");
 
 sb.append (" RIGHT" + level);
 this.eleRight.dump (level + 1, sb);
-}, "~N,StringBuffer");
+}, "~N,javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "toString", 
 function () {
 return this.eleLeft.toString () + this.dim + ":" + "\n" + this.eleRight.toString ();

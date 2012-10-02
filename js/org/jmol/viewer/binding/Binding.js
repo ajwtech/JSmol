@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "$.StringBuffer", "java.util.ArrayList", "$.Arrays", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "javax.util.StringXBuilder", "org.jmol.util.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.name = null;
 this.bindings = null;
@@ -119,7 +119,7 @@ return mouseAction >> 8;
 }, "~N");
 Clazz.defineMethod (c$, "getBindingInfo", 
 function (actionNames, qualifiers) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var qlow = (qualifiers == null || qualifiers.equalsIgnoreCase ("all") ? null : qualifiers.toLowerCase ());
 var names =  new Array (actionNames.length);
 for (var i = 0; i < actionNames.length; i++) names[i] = (qlow == null || actionNames[i].toLowerCase ().indexOf (qlow) >= 0 ?  new java.util.ArrayList () : null);
@@ -142,7 +142,7 @@ sb.append (sep);
 sb.append ((list[j]).substring (7));
 sep = ", ";
 }
-sb.append ('\n');
+sb.appendC ('\n');
 }
 return sb.toString ();
 }, "~A,~S");
@@ -152,7 +152,7 @@ return ((mouseAction & mod) == mod);
 }, $fz.isPrivate = true, $fz), "~N,~N");
 c$.getMouseActionName = Clazz.defineMethod (c$, "getMouseActionName", 
 function (mouseAction, addSortCode) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (mouseAction == 0) return "";
 var isMiddle = (org.jmol.viewer.binding.Binding.includes (mouseAction, 8) && !org.jmol.viewer.binding.Binding.includes (mouseAction, 16) && !org.jmol.viewer.binding.Binding.includes (mouseAction, 4));
 var code = "      ".toCharArray ();

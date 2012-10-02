@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.AtomShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shapespecial.Polyhedra", ["java.lang.StringBuffer", "javax.util.BitSet", "javax.vecmath.Point3i", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Measure", "$.Normix"], function () {
+Clazz.load (["org.jmol.shape.AtomShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shapespecial.Polyhedra", ["javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3i", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Measure", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.otherAtoms = null;
 this.polyhedronCount = 0;
@@ -353,7 +353,7 @@ p.visibilityFlags = (p.visible && bs.get (p.modelIndex) && !this.modelSet.isAtom
 }, "javax.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 for (var i = 0; i < this.polyhedronCount; i++) s.append (this.polyhedrons[i].getState ());
 
 if (this.drawEdges == 2) org.jmol.shape.Shape.appendCmd (s, "polyhedra frontedges");

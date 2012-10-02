@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.MeshCollection", ["java.lang.StringBuffer", "java.util.Hashtable", "javax.vecmath.Point3f", "org.jmol.script.Token", "org.jmol.shape.Mesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape", "$.Logger", "$.TextFormat", "org.jmol.viewer.StateManager"], function () {
+Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.MeshCollection", ["java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.script.Token", "org.jmol.shape.Mesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape", "$.Logger", "$.TextFormat", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.meshCount = 0;
 this.meshes = null;
@@ -284,12 +284,12 @@ return Integer.$valueOf (n);
 }if (property === "ID") return (this.currentMesh == null ? null : this.currentMesh.thisID);
 if (property.startsWith ("list")) {
 this.clean ();
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var k = 0;
 var id = (property.equals ("list") ? null : property.substring (5));
 for (var i = 0; i < this.meshCount; i++) {
 m = this.meshes[i];
-if (id != null && !id.equalsIgnoreCase (m.thisID)) continue ;sb.append ((++k)).append (" id:" + m.thisID).append ("; model:" + this.viewer.getModelNumberDotted (m.modelIndex)).append ("; vertices:" + m.vertexCount).append ("; polygons:" + m.polygonCount).append ("; visible:" + m.visible);
+if (id != null && !id.equalsIgnoreCase (m.thisID)) continue ;sb.appendI ((++k)).append (" id:" + m.thisID).append ("; model:" + this.viewer.getModelNumberDotted (m.modelIndex)).append ("; vertices:" + m.vertexCount).append ("; polygons:" + m.polygonCount).append ("; visible:" + m.visible);
 var range = this.getProperty ("dataRange", 0);
 if (range != null) sb.append ("; dataRange:").append (org.jmol.util.Escape.escape (range));
 if (m.title != null) {
@@ -298,10 +298,10 @@ for (var j = 0; j < m.title.length; j++) s += (j == 0 ? "; title:" : " | ") + m.
 
 if (s.length > 10000) s = s.substring (0, 10000) + "...";
 sb.append (s);
-}sb.append ('\n');
+}sb.appendC ('\n');
 if (id != null) {
 var info = this.getProperty ("jvxlFileInfo", 0);
-if (info != null) sb.append (info).append ('\n');
+if (info != null) sb.appendO (info).appendC ('\n');
 }}
 return sb.toString ();
 }if (property === "vertices") return this.getVertices (this.currentMesh);

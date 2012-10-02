@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lineLength = 0;
 this.pdbHeader = null;
@@ -59,15 +59,15 @@ this.dataT =  Clazz.newArray (8, 0);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 this.setIsPDB ();
-this.pdbHeader = (this.getHeader ?  new StringBuffer () : null);
+this.pdbHeader = (this.getHeader ?  new javax.util.StringXBuilder () : null);
 this.applySymmetry = !this.checkFilterKey ("NOSYMMETRY");
 this.getTlsGroups = this.checkFilterKey ("TLS");
 if (this.htParams.containsKey ("vTlsModels")) {
 this.vTlsModels = this.htParams.remove ("vTlsModels");
 }if (this.checkFilterKey ("CONF ")) {
 this.configurationPtr = this.parseIntAt (this.filter, this.filter.indexOf ("CONF ") + 5);
-this.sbIgnored =  new StringBuffer ();
-this.sbSelected =  new StringBuffer ();
+this.sbIgnored =  new javax.util.StringXBuilder ();
+this.sbSelected =  new javax.util.StringXBuilder ();
 }this.isLegacyModelType = (this.stateScriptVersionInt < 120000);
 this.isConnectStateBug = (this.stateScriptVersionInt >= 120151 && this.stateScriptVersionInt <= 120220 || this.stateScriptVersionInt >= 120300 && this.stateScriptVersionInt <= 120320);
 });
@@ -80,7 +80,7 @@ var serial = (isAtom ? this.parseIntRange (this.line, 6, 11) : 0);
 var isNewModel = ((this.isTrajectory || this.isSequential) && !this.isMultiModel && isAtom && serial == 1);
 if (this.getHeader) {
 if (isAtom || isModel) this.getHeader = false;
- else this.pdbHeader.append (this.line).append ('\n');
+ else this.pdbHeader.append (this.line).appendC ('\n');
 }if (isModel || isNewModel) {
 this.isMultiModel = isModel;
 this.getHeader = false;
@@ -491,8 +491,8 @@ return "Xx";
 Clazz.defineMethod (c$, "conect", 
 ($fz = function () {
 if (this.sbConect == null) {
-this.sbConect =  new StringBuffer ();
-this.sb =  new StringBuffer ();
+this.sbConect =  new javax.util.StringXBuilder ();
+this.sb =  new javax.util.StringXBuilder ();
 } else {
 this.sb.setLength (0);
 }var sourceSerial = -1;
@@ -522,7 +522,7 @@ this.sb.append (st1);
 this.sbConect.append (st);
 }this.atomSetCollection.addConnection ([i1, targetSerial, i < 4 ? 1 : 2048]);
 }
-this.sbConect.append (this.sb);
+this.sbConect.appendSB (this.sb);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "structure", 
 ($fz = function () {
@@ -871,8 +871,8 @@ this.setTlsEllipsoid (atom, group, symmetry);
 }}
 }
 }
-var sdata =  new StringBuffer ();
-for (var i = 0; i < data.length; i++) sdata.append (data[i]).append ('\n');
+var sdata =  new javax.util.StringXBuilder ();
+for (var i = 0; i < data.length; i++) sdata.appendI (data[i]).appendC ('\n');
 
 this.atomSetCollection.setAtomSetAtomProperty ("tlsGroup", sdata.toString (), iModel);
 this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("TLS", tlsGroupInfo, iModel);
@@ -936,8 +936,8 @@ atom.ellipsoid = [null, null, symmetry.getEllipsoid (this.dataT)];
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,java.util.Map,org.jmol.api.SymmetryInterface");
 Clazz.defineMethod (c$, "tlsAddError", 
 ($fz = function (error) {
-if (this.sbTlsErrors == null) this.sbTlsErrors =  new StringBuffer ();
-this.sbTlsErrors.append (this.fileName).append ('\t').append ("TLS group ").append (this.tlsGroupID).append ('\t').append (error).append ('\n');
+if (this.sbTlsErrors == null) this.sbTlsErrors =  new javax.util.StringXBuilder ();
+this.sbTlsErrors.append (this.fileName).appendC ('\t').append ("TLS group ").appendI (this.tlsGroupID).appendC ('\t').append (error).appendC ('\n');
 }, $fz.isPrivate = true, $fz), "~S");
 c$.fixRadius = Clazz.defineMethod (c$, "fixRadius", 
 function (r) {

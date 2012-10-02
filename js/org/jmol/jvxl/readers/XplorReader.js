@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.XplorReader", ["java.lang.StringBuffer", "org.jmol.util.Logger", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.XplorReader", ["javax.util.StringXBuilder", "org.jmol.util.Logger", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nBlock = 0;
 this.linePt = 2147483647;
@@ -18,12 +18,12 @@ this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new StringBuffer ();
+this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
 var nLines = this.parseIntStr (this.getLine ());
 for (var i = nLines; --i >= 0; ) {
 this.line = this.br.readLine ().trim ();
 org.jmol.util.Logger.info ("XplorReader: " + this.line);
-this.jvxlFileHeaderBuffer.append ("# ").append (this.line).append ('\n');
+this.jvxlFileHeaderBuffer.append ("# ").append (this.line).appendC ('\n');
 }
 this.jvxlFileHeaderBuffer.append ("Xplor data\nJmol " + org.jmol.viewer.Viewer.getJmolVersion () + '\n');
 this.na = this.parseIntStr (this.getLine ());

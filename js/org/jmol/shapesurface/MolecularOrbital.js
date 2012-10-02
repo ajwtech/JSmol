@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.MolecularOrbital", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "org.jmol.constant.EnumQuantumShell", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.Escape"], function () {
+Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.MolecularOrbital", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.constant.EnumQuantumShell", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.moTranslucency = null;
 this.moTranslucentLevel = null;
@@ -183,7 +183,7 @@ return this.viewer.getMoInfo (-1) + "\n" + s;
 }if (propertyName === "moNumber") return Integer.$valueOf (this.$moNumber);
 if (propertyName === "moLinearCombination") return this.$moLinearCombination;
 if (propertyName === "showMO") {
-var str =  new StringBuffer ();
+var str =  new javax.util.StringXBuilder ();
 var mos = (this.sg.getMoData ().get ("mos"));
 var nOrb = (mos == null ? 0 : mos.size ());
 var thisMO = param;
@@ -284,7 +284,7 @@ return ;
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 if (this.htModels == null) return "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var modelCount = this.viewer.getModelCount ();
 for (var i = 0; i < modelCount; i++) s.append (this.getMoState (i));
 
@@ -294,7 +294,7 @@ Clazz.defineMethod (c$, "getMoState",
 ($fz = function (modelIndex) {
 this.strID = this.getId (modelIndex);
 if (!this.getSettings (this.strID)) return "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var modelCount = this.viewer.getModelCount ();
 if (modelCount > 1) org.jmol.shape.Shape.appendCmd (s, "frame " + this.viewer.getModelNumberDotted (modelIndex));
 if (this.moCutoff != null) org.jmol.shape.Shape.appendCmd (s, "mo cutoff " + (this.sg.getIsPositiveOnly () ? "+" : "") + this.moCutoff);

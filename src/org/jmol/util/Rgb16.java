@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,8 @@
  */
 
 package org.jmol.util;
+
+import javax.util.StringXBuilder;
 
 public final class Rgb16 {
   public int rScaled;
@@ -90,12 +92,13 @@ public final class Rgb16 {
 
   @Override
   public String toString() {
-    return (new StringBuffer("Rgb16(")).append(rScaled).append(',')
-    .append(gScaled).append(',')
-    .append(bScaled).append(" -> ")
-    .append((rScaled >> 8) & 0xFF).append(',')
-    .append((gScaled >> 8) & 0xFF).append(',')
-    .append((bScaled >> 8) & 0xFF).append(')').toString();
+    return new StringXBuilder()
+    .append("Rgb16(").appendI(rScaled).appendC(',')
+    .appendI(gScaled).appendC(',')
+    .appendI(bScaled).append(" -> ")
+    .appendI((rScaled >> 8) & 0xFF).appendC(',')
+    .appendI((gScaled >> 8) & 0xFF).appendC(',')
+    .appendI((bScaled >> 8) & 0xFF).appendC(')').toString();
   }
 }
 

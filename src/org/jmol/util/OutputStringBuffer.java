@@ -5,16 +5,18 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import javax.util.StringXBuilder;
+
 public class OutputStringBuffer {
 
   public String type;
-  StringBuffer sb;
+  StringXBuilder sb;
   BufferedWriter bw;
   long nBytes;
   
   public OutputStringBuffer(BufferedOutputStream os) {
     if (os == null) {
-      sb = new StringBuffer();
+      sb = new StringXBuilder();
     } else {     
       OutputStreamWriter osw = new OutputStreamWriter(os);
       bw = new BufferedWriter(osw, 8192);

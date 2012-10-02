@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["org.jmol.util.JmolMolecule", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.smiles.SmilesSearch", ["java.lang.StringBuffer", "$.StringBuilder", "java.util.Arrays", "$.Hashtable", "org.jmol.smiles.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesParser", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger"], function () {
+Clazz.load (["org.jmol.util.JmolMolecule", "java.util.ArrayList", "javax.util.BitSet", "javax.vecmath.Vector3f"], "org.jmol.smiles.SmilesSearch", ["java.util.Arrays", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.smiles.SmilesAromatic", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesParser", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.patternAtoms = null;
 this.pattern = null;
@@ -61,7 +61,7 @@ this.v =  new org.jmol.smiles.SmilesSearch.VTemp ();
 });
 Clazz.defineMethod (c$, "toString", 
 function () {
-var sb =  new StringBuilder (this.pattern);
+var sb =  new javax.util.StringXBuilder ().append (this.pattern);
 sb.append ("\nmolecular formula: " + this.getMolecularFormula (true));
 return sb.toString ();
 });
@@ -140,7 +140,7 @@ if (needRingData) {
 this.ringCounts =  Clazz.newArray (this.jmolAtomCount, 0);
 this.ringConnections =  Clazz.newArray (this.jmolAtomCount, 0);
 this.ringData =  new Array (this.ringDataMax + 1);
-}this.ringSets =  new StringBuffer ();
+}this.ringSets =  new javax.util.StringXBuilder ();
 var s = "****";
 while (s.length < this.ringDataMax) s += s;
 
@@ -399,7 +399,7 @@ if (!isOK) return true;
 this.vReturn.add (bs);
 }if (this.isRingCheck) {
 this.ringSets.append (" ");
-for (var k = atomNum * 3 + 2; --k > atomNum; ) this.ringSets.append ("-").append (this.patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1) % atomNum].getMatchingAtom ());
+for (var k = atomNum * 3 + 2; --k > atomNum; ) this.ringSets.append ("-").appendI (this.patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1) % atomNum].getMatchingAtom ());
 
 this.ringSets.append ("- ");
 return true;
@@ -579,7 +579,7 @@ break;
 c$.isRingBond = Clazz.defineMethod (c$, "isRingBond", 
 function (ringSets, i, j) {
 return (ringSets != null && ringSets.indexOf ("-" + i + "-" + j + "-") >= 0);
-}, "StringBuffer,~N,~N");
+}, "javax.util.StringXBuilder,~N,~N");
 Clazz.defineMethod (c$, "checkStereochemistry", 
 ($fz = function () {
 for (var i = 0; i < this.measures.size (); i++) if (!this.measures.get (i).check ()) return false;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-07-15 19:16:54 -0500 (Sun, 15 Jul 2012) $
- * $Revision: 17359 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javax.util.StringXBuilder;
 
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
@@ -116,7 +118,7 @@ public class SmilesParser {
    */
   private boolean isSmarts;
   private boolean isBioSequence;
-  private char bioType;
+  private char bioType = '\0';
   private Map<Integer, SmilesBond> ringBonds = new Hashtable<Integer, SmilesBond>();
   private int braceCount;
   private int branchLevel;
@@ -193,7 +195,7 @@ public class SmilesParser {
 
   private String parseVariableLength(String pattern)
       throws InvalidSmilesException {
-    StringBuffer sout = new StringBuffer();
+    StringXBuilder sout = new StringXBuilder();
     // fix internal ||
     int len = pattern.length() - 1;
     int nParen = 0;
@@ -293,12 +295,12 @@ public class SmilesParser {
         if (repeat.indexOf("|") >= 0)
           repeat = "[$(" + repeat + ")]";
         for (int i = min; i <= max; i++) {
-          StringBuffer sb = new StringBuffer();
+          StringXBuilder sb = new StringXBuilder();
           sb.append("||").append(pattern.substring(0, pt0));
           for (int j = 0; j < i; j++)
             sb.append(repeat);
           sb.append(pattern.substring(pt1));
-          sout.append(sb);
+          sout.appendSB(sb);
         }
       }
       if (!isOK)
@@ -1274,12 +1276,12 @@ public class SmilesParser {
         if (bond != null && pt < 0) {
           // bonds are simpler, because they have only one character
           if (len > 1) {
-            StringBuffer sNew = new StringBuffer();
+            StringXBuilder sNew = new StringXBuilder();
             for (int i = 0; i < len;) {
               char ch = pattern.charAt(i++);
-              sNew.append(ch);
+              sNew.appendC(ch);
               if (ch != '!' && i < len)
-                sNew.append('&');
+                sNew.appendC('&');
             }
             pattern = sNew.toString();
             len = pattern.length();

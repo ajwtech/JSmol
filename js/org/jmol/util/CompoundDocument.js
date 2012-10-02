@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.BinaryDocument", "java.util.ArrayList"], "org.jmol.util.CompoundDocument", ["java.io.DataInputStream", "java.lang.StringBuffer", "$.StringBuilder", "org.jmol.util.Logger", "$.ZipData"], function () {
+Clazz.load (["org.jmol.util.BinaryDocument", "java.util.ArrayList"], "org.jmol.util.CompoundDocument", ["java.io.DataInputStream", "javax.util.StringXBuilder", "org.jmol.util.Logger", "$.ZipData"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.header = null;
 this.directory = null;
@@ -75,9 +75,9 @@ org.jmol.util.Logger.info ("reading " + name);
 if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
 var isBinary = (binaryFileList.indexOf ("|" + thisEntry.entryName + "|") >= 0);
 if (isBinary) name += ":asBinaryString";
-var data =  new StringBuilder ();
+var data =  new javax.util.StringXBuilder ();
 data.append ("BEGIN Directory Entry ").append (name).append ("\n");
-data.append (this.getFileAsString (thisEntry, isBinary));
+data.appendSB (this.getFileAsString (thisEntry, isBinary));
 data.append ("\nEND Directory Entry ").append (name).append ("\n");
 fileData.put (prefix + "/" + name, data.toString ());
 }}
@@ -93,7 +93,7 @@ this.directory.remove (i);
 this.directory.add (1, thisEntry);
 break;
 }}
-}this.data =  new StringBuffer ();
+}this.data =  new javax.util.StringXBuilder ();
 this.data.append ("Compound Document File Directory: ");
 this.data.append (this.getDirectoryListing ("|"));
 this.data.append ("\n");
@@ -105,7 +105,7 @@ if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
 var name = thisEntry.entryName;
 if (name.endsWith (".gz")) name = name.substring (0, name.length - 3);
 this.data.append ("BEGIN Directory Entry ").append (name).append ("\n");
-this.data.append (this.getFileAsString (thisEntry, binaryFileList.indexOf ("|" + thisEntry.entryName + "|") >= 0));
+this.data.appendSB (this.getFileAsString (thisEntry, binaryFileList.indexOf ("|" + thisEntry.entryName + "|") >= 0));
 this.data.append ("\n");
 this.data.append ("END Directory Entry ").append (thisEntry.entryName).append ("\n");
 }}
@@ -118,7 +118,7 @@ for (var i = 0; i < this.directory.size (); i++) {
 var thisEntry = this.directory.get (i);
 if (thisEntry.entryName.equals (entryName)) return this.getFileAsString (thisEntry, false);
 }
-return  new StringBuffer ();
+return  new javax.util.StringXBuilder ();
 }, "~S");
 Clazz.defineMethod (c$, "getOffset", 
 ($fz = function (SID) {
@@ -228,12 +228,12 @@ if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("CompoundDocumen
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getFileAsString", 
 ($fz = function (thisEntry, asBinaryString) {
-if (thisEntry.isEmpty) return  new StringBuffer ();
+if (thisEntry.isEmpty) return  new javax.util.StringXBuilder ();
 return (thisEntry.isStandard ? this.getStandardStringData (thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString) : this.getShortStringData (thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString));
 }, $fz.isPrivate = true, $fz), "org.jmol.util.CompoundDocument.CmpDocDirectoryEntry,~B");
 Clazz.defineMethod (c$, "getStandardStringData", 
 ($fz = function (thisSID, nBytes, asBinaryString) {
-var data =  new StringBuffer ();
+var data =  new javax.util.StringXBuilder ();
 var byteBuf =  Clazz.newArray (this.sectorSize, 0);
 var gzipData =  new org.jmol.util.ZipData (nBytes);
 try {
@@ -242,7 +242,7 @@ this.gotoSector (thisSID);
 nBytes = this.getSectorData (data, byteBuf, this.sectorSize, nBytes, asBinaryString, gzipData);
 thisSID = this.SAT[thisSID];
 }
-if (nBytes == -9999) return  new StringBuffer ();
+if (nBytes == -9999) return  new javax.util.StringXBuilder ();
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.errorEx (null, e);
@@ -260,20 +260,20 @@ var n = gzipData.addBytes (byteBuf, nSectorBytes, nBytes);
 if (n >= 0) return n;
 if (asBinaryString) {
 for (var i = 0; i < nSectorBytes; i++) {
-data.append (Integer.toHexString (byteBuf[i] & 0xFF)).append (' ');
+data.append (Integer.toHexString (byteBuf[i] & 0xFF)).appendC (' ');
 if (--nBytes < 1) break;
 }
 } else {
 for (var i = 0; i < nSectorBytes; i++) {
 if (byteBuf[i] == 0) return -9999;
-data.append (String.fromCharCode (byteBuf[i]));
+data.appendC (String.fromCharCode (byteBuf[i]));
 if (--nBytes < 1) break;
 }
 }return nBytes;
-}, $fz.isPrivate = true, $fz), "StringBuffer,~A,~N,~N,~B,org.jmol.util.ZipData");
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~A,~N,~N,~B,org.jmol.util.ZipData");
 Clazz.defineMethod (c$, "getShortStringData", 
 ($fz = function (shortSID, nBytes, asBinaryString) {
-var data =  new StringBuffer ();
+var data =  new javax.util.StringXBuilder ();
 if (this.rootEntry == null) return data;
 var thisSID = this.rootEntry.SIDfirstSector;
 var ptShort = 0;

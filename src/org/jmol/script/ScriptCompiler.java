@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:27:42 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17607 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -39,6 +39,8 @@ import org.jmol.modelset.Bond.BondSet;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -2115,7 +2117,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return false;
   }
 
-  char chFirst;
+  private char chFirst = '\0';
   private boolean lookingAtString(boolean allowPrime) {
     if (ichToken == cchScript)
       return false;
@@ -2143,7 +2145,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   String getUnescapedStringLiteral() {
     if (cchToken < 2)
       return "";
-    StringBuffer sb = new StringBuffer(cchToken - 2);
+    StringXBuilder sb = StringXBuilder.newN(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;
     int ich = ichToken + 1;
     while (ich < ichMax) {
@@ -2185,7 +2187,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           }
         }
       }
-      sb.append(ch);
+      sb.appendC(ch);
     }
     return sb.toString();
   }

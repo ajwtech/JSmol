@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "$.StringBuffer", "org.jmol.util.Parser"], function () {
+Clazz.load (null, "org.jmol.util.TextFormat", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "javax.util.StringXBuilder", "org.jmol.util.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.util, "TextFormat");
 Clazz.prepareFields (c$, function () {
 {
@@ -50,10 +50,10 @@ pt = s1.indexOf (".");
 var pt2 = decimalDigits + pt + 1;
 if (pt2 < len && (s1.charAt (pt2)).charCodeAt (0) >= 53) {
 return org.jmol.util.TextFormat.formatDecimal (value + (isNeg ? -1 : 1) * org.jmol.util.TextFormat.formatAdds[decimalDigits], decimalDigits);
-}var sb =  new StringBuffer (s1.substring (0, (decimalDigits == 0 ? pt : ++pt)));
+}var sb = javax.util.StringXBuilder.newS (s1.substring (0, (decimalDigits == 0 ? pt : ++pt)));
 for (var i = 0; i < decimalDigits; i++, pt++) {
-if (pt < len) sb.append (s1.charAt (pt));
- else sb.append ('0');
+if (pt < len) sb.appendC (s1.charAt (pt));
+ else sb.appendC ('0');
 }
 s1 = (isNeg ? "-" : "") + sb;
 return (Boolean.TRUE.equals (org.jmol.util.TextFormat.useNumberLocalization[0]) ? s1 : s1.$replace (',', '.'));
@@ -77,10 +77,10 @@ if (padLength <= 0) return value;
 var isNeg = (zeroPad && !alignLeft && (value.charAt (0)).charCodeAt (0) == 45);
 var padChar = (zeroPad ? '0' : ' ');
 var padChar0 = (isNeg ? '-' : padChar);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (alignLeft) sb.append (value);
-sb.append (padChar0);
-for (var i = padLength; --i > 0; ) sb.append (padChar);
+sb.appendC (padChar0);
+for (var i = padLength; --i > 0; ) sb.appendC (padChar);
 
 if (!alignLeft) sb.append (isNeg ? padChar + value.substring (1) : value);
 return sb.toString ();
@@ -211,7 +211,7 @@ strFormat = org.jmol.util.TextFormat.simpleReplace (strFormat, "%%", "\1");
 strFormat = org.jmol.util.TextFormat.simpleReplace (strFormat, "%p", "%6.2p");
 strFormat = org.jmol.util.TextFormat.simpleReplace (strFormat, "%q", "%6.2q");
 var format = org.jmol.util.TextFormat.split (strFormat, '%');
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append (format[0]);
 for (var i = 1; i < format.length; i++) {
 var f = "%" + format[i];
@@ -238,7 +238,7 @@ return f;
 }
 }
 var s = f.substring (0, pt + 1);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = 0; i < n; i++) sb.append (s);
 
 sb.append (f.substring (pt + 1));
@@ -293,7 +293,7 @@ if (fromLength == 0) return str;
 var isOnce = (strTo.indexOf (strFrom) >= 0);
 var ipt;
 while (str.indexOf (strFrom) >= 0) {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var ipt0 = 0;
 while ((ipt = str.indexOf (strFrom, ipt0)) >= 0) {
 s.append (str.substring (ipt0, ipt)).append (strTo);
@@ -326,13 +326,13 @@ function (s, s1, s2) {
 s.append (s2);
 var n = s1.length - s2.length;
 if (n > 0) s.append (s1.substring (0, n));
-}, "StringBuffer,~S,~S");
+}, "javax.util.StringXBuilder,~S,~S");
 c$.rFill = Clazz.defineMethod (c$, "rFill", 
 function (s, s1, s2) {
 var n = s1.length - s2.length;
 if (n > 0) s.append (s1.substring (0, n));
 s.append (s2);
-}, "StringBuffer,~S,~S");
+}, "javax.util.StringXBuilder,~S,~S");
 c$.safeTruncate = Clazz.defineMethod (c$, "safeTruncate", 
 function (f, n) {
 if (f > -0.0010 && f < 0.001) f = 0;
@@ -375,9 +375,9 @@ return true;
 c$.join = Clazz.defineMethod (c$, "join", 
 function (s, c, i0) {
 if (s.length < i0) return null;
-var sb =  new StringBuffer ();
-sb.append (s[i0++]);
-for (var i = i0; i < s.length; i++) sb.append (c).append (s[i]);
+var sb =  new javax.util.StringXBuilder ();
+sb.appendO (s[i0++]);
+for (var i = i0; i < s.length; i++) sb.appendC (c).appendO (s[i]);
 
 return sb.toString ();
 }, "~A,~S,~N");

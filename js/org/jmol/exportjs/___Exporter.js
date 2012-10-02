@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.exportjs");
-Clazz.load (["javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.util.GData"], "org.jmol.exportjs.___Exporter", ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.OutputStreamWriter", "java.lang.Float", "$.Short", "$.StringBuffer", "java.text.SimpleDateFormat", "java.util.ArrayList", "$.Date", "$.Hashtable", "javax.vecmath.Matrix3f", "org.jmol.util.Colix", "$.MeshSurface", "$.Quaternion"], function () {
+Clazz.load (["javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.util.GData"], "org.jmol.exportjs.___Exporter", ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.OutputStreamWriter", "java.lang.Float", "$.Short", "java.text.SimpleDateFormat", "java.util.ArrayList", "$.Date", "$.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Matrix3f", "org.jmol.util.Colix", "$.MeshSurface", "$.Quaternion"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.privateKey = 0;
@@ -143,7 +143,7 @@ this.outputComment (this.getJmolPerspective ());
 Clazz.defineMethod (c$, "getJmolPerspective", 
 function () {
 if (this.commentChar == null) return "";
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append (this.commentChar).append ("Jmol perspective:");
 sb.append ("\n").append (this.commentChar).append ("screen width height dim: " + this.screenWidth + " " + this.screenHeight + " " + this.viewer.getScreenDim ());
 sb.append ("\n").append (this.commentChar).append ("perspectiveDepth: " + this.viewer.getPerspectiveDepth ());

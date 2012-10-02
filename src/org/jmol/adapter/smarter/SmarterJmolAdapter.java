@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -351,7 +352,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     Object ret = Resolver.checkSpecialData(is, zipDirectory);
     if (ret instanceof String)
       return ret;
-    StringBuffer data = (StringBuffer) ret;
+    StringXBuilder data = (StringXBuilder) ret;
     try {
       if (data != null) {
         BufferedReader reader = new BufferedReader(new StringReader(data.toString()));

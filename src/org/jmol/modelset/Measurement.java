@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -34,6 +34,7 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
@@ -501,9 +502,9 @@ public class Measurement {
 
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
-    sb.append(" \t").append(f);
+    sb.append(" \t").appendF(f);
     sb.append(" \t").append(getString());
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));

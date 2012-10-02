@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Resolver", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.modelset.Model"], "org.jmol.modelsetbio.BioModel", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Resolver", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bioPolymerCount = 0;
 this.bioPolymers = null;
@@ -76,7 +76,7 @@ bs2.clearAll ();
 bs2.or (this.bsAtoms);
 bs2.andNot (bs);
 if (bs2.nextSetBit (0) >= 0) sb.append ("select " + org.jmol.util.Escape.escape (bs2) + " & !connected;stars 0.5;");
-}}, "StringBuffer,~N");
+}}, "javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "fixIndices", 
 function (modelIndex, nAtomsDeleted, bsDeleted) {
 Clazz.superCall (this, org.jmol.modelsetbio.BioModel, "fixIndices", [modelIndex, nAtomsDeleted, bsDeleted]);
@@ -313,17 +313,17 @@ break;
 sb.append ("\nNumber of Helices ... " + nH);
 sb.append ("\nNumber of Strands ... " + nS);
 sb.append ("\nNumber of Turns ..... " + nT);
-}, "StringBuffer,~N");
+}, "javax.util.StringXBuilder,~N");
 Clazz.overrideMethod (c$, "getProteinStructureState", 
 function (bsAtoms, taintedOnly, needPhiPsi, mode) {
 var showMode = (mode == 3);
 var pdbFileMode = (mode == 1);
 var scriptMode = (mode == 0);
 var bs = null;
-var cmd =  new StringBuffer ();
-var sbTurn =  new StringBuffer ();
-var sbHelix =  new StringBuffer ();
-var sbSheet =  new StringBuffer ();
+var cmd =  new javax.util.StringXBuilder ();
+var sbTurn =  new javax.util.StringXBuilder ();
+var sbHelix =  new javax.util.StringXBuilder ();
+var sbSheet =  new javax.util.StringXBuilder ();
 var type = org.jmol.constant.EnumStructure.NONE;
 var subtype = org.jmol.constant.EnumStructure.NONE;
 var id = 0;
@@ -418,7 +418,7 @@ str = org.jmol.util.TextFormat.formatStringS (str, "GROUPB", group2);
 str = org.jmol.util.TextFormat.formatStringS (str, "CB", chain2);
 str = org.jmol.util.TextFormat.formatStringI (str, "RESB", res2);
 sb.append (str);
-if (showMode) sb.append (" strucno= ").append (lastId);
+if (showMode) sb.append (" strucno= ").appendI (lastId);
 sb.append ("\n");
 }}
 bs = null;
@@ -440,7 +440,7 @@ chain2 = "" + ch;
 iLastAtom = i;
 }
 if (n > 0) cmd.append ("\n");
-return (scriptMode ? cmd.toString () : sbHelix.append (sbSheet).append (sbTurn).append (cmd).toString ());
+return (scriptMode ? cmd.toString () : sbHelix.appendSB (sbSheet).appendSB (sbTurn).appendSB (cmd).toString ());
 }, "javax.util.BitSet,~B,~B,~N");
 Clazz.overrideMethod (c$, "getFullPDBHeader", 
 function () {
@@ -482,7 +482,7 @@ if (ctype.charCodeAt (0) == 82) sb.append ("REMARK   6 Jmol data min = {-180 -18
  else sb.append ("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
 }for (var p = 0; p < this.bioPolymerCount; p++) this.bioPolymers[p].getPdbData (viewer, ctype, qtype, mStep, derivType, this.bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, pdbCONECT, bsWritten);
 
-}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuffer,~A,StringBuffer,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuilder,~A,javax.util.StringXBuilder,javax.util.BitSet");
 Clazz.defineStatics (c$,
 "pdbRecords", ["ATOM  ", "MODEL ", "HETATM"]);
 });

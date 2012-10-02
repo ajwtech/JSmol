@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-30 06:33:12 -0500 (Sun, 30 Sep 2012) $
- * $Revision: 17591 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -37,6 +37,8 @@ import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Map;
 
 public class Labels extends AtomShape {
@@ -570,7 +572,7 @@ public class Labels extends AtomShape {
   }
 
   private String getDefaultState() {
-    StringBuffer s = new StringBuffer("\n# label defaults;\n");
+    StringXBuilder s = new StringXBuilder().append("\n# label defaults;\n");
     appendCmd(s, "select none");
     appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));

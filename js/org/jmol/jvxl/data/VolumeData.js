@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (["org.jmol.api.VolumeDataInterface", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f"], "org.jmol.jvxl.data.VolumeData", ["java.lang.Float", "$.StringBuffer", "java.util.Hashtable", "org.jmol.util.Escape", "$.Logger", "$.XmlUtil"], function () {
+Clazz.load (["org.jmol.api.VolumeDataInterface", "javax.vecmath.Matrix3f", "$.Point3f", "$.Vector3f"], "org.jmol.jvxl.data.VolumeData", ["java.lang.Float", "java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.util.Escape", "$.Logger", "$.XmlUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.sr = null;
 this.doIterate = true;
@@ -344,7 +344,7 @@ if (d >= 0 || d > value) this.voxelData[x][y][z] = d;
 }, "javax.vecmath.Point4f,~N");
 Clazz.defineMethod (c$, "setVolumetricXml", 
 function () {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 if (this.voxelCounts[0] == 0) {
 org.jmol.util.XmlUtil.appendTag (sb, "jvxlVolumeData", null);
 } else {

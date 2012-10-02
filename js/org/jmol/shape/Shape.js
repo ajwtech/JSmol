@@ -162,7 +162,7 @@ return org.jmol.viewer.StateManager.getCommands (htDefine, htMore, selectCmd);
 c$.appendCmd = Clazz.defineMethod (c$, "appendCmd", 
 function (s, cmd) {
 org.jmol.viewer.StateManager.appendCmd (s, cmd);
-}, "StringBuffer,~S");
+}, "javax.util.StringXBuilder,~S");
 c$.getFontCommand = Clazz.defineMethod (c$, "getFontCommand", 
 function (type, font) {
 if (font == null) return "";

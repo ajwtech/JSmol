@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-29 22:26:02 -0500 (Sat, 29 Sep 2012) $
- * $Revision: 17590 $
+ * $Date: 2012-10-01 19:17:23 -0500 (Mon, 01 Oct 2012) $
+ * $Revision: 17606 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -35,10 +35,12 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
+
+import javax.util.StringXBuilder;
 
 public class Model {
 
@@ -98,7 +100,7 @@ public class Model {
   protected boolean hasRasmolHBonds;
   
   String loadState = "";
-  StringBuffer loadScript = new StringBuffer();
+  StringXBuilder loadScript = new StringXBuilder();
 
   boolean isModelKit;
   public boolean isModelkit() {
@@ -295,14 +297,14 @@ public class Model {
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
                          boolean isDraw, BitSet bsSelected,
-                         OutputStringBuffer sb, LabelToken[] tokens, StringBuffer pdbCONECT, BitSet bsWritten) {
+                         OutputStringBuilder sb, LabelToken[] tokens, StringXBuilder pdbCONECT, BitSet bsWritten) {
   }
   
   /**
    * @param sb  
    * @param maxAtoms 
    */
-  public void getDefaultLargePDBRendering(StringBuffer sb, int maxAtoms) {
+  public void getDefaultLargePDBRendering(StringXBuilder sb, int maxAtoms) {
   }
   
   /**
@@ -446,7 +448,7 @@ public class Model {
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
   }
 
-  public void getChimeInfo(StringBuffer sb, int nHetero) {
+  public void getChimeInfo(StringXBuilder sb, int nHetero) {
     sb.append("\nNumber of Atoms ..... " + (modelSet.atomCount - nHetero));
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");

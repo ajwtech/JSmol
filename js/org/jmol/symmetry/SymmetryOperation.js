@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Matrix4f", "$.Point3f"], "org.jmol.symmetry.SymmetryOperation", ["java.lang.Float", "$.StringBuffer", "java.util.ArrayList", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.Parser", "$.Quaternion", "$.TextFormat", "$.TriangleData"], function () {
+Clazz.load (["javax.vecmath.Matrix4f", "$.Point3f"], "org.jmol.symmetry.SymmetryOperation", ["java.lang.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.Parser", "$.Quaternion", "$.TextFormat", "$.TriangleData"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.xyzOriginal = null;
 this.xyz = null;
@@ -58,11 +58,11 @@ return "\n" + this.xyz + "\ninternal matrix representation:\n" + (this).toString
 });
 c$.dumpSeitz = Clazz.defineMethod (c$, "dumpSeitz", 
 function (s) {
-return ( new StringBuffer ("{\t")).append (Math.round (s.m00)).append ("\t").append (Math.round (s.m01)).append ("\t").append (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03)).append ("\t}\n").append ("{\t").append (Math.round (s.m10)).append ("\t").append (Math.round (s.m11)).append ("\t").append (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13)).append ("\t}\n").append ("{\t").append (Math.round (s.m20)).append ("\t").append (Math.round (s.m21)).append ("\t").append (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
+return  new javax.util.StringXBuilder ().append ("{\t").appendI (Math.round (s.m00)).append ("\t").appendI (Math.round (s.m01)).append ("\t").appendI (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m10)).append ("\t").appendI (Math.round (s.m11)).append ("\t").appendI (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m20)).append ("\t").appendI (Math.round (s.m21)).append ("\t").appendI (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
 }, "javax.vecmath.Matrix4f");
 c$.dumpCanonicalSeitz = Clazz.defineMethod (c$, "dumpCanonicalSeitz", 
 function (s) {
-return ( new StringBuffer ()).append ("{\t").append (Math.round (s.m00)).append ("\t").append (Math.round (s.m01)).append ("\t").append (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03 + 12)).append ("\t}\n").append ("{\t").append (Math.round (s.m10)).append ("\t").append (Math.round (s.m11)).append ("\t").append (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13 + 12)).append ("\t}\n").append ("{\t").append (Math.round (s.m20)).append ("\t").append (Math.round (s.m21)).append ("\t").append (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23 + 12)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
+return  new javax.util.StringXBuilder ().append ("{\t").appendI (Math.round (s.m00)).append ("\t").appendI (Math.round (s.m01)).append ("\t").appendI (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03 + 12)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m10)).append ("\t").appendI (Math.round (s.m11)).append ("\t").appendI (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13 + 12)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m20)).append ("\t").appendI (Math.round (s.m21)).append ("\t").appendI (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23 + 12)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
 }, "javax.vecmath.Matrix4f");
 Clazz.defineMethod (c$, "setMatrixFromXYZ", 
 function (xyz) {
@@ -513,7 +513,7 @@ if (ax1.z < 0 || ax1.z == 0 && (ax1.y < 0 || ax1.y == 0 && ax1.x < 0)) {
 ax1.scale (-1);
 ang1 = -ang1;
 }}var info1 = "identity";
-var draw1 =  new StringBuffer ();
+var draw1 =  new javax.util.StringXBuilder ();
 var drawid;
 if (isinversion) {
 ptemp.setT (ipt);
@@ -553,7 +553,7 @@ info1 += "|inversion center at " + org.jmol.symmetry.SymmetryOperation.fcoord (p
 }var cmds = null;
 if (!typeOnly) {
 drawid = "\ndraw ID " + id + "_";
-draw1 =  new StringBuffer ();
+draw1 =  new javax.util.StringXBuilder ();
 draw1.append ("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
 draw1.append (drawid).append ("* delete");
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame1X", 0.15, pt00, pt01, "red");
@@ -641,7 +641,7 @@ v.add (uc.getCanonicalCopy (1.05));
 org.jmol.util.TriangleData.intersectPlane (plane, v, 3);
 for (var i = v.size (); --i >= 0; ) {
 var pts = v.get (i);
-draw1.append (drawid).append ("planep").append (i).append (org.jmol.util.Escape.escapePt (pts[0])).append (org.jmol.util.Escape.escapePt (pts[1]));
+draw1.append (drawid).append ("planep").appendI (i).append (org.jmol.util.Escape.escapePt (pts[0])).append (org.jmol.util.Escape.escapePt (pts[1]));
 if (pts.length == 3) draw1.append (org.jmol.util.Escape.escapePt (pts[2]));
 draw1.append (" color translucent ").append (color);
 }
@@ -715,8 +715,8 @@ return [xyz, xyzOriginal, info1, cmds, org.jmol.symmetry.SymmetryOperation.appro
 }, $fz.isPrivate = true, $fz), "org.jmol.symmetry.SymmetryOperation,~S,org.jmol.api.SymmetryInterface,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
 c$.drawLine = Clazz.defineMethod (c$, "drawLine", 
 ($fz = function (s, id, diameter, pt0, pt1, color) {
-s.append (id).append (" diameter ").append (diameter).append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (pt1)).append (" color ").append (color);
-}, $fz.isPrivate = true, $fz), "StringBuffer,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
+s.append (id).append (" diameter ").appendF (diameter).append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (pt1)).append (" color ").append (color);
+}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
 c$.fcoord = Clazz.defineMethod (c$, "fcoord", 
 function (p) {
 return org.jmol.symmetry.SymmetryOperation.fc (p.x) + " " + org.jmol.symmetry.SymmetryOperation.fc (p.y) + " " + org.jmol.symmetry.SymmetryOperation.fc (p.z);

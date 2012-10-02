@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["java.util.Hashtable"], "org.jmol.smiles.SmilesParser", ["java.lang.Character", "$.Float", "$.StringBuffer", "java.util.ArrayList", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesSearch", "org.jmol.util.Elements", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.smiles.SmilesParser", ["java.lang.Character", "$.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "org.jmol.smiles.InvalidSmilesException", "$.SmilesAtom", "$.SmilesBond", "$.SmilesMeasure", "$.SmilesSearch", "org.jmol.util.Elements", "$.Logger", "$.Parser", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isSmarts = false;
 this.isBioSequence = false;
@@ -62,7 +62,7 @@ return search;
 }, "~S");
 Clazz.defineMethod (c$, "parseVariableLength", 
 ($fz = function (pattern) {
-var sout =  new StringBuffer ();
+var sout =  new javax.util.StringXBuilder ();
 var len = pattern.length - 1;
 var nParen = 0;
 var haveInternalOr = false;
@@ -137,12 +137,12 @@ if (ptOr >= 0) return this.parseVariableLength (pattern.substring (0, pt0) + "[$
 continue ;}if (max == -2147483648) max = min;
 if (repeat.indexOf ("|") >= 0) repeat = "[$(" + repeat + ")]";
 for (var i = min; i <= max; i++) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 sb.append ("||").append (pattern.substring (0, pt0));
 for (var j = 0; j < i; j++) sb.append (repeat);
 
 sb.append (pattern.substring (pt1));
-sout.append (sb);
+sout.appendSB (sb);
 }
 }
 if (!isOK) throw  new org.jmol.smiles.InvalidSmilesException ("bad variable expression: " + bracketed);
@@ -755,11 +755,11 @@ index = pt + 1;
 if (!this.isSmarts || pt == 0) break;
 if (bond != null && pt < 0) {
 if (len > 1) {
-var sNew =  new StringBuffer ();
+var sNew =  new javax.util.StringXBuilder ();
 for (var i = 0; i < len; ) {
 var ch = pattern.charAt (i++);
-sNew.append (ch);
-if (ch.charCodeAt (0) != 33 && i < len) sNew.append ('&');
+sNew.appendC (ch);
+if (ch.charCodeAt (0) != 33 && i < len) sNew.appendC ('&');
 }
 pattern = sNew.toString ();
 len = pattern.length;

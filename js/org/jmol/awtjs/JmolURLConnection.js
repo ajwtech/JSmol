@@ -20,7 +20,7 @@ Clazz.defineMethod (c$, "outputString",
 function (post) {
 this.postOut = post;
 }, "~S");
-Clazz.defineMethod (c$, "getStringBuffer", 
+Clazz.defineMethod (c$, "getStringXBuilder", 
 function () {
 return this.doAjax ();
 });

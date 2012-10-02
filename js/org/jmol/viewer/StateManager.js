@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "$.StringBuffer", "$.StringBuilder", "java.util.Arrays", "javax.util.BitSet", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "java.util.Arrays", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.saved = null;
@@ -27,7 +27,7 @@ this.localFunctions =  new java.util.Hashtable ();
 });
 c$.getVariableList = Clazz.defineMethod (c$, "getVariableList", 
 function (htVariables, nMax, withSites, definedOnly) {
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 var n = 0;
 var list =  new Array (htVariables.size ());
 for (var entry, $entry = htVariables.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
@@ -192,7 +192,7 @@ var o;
 if (saveName != null) {
 o = this.getOrientation (saveName);
 return (o == null ? "" : o.getMoveToText (true));
-}var sb =  new StringBuffer ();
+}var sb =  new javax.util.StringXBuilder ();
 var e = this.saved.keySet ().iterator ();
 while (e.hasNext ()) {
 var name = e.next ();
@@ -246,7 +246,7 @@ return (isStatic ? org.jmol.viewer.StateManager.staticFunctions : this.localFunc
 Clazz.defineMethod (c$, "getFunctionCalls", 
 function (selectedFunction) {
 if (selectedFunction == null) selectedFunction = "";
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var pt = selectedFunction.indexOf ("*");
 var isGeneric = (pt >= 0);
 var isStatic = (selectedFunction.indexOf ("static_") == 0);
@@ -266,7 +266,7 @@ java.util.Arrays.sort (names, 0, n);
 for (var i = 0; i < n; i++) {
 var f = ht.get (names[i]);
 s.append (namesOnly ? f.getSignature () : f.toString ());
-s.append ('\n');
+s.appendC ('\n');
 }
 return s.toString ();
 }, "~S");
@@ -355,7 +355,7 @@ return org.jmol.viewer.StateManager.getCommands (htDefine, htMore, "select");
 }, "java.util.Map,java.util.Map");
 c$.getCommands = Clazz.defineMethod (c$, "getCommands", 
 function (htDefine, htMore, selectCmd) {
-var s =  new StringBuffer ();
+var s =  new javax.util.StringXBuilder ();
 var setPrev = org.jmol.viewer.StateManager.getCommands (htDefine, s, null, selectCmd);
 if (htMore != null) org.jmol.viewer.StateManager.getCommands (htMore, s, setPrev, "select");
 return s.toString ();
@@ -372,12 +372,12 @@ setPrev = set;
 if (key.indexOf ("-") != 0) org.jmol.viewer.StateManager.appendCmd (s, key);
 }
 return setPrev;
-}, $fz.isPrivate = true, $fz), "java.util.Map,StringBuffer,~S,~S");
+}, $fz.isPrivate = true, $fz), "java.util.Map,javax.util.StringXBuilder,~S,~S");
 c$.appendCmd = Clazz.defineMethod (c$, "appendCmd", 
 function (s, cmd) {
 if (cmd.length == 0) return ;
 s.append ("  ").append (cmd).append (";\n");
-}, "StringBuffer,~S");
+}, "javax.util.StringXBuilder,~S");
 c$.$StateManager$Orientation$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
@@ -1008,7 +1008,7 @@ this.setParameterValue ("zSlab", this.zSlab);
 }, "org.jmol.viewer.StateManager.GlobalSettings,~B");
 Clazz.defineMethod (c$, "getLoadState", 
 function (a) {
-var b =  new StringBuffer ();
+var b =  new javax.util.StringXBuilder ();
 org.jmol.viewer.StateManager.appendCmd (b, "set allowEmbeddedScripts false");
 if (this.allowEmbeddedScripts) this.setParameterValue ("allowEmbeddedScripts", true);
 org.jmol.viewer.StateManager.appendCmd (b, "set appendNew " + this.appendNew);
@@ -1059,12 +1059,12 @@ return this.ptDefaultLattice;
 });
 Clazz.defineMethod (c$, "getWindowState", 
 function (a, b, c) {
-var d =  new StringBuffer ();
+var d =  new javax.util.StringXBuilder ();
 if (a != null) {
 a.append ("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
 d.append ("\nfunction _setWindowState() {\n");
-}if (b != 0) d.append ("# preferredWidthHeight ").append (b).append (" ").append (c).append (";\n");
-d.append ("# width ").append (b == 0 ? this.b$["org.jmol.viewer.StateManager"].viewer.getScreenWidth () : b).append (";\n# height ").append (c == 0 ? this.b$["org.jmol.viewer.StateManager"].viewer.getScreenHeight () : c).append (";\n");
+}if (b != 0) d.append ("# preferredWidthHeight ").appendI (b).append (" ").appendI (c).append (";\n");
+d.append ("# width ").appendI (b == 0 ? this.b$["org.jmol.viewer.StateManager"].viewer.getScreenWidth () : b).append (";\n# height ").appendI (c == 0 ? this.b$["org.jmol.viewer.StateManager"].viewer.getScreenHeight () : c).append (";\n");
 org.jmol.viewer.StateManager.appendCmd (d, "stateVersion = " + this.getParameter ("_version"));
 org.jmol.viewer.StateManager.appendCmd (d, "background " + org.jmol.util.Escape.escapeColor (this.objColors[0]));
 for (var e = 1; e < 8; e++) if (this.objColors[e] != 0) org.jmol.viewer.StateManager.appendCmd (d, org.jmol.viewer.StateManager.getObjectNameFromId (e) + "Color = \"" + org.jmol.util.Escape.escapeColor (this.objColors[e]) + '"');
@@ -1074,10 +1074,10 @@ d.append (this.getSpecularState ());
 org.jmol.viewer.StateManager.appendCmd (d, "statusReporting  = " + this.statusReporting);
 if (a != null) d.append ("}\n\n");
 return d.toString ();
-}, "StringBuffer,~N,~N");
+}, "javax.util.StringXBuilder,~N,~N");
 Clazz.defineMethod (c$, "getSpecularState", 
 function () {
-var a =  new StringBuffer ("");
+var a =  new javax.util.StringXBuilder ();
 org.jmol.viewer.StateManager.appendCmd (a, "set ambientPercent " + org.jmol.util.GData.getAmbientPercent ());
 org.jmol.viewer.StateManager.appendCmd (a, "set diffusePercent " + org.jmol.util.GData.getDiffusePercent ());
 org.jmol.viewer.StateManager.appendCmd (a, "set specular " + org.jmol.util.GData.getSpecular ());
@@ -1218,7 +1218,7 @@ return (b ? c : org.jmol.script.ScriptVariable.oValue (c));
 }, "~S,~B");
 Clazz.defineMethod (c$, "getAllSettings", 
 function (a) {
-var b =  new StringBuffer ("");
+var b =  new javax.util.StringXBuilder ();
 var c;
 var d;
 var e =  new Array (this.htBooleanParameterFlags.size () + this.htNonbooleanParameterValues.size () + this.htUserVariables.size ());
@@ -1255,7 +1255,7 @@ Clazz.defineMethod (c$, "chop",
 ($fz = function (a) {
 var b = a.length;
 if (b < 512) return a;
-var c =  new StringBuilder ();
+var c =  new javax.util.StringXBuilder ();
 var d = "\"\\\n    + \"";
 var e = 0;
 for (var f = 72; f < b; e = f, f += 72) {
@@ -1269,7 +1269,7 @@ return c.toString ();
 Clazz.defineMethod (c$, "getState", 
 function (a) {
 var b =  new Array (this.htBooleanParameterFlags.size () + this.htNonbooleanParameterValues.size ());
-var c =  new StringBuffer ();
+var c =  new javax.util.StringXBuilder ();
 var d = (a != null);
 if (d) {
 a.append ("  _setVariableState;\n");
@@ -1313,14 +1313,14 @@ if (i.length > 0) {
 c.append ("\n#user-defined atom sets; \n");
 c.append (i);
 }this.b$["org.jmol.viewer.StateManager"].viewer.loadShape (5);
-c.append (this.b$["org.jmol.viewer.StateManager"].viewer.getShapeProperty (5, "defaultState"));
+c.appendO (this.b$["org.jmol.viewer.StateManager"].viewer.getShapeProperty (5, "defaultState"));
 if (this.haveSetStructureList) {
 c.append ("struture HELIX set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.HELIX)));
 c.append ("struture SHEET set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.SHEET)));
 c.append ("struture TURN set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.TURN)));
 }if (a != null) c.append ("\n}\n\n");
 return c.toString ();
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "doReportProperty", 
 ($fz = function (a) {
 return ((a.charAt (0)).charCodeAt (0) != 95 && org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") < 0);

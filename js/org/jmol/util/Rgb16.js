@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Rgb16", ["java.lang.StringBuffer"], function () {
+Clazz.load (null, "org.jmol.util.Rgb16", ["javax.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.rScaled = 0;
 this.gScaled = 0;
@@ -48,6 +48,6 @@ return (0xFF000000 | ((this.rScaled << 8) & 0x00FF0000) | (this.gScaled & 0x0000
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
-return ( new StringBuffer ("Rgb16(")).append (this.rScaled).append (',').append (this.gScaled).append (',').append (this.bScaled).append (" -> ").append ((this.rScaled >> 8) & 0xFF).append (',').append ((this.gScaled >> 8) & 0xFF).append (',').append ((this.bScaled >> 8) & 0xFF).append (')').toString ();
+return  new javax.util.StringXBuilder ().append ("Rgb16(").appendI (this.rScaled).appendC (',').appendI (this.gScaled).appendC (',').appendI (this.bScaled).append (" -> ").appendI ((this.rScaled >> 8) & 0xFF).appendC (',').appendI ((this.gScaled >> 8) & 0xFF).appendC (',').appendI ((this.bScaled >> 8) & 0xFF).appendC (')').toString ();
 });
 });

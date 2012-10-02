@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.TextFormat"], function () {
+Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.spanningVectors = null;
 this.meshType = null;
@@ -226,7 +226,7 @@ this.vertexCount = this.vertexCount0;
 this.polygonCount0 = this.vertexCount0 = 0;
 this.normixCount = (this.isTriangleSet ? this.polygonCount : this.vertexCount);
 this.bsSlabDisplay.setBits (0, (this.polygonCount == 0 ? this.vertexCount : this.polygonCount));
-this.slabOptions =  new StringBuffer (this.meshType + " slab none");
+this.slabOptions =  new javax.util.StringXBuilder ().append (this.meshType + " slab none");
 this.bsSlabGhost = null;
 this.slabMeshType = 1048587;
 }if (slabType == 1048587) return false;
@@ -251,9 +251,9 @@ this.slabColix = (colorData[1]).shortValue ();
 if (org.jmol.util.Colix.isColixColorInherited (this.slabColix)) this.slabColix = org.jmol.util.Colix.copyColixTranslucency (this.slabColix, this.colix);
 andCap = false;
 this.colix = org.jmol.util.Colix.getColixTranslucent (this.colix, false, 0);
-}var sb =  new StringBuffer ();
+}var sb =  new javax.util.StringXBuilder ();
 sb.append (andCap ? " cap " : " slab ");
-if (isGhost) sb.append ("translucent ").append (org.jmol.util.Colix.getColixTranslucencyFractional (this.slabColix)).append (" ").append (org.jmol.util.Colix.getHexCode (this.slabColix)).append (" ");
+if (isGhost) sb.append ("translucent ").appendF (org.jmol.util.Colix.getColixTranslucencyFractional (this.slabColix)).append (" ").append (org.jmol.util.Colix.getHexCode (this.slabColix)).append (" ");
 switch (slabType) {
 case 1073741872:
 sb.append ("brillouin");
@@ -288,13 +288,13 @@ switch (slabType) {
 case 135266324:
 var points = o[1];
 var bs = o[2];
-sb.append ("within ").append (distance).append (bs == null ? org.jmol.util.Escape.escape (points) : org.jmol.util.Escape.escape (bs));
+sb.append ("within ").appendF (distance).append (bs == null ? org.jmol.util.Escape.escape (points) : org.jmol.util.Escape.escape (bs));
 this.getIntersection (distance, null, points, null, null, null, null, andCap, false, (distance > 0 ? 1276118018 : 1073742154), isGhost);
 break;
 case 1073742114:
 if (this.vertexValues == null) return false;
 var distanceMax = (o[1]).floatValue ();
-sb.append ("within range ").append (distance).append (" ").append (distanceMax);
+sb.append ("within range ").appendF (distance).append (" ").appendF (distanceMax);
 bs = (distanceMax < distance ? org.jmol.util.BitSetUtil.copy (this.bsSlabDisplay) : null);
 this.getIntersection (distance, null, null, null, null, null, null, andCap, false, 32, isGhost);
 var bsA = (bs == null ? null : org.jmol.util.BitSetUtil.copy (this.bsSlabDisplay));
@@ -310,7 +310,7 @@ break;
 break;
 }
 var newOptions = sb.toString ();
-if (this.slabOptions == null) this.slabOptions =  new StringBuffer ();
+if (this.slabOptions == null) this.slabOptions =  new javax.util.StringXBuilder ();
 if (this.slabOptions.indexOf (newOptions) < 0) this.slabOptions.append (this.slabOptions.length () > 0 ? "; " : "").append (this.meshType).append (newOptions);
 return true;
 }, "~A,~B");

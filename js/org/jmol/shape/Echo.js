@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Echo", ["java.lang.StringBuffer", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.Escape", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Echo", ["javax.util.StringXBuilder", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.Escape", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.shape, "Echo", org.jmol.shape.TextShape);
 Clazz.defineMethod (c$, "initShape", 
 function () {
@@ -100,7 +100,8 @@ return false;
 }, "~S,~A");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var s =  new StringBuffer ("\n  set echo off;\n");
+var s =  new javax.util.StringXBuilder ();
+s.append ("\n  set echo off;\n");
 var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 var t = e.next ();

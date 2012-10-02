@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "$.StringBuffer", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["org.jmol.jvxl.api.MeshDataServer", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Point4f"], "org.jmol.shapesurface.Isosurface", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "org.jmol.jvxl.readers.SurfaceGenerator", "org.jmol.shape.Mesh", "org.jmol.shapesurface.IsosurfaceMesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Parser", "$.Quaternion", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isomeshes = null;
 this.thisMesh = null;
@@ -434,7 +434,7 @@ this.fillMeshData (meshData, 1, null);
 meshData.polygonColorData = org.jmol.shapesurface.Isosurface.getPolygonColorData (meshData.polygonCount, meshData.polygonColixes, meshData.bsSlabDisplay);
 } else if (this.thisMesh.bsSlabGhost != null) {
 this.jvxlData.slabInfo = this.thisMesh.slabOptions.toString ();
-}var sb =  new StringBuffer ();
+}var sb =  new javax.util.StringXBuilder ();
 this.getMeshCommand (sb, this.thisMesh.index);
 this.thisMesh.setJvxlColorMap (true);
 return org.jmol.jvxl.data.JvxlCoder.jvxlGetFile (this.jvxlData, meshData, this.title, "", true, 1, sb.toString (), null);
@@ -444,7 +444,7 @@ return org.jmol.jvxl.data.JvxlCoder.jvxlGetInfo (this.jvxlData);
 }if (property === "command") {
 var key = this.previousMeshID.toUpperCase ();
 var isWild = org.jmol.util.TextFormat.isWild (key);
-var sb =  new StringBuffer ();
+var sb =  new javax.util.StringXBuilder ();
 for (var i = this.meshCount; --i >= 0; ) {
 var id = this.meshes[i].thisID.toUpperCase ();
 if (id.equals (key) || isWild && org.jmol.util.TextFormat.isMatch (id, key, true, true)) this.getMeshCommand (sb, i);
@@ -474,13 +474,13 @@ return ret;
 c$.getPolygonColorData = Clazz.defineMethod (c$, "getPolygonColorData", 
 function (ccount, colixes, bsSlabDisplay) {
 if (colixes == null) return null;
-var list1 =  new StringBuffer ();
+var list1 =  new javax.util.StringXBuilder ();
 var count = 0;
 var colix = 0;
 var done = false;
 for (var i = 0; i < ccount || (done = true) == true; i++) {
 if (!done && bsSlabDisplay != null && !bsSlabDisplay.get (i)) continue ;if (done || colixes[i] != colix) {
-if (count != 0) list1.append (" ").append (count).append (" ").append ((colix == 0 ? 0 : org.jmol.util.Colix.getArgb (colix)));
+if (count != 0) list1.append (" ").appendI (count).append (" ").appendI ((colix == 0 ? 0 : org.jmol.util.Colix.getArgb (colix)));
 if (done) break;
 colix = colixes[i];
 count = 1;
@@ -493,7 +493,8 @@ return list1.toString ();
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 this.clean ();
-var sb =  new StringBuffer ("\n");
+var sb =  new javax.util.StringXBuilder ();
+sb.append ("\n");
 for (var i = 0; i < this.meshCount; i++) this.getMeshCommand (sb, i);
 
 return sb.toString ();
@@ -535,7 +536,7 @@ org.jmol.shape.Shape.appendCmd (sb, "color isosurface phase " + org.jmol.shape.S
 var bs = entry.getValue ();
 if (!bs.isEmpty ()) org.jmol.shape.Shape.appendCmd (sb, "color " + this.myType + " " + org.jmol.util.Escape.escapeBs (bs, true) + " " + entry.getKey ());
 }
-}}, $fz.isPrivate = true, $fz), "StringBuffer,~N");
+}}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "getScriptBitSets", 
 ($fz = function (script, bsCmd) {
 this.script = script;
@@ -1145,7 +1146,7 @@ return (pickedVertex == -1 ? null : (org.jmol.util.Logger.debugging ? "$" + m.th
 }, $fz.isPrivate = true, $fz), "~N,~N,~B,javax.util.BitSet");
 Clazz.defineMethod (c$, "getCmd", 
 function (index) {
-var sb =  new StringBuffer ("\n");
+var sb =  new javax.util.StringXBuilder ().append ("\n");
 this.getMeshCommand (sb, index);
 return (sb.toString ());
 }, "~N");

@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["java.lang.StringBuffer"], "org.jmol.util.CifDataReader", ["java.util.ArrayList", "$.Hashtable", "org.jmol.util.Logger"], function () {
+Clazz.load (["javax.util.StringXBuilder"], "org.jmol.util.CifDataReader", ["java.util.ArrayList", "$.Hashtable", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.reader = null;
 this.br = null;
@@ -19,7 +19,7 @@ this.allData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "CifDataReader");
 Clazz.prepareFields (c$, function () {
-this.fileHeader =  new StringBuffer ();
+this.fileHeader =  new javax.util.StringXBuilder ();
 });
 Clazz.makeConstructor (c$, 
 function (reader) {
@@ -83,7 +83,7 @@ try {
 this.line = (this.reader != null ? this.reader.readLine () : this.br.readLine ());
 if (this.line == null) return null;
 if (this.isHeader) {
-if (this.line.startsWith ("#")) this.fileHeader.append (this.line).append ('\n');
+if (this.line.startsWith ("#")) this.fileHeader.append (this.line).appendC ('\n');
  else this.isHeader = false;
 }return this.line;
 } catch (e) {

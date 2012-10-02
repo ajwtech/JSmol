@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedReader", "java.lang.Enum", "org.jmol.api.JmolFilesReaderInterface", "java.util.Hashtable"], "org.jmol.viewer.FileManager", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "$.ByteArrayOutputStream", "$.FileInputStream", "$.FileOutputStream", "$.InputStreamReader", "$.StringReader", "java.lang.Long", "$.StringBuffer", "java.net.URL", "$.URLEncoder", "java.text.DateFormat", "java.util.ArrayList", "$.Date", "java.util.zip.CRC32", "$.GZIPInputStream", "$.ZipEntry", "$.ZipInputStream", "$.ZipOutputStream", "org.jmol.api.JmolViewer", "org.jmol.script.ScriptCompiler", "org.jmol.util.ArrayUtil", "$.Base64", "$.BinaryDocument", "$.CompoundDocument", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.DataManager", "$.JmolConstants", "$.Viewer"], function () {
+Clazz.load (["java.io.BufferedReader", "java.lang.Enum", "org.jmol.api.JmolFilesReaderInterface", "java.util.Hashtable"], "org.jmol.viewer.FileManager", ["java.io.BufferedInputStream", "$.ByteArrayInputStream", "$.ByteArrayOutputStream", "$.FileInputStream", "$.FileOutputStream", "$.InputStreamReader", "$.StringReader", "java.lang.Long", "java.net.URL", "$.URLEncoder", "java.text.DateFormat", "java.util.ArrayList", "$.Date", "java.util.zip.CRC32", "$.GZIPInputStream", "$.ZipEntry", "$.ZipInputStream", "$.ZipOutputStream", "javax.util.StringXBuilder", "org.jmol.api.JmolViewer", "org.jmol.script.ScriptCompiler", "org.jmol.util.ArrayUtil", "$.Base64", "$.BinaryDocument", "$.CompoundDocument", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.ZipUtil", "org.jmol.viewer.DataManager", "$.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.pathForAllFiles = "";
@@ -101,7 +101,7 @@ this.appletProxy = (appletProxy == null || appletProxy.length == 0 ? null : appl
 }, "~S");
 Clazz.defineMethod (c$, "getState", 
 function (sfunc) {
-var commands =  new StringBuffer ();
+var commands =  new javax.util.StringXBuilder ();
 if (sfunc != null) {
 sfunc.append ("  _setFileState;\n");
 commands.append ("function _setFileState() {\n\n");
@@ -109,7 +109,7 @@ commands.append ("function _setFileState() {\n\n");
 this.viewer.appendLoadStates (commands);
 if (sfunc != null) commands.append ("\n}\n\n");
 return commands.toString ();
-}, "StringBuffer");
+}, "javax.util.StringXBuilder");
 Clazz.defineMethod (c$, "getFileTypeName", 
 function (fileName) {
 var pt = fileName.indexOf ("::");
@@ -125,7 +125,7 @@ return this.viewer.getModelAdapter ().getFileTypeName (org.jmol.viewer.FileManag
 return (br)[0];
 }return null;
 }, "~S");
-c$.getBISForStringBuffer = Clazz.defineMethod (c$, "getBISForStringBuffer", 
+c$.getBISForStringXBuilder = Clazz.defineMethod (c$, "getBISForStringXBuilder", 
 function (t) {
 return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream ((t).toString ().getBytes ()));
 }, "~O");
@@ -136,7 +136,7 @@ return  new java.io.BufferedReader ( new java.io.StringReader (string));
 Clazz.defineMethod (c$, "getZipDirectoryAsString", 
 ($fz = function (fileName) {
 var t = this.getBufferedInputStreamOrErrorMessageFromName (fileName, fileName, false, false, null);
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
+if (Clazz.instanceOf (t, javax.util.StringXBuilder)) t = org.jmol.viewer.FileManager.getBISForStringXBuilder (t);
 return org.jmol.util.ZipUtil.getZipDirectoryAsStringAndClose (t);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "createAtomSetCollectionFromFile", 
@@ -194,20 +194,20 @@ if (!isAppend && !(Clazz.instanceOf (fileReader.atomSetCollection, String))) {
 this.viewer.zap (false, true, false);
 this.fullPathName = this.fileName = (strModel === "1 0 C 0 0" ? "Jmol Model Kit" : "string");
 }return fileReader.atomSetCollection;
-}, "~S,StringBuffer,java.util.Map,~B,~B");
+}, "~S,javax.util.StringXBuilder,java.util.Map,~B,~B");
 Clazz.defineMethod (c$, "createAtomSeCollectionFromStrings", 
 function (arrayModels, loadScript, htParams, isAppend) {
 if (!htParams.containsKey ("isData")) {
 var oldSep = "\"" + this.viewer.getDataSeparator () + "\"";
 var tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-var sb =  new StringBuffer ("set dataSeparator \"~~~next file~~~\";\ndata ");
-sb.append (tag);
+var sb =  new javax.util.StringXBuilder ();
+sb.append ("set dataSeparator \"~~~next file~~~\";\ndata ").append (tag);
 for (var i = 0; i < arrayModels.length; i++) {
 if (i > 0) sb.append ("~~~next file~~~");
 sb.append (arrayModels[i]);
 }
 sb.append ("end ").append (tag).append (";set dataSeparator ").append (oldSep);
-loadScript.append (sb);
+loadScript.appendSB (sb);
 }this.setLoadState (htParams);
 org.jmol.util.Logger.info ("FileManager.getAtomSetCollectionFromStrings(string[])");
 var fullPathNames =  new Array (arrayModels.length);
@@ -219,7 +219,7 @@ readers[i] = Clazz.innerTypeInstance (org.jmol.viewer.FileManager.StringDataRead
 var filesReader = Clazz.innerTypeInstance (org.jmol.viewer.FileManager.FilesReader, this, null, fullPathNames, fullPathNames, null, readers, htParams, isAppend);
 filesReader.run ();
 return filesReader.atomSetCollection;
-}, "~A,StringBuffer,java.util.Map,~B");
+}, "~A,javax.util.StringXBuilder,java.util.Map,~B");
 Clazz.defineMethod (c$, "createAtomSeCollectionFromArrayData", 
 function (arrayData, htParams, isAppend) {
 org.jmol.util.Logger.info ("FileManager.getAtomSetCollectionFromArrayData(Vector)");
@@ -267,7 +267,7 @@ if (isPngjBinaryPost) {
 outputBytes = o;
 name = org.jmol.util.TextFormat.simpleReplace (name, "?_", "=_");
 } else {
-name = ( new StringBuffer (name)).append ("=").append (org.jmol.util.Base64.getBase64 (o)).toString ();
+name =  new javax.util.StringXBuilder ().append (name).append ("=").appendSB (org.jmol.util.Base64.getBase64 (o)).toString ();
 }}var errorMessage = null;
 var iurl = (cacheBytes == null ? org.jmol.viewer.FileManager.urlPrefixes.length : -1);
 for (; --iurl >= 0; ) if (name.startsWith (org.jmol.viewer.FileManager.urlPrefixes[iurl])) break;
@@ -289,7 +289,7 @@ if (checkOnly) return null;
 name = url.toString ();
 if (showMsg && name.toLowerCase ().indexOf ("password") < 0) org.jmol.util.Logger.info ("FileManager opening " + name);
 ret = fai.getBufferedURLInputStream (url, outputBytes, post);
-if (Clazz.instanceOf (ret, StringBuffer) || Clazz.instanceOf (ret, String)) return ret;
+if (Clazz.instanceOf (ret, javax.util.StringXBuilder) || Clazz.instanceOf (ret, String)) return ret;
 } else if (cacheBytes == null && (cacheBytes = this.cacheGet (name, true)) == null) {
 if (showMsg) org.jmol.util.Logger.info ("FileManager opening " + name);
 ret = fai.getBufferedFileInputStream (name);
@@ -386,7 +386,7 @@ if (info.length == 3) {
 name0 = this.getObjectAsSections (info[2], header, fileData);
 fileData.put ("OUTPUT", name0);
 info = this.viewer.getModelAdapter ().specialLoad (info[1], fileData.get (name0));
-}}var sb =  new StringBuffer ();
+}}var sb =  new javax.util.StringXBuilder ();
 if (fileData.get ("OUTPUT") != null) sb.append (fileData.get (fileData.get ("OUTPUT")));
 var s;
 for (var i = 2; i < info.length; i++) {
@@ -408,7 +408,7 @@ if (bytes == null) org.jmol.util.Logger.info ("FileManager opening " + name);
 name = subFileList[0];
 }var t = (bytes == null ? this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, true, false, null) :  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (bytes)));
 if (Clazz.instanceOf (t, String)) return t;
-if (Clazz.instanceOf (t, StringBuffer)) return org.jmol.viewer.FileManager.getBufferedReaderForString ((t).toString ());
+if (Clazz.instanceOf (t, javax.util.StringXBuilder)) return org.jmol.viewer.FileManager.getBufferedReaderForString ((t).toString ());
 try {
 var bis = t;
 if (org.jmol.util.ZipUtil.isGzip (bis)) {
@@ -439,7 +439,7 @@ throw ioe;
 Clazz.defineMethod (c$, "getZipDirectory", 
 function (fileName, addManifest) {
 var t = this.getBufferedInputStreamOrErrorMessageFromName (fileName, fileName, false, false, null);
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
+if (Clazz.instanceOf (t, javax.util.StringXBuilder)) t = org.jmol.viewer.FileManager.getBISForStringXBuilder (t);
 return org.jmol.util.ZipUtil.getZipDirectoryAndClose (t, addManifest);
 }, "~S,~B");
 Clazz.defineMethod (c$, "getObjectAsSections", 
@@ -466,7 +466,7 @@ var t = this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, false
 if (Clazz.instanceOf (t, String)) {
 fileData.put (name0, t + "\n");
 return name0;
-}if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
+}if (Clazz.instanceOf (t, javax.util.StringXBuilder)) t = org.jmol.viewer.FileManager.getBISForStringXBuilder (t);
 bis = t;
 if (org.jmol.util.CompoundDocument.isCompoundDocument (bis)) {
 var doc =  new org.jmol.util.CompoundDocument (bis);
@@ -476,14 +476,14 @@ org.jmol.util.ZipUtil.getAllData (bis, subFileList, name.$replace ('\\', '/'), "
 } else if (asBinaryString) {
 var bd =  new org.jmol.util.BinaryDocument ();
 bd.setStream (bis, false);
-sb =  new StringBuffer ();
+sb =  new javax.util.StringXBuilder ();
 if (header != null) sb.append ("BEGIN Directory Entry " + name0 + "\n");
 try {
-while (true) sb.append (Integer.toHexString ((bd.readByte ()) & 0xFF)).append (' ');
+while (true) sb.append (Integer.toHexString ((bd.readByte ()) & 0xFF)).appendC (' ');
 
 } catch (e1) {
 if (Clazz.exceptionOf (e1, Exception)) {
-sb.append ('\n');
+sb.appendC ('\n');
 } else {
 throw e1;
 }
@@ -493,11 +493,11 @@ fileData.put (name0, sb.toString ());
 } else {
 var br =  new java.io.BufferedReader ( new java.io.InputStreamReader (org.jmol.util.ZipUtil.isGzip (bis) ?  new java.util.zip.GZIPInputStream (bis) : bis));
 var line;
-sb =  new StringBuffer ();
+sb =  new javax.util.StringXBuilder ();
 if (header != null) sb.append ("BEGIN Directory Entry " + name0 + "\n");
 while ((line = br.readLine ()) != null) {
 sb.append (line);
-sb.append ('\n');
+sb.appendC ('\n');
 }
 br.close ();
 if (header != null) sb.append ("\nEND Directory Entry " + name0 + "\n");
@@ -531,7 +531,7 @@ name = subFileList[0];
 allowZip = true;
 }var t = this.getBufferedInputStreamOrErrorMessageFromName (name, fullName, false, false, null);
 if (Clazz.instanceOf (t, String)) return "Error:" + t;
-if (Clazz.instanceOf (t, StringBuffer)) t = org.jmol.viewer.FileManager.getBISForStringBuffer (t);
+if (Clazz.instanceOf (t, javax.util.StringXBuilder)) t = org.jmol.viewer.FileManager.getBISForStringXBuilder (t);
 try {
 var bis = t;
 var bytes = (os != null || subFileList == null || subFileList.length <= 1 || !allowZip || !org.jmol.util.ZipUtil.isZipStream (bis) && !org.jmol.util.ZipUtil.isPngZipStream (bis) ? org.jmol.viewer.FileManager.getStreamAsBytes (bis, os) : org.jmol.util.ZipUtil.getZipFileContentsAsBytes (bis, subFileList, 1));
@@ -575,20 +575,20 @@ data[1] = t;
 return false;
 }try {
 var br = t;
-var sb =  new StringBuffer (8192);
+var sb = javax.util.StringXBuilder.newN (8192);
 var line;
 if (nBytesMax == 2147483647) {
 line = br.readLine ();
 if (allowBinary || line != null && line.indexOf ('\0') < 0 && (line.length != 4 || (line.charAt (0)).charCodeAt (0) != 65533 || line.indexOf ("PNG") != 1)) {
-sb.append (line).append ('\n');
-while ((line = br.readLine ()) != null) sb.append (line).append ('\n');
+sb.append (line).appendC ('\n');
+while ((line = br.readLine ()) != null) sb.append (line).appendC ('\n');
 
 }} else {
 var n = 0;
 var len;
 while (n < nBytesMax && (line = br.readLine ()) != null) {
 if (nBytesMax - n < (len = line.length) + 1) line = line.substring (0, nBytesMax - n - 1);
-sb.append (line).append ('\n');
+sb.append (line).appendC ('\n');
 n += len + 1;
 }
 }br.close ();
@@ -1050,7 +1050,7 @@ Clazz.defineMethod (c$, "postByteArray",
 ($fz = function (outFileName, bytes) {
 var ret = this.getBufferedInputStreamOrErrorMessageFromName (outFileName, null, false, false, bytes);
 if (Clazz.instanceOf (ret, String)) return ret;
-if (Clazz.instanceOf (ret, StringBuffer)) ret = org.jmol.viewer.FileManager.getBISForStringBuffer (ret);
+if (Clazz.instanceOf (ret, javax.util.StringXBuilder)) ret = org.jmol.viewer.FileManager.getBISForStringXBuilder (ret);
 try {
 ret = org.jmol.viewer.FileManager.getStreamAsBytes (ret, null);
 } catch (e) {
@@ -1157,7 +1157,7 @@ c$.getSceneScript = Clazz.defineMethod (c$, "getSceneScript",
 function (scenes, htScenes, list) {
 var iSceneLast = 0;
 var iScene = 0;
-var sceneScript =  new StringBuffer ("###scene.spt###" + " Jmol " + org.jmol.api.JmolViewer.getJmolVersion () + "\n{\nsceneScripts={");
+var sceneScript =  new javax.util.StringXBuilder ().append ("###scene.spt###").append (" Jmol ").append (org.jmol.api.JmolViewer.getJmolVersion ()).append ("\n{\nsceneScripts={");
 for (var i = 1; i < scenes.length; i++) {
 scenes[i - 1] = org.jmol.util.TextFormat.trim (scenes[i - 1], "\t\n\r ");
 var pt =  Clazz.newArray (1, 0);
@@ -1168,7 +1168,7 @@ list.add (Integer.$valueOf (iScene));
 var key = iSceneLast + "-" + iScene;
 htScenes.put (key, scenes[i - 1]);
 if (i > 1) sceneScript.append (",");
-sceneScript.append ('\n').append (org.jmol.util.Escape.escapeStr (key)).append (": ").append (org.jmol.util.Escape.escapeStr (scenes[i - 1]));
+sceneScript.appendC ('\n').append (org.jmol.util.Escape.escapeStr (key)).append (": ").append (org.jmol.util.Escape.escapeStr (scenes[i - 1]));
 iSceneLast = iScene;
 }
 sceneScript.append ("\n}\n");
@@ -1368,7 +1368,7 @@ if (Clazz.instanceOf (e, java.util.zip.ZipInputStream)) {
 if (d != null) this.htParams.put ("subFileList", d);
 var f = this.b$["org.jmol.viewer.FileManager"].getZipDirectory (c, true);
 e = this.b$["org.jmol.viewer.FileManager"].getBufferedInputStreamOrErrorMessageFromName (c, this.fullPathNamesIn[a], false, false, null);
-var g = (Clazz.instanceOf (e, StringBuffer) ? org.jmol.viewer.FileManager.getBISForStringBuffer (e) : e);
+var g = (Clazz.instanceOf (e, javax.util.StringXBuilder) ? org.jmol.viewer.FileManager.getBISForStringXBuilder (e) : e);
 e = this.b$["org.jmol.viewer.FileManager"].viewer.getModelAdapter ().getAtomSetCollectionOrBufferedReaderFromZip (g, c, f, this.htParams, true, b);
 }if (Clazz.instanceOf (e, java.io.BufferedInputStream)) return  new org.jmol.util.BinaryDocument (e);
 if (Clazz.instanceOf (e, java.io.BufferedReader) || Clazz.instanceOf (e, org.jmol.util.BinaryDocument)) {

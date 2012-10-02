@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.FontLineShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "$.StringBuffer", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.load (["org.jmol.shape.FontLineShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "javax.util.StringXBuilder", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.axisXY = null;
 this.scale = 0;
@@ -109,10 +109,10 @@ axisPoint.z *= this.corner.z * scale;
 }, "~N");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var sb =  new StringBuffer ();
-sb.append ("  axes scale ").append (this.viewer.getAxesScale ()).append (";\n");
+var sb =  new javax.util.StringXBuilder ();
+sb.append ("  axes scale ").appendF (this.viewer.getAxesScale ()).append (";\n");
 if (this.fixedOrigin != null) sb.append ("  axes center ").append (org.jmol.util.Escape.escapePt (this.fixedOrigin)).append (";\n");
-if (this.axisXY.z != 0) sb.append ("  axes position [").append (Math.round (this.axisXY.x)).append (" ").append (Math.round (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
+if (this.axisXY.z != 0) sb.append ("  axes position [").appendI (Math.round (this.axisXY.x)).append (" ").appendI (Math.round (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
 if (this.labels != null) {
 sb.append ("  axes labels ");
 for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.escapeStr (this.labels[i])).append (" ");
