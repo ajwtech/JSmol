@@ -1,5 +1,5 @@
 ﻿Clazz.declarePackage ("org.jmol.bspt");
-Clazz.load (["org.jmol.bspt.Element"], "org.jmol.bspt.Leaf", ["org.jmol.bspt.Node"], function () {
+Clazz.load (["org.jmol.bspt.Element"], "org.jmol.bspt.Leaf", ["org.jmol.bspt.Node", "org.jmol.util.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tuples = null;
 Clazz.instantialize (this, arguments);
@@ -47,7 +47,7 @@ for (var i = 0; i < this.count; ++i) {
 var t = this.tuples[i];
 for (var j = 0; j < level; ++j) sb.append (".");
 
-sb.appendO (t).append ("Leaf ").appendI (i).append (": ").append ((t).getInfo ());
+sb.append (org.jmol.util.Escape.escape (t)).append ("Leaf ").appendI (i).append (": ").append ((t).getInfo ());
 }
 }, "~N,javax.util.StringXBuilder");
 Clazz.overrideMethod (c$, "toString", 

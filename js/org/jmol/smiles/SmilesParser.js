@@ -3,7 +3,7 @@ Clazz.load (["java.util.Hashtable"], "org.jmol.smiles.SmilesParser", ["java.lang
 c$ = Clazz.decorateAsClass (function () {
 this.isSmarts = false;
 this.isBioSequence = false;
-this.bioType = 0;
+this.bioType = '\0';
 this.ringBonds = null;
 this.braceCount = 0;
 this.branchLevel = 0;

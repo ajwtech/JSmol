@@ -222,7 +222,7 @@ cmd = org.jmol.viewer.StateManager.getCommands (temp, null);
 if (cmd == null) org.jmol.viewer.StateManager.appendCmd (commands, "select none");
  else commands.append (cmd);
 org.jmol.viewer.StateManager.appendCmd (commands, "set hideNotSelected " + this.hideNotSelected);
-commands.appendO (this.viewer.getShapeProperty (1, "selectionState"));
+commands.append (this.viewer.getShapeProperty (1, "selectionState"));
 if (this.viewer.getSelectionHaloEnabled (false)) org.jmol.viewer.StateManager.appendCmd (commands, "SelectionHalos ON");
 if (sfunc != null) commands.append ("}\n\n");
 return commands.toString ();

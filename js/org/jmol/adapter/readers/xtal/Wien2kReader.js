@@ -2,7 +2,7 @@
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.Wien2kReader", ["java.lang.Character", "$.Float", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isrhombohedral = false;
-this.latticeCode = 0;
+this.latticeCode = '\0';
 this.doSymmetry = true;
 this.cxyz = " x y z";
 Clazz.instantialize (this, arguments);

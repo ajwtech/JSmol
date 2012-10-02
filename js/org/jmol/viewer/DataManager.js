@@ -164,12 +164,12 @@ if (Clazz.instanceOf (data, Array)) {
 this.viewer.getAtomicPropertyState (sb, 14, obj[2], name, data);
 sb.append ("\n");
 } else {
-sb.append ("\n").appendO (org.jmol.util.Escape.encapsulateData (name, data));
+sb.append ("\n").append (org.jmol.util.Escape.encapsulateData (name, data));
 }} else if (name.indexOf ("data2d") == 0) {
 var data = this.dataValues.get (name)[1];
 if (Clazz.instanceOf (data, Array)) {
 n++;
-sb.append ("\n").appendO (org.jmol.util.Escape.encapsulateData (name, data));
+sb.append ("\n").append (org.jmol.util.Escape.encapsulateData (name, data));
 }}}
 if (this.userVdws != null) {
 var info = this.getDefaultVdwNameOrData (0, org.jmol.constant.EnumVdw.USER, this.bsUserVdws);

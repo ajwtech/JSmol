@@ -3,7 +3,7 @@ Clazz.load (["javax.vecmath.Matrix4f"], "org.jmol.symmetry.HallInfo", ["javax.ut
 c$ = Clazz.decorateAsClass (function () {
 this.hallSymbol = null;
 this.primitiveHallSymbol = null;
-this.latticeCode = 0;
+this.latticeCode = '\0';
 this.latticeExtension = null;
 this.isCentrosymmetric = false;
 this.nRotations = 0;
@@ -119,8 +119,8 @@ this.translation = null;
 this.seitzMatrix12ths = null;
 this.isImproper = false;
 this.order = 0;
-this.axisType = 0;
-this.diagonalReferenceAxis = 0;
+this.axisType = '\0';
+this.diagonalReferenceAxis = '\0';
 this.allPositive = true;
 Clazz.instantialize (this, arguments);
 }, org.jmol.symmetry.HallInfo, "RotationTerm");

@@ -211,7 +211,7 @@ return (Float.isNaN (marginAtoms) ? Math.max (r, 0.1) : r + marginAtoms);
 Clazz.defineMethod (c$, "setHeader", 
 function (calcType, line2) {
 this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
-if (this.atomData.programInfo != null) this.jvxlFileHeaderBuffer.append ("#created by ").append (this.atomData.programInfo).append (" on ").appendO ( new java.util.Date ()).append ("\n");
+if (this.atomData.programInfo != null) this.jvxlFileHeaderBuffer.append ("#created by ").append (this.atomData.programInfo).append (" on ").append ("" +  new java.util.Date ()).append ("\n");
 this.jvxlFileHeaderBuffer.append (calcType).append ("\n").append (line2).append ("\n");
 }, "~S,~S");
 Clazz.defineMethod (c$, "setRanges", 

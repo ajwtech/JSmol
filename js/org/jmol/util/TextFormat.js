@@ -376,8 +376,8 @@ c$.join = Clazz.defineMethod (c$, "join",
 function (s, c, i0) {
 if (s.length < i0) return null;
 var sb =  new javax.util.StringXBuilder ();
-sb.appendO (s[i0++]);
-for (var i = i0; i < s.length; i++) sb.appendC (c).appendO (s[i]);
+sb.append (s[i0++]);
+for (var i = i0; i < s.length; i++) sb.appendC (c).append (s[i]);
 
 return sb.toString ();
 }, "~A,~S,~N");
