@@ -65,7 +65,7 @@ this.s += buf.s;
 Clazz.defineMethod (c$, "appendO", 
 function (data) {
 {
-this.s += data.to$tring();
+this.s += data.toString();
 }return this;
 }, "~O");
 Clazz.defineMethod (c$, "length", 
