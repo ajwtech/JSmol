@@ -1,11 +1,12 @@
 ﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
-Clazz.load (["org.jmol.minimize.forcefield.ForceField"], "org.jmol.minimize.forcefield.ForceFieldMMFF", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.Boolean", "$.Double", "$.Float", "$.NullPointerException", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.minimize.MinAtom", "$.MinObject", "org.jmol.minimize.forcefield.AtomType", "$.CalculationsMMFF", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger"], function () {
+Clazz.load (["org.jmol.minimize.forcefield.ForceField"], "org.jmol.minimize.forcefield.ForceFieldMMFF", ["java.lang.Boolean", "$.Double", "$.Float", "$.NullPointerException", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.minimize.MinAtom", "$.MinObject", "org.jmol.minimize.forcefield.AtomType", "$.CalculationsMMFF", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.useEmpiricalRules = true;
 this.rawAtomTypes = null;
 this.rawBondTypes = null;
 this.rawMMFF94Charges = null;
 this.vRings = null;
+this.base = null;
 this.typeData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield, "ForceFieldMMFF", org.jmol.minimize.forcefield.ForceField);
@@ -73,6 +74,13 @@ this.getMmffParameters ("mmff/mmfftor.par.txt", org.jmol.minimize.forcefield.For
 this.getMmffParameters ("mmff/mmffvdw.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 17);
 org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams.put (Integer.$valueOf (-1), Boolean.TRUE);
 }, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "getResourceUrl", 
+($fz = function (fileName) {
+{
+if (this.base == null)
+this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
+return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);
+}}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getMmffParameters", 
 ($fz = function (fileName, data, dataType) {
 var url = null;
@@ -80,10 +88,7 @@ var line = null;
 var value = null;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("reading data from " + fileName);
 try {
-if ((url = this.getClass ().getResource (fileName)) == null) {
-System.err.println ("Couldn't find file: " + fileName);
-throw  new NullPointerException ();
-}var br =  new java.io.BufferedReader ( new java.io.InputStreamReader (url.getContent ()));
+var br = this.getBufferedReader (fileName);
 while ((line = br.readLine ()) != null && line.length < 5 || !line.startsWith ("*")) continue ;
 var a1 = 0;
 var a2 = 127;
@@ -208,13 +213,9 @@ throw e;
 Clazz.defineMethod (c$, "getAtomTypes", 
 ($fz = function (fileName) {
 var types =  new java.util.ArrayList ();
-var url = null;
 var line = null;
 try {
-if ((url = this.getClass ().getResource (fileName)) == null) {
-System.err.println ("Couldn't find file: " + fileName);
-throw  new NullPointerException ();
-}var br =  new java.io.BufferedReader ( new java.io.InputStreamReader (url.getContent ()));
+var br = this.getBufferedReader (fileName);
 var at;
 types.add ( new org.jmol.minimize.forcefield.AtomType (0, 0, 0, 0, 1, "H or NOT FOUND", ""));
 while ((line = br.readLine ()) != null) {
@@ -239,6 +240,16 @@ throw e;
 org.jmol.util.Logger.info ((types.size () - 1) + " SMARTS-based atom types read");
 ($t$ = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes = types, org.jmol.minimize.forcefield.ForceFieldMMFF.prototype.atomTypes = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes, $t$);
 }, $fz.isPrivate = true, $fz), "~S");
+Clazz.defineMethod (c$, "getBufferedReader", 
+($fz = function (fileName) {
+var url = null;
+if ((url = this.getResourceUrl (fileName)) == null) {
+System.err.println ("Couldn't find file: " + fileName);
+throw  new NullPointerException ();
+}{
+var a = [null,null];
+return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),a,false);
+}}, $fz.isPrivate = true, $fz), "~S");
 c$.setFlags = Clazz.defineMethod (c$, "setFlags", 
 ($fz = function (at) {
 switch (at.mmType) {

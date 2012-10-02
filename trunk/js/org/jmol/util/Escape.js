@@ -163,7 +163,7 @@ if (Clazz.instanceOf (x, Array)) {
 var dlist = x;
 for (var i = 0; i < dlist.length; i++) {
 if (i > 0) s.append (", ");
-s.appendD ();
+s.appendD (dlist[i]);
 }
 } else if (Clazz.instanceOf (x, Array)) {
 var flist = x;
@@ -375,7 +375,7 @@ return org.jmol.util.Escape.packageJSONSb (infoType, sb);
 sb.append ("[");
 var imax = (info).length;
 for (var i = 0; i < imax; i++) {
-sb.append (sep).appendD ();
+sb.append (sep).appendD ((info)[i]);
 sep = ",";
 }
 sb.append ("]");
