@@ -7,15 +7,20 @@
       </fileset>
     </copy>
   	<delete dir="jslocal/java/**/*.js" />
-  	<delete dir="jslocal/javax/**/*.js" />
   	<delete dir="jslocal/org/**/*.js" />
     <copy todir="jslocal" >
       <fileset dir="bin">
         <include name="**/*.js" />
+        <exclude name="**/jsmol/*.js" />
       </fileset>
     </copy>
-    <copy todir="jslocal/org/jmol/minimize/forcefield/mmff" >
-      <fileset dir="src/org/jmol/minimize/forcefield/mmff">
+    <copy todir="jslocal/org/jmol" >
+  	  <fileset dir="">
+  	    <include name="Jmol.properties" />
+  	  </fileset>
+    </copy>
+    <copy todir="jslocal/org/jmol/minimize/forcefield/data" >
+      <fileset dir="src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>

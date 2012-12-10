@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import java.util.Map;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.util.Logger;
@@ -43,33 +42,37 @@ public class XmlQEReader extends XmlReader {
   XmlQEReader() {
   }
   
+  private float a;
+  private float b;
+  private float c;
+  //private float alpha;
+  //private float beta;
+  //private float gamma;
+  
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { "SPECIES", "TAU" };
   }
 
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
+                            BufferedReader reader, Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
+    super.processXml(parent, atomSetCollection, reader, saxReader);
   }
 
-  int atomCount;
-  
   @Override
-  public void processStartElement(String namespaceURI, String localName,
-                                  String qName, Map<String, String> atts) {
+  public void processStartElement(String localName) {
     if (Logger.debugging) 
       Logger.debug("xmlqe: start " + localName);
 
     if (!parent.continuing)
       return;
 
-    if ("NUMBER_OF_ATOMS".equals(localName)
-        || "CELL_DIMENSIONS".equals(localName)
-        || "AT".equals(localName)) {
+    if ("NUMBER_OF_ATOMS".equalsIgnoreCase(localName)
+        || "CELL_DIMENSIONS".equalsIgnoreCase(localName)
+        || "AT".equalsIgnoreCase(localName)) {
       keepChars = true;
       return;
     }
@@ -96,15 +99,8 @@ public class XmlQEReader extends XmlReader {
     
   }
 
-  private float a;
-  private float b;
-  private float c;
-  float alpha;
-  float beta;
-  float gamma;
-  
   @Override
-  public void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
 
     if (Logger.debugging)
       Logger.debug("xmlqe: end " + localName);
@@ -114,24 +110,24 @@ public class XmlQEReader extends XmlReader {
       if (!parent.doProcessLines)
         break;
 
-      if ("NUMBER_OF_ATOMS".equals(localName)) {
-        atomCount = parseIntStr(chars);
-        break;
-      }
+//      if ("NUMBER_OF_ATOMS".equals(localName)) {
+//        atomCount = parseIntStr(chars);
+//        break;
+//      }
 
-      if ("CELL_DIMENSIONS".equals(localName)) {
+      if ("CELL_DIMENSIONS".equalsIgnoreCase(localName)) {
         parent.setFractionalCoordinates(true);
         float[] data = getTokensFloat(chars, null, 6);
         a = data[0];
         b = (data[1] == 0 ? a : data[1]);
         c = (data[2] == 0 ? a : data[2]);
-        alpha = (data[3] == 0 ? 90 : data[3]);
-        beta = (data[4] == 0 ? 90 : data[4]);
-        gamma = (data[5] == 0 ? 90 : data[5]);
+        //alpha = (data[3] == 0 ? 90 : data[3]);
+        //beta = (data[4] == 0 ? 90 : data[4]);
+        //gamma = (data[5] == 0 ? 90 : data[5]);
         break;
       }
 
-      if ("AT".equals(localName)) {
+      if ("AT".equalsIgnoreCase(localName)) {
         // probably wrong -- only cubic
         float[] m = getTokensFloat(chars, null, 9);
         for (int i = 0; i < 9; i += 3) {
@@ -145,7 +141,7 @@ public class XmlQEReader extends XmlReader {
         break;
       }
 
-      if ("GEOMETRY_INFO".equals(localName)) {
+      if ("GEOMETRY_INFO".equalsIgnoreCase(localName)) {
         try {
           parent.applySymmetryAndSetTrajectory();
         } catch (Exception e) {

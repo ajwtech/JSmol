@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-10 03:51:32 -0600 (Sat, 10 Nov 2012) $
- * $Revision: 17707 $
+ * $Date: 2012-12-09 22:10:56 -0600 (Sun, 09 Dec 2012) $
+ * $Revision: 17802 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -151,7 +151,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return atomSetCollection;
     } catch (Throwable e) {
       try{ 
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
       } catch (Exception ee) {
         Logger.error(e.toString());
       }
