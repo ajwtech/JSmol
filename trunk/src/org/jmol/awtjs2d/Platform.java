@@ -57,8 +57,19 @@ public class Platform implements ApiPlatform {
     return true;
   }
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
-    return null; // DOM XML reader only -- not implemented in JavaScript
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
+    /**
+     * we must use Object[] here to hide [HTMLUnknownElement] and [Attribute] from Java2Script
+     * @j2sNative
+     * 
+     * if (method == "localName")return jsObject[0]["nodeName"];
+     * return (args == null ? jsObject[0][method] : jsObject[0][method](args[0]));
+     * 
+     * 
+     */
+    {
+      return null;
+    }
   }
 
   public boolean isHeadless() {
@@ -248,4 +259,5 @@ public class Platform implements ApiPlatform {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
+	
 }

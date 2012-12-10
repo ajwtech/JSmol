@@ -1,33 +1,33 @@
 <project name="JSmol" default="fromJmol" basedir=".">
  
+	<!-- note that org.jmol.util.BitSet is NOT transferred, because we already have the 32-bit version in JSmol.
+	     org.jmol.util.BitSet32.java is just there for a backup. -->
   <target name="fromJmol" id="fromJmol">
-    <copy todir="src/org/jmol" >
+    <copy todir="" >
+      <fileset dir="../Jmol">
+        <include name="Jmol.properties" />
+      </fileset>
+    </copy>
+    <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="../Jmol/src/org/jmol">
         <include name="**/*.java" />
+        <exclude name="**/util/*"/>
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
         <exclude name="**/console/*"/>
       	<exclude name="**/export/**/*"/>
-      	<exclude name="**/g3d/*"/>
       	<exclude name="**/i18n/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/popup/*"/>
       </fileset>
     </copy>
-    <copy todir="src/org/jmol/minimize/forcefield/mmff" >
-      <fileset dir="../Jmol/src/org/jmol/minimize/forcefield/mmff">
-        <include name="*.txt" />
-      </fileset>
-    </copy>
-  	<copy todir="src/javax/util" >
-      <fileset dir="../Jmol/src/javax/util">
-        <include name="StringXBuilder.java" />
-      </fileset>
-    </copy>
-  	<copy todir="src/javax/vecmath" >
-      <fileset dir="../Jmol/src/javax/vecmath">
+  	<copy overwrite="true" todir="src/org/jmol/util" >
+      <fileset dir="../Jmol/src/org/jmol/util">
         <include name="**/*.java" />
+        <exclude name="BitSet.java"/>
+        <exclude name="BitSet32.java"/>
+      	<!-- note that JSmol's BitSet.java is derived from Jmol's BitSet32.java, not BitSet.java, which is a 64-bit version -->
       </fileset>
     </copy>
 

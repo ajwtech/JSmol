@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-23 02:11:27 -0500 (Tue, 23 Oct 2012) $
- * $Revision: 17676 $
+ * $Date: 2012-12-09 22:10:56 -0600 (Sun, 09 Dec 2012) $
+ * $Revision: 17802 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -576,7 +576,7 @@ abstract public class JmolViewer {
     apiPlatform.renderScreenImage(this, g, currentSize);
   }
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
     return apiPlatform.getJsObjectInfo(jsObject, method, args);
   }
 
