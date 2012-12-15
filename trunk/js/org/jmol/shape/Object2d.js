@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (null, "org.jmol.shape.Object2d", ["java.lang.Float", "org.jmol.util.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isLabelOrHover = false;
@@ -37,7 +37,7 @@ this.scalePixelsPerMicron = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shape, "Object2d");
 Clazz.prepareFields (c$, function () {
-this.boxXY =  Clazz.newArray (5, 0);
+this.boxXY =  Clazz.newFloatArray (5, 0);
 });
 Clazz.defineMethod (c$, "getScalePixelsPerMicron", 
 function () {
@@ -47,23 +47,6 @@ Clazz.defineMethod (c$, "setScalePixelsPerMicron",
 function (scalePixelsPerMicron) {
 this.scalePixelsPerMicron = scalePixelsPerMicron;
 }, "~N");
-Clazz.makeConstructor (c$, 
-function () {
-});
-Clazz.makeConstructor (c$, 
-function (viewer, gdata, target, colix, valign, align, scalePixelsPerMicron) {
-this.viewer = viewer;
-this.gdata = gdata;
-this.isLabelOrHover = false;
-this.target = target;
-if (target.equals ("error")) valign = 1;
-this.colix = colix;
-this.align = align;
-this.valign = valign;
-this.z = 2;
-this.zSlab = -2147483648;
-this.scalePixelsPerMicron = scalePixelsPerMicron;
-}, "org.jmol.viewer.Viewer,org.jmol.util.GData,~S,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setModel", 
 function (modelIndex) {
 this.modelIndex = modelIndex;
@@ -77,7 +60,7 @@ function (xyz) {
 this.valign = (xyz == null ? 0 : 4);
 this.xyz = xyz;
 this.setAdjustForWindow (xyz == null);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setAdjustForWindow", 
 function (TF) {
 this.adjustForWindow = TF;
@@ -86,24 +69,24 @@ Clazz.defineMethod (c$, "setColix",
 function (colix) {
 this.colix = colix;
 }, "~N");
-Clazz.defineMethod (c$, "setColix", 
+Clazz.defineMethod (c$, "setColixO", 
 function (value) {
-this.colix = org.jmol.util.Colix.getColix (value);
+this.colix = org.jmol.util.Colix.getColixO (value);
 }, "~O");
 Clazz.defineMethod (c$, "setTranslucent", 
 function (level, isBackground) {
 if (isBackground) {
-if (this.bgcolix != 0) this.bgcolix = org.jmol.util.Colix.getColixTranslucent (this.bgcolix, !Float.isNaN (level), level);
+if (this.bgcolix != 0) this.bgcolix = org.jmol.util.Colix.getColixTranslucent3 (this.bgcolix, !Float.isNaN (level), level);
 } else {
-this.colix = org.jmol.util.Colix.getColixTranslucent (this.colix, !Float.isNaN (level), level);
+this.colix = org.jmol.util.Colix.getColixTranslucent3 (this.colix, !Float.isNaN (level), level);
 }}, "~N,~B");
 Clazz.defineMethod (c$, "setBgColix", 
 function (colix) {
 this.bgcolix = colix;
 }, "~N");
-Clazz.defineMethod (c$, "setBgColix", 
+Clazz.defineMethod (c$, "setBgColixO", 
 function (value) {
-this.bgcolix = (value == null ? 0 : org.jmol.util.Colix.getColix (value));
+this.bgcolix = (value == null ? 0 : org.jmol.util.Colix.getColixO (value));
 }, "~O");
 Clazz.defineMethod (c$, "setMovableX", 
 function (x) {
@@ -141,11 +124,6 @@ if (this.valign != 4) this.valign = 0;
 this.movableZ = 2147483647;
 this.movableZPercent = z;
 }, "~N");
-Clazz.defineMethod (c$, "setXY", 
-function (x, y) {
-this.setMovableX (x);
-this.setMovableY (y);
-}, "~N,~N");
 Clazz.defineMethod (c$, "setZs", 
 function (z, zSlab) {
 this.z = z;
@@ -193,23 +171,23 @@ default:
 return -((offset << 56) >> 56);
 }
 }, "~N");
-Clazz.defineMethod (c$, "setAlignment", 
+Clazz.defineMethod (c$, "setAlignmentLCR", 
 function (align) {
 if ("left".equals (align)) return this.setAlignment (1);
 if ("center".equals (align)) return this.setAlignment (2);
 if ("right".equals (align)) return this.setAlignment (3);
 return false;
 }, "~S");
-c$.getAlignment = Clazz.defineMethod (c$, "getAlignment", 
-function (align) {
-return org.jmol.shape.Object2d.hAlignNames[align & 3];
-}, "~N");
 Clazz.defineMethod (c$, "setAlignment", 
 function (align) {
 if (this.align != align) {
 this.align = align;
 this.recalc ();
 }return true;
+}, "~N");
+c$.getAlignmentName = Clazz.defineMethod (c$, "getAlignmentName", 
+function (align) {
+return org.jmol.shape.Object2d.hAlignNames[align & 3];
 }, "~N");
 Clazz.defineMethod (c$, "setPointer", 
 function (pointer) {
@@ -245,7 +223,7 @@ if (this.gdata.isAntialiased ()) {
 x <<= 1;
 y <<= 1;
 }return (this.script != null && x >= this.boxX && x <= this.boxX + this.boxWidth && y >= this.boxY && y <= this.boxY + this.boxHeight);
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 c$.setProperty = Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, currentObject) {
 if ("script" === propertyName) {
@@ -271,11 +249,11 @@ if (currentObject == null) return true;
 var pt = value;
 currentObject.setXYZ (null);
 if (pt.z == 3.4028235E38) {
-currentObject.setMovableX (Math.round (pt.x));
-currentObject.setMovableY (Math.round (pt.y));
+currentObject.setMovableX (Clazz.floatToInt (pt.x));
+currentObject.setMovableY (Clazz.floatToInt (pt.y));
 } else {
-currentObject.setMovableXPercent (Math.round (pt.x));
-currentObject.setMovableYPercent (Math.round (pt.y));
+currentObject.setMovableXPercent (Clazz.floatToInt (pt.x));
+currentObject.setMovableYPercent (Clazz.floatToInt (pt.y));
 }return true;
 }if ("xyz" === propertyName) {
 if (currentObject != null) {

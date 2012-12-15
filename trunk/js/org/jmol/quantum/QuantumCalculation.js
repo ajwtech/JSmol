@@ -1,9 +1,10 @@
-﻿Clazz.declarePackage ("org.jmol.quantum");
-Clazz.load (["javax.vecmath.Point3f"], "org.jmol.quantum.QuantumCalculation", ["org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.quantum");
+Clazz.load (null, "org.jmol.quantum.QuantumCalculation", ["org.jmol.quantum.QMAtom", "org.jmol.util.Escape", "$.Logger", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.doDebug = false;
 this.bsExcluded = null;
 this.voxelData = null;
+this.voxelDataTemp = null;
 this.vd = null;
 this.countsXYZ = null;
 this.points = null;
@@ -34,14 +35,11 @@ this.Z2 = null;
 this.rangeBohrOrAngstroms = 10;
 this.unitFactor = 1.8897161;
 this.volume = 1;
-if (!Clazz.isClassDefined ("org.jmol.quantum.QuantumCalculation.QMAtom")) {
-org.jmol.quantum.QuantumCalculation.$QuantumCalculation$QMAtom$ ();
-}
 Clazz.instantialize (this, arguments);
 }, org.jmol.quantum, "QuantumCalculation");
 Clazz.prepareFields (c$, function () {
-this.originBohr =  Clazz.newArray (3, 0);
-this.stepBohr =  Clazz.newArray (3, 0);
+this.originBohr =  Clazz.newFloatArray (3, 0);
+this.stepBohr =  Clazz.newFloatArray (3, 0);
 });
 Clazz.defineMethod (c$, "initialize", 
 function (nX, nY, nZ, points) {
@@ -51,16 +49,16 @@ nX = nY = nZ = points.length;
 }this.nX = this.xMax = nX;
 this.nY = this.yMax = nY;
 this.nZ = this.zMax = nZ;
-if (this.xBohr != null && this.xBohr.length >= nX) return ;
-this.xBohr =  Clazz.newArray (nX, 0);
-this.yBohr =  Clazz.newArray (nY, 0);
-this.zBohr =  Clazz.newArray (nZ, 0);
-this.X =  Clazz.newArray (nX, 0);
-this.Y =  Clazz.newArray (nY, 0);
-this.Z =  Clazz.newArray (nZ, 0);
-this.X2 =  Clazz.newArray (nX, 0);
-this.Y2 =  Clazz.newArray (nY, 0);
-this.Z2 =  Clazz.newArray (nZ, 0);
+if (this.xBohr != null && this.xBohr.length >= nX) return;
+this.xBohr =  Clazz.newFloatArray (nX, 0);
+this.yBohr =  Clazz.newFloatArray (nY, 0);
+this.zBohr =  Clazz.newFloatArray (nZ, 0);
+this.X =  Clazz.newFloatArray (nX, 0);
+this.Y =  Clazz.newFloatArray (nY, 0);
+this.Z =  Clazz.newFloatArray (nZ, 0);
+this.X2 =  Clazz.newFloatArray (nX, 0);
+this.Y2 =  Clazz.newFloatArray (nY, 0);
+this.Z2 =  Clazz.newFloatArray (nZ, 0);
 }, "~N,~N,~N,~A");
 Clazz.defineMethod (c$, "setupCoordinates", 
 function (originXYZ, stepsXYZ, bsSelected, atomCoordAngstroms, points, renumber) {
@@ -76,19 +74,19 @@ org.jmol.util.Logger.info ("QuantumCalculation:\n origin = " + org.jmol.util.Esc
 this.qmAtoms =  new Array (renumber ? bsSelected.cardinality () : atomCoordAngstroms.length);
 var isAll = (bsSelected == null);
 var i0 = (isAll ? this.qmAtoms.length - 1 : bsSelected.nextSetBit (0));
-for (var i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit (i + 1))) this.qmAtoms[renumber ? j++ : i] = Clazz.innerTypeInstance (org.jmol.quantum.QuantumCalculation.QMAtom, this, null, i, atomCoordAngstroms[i], this.X, this.Y, this.Z, this.X2, this.Y2, this.Z2);
+for (var i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit (i + 1))) this.qmAtoms[renumber ? j++ : i] =  new org.jmol.quantum.QMAtom (i, atomCoordAngstroms[i], this.X, this.Y, this.Z, this.X2, this.Y2, this.Z2, (this.bsExcluded != null && this.bsExcluded.get (i)), this.unitFactor);
 
-}}, "~A,~A,javax.util.BitSet,~A,~A,~B");
+}}, "~A,~A,org.jmol.util.BitSet,~A,~A,~B");
 Clazz.defineMethod (c$, "process", 
 function (pt) {
 this.doDebug = false;
 if (this.points == null || this.nX != 1) this.initializeOnePoint ();
 this.points[0].setT (pt);
-this.voxelData[0][0][0] = 0;
+this.voxelDataTemp[0][0][0] = 0;
 this.setXYZBohr (this.points);
 this.processPoints ();
 return this.voxelData[0][0][0];
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "processPoints", 
 function () {
 this.process ();
@@ -96,9 +94,13 @@ this.process ();
 Clazz.defineMethod (c$, "initializeOnePoint", 
 function () {
 this.points =  new Array (1);
-this.points[0] =  new javax.vecmath.Point3f ();
-this.voxelData =  Clazz.newArray (1, 1, 1, 0);
-this.xMin = this.yMin = this.zMin = 0;
+this.points[0] =  new org.jmol.util.Point3f ();
+if (this.voxelData == null || this.voxelData === this.voxelDataTemp) {
+this.voxelData = this.voxelDataTemp =  Clazz.newFloatArray (1, 1, 1, 0);
+} else {
+this.voxelData =  Clazz.newFloatArray (1, 1, 1, 0);
+this.voxelDataTemp =  Clazz.newFloatArray (1, 1, 1, 0);
+}this.xMin = this.yMin = this.zMin = 0;
 this.initialize (1, 1, 1, this.points);
 });
 Clazz.defineMethod (c$, "setXYZBohr", 
@@ -125,7 +127,7 @@ break;
 }
 bohr[j] = x * this.unitFactor;
 }
-return ;
+return;
 }bohr[0] = this.originBohr[i];
 var inc = this.stepBohr[i];
 for (var j = 0; ++j < n; ) bohr[j] = bohr[j - 1] + inc;
@@ -136,84 +138,6 @@ function (ix) {
 this.yMax = this.zMax = (ix < 0 ? this.xMax : ix + 1);
 this.yMin = this.zMin = (ix < 0 ? 0 : ix);
 }, "~N");
-c$.$QuantumCalculation$QMAtom$ = function () {
-Clazz.pu$h ();
-c$ = Clazz.decorateAsClass (function () {
-Clazz.prepareCallback (this, arguments);
-this.myX = null;
-this.myY = null;
-this.myZ = null;
-this.myX2 = null;
-this.myY2 = null;
-this.myZ2 = null;
-this.atom = null;
-this.index = 0;
-this.znuc = 0;
-this.iMolecule = 0;
-this.isExcluded = false;
-Clazz.instantialize (this, arguments);
-}, org.jmol.quantum.QuantumCalculation, "QMAtom", javax.vecmath.Point3f);
-Clazz.makeConstructor (c$, 
-function (a, b, c, d, e, f, g, h) {
-Clazz.superConstructor (this, org.jmol.quantum.QuantumCalculation.QMAtom, []);
-this.index = a;
-this.myX = c;
-this.myY = d;
-this.myZ = e;
-this.myX2 = f;
-this.myY2 = g;
-this.myZ2 = h;
-this.atom = b;
-this.isExcluded = (this.b$["org.jmol.quantum.QuantumCalculation"].bsExcluded != null && this.b$["org.jmol.quantum.QuantumCalculation"].bsExcluded.get (a));
-this.setT (b);
-this.scale (this.b$["org.jmol.quantum.QuantumCalculation"].unitFactor);
-this.znuc = b.getElementNumber ();
-}, "~N,org.jmol.modelset.Atom,~A,~A,~A,~A,~A,~A");
-Clazz.defineMethod (c$, "setXYZ", 
-function (a) {
-var b;
-try {
-if (a) {
-if (this.b$["org.jmol.quantum.QuantumCalculation"].points != null) {
-this.b$["org.jmol.quantum.QuantumCalculation"].xMin = this.b$["org.jmol.quantum.QuantumCalculation"].yMin = this.b$["org.jmol.quantum.QuantumCalculation"].zMin = 0;
-this.b$["org.jmol.quantum.QuantumCalculation"].xMax = this.b$["org.jmol.quantum.QuantumCalculation"].yMax = this.b$["org.jmol.quantum.QuantumCalculation"].zMax = this.b$["org.jmol.quantum.QuantumCalculation"].points.length;
-} else {
-b = Math.round (Math.floor ((this.x - this.b$["org.jmol.quantum.QuantumCalculation"].xBohr[0] - this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[0]));
-this.b$["org.jmol.quantum.QuantumCalculation"].xMin = (b < 0 ? 0 : b);
-b = Math.round (Math.floor (1 + (this.x - this.b$["org.jmol.quantum.QuantumCalculation"].xBohr[0] + this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[0]));
-this.b$["org.jmol.quantum.QuantumCalculation"].xMax = (b >= this.b$["org.jmol.quantum.QuantumCalculation"].nX ? this.b$["org.jmol.quantum.QuantumCalculation"].nX : b + 1);
-b = Math.round (Math.floor ((this.y - this.b$["org.jmol.quantum.QuantumCalculation"].yBohr[0] - this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[1]));
-this.b$["org.jmol.quantum.QuantumCalculation"].yMin = (b < 0 ? 0 : b);
-b = Math.round (Math.floor (1 + (this.y - this.b$["org.jmol.quantum.QuantumCalculation"].yBohr[0] + this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[1]));
-this.b$["org.jmol.quantum.QuantumCalculation"].yMax = (b >= this.b$["org.jmol.quantum.QuantumCalculation"].nY ? this.b$["org.jmol.quantum.QuantumCalculation"].nY : b + 1);
-b = Math.round (Math.floor ((this.z - this.b$["org.jmol.quantum.QuantumCalculation"].zBohr[0] - this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[2]));
-this.b$["org.jmol.quantum.QuantumCalculation"].zMin = (b < 0 ? 0 : b);
-b = Math.round (Math.floor (1 + (this.z - this.b$["org.jmol.quantum.QuantumCalculation"].zBohr[0] + this.b$["org.jmol.quantum.QuantumCalculation"].rangeBohrOrAngstroms) / this.b$["org.jmol.quantum.QuantumCalculation"].stepBohr[2]));
-this.b$["org.jmol.quantum.QuantumCalculation"].zMax = (b >= this.b$["org.jmol.quantum.QuantumCalculation"].nZ ? this.b$["org.jmol.quantum.QuantumCalculation"].nZ : b + 1);
-}}for (b = this.b$["org.jmol.quantum.QuantumCalculation"].xMax; --b >= this.b$["org.jmol.quantum.QuantumCalculation"].xMin; ) {
-this.myX2[b] = this.myX[b] = this.b$["org.jmol.quantum.QuantumCalculation"].xBohr[b] - this.x;
-this.myX2[b] *= this.myX[b];
-}
-for (b = this.b$["org.jmol.quantum.QuantumCalculation"].yMax; --b >= this.b$["org.jmol.quantum.QuantumCalculation"].yMin; ) {
-this.myY2[b] = this.myY[b] = this.b$["org.jmol.quantum.QuantumCalculation"].yBohr[b] - this.y;
-this.myY2[b] *= this.myY[b];
-}
-for (b = this.b$["org.jmol.quantum.QuantumCalculation"].zMax; --b >= this.b$["org.jmol.quantum.QuantumCalculation"].zMin; ) {
-this.myZ2[b] = this.myZ[b] = this.b$["org.jmol.quantum.QuantumCalculation"].zBohr[b] - this.z;
-this.myZ2[b] *= this.myZ[b];
-}
-if (this.b$["org.jmol.quantum.QuantumCalculation"].points != null) {
-this.b$["org.jmol.quantum.QuantumCalculation"].yMax = this.b$["org.jmol.quantum.QuantumCalculation"].zMax = 1;
-}} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error ("Error in QuantumCalculation setting bounds");
-} else {
-throw e;
-}
-}
-}, "~B");
-c$ = Clazz.p0p ();
-};
 Clazz.defineStatics (c$,
 "bohr_per_angstrom", 1.8897161);
 });

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.declarePackage ("org.jmol.jvxl.readers");
 Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoPlaneReader", null, function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "IsoPlaneReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.makeConstructor (c$, 

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
+Clazz.declarePackage ("org.jmol.minimize.forcefield");
 Clazz.load (["org.jmol.minimize.forcefield.Calculation", "$.Calculations"], "org.jmol.minimize.forcefield.CalculationsUFF", ["java.util.ArrayList", "org.jmol.minimize.Util"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ffParams = null;
@@ -336,7 +336,7 @@ break;
 }
 e = 2.0934;
 }
-if (org.jmol.minimize.Util.isNearZero (e)) return ;
+if (org.jmol.minimize.Util.isNearZero (e)) return;
 a.add ([[this.ia, this.ib, this.ic, this.id, d], [e, c]]);
 }, "java.util.List,~A");
 Clazz.overrideMethod (c$, "compute", 

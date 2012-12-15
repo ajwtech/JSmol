@@ -1,10 +1,10 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.ArrayUtil", ["java.util.Arrays"], function () {
 c$ = Clazz.declareType (org.jmol.util, "ArrayUtil");
 c$.ensureLength = Clazz.defineMethod (c$, "ensureLength", 
 function (array, minimumLength) {
 if (array != null && org.jmol.util.ArrayUtil.getLength (array) >= minimumLength) return array;
-return org.jmol.util.ArrayUtil.arrayCopyOpt (array, minimumLength);
+return org.jmol.util.ArrayUtil.arrayCopyObject (array, minimumLength);
 }, "~O,~N");
 c$.ensureLengthS = Clazz.defineMethod (c$, "ensureLengthS", 
 function (array, minimumLength) {
@@ -33,7 +33,7 @@ return org.jmol.util.ArrayUtil.arrayCopyByte (array, minimumLength);
 }, "~A,~N");
 c$.doubleLength = Clazz.defineMethod (c$, "doubleLength", 
 function (array) {
-return org.jmol.util.ArrayUtil.arrayCopyOpt (array, (array == null ? 16 : 2 * org.jmol.util.ArrayUtil.getLength (array)));
+return org.jmol.util.ArrayUtil.arrayCopyObject (array, (array == null ? 16 : 2 * org.jmol.util.ArrayUtil.getLength (array)));
 }, "~O");
 c$.doubleLengthS = Clazz.defineMethod (c$, "doubleLengthS", 
 function (array) {
@@ -66,25 +66,25 @@ var oldLength = org.jmol.util.ArrayUtil.getLength (array);
 if (firstElement >= oldLength) return array;
 var n = oldLength - (firstElement + nElements);
 if (n < 0) n = 0;
-var t = org.jmol.util.ArrayUtil.newInstance (array, firstElement + n);
+var t = org.jmol.util.ArrayUtil.newInstanceO (array, firstElement + n);
 if (firstElement > 0) System.arraycopy (array, 0, t, 0, firstElement);
 if (n > 0) System.arraycopy (array, firstElement + nElements, t, firstElement, n);
 return t;
 }, "~O,~N,~N");
-c$.arrayCopyOpt = Clazz.defineMethod (c$, "arrayCopyOpt", 
+c$.arrayCopyObject = Clazz.defineMethod (c$, "arrayCopyObject", 
 function (array, newLength) {
 if (array == null) {
 return null;
 }var oldLength = org.jmol.util.ArrayUtil.getLength (array);
 if (newLength == oldLength) return array;
-var t = org.jmol.util.ArrayUtil.newInstance (array, newLength);
+var t = org.jmol.util.ArrayUtil.newInstanceO (array, newLength);
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 return t;
 }, "~O,~N");
-c$.newInstance = Clazz.defineMethod (c$, "newInstance", 
+c$.newInstanceO = Clazz.defineMethod (c$, "newInstanceO", 
 ($fz = function (array, n) {
 {
-return Clazz.newArrayBH(array, n);
+return new Array(n);
 }}, $fz.isPrivate = true, $fz), "~O,~N");
 c$.getLength = Clazz.defineMethod (c$, "getLength", 
 ($fz = function (array) {
@@ -93,6 +93,7 @@ return array.length
 }}, $fz.isPrivate = true, $fz), "~O");
 c$.arrayCopyS = Clazz.defineMethod (c$, "arrayCopyS", 
 function (array, newLength) {
+if (newLength < 0) newLength = array.length;
 var t =  new Array (newLength);
 if (array != null) {
 var oldLength = array.length;
@@ -101,7 +102,7 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyII = Clazz.defineMethod (c$, "arrayCopyII", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, 0);
+var t = org.jmol.util.ArrayUtil.newInt2 (newLength);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -109,6 +110,7 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyPt = Clazz.defineMethod (c$, "arrayCopyPt", 
 function (array, newLength) {
+if (newLength < 0) newLength = array.length;
 var t =  new Array (newLength);
 if (array != null) {
 var oldLength = array.length;
@@ -117,7 +119,8 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyF = Clazz.defineMethod (c$, "arrayCopyF", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, 0);
+if (newLength < 0) newLength = array.length;
+var t =  Clazz.newFloatArray (newLength, 0);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -125,7 +128,8 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyI = Clazz.defineMethod (c$, "arrayCopyI", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, 0);
+if (newLength < 0) newLength = array.length;
+var t =  Clazz.newIntArray (newLength, 0);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -136,9 +140,9 @@ function (array, i0, n) {
 if (array == null) return null;
 var oldLength = array.length;
 if (n == -1) n = oldLength;
-if (n == -2) n = Math.floor (oldLength / 2);
+if (n == -2) n = Clazz.doubleToInt (oldLength / 2);
 n = n - i0;
-var t =  Clazz.newArray (n, 0);
+var t =  Clazz.newIntArray (n, 0);
 System.arraycopy (array, i0, t, 0, n);
 return t;
 }, "~A,~N,~N");
@@ -146,13 +150,15 @@ c$.arrayCopyRangeRevI = Clazz.defineMethod (c$, "arrayCopyRangeRevI",
 function (array, i0, n) {
 if (array == null) return null;
 var t = org.jmol.util.ArrayUtil.arrayCopyRangeI (array, i0, n);
-for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swapInt (t, i, n - 1 - i);
+if (n < 0) n = array.length;
+for (var i = Clazz.doubleToInt (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swapInt (t, i, n - 1 - i);
 
 return t;
 }, "~A,~N,~N");
 c$.arrayCopyShort = Clazz.defineMethod (c$, "arrayCopyShort", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, 0);
+if (newLength < 0) newLength = array.length;
+var t =  Clazz.newShortArray (newLength, 0);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -160,7 +166,8 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyByte = Clazz.defineMethod (c$, "arrayCopyByte", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, 0);
+if (newLength < 0) newLength = array.length;
+var t =  Clazz.newByteArray (newLength, 0);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -168,7 +175,8 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyBool = Clazz.defineMethod (c$, "arrayCopyBool", 
 function (array, newLength) {
-var t =  Clazz.newArray (newLength, false);
+if (newLength < 0) newLength = array.length;
+var t =  Clazz.newBooleanArray (newLength, false);
 if (array != null) {
 var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
@@ -221,4 +229,34 @@ var oi = o[i];
 o[i] = o[j];
 o[j] = oi;
 }, "~A,~N,~N");
+c$.newFloat2 = Clazz.defineMethod (c$, "newFloat2", 
+function (n) {
+{
+return Clazz.newArray(n, null);
+}}, "~N");
+c$.newInt2 = Clazz.defineMethod (c$, "newInt2", 
+function (n) {
+{
+return Clazz.newArray(n, null);
+}}, "~N");
+c$.newFloat3 = Clazz.defineMethod (c$, "newFloat3", 
+function (nx, ny) {
+{
+return Clazz.newArray(nx, null);
+}}, "~N,~N");
+c$.newInt4 = Clazz.defineMethod (c$, "newInt4", 
+function (n) {
+{
+return Clazz.newArray(n, null);
+}}, "~N");
+c$.newShort2 = Clazz.defineMethod (c$, "newShort2", 
+function (n) {
+{
+return Clazz.newArray(n, null);
+}}, "~N");
+c$.newByte2 = Clazz.defineMethod (c$, "newByte2", 
+function (n) {
+{
+return Clazz.newArray(n, null);
+}}, "~N");
 });

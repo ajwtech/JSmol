@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jsmol.test");
+Clazz.declarePackage ("org.jsmol.test");
 Clazz.load (null, "org.jsmol.test.Test_adapter", ["java.io.BufferedReader", "$.StringReader", "java.util.Hashtable", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.declareType (org.jsmol.test, "Test_adapter");
 c$.main = Clazz.defineMethod (c$, "main", 

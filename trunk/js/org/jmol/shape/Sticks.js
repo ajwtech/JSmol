@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Shape", "javax.vecmath.Point3i"], "org.jmol.shape.Sticks", ["java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.constant.EnumPalette", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.JmolEdge"], function () {
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.Shape", "org.jmol.util.Point3i"], "org.jmol.shape.Sticks", ["java.util.Hashtable", "org.jmol.constant.EnumPalette", "org.jmol.util.BitSet", "$.BitSetUtil", "$.Colix", "$.Escape", "$.JmolEdge", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.myMask = 0;
 this.reportAll = false;
@@ -11,7 +11,7 @@ this.ptXY = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shape, "Sticks", org.jmol.shape.Shape);
 Clazz.prepareFields (c$, function () {
-this.ptXY =  new javax.vecmath.Point3i ();
+this.ptXY =  new org.jmol.util.Point3i ();
 });
 Clazz.defineMethod (c$, "initShape", 
 function () {
@@ -23,45 +23,45 @@ Clazz.overrideMethod (c$, "setSize",
 function (size, bsSelected) {
 if (size == 2147483647) {
 this.selectedBonds = org.jmol.util.BitSetUtil.copy (bsSelected);
-return ;
+return;
 }if (size == -2147483648) {
-if (this.bsOrderSet == null) this.bsOrderSet =  new javax.util.BitSet ();
+if (this.bsOrderSet == null) this.bsOrderSet =  new org.jmol.util.BitSet ();
 this.bsOrderSet.or (bsSelected);
-return ;
-}if (this.bsSizeSet == null) this.bsSizeSet =  new javax.util.BitSet ();
+return;
+}if (this.bsSizeSet == null) this.bsSizeSet =  new org.jmol.util.BitSet ();
 var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bsSelected));
 var mad = size;
 while (iter.hasNext ()) {
 this.bsSizeSet.set (iter.nextIndex ());
 iter.next ().setMad (mad);
 }
-}, "~N,javax.util.BitSet");
+}, "~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
 if ("type" === propertyName) {
 this.myMask = (value).intValue ();
-return ;
+return;
 }if ("reportAll" === propertyName) {
 this.reportAll = true;
-return ;
+return;
 }if ("reset" === propertyName) {
 this.bsOrderSet = null;
 this.bsSizeSet = null;
 this.bsColixSet = null;
 this.selectedBonds = null;
-return ;
+return;
 }if ("bondOrder" === propertyName) {
-if (this.bsOrderSet == null) this.bsOrderSet =  new javax.util.BitSet ();
+if (this.bsOrderSet == null) this.bsOrderSet =  new org.jmol.util.BitSet ();
 var order = (value).shortValue ();
 var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (65535, bs));
 while (iter.hasNext ()) {
 this.bsOrderSet.set (iter.nextIndex ());
 iter.next ().setOrder (order);
 }
-return ;
+return;
 }if ("color" === propertyName) {
-if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
-var colix = org.jmol.util.Colix.getColix (value);
+if (this.bsColixSet == null) this.bsColixSet =  new org.jmol.util.BitSet ();
+var colix = org.jmol.util.Colix.getColixO (value);
 var pal = (Clazz.instanceOf (value, org.jmol.constant.EnumPalette) ? value : null);
 if (pal === org.jmol.constant.EnumPalette.TYPE || pal === org.jmol.constant.EnumPalette.ENERGY) {
 var isEnergy = (pal === org.jmol.constant.EnumPalette.ENERGY);
@@ -70,13 +70,13 @@ while (iter.hasNext ()) {
 this.bsColixSet.set (iter.nextIndex ());
 var bond = iter.next ();
 if (isEnergy) {
-bond.setColix (this.setColix (colix, pal.id, bond));
+bond.setColix (this.setColixB (colix, pal.id, bond));
 bond.setPaletteID (pal.id);
 } else {
 bond.setColix (org.jmol.util.Colix.getColix (org.jmol.util.JmolEdge.getArgbHbondType (bond.order)));
 }}
-return ;
-}if (colix == 2 && pal !== org.jmol.constant.EnumPalette.CPK) return ;
+return;
+}if (colix == 2 && pal !== org.jmol.constant.EnumPalette.CPK) return;
 var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bs));
 while (iter.hasNext ()) {
 var iBond = iter.nextIndex ();
@@ -84,20 +84,20 @@ var bond = iter.next ();
 bond.setColix (colix);
 this.bsColixSet.setBitTo (iBond, (colix != 0 && colix != 2));
 }
-return ;
+return;
 }if ("translucency" === propertyName) {
-if (this.bsColixSet == null) this.bsColixSet =  new javax.util.BitSet ();
+if (this.bsColixSet == null) this.bsColixSet =  new org.jmol.util.BitSet ();
 var isTranslucent = ((value).equals ("translucent"));
 var iter = (this.selectedBonds != null ? this.modelSet.getBondIterator (this.selectedBonds) : this.modelSet.getBondIteratorForType (this.myMask, bs));
 while (iter.hasNext ()) {
 this.bsColixSet.set (iter.nextIndex ());
 iter.next ().setTranslucent (isTranslucent, this.translucentLevel);
 }
-return ;
+return;
 }if ("deleteModelAtoms" === propertyName) {
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shape.Sticks, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if (property.equals ("selectionState")) return (this.selectedBonds != null ? "select BONDS " + org.jmol.util.Escape.escape (this.selectedBonds) + "\n" : "");
@@ -109,7 +109,8 @@ function () {
 var bonds = this.modelSet.getBonds ();
 for (var i = this.modelSet.getBondCount (); --i >= 0; ) {
 var bond = bonds[i];
-if ((bond.getShapeVisibilityFlags () & this.myVisibilityFlag) == 0 || this.modelSet.isAtomHidden (bond.getAtomIndex1 ()) || this.modelSet.isAtomHidden (bond.getAtomIndex2 ())) continue ;bond.getAtom1 ().setClickable (this.myVisibilityFlag);
+if ((bond.getShapeVisibilityFlags () & this.myVisibilityFlag) == 0 || this.modelSet.isAtomHidden (bond.getAtomIndex1 ()) || this.modelSet.isAtomHidden (bond.getAtomIndex2 ())) continue;
+bond.getAtom1 ().setClickable (this.myVisibilityFlag);
 bond.getAtom2 ().setClickable (this.myVisibilityFlag);
 }
 });
@@ -134,21 +135,21 @@ if (this.reportAll || (bond.order & 131072) == 0) org.jmol.shape.Shape.setStateI
 }if (this.bsColixSet != null) for (var i = this.bsColixSet.nextSetBit (0); i >= 0; i = this.bsColixSet.nextSetBit (i + 1)) {
 var colix = bonds[i].getColix ();
 if ((colix & -30721) == 2) org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommand ("bonds", org.jmol.constant.EnumPalette.CPK.id, colix));
- else org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommand ("bonds", colix));
+ else org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommandUnk ("bonds", colix));
 }
-return org.jmol.shape.Shape.getShapeCommands (temp, null, "select BONDS") + "\n" + (haveTainted ? org.jmol.shape.Shape.getShapeCommands (temp2, null, "select BONDS") + "\n" : "");
+return org.jmol.shape.Shape.getShapeCommandsSel (temp, null, "select BONDS") + "\n" + (haveTainted ? org.jmol.shape.Shape.getShapeCommandsSel (temp2, null, "select BONDS") + "\n" : "");
 });
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 var bond = this.findPickedBond (x, y, bsVisible, pt);
 if (bond == null) return false;
 this.viewer.highlightBond (bond.index, true);
 return true;
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
 function (x, y, modifiers, bsVisible) {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 var bond = this.findPickedBond (x, y, bsVisible, pt);
 if (bond == null) return null;
 var modelIndex = bond.getAtom1 ().modelIndex;
@@ -162,7 +163,7 @@ map.put ("type", "bond");
 map.put ("info", info);
 this.viewer.setStatusAtomPicked (-3, "[\"bond\",\"" + bond.getIdentity () + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
 return map;
-}, "~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "findPickedBond", 
 ($fz = function (x, y, bsVisible, pt) {
 var dmin2 = 100;
@@ -171,24 +172,27 @@ x <<= 1;
 y <<= 1;
 dmin2 <<= 1;
 }var pickedBond = null;
-var v =  new javax.vecmath.Point3f ();
+var v =  new org.jmol.util.Point3f ();
 var bonds = this.modelSet.getBonds ();
 for (var i = this.modelSet.getBondCount (); --i >= 0; ) {
 var bond = bonds[i];
-if (bond.getShapeVisibilityFlags () == 0) continue ;var atom1 = bond.getAtom1 ();
+if (bond.getShapeVisibilityFlags () == 0) continue;
+var atom1 = bond.getAtom1 ();
 var atom2 = bond.getAtom2 ();
-if (!atom1.isVisible (0) || !atom2.isVisible (0)) continue ;v.setT (atom1);
+if (!atom1.isVisible (0) || !atom2.isVisible (0)) continue;
+v.setT (atom1);
 v.add (atom2);
 v.scale (0.5);
 var d2 = this.coordinateInRange (x, y, v, dmin2, this.ptXY);
 if (d2 >= 0) {
 var f = 1 * (this.ptXY.x - atom1.screenX) / (atom2.screenX - atom1.screenX);
-if (f < 0.4 || f > 0.6) continue ;dmin2 = d2;
+if (f < 0.4 || f > 0.6) continue;
+dmin2 = d2;
 pickedBond = bond;
 pt.setT (v);
 }}
 return pickedBond;
-}, $fz.isPrivate = true, $fz), "~N,~N,javax.util.BitSet,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "~N,~N,org.jmol.util.BitSet,org.jmol.util.Point3f");
 Clazz.defineStatics (c$,
 "MAX_BOND_CLICK_DISTANCE_SQUARED", 100);
 });

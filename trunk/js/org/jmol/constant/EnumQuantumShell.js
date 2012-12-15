@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.constant");
-Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumQuantumShell", ["javax.util.StringXBuilder"], function () {
+Clazz.declarePackage ("org.jmol.constant");
+Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumQuantumShell", ["org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.tag = null;
 this.tag2 = null;
@@ -16,7 +16,7 @@ this.idSpherical = idSpherical;
 }, $fz.isPrivate = true, $fz), "~S,~S,~N,~N");
 c$.getNewDfCoefMap = Clazz.defineMethod (c$, "getNewDfCoefMap", 
 function () {
-return [ Clazz.newArray (1, 0),  Clazz.newArray (3, 0),  Clazz.newArray (4, 0),  Clazz.newArray (5, 0),  Clazz.newArray (6, 0),  Clazz.newArray (7, 0),  Clazz.newArray (10, 0)];
+return [ Clazz.newIntArray (1, 0),  Clazz.newIntArray (3, 0),  Clazz.newIntArray (4, 0),  Clazz.newIntArray (5, 0),  Clazz.newIntArray (6, 0),  Clazz.newIntArray (7, 0),  Clazz.newIntArray (10, 0)];
 });
 c$.getQuantumShellTagID = Clazz.defineMethod (c$, "getQuantumShellTagID", 
 function (tag) {
@@ -72,12 +72,12 @@ return "" + id;
 }, "~N");
 c$.getMOString = Clazz.defineMethod (c$, "getMOString", 
 function (lc) {
-var sb =  new javax.util.StringXBuilder ();
-if (lc.length == 2) return "" + Math.round ((lc[0] < 0 ? -lc[1] : lc[1]));
+var sb =  new org.jmol.util.StringXBuilder ();
+if (lc.length == 2) return "" + Clazz.floatToInt (lc[0] < 0 ? -lc[1] : lc[1]);
 sb.appendC ('[');
 for (var i = 0; i < lc.length; i += 2) {
 if (i > 0) sb.append (", ");
-sb.appendF (lc[i]).append (" ").appendI (Math.round (lc[i + 1]));
+sb.appendF (lc[i]).append (" ").appendI (Clazz.floatToInt (lc[i + 1]));
 }
 sb.appendC (']');
 return sb.toString ();

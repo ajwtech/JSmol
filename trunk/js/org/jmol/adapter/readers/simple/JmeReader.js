@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.JmeReader", ["org.jmol.adapter.smarter.Bond", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.adapter.readers.simple, "JmeReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
@@ -40,7 +40,8 @@ var atomIndex2 = this.parseInt () - 1;
 var order = this.parseInt ();
 switch (order) {
 default:
-continue ;case 1:
+continue;
+case 1:
 case 2:
 case 3:
 break;

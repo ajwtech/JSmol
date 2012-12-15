@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
+Clazz.declarePackage ("org.jmol.minimize");
 Clazz.load (["org.jmol.minimize.MinObject"], "org.jmol.minimize.MinBond", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.rawIndex = 0;

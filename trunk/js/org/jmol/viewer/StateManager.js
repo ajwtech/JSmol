@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Matrix3f", "$.Point3f", "org.jmol.constant.EnumAxesMode", "$.EnumCallback"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "java.util.Arrays", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
+Clazz.declarePackage ("org.jmol.viewer");
+Clazz.load (["java.util.Hashtable", "org.jmol.constant.EnumAxesMode", "$.EnumCallback", "org.jmol.util.Matrix3f", "$.Point3f"], "org.jmol.viewer.StateManager", ["java.lang.Boolean", "$.Float", "$.Runtime", "java.util.Arrays", "org.jmol.constant.EnumStructure", "org.jmol.script.ScriptVariable", "org.jmol.util.BitSet", "$.BitSetUtil", "$.Escape", "$.GData", "$.Logger", "$.StringXBuilder", "$.TextFormat", "org.jmol.viewer.JmolConstants", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.saved = null;
@@ -27,13 +27,13 @@ this.localFunctions =  new java.util.Hashtable ();
 });
 c$.getVariableList = Clazz.defineMethod (c$, "getVariableList", 
 function (htVariables, nMax, withSites, definedOnly) {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 var n = 0;
 var list =  new Array (htVariables.size ());
 for (var entry, $entry = htVariables.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var $var = entry.getValue ();
-if ((withSites || !key.startsWith ("site_")) && (!definedOnly || (key.charAt (0)).charCodeAt (0) == 64)) list[n++] = key + ((key.charAt (0)).charCodeAt (0) == 64 ? " " + $var.asString () : " = " + org.jmol.viewer.StateManager.varClip (key, $var.escape (), nMax));
+if ((withSites || !key.startsWith ("site_")) && (!definedOnly || key.charAt (0) == '@')) list[n++] = key + (key.charAt (0) == '@' ? " " + $var.asString () : " = " + org.jmol.viewer.StateManager.varClip (key, $var.escape (), nMax));
 }
 java.util.Arrays.sort (list, 0, n);
 for (var i = 0; i < n; i++) if (list[i] != null) org.jmol.viewer.StateManager.appendCmd (sb, list[i]);
@@ -45,7 +45,7 @@ c$.getObjectIdFromName = Clazz.defineMethod (c$, "getObjectIdFromName",
 function (name) {
 if (name == null) return -1;
 var objID = "background axis1      axis2      axis3      boundbox   unitcell   frank      ".indexOf (name.toLowerCase ());
-return (objID < 0 ? objID : Math.floor (objID / 11));
+return (objID < 0 ? objID : Clazz.doubleToInt (objID / 11));
 }, "~S");
 c$.getObjectNameFromId = Clazz.defineMethod (c$, "getObjectNameFromId", 
 function (objId) {
@@ -126,16 +126,16 @@ Clazz.defineMethod (c$, "saveSelection",
 function (saveName, bsSelected) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("Selected_");
-return ;
+return;
 }saveName = this.lastSelected = "Selected_" + saveName;
 this.saved.put (saveName, org.jmol.util.BitSetUtil.copy (bsSelected));
-}, "~S,javax.util.BitSet");
+}, "~S,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "restoreSelection", 
 function (saveName) {
 var name = (saveName.length > 0 ? "Selected_" + saveName : this.lastSelected);
 var bsSelected = this.saved.get (name);
 if (bsSelected == null) {
-this.viewer.select ( new javax.util.BitSet (), false, null, false);
+this.viewer.select ( new org.jmol.util.BitSet (), false, null, false);
 return false;
 }this.viewer.select (bsSelected, false, null, false);
 return true;
@@ -144,7 +144,7 @@ Clazz.defineMethod (c$, "saveState",
 function (saveName) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("State_");
-return ;
+return;
 }saveName = this.lastState = "State_" + saveName;
 this.saved.put (saveName, this.viewer.getStateInfo ());
 }, "~S");
@@ -158,7 +158,7 @@ Clazz.defineMethod (c$, "saveStructure",
 function (saveName) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("Shape_");
-return ;
+return;
 }saveName = this.lastShape = "Shape_" + saveName;
 this.saved.put (saveName, this.viewer.getStructureState ());
 }, "~S");
@@ -172,10 +172,10 @@ Clazz.defineMethod (c$, "saveCoordinates",
 function (saveName, bsSelected) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("Coordinates_");
-return ;
+return;
 }saveName = this.lastCoordinates = "Coordinates_" + saveName;
 this.saved.put (saveName, this.viewer.getCoordinateState (bsSelected));
-}, "~S,javax.util.BitSet");
+}, "~S,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getSavedCoordinates", 
 function (saveName) {
 var name = (saveName.length > 0 ? "Coordinates_" + saveName : this.lastCoordinates);
@@ -192,12 +192,13 @@ var o;
 if (saveName != null) {
 o = this.getOrientation (saveName);
 return (o == null ? "" : o.getMoveToText (true));
-}var sb =  new javax.util.StringXBuilder ();
+}var sb =  new org.jmol.util.StringXBuilder ();
 var e = this.saved.keySet ().iterator ();
 while (e.hasNext ()) {
 var name = e.next ();
 if (!name.startsWith ("Orientation_")) {
-continue ;}sb.append ((this.saved.get (name)).getMoveToText (true));
+continue;
+}sb.append ((this.saved.get (name)).getMoveToText (true));
 }
 return sb.toString ();
 }, "~S");
@@ -205,7 +206,7 @@ Clazz.defineMethod (c$, "saveOrientation",
 function (saveName) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("Orientation_");
-return ;
+return;
 }var o = Clazz.innerTypeInstance (org.jmol.viewer.StateManager.Orientation, this, null, saveName.equals ("default"));
 o.saveName = this.lastOrientation = "Orientation_" + saveName;
 this.saved.put (o.saveName, o);
@@ -226,7 +227,7 @@ Clazz.defineMethod (c$, "saveBonds",
 function (saveName) {
 if (saveName.equalsIgnoreCase ("DELETE")) {
 this.deleteSavedType ("Bonds_");
-return ;
+return;
 }var b = Clazz.innerTypeInstance (org.jmol.viewer.StateManager.Connections, this, null);
 b.saveName = this.lastConnections = "Bonds_" + saveName;
 this.saved.put (b.saveName, b);
@@ -246,7 +247,7 @@ return (isStatic ? org.jmol.viewer.StateManager.staticFunctions : this.localFunc
 Clazz.defineMethod (c$, "getFunctionCalls", 
 function (selectedFunction) {
 if (selectedFunction == null) selectedFunction = "";
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 var pt = selectedFunction.indexOf ("*");
 var isGeneric = (pt >= 0);
 var isStatic = (selectedFunction.indexOf ("static_") == 0);
@@ -290,7 +291,7 @@ function ($function) {
 Clazz.defineMethod (c$, "removeFunction", 
 function (name) {
 var $function = this.getFunction (name);
-if ($function == null) return ;
+if ($function == null) return;
 org.jmol.viewer.StateManager.staticFunctions.remove (name);
 this.localFunctions.remove (name);
 }, "~S");
@@ -336,7 +337,7 @@ var bs;
 if (ht.containsKey (key)) {
 bs = ht.get (key);
 } else {
-bs =  new javax.util.BitSet ();
+bs =  new org.jmol.util.BitSet ();
 ht.put (key, bs);
 }bs.setBits (i1, i2 + 1);
 }, "java.util.Map,~N,~N,~S");
@@ -346,38 +347,31 @@ if (nMax > 0 && sv.length > nMax) sv = sv.substring (0, nMax) + " #...more (" + 
 return sv;
 }, "~S,~S,~N");
 c$.getCommands = Clazz.defineMethod (c$, "getCommands", 
-function (ht) {
-return org.jmol.viewer.StateManager.getCommands (ht, null, "select");
-}, "java.util.Map");
-c$.getCommands = Clazz.defineMethod (c$, "getCommands", 
-function (htDefine, htMore) {
-return org.jmol.viewer.StateManager.getCommands (htDefine, htMore, "select");
-}, "java.util.Map,java.util.Map");
-c$.getCommands = Clazz.defineMethod (c$, "getCommands", 
 function (htDefine, htMore, selectCmd) {
-var s =  new javax.util.StringXBuilder ();
-var setPrev = org.jmol.viewer.StateManager.getCommands (htDefine, s, null, selectCmd);
-if (htMore != null) org.jmol.viewer.StateManager.getCommands (htMore, s, setPrev, "select");
+var s =  new org.jmol.util.StringXBuilder ();
+var setPrev = org.jmol.viewer.StateManager.getCommands2 (htDefine, s, null, selectCmd);
+if (htMore != null) org.jmol.viewer.StateManager.getCommands2 (htMore, s, setPrev, "select");
 return s.toString ();
 }, "java.util.Map,java.util.Map,~S");
-c$.getCommands = Clazz.defineMethod (c$, "getCommands", 
+c$.getCommands2 = Clazz.defineMethod (c$, "getCommands2", 
 ($fz = function (ht, s, setPrev, selectCmd) {
 if (ht == null) return "";
 for (var entry, $entry = ht.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var set = org.jmol.util.Escape.escape (entry.getValue ());
-if (set.length < 5) continue ;set = selectCmd + " " + set;
+if (set.length < 5) continue;
+set = selectCmd + " " + set;
 if (!set.equals (setPrev)) org.jmol.viewer.StateManager.appendCmd (s, set);
 setPrev = set;
 if (key.indexOf ("-") != 0) org.jmol.viewer.StateManager.appendCmd (s, key);
 }
 return setPrev;
-}, $fz.isPrivate = true, $fz), "java.util.Map,javax.util.StringXBuilder,~S,~S");
+}, $fz.isPrivate = true, $fz), "java.util.Map,org.jmol.util.StringXBuilder,~S,~S");
 c$.appendCmd = Clazz.defineMethod (c$, "appendCmd", 
 function (s, cmd) {
-if (cmd.length == 0) return ;
+if (cmd.length == 0) return;
 s.append ("  ").append (cmd).append (";\n");
-}, "javax.util.StringXBuilder,~S");
+}, "org.jmol.util.StringXBuilder,~S");
 c$.$StateManager$Orientation$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
@@ -395,21 +389,20 @@ this.yNav = NaN;
 this.navDepth = NaN;
 this.windowCenteredFlag = false;
 this.navigationMode = false;
-this.navigateSurface = false;
 this.moveToText = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.viewer.StateManager, "Orientation");
 Clazz.prepareFields (c$, function () {
-this.rotationMatrix =  new javax.vecmath.Matrix3f ();
-this.center =  new javax.vecmath.Point3f ();
-this.navCenter =  new javax.vecmath.Point3f ();
+this.rotationMatrix =  new org.jmol.util.Matrix3f ();
+this.center =  new org.jmol.util.Point3f ();
+this.navCenter =  new org.jmol.util.Point3f ();
 });
 Clazz.makeConstructor (c$, 
 function (a) {
 if (a) {
 var b = this.b$["org.jmol.viewer.StateManager"].viewer.getModelSetAuxiliaryInfoValue ("defaultOrientationMatrix");
 if (b == null) this.rotationMatrix.setIdentity ();
- else this.rotationMatrix.set (b);
+ else this.rotationMatrix.setM (b);
 } else {
 this.b$["org.jmol.viewer.StateManager"].viewer.getRotation (this.rotationMatrix);
 }this.xTrans = this.b$["org.jmol.viewer.StateManager"].viewer.getTranslationXPercent ();
@@ -419,13 +412,12 @@ this.center.setT (this.b$["org.jmol.viewer.StateManager"].viewer.getRotationCent
 this.windowCenteredFlag = this.b$["org.jmol.viewer.StateManager"].viewer.isWindowCentered ();
 this.rotationRadius = this.b$["org.jmol.viewer.StateManager"].viewer.getRotationRadius ();
 this.navigationMode = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationMode ();
-this.navigateSurface = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigateSurface ();
 this.moveToText = this.b$["org.jmol.viewer.StateManager"].viewer.getMoveToText (-1);
 if (this.navigationMode) {
 this.xNav = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationOffsetPercent ('X');
 this.yNav = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationOffsetPercent ('Y');
 this.navDepth = this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationDepthPercent ();
-this.navCenter = javax.vecmath.Point3f.newP (this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationCenter ());
+this.navCenter = org.jmol.util.Point3f.newP (this.b$["org.jmol.viewer.StateManager"].viewer.getNavigationCenter ());
 }}, "~B");
 Clazz.defineMethod (c$, "getMoveToText", 
 function (a) {
@@ -435,11 +427,10 @@ Clazz.defineMethod (c$, "restore",
 function (a, b) {
 if (!b) {
 this.b$["org.jmol.viewer.StateManager"].viewer.setRotationMatrix (this.rotationMatrix);
-return ;
+return;
 }this.b$["org.jmol.viewer.StateManager"].viewer.setBooleanProperty ("windowCentered", this.windowCenteredFlag);
 this.b$["org.jmol.viewer.StateManager"].viewer.setBooleanProperty ("navigationMode", this.navigationMode);
-this.b$["org.jmol.viewer.StateManager"].viewer.setBooleanProperty ("navigateSurface", this.navigateSurface);
-this.b$["org.jmol.viewer.StateManager"].viewer.moveTo (a, this.center, null, NaN, this.rotationMatrix, this.zoom, this.xTrans, this.yTrans, this.rotationRadius, this.navCenter, this.xNav, this.yNav, this.navDepth);
+this.b$["org.jmol.viewer.StateManager"].viewer.moveTo (this.b$["org.jmol.viewer.StateManager"].viewer.eval, a, this.center, null, NaN, this.rotationMatrix, this.zoom, this.xTrans, this.yTrans, this.rotationRadius, this.navCenter, this.xNav, this.yNav, this.navDepth);
 }, "~N,~B");
 c$ = Clazz.p0p ();
 };
@@ -455,7 +446,7 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function () {
 var a = this.b$["org.jmol.viewer.StateManager"].viewer.getModelSet ();
-if (a == null) return ;
+if (a == null) return;
 this.bondCount = a.getBondCount ();
 this.connections =  new Array (this.bondCount + 1);
 var b = a.getBonds ();
@@ -467,12 +458,13 @@ this.connections[c] =  new org.jmol.viewer.StateManager.Connection (d.getAtomInd
 Clazz.defineMethod (c$, "restore", 
 function () {
 var a = this.b$["org.jmol.viewer.StateManager"].viewer.getModelSet ();
-if (a == null) return ;
+if (a == null) return;
 a.deleteAllBonds ();
 for (var b = this.bondCount; --b >= 0; ) {
 var c = this.connections[b];
 var d = a.getAtomCount ();
-if (c.atomIndex1 >= d || c.atomIndex2 >= d) continue ;var e = a.bondAtoms (a.atoms[c.atomIndex1], a.atoms[c.atomIndex2], c.order, c.mad, null, c.energy, false, true);
+if (c.atomIndex1 >= d || c.atomIndex2 >= d) continue;
+var e = a.bondAtoms (a.atoms[c.atomIndex1], a.atoms[c.atomIndex2], c.order, c.mad, null, c.energy, false, true);
 e.setColix (c.colix);
 e.setShapeVisibilityFlags (c.shapeVisibilityFlags);
 }
@@ -590,6 +582,7 @@ this.multipleBondSpacing = -1;
 this.multipleBondRadiusFactor = 0;
 this.cartoonBaseEdges = false;
 this.cartoonRockets = false;
+this.cartoonFancy = false;
 this.chainCaseSensitive = false;
 this.hermiteLevel = 0;
 this.highResolutionFlag = false;
@@ -671,7 +664,6 @@ this.vibrationScale = 1;
 this.wireframeRotation = false;
 this.hideNavigationPoint = false;
 this.navigationMode = false;
-this.navigateSurface = false;
 this.navigationPeriodic = false;
 this.navigationSpeed = 5;
 this.showNavigationPointAlways = false;
@@ -697,11 +689,11 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.viewer.StateManager, "GlobalSettings");
 Clazz.prepareFields (c$, function () {
 this.htUserVariables =  new java.util.Hashtable ();
-this.ptDefaultLattice =  new javax.vecmath.Point3f ();
+this.ptDefaultLattice =  new org.jmol.util.Point3f ();
 this.axesMode = org.jmol.constant.EnumAxesMode.BOUNDBOX;
-this.objColors =  Clazz.newArray (8, 0);
-this.objStateOn =  Clazz.newArray (8, false);
-this.objMad =  Clazz.newArray (8, 0);
+this.objColors =  Clazz.newIntArray (8, 0);
+this.objStateOn =  Clazz.newBooleanArray (8, false);
+this.objMad =  Clazz.newIntArray (8, 0);
 this.structureList =  new java.util.Hashtable ();
 {
 this.structureList.put (org.jmol.constant.EnumStructure.TURN, [30, 90, -15, 95]);
@@ -717,15 +709,15 @@ function () {
 var a = this.htUserVariables.keySet ().iterator ();
 while (a.hasNext ()) {
 var b = a.next ();
-if ((b.charAt (0)).charCodeAt (0) == 64 || b.startsWith ("site_")) a.remove ();
+if (b.charAt (0) == '@' || b.startsWith ("site_")) a.remove ();
 }
 this.setPicked (-1);
-this.setParameterValue ("_atomhovered", -1);
-this.setParameterValue ("_pickinfo", "");
-this.setParameterValue ("selectionhalos", false);
-this.setParameterValue ("hidenotselected", false);
-this.setParameterValue ("measurementlabels", this.measurementLabels = true);
-this.setParameterValue ("drawHover", this.drawHover = false);
+this.setParamI ("_atomhovered", -1);
+this.setParamS ("_pickinfo", "");
+this.setParamB ("selectionhalos", false);
+this.setParamB ("hidenotselected", false);
+this.setParamB ("measurementlabels", this.measurementLabels = true);
+this.setParamB ("drawHover", this.drawHover = false);
 });
 Clazz.defineMethod (c$, "registerAllValues", 
 function (a, b) {
@@ -745,272 +737,272 @@ this.allowKeyStrokes = a.allowKeyStrokes;
 this.legacyAutoBonding = a.legacyAutoBonding;
 this.useScriptQueue = a.useScriptQueue;
 this.useArcBall = a.useArcBall;
-}for (var item, $item = 0, $$item = org.jmol.constant.EnumCallback.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) this.resetParameterStringValue (item.name () + "Callback", a);
+}for (var item, $item = 0, $$item = org.jmol.constant.EnumCallback.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) this.resetValue (item.name () + "Callback", a);
 
-this.setParameterValue ("historyLevel", 0);
-this.setParameterValue ("depth", 0);
-this.setParameterValue ("gestureSwipeFactor", 1.0);
-this.setParameterValue ("hideNotSelected", false);
-this.setParameterValue ("hoverLabel", "");
-this.setParameterValue ("isKiosk", this.b$["org.jmol.viewer.StateManager"].viewer.isKiosk ());
-this.setParameterValue ("logFile", this.b$["org.jmol.viewer.StateManager"].viewer.getLogFile ());
-this.setParameterValue ("logLevel", org.jmol.util.Logger.getLogLevel ());
-this.setParameterValue ("mouseWheelFactor", 1.15);
-this.setParameterValue ("mouseDragFactor", 1.0);
-this.setParameterValue ("navFps", 10);
-this.setParameterValue ("navigationDepth", 0);
-this.setParameterValue ("navigationSlab", 0);
-this.setParameterValue ("navX", 0);
-this.setParameterValue ("navY", 0);
-this.setParameterValue ("navZ", 0);
-this.setParameterValue ("pathForAllFiles", "");
-this.setParameterValue ("perspectiveModel", 11);
-this.setParameterValue ("picking", "identify");
-this.setParameterValue ("pickingStyle", "toggle");
-this.setParameterValue ("refreshing", true);
-this.setParameterValue ("rotationRadius", 0);
-this.setParameterValue ("scaleAngstromsPerInch", 0);
-this.setParameterValue ("scriptReportingLevel", 0);
-this.setParameterValue ("selectionHalos", false);
-this.setParameterValue ("showaxes", false);
-this.setParameterValue ("showboundbox", false);
-this.setParameterValue ("showfrank", false);
-this.setParameterValue ("showUnitcell", false);
-this.setParameterValue ("slab", 100);
-this.setParameterValue ("slabEnabled", false);
-this.setParameterValue ("slabrange", 0);
-this.setParameterValue ("spinX", 0);
-this.setParameterValue ("spinY", 30);
-this.setParameterValue ("spinZ", 0);
-this.setParameterValue ("spinFps", 30);
-this.setParameterValue ("stereoDegrees", -5);
-this.setParameterValue ("stateversion", 0);
-this.setParameterValue ("syncScript", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().syncingScripts);
-this.setParameterValue ("syncMouse", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().syncingMouse);
-this.setParameterValue ("syncStereo", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().stereoSync);
-this.setParameterValue ("windowCentered", true);
-this.setParameterValue ("zoomEnabled", true);
-this.setParameterValue ("zDepth", 0);
-this.setParameterValue ("zShade", false);
-this.setParameterValue ("zSlab", 50);
-this.setParameterValue ("_version", org.jmol.viewer.StateManager.getJmolVersionInt ());
-this.setParameterValue ("axesWindow", true);
-this.setParameterValue ("axesMolecular", false);
-this.setParameterValue ("axesPosition", false);
-this.setParameterValue ("axesUnitcell", false);
-this.setParameterValue ("backgroundModel", 0);
-this.setParameterValue ("colorRasmol", false);
-this.setParameterValue ("currentLocalPath", "");
-this.setParameterValue ("defaultLattice", "{0 0 0}");
-this.setParameterValue ("defaultColorScheme", "Jmol");
-this.setParameterValue ("defaultDirectoryLocal", "");
-this.setParameterValue ("defaults", "Jmol");
-this.setParameterValue ("defaultVDW", "Jmol");
-this.setParameterValue ("exportDrivers", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
-this.setParameterValue ("propertyAtomNumberColumnCount", 0);
-this.setParameterValue ("propertyAtomNumberField", 0);
-this.setParameterValue ("propertyDataColumnCount", 0);
-this.setParameterValue ("propertyDataField", 0);
-this.setParameterValue ("undo", true);
-this.setParameterValue ("allowEmbeddedScripts", this.allowEmbeddedScripts);
-this.setParameterValue ("allowGestures", this.allowGestures);
-this.setParameterValue ("allowKeyStrokes", this.allowKeyStrokes);
-this.setParameterValue ("allowModelkit", this.allowModelkit);
-this.setParameterValue ("allowMultiTouch", this.allowMultiTouch);
-this.setParameterValue ("allowRotateSelected", this.allowRotateSelected);
-this.setParameterValue ("allowMoveAtoms", this.allowMoveAtoms);
-this.setParameterValue ("ambientPercent", this.ambientPercent);
-this.setParameterValue ("animationFps", this.animationFps);
-this.setParameterValue ("antialiasImages", this.antialiasImages);
-this.setParameterValue ("antialiasDisplay", this.antialiasDisplay);
-this.setParameterValue ("antialiasTranslucent", this.antialiasTranslucent);
-this.setParameterValue ("appendNew", this.appendNew);
-this.setParameterValue ("appletProxy", this.appletProxy);
-this.setParameterValue ("applySymmetryToBonds", this.applySymmetryToBonds);
-this.setParameterValue ("atomPicking", this.atomPicking);
-this.setParameterValue ("atomTypes", this.atomTypes);
-this.setParameterValue ("autoBond", this.autoBond);
-this.setParameterValue ("autoFps", this.autoFps);
-this.setParameterValue ("axesMode", this.axesMode.getCode ());
-this.setParameterValue ("axesScale", this.axesScale);
-this.setParameterValue ("axesOrientationRasmol", this.axesOrientationRasmol);
-this.setParameterValue ("bondModeOr", this.bondModeOr);
-this.setParameterValue ("bondPicking", this.bondPicking);
-this.setParameterValue ("bondRadiusMilliAngstroms", this.bondRadiusMilliAngstroms);
-this.setParameterValue ("bondTolerance", this.bondTolerance);
-this.setParameterValue ("cameraDepth", this.cameraDepth);
-this.setParameterValue ("cartoonBaseEdges", this.cartoonBaseEdges);
-this.setParameterValue ("cartoonRockets", this.cartoonRockets);
-this.setParameterValue ("chainCaseSensitive", this.chainCaseSensitive);
-this.setParameterValue ("dataSeparator", this.dataSeparator);
-this.setParameterValue ("debugScript", this.debugScript);
-this.setParameterValue ("defaultAngleLabel", this.defaultAngleLabel);
-this.setParameterValue ("defaultDrawArrowScale", this.defaultDrawArrowScale);
-this.setParameterValue ("defaultDirectory", this.defaultDirectory);
-this.setParameterValue ("defaultDistanceLabel", this.defaultDistanceLabel);
-this.setParameterValue ("defaultDropScript", this.defaultDropScript);
-this.setParameterValue ("defaultLabelPDB", this.defaultLabelPDB);
-this.setParameterValue ("defaultLabelXYZ", this.defaultLabelXYZ);
-this.setParameterValue ("defaultLoadFilter", this.defaultLoadFilter);
-this.setParameterValue ("defaultLoadScript", this.defaultLoadScript);
-this.setParameterValue ("defaultStructureDSSP", this.defaultStructureDSSP);
-this.setParameterValue ("defaultTorsionLabel", this.defaultTorsionLabel);
-this.setParameterValue ("defaultTranslucent", this.defaultTranslucent);
-this.setParameterValue ("delayMaximumMs", this.delayMaximumMs);
-this.setParameterValue ("diffusePercent", this.diffusePercent);
-this.setParameterValue ("dipoleScale", this.dipoleScale);
-this.setParameterValue ("disablePopupMenu", this.disablePopupMenu);
-this.setParameterValue ("displayCellParameters", this.displayCellParameters);
-this.setParameterValue ("dotDensity", this.dotDensity);
-this.setParameterValue ("dotScale", this.dotScale);
-this.setParameterValue ("dotsSelectedOnly", this.dotsSelectedOnly);
-this.setParameterValue ("dotSurface", this.dotSurface);
-this.setParameterValue ("dragSelected", this.dragSelected);
-this.setParameterValue ("drawHover", this.drawHover);
-this.setParameterValue ("drawPicking", this.drawPicking);
-this.setParameterValue ("dsspCalculateHydrogenAlways", this.dsspCalcHydrogen);
-this.setParameterValue ("dynamicMeasurements", this.dynamicMeasurements);
-this.setParameterValue ("edsUrlFormat", this.edsUrlFormat);
-this.setParameterValue ("edsUrlCutoff", this.edsUrlCutoff);
-this.setParameterValue ("ellipsoidArcs", this.ellipsoidArcs);
-this.setParameterValue ("ellipsoidAxes", this.ellipsoidAxes);
-this.setParameterValue ("ellipsoidAxisDiameter", this.ellipsoidAxisDiameter);
-this.setParameterValue ("ellipsoidBall", this.ellipsoidBall);
-this.setParameterValue ("ellipsoidDotCount", this.ellipsoidDotCount);
-this.setParameterValue ("ellipsoidDots", this.ellipsoidDots);
-this.setParameterValue ("ellipsoidFill", this.ellipsoidFill);
-this.setParameterValue ("energyUnits", this.energyUnits);
-this.setParameterValue ("fontScaling", this.fontScaling);
-this.setParameterValue ("fontCaching", this.fontCaching);
-this.setParameterValue ("forceAutoBond", this.forceAutoBond);
-this.setParameterValue ("forceField", this.forceField);
-this.setParameterValue ("fractionalRelative", this.fractionalRelative);
-this.setParameterValue ("greyscaleRendering", this.greyscaleRendering);
-this.setParameterValue ("hbondsAngleMinimum", this.hbondsAngleMinimum);
-this.setParameterValue ("hbondsDistanceMaximum", this.hbondsDistanceMaximum);
-this.setParameterValue ("hbondsBackbone", this.hbondsBackbone);
-this.setParameterValue ("hbondsRasmol", this.hbondsRasmol);
-this.setParameterValue ("hbondsSolid", this.hbondsSolid);
-this.setParameterValue ("helixStep", this.helixStep);
-this.setParameterValue ("helpPath", this.helpPath);
-this.setParameterValue ("hermiteLevel", this.hermiteLevel);
-this.setParameterValue ("hideNameInPopup", this.hideNameInPopup);
-this.setParameterValue ("hideNavigationPoint", this.hideNavigationPoint);
-this.setParameterValue ("highResolution", this.highResolutionFlag);
-this.setParameterValue ("hoverDelay", this.hoverDelayMs / 1000);
-this.setParameterValue ("imageState", this.imageState);
-this.setParameterValue ("isosurfaceKey", this.isosurfaceKey);
-this.setParameterValue ("isosurfacePropertySmoothing", this.isosurfacePropertySmoothing);
-this.setParameterValue ("isosurfacePropertySmoothingPower", this.isosurfacePropertySmoothingPower);
-this.setParameterValue ("justifyMeasurements", this.justifyMeasurements);
-this.setParameterValue ("legacyAutoBonding", this.legacyAutoBonding);
-this.setParameterValue ("loadAtomDataTolerance", this.loadAtomDataTolerance);
-this.setParameterValue ("loadFormat", this.loadFormat);
-this.setParameterValue ("loadLigandFormat", this.loadLigandFormat);
-this.setParameterValue ("logCommands", this.logCommands);
-this.setParameterValue ("logGestures", this.logGestures);
-this.setParameterValue ("measureAllModels", this.measureAllModels);
-this.setParameterValue ("measurementLabels", this.measurementLabels);
-this.setParameterValue ("measurementUnits", this.measureDistanceUnits);
-this.setParameterValue ("meshScale", this.meshScale);
-this.setParameterValue ("messageStyleChime", this.messageStyleChime);
-this.setParameterValue ("minBondDistance", this.minBondDistance);
-this.setParameterValue ("minPixelSelRadius", this.minPixelSelRadius);
-this.setParameterValue ("minimizationSteps", this.minimizationSteps);
-this.setParameterValue ("minimizationRefresh", this.minimizationRefresh);
-this.setParameterValue ("minimizationSilent", this.minimizationSilent);
-this.setParameterValue ("minimizationCriterion", this.minimizationCriterion);
-this.setParameterValue ("modelKitMode", this.modelKitMode);
-this.setParameterValue ("monitorEnergy", this.monitorEnergy);
-this.setParameterValue ("multipleBondRadiusFactor", this.multipleBondRadiusFactor);
-this.setParameterValue ("multipleBondSpacing", this.multipleBondSpacing);
-this.setParameterValue ("multiProcessor", this.multiProcessor && (org.jmol.viewer.Viewer.nProcessors > 1));
-this.setParameterValue ("navigationMode", this.navigationMode);
-this.setParameterValue ("navigateSurface", this.navigateSurface);
-this.setParameterValue ("navigationPeriodic", this.navigationPeriodic);
-this.setParameterValue ("navigationSpeed", this.navigationSpeed);
-this.setParameterValue ("nmrUrlFormat", this.nmrUrlFormat);
-this.setParameterValue ("partialDots", this.partialDots);
-this.setParameterValue ("pdbAddHydrogens", this.pdbAddHydrogens);
-this.setParameterValue ("pdbGetHeader", this.pdbGetHeader);
-this.setParameterValue ("pdbSequential", this.pdbSequential);
-this.setParameterValue ("perspectiveDepth", this.perspectiveDepth);
-this.setParameterValue ("percentVdwAtom", this.percentVdwAtom);
-this.setParameterValue ("phongExponent", this.phongExponent);
-this.setParameterValue ("pickingSpinRate", this.pickingSpinRate);
-this.setParameterValue ("pickLabel", this.pickLabel);
-this.setParameterValue ("pointGroupLinearTolerance", this.pointGroupLinearTolerance);
-this.setParameterValue ("pointGroupDistanceTolerance", this.pointGroupDistanceTolerance);
-this.setParameterValue ("preserveState", this.preserveState);
-this.setParameterValue ("propertyColorScheme", this.propertyColorScheme);
-this.setParameterValue ("quaternionFrame", this.quaternionFrame);
-this.setParameterValue ("rangeSelected", this.rangeSelected);
-this.setParameterValue ("repaintWaitMs", this.repaintWaitMs);
-this.setParameterValue ("ribbonAspectRatio", this.ribbonAspectRatio);
-this.setParameterValue ("ribbonBorder", this.ribbonBorder);
-this.setParameterValue ("rocketBarrels", this.rocketBarrels);
-this.setParameterValue ("saveProteinStructureState", this.saveProteinStructureState);
-this.setParameterValue ("scriptqueue", this.useScriptQueue);
-this.setParameterValue ("selectAllModels", this.selectAllModels);
-this.setParameterValue ("selectHetero", this.rasmolHeteroSetting);
-this.setParameterValue ("selectHydrogen", this.rasmolHydrogenSetting);
-this.setParameterValue ("sheetSmoothing", this.sheetSmoothing);
-this.setParameterValue ("showHiddenSelectionHalos", this.showHiddenSelectionHalos);
-this.setParameterValue ("showHydrogens", this.showHydrogens);
-this.setParameterValue ("showKeyStrokes", this.showKeyStrokes);
-this.setParameterValue ("showMeasurements", this.showMeasurements);
-this.setParameterValue ("showMultipleBonds", this.showMultipleBonds);
-this.setParameterValue ("showNavigationPointAlways", this.showNavigationPointAlways);
-this.setParameterValue ("showScript", this.scriptDelay);
-this.setParameterValue ("showtiming", this.showTiming);
-this.setParameterValue ("slabByMolecule", this.slabByMolecule);
-this.setParameterValue ("slabByAtom", this.slabByAtom);
-this.setParameterValue ("smartAromatic", this.smartAromatic);
-this.setParameterValue ("smallMoleculeMaxAtoms", this.smallMoleculeMaxAtoms);
-this.setParameterValue ("smilesUrlFormat", this.smilesUrlFormat);
-this.setParameterValue ("nihResolverFormat", this.nihResolverFormat);
-this.setParameterValue ("pubChemFormat", this.pubChemFormat);
-this.setParameterValue ("solventProbe", this.solventOn);
-this.setParameterValue ("solventProbeRadius", this.solventProbeRadius);
-this.setParameterValue ("specular", this.specular);
-this.setParameterValue ("specularExponent", this.specularExponent);
-this.setParameterValue ("specularPercent", this.specularPercent);
-this.setParameterValue ("specularPower", this.specularPower);
-this.setParameterValue ("ssbondsBackbone", this.ssbondsBackbone);
-this.setParameterValue ("statusReporting", this.statusReporting);
-this.setParameterValue ("strandCount", this.strandCountForStrands);
-this.setParameterValue ("strandCountForStrands", this.strandCountForStrands);
-this.setParameterValue ("strandCountForMeshRibbon", this.strandCountForMeshRibbon);
-this.setParameterValue ("strutDefaultRadius", this.strutDefaultRadius);
-this.setParameterValue ("strutLengthMaximum", this.strutLengthMaximum);
-this.setParameterValue ("strutSpacing", this.strutSpacing);
-this.setParameterValue ("strutsMultiple", this.strutsMultiple);
-this.setParameterValue ("testFlag1", this.testFlag1);
-this.setParameterValue ("testFlag2", this.testFlag2);
-this.setParameterValue ("testFlag3", this.testFlag3);
-this.setParameterValue ("testFlag4", this.testFlag4);
-this.setParameterValue ("traceAlpha", this.traceAlpha);
-this.setParameterValue ("useArcBall", this.useArcBall);
-this.setParameterValue ("useMinimizationThread", this.useMinimizationThread);
-this.setParameterValue ("useNumberLocalization", this.useNumberLocalization);
-this.setParameterValue ("vectorScale", this.vectorScale);
-this.setParameterValue ("vectorSymmetry", this.vectorSymmetry);
-this.setParameterValue ("vibrationPeriod", this.vibrationPeriod);
-this.setParameterValue ("vibrationScale", this.vibrationScale);
-this.setParameterValue ("visualRange", this.visualRange);
-this.setParameterValue ("waitForMoveTo", this.waitForMoveTo);
-this.setParameterValue ("wireframeRotation", this.wireframeRotation);
-this.setParameterValue ("zDepth", this.zDepth);
-this.setParameterValue ("zeroBasedXyzRasmol", this.zeroBasedXyzRasmol);
-this.setParameterValue ("zoomLarge", this.zoomLarge);
-this.setParameterValue ("zShadePower", this.zShadePower);
-this.setParameterValue ("zSlab", this.zSlab);
+this.setParamI ("historyLevel", 0);
+this.setParamI ("depth", 0);
+this.setParamF ("gestureSwipeFactor", 1.0);
+this.setParamB ("hideNotSelected", false);
+this.setParamS ("hoverLabel", "");
+this.setParamB ("isKiosk", this.b$["org.jmol.viewer.StateManager"].viewer.isKiosk ());
+this.setParamS ("logFile", this.b$["org.jmol.viewer.StateManager"].viewer.getLogFile ());
+this.setParamI ("logLevel", org.jmol.util.Logger.getLogLevel ());
+this.setParamF ("mouseWheelFactor", 1.15);
+this.setParamF ("mouseDragFactor", 1.0);
+this.setParamI ("navFps", 10);
+this.setParamI ("navigationDepth", 0);
+this.setParamI ("navigationSlab", 0);
+this.setParamI ("navX", 0);
+this.setParamI ("navY", 0);
+this.setParamI ("navZ", 0);
+this.setParamS ("pathForAllFiles", "");
+this.setParamI ("perspectiveModel", 11);
+this.setParamS ("picking", "identify");
+this.setParamS ("pickingStyle", "toggle");
+this.setParamB ("refreshing", true);
+this.setParamI ("rotationRadius", 0);
+this.setParamI ("scaleAngstromsPerInch", 0);
+this.setParamI ("scriptReportingLevel", 0);
+this.setParamB ("selectionHalos", false);
+this.setParamB ("showaxes", false);
+this.setParamB ("showboundbox", false);
+this.setParamB ("showfrank", false);
+this.setParamB ("showUnitcell", false);
+this.setParamI ("slab", 100);
+this.setParamB ("slabEnabled", false);
+this.setParamF ("slabrange", 0);
+this.setParamI ("spinX", 0);
+this.setParamI ("spinY", 30);
+this.setParamI ("spinZ", 0);
+this.setParamI ("spinFps", 30);
+this.setParamI ("stereoDegrees", -5);
+this.setParamI ("stateversion", 0);
+this.setParamB ("syncScript", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().syncingScripts);
+this.setParamB ("syncMouse", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().syncingMouse);
+this.setParamB ("syncStereo", this.b$["org.jmol.viewer.StateManager"].viewer.getStatusManager ().stereoSync);
+this.setParamB ("windowCentered", true);
+this.setParamB ("zoomEnabled", true);
+this.setParamI ("zDepth", 0);
+this.setParamB ("zShade", false);
+this.setParamI ("zSlab", 50);
+this.setParamI ("_version", org.jmol.viewer.StateManager.getJmolVersionInt ());
+this.setParamB ("axesWindow", true);
+this.setParamB ("axesMolecular", false);
+this.setParamB ("axesPosition", false);
+this.setParamB ("axesUnitcell", false);
+this.setParamI ("backgroundModel", 0);
+this.setParamB ("colorRasmol", false);
+this.setParamS ("currentLocalPath", "");
+this.setParamS ("defaultLattice", "{0 0 0}");
+this.setParamS ("defaultColorScheme", "Jmol");
+this.setParamS ("defaultDirectoryLocal", "");
+this.setParamS ("defaults", "Jmol");
+this.setParamS ("defaultVDW", "Jmol");
+this.setParamS ("exportDrivers", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
+this.setParamI ("propertyAtomNumberColumnCount", 0);
+this.setParamI ("propertyAtomNumberField", 0);
+this.setParamI ("propertyDataColumnCount", 0);
+this.setParamI ("propertyDataField", 0);
+this.setParamB ("undo", true);
+this.setParamB ("allowEmbeddedScripts", this.allowEmbeddedScripts);
+this.setParamB ("allowGestures", this.allowGestures);
+this.setParamB ("allowKeyStrokes", this.allowKeyStrokes);
+this.setParamB ("allowModelkit", this.allowModelkit);
+this.setParamB ("allowMultiTouch", this.allowMultiTouch);
+this.setParamB ("allowRotateSelected", this.allowRotateSelected);
+this.setParamB ("allowMoveAtoms", this.allowMoveAtoms);
+this.setParamI ("ambientPercent", this.ambientPercent);
+this.setParamI ("animationFps", this.animationFps);
+this.setParamB ("antialiasImages", this.antialiasImages);
+this.setParamB ("antialiasDisplay", this.antialiasDisplay);
+this.setParamB ("antialiasTranslucent", this.antialiasTranslucent);
+this.setParamB ("appendNew", this.appendNew);
+this.setParamS ("appletProxy", this.appletProxy);
+this.setParamB ("applySymmetryToBonds", this.applySymmetryToBonds);
+this.setParamB ("atomPicking", this.atomPicking);
+this.setParamS ("atomTypes", this.atomTypes);
+this.setParamB ("autoBond", this.autoBond);
+this.setParamB ("autoFps", this.autoFps);
+this.setParamI ("axesMode", this.axesMode.getCode ());
+this.setParamF ("axesScale", this.axesScale);
+this.setParamB ("axesOrientationRasmol", this.axesOrientationRasmol);
+this.setParamB ("bondModeOr", this.bondModeOr);
+this.setParamB ("bondPicking", this.bondPicking);
+this.setParamI ("bondRadiusMilliAngstroms", this.bondRadiusMilliAngstroms);
+this.setParamF ("bondTolerance", this.bondTolerance);
+this.setParamF ("cameraDepth", this.cameraDepth);
+this.setParamB ("cartoonBaseEdges", this.cartoonBaseEdges);
+this.setParamB ("cartoonFancy", this.cartoonFancy);
+this.setParamB ("cartoonRockets", this.cartoonRockets);
+this.setParamB ("chainCaseSensitive", this.chainCaseSensitive);
+this.setParamS ("dataSeparator", this.dataSeparator);
+this.setParamB ("debugScript", this.debugScript);
+this.setParamS ("defaultAngleLabel", this.defaultAngleLabel);
+this.setParamF ("defaultDrawArrowScale", this.defaultDrawArrowScale);
+this.setParamS ("defaultDirectory", this.defaultDirectory);
+this.setParamS ("defaultDistanceLabel", this.defaultDistanceLabel);
+this.setParamS ("defaultDropScript", this.defaultDropScript);
+this.setParamS ("defaultLabelPDB", this.defaultLabelPDB);
+this.setParamS ("defaultLabelXYZ", this.defaultLabelXYZ);
+this.setParamS ("defaultLoadFilter", this.defaultLoadFilter);
+this.setParamS ("defaultLoadScript", this.defaultLoadScript);
+this.setParamB ("defaultStructureDSSP", this.defaultStructureDSSP);
+this.setParamS ("defaultTorsionLabel", this.defaultTorsionLabel);
+this.setParamF ("defaultTranslucent", this.defaultTranslucent);
+this.setParamI ("delayMaximumMs", this.delayMaximumMs);
+this.setParamI ("diffusePercent", this.diffusePercent);
+this.setParamF ("dipoleScale", this.dipoleScale);
+this.setParamB ("disablePopupMenu", this.disablePopupMenu);
+this.setParamB ("displayCellParameters", this.displayCellParameters);
+this.setParamI ("dotDensity", this.dotDensity);
+this.setParamI ("dotScale", this.dotScale);
+this.setParamB ("dotsSelectedOnly", this.dotsSelectedOnly);
+this.setParamB ("dotSurface", this.dotSurface);
+this.setParamB ("dragSelected", this.dragSelected);
+this.setParamB ("drawHover", this.drawHover);
+this.setParamB ("drawPicking", this.drawPicking);
+this.setParamB ("dsspCalculateHydrogenAlways", this.dsspCalcHydrogen);
+this.setParamB ("dynamicMeasurements", this.dynamicMeasurements);
+this.setParamS ("edsUrlFormat", this.edsUrlFormat);
+this.setParamS ("edsUrlCutoff", this.edsUrlCutoff);
+this.setParamB ("ellipsoidArcs", this.ellipsoidArcs);
+this.setParamB ("ellipsoidAxes", this.ellipsoidAxes);
+this.setParamF ("ellipsoidAxisDiameter", this.ellipsoidAxisDiameter);
+this.setParamB ("ellipsoidBall", this.ellipsoidBall);
+this.setParamI ("ellipsoidDotCount", this.ellipsoidDotCount);
+this.setParamB ("ellipsoidDots", this.ellipsoidDots);
+this.setParamB ("ellipsoidFill", this.ellipsoidFill);
+this.setParamS ("energyUnits", this.energyUnits);
+this.setParamB ("fontScaling", this.fontScaling);
+this.setParamB ("fontCaching", this.fontCaching);
+this.setParamB ("forceAutoBond", this.forceAutoBond);
+this.setParamS ("forceField", this.forceField);
+this.setParamB ("fractionalRelative", this.fractionalRelative);
+this.setParamB ("greyscaleRendering", this.greyscaleRendering);
+this.setParamF ("hbondsAngleMinimum", this.hbondsAngleMinimum);
+this.setParamF ("hbondsDistanceMaximum", this.hbondsDistanceMaximum);
+this.setParamB ("hbondsBackbone", this.hbondsBackbone);
+this.setParamB ("hbondsRasmol", this.hbondsRasmol);
+this.setParamB ("hbondsSolid", this.hbondsSolid);
+this.setParamI ("helixStep", this.helixStep);
+this.setParamS ("helpPath", this.helpPath);
+this.setParamI ("hermiteLevel", this.hermiteLevel);
+this.setParamB ("hideNameInPopup", this.hideNameInPopup);
+this.setParamB ("hideNavigationPoint", this.hideNavigationPoint);
+this.setParamB ("highResolution", this.highResolutionFlag);
+this.setParamF ("hoverDelay", this.hoverDelayMs / 1000);
+this.setParamB ("imageState", this.imageState);
+this.setParamB ("isosurfaceKey", this.isosurfaceKey);
+this.setParamB ("isosurfacePropertySmoothing", this.isosurfacePropertySmoothing);
+this.setParamI ("isosurfacePropertySmoothingPower", this.isosurfacePropertySmoothingPower);
+this.setParamB ("justifyMeasurements", this.justifyMeasurements);
+this.setParamB ("legacyAutoBonding", this.legacyAutoBonding);
+this.setParamF ("loadAtomDataTolerance", this.loadAtomDataTolerance);
+this.setParamS ("loadFormat", this.loadFormat);
+this.setParamS ("loadLigandFormat", this.loadLigandFormat);
+this.setParamB ("logCommands", this.logCommands);
+this.setParamB ("logGestures", this.logGestures);
+this.setParamB ("measureAllModels", this.measureAllModels);
+this.setParamB ("measurementLabels", this.measurementLabels);
+this.setParamS ("measurementUnits", this.measureDistanceUnits);
+this.setParamI ("meshScale", this.meshScale);
+this.setParamB ("messageStyleChime", this.messageStyleChime);
+this.setParamF ("minBondDistance", this.minBondDistance);
+this.setParamI ("minPixelSelRadius", this.minPixelSelRadius);
+this.setParamI ("minimizationSteps", this.minimizationSteps);
+this.setParamB ("minimizationRefresh", this.minimizationRefresh);
+this.setParamB ("minimizationSilent", this.minimizationSilent);
+this.setParamF ("minimizationCriterion", this.minimizationCriterion);
+this.setParamB ("modelKitMode", this.modelKitMode);
+this.setParamB ("monitorEnergy", this.monitorEnergy);
+this.setParamF ("multipleBondRadiusFactor", this.multipleBondRadiusFactor);
+this.setParamF ("multipleBondSpacing", this.multipleBondSpacing);
+this.setParamB ("multiProcessor", this.multiProcessor && (org.jmol.viewer.Viewer.nProcessors > 1));
+this.setParamB ("navigationMode", this.navigationMode);
+this.setParamB ("navigationPeriodic", this.navigationPeriodic);
+this.setParamF ("navigationSpeed", this.navigationSpeed);
+this.setParamS ("nmrUrlFormat", this.nmrUrlFormat);
+this.setParamB ("partialDots", this.partialDots);
+this.setParamB ("pdbAddHydrogens", this.pdbAddHydrogens);
+this.setParamB ("pdbGetHeader", this.pdbGetHeader);
+this.setParamB ("pdbSequential", this.pdbSequential);
+this.setParamB ("perspectiveDepth", this.perspectiveDepth);
+this.setParamI ("percentVdwAtom", this.percentVdwAtom);
+this.setParamI ("phongExponent", this.phongExponent);
+this.setParamI ("pickingSpinRate", this.pickingSpinRate);
+this.setParamS ("pickLabel", this.pickLabel);
+this.setParamF ("pointGroupLinearTolerance", this.pointGroupLinearTolerance);
+this.setParamF ("pointGroupDistanceTolerance", this.pointGroupDistanceTolerance);
+this.setParamB ("preserveState", this.preserveState);
+this.setParamS ("propertyColorScheme", this.propertyColorScheme);
+this.setParamS ("quaternionFrame", this.quaternionFrame);
+this.setParamB ("rangeSelected", this.rangeSelected);
+this.setParamI ("repaintWaitMs", this.repaintWaitMs);
+this.setParamI ("ribbonAspectRatio", this.ribbonAspectRatio);
+this.setParamB ("ribbonBorder", this.ribbonBorder);
+this.setParamB ("rocketBarrels", this.rocketBarrels);
+this.setParamB ("saveProteinStructureState", this.saveProteinStructureState);
+this.setParamB ("scriptqueue", this.useScriptQueue);
+this.setParamB ("selectAllModels", this.selectAllModels);
+this.setParamB ("selectHetero", this.rasmolHeteroSetting);
+this.setParamB ("selectHydrogen", this.rasmolHydrogenSetting);
+this.setParamF ("sheetSmoothing", this.sheetSmoothing);
+this.setParamB ("showHiddenSelectionHalos", this.showHiddenSelectionHalos);
+this.setParamB ("showHydrogens", this.showHydrogens);
+this.setParamB ("showKeyStrokes", this.showKeyStrokes);
+this.setParamB ("showMeasurements", this.showMeasurements);
+this.setParamB ("showMultipleBonds", this.showMultipleBonds);
+this.setParamB ("showNavigationPointAlways", this.showNavigationPointAlways);
+this.setParamI ("showScript", this.scriptDelay);
+this.setParamB ("showtiming", this.showTiming);
+this.setParamB ("slabByMolecule", this.slabByMolecule);
+this.setParamB ("slabByAtom", this.slabByAtom);
+this.setParamB ("smartAromatic", this.smartAromatic);
+this.setParamI ("smallMoleculeMaxAtoms", this.smallMoleculeMaxAtoms);
+this.setParamS ("smilesUrlFormat", this.smilesUrlFormat);
+this.setParamS ("nihResolverFormat", this.nihResolverFormat);
+this.setParamS ("pubChemFormat", this.pubChemFormat);
+this.setParamB ("solventProbe", this.solventOn);
+this.setParamF ("solventProbeRadius", this.solventProbeRadius);
+this.setParamB ("specular", this.specular);
+this.setParamI ("specularExponent", this.specularExponent);
+this.setParamI ("specularPercent", this.specularPercent);
+this.setParamI ("specularPower", this.specularPower);
+this.setParamB ("ssbondsBackbone", this.ssbondsBackbone);
+this.setParamB ("statusReporting", this.statusReporting);
+this.setParamI ("strandCount", this.strandCountForStrands);
+this.setParamI ("strandCountForStrands", this.strandCountForStrands);
+this.setParamI ("strandCountForMeshRibbon", this.strandCountForMeshRibbon);
+this.setParamF ("strutDefaultRadius", this.strutDefaultRadius);
+this.setParamF ("strutLengthMaximum", this.strutLengthMaximum);
+this.setParamI ("strutSpacing", this.strutSpacing);
+this.setParamB ("strutsMultiple", this.strutsMultiple);
+this.setParamB ("testFlag1", this.testFlag1);
+this.setParamB ("testFlag2", this.testFlag2);
+this.setParamB ("testFlag3", this.testFlag3);
+this.setParamB ("testFlag4", this.testFlag4);
+this.setParamB ("traceAlpha", this.traceAlpha);
+this.setParamB ("useArcBall", this.useArcBall);
+this.setParamB ("useMinimizationThread", this.useMinimizationThread);
+this.setParamB ("useNumberLocalization", this.useNumberLocalization);
+this.setParamF ("vectorScale", this.vectorScale);
+this.setParamB ("vectorSymmetry", this.vectorSymmetry);
+this.setParamF ("vibrationPeriod", this.vibrationPeriod);
+this.setParamF ("vibrationScale", this.vibrationScale);
+this.setParamF ("visualRange", this.visualRange);
+this.setParamB ("waitForMoveTo", this.waitForMoveTo);
+this.setParamB ("wireframeRotation", this.wireframeRotation);
+this.setParamI ("zDepth", this.zDepth);
+this.setParamB ("zeroBasedXyzRasmol", this.zeroBasedXyzRasmol);
+this.setParamB ("zoomLarge", this.zoomLarge);
+this.setParamI ("zShadePower", this.zShadePower);
+this.setParamI ("zSlab", this.zSlab);
 }, "org.jmol.viewer.StateManager.GlobalSettings,~B");
 Clazz.defineMethod (c$, "getLoadState", 
 function (a) {
-var b =  new javax.util.StringXBuilder ();
+var b =  new org.jmol.util.StringXBuilder ();
 org.jmol.viewer.StateManager.appendCmd (b, "set allowEmbeddedScripts false");
-if (this.allowEmbeddedScripts) this.setParameterValue ("allowEmbeddedScripts", true);
+if (this.allowEmbeddedScripts) this.setParamB ("allowEmbeddedScripts", true);
 org.jmol.viewer.StateManager.appendCmd (b, "set appendNew " + this.appendNew);
 org.jmol.viewer.StateManager.appendCmd (b, "set appletProxy " + org.jmol.util.Escape.escapeStr (this.appletProxy));
 org.jmol.viewer.StateManager.appendCmd (b, "set applySymmetryToBonds " + this.applySymmetryToBonds);
@@ -1022,7 +1014,7 @@ org.jmol.viewer.StateManager.appendCmd (b, "set bondTolerance " + this.bondToler
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultLattice " + org.jmol.util.Escape.escapePt (this.ptDefaultLattice));
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultLoadFilter " + org.jmol.util.Escape.escapeStr (this.defaultLoadFilter));
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultLoadScript \"\"");
-if (this.defaultLoadScript.length > 0) this.setParameterValue ("defaultLoadScript", this.defaultLoadScript);
+if (this.defaultLoadScript.length > 0) this.setParamS ("defaultLoadScript", this.defaultLoadScript);
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultStructureDssp " + this.defaultStructureDSSP);
 var c = this.b$["org.jmol.viewer.StateManager"].viewer.getDefaultVdwTypeNameOrData (-2147483648, null);
 org.jmol.viewer.StateManager.appendCmd (b, "set defaultVDW " + c);
@@ -1052,14 +1044,14 @@ return b.toString ();
 Clazz.defineMethod (c$, "setDefaultLattice", 
 function (a) {
 this.ptDefaultLattice.setT (a);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getDefaultLattice", 
 function () {
 return this.ptDefaultLattice;
 });
 Clazz.defineMethod (c$, "getWindowState", 
 function (a, b, c) {
-var d =  new javax.util.StringXBuilder ();
+var d =  new org.jmol.util.StringXBuilder ();
 if (a != null) {
 a.append ("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
 d.append ("\nfunction _setWindowState() {\n");
@@ -1074,10 +1066,10 @@ d.append (this.getSpecularState ());
 org.jmol.viewer.StateManager.appendCmd (d, "statusReporting  = " + this.statusReporting);
 if (a != null) d.append ("}\n\n");
 return d.toString ();
-}, "javax.util.StringXBuilder,~N,~N");
+}, "org.jmol.util.StringXBuilder,~N,~N");
 Clazz.defineMethod (c$, "getSpecularState", 
 function () {
-var a =  new javax.util.StringXBuilder ();
+var a =  new org.jmol.util.StringXBuilder ();
 org.jmol.viewer.StateManager.appendCmd (a, "set ambientPercent " + org.jmol.util.GData.getAmbientPercent ());
 org.jmol.viewer.StateManager.appendCmd (a, "set diffusePercent " + org.jmol.util.GData.getDiffusePercent ());
 org.jmol.viewer.StateManager.appendCmd (a, "set specular " + org.jmol.util.GData.getSpecular ());
@@ -1087,7 +1079,7 @@ var b = org.jmol.util.GData.getSpecularExponent ();
 var c = org.jmol.util.GData.getPhongExponent ();
 if (Math.pow (2, b) == c) org.jmol.viewer.StateManager.appendCmd (a, "set specularExponent " + b);
  else org.jmol.viewer.StateManager.appendCmd (a, "set phongExponent " + c);
-org.jmol.viewer.StateManager.appendCmd (a, "set zShadePower " + org.jmol.util.GData.getZShadePower ());
+org.jmol.viewer.StateManager.appendCmd (a, "set zShadePower " + this.zShadePower);
 return a.toString ();
 });
 Clazz.defineMethod (c$, "setUnits", 
@@ -1101,49 +1093,49 @@ if (a.equalsIgnoreCase ("angstroms")) this.measureDistanceUnits = "angstroms";
  else if (a.equalsIgnoreCase ("vanderwaals") || a.equalsIgnoreCase ("vdw")) this.measureDistanceUnits = "vdw";
  else if (a.equalsIgnoreCase ("kj")) this.energyUnits = "kJ";
  else if (a.equalsIgnoreCase ("kcal")) this.energyUnits = "kcal";
-if (!b.equalsIgnoreCase (this.measureDistanceUnits)) this.setParameterValue ("measurementUnits", this.measureDistanceUnits);
- else if (!c.equalsIgnoreCase (this.energyUnits)) this.setParameterValue ("energyUnits", this.energyUnits);
+if (!b.equalsIgnoreCase (this.measureDistanceUnits)) this.setParamS ("measurementUnits", this.measureDistanceUnits);
+ else if (!c.equalsIgnoreCase (this.energyUnits)) this.setParamS ("energyUnits", this.energyUnits);
 }, "~S");
 Clazz.defineMethod (c$, "isJmolVariable", 
 function (a) {
-return (a.charAt (0)).charCodeAt (0) == 95 || this.htNonbooleanParameterValues.containsKey (a = a.toLowerCase ()) || this.htBooleanParameterFlags.containsKey (a) || org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") >= 0;
+return a.charAt (0) == '_' || this.htNonbooleanParameterValues.containsKey (a = a.toLowerCase ()) || this.htBooleanParameterFlags.containsKey (a) || org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") >= 0;
 }, "~S");
-Clazz.defineMethod (c$, "resetParameterStringValue", 
+Clazz.defineMethod (c$, "resetValue", 
 ($fz = function (a, b) {
-this.setParameterValue (a, b == null ? "" : b.getParameter (a));
+this.setParamS (a, b == null ? "" : b.getParameter (a));
 }, $fz.isPrivate = true, $fz), "~S,org.jmol.viewer.StateManager.GlobalSettings");
-Clazz.defineMethod (c$, "setParameterValue", 
+Clazz.defineMethod (c$, "setParamB", 
 function (a, b) {
 a = a.toLowerCase ();
-if (this.htNonbooleanParameterValues.containsKey (a)) return ;
+if (this.htNonbooleanParameterValues.containsKey (a)) return;
 this.htBooleanParameterFlags.put (a, b ? Boolean.TRUE : Boolean.FALSE);
 }, "~S,~B");
-Clazz.defineMethod (c$, "setParameterValue", 
+Clazz.defineMethod (c$, "setParamI", 
 function (a, b) {
 a = a.toLowerCase ();
-if (this.htBooleanParameterFlags.containsKey (a)) return ;
+if (this.htBooleanParameterFlags.containsKey (a)) return;
 this.htNonbooleanParameterValues.put (a, Integer.$valueOf (b));
 }, "~S,~N");
-Clazz.defineMethod (c$, "setParameterValue", 
+Clazz.defineMethod (c$, "setParamF", 
 function (a, b) {
-if (Float.isNaN (b)) return ;
+if (Float.isNaN (b)) return;
 a = a.toLowerCase ();
-if (this.htBooleanParameterFlags.containsKey (a)) return ;
+if (this.htBooleanParameterFlags.containsKey (a)) return;
 this.htNonbooleanParameterValues.put (a,  new Float (b));
 }, "~S,~N");
-Clazz.defineMethod (c$, "setParameterValue", 
+Clazz.defineMethod (c$, "setParamS", 
 function (a, b) {
 a = a.toLowerCase ();
-if (b == null || this.htBooleanParameterFlags.containsKey (a)) return ;
+if (b == null || this.htBooleanParameterFlags.containsKey (a)) return;
 this.htNonbooleanParameterValues.put (a, b);
 }, "~S,~S");
-Clazz.defineMethod (c$, "removeJmolParameter", 
+Clazz.defineMethod (c$, "removeParam", 
 function (a) {
 a = a.toLowerCase ();
 if (this.htBooleanParameterFlags.containsKey (a)) {
 this.htBooleanParameterFlags.remove (a);
 if (!this.htPropertyFlagsRemoved.containsKey (a)) this.htPropertyFlagsRemoved.put (a, Boolean.FALSE);
-return ;
+return;
 }if (this.htNonbooleanParameterValues.containsKey (a)) this.htNonbooleanParameterValues.remove (a);
 }, "~S");
 Clazz.defineMethod (c$, "setUserVariable", 
@@ -1185,16 +1177,16 @@ return "<not defined>";
 }, "~S,~N");
 Clazz.defineMethod (c$, "getParameter", 
 function (a) {
-var b = this.getParameter (a, false);
+var b = this.getParam (a, false);
 return (b == null ? "" : b);
 }, "~S");
 Clazz.defineMethod (c$, "getOrSetNewVariable", 
 function (a, b) {
 if (a == null || a.length == 0) a = "x";
-var c = this.getParameter (a, true);
-return (c == null && b && (a.charAt (0)).charCodeAt (0) != 95 ? this.setUserVariable (a, org.jmol.script.ScriptVariable.newScriptVariableObj (4, "")) : org.jmol.script.ScriptVariable.getVariable (c));
+var c = this.getParam (a, true);
+return (c == null && b && a.charAt (0) != '_' ? this.setUserVariable (a, org.jmol.script.ScriptVariable.newVariable (4, "")) : org.jmol.script.ScriptVariable.getVariable (c));
 }, "~S,~B");
-Clazz.defineMethod (c$, "getParameter", 
+Clazz.defineMethod (c$, "getParam", 
 function (a, b) {
 a = a.toLowerCase ();
 if (a.equals ("_memory")) {
@@ -1218,7 +1210,7 @@ return (b ? c : org.jmol.script.ScriptVariable.oValue (c));
 }, "~S,~B");
 Clazz.defineMethod (c$, "getAllSettings", 
 function (a) {
-var b =  new javax.util.StringXBuilder ();
+var b =  new org.jmol.util.StringXBuilder ();
 var c;
 var d;
 var e =  new Array (this.htBooleanParameterFlags.size () + this.htNonbooleanParameterValues.size () + this.htUserVariables.size ());
@@ -1232,7 +1224,7 @@ if (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0) e[f++] = (d.indexOf (
 c = this.htNonbooleanParameterValues.keySet ().iterator ();
 while (c.hasNext ()) {
 d = c.next ();
-if ((d.charAt (0)).charCodeAt (0) != 64 && (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0)) {
+if (d.charAt (0) != '@' && (a == null || d.indexOf (a) == 0 || d.indexOf (g) == 0)) {
 var h = this.htNonbooleanParameterValues.get (d);
 if (Clazz.instanceOf (h, String)) h = this.chop (org.jmol.util.Escape.escapeStr (h));
 e[f++] = (d.indexOf ("_") == 0 ? d + " = " : "set " + d + " ") + h;
@@ -1255,11 +1247,11 @@ Clazz.defineMethod (c$, "chop",
 ($fz = function (a) {
 var b = a.length;
 if (b < 512) return a;
-var c =  new javax.util.StringXBuilder ();
+var c =  new org.jmol.util.StringXBuilder ();
 var d = "\"\\\n    + \"";
 var e = 0;
 for (var f = 72; f < b; e = f, f += 72) {
-while ((a.charAt (f - 1)).charCodeAt (0) == 92) f++;
+while (a.charAt (f - 1) == '\\') f++;
 
 c.append ((e == 0 ? "" : d)).append (a.substring (e, f));
 }
@@ -1269,7 +1261,7 @@ return c.toString ();
 Clazz.defineMethod (c$, "getState", 
 function (a) {
 var b =  new Array (this.htBooleanParameterFlags.size () + this.htNonbooleanParameterValues.size ());
-var c =  new javax.util.StringXBuilder ();
+var c =  new org.jmol.util.StringXBuilder ();
 var d = (a != null);
 if (d) {
 a.append ("  _setVariableState;\n");
@@ -1287,7 +1279,7 @@ while (f.hasNext ()) {
 g = f.next ();
 if (this.doReportProperty (g)) {
 var h = this.htNonbooleanParameterValues.get (g);
-if ((g.charAt (0)).charCodeAt (0) == 61) {
+if (g.charAt (0) == '=') {
 g = g.substring (1);
 } else {
 if (g.indexOf ("default") == 0) g = " set " + g;
@@ -1320,10 +1312,10 @@ c.append ("struture SHEET set " + org.jmol.util.Escape.escape (this.structureLis
 c.append ("struture TURN set " + org.jmol.util.Escape.escape (this.structureList.get (org.jmol.constant.EnumStructure.TURN)));
 }if (a != null) c.append ("\n}\n\n");
 return c.toString ();
-}, "javax.util.StringXBuilder");
+}, "org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "doReportProperty", 
 ($fz = function (a) {
-return ((a.charAt (0)).charCodeAt (0) != 95 && org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") < 0);
+return (a.charAt (0) != '_' && org.jmol.viewer.StateManager.unreportedProperties.indexOf (";" + a + ";") < 0);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getVariableList", 
 function () {
@@ -1342,10 +1334,10 @@ Clazz.defineMethod (c$, "setPicked",
 function (a) {
 var b = null;
 if (a >= 0) {
-this.setParameterValue ("_atompicked", a);
-b = this.getParameter ("picked", true);
+this.setParamI ("_atompicked", a);
+b = this.getParam ("picked", true);
 }if (b == null || b.tok != 10) {
-b = org.jmol.script.ScriptVariable.getVariable ( new javax.util.BitSet ());
+b = org.jmol.script.ScriptVariable.newVariable (10,  new org.jmol.util.BitSet ());
 this.setUserVariable ("picked", b);
 }if (a >= 0) org.jmol.script.ScriptVariable.getBitSet (b, false).set (a);
 }, "~N");

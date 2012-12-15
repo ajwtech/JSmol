@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (null, "org.jmol.script.ScriptCompilationTokenParser", ["java.lang.Float", "java.util.ArrayList", "javax.vecmath.Point3f", "org.jmol.i18n.GT", "org.jmol.script.ScriptEvaluator", "$.Token", "org.jmol.util.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.script");
+Clazz.load (null, "org.jmol.script.ScriptCompilationTokenParser", ["java.lang.Float", "java.util.ArrayList", "org.jmol.i18n.GT", "org.jmol.script.ScriptEvaluator", "$.Token", "org.jmol.util.Logger", "$.Point3f", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.script = null;
@@ -112,7 +112,8 @@ this.atokenInfix[this.itokenInfix] = t;
 if (!this.moreTokens ()) break;
 }if (this.lastToken.tok == 1060866) {
 if (!this.clauseDefine (true, false)) return false;
-continue ;}if (!this.isMathExpressionCommand) this.addTokenToPostfixToken (tokenBegin = org.jmol.script.Token.newTokenObj (1048577, "implicitExpressionBegin"));
+continue;
+}if (!this.isMathExpressionCommand) this.addTokenToPostfixToken (tokenBegin = org.jmol.script.Token.newTokenObj (1048577, "implicitExpressionBegin"));
 if (!this.clauseOr (this.isCommaAsOrAllowed || !this.isMathExpressionCommand && this.tokPeekIs (269484048))) return false;
 if (!this.isMathExpressionCommand && !(this.isEmbeddedExpression && this.lastToken === org.jmol.script.Token.tokenCoordinateEnd)) {
 this.addTokenToPostfixToken (org.jmol.script.Token.tokenExpressionEnd);
@@ -637,19 +638,19 @@ if (this.isToken (1048586)) {
 this.returnToken ();
 return this.clausePrimitive ();
 }this.addTokenToPostfixToken (this.theToken);
-if (this.theToken.tok == 1060866) return this.clauseDefine (false, false);
+if (this.theToken.tok == 1060866) return this.clauseDefine (true, false);
 return true;
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "clauseCell", 
 ($fz = function () {
-var cell =  new javax.vecmath.Point3f ();
+var cell =  new org.jmol.util.Point3f ();
 this.tokenNext ();
 if (!this.tokenNextTok (269484436)) return this.errorStr (15, "=");
 if (this.getToken () == null) return this.error (3);
 if (this.isToken (2)) {
 var nnn = this.theToken.intValue;
-cell.x = Math.floor (nnn / 100) - 4;
-cell.y = Math.floor ((nnn % 100) / 10) - 4;
+cell.x = Clazz.doubleToInt (nnn / 100) - 4;
+cell.y = Clazz.doubleToInt ((nnn % 100) / 10) - 4;
 cell.z = (nnn % 10) - 4;
 return this.addTokenToPostfix (1095761925, cell);
 }if (!this.isToken (1048586) || !this.getNumericalToken ()) return this.error (3);
@@ -727,7 +728,7 @@ if (this.tokPeekIs (269484209)) this.getToken ();
  else if (!this.clauseSequenceSpec ()) return false;
 specSeen = true;
 tok = this.tokPeek ();
-}if (tok == 269484066 || tok == 269484209 || tok == 1073741824 || tok == 1112541205 || tok == 1112541206 || tok == 1112541207 || tok == 2 && !wasInteger) {
+}if (tok == 269484066 || tok == 269484209 || tok == 1073741824 || tok == 1112541205 || tok == 1112541206 || tok == 1112541207 || tok == 1141899280 || tok == 2 && !wasInteger) {
 if (!this.clauseChainSpec (tok)) return false;
 specSeen = true;
 tok = this.tokPeek ();
@@ -805,7 +806,7 @@ Clazz.defineMethod (c$, "clauseChainSpec",
 if (tok == 269484066) {
 this.tokenNext ();
 tok = this.tokPeek ();
-if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048609, '\0'.charCodeAt (0), "spec_chain"));
+if (this.isSpecTerminator (tok)) return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048609, 0, "spec_chain"));
 }var chain;
 switch (tok) {
 case 269484209:
@@ -814,13 +815,13 @@ case 2:
 this.getToken ();
 var val = this.theToken.intValue;
 if (val < 0 || val > 9) return this.error (8);
-chain = String.fromCharCode ((48 + val));
+chain = String.fromCharCode (48 + val);
 break;
 default:
 var strChain = "" + this.getToken ().value;
 if (strChain.length != 1) return this.error (8);
 chain = strChain.charAt (0);
-if (chain.charCodeAt (0) == 63) return true;
+if (chain == '?') return true;
 break;
 }
 return this.generateResidueSpecCode (org.jmol.script.Token.newTokenIntVal (1048609, chain.charCodeAt (0), "spec_chain"));
@@ -881,7 +882,7 @@ Clazz.defineMethod (c$, "fixModelSpec",
 var ival = token.intValue;
 if (ival == 2147483647) {
 var f = (this.theValue).floatValue ();
-if (f == Math.round (f)) ival = (Math.round (f)) * 1000000;
+if (f == Clazz.floatToInt (f)) ival = (Clazz.floatToInt (f)) * 1000000;
 if (ival < 0) ival = 2147483647;
 }return ival;
 }, $fz.isPrivate = true, $fz), "org.jmol.script.Token");

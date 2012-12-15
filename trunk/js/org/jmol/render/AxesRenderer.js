@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.render.FontLineShapeRenderer", "javax.vecmath.Point3f"], "org.jmol.render.AxesRenderer", ["org.jmol.constant.EnumAxesMode", "org.jmol.util.Point3fi"], function () {
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.FontLineShapeRenderer", "org.jmol.util.Point3f"], "org.jmol.render.AxesRenderer", ["org.jmol.constant.EnumAxesMode", "org.jmol.util.Point3fi"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.screens = null;
 this.originScreen = null;
@@ -9,10 +9,10 @@ Clazz.instantialize (this, arguments);
 Clazz.prepareFields (c$, function () {
 this.screens =  new Array (6);
 {
-for (var i = 6; --i >= 0; ) this.screens[i] =  new javax.vecmath.Point3f ();
+for (var i = 6; --i >= 0; ) this.screens[i] =  new org.jmol.util.Point3f ();
 
-}this.originScreen =  new javax.vecmath.Point3f ();
-this.colixes =  Clazz.newArray (3, 0);
+}this.originScreen =  new org.jmol.util.Point3f ();
+this.colixes =  Clazz.newShortArray (3, 0);
 });
 Clazz.overrideMethod (c$, "initRenderer", 
 function () {
@@ -23,9 +23,9 @@ Clazz.defineMethod (c$, "render",
 function () {
 var axes = this.shape;
 var mad = this.viewer.getObjectMad (1);
-if (mad == 0 || !this.g3d.checkTranslucent (false)) return ;
+if (mad == 0 || !this.g3d.checkTranslucent (false)) return false;
 var isXY = (axes.axisXY.z != 0);
-if (!isXY && this.viewer.isNavigating () && this.viewer.getNavigationPeriodic ()) return ;
+if (!isXY && this.viewer.isNavigating () && this.viewer.getNavigationPeriodic ()) return false;
 var axesMode = this.viewer.getAxesMode ();
 this.imageFontScaling = this.viewer.getImageFontScaling ();
 if (this.viewer.areAxesTainted ()) {
@@ -36,7 +36,7 @@ if (f != null) axes.font3d = f;
 var cellInfos = this.modelSet.getCellInfos ();
 var modelIndex = this.viewer.getCurrentModelIndex ();
 var isUnitCell = (axesMode === org.jmol.constant.EnumAxesMode.UNITCELL);
-if (this.viewer.isJmolDataFrameForModel (modelIndex) && !this.viewer.getModelSet ().getJmolFrameType (modelIndex).equals ("plot data") || isUnitCell && modelIndex < 0) return ;
+if (this.viewer.isJmolDataFrameForModel (modelIndex) && !this.viewer.getModelSet ().getJmolFrameType (modelIndex).equals ("plot data") || isUnitCell && modelIndex < 0) return false;
 var nPoints = 6;
 var labelPtr = 0;
 if (isUnitCell && cellInfos != null) {
@@ -56,9 +56,9 @@ var slab = this.g3d.getSlab ();
 var diameter = mad;
 var drawTicks = false;
 if (isXY) {
-if (this.exportType == 1) return ;
+if (this.exportType == 1) return false;
 if (mad >= 20) {
-diameter = (mad > 500 ? 5 : Math.floor (mad / 100));
+diameter = (mad > 500 ? 5 : Clazz.doubleToInt (mad / 100));
 if (diameter == 0) diameter = 2;
 } else {
 if (this.g3d.isAntialiased ()) diameter += diameter;
@@ -81,7 +81,7 @@ this.atomA =  new org.jmol.util.Point3fi ();
 this.atomB =  new org.jmol.util.Point3fi ();
 }this.atomA.setT (axes.getOriginPoint (isDataFrame));
 }this.viewer.transformPtNoClip (axes.getOriginPoint (isDataFrame), this.originScreen);
-diameter = this.getDiameter (Math.round (this.originScreen.z), mad);
+diameter = this.getDiameter (Clazz.floatToInt (this.originScreen.z), mad);
 for (var i = nPoints; --i >= 0; ) this.viewer.transformPtNoClip (axes.getAxisPoint (i, isDataFrame), this.screens[i]);
 
 }var xCenter = this.originScreen.x;
@@ -108,6 +108,7 @@ this.colix = this.viewer.getColixBackgroundContrast ();
 this.g3d.setColix (this.colix);
 this.renderLabel ("0", this.originScreen.x, this.originScreen.y, this.originScreen.z, xCenter, yCenter);
 }if (isXY) this.g3d.setSlab (slab);
+return false;
 });
 Clazz.defineMethod (c$, "renderLabel", 
 ($fz = function (str, x, y, z, xCenter, yCenter) {
@@ -121,9 +122,9 @@ dx = (strWidth * 0.75 * dx / dist);
 dy = (strAscent * 0.75 * dy / dist);
 x += dx;
 y += dy;
-}var xStrBaseline = x - Math.floor (strWidth / 2);
-var yStrBaseline = y + Math.floor (strAscent / 2);
-this.g3d.drawString (str, this.font3d, Math.round (xStrBaseline), Math.round (yStrBaseline), Math.round (z), Math.round (z));
+}var xStrBaseline = Math.floor (x - strWidth / 2);
+var yStrBaseline = Math.floor (y + strAscent / 2);
+this.g3d.drawString (str, this.font3d, Clazz.doubleToInt (xStrBaseline), Clazz.doubleToInt (yStrBaseline), Clazz.floatToInt (z), Clazz.floatToInt (z), 0);
 }, $fz.isPrivate = true, $fz), "~S,~N,~N,~N,~N,~N");
 Clazz.defineStatics (c$,
 "axisLabels", ["+X", "+Y", "+Z", null, null, null, "a", "b", "c", "X", "Y", "Z", null, null, null, "X", null, "Z", null, "(Y)", null]);

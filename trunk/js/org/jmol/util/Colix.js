@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.util.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "javax.util.StringXBuilder", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (["org.jmol.util.ArrayUtil", "$.Int2IntHash"], "org.jmol.util.Colix", ["java.lang.Float", "$.IndexOutOfBoundsException", "org.jmol.constant.EnumPalette", "org.jmol.util.ColorUtil", "$.Escape", "$.Logger", "$.Parser", "$.Shader", "$.StringXBuilder"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Colix");
 Clazz.makeConstructor (c$, 
 function () {
@@ -35,8 +35,8 @@ return (org.jmol.util.Colix.colixMax < 2047 ? ($t$ = org.jmol.util.Colix.colixMa
 }, "~N");
 c$.calcArgbsGreyscale = Clazz.defineMethod (c$, "calcArgbsGreyscale", 
 ($fz = function () {
-if (org.jmol.util.Colix.argbsGreyscale != null) return ;
-var a =  Clazz.newArray (org.jmol.util.Colix.argbs.length, 0);
+if (org.jmol.util.Colix.argbsGreyscale != null) return;
+var a =  Clazz.newIntArray (org.jmol.util.Colix.argbs.length, 0);
 for (var i = org.jmol.util.Colix.argbs.length; --i >= 4; ) a[i] = org.jmol.util.ColorUtil.calcGreyscaleRgbFromRgb (org.jmol.util.Colix.argbs[i]);
 
 ($t$ = org.jmol.util.Colix.argbsGreyscale = a, org.jmol.util.Colix.prototype.argbsGreyscale = org.jmol.util.Colix.argbsGreyscale, $t$);
@@ -46,7 +46,7 @@ function (colix) {
 if (org.jmol.util.Colix.argbsGreyscale == null) org.jmol.util.Colix.calcArgbsGreyscale ();
 return org.jmol.util.Colix.argbsGreyscale[colix & -30721];
 }, "~N");
-c$.getShades = Clazz.defineMethod (c$, "getShades", 
+c$.getShadesArgb = Clazz.defineMethod (c$, "getShadesArgb", 
 function (argb, asGrey) {
 if (asGrey) {
 if (org.jmol.util.Colix.argbsGreyscale == null) org.jmol.util.Colix.calcArgbsGreyscale ();
@@ -63,7 +63,7 @@ return shades;
 c$.getShadesGreyscale = Clazz.defineMethod (c$, "getShadesGreyscale", 
 function (colix) {
 colix &= -30721;
-if (org.jmol.util.Colix.ashadesGreyscale == null) ($t$ = org.jmol.util.Colix.ashadesGreyscale =  Clazz.newArray (org.jmol.util.Colix.ashades.length, 0), org.jmol.util.Colix.prototype.ashadesGreyscale = org.jmol.util.Colix.ashadesGreyscale, $t$);
+if (org.jmol.util.Colix.ashadesGreyscale == null) ($t$ = org.jmol.util.Colix.ashadesGreyscale = org.jmol.util.ArrayUtil.newInt2 (org.jmol.util.Colix.ashades.length), org.jmol.util.Colix.prototype.ashadesGreyscale = org.jmol.util.Colix.ashadesGreyscale, $t$);
 var shadesGreyscale = org.jmol.util.Colix.ashadesGreyscale[colix];
 if (shadesGreyscale == null) shadesGreyscale = org.jmol.util.Colix.ashadesGreyscale[colix] = org.jmol.util.Shader.getShades (org.jmol.util.Colix.argbs[colix], true);
 return shadesGreyscale;
@@ -74,12 +74,12 @@ for (var i = org.jmol.util.Colix.colixMax; --i >= 0; ) org.jmol.util.Colix.ashad
 
 ($t$ = org.jmol.util.Shader.sphereShadingCalculated = false, org.jmol.util.Shader.prototype.sphereShadingCalculated = org.jmol.util.Shader.sphereShadingCalculated, $t$);
 });
-c$.getColix = Clazz.defineMethod (c$, "getColix", 
+c$.getColixO = Clazz.defineMethod (c$, "getColixO", 
 function (obj) {
 if (obj == null) return 0;
 if (Clazz.instanceOf (obj, org.jmol.constant.EnumPalette)) return ((obj) === org.jmol.constant.EnumPalette.NONE ? 0 : 2);
 if (Clazz.instanceOf (obj, Integer)) return org.jmol.util.Colix.getColix ((obj).intValue ());
-if (Clazz.instanceOf (obj, String)) return org.jmol.util.Colix.getColix (obj);
+if (Clazz.instanceOf (obj, String)) return org.jmol.util.Colix.getColixS (obj);
 if (Clazz.instanceOf (obj, Byte)) return ((obj).byteValue () == 0 ? 0 : 2);
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("?? getColix(" + obj + ")");
@@ -90,7 +90,7 @@ function (colix, translucentLevel) {
 if (translucentLevel == 0) return (colix & -30721);
 if (translucentLevel < 0) return (colix & -30721 | 30720);
 if (Float.isNaN (translucentLevel) || translucentLevel >= 255 || translucentLevel == 1.0) return ((colix & -30721) | 16384);
-var iLevel = Math.round ((translucentLevel < 1 ? translucentLevel * 256 : translucentLevel <= 9 ? (Math.round ((translucentLevel - 1))) << 5 : translucentLevel < 15 ? 256 : translucentLevel));
+var iLevel = Clazz.doubleToInt (Math.floor (translucentLevel < 1 ? translucentLevel * 256 : translucentLevel <= 9 ? (Clazz.doubleToInt (Math.floor (translucentLevel - 1))) << 5 : translucentLevel < 15 ? 256 : translucentLevel));
 iLevel = (iLevel >> 5) % 16;
 return (colix & -30721 | (iLevel << 11));
 }, "~N,~N");
@@ -131,7 +131,7 @@ c$.getChangeableColixIndex = Clazz.defineMethod (c$, "getChangeableColixIndex",
 function (colix) {
 return (colix >= 0 ? -1 : (colix & 2047));
 }, "~N");
-c$.getColixTranslucent = Clazz.defineMethod (c$, "getColixTranslucent", 
+c$.getColixTranslucent3 = Clazz.defineMethod (c$, "getColixTranslucent3", 
 function (colix, isTranslucent, translucentLevel) {
 if (colix == 0) colix = 1;
 colix &= -30721;
@@ -139,7 +139,7 @@ return (isTranslucent ? org.jmol.util.Colix.applyColorTranslucencyLevel (colix, 
 }, "~N,~B,~N");
 c$.copyColixTranslucency = Clazz.defineMethod (c$, "copyColixTranslucency", 
 function (colixFrom, colixTo) {
-return org.jmol.util.Colix.getColixTranslucent (colixTo, org.jmol.util.Colix.isColixTranslucent (colixFrom), org.jmol.util.Colix.getColixTranslucencyLevel (colixFrom));
+return org.jmol.util.Colix.getColixTranslucent3 (colixTo, org.jmol.util.Colix.isColixTranslucent (colixFrom), org.jmol.util.Colix.getColixTranslucencyLevel (colixFrom));
 }, "~N,~N");
 c$.getColixTranslucencyFractional = Clazz.defineMethod (c$, "getColixTranslucencyFractional", 
 function (colix) {
@@ -166,7 +166,7 @@ default:
 return 255;
 }
 }, "~N");
-c$.getColix = Clazz.defineMethod (c$, "getColix", 
+c$.getColixS = Clazz.defineMethod (c$, "getColixS", 
 function (colorName) {
 var argb = org.jmol.util.ColorUtil.getArgbFromString (colorName);
 if (argb != 0) return org.jmol.util.Colix.getColix (argb);
@@ -178,7 +178,7 @@ c$.getColixArray = Clazz.defineMethod (c$, "getColixArray",
 function (colorNames) {
 if (colorNames == null || colorNames.length == 0) return null;
 var colors = org.jmol.util.Parser.getTokens (colorNames);
-var colixes =  Clazz.newArray (colors.length, 0);
+var colixes =  Clazz.newShortArray (colors.length, 0);
 for (var j = 0; j < colors.length; j++) {
 colixes[j] = org.jmol.util.Colix.getColix (org.jmol.util.ColorUtil.getArgbFromString (colors[j]));
 if (colixes[j] == 0) return null;
@@ -192,7 +192,7 @@ return org.jmol.util.Escape.escapeColor (org.jmol.util.Colix.getArgb (colix));
 c$.getHexCodes = Clazz.defineMethod (c$, "getHexCodes", 
 function (colixes) {
 if (colixes == null) return null;
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < colixes.length; i++) s.append (i == 0 ? "" : " ").append (org.jmol.util.Colix.getHexCode (colixes[i]));
 
 return s.toString ();
@@ -201,7 +201,7 @@ c$.getColixTranslucent = Clazz.defineMethod (c$, "getColixTranslucent",
 function (argb) {
 var a = (argb >> 24) & 0xFF;
 if (a == 0xFF) return org.jmol.util.Colix.getColix (argb);
-return org.jmol.util.Colix.getColixTranslucent (org.jmol.util.Colix.getColix (argb), true, a / 255);
+return org.jmol.util.Colix.getColixTranslucent3 (org.jmol.util.Colix.getColix (argb), true, a / 255);
 }, "~N");
 Clazz.defineStatics (c$,
 "INHERIT_ALL", 0,
@@ -210,9 +210,10 @@ Clazz.defineStatics (c$,
 "RAW_RGB", 3,
 "SPECIAL_COLIX_MAX", 4,
 "colixMax", 4,
-"argbs",  Clazz.newArray (128, 0),
-"argbsGreyscale", null,
-"ashades",  Clazz.newArray (128, 0),
+"argbs",  Clazz.newIntArray (128, 0),
+"argbsGreyscale", null);
+c$.ashades = c$.prototype.ashades = org.jmol.util.ArrayUtil.newInt2 (128);
+Clazz.defineStatics (c$,
 "ashadesGreyscale", null);
 c$.colixHash = c$.prototype.colixHash =  new org.jmol.util.Int2IntHash (256);
 Clazz.defineStatics (c$,

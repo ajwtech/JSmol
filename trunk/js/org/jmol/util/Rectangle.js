@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 c$ = Clazz.decorateAsClass (function () {
 this.x = 0;
 this.y = 0;

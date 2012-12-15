@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.declarePackage ("org.jmol.jvxl.readers");
 Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.AtomPropertyMapper", ["java.lang.Float", "org.jmol.api.Interface", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.mepCalc = null;
@@ -93,7 +93,8 @@ var iAtom = this.myIndex[ia];
 var isNearby = (iAtom >= this.firstNearbyAtom);
 var ptA = this.atomXyz[iAtom];
 var p = this.atomProp[iAtom];
-if (Float.isNaN (p)) continue ;var d2 = pt.distanceSquared (ptA);
+if (Float.isNaN (p)) continue;
+var d2 = pt.distanceSquared (ptA);
 if (isNearby) {
 if (d2 < dminNearby) {
 dminNearby = d2;
@@ -112,5 +113,5 @@ vdiv += d2;
 value += d2 * p;
 }}
 return (this.mepCalc != null ? value : this.doSmoothProperty ? (vdiv == 0 || dminNearby < dmin ? NaN : value / vdiv) : value);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 });

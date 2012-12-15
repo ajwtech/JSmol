@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["javax.util.BitSet", "org.jmol.constant.EnumAnimationMode"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "org.jmol.viewer.StateManager"], function () {
+Clazz.declarePackage ("org.jmol.viewer");
+Clazz.load (["org.jmol.constant.EnumAnimationMode", "org.jmol.util.BitSet"], "org.jmol.viewer.AnimationManager", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "org.jmol.thread.AnimationThread", "org.jmol.util.Escape", "$.StringXBuilder", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.animationReplayMode = null;
@@ -26,7 +26,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.viewer, "AnimationManager");
 Clazz.prepareFields (c$, function () {
 this.animationReplayMode = org.jmol.constant.EnumAnimationMode.ONCE;
-this.bsVisibleFrames =  new javax.util.BitSet ();
+this.bsVisibleFrames =  new org.jmol.util.BitSet ();
 });
 Clazz.makeConstructor (c$, 
 function (viewer) {
@@ -36,10 +36,6 @@ Clazz.defineMethod (c$, "getVisibleFramesBitSet",
 function () {
 return this.bsVisibleFrames;
 });
-Clazz.defineMethod (c$, "setCurrentModelIndex", 
-function (modelIndex) {
-this.setCurrentModelIndex (modelIndex, true);
-}, "~N");
 Clazz.defineMethod (c$, "setCurrentModelIndex", 
 function (modelIndex, clearBackgroundModel) {
 if (modelIndex < 0) this.setAnimationOff (false);
@@ -92,8 +88,8 @@ this.bsVisibleFrames.clearAll ();
 if (this.backgroundModelIndex >= 0) this.bsVisibleFrames.set (this.backgroundModelIndex);
 if (this.currentModelIndex >= 0) {
 this.bsVisibleFrames.set (this.currentModelIndex);
-return ;
-}if (this.frameStep == 0) return ;
+return;
+}if (this.frameStep == 0) return;
 var nDisplayed = 0;
 var frameDisplayed = 0;
 for (var i = this.firstModelIndex; i != this.lastModelIndex; i += this.frameStep) if (!this.viewer.isJmolDataFrameForModel (i)) {
@@ -105,7 +101,7 @@ if (this.firstModelIndex == this.lastModelIndex || !this.viewer.isJmolDataFrameF
 this.bsVisibleFrames.set (this.lastModelIndex);
 if (nDisplayed == 0) this.firstModelIndex = this.lastModelIndex;
 nDisplayed = 0;
-}if (nDisplayed == 1 && this.currentModelIndex < 0) this.setCurrentModelIndex (frameDisplayed);
+}if (nDisplayed == 1 && this.currentModelIndex < 0) this.setCurrentModelIndex (frameDisplayed, true);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "initializePointers", 
 function (frameStep) {
@@ -118,7 +114,7 @@ this.viewer.setFrameVariables ();
 Clazz.defineMethod (c$, "clear", 
 function () {
 this.setAnimationOn (false);
-this.setCurrentModelIndex (0);
+this.setCurrentModelIndex (0, true);
 this.currentDirection = 1;
 this.setAnimationDirection (1);
 this.setAnimationFps (10);
@@ -147,7 +143,7 @@ Clazz.defineMethod (c$, "getState",
 function (sfunc) {
 var modelCount = this.viewer.getModelCount ();
 if (modelCount < 2) return "";
-var commands =  new javax.util.StringXBuilder ();
+var commands =  new org.jmol.util.StringXBuilder ();
 if (sfunc != null) {
 sfunc.append ("  _setFrameState;\n");
 commands.append ("function _setFrameState() {\n");
@@ -165,7 +161,7 @@ org.jmol.viewer.StateManager.appendCmd (commands, "animation " + (!this.$animati
 if (this.$animationOn && this.animationPaused) org.jmol.viewer.StateManager.appendCmd (commands, "animation PAUSE");
 if (sfunc != null) commands.append ("}\n\n");
 return commands.toString ();
-}, "javax.util.StringXBuilder");
+}, "org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "setAnimationDirection", 
 function (animationDirection) {
 this.animationDirection = animationDirection;
@@ -177,9 +173,9 @@ this.animationFps = animationFps;
 Clazz.defineMethod (c$, "setAnimationReplayMode", 
 function (animationReplayMode, firstFrameDelay, lastFrameDelay) {
 this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
-this.firstFrameDelayMs = Math.round ((this.firstFrameDelay * 1000));
+this.firstFrameDelayMs = Clazz.floatToInt (this.firstFrameDelay * 1000);
 this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
-this.lastFrameDelayMs = Math.round ((this.lastFrameDelay * 1000));
+this.lastFrameDelayMs = Clazz.floatToInt (this.lastFrameDelay * 1000);
 this.animationReplayMode = animationReplayMode;
 this.viewer.setFrameVariables ();
 }, "org.jmol.constant.EnumAnimationMode,~N,~N");
@@ -204,7 +200,7 @@ Clazz.defineMethod (c$, "setAnimationOn",
 function (animationOn) {
 if (!animationOn || !this.viewer.haveModelSet () || this.viewer.isHeadless ()) {
 this.setAnimationOff (false);
-return ;
+return;
 }if (!this.viewer.getSpinOn ()) this.viewer.refresh (3, "Viewer:setAnimationOn");
 this.setAnimationRange (-1, -1);
 this.resumeAnimation ();
@@ -237,7 +233,7 @@ function () {
 if (this.currentModelIndex < 0) this.setAnimationRange (this.firstModelIndex, this.lastModelIndex);
 if (this.viewer.getModelCount () <= 1) {
 this.animationOn (false);
-return ;
+return;
 }this.animationOn (true);
 this.animationPaused = false;
 if (this.animationThread == null) {
@@ -251,11 +247,11 @@ return this.setAnimationRelative (this.animationDirection);
 });
 Clazz.defineMethod (c$, "setAnimationLast", 
 function () {
-this.setCurrentModelIndex (this.animationDirection > 0 ? this.lastModelIndex : this.firstModelIndex);
+this.setCurrentModelIndex (this.animationDirection > 0 ? this.lastModelIndex : this.firstModelIndex, true);
 });
 Clazz.defineMethod (c$, "rewindAnimation", 
 function () {
-this.setCurrentModelIndex (this.animationDirection > 0 ? this.firstModelIndex : this.lastModelIndex);
+this.setCurrentModelIndex (this.animationDirection > 0 ? this.firstModelIndex : this.lastModelIndex, true);
 this.currentDirection = 1;
 this.viewer.setFrameVariables ();
 });
@@ -281,7 +277,7 @@ modelIndexNext -= 2 * frameStep;
 }
 }var nModels = this.viewer.getModelCount ();
 if (modelIndexNext < 0 || modelIndexNext >= nModels) return false;
-this.setCurrentModelIndex (modelIndexNext);
+this.setCurrentModelIndex (modelIndexNext, true);
 return true;
 }, "~N");
 Clazz.defineMethod (c$, "getAnimRunTimeSeconds", 

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.AimsReader", ["org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.globalDoApplySymmetry = false;
@@ -51,7 +51,7 @@ Clazz.defineMethod (c$, "readAtom",
 ($fz = function (tokens, isFractional) {
 if (tokens.length < 5) {
 org.jmol.util.Logger.warn ("cannot read line with FHI-aims line: " + this.line);
-return ;
+return;
 }if (this.isFractional != isFractional) this.setFractionalCoordinates (this.isFractional = isFractional);
 var atom = this.atomSetCollection.addNewAtom ();
 this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
@@ -61,11 +61,11 @@ Clazz.defineMethod (c$, "readMultipole",
 ($fz = function (tokens) {
 if (tokens.length < 6) {
 org.jmol.util.Logger.warn ("cannot read line with FHI-aims atom data: " + this.line);
-return ;
+return;
 }var order = this.parseIntStr (tokens[4]);
 if (order > 0) {
 org.jmol.util.Logger.warn ("multipole line ignored since only monopoles are currently supported: " + this.line);
-return ;
+return;
 }if (this.isFractional) this.setFractionalCoordinates (this.isFractional = false);
 var atom = this.atomSetCollection.addNewAtom ();
 this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));

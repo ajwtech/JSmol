@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.script");
+Clazz.declarePackage ("org.jmol.script");
 Clazz.load (null, "org.jmol.script.ScriptFlowContext", ["org.jmol.script.ScriptCompiler"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.compiler = null;

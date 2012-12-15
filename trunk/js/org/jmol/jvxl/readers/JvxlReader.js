@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.JvxlXmlReader"], "org.jmol.jvxl.readers.JvxlReader", ["java.lang.NullPointerException", "javax.util.StringXBuilder", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Colix", "$.Escape", "$.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.JvxlXmlReader"], "org.jmol.jvxl.readers.JvxlReader", ["java.lang.NullPointerException", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Colix", "$.Escape", "$.Logger", "$.Parser", "$.Point4f", "$.StringXBuilder"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "JvxlReader", org.jmol.jvxl.readers.JvxlXmlReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -13,7 +13,7 @@ this.JVXL_VERSION = "2.0";
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ().append (this.skipComments (false));
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ().append (this.skipComments (false));
 if (this.line == null || this.line.length == 0) this.line = "Line 1";
 this.jvxlFileHeaderBuffer.append (this.line).appendC ('\n');
 if (this.readLine () == null || this.line.length == 0) this.line = "Line 2";
@@ -25,12 +25,12 @@ this.isXLowToHigh = false;
 this.negativeAtomCount = true;
 this.atomCount = 0;
 if (tokens[0] === "-0") {
-} else if ((tokens[0].charAt (0)).charCodeAt (0) == 43) {
+} else if (tokens[0].charAt (0) == '+') {
 this.isXLowToHigh = true;
 this.atomCount = this.parseIntStr (tokens[0].substring (1));
 } else {
 this.atomCount = -this.parseIntStr (tokens[0]);
-}if (this.atomCount == -2147483648) return ;
+}if (this.atomCount == -2147483648) return;
 this.volumetricOrigin.set (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 this.isAngstroms = org.jmol.jvxl.readers.VolumeFileReader.checkAtomLine (this.isXLowToHigh, this.isAngstroms, null, atomLine, this.jvxlFileHeaderBuffer);
 if (!this.isAngstroms) this.volumetricOrigin.scale (0.5291772);
@@ -42,7 +42,7 @@ for (var i = 0; i < this.atomCount; ++i) this.jvxlFileHeaderBuffer.append (this.
 
 org.jmol.util.Logger.info ("Reading extra JVXL information line: " + this.line);
 this.nSurfaces = this.parseIntStr (this.line);
-if (!(this.isJvxl = (this.nSurfaces < 0))) return ;
+if (!(this.isJvxl = (this.nSurfaces < 0))) return;
 this.nSurfaces = -this.nSurfaces;
 org.jmol.util.Logger.info ("jvxl file surfaces: " + this.nSurfaces);
 var ich;
@@ -56,7 +56,7 @@ org.jmol.util.Logger.info ("using default color fraction base and range");
 } else {
 this.colorFractionBase = ich;
 this.colorFractionRange = this.parseInt ();
-}this.cJvxlEdgeNaN = String.fromCharCode ((this.edgeFractionBase + this.edgeFractionRange));
+}this.cJvxlEdgeNaN = String.fromCharCode (this.edgeFractionBase + this.edgeFractionRange);
 });
 Clazz.overrideMethod (c$, "jvxlReadData", 
 function (type, nPoints) {
@@ -100,11 +100,11 @@ var param3 = this.parseInt ();
 if (param3 == -2147483648 || param3 == -1) param3 = 0;
 if (param1 == -1) {
 try {
-this.params.thePlane = javax.vecmath.Point4f.new4 (this.parseFloat (), this.parseFloat (), this.parseFloat (), this.parseFloat ());
+this.params.thePlane = org.jmol.util.Point4f.new4 (this.parseFloat (), this.parseFloat (), this.parseFloat (), this.parseFloat ());
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
-this.params.thePlane = javax.vecmath.Point4f.new4 (0, 0, 1, 0);
+this.params.thePlane = org.jmol.util.Point4f.new4 (0, 0, 1, 0);
 } else {
 throw e;
 }
@@ -117,9 +117,9 @@ this.params.thePlane = null;
 this.params.isContoured = (param3 != 0);
 var nContoursRead = this.parseInt ();
 if (nContoursRead == -2147483648) {
-if ((this.line.charAt (this.next[0])).charCodeAt (0) == 91) {
+if (this.line.charAt (this.next[0]) == '[') {
 this.jvxlData.contourValues = this.params.contoursDiscrete = this.parseFloatArray ();
-org.jmol.util.Logger.info ("JVXL read: contourValues " + org.jmol.util.Escape.escapeArray (this.jvxlData.contourValues));
+org.jmol.util.Logger.info ("JVXL read: contourValues " + org.jmol.util.Escape.escapeAF (this.jvxlData.contourValues));
 this.jvxlData.contourColixes = this.params.contourColixes = org.jmol.util.Colix.getColixArray (this.getQuotedStringNext ());
 this.jvxlData.contourColors = org.jmol.util.Colix.getHexCodes (this.jvxlData.contourColixes);
 org.jmol.util.Logger.info ("JVXL read: contourColixes " + this.jvxlData.contourColors);
@@ -158,7 +158,7 @@ blue = this.parseFloat ();
 Clazz.defineMethod (c$, "readSurfaceData", 
 function (isMapDataIgnored) {
 this.thisInside = !this.params.isContoured;
-if (this.readSurfaceData ()) return ;
+if (this.readSurfaceData ()) return;
 this.readVolumeFileSurfaceData ();
 }, "~B");
 Clazz.overrideMethod (c$, "jvxlSkipData", 

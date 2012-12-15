@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.ShelxReader", ["java.lang.Float", "org.jmol.adapter.smarter.Atom", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.sfacElementSymbols = null;
@@ -13,7 +13,7 @@ this.setFractionalCoordinates (true);
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
 var lineLength;
-while ((lineLength = (this.line = this.line.trim ()).length) > 0 && (this.line.charAt (lineLength - 1)).charCodeAt (0) == 61) this.line = this.line.substring (0, lineLength - 1) + this.readLine ();
+while ((lineLength = (this.line = this.line.trim ()).length) > 0 && this.line.charAt (lineLength - 1) == '=') this.line = this.line.substring (0, lineLength - 1) + this.readLine ();
 
 this.tokens = this.getTokens ();
 if (this.tokens.length == 0) return true;
@@ -112,7 +112,7 @@ var a2 = this.parseFloatStr (sfacTokens[3]);
 var a3 = this.parseFloatStr (sfacTokens[5]);
 var a4 = this.parseFloatStr (sfacTokens[7]);
 var c = this.parseFloatStr (sfacTokens[9]);
-var z = Math.round ((a1 + a2 + a3 + a4 + c + 0.5));
+var z = Math.round (a1 + a2 + a3 + a4 + c);
 var elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElementSymbol (z);
 var oldCount = 0;
 if (this.sfacElementSymbols == null) {
@@ -132,14 +132,14 @@ var y = this.parseFloatStr (this.tokens[3]);
 var z = this.parseFloatStr (this.tokens[4]);
 if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) {
 org.jmol.util.Logger.error ("skipping line " + this.line);
-return ;
+return;
 }elementIndex--;
 var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = atomName;
 if (this.sfacElementSymbols != null && elementIndex >= 0 && elementIndex < this.sfacElementSymbols.length) atom.elementSymbol = this.sfacElementSymbols[elementIndex];
 this.setAtomCoordXYZ (atom, x, y, z);
 if (this.tokens.length == 12) {
-var data =  Clazz.newArray (8, 0);
+var data =  Clazz.newFloatArray (8, 0);
 data[0] = this.parseFloatStr (this.tokens[6]);
 data[1] = this.parseFloatStr (this.tokens[7]);
 data[2] = this.parseFloatStr (this.tokens[8]);
@@ -148,7 +148,7 @@ data[4] = this.parseFloatStr (this.tokens[10]);
 data[5] = this.parseFloatStr (this.tokens[9]);
 for (var i = 0; i < 6; i++) if (Float.isNaN (data[i])) {
 org.jmol.util.Logger.error ("Bad anisotropic Uij data: " + this.line);
-return ;
+return;
 }
 this.atomSetCollection.setAnisoBorU (atom, data, 8);
 }}, $fz.isPrivate = true, $fz));

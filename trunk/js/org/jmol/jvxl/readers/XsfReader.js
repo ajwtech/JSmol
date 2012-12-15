@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.XsfReader", ["javax.util.StringXBuilder", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.XsfReader", ["org.jmol.util.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isBXSF = false;
 Clazz.instantialize (this, arguments);
@@ -12,7 +12,7 @@ Clazz.overrideMethod (c$, "readParameters",
 function () {
 this.isAngstroms = false;
 this.params.blockCubeData = true;
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("XsfReader file\n");
 var needCutoff = this.params.cutoffAutomatic;
 this.isAngstroms = true;
@@ -26,7 +26,8 @@ beginKey = "BEGIN_BANDGRID_3D";
 if (needCutoff) {
 this.params.cutoff = this.parseFloatStr (this.getTokens ()[2]);
 needCutoff = false;
-}}continue ;}
+}}continue;
+}
 if (needCutoff) this.params.cutoff = 0.05;
 if (this.isBXSF) this.nSurfaces = this.parseIntStr (this.readLine ());
 this.voxelCounts[0] = this.parseIntStr (this.readLine ());
@@ -49,7 +50,7 @@ this.params.insideOut = !this.params.insideOut;
 }});
 Clazz.overrideMethod (c$, "gotoData", 
 function (n, nPoints) {
-if (!this.params.blockCubeData) return ;
+if (!this.params.blockCubeData) return;
 if (n > 0) org.jmol.util.Logger.info ("skipping " + n + " data sets, " + nPoints + " points each");
 if (this.isBXSF) org.jmol.util.Logger.info (this.readLine ());
 for (var i = 0; i < n; i++) this.skipData (nPoints);

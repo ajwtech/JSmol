@@ -1,11 +1,11 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.PhosphorusMonomer", "org.jmol.viewer.JmolConstants"], "org.jmol.modelsetbio.NucleicMonomer", ["javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.Quaternion"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelsetbio.PhosphorusMonomer", "org.jmol.viewer.JmolConstants"], "org.jmol.modelsetbio.NucleicMonomer", ["org.jmol.constant.EnumStructure", "org.jmol.util.Point3f", "$.Quaternion", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.hasRnaO2Prime = false;
 this.baseCenter = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelsetbio, "NucleicMonomer", org.jmol.modelsetbio.PhosphorusMonomer);
-c$.validateAndAllocate = Clazz.overrideMethod (c$, "validateAndAllocate", 
+c$.validateAndAllocate = Clazz.defineMethod (c$, "validateAndAllocate", 
 function (chain, group3, seqcode, firstAtomIndex, lastAtomIndex, specialAtomIndexes) {
 var offsets = org.jmol.modelsetbio.Monomer.scanForOffsets (firstAtomIndex, specialAtomIndexes, org.jmol.modelsetbio.NucleicMonomer.interestingNucleicAtomIDs);
 if (offsets == null) return null;
@@ -20,12 +20,13 @@ return nucleicMonomer;
 Clazz.makeConstructor (c$, 
 function (chain, group3, seqcode, firstAtomIndex, lastAtomIndex, offsets) {
 Clazz.superConstructor (this, org.jmol.modelsetbio.NucleicMonomer, [chain, group3, seqcode, firstAtomIndex, lastAtomIndex, offsets]);
-if (offsets[15] == -1) {
+if (!org.jmol.modelsetbio.Monomer.have (offsets, 15)) {
 offsets[0] = offsets[19];
-if (offsets[0] >= 0) this.leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
-}this.hasRnaO2Prime = offsets[2] != -1;
-this.$isPyrimidine = offsets[8] != -1;
-this.$isPurine = offsets[9] != -1 && offsets[10] != -1 && offsets[11] != -1;
+var offset = offsets[0] & 0xFF;
+if (offset != 255) this.leadAtomIndex = firstAtomIndex + offset;
+}this.hasRnaO2Prime = org.jmol.modelsetbio.Monomer.have (offsets, 2);
+this.$isPyrimidine = org.jmol.modelsetbio.Monomer.have (offsets, 8);
+this.$isPurine = org.jmol.modelsetbio.Monomer.have (offsets, 9) && org.jmol.modelsetbio.Monomer.have (offsets, 10) && org.jmol.modelsetbio.Monomer.have (offsets, 11);
 }, "org.jmol.modelset.Chain,~S,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "isNucleicMonomer", 
 function () {
@@ -49,7 +50,7 @@ return this.$isPyrimidine;
 });
 Clazz.defineMethod (c$, "isGuanine", 
 function () {
-return this.offsets[17] != -1;
+return org.jmol.modelsetbio.Monomer.have (this.offsets, 17);
 });
 Clazz.overrideMethod (c$, "getProteinStructureType", 
 function () {
@@ -101,7 +102,7 @@ return this.getAtomFromOffsetIndex (13);
 });
 Clazz.overrideMethod (c$, "getTerminatorAtom", 
 function () {
-return this.getAtomFromOffsetIndex (this.offsets[20] != -1 ? 20 : 21);
+return this.getAtomFromOffsetIndex (org.jmol.modelsetbio.Monomer.have (this.offsets, 20) ? 20 : 21);
 });
 Clazz.defineMethod (c$, "getBaseRing6Points", 
 function (ring6Points) {
@@ -129,7 +130,7 @@ var competitor = closest[0];
 var lead = this.getLeadAtom ();
 var o5prime = this.getAtomFromOffsetIndex (19);
 var c3prime = this.getAtomFromOffsetIndex (22);
-var mar = (Math.floor (madBegin / 2));
+var mar = (Clazz.doubleToInt (madBegin / 2));
 if (mar < 1900) mar = 1900;
 var radius = this.scaleToScreen (lead.screenZ, mar);
 if (radius < 4) radius = 4;
@@ -138,7 +139,7 @@ if (this.isCursorOnTopOf (lead, x, y, radius, competitor) || this.isCursorOnTopO
 Clazz.defineMethod (c$, "setModelClickability", 
 function () {
 var atom;
-if (this.isAtomHidden (this.leadAtomIndex)) return ;
+if (this.isAtomHidden (this.leadAtomIndex)) return;
 for (var i = 6; --i >= 0; ) {
 atom = this.getAtomFromOffsetIndex (org.jmol.modelsetbio.NucleicMonomer.ring6OffsetIndexes[i]);
 atom.setClickable (org.jmol.modelsetbio.NucleicMonomer.CARTOON_VISIBILITY_FLAG);
@@ -167,10 +168,11 @@ return this.getP ();
 case 'c':
 if (this.baseCenter == null) {
 var n = 0;
-this.baseCenter =  new javax.vecmath.Point3f ();
+this.baseCenter =  new org.jmol.util.Point3f ();
 for (var i = 0; i < org.jmol.modelsetbio.NucleicMonomer.heavyAtomIndexes.length; i++) {
 var a = this.getAtomFromOffsetIndex (org.jmol.modelsetbio.NucleicMonomer.heavyAtomIndexes[i]);
-if (a == null) continue ;this.baseCenter.add (a);
+if (a == null) continue;
+this.baseCenter.add (a);
 n++;
 }
 this.baseCenter.scale (1 / n);
@@ -222,7 +224,9 @@ if (bonds == null) return null;
 var g = ptNorP.getGroup ();
 for (var i = 0; i < bonds.length; i++) {
 var atom = bonds[i].getOtherAtom (ptNorP);
-if (p1 != null && atom.index == p1.index) continue ;if (p2 != null && atom.index == p2.index) continue ;if (atom.getGroup () === g) ptB = atom;
+if (p1 != null && atom.index == p1.index) continue;
+if (p2 != null && atom.index == p2.index) continue;
+if (atom.getGroup () === g) ptB = atom;
  else ptA = atom;
 }
 break;
@@ -240,9 +244,9 @@ ptB = this.getAtomFromOffsetIndex (1);
 }break;
 }
 if (ptA == null || ptB == null) return null;
-var vA = javax.vecmath.Vector3f.newV (ptA);
+var vA = org.jmol.util.Vector3f.newV (ptA);
 vA.sub (ptNorP);
-var vB = javax.vecmath.Vector3f.newV (ptB);
+var vB = org.jmol.util.Vector3f.newV (ptB);
 vB.sub (ptNorP);
 if (reverseY) vB.scale (-1);
 return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, null, yBased);
@@ -256,7 +260,7 @@ var myN1 = myNucleotide.getN1 ();
 var otherN3 = otherNucleotide.getN3 ();
 return (myN1.isBonded (otherN3));
 }, "org.jmol.modelset.Group");
-Clazz.overrideMethod (c$, "getCrossLinkLeadAtomIndexes", 
+Clazz.overrideMethod (c$, "getCrossLinkLead", 
 function (vReturn) {
 var N = (this.$isPurine ? this.getN1 () : this.getN3 ());
 var bonds = N.getBonds ();
@@ -266,7 +270,8 @@ for (var i = 0; i < bonds.length; i++) {
 if (bonds[i].isHydrogen ()) {
 var N2 = bonds[i].getOtherAtom (N);
 var g = N2.getGroup ();
-if (!(Clazz.instanceOf (g, org.jmol.modelsetbio.NucleicMonomer))) continue ;var m = g;
+if (!(Clazz.instanceOf (g, org.jmol.modelsetbio.NucleicMonomer))) continue;
+var m = g;
 if ((this.$isPurine ? m.getN3 () : m.getN1 ()) === N2) {
 if (vReturn == null) return true;
 vReturn.add (Integer.$valueOf (m.leadAtomIndex));

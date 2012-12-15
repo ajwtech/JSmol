@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "$.AtomSetCollection"], "org.jmol.adapter.readers.xtal.GulpReader", ["java.lang.Double", "$.Float", "java.util.Hashtable", "javax.vecmath.Vector3f"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "$.AtomSetCollection"], "org.jmol.adapter.readers.xtal.GulpReader", ["java.lang.Double", "$.Float", "java.util.Hashtable", "org.jmol.util.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$spaceGroup = null;
 this.isSlab = false;
@@ -29,7 +29,7 @@ this.setFractionalCoordinates (this.readDimensionality ());
 });
 Clazz.overrideMethod (c$, "finalizeReader", 
 function () {
-if (this.atomCharges == null) return ;
+if (this.atomCharges == null) return;
 var atoms = this.atomSetCollection.getAtoms ();
 var f;
 for (var i = this.atomSetCollection.getAtomCount (); --i >= 0; ) if ((f = this.atomCharges.get (atoms[i].atomName)) != null || (f = this.atomCharges.get (atoms[i].getElementSymbol ())) != null) atoms[i].partialCharge = f.floatValue ();
@@ -138,9 +138,9 @@ Clazz.defineMethod (c$, "readCellParameters",
 ($fz = function (isLatticeVectors) {
 if (isLatticeVectors) {
 this.readLine ();
-this.primitiveData = this.fillFloatArray (null, 0,  Clazz.newArray (9, 0));
+this.primitiveData = this.fillFloatArray (null, 0,  Clazz.newFloatArray (9, 0));
 this.a = 0;
-return ;
+return;
 }var i0 = (this.line.indexOf ("Full cell") < 0 ? 0 : 4);
 this.coordinatesArePrimitive = (i0 == 0);
 this.readLine ();
@@ -176,7 +176,7 @@ if (this.totEnergy != null) this.setEnergy ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "scalePrimitiveData", 
 ($fz = function (i, value) {
-var v = javax.vecmath.Vector3f.new3 (this.primitiveData[i], this.primitiveData[i + 1], this.primitiveData[i + 2]);
+var v = org.jmol.util.Vector3f.new3 (this.primitiveData[i], this.primitiveData[i + 1], this.primitiveData[i + 2]);
 v.normalize ();
 v.scale (value);
 this.primitiveData[i++] = v.x;
@@ -209,9 +209,11 @@ while (this.readLine () != null) {
 if (this.line.indexOf (this.sep) >= 0 && this.readLine ().indexOf ("Region") < 0) break;
 if (this.line.indexOf ("Region") >= 0) {
 this.readLine ();
-continue ;}this.line = this.line.$replace ('*', ' ');
+continue;
+}this.line = this.line.$replace ('*', ' ');
 var tokens = this.getTokens ();
-if (!tokens[2].equals ("c")) continue ;var atom = this.atomSetCollection.addNewAtom ();
+if (!tokens[2].equals ("c")) continue;
+var atom = this.atomSetCollection.addNewAtom ();
 atom.atomName = tokens[1];
 this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 }

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.api.AtomIndexIterator"], "org.jmol.modelset.AtomIteratorWithinModel", ["org.jmol.atomdata.RadiusData"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.cubeIterator = null;
@@ -33,7 +33,7 @@ this.isZeroBased = isZeroBased;
 this.hemisphereOnly = hemisphereOnly;
 this.threadSafe = threadSafe;
 this.cubeIterator = null;
-}, "org.jmol.bspt.Bspf,javax.util.BitSet,~B,~B,~B,~B");
+}, "org.jmol.bspt.Bspf,org.jmol.util.BitSet,~B,~B,~B,~B");
 Clazz.overrideMethod (c$, "setModel", 
 function (modelSet, modelIndex, firstModelAtom, atomIndex, center, distance, rd) {
 if (this.threadSafe) modelIndex = -1 - modelIndex;
@@ -41,7 +41,7 @@ if (modelIndex != this.modelIndex || this.cubeIterator == null) {
 this.cubeIterator = this.bspf.getCubeIterator (modelIndex);
 this.modelIndex = modelIndex;
 }this.zeroBase = (this.isZeroBased ? firstModelAtom : 0);
-if (distance == -2147483648) return ;
+if (distance == -2147483648) return;
 this.atomIndex = (distance < 0 ? -1 : atomIndex);
 this.isVdw = (rd != null);
 if (this.isVdw) {
@@ -52,13 +52,13 @@ distance = (rd.factorType === org.jmol.atomdata.RadiusData.EnumType.OFFSET ? 5 +
 this.vdw1 = this.atoms[atomIndex].getVanderwaalsRadiusFloat (this.viewer, rd.vdwType);
 }this.checkGreater = (this.isGreaterOnly && atomIndex != 2147483647);
 this.setCenter (center, distance);
-}, "org.jmol.modelset.ModelCollection,~N,~N,~N,javax.vecmath.Point3f,~N,org.jmol.atomdata.RadiusData");
+}, "org.jmol.modelset.ModelCollection,~N,~N,~N,org.jmol.util.Point3f,~N,org.jmol.atomdata.RadiusData");
 Clazz.overrideMethod (c$, "setCenter", 
 function (center, distance) {
-if (this.cubeIterator == null) return ;
+if (this.cubeIterator == null) return;
 this.cubeIterator.initialize (center, distance, this.hemisphereOnly);
 this.distanceSquared = distance * distance;
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.overrideMethod (c$, "hasNext", 
 function () {
 if (this.atomIndex >= 0) while (this.cubeIterator.hasMoreElements ()) {
@@ -101,7 +101,7 @@ d *= d;
 d = this.distanceSquared;
 }if (this.foundDistance2 () <= d) bsResult.set (iAtom);
 }
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "release", 
 function () {
 if (this.cubeIterator != null) {

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "java.util.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.i18n.GT", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.thread.ScriptParallelProcessor", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "org.jmol.viewer.Viewer"], function () {
+Clazz.declarePackage ("org.jmol.script");
+Clazz.load (["org.jmol.script.ScriptCompilationTokenParser", "java.util.ArrayList"], "org.jmol.script.ScriptCompiler", ["java.lang.Boolean", "$.Character", "$.Double", "$.Float", "java.util.Hashtable", "org.jmol.api.Interface", "org.jmol.i18n.GT", "org.jmol.io.JmolBinary", "org.jmol.modelset.Bond", "$.Group", "org.jmol.script.ContextToken", "$.ScriptContext", "$.ScriptEvaluator", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptVariable", "$.Token", "org.jmol.util.ArrayUtil", "$.BitSet", "$.Escape", "$.Logger", "$.Parser", "$.StringXBuilder", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -95,7 +95,7 @@ this.theToken = org.jmol.script.Token.newTokenObj (1073741824, ident);
 if (this.pushCount > 0) {
 var ct = this.vPush.get (this.pushCount - 1);
 ct.addName (ident);
-if (ct.tok != 364558) return ;
+if (ct.tok != 364558) return;
 }if (this.thisFunction == null) {
 if (this.contextVariables == null) this.contextVariables =  new java.util.Hashtable ();
 org.jmol.script.ScriptCompiler.addContextVariable (this.contextVariables, ident);
@@ -104,7 +104,7 @@ this.thisFunction.addVariable (ident, false);
 }}, $fz.isPrivate = true, $fz), "~S");
 c$.addContextVariable = Clazz.defineMethod (c$, "addContextVariable", 
 function (contextVariables, ident) {
-contextVariables.put (ident, org.jmol.script.ScriptVariable.newScriptVariableObj (4, "").setName (ident));
+contextVariables.put (ident, org.jmol.script.ScriptVariable.newVariable (4, "").setName (ident));
 }, "java.util.Map,~S");
 Clazz.defineMethod (c$, "isContextVariable", 
 ($fz = function (ident) {
@@ -116,26 +116,16 @@ return (this.thisFunction != null ? this.thisFunction.isVariable (ident) : this.
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "cleanScriptComments", 
 ($fz = function (script) {
+if (script.indexOf ('\u201C') >= 0) script = script.$replace ('\u201C', '"');
+if (script.indexOf ('\u201D') >= 0) script = script.$replace ('\u201D', '"');
+if (script.indexOf ('\uFEFF') >= 0) script = script.$replace ('\uFEFF', ' ');
 var pt = (script.indexOf ("\1##"));
 if (pt >= 0) {
 this.scriptExtensions = script.substring (pt + 1);
 script = script.substring (0, pt);
 }this.haveComments = (script.indexOf ("#") >= 0);
-return org.jmol.script.ScriptCompiler.getEmbeddedScript (script);
+return org.jmol.io.JmolBinary.getEmbeddedScript (script);
 }, $fz.isPrivate = true, $fz), "~S");
-c$.getEmbeddedScript = Clazz.defineMethod (c$, "getEmbeddedScript", 
-function (script) {
-if (script == null) return script;
-var pt = script.indexOf ("**** Jmol Embedded Script ****");
-if (pt < 0) return script;
-var pt1 = script.lastIndexOf ("/*", pt);
-var pt2 = script.indexOf (((script.charAt (pt1 + 2)).charCodeAt (0) == 42 ? "*" : "") + "*/", pt);
-if (pt1 >= 0 && pt2 >= pt) script = script.substring (pt + "**** Jmol Embedded Script ****".length, pt2) + "\n";
-while ((pt1 = script.indexOf (" #Jmol...\u0000")) >= 0) script = script.substring (0, pt1) + script.substring (pt1 + " #Jmol...\u0000".length + 4);
-
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (script);
-return script;
-}, "~S");
 Clazz.defineMethod (c$, "addTokenToPrefix", 
 ($fz = function (token) {
 if (this.logMessages) org.jmol.util.Logger.info ("addTokenToPrefix" + token);
@@ -146,7 +136,6 @@ Clazz.defineMethod (c$, "compile0",
 ($fz = function (isFull) {
 this.vFunctionStack =  new java.util.ArrayList ();
 this.htUserFunctions =  new java.util.Hashtable ();
-this.script = this.script.$replace ('\u201C', '"').$replace ('\u201D', '"');
 this.script = this.cleanScriptComments (this.script);
 this.ichToken = this.script.indexOf ("# Jmol state version ");
 this.isStateScript = (this.ichToken >= 0);
@@ -182,8 +171,8 @@ this.parenCount = 0;
 this.ptSemi = -10;
 this.cchToken = 0;
 this.lnLength = 8;
-this.lineNumbers =  Clazz.newArray (this.lnLength, 0);
-this.lineIndices =  Clazz.newArray (this.lnLength, 2, 0);
+this.lineNumbers =  Clazz.newShortArray (this.lnLength, 0);
+this.lineIndices =  Clazz.newIntArray (this.lnLength, 2, 0);
 this.isNewSet = this.isSetBrace = false;
 this.ptNewSetModifier = 1;
 this.isShowScriptOutput = false;
@@ -210,14 +199,17 @@ if ((this.nTokens = this.ltoken.size ()) == 0) {
 if (this.thisFunction != null && this.thisFunction.chpt0 == 0) this.thisFunction.chpt0 = this.ichToken;
 this.ichCurrentCommand = this.ichToken;
 iLine = this.lineCurrent;
-}if (this.lookingAtLeadingWhitespace ()) continue ;this.endOfLine = false;
+}if (this.lookingAtLeadingWhitespace ()) continue;
+this.endOfLine = false;
 if (!this.isEndOfCommand) {
 this.endOfLine = this.lookingAtEndOfLine ();
 switch (this.endOfLine ? 0 : this.lookingAtComment ()) {
 case 2:
-continue ;case 3:
+continue;
+case 3:
 this.isEndOfCommand = true;
-continue ;case 1:
+continue;
+case 1:
 this.isEndOfCommand = true;
 this.comment = this.script.substring (this.ichToken, this.ichToken + this.cchToken).trim ();
 break;
@@ -227,37 +219,44 @@ this.isEndOfCommand = this.isEndOfCommand || this.endOfLine || this.lookingAtEnd
 this.isEndOfCommand = false;
 switch (this.processTokenList (iLine, isFull)) {
 case 2:
-continue ;case 4:
+continue;
+case 4:
 return false;
 }
 this.checkImpliedScriptCmd = false;
-if (this.ichToken < this.cchScript) continue ;this.setAaTokenCompiled ();
+if (this.ichToken < this.cchScript) continue;
+this.setAaTokenCompiled ();
 return (this.flowContext == null || this.errorStr (11, org.jmol.script.Token.nameOf (this.flowContext.token.tok)));
 }if (this.nTokens > 0) {
 switch (this.checkSpecialParameterSyntax ()) {
 case 2:
-continue ;case 4:
+continue;
+case 4:
 return false;
 }
 }if (this.lookingAtLookupToken (this.ichToken)) {
 var ident = this.getPrefixToken ();
 switch (this.parseKnownToken (ident)) {
 case 2:
-continue ;case 4:
+continue;
+case 4:
 return false;
 }
 switch (this.parseCommandParameter (ident)) {
 case 2:
-continue ;case 4:
+continue;
+case 4:
 return false;
 }
 this.addTokenToPrefix (this.theToken);
-continue ;}if (this.nTokens == 0 || (this.isNewSet || this.isSetBrace) && this.nTokens == this.ptNewSetModifier) {
+continue;
+}if (this.nTokens == 0 || (this.isNewSet || this.isSetBrace) && this.nTokens == this.ptNewSetModifier) {
 if (this.nTokens == 0) {
 if (this.lookingAtString (true)) {
 this.addTokenToPrefix (this.setCommand (org.jmol.script.Token.tokenScript));
 this.cchToken = 0;
-continue ;}if (this.lookingAtImpliedString (true, true, true)) this.ichEnd = this.ichToken + this.cchToken;
+continue;
+}if (this.lookingAtImpliedString (true, true, true)) this.ichEnd = this.ichToken + this.cchToken;
 }return this.commandExpected ();
 }return this.errorStr (19, this.script.substring (this.ichToken, this.ichToken + 1));
 }
@@ -277,7 +276,7 @@ return this.cchToken > 0;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "isLineContinuation", 
 ($fz = function (ichT, checkMathop) {
-var isEscaped = (ichT + 2 < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 92 && this.nCharNewLine (ichT + 1) > 0 || checkMathop && this.lookingAtMathContinuation (ichT));
+var isEscaped = (ichT + 2 < this.cchScript && this.script.charAt (ichT) == '\\' && this.nCharNewLine (ichT + 1) > 0 || checkMathop && this.lookingAtMathContinuation (ichT));
 if (isEscaped) this.lineCurrent++;
 return isEscaped;
 }, $fz.isPrivate = true, $fz), "~N,~B");
@@ -308,11 +307,11 @@ return true;
 Clazz.defineMethod (c$, "nCharNewLine", 
 ($fz = function (ichT) {
 var ch;
-return (ichT >= this.cchScript ? 0 : ((ch = this.script.charAt (ichT))).charCodeAt (0) != 13 ? (ch.charCodeAt (0) == 10 ? 1 : 0) : ++ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 10 ? 2 : 1);
+return (ichT >= this.cchScript ? 0 : (ch = this.script.charAt (ichT)) != '\r' ? (ch == '\n' ? 1 : 0) : ++ichT < this.cchScript && this.script.charAt (ichT) == '\n' ? 2 : 1);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "lookingAtEndOfStatement", 
 ($fz = function () {
-var isSemi = ((this.script.charAt (this.ichToken)).charCodeAt (0) == 59);
+var isSemi = (this.script.charAt (this.ichToken) == ';');
 if (isSemi && this.nTokens > 0) this.ptSemi = this.nTokens;
 if (!isSemi || this.nSemiSkip-- > 0) return false;
 this.cchToken = 1;
@@ -323,29 +322,29 @@ Clazz.defineMethod (c$, "lookingAtComment",
 var ch = this.script.charAt (this.ichToken);
 var ichT = this.ichToken;
 var ichFirstSharp = -1;
-if (this.ichToken == this.ichCurrentCommand && ch.charCodeAt (0) == 36) {
+if (this.ichToken == this.ichCurrentCommand && ch == '$') {
 this.isShowScriptOutput = true;
 this.isShowCommand = true;
-while (ch.charCodeAt (0) != 93 && ichT < this.cchScript && !this.eol (ch = this.script.charAt (ichT))) ++ichT;
+while (ch != ']' && ichT < this.cchScript && !this.eol (ch = this.script.charAt (ichT))) ++ichT;
 
 this.cchToken = ichT - this.ichToken;
 return 2;
 } else if (this.isShowScriptOutput && !this.isShowCommand) {
 ichFirstSharp = ichT;
-}if (ch.charCodeAt (0) == 47 && ichT + 1 < this.cchScript) switch (this.script.charAt (++ichT)) {
+}if (ch == '/' && ichT + 1 < this.cchScript) switch (this.script.charAt (++ichT)) {
 case '/':
 ichFirstSharp = this.ichToken;
 this.ichEnd = ichT - 1;
 break;
 case '*':
 this.ichEnd = ichT - 1;
-var terminator = (++ichT < this.cchScript && ((ch = this.script.charAt (ichT))).charCodeAt (0) == 42 ? "**/" : "*/");
+var terminator = (++ichT < this.cchScript && (ch = this.script.charAt (ichT)) == '*' ? "**/" : "*/");
 ichT = this.script.indexOf (terminator, this.ichToken + 2);
 if (ichT < 0) {
 this.ichToken = this.cchScript;
 return 3;
 }this.incrementLineCount (this.script.substring (this.ichToken, ichT));
-this.cchToken = ichT + (ch.charCodeAt (0) == 42 ? 3 : 2) - this.ichToken;
+this.cchToken = ichT + (ch == '*' ? 3 : 2) - this.ichToken;
 return 2;
 default:
 return 0;
@@ -358,16 +357,19 @@ if (this.eol (ch = this.script.charAt (ichT))) {
 this.ichEnd = ichT;
 if (ichT > 0 && this.isLineContinuation (ichT - 1, false)) {
 ichT += this.nCharNewLine (ichT);
-continue ;}if (!isSharp && ch.charCodeAt (0) == 59) continue ;break;
-}if (ichFirstSharp >= 0) continue ;if (ch.charCodeAt (0) == 35) ichFirstSharp = ichT;
+continue;
+}if (!isSharp && ch == ';') continue;
+break;
+}if (ichFirstSharp >= 0) continue;
+if (ch == '#') ichFirstSharp = ichT;
 }
 if (ichFirstSharp < 0) return 0;
 this.ichComment = ichFirstSharp;
-if (isSharp && this.nTokens == 0 && this.cchScript - ichFirstSharp >= 3 && (this.script.charAt (ichFirstSharp + 1)).charCodeAt (0) == 106 && (this.script.charAt (ichFirstSharp + 2)).charCodeAt (0) == 99) {
+if (isSharp && this.nTokens == 0 && this.cchScript - ichFirstSharp >= 3 && this.script.charAt (ichFirstSharp + 1) == 'j' && this.script.charAt (ichFirstSharp + 2) == 'c') {
 this.cchToken = ichT - this.ichToken;
 return 2;
 }if (ichFirstSharp != this.ichToken) return 0;
-if (isSharp && this.cchScript > this.ichToken + 3 && (this.script.charAt (this.ichToken + 1)).charCodeAt (0) == 106 && (this.script.charAt (this.ichToken + 2)).charCodeAt (0) == 120 && org.jmol.script.ScriptCompiler.isSpaceOrTab (this.script.charAt (this.ichToken + 3))) {
+if (isSharp && this.cchScript > this.ichToken + 3 && this.script.charAt (this.ichToken + 1) == 'j' && this.script.charAt (this.ichToken + 2) == 'x' && org.jmol.script.ScriptCompiler.isSpaceOrTab (this.script.charAt (this.ichToken + 3))) {
 this.cchToken = 4;
 return 2;
 }if (ichT == this.ichToken) return 0;
@@ -439,7 +441,7 @@ break;
 if (doEval) {
 if (this.iCommand == this.lnLength) {
 this.lineNumbers = org.jmol.util.ArrayUtil.doubleLengthShort (this.lineNumbers);
-var lnI =  Clazz.newArray (this.lnLength * 2, 2, 0);
+var lnI =  Clazz.newIntArray (this.lnLength * 2, 2, 0);
 System.arraycopy (this.lineIndices, 0, lnI, 0, this.lnLength);
 this.lineIndices = lnI;
 this.lnLength *= 2;
@@ -582,14 +584,14 @@ var ch;
 if (this.nTokens == this.ptNewSetModifier) {
 ch = this.script.charAt (this.ichToken);
 var isAndEquals = ("+-\\*/&|=".indexOf (ch) >= 0);
-var isOperation = (isAndEquals || ch.charCodeAt (0) == 46 || ch.charCodeAt (0) == 91);
+var isOperation = (isAndEquals || ch == '.' || ch == '[');
 var ch2 = (this.ichToken + 1 >= this.cchScript ? 0 : this.script.charAt (this.ichToken + 1));
-if (!this.isNewSet && this.isUserToken && isOperation && (ch.charCodeAt (0) == 61 || ch2.charCodeAt (0) == ch.charCodeAt (0) || ch2.charCodeAt (0) == 61)) {
+if (!this.isNewSet && this.isUserToken && isOperation && (ch == '=' || ch2 == ch || ch2 == '=')) {
 this.isNewSet = true;
 }if (this.isNewSet || this.tokCommand == 1085443 || org.jmol.script.Token.tokAttr (this.tokCommand, 536870912)) {
-if (ch.charCodeAt (0) == 61) this.setEqualPt = this.ichToken;
-if (org.jmol.script.Token.tokAttr (this.tokCommand, 536870912) && ch.charCodeAt (0) == 61 || (this.isNewSet || this.isSetBrace) && isOperation) {
-this.setCommand (isAndEquals ? org.jmol.script.Token.tokenSet : ch.charCodeAt (0) == 91 && !this.isSetBrace ? org.jmol.script.Token.tokenSetArray : org.jmol.script.Token.tokenSetProperty);
+if (ch == '=') this.setEqualPt = this.ichToken;
+if (org.jmol.script.Token.tokAttr (this.tokCommand, 536870912) && ch == '=' || (this.isNewSet || this.isSetBrace) && isOperation) {
+this.setCommand (isAndEquals ? org.jmol.script.Token.tokenSet : ch == '[' && !this.isSetBrace ? org.jmol.script.Token.tokenSetArray : org.jmol.script.Token.tokenSetProperty);
 this.ltoken.add (0, this.tokenCommand);
 this.cchToken = 1;
 switch (ch) {
@@ -608,7 +610,7 @@ case '\\':
 case '&':
 case '|':
 if (ch2.charCodeAt (0) == 0) return this.ERROR (4);
-if (ch2.charCodeAt (0) != ch.charCodeAt (0) && ch2.charCodeAt (0) != 61) return this.ERROR (1, "\"" + ch + "\"");
+if (ch2 != ch && ch2 != '=') return this.ERROR (1, "\"" + ch + "\"");
 break;
 default:
 this.lastToken = org.jmol.script.Token.tokenMinus;
@@ -642,7 +644,7 @@ return 2;
 case 135271426:
 case 135271429:
 case 135270410:
-if ((this.script.charAt (this.ichToken)).charCodeAt (0) == 64) {
+if (this.script.charAt (this.ichToken) == '@') {
 this.iHaveQuotedString = true;
 return 0;
 }if (this.tokCommand == 135271426) {
@@ -669,7 +671,7 @@ this.iHaveQuotedString = (tok == 4);
 }}
 return 2;
 }var bs;
-if ((this.script.charAt (this.ichToken)).charCodeAt (0) == 123 || this.parenCount > 0) break;
+if (this.script.charAt (this.ichToken) == '{' || this.parenCount > 0) break;
 if ((bs = this.lookingAtBitset ()) != null) {
 this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (10, bs));
 return 2;
@@ -685,7 +687,7 @@ return 2;
 case 135270421:
 if (this.nTokens == 2 && this.lastToken.tok == 4115) this.iHaveQuotedString = true;
 if (!this.iHaveQuotedString) {
-if ((this.script.charAt (this.ichToken)).charCodeAt (0) == 64) {
+if (this.script.charAt (this.ichToken) == '@') {
 this.iHaveQuotedString = true;
 return 0;
 }if (this.lookingAtImpliedString (true, true, true)) {
@@ -719,9 +721,9 @@ return 2;
 }if (this.lookingAtSeqcode ()) {
 ch = this.script.charAt (this.ichToken);
 try {
-var seqNum = (ch.charCodeAt (0) == 42 || ch.charCodeAt (0) == 94 ? 2147483647 : Integer.parseInt (this.script.substring (this.ichToken, this.ichToken + this.cchToken - 2)));
+var seqNum = (ch == '*' || ch == '^' ? 2147483647 : Integer.parseInt (this.script.substring (this.ichToken, this.ichToken + this.cchToken - 2)));
 var insertionCode = this.script.charAt (this.ichToken + this.cchToken - 1);
-if (insertionCode.charCodeAt (0) == 94) insertionCode = ' ';
+if (insertionCode == '^') insertionCode = ' ';
 if (seqNum < 0) {
 seqNum = -seqNum;
 this.addTokenToPrefix (org.jmol.script.Token.tokenMinus);
@@ -747,13 +749,13 @@ this.tokenAt (0).intValue = f.pt0;
 this.addTokenToPrefix (org.jmol.script.Token.newTokenIntVal (2, val, intString));
 return 2;
 }if (!this.isMathExpressionCommand && this.parenCount == 0 || this.lastToken.tok != 1073741824 && !org.jmol.script.ScriptCompilationTokenParser.tokenAttr (this.lastToken, 135266304)) {
-var isBondOrMatrix = ((this.script.charAt (this.ichToken)).charCodeAt (0) == 91);
+var isBondOrMatrix = (this.script.charAt (this.ichToken) == '[');
 var bs = this.lookingAtBitset ();
 if (bs == null) {
 if (isBondOrMatrix) {
 var m = this.lookingAtMatrix ();
-if (Clazz.instanceOf (m, javax.vecmath.Matrix3f) || Clazz.instanceOf (m, javax.vecmath.Matrix4f)) {
-this.addTokenToPrefix (org.jmol.script.Token.newTokenObj ((Clazz.instanceOf (m, javax.vecmath.Matrix3f) ? 11 : 12), m));
+if (Clazz.instanceOf (m, org.jmol.util.Matrix3f) || Clazz.instanceOf (m, org.jmol.util.Matrix4f)) {
+this.addTokenToPrefix (org.jmol.script.Token.newTokenObj ((Clazz.instanceOf (m, org.jmol.util.Matrix3f) ? 11 : 12), m));
 return 2;
 }}} else {
 if (isBondOrMatrix) this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (10,  new org.jmol.modelset.Bond.BondSet (bs)));
@@ -765,7 +767,7 @@ Clazz.defineMethod (c$, "lookingAtMatrix",
 ($fz = function () {
 var ipt;
 var m;
-if (this.ichToken + 4 >= this.cchScript || (this.script.charAt (this.ichToken)).charCodeAt (0) != 91 || (this.script.charAt (this.ichToken + 1)).charCodeAt (0) != 91 || (ipt = this.script.indexOf ("]]", this.ichToken)) < 0 || (m = org.jmol.util.Escape.unescapeMatrix (this.script.substring (this.ichToken, ipt + 2))) == null) return null;
+if (this.ichToken + 4 >= this.cchScript || this.script.charAt (this.ichToken) != '[' || this.script.charAt (this.ichToken + 1) != '[' || (ipt = this.script.indexOf ("]]", this.ichToken)) < 0 || (m = org.jmol.util.Escape.unescapeMatrix (this.script.substring (this.ichToken, ipt + 2))) == null) return null;
 this.cchToken = ipt + 2 - this.ichToken;
 return m;
 }, $fz.isPrivate = true, $fz));
@@ -777,11 +779,11 @@ if (this.flowContext != null && this.flowContext.token.tok == 102410 && this.flo
 switch (this.theTok) {
 case 1073741824:
 if (this.nTokens == 0 && !this.checkImpliedScriptCmd) {
-if ((ident.charAt (0)).charCodeAt (0) == 39) {
+if (ident.charAt (0) == '\'') {
 this.addTokenToPrefix (this.setCommand (org.jmol.script.Token.tokenScript));
 this.cchToken = 0;
 return 2;
-}if (this.ichToken + this.cchToken < this.cchScript && (this.script.charAt (this.ichToken + this.cchToken)).charCodeAt (0) == 46) {
+}if (this.ichToken + this.cchToken < this.cchScript && this.script.charAt (this.ichToken + this.cchToken) == '.') {
 this.addTokenToPrefix (this.setCommand (org.jmol.script.Token.tokenScript));
 this.nTokens = 1;
 this.cchToken = 0;
@@ -1007,7 +1009,7 @@ this.tokenCommand.value = ident;
 return 2;
 }if (this.nTokens == 1) {
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
-this.thisFunction = (this.tokCommand == 102436 ?  new org.jmol.thread.ScriptParallelProcessor (ident, this.tokCommand) :  new org.jmol.script.ScriptFunction (ident, this.tokCommand));
+this.thisFunction = (this.tokCommand == 102436 ? org.jmol.script.ScriptCompiler.newScriptParallelProcessor (ident, this.tokCommand) :  new org.jmol.script.ScriptFunction (ident, this.tokCommand));
 this.htUserFunctions.put (ident, Boolean.TRUE);
 this.flowContext.setFunction (this.thisFunction);
 break;
@@ -1153,10 +1155,16 @@ case 135190:
 case 135188:
 case 135180:
 var ch = this.nextChar ();
-if (this.parenCount == 0 && this.bracketCount == 0 && ".:/\\+-!?".indexOf (ch) >= 0 && !(ch.charCodeAt (0) == 45 && ident.equals ("="))) this.checkUnquotedFileName ();
+if (this.parenCount == 0 && this.bracketCount == 0 && ".:/\\+-!?".indexOf (ch) >= 0 && !(ch == '-' && ident.equals ("="))) this.checkUnquotedFileName ();
 }
 return 0;
 }, $fz.isPrivate = true, $fz), "~S");
+c$.newScriptParallelProcessor = Clazz.defineMethod (c$, "newScriptParallelProcessor", 
+($fz = function (name, tok) {
+var jpp = org.jmol.api.Interface.getOptionInterface ("parallel.ScriptParallelProcessor");
+jpp.set (name, tok);
+return jpp;
+}, $fz.isPrivate = true, $fz), "~S,~N");
 Clazz.defineMethod (c$, "setNewSetCommand", 
 ($fz = function (isSetBrace, ident) {
 this.tokCommand = 1085443;
@@ -1176,7 +1184,7 @@ Clazz.defineMethod (c$, "checkUnquotedFileName",
 ($fz = function () {
 var ichT = this.ichToken;
 var ch;
-while (++ichT < this.cchScript && !Character.isWhitespace (ch = this.script.charAt (ichT)) && ch.charCodeAt (0) != 35 && ch.charCodeAt (0) != 59 && ch.charCodeAt (0) != 125) {
+while (++ichT < this.cchScript && !Character.isWhitespace (ch = this.script.charAt (ichT)) && ch != '#' && ch != ';' && ch != '}') {
 }
 var name = this.script.substring (this.ichToken, ichT).$replace ('\\', '/');
 this.cchToken = ichT - this.ichToken;
@@ -1313,7 +1321,7 @@ switch (this.tokCommand) {
 case 364558:
 this.flowContext =  new org.jmol.script.ScriptFlowContext (this, ct, pt, this.flowContext);
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
-this.thisFunction =  new org.jmol.thread.ScriptParallelProcessor ("", this.tokCommand);
+this.thisFunction = org.jmol.script.ScriptCompiler.newScriptParallelProcessor ("", this.tokCommand);
 this.flowContext.setFunction (this.thisFunction);
 this.pushCount++;
 this.vPush.add (ct);
@@ -1386,10 +1394,10 @@ Clazz.defineMethod (c$, "getData",
 ($fz = function (key) {
 this.addTokenToPrefix (org.jmol.script.Token.newTokenObj (4, key));
 this.ichToken += key.length + 2;
-if (this.script.length > this.ichToken && (this.script.charAt (this.ichToken)).charCodeAt (0) == 13) {
+if (this.script.length > this.ichToken && this.script.charAt (this.ichToken) == '\r') {
 this.lineCurrent++;
 this.ichToken++;
-}if (this.script.length > this.ichToken && (this.script.charAt (this.ichToken)).charCodeAt (0) == 10) {
+}if (this.script.length > this.ichToken && this.script.charAt (this.ichToken) == '\n') {
 this.lineCurrent++;
 this.ichToken++;
 }var i = this.script.indexOf (this.chFirst + key + this.chFirst, this.ichToken) - 4;
@@ -1411,17 +1419,17 @@ if (pt < 0 && pt2 < 0) return 0;
 var n = this.lineCurrent;
 if (pt < 0 || pt2 < pt) pt = pt2;
 for (var i = str.length; --i >= pt; ) {
-if (((ch = str.charAt (i))).charCodeAt (0) == 10 || ch.charCodeAt (0) == 13) this.lineCurrent++;
+if ((ch = str.charAt (i)) == '\n' || ch == '\r') this.lineCurrent++;
 }
 return this.lineCurrent - n;
 }, $fz.isPrivate = true, $fz), "~S");
 c$.isSpaceOrTab = Clazz.defineMethod (c$, "isSpaceOrTab", 
 ($fz = function (ch) {
-return ch.charCodeAt (0) == 32 || ch.charCodeAt (0) == 9;
+return ch == ' ' || ch == '\t';
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "eol", 
 ($fz = function (ch) {
-return (ch.charCodeAt (0) == 13 || ch.charCodeAt (0) == 10 || ch.charCodeAt (0) == 59 && this.nSemiSkip <= 0);
+return (ch == '\r' || ch == '\n' || ch == ';' && this.nSemiSkip <= 0);
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "lookingAtBraceSyntax", 
 ($fz = function () {
@@ -1437,7 +1445,7 @@ nParen--;
 break;
 }
 }
-if (ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 91 && ++nParen == 1) while (++ichT < this.cchScript && nParen > 0) {
+if (ichT < this.cchScript && this.script.charAt (ichT) == '[' && ++nParen == 1) while (++ichT < this.cchScript && nParen > 0) {
 switch (this.script.charAt (ichT)) {
 case '[':
 nParen++;
@@ -1447,7 +1455,7 @@ nParen--;
 break;
 }
 }
-if (ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 46 && nParen == 0) {
+if (ichT < this.cchScript && this.script.charAt (ichT) == '.' && nParen == 0) {
 return true;
 }return false;
 }, $fz.isPrivate = true, $fz));
@@ -1455,14 +1463,14 @@ Clazz.defineMethod (c$, "lookingAtString",
 ($fz = function (allowPrime) {
 if (this.ichToken == this.cchScript) return false;
 this.chFirst = this.script.charAt (this.ichToken);
-if (this.chFirst.charCodeAt (0) != 34 && (!allowPrime || this.chFirst.charCodeAt (0) != 39)) return false;
+if (this.chFirst != '"' && (!allowPrime || this.chFirst != '\'')) return false;
 var ichT = this.ichToken;
 var ch;
 var previousCharBackslash = false;
 while (++ichT < this.cchScript) {
 ch = this.script.charAt (ichT);
-if (ch.charCodeAt (0) == this.chFirst.charCodeAt (0) && !previousCharBackslash) break;
-previousCharBackslash = (ch.charCodeAt (0) == 92 ? !previousCharBackslash : false);
+if (ch == this.chFirst && !previousCharBackslash) break;
+previousCharBackslash = (ch == '\\' ? !previousCharBackslash : false);
 }
 if (ichT == this.cchScript) {
 this.cchToken = -1;
@@ -1474,12 +1482,12 @@ this.cchToken = ++ichT - this.ichToken;
 Clazz.defineMethod (c$, "getUnescapedStringLiteral", 
 function () {
 if (this.cchToken < 2) return "";
-var sb = javax.util.StringXBuilder.newN (this.cchToken - 2);
+var sb = org.jmol.util.StringXBuilder.newN (this.cchToken - 2);
 var ichMax = this.ichToken + this.cchToken - 1;
 var ich = this.ichToken + 1;
 while (ich < ichMax) {
 var ch = this.script.charAt (ich++);
-if (ch.charCodeAt (0) == 92 && ich < ichMax) {
+if (ch == '\\' && ich < ichMax) {
 ch = this.script.charAt (ich++);
 switch (ch) {
 case 'b':
@@ -1499,7 +1507,7 @@ case '\'':
 break;
 case 'x':
 case 'u':
-var digitCount = ch.charCodeAt (0) == 120 ? 2 : 4;
+var digitCount = ch == 'x' ? 2 : 4;
 if (ich < ichMax) {
 var unicode = 0;
 for (var k = digitCount; --k >= 0 && ich < ichMax; ) {
@@ -1519,7 +1527,7 @@ return sb.toString ();
 Clazz.defineMethod (c$, "lookingAtLoadFormat", 
 ($fz = function () {
 var ichT = this.ichToken;
-var ch = '\0';
+var ch = '\u0000';
 var allchar = (ichT < this.cchScript && org.jmol.viewer.Viewer.isDatabaseCode (ch = this.script.charAt (ichT)));
 while (ichT < this.cchScript && (Character.isLetterOrDigit (ch = this.script.charAt (ichT)) && (allchar || Character.isLetter (ch)) || allchar && (!this.eol (ch) && !Character.isWhitespace (ch)))) ++ichT;
 
@@ -1532,8 +1540,8 @@ Clazz.defineMethod (c$, "lookingAtImpliedString",
 var ichT = this.ichToken;
 var ch = this.script.charAt (ichT);
 var parseVariables = !(org.jmol.script.Token.tokAttr (this.tokCommand, 20480) || (this.tokCommand & 1) == 0);
-var isVariable = (ch.charCodeAt (0) == 64);
-var isMath = (isVariable && ichT + 3 < this.cchScript && (this.script.charAt (ichT + 1)).charCodeAt (0) == 123);
+var isVariable = (ch == '@');
+var isMath = (isVariable && ichT + 3 < this.cchScript && this.script.charAt (ichT + 1) == '{');
 if (isMath && parseVariables) {
 ichT = org.jmol.script.ScriptCompiler.ichMathTerminator (this.script, this.ichToken + 1, this.cchScript);
 return (ichT != this.cchScript && (this.cchToken = ichT + 1 - this.ichToken) > 0);
@@ -1547,11 +1555,13 @@ case '(':
 if (!allowSptParen) {
 if (ichT >= 5 && (this.script.substring (ichT - 4, ichT).equals (".spt") || this.script.substring (ichT - 4, ichT).equals (".png") || this.script.substring (ichT - 5, ichT).equals (".pngj"))) {
 isOK = false;
-continue ;}}break;
+continue;
+}}break;
 case '=':
 if (!allowEquals) {
 isOK = false;
-continue ;}break;
+continue;
+}break;
 case '{':
 parenpt++;
 break;
@@ -1559,7 +1569,8 @@ case '}':
 parenpt--;
 if (parenpt < 0 && (this.braceCount > 0 || this.iBrace > 0)) {
 isOK = false;
-continue ;}break;
+continue;
+}break;
 default:
 if (Character.isWhitespace (ch)) {
 if (ptSpace < 0) ptSpace = ichT;
@@ -1582,17 +1593,18 @@ return false;
 c$.ichMathTerminator = Clazz.defineMethod (c$, "ichMathTerminator", 
 function (script, ichT, len) {
 var nP = 1;
-var chFirst = '\0';
-var chLast = '\0';
+var chFirst = '\u0000';
+var chLast = '\u0000';
 while (nP > 0 && ++ichT < len) {
 var ch = script.charAt (ichT);
-if (chFirst.charCodeAt (0) != 0) {
-if (chLast.charCodeAt (0) == 92) {
+if (chFirst != '\0') {
+if (chLast == '\\') {
 ch = '\0';
-} else if (ch.charCodeAt (0) == chFirst.charCodeAt (0)) {
+} else if (ch == chFirst) {
 chFirst = '\0';
 }chLast = ch;
-continue ;}switch (ch) {
+continue;
+}switch (ch) {
 case '\'':
 case '"':
 chFirst = ch;
@@ -1612,23 +1624,23 @@ Clazz.defineMethod (c$, "lookingAtExponential",
 if (this.ichToken == this.cchScript) return NaN;
 var ichT = this.ichToken;
 var pt0 = ichT;
-if ((this.script.charAt (ichT)).charCodeAt (0) == 45) ++ichT;
+if (this.script.charAt (ichT) == '-') ++ichT;
 var isOK = false;
 var ch = 'X';
 while (ichT < this.cchScript && Character.isDigit (ch = this.script.charAt (ichT))) {
 ++ichT;
 isOK = true;
 }
-if (ichT < this.cchScript && ch.charCodeAt (0) == 46) ++ichT;
+if (ichT < this.cchScript && ch == '.') ++ichT;
 while (ichT < this.cchScript && Character.isDigit (ch = this.script.charAt (ichT))) {
 ++ichT;
 isOK = true;
 }
 if (ichT == this.cchScript || !isOK) return NaN;
-isOK = (ch.charCodeAt (0) != 69 && ch.charCodeAt (0) != 101);
+isOK = (ch != 'E' && ch != 'e');
 if (isOK || ++ichT == this.cchScript) return NaN;
 ch = this.script.charAt (ichT);
-if (ch.charCodeAt (0) == 45 || ch.charCodeAt (0) == 43) ichT++;
+if (ch == '-' || ch == '+') ichT++;
 while (ichT < this.cchScript && Character.isDigit (ch = this.script.charAt (ichT))) {
 ichT++;
 isOK = true;
@@ -1641,16 +1653,16 @@ Clazz.defineMethod (c$, "lookingAtDecimal",
 ($fz = function () {
 if (this.ichToken == this.cchScript) return false;
 var ichT = this.ichToken;
-if ((this.script.charAt (ichT)).charCodeAt (0) == 45) ++ichT;
+if (this.script.charAt (ichT) == '-') ++ichT;
 var digitSeen = false;
 var ch = 'X';
 while (ichT < this.cchScript && Character.isDigit (ch = this.script.charAt (ichT++))) digitSeen = true;
 
-if (ch.charCodeAt (0) != 46) return false;
+if (ch != '.') return false;
 var ch1;
 if (ichT < this.cchScript && !this.eol (ch1 = this.script.charAt (ichT))) {
-if (Character.isLetter (ch1) || ch1.charCodeAt (0) == 63 || ch1.charCodeAt (0) == 42) return false;
-if (ichT + 1 < this.cchScript && (Character.isLetter (ch1 = this.script.charAt (ichT + 1)) || ch1.charCodeAt (0) == 63)) return false;
+if (Character.isLetter (ch1) || ch1 == '?' || ch1 == '*') return false;
+if (ichT + 1 < this.cchScript && (Character.isLetter (ch1 = this.script.charAt (ichT + 1)) || ch1 == '?')) return false;
 }while (ichT < this.cchScript && Character.isDigit (this.script.charAt (ichT))) {
 ++ichT;
 digitSeen = true;
@@ -1662,18 +1674,18 @@ Clazz.defineMethod (c$, "lookingAtSeqcode",
 ($fz = function () {
 var ichT = this.ichToken;
 var ch = ' ';
-if (ichT + 1 < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 42 && (this.script.charAt (ichT + 1)).charCodeAt (0) == 94) {
+if (ichT + 1 < this.cchScript && this.script.charAt (ichT) == '*' && this.script.charAt (ichT + 1) == '^') {
 ch = '^';
 ++ichT;
 } else {
-if ((this.script.charAt (ichT)).charCodeAt (0) == 45) ++ichT;
+if (this.script.charAt (ichT) == '-') ++ichT;
 while (ichT < this.cchScript && Character.isDigit (ch = this.script.charAt (ichT))) ++ichT;
 
-}if (ch.charCodeAt (0) != 94) return false;
+}if (ch != '^') return false;
 ichT++;
 if (ichT == this.cchScript) ch = ' ';
  else ch = this.script.charAt (ichT++);
-if (ch.charCodeAt (0) != 32 && ch.charCodeAt (0) != 42 && ch.charCodeAt (0) != 63 && !Character.isLetter (ch)) return false;
+if (ch != ' ' && ch != '*' && ch != '?' && !Character.isLetter (ch)) return false;
 this.cchToken = ichT - this.ichToken;
 return true;
 }, $fz.isPrivate = true, $fz));
@@ -1681,7 +1693,7 @@ Clazz.defineMethod (c$, "lookingAtInteger",
 ($fz = function () {
 if (this.ichToken == this.cchScript) return 2147483647;
 var ichT = this.ichToken;
-if ((this.script.charAt (this.ichToken)).charCodeAt (0) == 45) ++ichT;
+if (this.script.charAt (this.ichToken) == '-') ++ichT;
 var ichBeginDigits = ichT;
 while (ichT < this.cchScript && Character.isDigit (this.script.charAt (ichT))) ++ichT;
 
@@ -1702,9 +1714,9 @@ Clazz.defineMethod (c$, "lookingAtBitset",
 function () {
 if (this.script.indexOf ("({null})", this.ichToken) == this.ichToken) {
 this.cchToken = 8;
-return  new javax.util.BitSet ();
+return  new org.jmol.util.BitSet ();
 }var ichT;
-if (this.ichToken + 4 > this.cchScript || (this.script.charAt (this.ichToken + 1)).charCodeAt (0) != 123 || (ichT = this.script.indexOf ("}", this.ichToken)) < 0 || ichT + 1 == this.cchScript) return null;
+if (this.ichToken + 4 > this.cchScript || this.script.charAt (this.ichToken + 1) != '{' || (ichT = this.script.indexOf ("}", this.ichToken)) < 0 || ichT + 1 == this.cchScript) return null;
 var bs = org.jmol.util.Escape.unescapeBitset (this.script.substring (this.ichToken, ichT + 2));
 if (bs != null) this.cchToken = ichT + 2 - this.ichToken;
 return bs;
@@ -1712,8 +1724,8 @@ return bs;
 Clazz.defineMethod (c$, "lookingAtObjectID", 
 ($fz = function (allowWildID) {
 var ichT = this.ichToken;
-if (ichT == this.cchScript || (this.script.charAt (ichT)).charCodeAt (0) != 36) return false;
-if (++ichT != this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 34) return false;
+if (ichT == this.cchScript || this.script.charAt (ichT) != '$') return false;
+if (++ichT != this.cchScript && this.script.charAt (ichT) == '"') return false;
 while (ichT < this.cchScript) {
 var ch;
 if (Character.isWhitespace (ch = this.script.charAt (ichT))) {
@@ -1748,19 +1760,19 @@ case '&':
 case '|':
 case '*':
 if (ichT < this.cchScript) {
-if ((this.script.charAt (ichT)).charCodeAt (0) == ch.charCodeAt (0)) {
+if (this.script.charAt (ichT) == ch) {
 ++ichT;
-if (ch.charCodeAt (0) == 45 || ch.charCodeAt (0) == 43) break;
-if (ch.charCodeAt (0) == 38 && ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == ch.charCodeAt (0)) ++ichT;
-} else if ((this.script.charAt (ichT)).charCodeAt (0) == 61) {
+if (ch == '-' || ch == '+') break;
+if (ch == '&' && ichT < this.cchScript && this.script.charAt (ichT) == ch) ++ichT;
+} else if (this.script.charAt (ichT) == '=') {
 ++ichT;
 }}this.tokLastMath = 1;
 break;
 case '/':
-if (ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 47) break;
+if (ichT < this.cchScript && this.script.charAt (ichT) == '/') break;
 case '\\':
 case '!':
-if (ichT < this.cchScript && (this.script.charAt (ichT)).charCodeAt (0) == 61) ++ichT;
+if (ichT < this.cchScript && this.script.charAt (ichT) == '=') ++ichT;
 this.tokLastMath = 1;
 break;
 case ')':
@@ -1786,7 +1798,7 @@ break;
 case '<':
 case '=':
 case '>':
-if (ichT < this.cchScript && (((ch = this.script.charAt (ichT))).charCodeAt (0) == 60 || ch.charCodeAt (0) == 61 || ch.charCodeAt (0) == 62)) ++ichT;
+if (ichT < this.cchScript && ((ch = this.script.charAt (ichT)) == '<' || ch == '=' || ch == '>')) ++ichT;
 this.tokLastMath = 1;
 break;
 default:
@@ -1795,8 +1807,8 @@ case '~':
 case '_':
 case '\'':
 case '?':
-if (ch.charCodeAt (0) == 63) this.tokLastMath = 1;
-while (ichT < this.cchScript && (Character.isLetterOrDigit (ch = this.script.charAt (ichT)) || ch.charCodeAt (0) == 95 || ch.charCodeAt (0) == 63 || ch.charCodeAt (0) == 126 || ch.charCodeAt (0) == 39) || (ch.charCodeAt (0) == 94 && ichT > ichT0 && Character.isDigit (this.script.charAt (ichT - 1))) || ch.charCodeAt (0) == 92 && ichT + 1 < this.cchScript && (this.script.charAt (ichT + 1)).charCodeAt (0) == 63) ++ichT;
+if (ch == '?') this.tokLastMath = 1;
+while (ichT < this.cchScript && (Character.isLetterOrDigit (ch = this.script.charAt (ichT)) || ch == '_' || ch == '?' || ch == '~' || ch == '\'') || (ch == '^' && ichT > ichT0 && Character.isDigit (this.script.charAt (ichT - 1))) || ch == '\\' && ichT + 1 < this.cchScript && this.script.charAt (ichT + 1) == '?') ++ichT;
 
 break;
 }
@@ -1806,9 +1818,9 @@ return true;
 Clazz.defineMethod (c$, "charToken", 
 ($fz = function () {
 var ch;
-if (this.ichToken == this.cchScript || ((ch = this.script.charAt (this.ichToken))).charCodeAt (0) == 34 || ch.charCodeAt (0) == 64) return false;
+if (this.ichToken == this.cchScript || (ch = this.script.charAt (this.ichToken)) == '"' || ch == '@') return false;
 var ichT = this.ichToken;
-while (ichT < this.cchScript && !org.jmol.script.ScriptCompiler.isSpaceOrTab (ch = this.script.charAt (ichT)) && ch.charCodeAt (0) != 35 && ch.charCodeAt (0) != 125 && !this.eol (ch)) ++ichT;
+while (ichT < this.cchScript && !org.jmol.script.ScriptCompiler.isSpaceOrTab (ch = this.script.charAt (ichT)) && ch != '#' && ch != '}' && !this.eol (ch)) ++ichT;
 
 this.cchToken = ichT - this.ichToken;
 return true;
@@ -1862,7 +1874,8 @@ if (isEscaped1) ptQ = ptToken = i;
 }break;
 case '\\':
 isEscaped = !isEscaped;
-continue ;case ' ':
+continue;
+case ' ':
 if (!isEscaped && !isEscaped1 && !isEscaped2) {
 ptToken = i + 1;
 ptQ = -1;

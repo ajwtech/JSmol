@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Hover", ["java.util.Hashtable", "org.jmol.shape.Text", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.hoverText = null;
@@ -15,9 +15,9 @@ function () {
 Clazz.superCall (this, org.jmol.shape.Hover, "initShape", []);
 this.isHover = true;
 var font3d = this.gdata.getFont3DFSS ("SansSerif", "Plain", 12);
-var bgcolix = org.jmol.util.Colix.getColix ("#FFFFC3");
+var bgcolix = org.jmol.util.Colix.getColixS ("#FFFFC3");
 var colix = 4;
-this.currentObject = this.hoverText =  new org.jmol.shape.Text (this.gdata, font3d, null, colix, bgcolix, 0, 0, 1, -2147483648, 1, 0);
+this.currentObject = this.hoverText = org.jmol.shape.Text.newLabel (this.gdata, font3d, null, colix, bgcolix, 0, 0, 1, -2147483648, 1, 0);
 this.hoverText.setAdjustForWindow (true);
 });
 Clazz.defineMethod (c$, "setProperty", 
@@ -26,14 +26,14 @@ if ("target" === propertyName) {
 if (value == null) this.atomIndex = -1;
  else {
 this.atomIndex = (value).intValue ();
-}return ;
+}return;
 }if ("text" === propertyName) {
 this.text = value;
 if (this.text != null && this.text.length == 0) this.text = null;
-return ;
+return;
 }if ("specialLabel" === propertyName) {
 this.specialLabel = value;
-return ;
+return;
 }if ("atomLabel" === propertyName) {
 var text = value;
 if (text != null && text.length == 0) text = null;
@@ -41,23 +41,23 @@ var count = this.viewer.getAtomCount ();
 if (this.atomFormats == null || this.atomFormats.length < count) this.atomFormats =  new Array (count);
 for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) this.atomFormats[i] = text;
 
-return ;
+return;
 }if ("xy" === propertyName) {
 this.xy = value;
-return ;
+return;
 }if ("label" === propertyName) {
 this.labelFormat = value;
 if (this.labelFormat != null && this.labelFormat.length == 0) this.labelFormat = null;
-return ;
+return;
 }if (propertyName === "deleteModelAtoms") {
 if (this.atomFormats != null) {
 var firstAtomDeleted = ((value)[2])[1];
 var nAtomsDeleted = ((value)[2])[2];
 this.atomFormats = org.jmol.util.ArrayUtil.deleteElements (this.atomFormats, firstAtomDeleted, nAtomsDeleted);
 }this.atomIndex = -1;
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shape.Hover, "setProperty", [propertyName, value, null]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var temp =  new java.util.Hashtable ();

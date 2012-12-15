@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoMOReader", ["java.lang.Float", "java.util.Random", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.api.Interface", "org.jmol.constant.EnumQuantumShell", "org.jmol.util.Logger", "$.Measure", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoMOReader", ["java.lang.Float", "java.util.Random", "org.jmol.api.Interface", "org.jmol.constant.EnumQuantumShell", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Point3f", "$.TextFormat", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.random = null;
 this.vDist = null;
@@ -17,7 +17,7 @@ this.qSetupDone = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoMOReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.prepareFields (c$, function () {
-this.vDist =  Clazz.newArray (3, 0);
+this.vDist =  Clazz.newFloatArray (3, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -59,10 +59,10 @@ for (var i = this.params.title.length; --i >= 0; ) this.fixTitleLine (i, mo);
 this.coef = mo.get ("coefficients");
 this.dfCoefMaps = mo.get ("dfCoefMaps");
 } else {
-this.coefs =  Clazz.newArray (this.mos.size (), 0);
+this.coefs = org.jmol.util.ArrayUtil.newFloat2 (this.mos.size ());
 for (var i = 1; i < this.linearCombination.length; i += 2) {
-var j = Math.round (this.linearCombination[i]);
-if (j > this.mos.size () || j < 1) return ;
+var j = Clazz.floatToInt (this.linearCombination[i]);
+if (j > this.mos.size () || j < 1) return;
 this.coefs[j - 1] = this.mos.get (j - 1).get ("coefficients");
 }
 for (var i = this.params.title.length; --i >= 0; ) this.fixTitleLine (i, null);
@@ -72,9 +72,9 @@ for (var i = this.params.title.length; --i >= 0; ) this.fixTitleLine (i, null);
 if (isMapData && !this.isElectronDensityCalc && !haveVolumeData) {
 this.volumeData.sr = this;
 this.volumeData.doIterate = false;
-this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (1, 1, 1, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newFloatArray (1, 1, 1, 0));
 this.points =  new Array (1);
-this.points[0] =  new javax.vecmath.Point3f ();
+this.points[0] =  new org.jmol.util.Point3f ();
 if (!this.setupCalculation ()) this.q = null;
 } else if (this.params.psi_monteCarloCount > 0) {
 this.vertexDataOnly = true;
@@ -88,10 +88,10 @@ return true;
 }, "~B");
 Clazz.defineMethod (c$, "fixTitleLine", 
 ($fz = function (iLine, mo) {
-if (!this.fixTitleLine (iLine)) return ;
+if (!this.fixTitleLine (iLine)) return;
 var line = this.params.title[iLine];
 var pt = line.indexOf ("%");
-if (line.length == 0 || pt < 0) return ;
+if (line.length == 0 || pt < 0) return;
 var rep = 0;
 if (line.indexOf ("%F") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "F", this.params.fileName);
 if (line.indexOf ("%I") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "I", this.params.qm_moLinearCombination == null ? "" + this.params.qm_moNumber : org.jmol.constant.EnumQuantumShell.getMOString (this.params.qm_moLinearCombination));
@@ -99,7 +99,7 @@ if (line.indexOf ("%N") >= 0) line = org.jmol.util.TextFormat.formatStringS (lin
 var energy = null;
 if (mo == null) {
 for (var i = 0; i < this.linearCombination.length; i += 2) if (this.linearCombination[i] != 0) {
-mo = this.mos.get (Math.round (this.linearCombination[i + 1]) - 1);
+mo = this.mos.get (Clazz.floatToInt (this.linearCombination[i + 1]) - 1);
 var e = mo.get ("energy");
 if (energy == null) {
 if (e == null) break;
@@ -115,35 +115,39 @@ if (line.indexOf ("%U") >= 0) line = org.jmol.util.TextFormat.formatStringS (lin
 if (line.indexOf ("%S") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "S", mo != null && mo.containsKey ("symmetry") && ++rep != 0 ? "" + mo.get ("symmetry") : "");
 if (line.indexOf ("%O") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "O", mo != null && mo.containsKey ("occupancy") && ++rep != 0 ? "" + mo.get ("occupancy") : "");
 if (line.indexOf ("%T") >= 0) line = org.jmol.util.TextFormat.formatStringS (line, "T", mo != null && mo.containsKey ("type") && ++rep != 0 ? "" + mo.get ("type") : "");
-var isOptional = (line.indexOf ("?") == 0);
+if (line.equals ("string")) {
+this.params.title[iLine] = "";
+return;
+}var isOptional = (line.indexOf ("?") == 0);
 this.params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim ().endsWith ("=") ? line.substring (1) : "");
 }, $fz.isPrivate = true, $fz), "~N,java.util.Map");
 Clazz.defineMethod (c$, "readSurfaceData", 
 function (isMapData) {
-if (this.volumeData.sr != null) return ;
+if (this.volumeData.sr != null) return;
 if (this.params.psi_monteCarloCount <= 0) {
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoMOReader, "readSurfaceData", [isMapData]);
-return ;
-}if (this.points != null) return ;
+return;
+}if (this.points != null) return;
 this.points =  new Array (1000);
-for (var j = 0; j < 1000; j++) this.points[j] =  new javax.vecmath.Point3f ();
+for (var j = 0; j < 1000; j++) this.points[j] =  new org.jmol.util.Point3f ();
 
-if (this.params.thePlane != null) this.vTemp =  new javax.vecmath.Vector3f ();
+if (this.params.thePlane != null) this.vTemp =  new org.jmol.util.Vector3f ();
 for (var i = 0; i < 3; i++) this.vDist[i] = this.volumeData.volumetricVectorLengths[i] * this.volumeData.voxelCounts[i];
 
-this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (1000, 1, 1, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newFloatArray (1000, 1, 1, 0));
 this.getValues ();
 var value;
 var f = 0;
 for (var j = 0; j < 1000; j++) if ((value = Math.abs (this.voxelData[j][0][0])) > f) f = value;
 
-if (f < 0.0001) return ;
+if (f < 0.0001) return;
 for (var i = 0; i < this.params.psi_monteCarloCount; ) {
 this.getValues ();
 for (var j = 0; j < 1000; j++) {
 value = this.voxelData[j][0][0];
 var absValue = Math.abs (value);
-if (absValue <= this.getRnd (f)) continue ;this.addVertexCopy (this.points[j], value, 0);
+if (absValue <= this.getRnd (f)) continue;
+this.addVertexCopy (this.points[j], value, 0);
 if (++i == this.params.psi_monteCarloCount) break;
 }
 }
@@ -163,14 +167,14 @@ this.createOrbital ();
 Clazz.overrideMethod (c$, "getValueAtPoint", 
 function (pt) {
 return (this.q == null ? 0 : this.q.process (pt));
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getRnd", 
 ($fz = function (f) {
 return this.random.nextFloat () * f;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.overrideMethod (c$, "generateCube", 
 function () {
-if (this.params.volumeData != null) return ;
+if (this.params.volumeData != null) return;
 this.newVoxelDataCube ();
 this.createOrbital ();
 });
@@ -178,18 +182,18 @@ Clazz.defineMethod (c$, "createOrbital",
 function () {
 var isMonteCarlo = (this.params.psi_monteCarloCount > 0);
 if (this.isElectronDensityCalc) {
-if (this.mos == null || isMonteCarlo) return ;
+if (this.mos == null || isMonteCarlo) return;
 for (var i = this.params.qm_moNumber; --i >= 0; ) {
 org.jmol.util.Logger.info (" generating isosurface data for MO " + (i + 1));
 var mo = this.mos.get (i);
 this.coef = mo.get ("coefficients");
 this.dfCoefMaps = mo.get ("dfCoefMaps");
-if (!this.setupCalculation ()) return ;
+if (!this.setupCalculation ()) return;
 this.q.createCube ();
 }
 } else {
 if (!isMonteCarlo) org.jmol.util.Logger.info ("generating isosurface data for MO using cutoff " + this.params.cutoff);
-if (!this.setupCalculation ()) return ;
+if (!this.setupCalculation ()) return;
 this.q.createCube ();
 }});
 Clazz.defineMethod (c$, "getPlane", 
@@ -204,17 +208,20 @@ switch (this.params.qmOrbitalType) {
 case 5:
 break;
 case 1:
-return this.q.setupCalculation (this.volumeData, this.bsMySelected, null, null, this.params.moData.get ("calculationType"), this.atomData.atomXyz, this.atomData.firstAtomIndex, this.params.moData.get ("shells"), this.params.moData.get ("gaussians"), this.dfCoefMaps, null, this.coef, this.linearCombination, this.coefs, this.params.theProperty, this.params.moData.get ("isNormalized") == null, this.points, this.params.parameters, this.params.testFlags);
+return this.q.setupCalculation (this.volumeData, this.bsMySelected, null, null, this.params.moData.get ("calculationType"), this.atomData.atomXyz, this.atomData.firstAtomIndex, this.params.moData.get ("shells"), this.params.moData.get ("gaussians"), this.dfCoefMaps, null, this.coef, this.linearCombination, this.params.isSquaredLinear, this.coefs, null, this.params.moData.get ("isNormalized") == null, this.points, this.params.parameters, this.params.testFlags);
 case 2:
-return this.q.setupCalculation (this.volumeData, this.bsMySelected, null, null, this.params.moData.get ("calculationType"), this.atomData.atomXyz, this.atomData.firstAtomIndex, null, null, null, this.params.moData.get ("slaters"), this.coef, this.linearCombination, this.coefs, this.params.theProperty, true, this.points, this.params.parameters, this.params.testFlags);
+return this.q.setupCalculation (this.volumeData, this.bsMySelected, null, null, this.params.moData.get ("calculationType"), this.atomData.atomXyz, this.atomData.firstAtomIndex, null, null, null, this.params.moData.get ("slaters"), this.coef, this.linearCombination, this.params.isSquaredLinear, this.coefs, null, true, this.points, this.params.parameters, this.params.testFlags);
 case 3:
-return this.q.setupCalculation (this.volumeData, this.bsMySelected, this.params.bsSolvent, this.atomData.bsMolecules, null, this.atomData.atomXyz, this.atomData.firstAtomIndex, null, null, null, null, null, null, null, this.params.theProperty, true, this.points, this.params.parameters, this.params.testFlags);
+return this.q.setupCalculation (this.volumeData, this.bsMySelected, this.params.bsSolvent, this.atomData.bsMolecules, null, this.atomData.atomXyz, this.atomData.firstAtomIndex, null, null, null, null, null, null, this.params.isSquaredLinear, null, null, true, this.points, this.params.parameters, this.params.testFlags);
 }
 return false;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getSurfacePointAndFraction", 
 function (cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn) {
 var zero = Clazz.superCall (this, org.jmol.jvxl.readers.IsoMOReader, "getSurfacePointAndFraction", [cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn]);
-return (this.q == null || Float.isNaN (zero) ? zero : this.q.process (ptReturn));
-}, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
+if (this.q != null && !Float.isNaN (zero)) {
+zero = this.q.process (ptReturn);
+if (this.params.isSquared) zero *= zero;
+}return zero;
+}, "~N,~B,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,~N,~N,~N,~N,~N,~A,org.jmol.util.Point3f");
 });

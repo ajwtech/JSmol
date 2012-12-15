@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.MeshSurface", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.BoxInfo", "$.Colix", "$.Escape", "$.Measure", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.spanningVectors = null;
 this.meshType = null;
@@ -12,12 +12,14 @@ this.polygonIndexes = null;
 this.isTriangleSet = false;
 this.haveQuads = false;
 this.colix = 0;
+this.colixBack = 0;
 this.isColorSolid = true;
 this.offset = null;
 this.altVertices = null;
 this.polygonColixes = null;
 this.vertexColixes = null;
 this.normals = null;
+this.normalsTemp = null;
 this.normalCount = 0;
 this.normixCount = 0;
 this.bsPolygons = null;
@@ -53,16 +55,16 @@ Clazz.makeConstructor (c$,
 function () {
 });
 c$.newMesh = Clazz.defineMethod (c$, "newMesh", 
-function (vertices, vertexCount, polygonIndexes, normals, nNormals) {
+function (isAlt, vertices, vertexCount, polygonIndexes, normals, nNormals) {
 var ms =  new org.jmol.util.MeshSurface ();
 ms.polygonIndexes = polygonIndexes;
-if (Clazz.instanceOf (vertices, Array)) ms.vertices = vertices;
- else ms.altVertices = vertices;
+if (isAlt) ms.altVertices = vertices;
+ else ms.vertices = vertices;
 ms.vertexCount = (vertexCount == 0 ? vertices.length : vertexCount);
 ms.normals = normals;
 ms.normalCount = (nNormals == 0 && normals != null ? normals.length : nNormals);
 return ms;
-}, "~A,~N,~A,~A,~N");
+}, "~B,~A,~N,~A,~A,~N");
 c$.newSlab = Clazz.defineMethod (c$, "newSlab", 
 function (vertices, vertexCount, vertexValues, polygonIndexes, polygonCount, checkCount) {
 var ms =  new org.jmol.util.MeshSurface ();
@@ -86,13 +88,17 @@ Clazz.defineMethod (c$, "setColix",
 function (colix) {
 this.colix = colix;
 }, "~N");
+Clazz.defineMethod (c$, "setColixBack", 
+function (colix) {
+this.colixBack = colix;
+}, "~N");
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertex) {
 if (this.vertexCount == 0) this.vertices =  new Array (25);
  else if (this.vertexCount == this.vertices.length) this.vertices = org.jmol.util.ArrayUtil.doubleLength (this.vertices);
-this.vertices[this.vertexCount] = javax.vecmath.Point3f.newP (vertex);
+this.vertices[this.vertexCount] = org.jmol.util.Point3f.newP (vertex);
 return this.vertexCount++;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addTriangle", 
 function (vertexA, vertexB, vertexC) {
 this.addPolygon ([vertexA, vertexB, vertexC], null);
@@ -105,16 +111,16 @@ this.addPolygon ([vertexA, vertexB, vertexC, vertexD], null);
 Clazz.defineMethod (c$, "setPolygonCount", 
 function (polygonCount) {
 this.polygonCount = polygonCount;
-if (polygonCount < 0) return ;
-if (this.polygonIndexes == null || polygonCount > this.polygonIndexes.length) this.polygonIndexes =  Clazz.newArray (polygonCount, 0);
+if (polygonCount < 0) return;
+if (this.polygonIndexes == null || polygonCount > this.polygonIndexes.length) this.polygonIndexes = org.jmol.util.ArrayUtil.newInt2 (polygonCount);
 }, "~N");
 Clazz.defineMethod (c$, "addVertexCopyVal", 
 function (vertex, value) {
-if (this.vertexCount == 0) this.vertexValues =  Clazz.newArray (25, 0);
+if (this.vertexCount == 0) this.vertexValues =  Clazz.newFloatArray (25, 0);
  else if (this.vertexCount >= this.vertexValues.length) this.vertexValues = org.jmol.util.ArrayUtil.doubleLengthF (this.vertexValues);
 this.vertexValues[this.vertexCount] = value;
 return this.addVertexCopy (vertex);
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "addTriangleCheck", 
 function (vertexA, vertexB, vertexC, check, check2, color) {
 return (this.vertices == null || this.vertexValues != null && (Float.isNaN (this.vertexValues[vertexA]) || Float.isNaN (this.vertexValues[vertexB]) || Float.isNaN (this.vertexValues[vertexC])) || Float.isNaN (this.vertices[vertexA].x) || Float.isNaN (this.vertices[vertexB].x) || Float.isNaN (this.vertices[vertexC].x) ? -1 : this.addPolygonV3 (vertexA, vertexB, vertexC, check, check2, color, null));
@@ -122,7 +128,7 @@ return (this.vertices == null || this.vertexValues != null && (Float.isNaN (this
 Clazz.defineMethod (c$, "addPolygonV3", 
 ($fz = function (vertexA, vertexB, vertexC, check, check2, color, bs) {
 return (this.checkCount == 2 ? this.addPolygonC ([vertexA, vertexB, vertexC, check, check2], color, bs) : this.addPolygon ([vertexA, vertexB, vertexC, check], bs));
-}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,~N,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "addPolygonC", 
 function (polygon, color, bs) {
 if (color != 0) {
@@ -130,20 +136,20 @@ if (this.polygonColixes == null || this.polygonCount == 0) this.lastColor = 0;
 var colix = (color == this.lastColor ? this.lastColix : (this.lastColix = org.jmol.util.Colix.getColix (this.lastColor = color)));
 this.setPolygonColix (this.polygonCount, colix);
 }return this.addPolygon (polygon, bs);
-}, "~A,~N,javax.util.BitSet");
+}, "~A,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "addPolygon", 
 ($fz = function (polygon, bs) {
 var n = this.polygonCount;
-if (this.polygonCount == 0) this.polygonIndexes =  Clazz.newArray (25, 0);
+if (this.polygonCount == 0) this.polygonIndexes = org.jmol.util.ArrayUtil.newInt2 (25);
  else if (this.polygonCount == this.polygonIndexes.length) this.polygonIndexes = org.jmol.util.ArrayUtil.doubleLength (this.polygonIndexes);
 if (bs != null) bs.set (this.polygonCount);
 this.polygonIndexes[this.polygonCount++] = polygon;
 return n;
-}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setPolygonColix", 
 ($fz = function (index, colix) {
 if (this.polygonColixes == null) {
-this.polygonColixes =  Clazz.newArray (25, 0);
+this.polygonColixes =  Clazz.newShortArray (25, 0);
 } else if (index >= this.polygonColixes.length) {
 this.polygonColixes = org.jmol.util.ArrayUtil.doubleLengthShort (this.polygonColixes);
 }this.polygonColixes[index] = colix;
@@ -168,8 +174,8 @@ function (bsDisplay, bsGhost, type, color, translucency) {
 this.bsSlabDisplay = bsDisplay;
 this.bsSlabGhost = bsGhost;
 this.slabMeshType = (type.equalsIgnoreCase ("mesh") ? 1073742018 : 1073741938);
-this.slabColix = org.jmol.util.Colix.getColixTranslucent (org.jmol.util.Colix.getColix (color), true, translucency);
-}, "javax.util.BitSet,javax.util.BitSet,~S,~S,~N");
+this.slabColix = org.jmol.util.Colix.getColixTranslucent3 (org.jmol.util.Colix.getColixS (color), true, translucency);
+}, "org.jmol.util.BitSet,org.jmol.util.BitSet,~S,~S,~N");
 Clazz.defineMethod (c$, "getSlabColor", 
 function () {
 return (this.bsSlabGhost == null ? null : org.jmol.util.Colix.getHexCode (this.slabColix));
@@ -201,7 +207,7 @@ if (s.indexOf ("array") == 0) {
 var pts = org.jmol.util.TextFormat.splitChars (s.substring (6, s.length - 1), ",");
 return org.jmol.util.MeshSurface.getSlabObject (1679429641, [org.jmol.util.Escape.unescapePoint (pts[0]), org.jmol.util.Escape.unescapePoint (pts[1]), org.jmol.util.Escape.unescapePoint (pts[2]), org.jmol.util.Escape.unescapePoint (pts[3])], isCap, null);
 }var plane = org.jmol.util.Escape.unescapePoint (s);
-if (Clazz.instanceOf (plane, javax.vecmath.Point4f)) return org.jmol.util.MeshSurface.getSlabObject (135266319, plane, isCap, null);
+if (Clazz.instanceOf (plane, org.jmol.util.Point4f)) return org.jmol.util.MeshSurface.getSlabObject (135266319, plane, isCap, null);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -226,7 +232,7 @@ this.vertexCount = this.vertexCount0;
 this.polygonCount0 = this.vertexCount0 = 0;
 this.normixCount = (this.isTriangleSet ? this.polygonCount : this.vertexCount);
 this.bsSlabDisplay.setBits (0, (this.polygonCount == 0 ? this.vertexCount : this.polygonCount));
-this.slabOptions =  new javax.util.StringXBuilder ().append (this.meshType + " slab none");
+this.slabOptions =  new org.jmol.util.StringXBuilder ().append (this.meshType + " slab none");
 this.bsSlabGhost = null;
 this.slabMeshType = 1048587;
 }if (slabType == 1048587) return false;
@@ -245,13 +251,13 @@ if (this.polygonCount == 0 && this.vertexCount == 0) return false;
 if (this.polygonCount == 0) this.bsSlabDisplay.setBits (this.mergeVertexCount0, this.vertexCount);
  else this.bsSlabDisplay.setBits (this.mergePolygonCount0, this.polygonCount);
 }if (isGhost) {
-if (this.bsSlabGhost == null) this.bsSlabGhost =  new javax.util.BitSet ();
+if (this.bsSlabGhost == null) this.bsSlabGhost =  new org.jmol.util.BitSet ();
 this.slabMeshType = (colorData[0]).intValue ();
 this.slabColix = (colorData[1]).shortValue ();
 if (org.jmol.util.Colix.isColixColorInherited (this.slabColix)) this.slabColix = org.jmol.util.Colix.copyColixTranslucency (this.slabColix, this.colix);
 andCap = false;
-this.colix = org.jmol.util.Colix.getColixTranslucent (this.colix, false, 0);
-}var sb =  new javax.util.StringXBuilder ();
+this.colix = org.jmol.util.Colix.getColixTranslucent3 (this.colix, false, 0);
+}var sb =  new org.jmol.util.StringXBuilder ();
 sb.append (andCap ? " cap " : " slab ");
 if (isGhost) sb.append ("translucent ").appendF (org.jmol.util.Colix.getColixTranslucencyFractional (this.slabColix)).append (" ").append (org.jmol.util.Colix.getHexCode (this.slabColix)).append (" ");
 switch (slabType) {
@@ -310,13 +316,13 @@ break;
 break;
 }
 var newOptions = sb.toString ();
-if (this.slabOptions == null) this.slabOptions =  new javax.util.StringXBuilder ();
+if (this.slabOptions == null) this.slabOptions =  new org.jmol.util.StringXBuilder ();
 if (this.slabOptions.indexOf (newOptions) < 0) this.slabOptions.append (this.slabOptions.length () > 0 ? "; " : "").append (this.meshType).append (newOptions);
 return true;
 }, "~A,~B");
 Clazz.defineMethod (c$, "slabBrillouin", 
 function (unitCellVectors) {
-return ;
+return;
 }, "~A");
 Clazz.defineMethod (c$, "addIntersectionVertex", 
 function (vertex, value, source, set, mapEdge, i1, i2) {
@@ -334,11 +340,11 @@ this.vertexSets[this.vertexCount] = set;
 }var i = this.addVertexCopy (vertex, value, true, -4);
 mapEdge.put (key, Integer.$valueOf (i));
 return i;
-}, "javax.vecmath.Point3f,~N,~N,~N,java.util.Map,~N,~N");
+}, "org.jmol.util.Point3f,~N,~N,~N,java.util.Map,~N,~N");
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertex, value, assocNormals, iNormal) {
 return this.addVertexCopyVal (vertex, value);
-}, "javax.vecmath.Point3f,~N,~B,~N");
+}, "org.jmol.util.Point3f,~N,~B,~N");
 Clazz.defineMethod (c$, "getIntersection", 
 function (distance, plane, ptCenters, vData, fData, bsSource, meshSurface, andCap, doClean, tokType, isGhost) {
 var isSlab = (vData == null);
@@ -346,8 +352,8 @@ var pts = null;
 if (fData == null) fData = this.vertexValues;
 var mapEdge =  new java.util.Hashtable ();
 if (ptCenters != null || isGhost) andCap = false;
-var values =  Clazz.newArray (2, 0);
-var fracs =  Clazz.newArray (2, 0);
+var values =  Clazz.newFloatArray (2, 0);
+var fracs =  Clazz.newFloatArray (2, 0);
 var absD = Math.abs (distance);
 var d1;
 var d2;
@@ -364,10 +370,11 @@ if (this.polygonCount == 0) {
 for (var i = this.mergeVertexCount0; i < this.vertexCount; i++) {
 if (Float.isNaN (fData[i]) || org.jmol.util.MeshSurface.checkSlab (tokType, this.vertices[i], fData[i], distance, plane, ptCenters, bsSource) > 0) this.bsSlabDisplay.clear (i);
 }
-return ;
+return;
 }var iLast = this.polygonCount;
 for (var i = this.mergePolygonCount0; i < iLast; i++) {
-if (!this.setABC (i)) continue ;var bsSlab = (this.bsSlabGhost != null && this.bsSlabGhost.get (i) ? this.bsSlabGhost : this.bsSlabDisplay);
+if (!this.setABC (i)) continue;
+var bsSlab = (this.bsSlabGhost != null && this.bsSlabGhost.get (i) ? this.bsSlabGhost : this.bsSlabDisplay);
 var check1 = this.polygonIndexes[i][3];
 var check2 = (this.checkCount == 2 ? this.polygonIndexes[i][4] : 0);
 var vA = this.vertices[this.iA];
@@ -416,7 +423,8 @@ case 0:
 this.doCap = false;
 break;
 case 7:
-continue ;case 1:
+continue;
+case 1:
 case 6:
 var tossBC = (test1 == 1);
 if (tossBC || isGhost) {
@@ -483,7 +491,7 @@ iPts.add ([this.iD, this.iE]);
 vData.add (pts);
 }}
 if (andCap && iPts.size () > 0) {
-var center =  new javax.vecmath.Point3f ();
+var center =  new org.jmol.util.Point3f ();
 for (var i = iPts.size (); --i >= 0; ) {
 var ipts = iPts.get (i);
 center.add (this.vertices[ipts[0]]);
@@ -495,25 +503,26 @@ for (var i = iPts.size (); --i >= 0; ) {
 var ipts = iPts.get (i);
 this.addPolygonV3 (ipts[0], v0, ipts[1], 0, 0, 0, this.bsSlabDisplay);
 }
-}if (!doClean) return ;
-var bsv =  new javax.util.BitSet ();
-var bsp =  new javax.util.BitSet ();
+}if (!doClean) return;
+var bsv =  new org.jmol.util.BitSet ();
+var bsp =  new org.jmol.util.BitSet ();
 for (var i = 0; i < this.polygonCount; i++) {
-if (this.polygonIndexes[i] == null) continue ;bsp.set (i);
+if (this.polygonIndexes[i] == null) continue;
+bsp.set (i);
 for (var j = 0; j < 3; j++) bsv.set (this.polygonIndexes[i][j]);
 
 }
 var n = 0;
 var nPoly = bsp.cardinality ();
 if (nPoly != this.polygonCount) {
-var map =  Clazz.newArray (this.vertexCount, 0);
+var map =  Clazz.newIntArray (this.vertexCount, 0);
 for (var i = 0; i < this.vertexCount; i++) if (bsv.get (i)) map[i] = n++;
 
 var vTemp =  new Array (n);
 n = 0;
 for (var i = 0; i < this.vertexCount; i++) if (bsv.get (i)) vTemp[n++] = this.vertices[i];
 
-var pTemp =  Clazz.newArray (nPoly, 0);
+var pTemp = org.jmol.util.ArrayUtil.newInt2 (nPoly);
 nPoly = 0;
 for (var i = 0; i < this.polygonCount; i++) if (this.polygonIndexes[i] != null) {
 for (var j = 0; j < 3; j++) this.polygonIndexes[i][j] = map[this.polygonIndexes[i][j]];
@@ -524,7 +533,7 @@ this.vertices = vTemp;
 this.vertexCount = n;
 this.polygonIndexes = pTemp;
 this.polygonCount = nPoly;
-}}, "~N,javax.vecmath.Point4f,~A,java.util.List,~A,javax.util.BitSet,org.jmol.util.MeshSurface,~B,~B,~N,~B");
+}}, "~N,org.jmol.util.Point4f,~A,java.util.List,~A,org.jmol.util.BitSet,org.jmol.util.MeshSurface,~B,~B,~N,~B");
 c$.setPoint = Clazz.defineMethod (c$, "setPoint", 
 ($fz = function (fracs, i, i0, i1) {
 return (fracs[i] == 0 ? i0 : fracs[i] == 1 ? i1 : -1);
@@ -555,7 +564,7 @@ c$.checkSlab = Clazz.defineMethod (c$, "checkSlab",
 var d;
 switch (tokType) {
 case 3:
-return (bs.get (Math.round (val)) ? 1 : -1);
+return (bs.get (Clazz.floatToInt (val)) ? 1 : -1);
 case 32:
 d = distance - val;
 break;
@@ -573,7 +582,7 @@ d = -org.jmol.util.MeshSurface.minDist (v, ptCenters) - distance;
 break;
 }
 return (Math.abs (d) < 0.0001 ? 0 : d);
-}, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Point3f,~N,~N,javax.vecmath.Point4f,~A,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.Point3f,~N,~N,org.jmol.util.Point4f,~A,org.jmol.util.BitSet");
 c$.minDist = Clazz.defineMethod (c$, "minDist", 
 ($fz = function (pt, ptCenters) {
 var dmin = 2147483647;
@@ -582,23 +591,23 @@ var d = ptCenters[i].distance (pt);
 if (d < dmin) dmin = d;
 }
 return dmin;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,~A");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,~A");
 Clazz.defineMethod (c$, "interpolateSphere", 
 ($fz = function (v1, v2, d1, d2, absD, val1, val2, values, fracs, i) {
 return org.jmol.util.MeshSurface.interpolateFraction (v1, v2, org.jmol.util.MeshSurface.getSphericalInterpolationFraction (absD, d1, d2, v1.distance (v2)), val1, val2, values, fracs, i);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~N,~N,~A,~A,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f,~N,~N,~N,~N,~N,~A,~A,~N");
 c$.interpolatePoint = Clazz.defineMethod (c$, "interpolatePoint", 
 ($fz = function (v1, v2, d1, d2, val1, val2, values, fracs, i) {
 return org.jmol.util.MeshSurface.interpolateFraction (v1, v2, d1 / (d1 + d2), val1, val2, values, fracs, i);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~N,~A,~A,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f,~N,~N,~N,~N,~A,~A,~N");
 c$.interpolateFraction = Clazz.defineMethod (c$, "interpolateFraction", 
 ($fz = function (v1, v2, f, val1, val2, values, fracs, i) {
 if (f < 0.0001) f = 0;
  else if (f > 0.9999) f = 1;
 fracs[i] = f;
 values[i] = (val2 - val1) * f + val1;
-return javax.vecmath.Point3f.new3 (v1.x + (v2.x - v1.x) * f, v1.y + (v2.y - v1.y) * f, v1.z + (v2.z - v1.z) * f);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N,~A,~A,~N");
+return org.jmol.util.Point3f.new3 (v1.x + (v2.x - v1.x) * f, v1.y + (v2.y - v1.y) * f, v1.z + (v2.z - v1.z) * f);
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f,~N,~N,~N,~A,~A,~N");
 c$.getSphericalInterpolationFraction = Clazz.defineMethod (c$, "getSphericalInterpolationFraction", 
 function (r, valueA, valueB, d) {
 var ra = Math.abs (r + valueA) / d;

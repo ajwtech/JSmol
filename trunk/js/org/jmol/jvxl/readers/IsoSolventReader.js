@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "javax.vecmath.Point3f", "$.Point4f", "$.Vector3f"], "org.jmol.jvxl.readers.IsoSolventReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3i", "org.jmol.jvxl.data.MeshData", "org.jmol.util.BitSetUtil", "$.Logger", "$.Measure", "$.MeshSurface"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "org.jmol.util.Point3f", "$.Point4f", "$.Vector3f"], "org.jmol.jvxl.readers.IsoSolventReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.jvxl.data.MeshData", "org.jmol.util.BitSet", "$.BitSetUtil", "$.Logger", "$.Measure", "$.MeshSurface", "$.Point3i"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.cavityRadius = 0;
 this.envelopeRadius = 0;
@@ -39,14 +39,14 @@ this.nTest = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoSolventReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.prepareFields (c$, function () {
-this.vTemp =  new javax.vecmath.Vector3f ();
-this.plane =  new javax.vecmath.Point4f ();
-this.ptTemp2 =  new javax.vecmath.Point3f ();
-this.ptS1 =  new javax.vecmath.Point3f ();
-this.ptS2 =  new javax.vecmath.Point3f ();
-this.vTemp2 =  new javax.vecmath.Vector3f ();
-this.vTemp3 =  new javax.vecmath.Vector3f ();
-this.p =  new javax.vecmath.Point3f ();
+this.vTemp =  new org.jmol.util.Vector3f ();
+this.plane =  new org.jmol.util.Point4f ();
+this.ptTemp2 =  new org.jmol.util.Point3f ();
+this.ptS1 =  new org.jmol.util.Point3f ();
+this.ptS2 =  new org.jmol.util.Point3f ();
+this.vTemp2 =  new org.jmol.util.Vector3f ();
+this.vTemp3 =  new org.jmol.util.Vector3f ();
+this.p =  new org.jmol.util.Point3f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -61,7 +61,7 @@ this.volumeData.setUnitVectors ();
 this.volumeData.getYzCount ();
 this.bsAtomMinMax =  new Array (this.nPointsX);
 this.getAtomMinMax (null, this.bsAtomMinMax);
-this.voxelSource =  Clazz.newArray (this.volumeData.nPoints, 0);
+this.voxelSource =  Clazz.newIntArray (this.volumeData.nPoints, 0);
 }return true;
 }, "~B");
 Clazz.defineMethod (c$, "setup", 
@@ -97,7 +97,7 @@ this.isProgressive = this.isXLowToHigh = true;
 }, "~B");
 Clazz.overrideMethod (c$, "generateCube", 
 function () {
-if (this.isCavity && this.params.theProperty != null) return ;
+if (this.isCavity && this.params.theProperty != null) return;
 this.getMaxRadius ();
 if (this.isCavity && this.dataType != 1205 && this.dataType != 1206) {
 this.params.vertexSource = null;
@@ -108,11 +108,11 @@ this.generateSolventCavity ();
 this.resetVoxelData (3.4028235E38);
 this.markSphereVoxels (0, NaN);
 } else {
-this.voxelSource =  Clazz.newArray (this.volumeData.nPoints, 0);
+this.voxelSource =  Clazz.newIntArray (this.volumeData.nPoints, 0);
 this.generateSolventCube ();
 }this.unsetVoxelData ();
 var info = this.params.slabInfo;
-if (info != null) for (var i = 0; i < info.size (); i++) if ((info.get (i)[2]).booleanValue () && Clazz.instanceOf (info.get (i)[0], javax.vecmath.Point4f)) {
+if (info != null) for (var i = 0; i < info.size (); i++) if ((info.get (i)[2]).booleanValue () && Clazz.instanceOf (info.get (i)[0], org.jmol.util.Point4f)) {
 this.volumeData.capData (info.get (i)[0], this.params.cutoff);
 info.remove (i--);
 }
@@ -130,7 +130,7 @@ var fraction = fReturn[0] = org.jmol.util.MeshSurface.getSphericalInterpolationF
 ptReturn.scaleAdd2 (fraction, edgeVector, pointA);
 var diff = valueB - valueA;
 return valueA + fraction * diff;
-}, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
+}, "~N,~B,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,~N,~N,~N,~N,~N,~A,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertexXYZ, value, assocVertex) {
 var i = Clazz.superCall (this, org.jmol.jvxl.readers.IsoSolventReader, "addVertexCopy", [vertexXYZ, value, assocVertex]);
@@ -138,7 +138,7 @@ if (i < 0) return i;
 if (this.isSurfacePoint) this.bsSurfacePoints.set (i);
 if (this.params.vertexSource != null) this.params.vertexSource[i] = this.iAtomSurface;
 return i;
-}, "javax.vecmath.Point3f,~N,~N");
+}, "org.jmol.util.Point3f,~N,~N");
 Clazz.overrideMethod (c$, "selectPocket", 
 function (doExclude) {
 if (this.meshDataServer != null) this.meshDataServer.fillMeshData (this.meshData, 1, null);
@@ -150,7 +150,8 @@ for (var i = 0; i < nVertices; i++) {
 for (var j = 0; j < nDots; j++) {
 if (this.dots[j].distance (v[i]) < this.envelopeRadius) {
 vv[i] = NaN;
-continue ;}}
+continue;
+}}
 }
 this.meshData.getSurfaceSet ();
 var nSets = this.meshData.nSets;
@@ -173,7 +174,7 @@ Clazz.overrideMethod (c$, "postProcessVertices",
 function () {
 this.setVertexSource ();
 if (this.doCalculateTroughs && this.bsSurfacePoints != null) {
-var bsAll =  new javax.util.BitSet ();
+var bsAll =  new org.jmol.util.BitSet ();
 var bsSurfaces = this.meshData.getSurfaceSet ();
 var bsSources = null;
 var volumes = (this.isPocket ? null : this.meshData.calculateVolumeOrArea (-1, false, false));
@@ -182,17 +183,19 @@ for (var i = 0; i < this.meshData.nSets; i++) {
 var bss = bsSurfaces[i];
 if (bss.intersects (this.bsSurfacePoints)) {
 if (volumes == null || Math.abs (volumes[i]) > minVolume) if (this.params.vertexSource != null) {
-var bs =  new javax.util.BitSet ();
+var bs =  new org.jmol.util.BitSet ();
 if (bsSources == null) bsSources =  new Array (bsSurfaces.length);
 for (var j = bss.nextSetBit (0); j >= 0; j = bss.nextSetBit (j + 1)) {
 var iatom = this.params.vertexSource[j];
-if (iatom < 0) continue ;if (bsAll.get (iatom)) {
+if (iatom < 0) continue;
+if (bsAll.get (iatom)) {
 this.meshData.invalidateSurfaceSet (i);
 break;
 }bs.set (iatom);
 }
 bsAll.or (bs);
-continue ;}}this.meshData.invalidateSurfaceSet (i);
+continue;
+}}this.meshData.invalidateSurfaceSet (i);
 }
 this.updateSurfaceData ();
 if (this.meshDataServer != null) {
@@ -212,17 +215,18 @@ for (var x = 0; x < this.nPointsX; ++x) for (var y = 0; y < this.nPointsY; ++y) 
 out : for (var z = 0; z < this.nPointsZ; ++z, ++i) if ((d = this.voxelData[x][y][z]) < 3.4028235E38 && d >= this.cavityRadius) {
 this.volumeData.voxelPtToXYZ (x, y, z, this.ptXyzTemp);
 for (var j = 0; j < nDots; j++) {
-if (this.dots[j].distance (this.ptXyzTemp) < r2) continue out;}
+if (this.dots[j].distance (this.ptXyzTemp) < r2) continue out;
+}
 bs.set (i);
 n++;
 }
 }
 
 org.jmol.util.Logger.info ("cavities include " + n + " voxel points");
-this.atomRadius =  Clazz.newArray (n, 0);
+this.atomRadius =  Clazz.newFloatArray (n, 0);
 this.atomXyz =  new Array (n);
 for (var x = 0, ipt = 0, apt = 0; x < this.nPointsX; ++x) for (var y = 0; y < this.nPointsY; ++y) for (var z = 0; z < this.nPointsZ; ++z) if (bs.get (ipt++)) {
-this.volumeData.voxelPtToXYZ (x, y, z, (this.atomXyz[apt] =  new javax.vecmath.Point3f ()));
+this.volumeData.voxelPtToXYZ (x, y, z, (this.atomXyz[apt] =  new org.jmol.util.Point3f ()));
 this.atomRadius[apt++] = this.voxelData[x][y][z];
 }
 
@@ -232,11 +236,11 @@ this.thisAtomSet = org.jmol.util.BitSetUtil.setAll (this.myAtomCount);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "generateSolventCube", 
 ($fz = function () {
-if (this.dataType == 1205) return ;
-this.params.vertexSource =  Clazz.newArray (this.volumeData.nPoints, 0);
-this.bsSurfaceDone =  new javax.util.BitSet ();
-this.bsSurfaceVoxels =  new javax.util.BitSet ();
-this.bsSurfacePoints =  new javax.util.BitSet ();
+if (this.dataType == 1205) return;
+this.params.vertexSource =  Clazz.newIntArray (this.volumeData.nPoints, 0);
+this.bsSurfaceDone =  new org.jmol.util.BitSet ();
+this.bsSurfaceVoxels =  new org.jmol.util.BitSet ();
+this.bsSurfacePoints =  new org.jmol.util.BitSet ();
 if (this.doCalculateTroughs) {
 this.iter = this.atomDataServer.getSelectedAtomIterator (this.bsMySelected, true, false, false);
 this.vEdges =  new java.util.ArrayList ();
@@ -268,7 +272,7 @@ this.validSpheres = null;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getEdges", 
 ($fz = function () {
-for (var iatomA = 0; iatomA < this.myAtomCount; iatomA++) this.bsLocale[iatomA] =  new javax.util.BitSet ();
+for (var iatomA = 0; iatomA < this.myAtomCount; iatomA++) this.bsLocale[iatomA] =  new org.jmol.util.BitSet ();
 
 var dist2 = this.solventRadius + this.maxRadius;
 for (var iatomA = 0; iatomA < this.myAtomCount; iatomA++) {
@@ -278,10 +282,12 @@ this.atomDataServer.setIteratorForAtom (this.iter, this.atomIndex[iatomA], rA + 
 while (this.iter.hasNext ()) {
 var iB = this.iter.next ();
 var iatomB = this.myIndex[iB];
-if (iatomA >= this.firstNearbyAtom && iatomB >= this.firstNearbyAtom) continue ;var ptB = this.atomXyz[iatomB];
+if (iatomA >= this.firstNearbyAtom && iatomB >= this.firstNearbyAtom) continue;
+var ptB = this.atomXyz[iatomB];
 var rB = this.atomRadius[iatomB] + this.solventRadius;
 var dAB = ptA.distance (ptB);
-if (dAB >= rA + rB) continue ;var edge = Clazz.innerTypeInstance (org.jmol.jvxl.readers.IsoSolventReader.Edge, this, null, iatomA, iatomB);
+if (dAB >= rA + rB) continue;
+var edge = Clazz.innerTypeInstance (org.jmol.jvxl.readers.IsoSolventReader.Edge, this, null, iatomA, iatomB);
 this.vEdges.add (edge);
 this.bsLocale[iatomA].set (iatomB);
 this.bsLocale[iatomB].set (iatomA);
@@ -295,8 +301,8 @@ return this.htEdges.get (i < j ? i + "_" + j : j + "_" + i);
 }, "~N,~N");
 Clazz.defineMethod (c$, "getFaces", 
 ($fz = function () {
-var bs =  new javax.util.BitSet ();
-this.validSpheres =  new javax.util.BitSet ();
+var bs =  new org.jmol.util.BitSet ();
+this.validSpheres =  new org.jmol.util.BitSet ();
 this.noFaceSpheres = org.jmol.util.BitSetUtil.setAll (this.myAtomCount);
 for (var i = this.vEdges.size (); --i >= 0; ) {
 var edge = this.vEdges.get (i);
@@ -321,7 +327,7 @@ this.noFaceSpheres.clear (ib);
 this.noFaceSpheres.clear (ic);
 }}}
 }
-var bsOK =  new javax.util.BitSet ();
+var bsOK =  new org.jmol.util.BitSet ();
 for (var i = this.vEdges.size (); --i >= 0; ) if (this.vEdges.get (i).getType () >= 0) bsOK.set (i);
 
 this.aEdges =  new Array (bsOK.cardinality ());
@@ -364,7 +370,8 @@ f.isValid = true;
 while (this.iter.hasNext ()) {
 var ia = this.iter.next ();
 var iatom = this.myIndex[ia];
-if (iatom == f.ia || iatom == f.ib || iatom == f.ic) continue ;var d = this.atomData.atomXyz[ia].distance (f.pS);
+if (iatom == f.ia || iatom == f.ib || iatom == f.ic) continue;
+var d = this.atomData.atomXyz[ia].distance (f.pS);
 if (d < this.atomData.atomRadius[ia] + this.solventRadius) {
 f.isValid = false;
 break;
@@ -380,10 +387,11 @@ return true;
 }, $fz.isPrivate = true, $fz), "org.jmol.jvxl.readers.IsoSolventReader.Face");
 Clazz.defineMethod (c$, "markFaceVoxels", 
 ($fz = function (firstPass) {
-var bsThisPass =  new javax.util.BitSet ();
+var bsThisPass =  new org.jmol.util.BitSet ();
 for (var fi = this.vFaces.size (); --fi >= 0; ) {
 var f = this.vFaces.get (fi);
-if (!f.isValid) continue ;this.setGridLimitsForAtom (f.pS, this.solventRadius, this.pt0, this.pt1);
+if (!f.isValid) continue;
+this.setGridLimitsForAtom (f.pS, this.solventRadius, this.pt0, this.pt1);
 this.volumeData.voxelPtToXYZ (this.pt0.x, this.pt0.y, this.pt0.z, this.ptXyzTemp);
 var ptA = this.atomXyz[f.ia];
 var ptB = this.atomXyz[f.ib];
@@ -414,10 +422,10 @@ this.bsSurfaceVoxels.set (ipt);
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "markToroidVoxels", 
 ($fz = function () {
-var ptA0 =  new javax.vecmath.Point3i ();
-var ptB0 =  new javax.vecmath.Point3i ();
-var ptA1 =  new javax.vecmath.Point3i ();
-var ptB1 =  new javax.vecmath.Point3i ();
+var ptA0 =  new org.jmol.util.Point3i ();
+var ptB0 =  new org.jmol.util.Point3i ();
+var ptA1 =  new org.jmol.util.Point3i ();
+var ptB1 =  new org.jmol.util.Point3i ();
 for (var ei = 0; ei < this.aEdges.length; ei++) {
 var edge = this.aEdges[ei];
 var ia = edge.ia;
@@ -438,7 +446,8 @@ for (var j = this.pt0.y; j < this.pt1.y; j++, this.ptXyzTemp.scaleAdd2 (1, this.
 this.ptZ0.setT (this.ptXyzTemp);
 for (var k = this.pt0.z; k < this.pt1.z; k++, this.ptXyzTemp.add (this.volumetricVectors[2])) {
 var dVS = this.checkSpecialVoxel (ptA, rAS, ptB, rBS, dAB, this.ptXyzTemp);
-if (Float.isNaN (dVS)) continue ;var value = this.solventRadius - dVS;
+if (Float.isNaN (dVS)) continue;
+var value = this.solventRadius - dVS;
 if (value < this.voxelData[i][j][k]) {
 var ipt = this.volumeData.getPointIndex (i, j, k);
 this.setVoxel (i, j, k, ipt, value);
@@ -453,7 +462,7 @@ Clazz.defineMethod (c$, "unsetVoxelData",
 function () {
 if (!this.havePlane) {
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoSolventReader, "unsetVoxelData", []);
-return ;
+return;
 }if (this.isProgressive) for (var i = 0; i < this.yzCount; i++) {
 if (this.thisPlane[i] < 0.001) {
 } else {
@@ -484,7 +493,7 @@ pt0.z = Math.min (ptA.z, ptB.z);
 pt1.x = Math.max (ptA.x, ptB.x);
 pt1.y = Math.max (ptA.y, ptB.y);
 pt1.z = Math.max (ptA.z, ptB.z);
-}}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3i,javax.vecmath.Point3i,javax.vecmath.Point3i,javax.vecmath.Point3i");
+}}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
 Clazz.defineMethod (c$, "checkSpecialVoxel", 
 ($fz = function (ptA, rAS, ptB, rBS, dAB, ptV) {
 var dAV = ptA.distance (ptV);
@@ -502,7 +511,7 @@ if (ptA.distance (this.p) >= rAS) return NaN;
 dVS = this.solventDistance (rBS, rAS, dAB, dBV, dAV);
 return (org.jmol.jvxl.readers.IsoSolventReader.voxelIsInTrough (dVS, rBS * rBS, rAS, dAB, dBV) ? dVS : NaN);
 }return NaN;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,~N,javax.vecmath.Point3f,~N,~N,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,~N,org.jmol.util.Point3f,~N,~N,org.jmol.util.Point3f");
 c$.voxelIsInTrough = Clazz.defineMethod (c$, "voxelIsInTrough", 
 ($fz = function (dXC, rAC2, rBC, dAB, dAX) {
 var cosACBf = (rAC2 + rBC * rBC - dAB * dAB) / rBC;
@@ -539,23 +548,23 @@ return Math.sin (angleBAS) * rAS;
 }, "~N,~N");
 Clazz.defineMethod (c$, "dumpLine", 
 function (pt1, pt2, label, color) {
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt1) + "} @{point" + javax.vecmath.Point3f.newP (pt2) + "} color " + color);
-}, "javax.vecmath.Point3f,javax.vecmath.Tuple3f,~S,~S");
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + org.jmol.util.Point3f.newP (pt1) + "} @{point" + org.jmol.util.Point3f.newP (pt2) + "} color " + color);
+}, "org.jmol.util.Point3f,org.jmol.util.Tuple3f,~S,~S");
 Clazz.defineMethod (c$, "dumpLine2", 
 function (pt1, pt2, label, d, color1, color2) {
-var pt =  new javax.vecmath.Vector3f ();
+var pt =  new org.jmol.util.Vector3f ();
 pt.setT (pt2);
 pt.sub (pt1);
 pt.normalize ();
 pt.scale (d);
 pt.add (pt1);
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt1) + "} @{point" + javax.vecmath.Point3f.newP (pt) + "} color " + color1);
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt) + "} @{point" + javax.vecmath.Point3f.newP (pt2) + "} color " + color2);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~S,~N,~S,~S");
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + org.jmol.util.Point3f.newP (pt1) + "} @{point" + org.jmol.util.Point3f.newP (pt) + "} color " + color1);
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + org.jmol.util.Point3f.newP (pt) + "} @{point" + org.jmol.util.Point3f.newP (pt2) + "} color " + color2);
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,~S,~N,~S,~S");
 Clazz.defineMethod (c$, "dumpPoint", 
 function (pt, label, color) {
-this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + javax.vecmath.Point3f.newP (pt) + "} color " + color);
-}, "javax.vecmath.Point3f,~S,~S");
+this.sg.log ("draw ID \"" + label + (this.nTest++) + "\" @{point" + org.jmol.util.Point3f.newP (pt) + "} color " + color);
+}, "org.jmol.util.Point3f,~S,~S");
 Clazz.overrideMethod (c$, "getValueAtPoint", 
 function (pt) {
 if (this.contactPair != null) return pt.distance (this.contactPair.myAtoms[1]) - this.contactPair.radii[1];
@@ -565,7 +574,7 @@ var r = pt.distance (this.atomXyz[iAtom]) - this.atomRadius[iAtom] - this.solven
 if (r < value) value = r;
 }
 return (value == 3.4028235E38 ? NaN : value);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.overrideMethod (c$, "getPlane", 
 function (x) {
 if (this.yzCount == 0) {
@@ -600,7 +609,7 @@ Clazz.defineMethod (c$, "addFace",
 function (a) {
 if (a == null) {
 this.nInvalid++;
-return ;
+return;
 }this.nFaces++;
 }, "org.jmol.jvxl.readers.IsoSolventReader.Face");
 Clazz.defineMethod (c$, "getType", 
@@ -633,9 +642,9 @@ function (a, b, c, d, e) {
 this.ia = a;
 this.ib = b;
 this.ic = c;
-this.pS = javax.vecmath.Point3f.newP (e);
+this.pS = org.jmol.util.Point3f.newP (e);
 this.edges[0] = d;
-}, "~N,~N,~N,org.jmol.jvxl.readers.IsoSolventReader.Edge,javax.vecmath.Point3f");
+}, "~N,~N,~N,org.jmol.jvxl.readers.IsoSolventReader.Edge,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setEdges", 
 function () {
 if (this.edges[1] == null) {
@@ -647,7 +656,7 @@ for (var b = 0; b < 3; b++) this.edges[b].addFace (a);
 });
 Clazz.defineMethod (c$, "dump", 
 function () {
-return ;
+return;
 });
 c$ = Clazz.p0p ();
 };

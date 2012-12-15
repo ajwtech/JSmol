@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GenNBOReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Exception", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GenNBOReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Boolean", "$.Character", "$.Exception", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isOutputFile = false;
 this.moType = "";
@@ -25,7 +25,7 @@ this.moType = "AO";
 this.atomSetCollection.setCollectionName (line1 + ": " + this.moType + "s");
 isOK = this.readData31 (line1, this.line);
 }if (!isOK) org.jmol.util.Logger.error ("Unimplemented shell type -- no orbitals avaliable: " + this.line);
-if (this.isOutputFile) return ;
+if (this.isOutputFile) return;
 if (isOK) {
 this.readMOs ();
 }this.continuing = false;
@@ -99,19 +99,20 @@ this.atomSetCollection.setAtomSetName (this.moType + "s: " + line1.trim ());
 for (var i = 0; i < atomCount; i++) {
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 var z = this.parseIntStr (tokens[0]);
-if (z < 0) continue ;var atom = this.atomSetCollection.addNewAtom ();
+if (z < 0) continue;
+var atom = this.atomSetCollection.addNewAtom ();
 atom.elementNumber = z;
 this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
 }
 this.shells =  new java.util.ArrayList ();
-this.gaussians =  Clazz.newArray (this.gaussianCount, 0);
-for (var i = 0; i < this.gaussianCount; i++) this.gaussians[i] =  Clazz.newArray (6, 0);
+this.gaussians = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
+for (var i = 0; i < this.gaussianCount; i++) this.gaussians[i] =  Clazz.newFloatArray (6, 0);
 
 this.readLine ();
 this.nOrbitals = 0;
 for (var i = 0; i < this.shellCount; i++) {
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
-var slater =  Clazz.newArray (4, 0);
+var slater =  Clazz.newIntArray (4, 0);
 slater[0] = this.parseIntStr (tokens[0]) - 1;
 var n = this.parseIntStr (tokens[1]);
 this.nOrbitals += n;
@@ -151,7 +152,7 @@ this.shells.add (slater);
 }
 for (var j = 0; j < 5; j++) {
 this.readLine ();
-var temp = this.fillFloatArray (null, 0,  Clazz.newArray (this.gaussianCount, 0));
+var temp = this.fillFloatArray (null, 0,  Clazz.newFloatArray (this.gaussianCount, 0));
 for (var i = 0; i < this.gaussianCount; i++) {
 this.gaussians[i][j] = temp[i];
 if (j > 1) this.gaussians[i][5] += temp[i];
@@ -190,22 +191,23 @@ if (ntype == null) {
 org.jmol.util.Logger.error ("uninterpretable type " + this.moType);
 return false;
 }if (!ntype.equals ("AO")) this.discardLinesUntilContains (ntype.equals ("MO") ? "NBO" : ntype);
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 while (this.readLine () != null && this.line.indexOf ("O    ") < 0 && this.line.indexOf ("ALPHA") < 0 && this.line.indexOf ("BETA") < 0) sb.append (this.line);
 
 sb.appendC (' ');
 var data = sb.toString ();
 var n = data.length - 1;
-sb =  new javax.util.StringXBuilder ();
+sb =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < n; i++) {
 var c = data.charAt (i);
 switch (c) {
 case '(':
 case '-':
-if ((data.charAt (i + 1)).charCodeAt (0) == 32) i++;
+if (data.charAt (i + 1) == ' ') i++;
 break;
 case ' ':
-if (Character.isDigit (data.charAt (i + 1)) || (data.charAt (i + 1)).charCodeAt (0) == 40) continue ;break;
+if (Character.isDigit (data.charAt (i + 1)) || data.charAt (i + 1) == '(') continue;
+break;
 }
 sb.appendC (c);
 }
@@ -231,7 +233,7 @@ this.nOrbitals = this.orbitals.size ();
 this.line = null;
 for (var i = this.nOrbitals0; i < this.nOrbitals; i++) {
 var mo = this.orbitals.get (i);
-var coefs =  Clazz.newArray (nAOs, 0);
+var coefs =  Clazz.newFloatArray (nAOs, 0);
 mo.put ("coefficients", coefs);
 if (isMO) {
 if (this.line == null) {
@@ -245,11 +247,11 @@ this.line = null;
 coefs[i] = 1;
 }}
 if (this.moType.equals ("NBO")) {
-var occupancies =  Clazz.newArray (this.nOrbitals - this.nOrbitals0, 0);
+var occupancies =  Clazz.newFloatArray (this.nOrbitals - this.nOrbitals0, 0);
 this.fillFloatArray (null, 0, occupancies);
 for (var i = this.nOrbitals0; i < this.nOrbitals; i++) {
 var mo = this.orbitals.get (i);
-mo.put ("occupancy", Float.$valueOf (Math.round ((occupancies[i - this.nOrbitals0] + 0.2))));
+mo.put ("occupancy", Float.$valueOf (Clazz.floatToInt (occupancies[i - this.nOrbitals0] + 0.2)));
 }
 }}, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineStatics (c$,

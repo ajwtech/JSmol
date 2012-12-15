@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.quantum");
-Clazz.load (["org.jmol.api.QuantumPlaneCalculationInterface", "org.jmol.quantum.QuantumCalculation"], "org.jmol.quantum.NciCalculation", ["java.lang.Double", "javax.util.BitSet", "org.jmol.util.BitSetUtil", "$.Eigen", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.quantum");
+Clazz.load (["org.jmol.api.QuantumPlaneCalculationInterface", "org.jmol.quantum.QuantumCalculation", "org.jmol.util.ArrayUtil"], "org.jmol.quantum.NciCalculation", ["java.lang.Double", "org.jmol.util.BitSet", "$.BitSetUtil", "$.Eigen", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.havePoints = false;
 this.isReducedDensity = false;
@@ -40,7 +40,7 @@ this.p2 = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.quantum, "NciCalculation", org.jmol.quantum.QuantumCalculation, org.jmol.api.QuantumPlaneCalculationInterface);
 Clazz.prepareFields (c$, function () {
-this.yzPlanesRho =  Clazz.newArray (2, 0);
+this.yzPlanesRho = org.jmol.util.ArrayUtil.newFloat2 (2);
 });
 Clazz.overrideMethod (c$, "getNoValue", 
 function () {
@@ -51,10 +51,10 @@ function () {
 Clazz.superConstructor (this, org.jmol.quantum.NciCalculation, []);
 });
 Clazz.overrideMethod (c$, "setupCalculation", 
-function (volumeData, bsSelected, bsExcluded, bsMolecules, calculationType, atomCoordAngstroms, firstAtomOffset, shells, gaussians, dfCoefMaps, slaters, moCoefficients, linearCombination, coefs, partialCharges, isDensityOnly, points, parameters, testFlags) {
+function (volumeData, bsSelected, bsExcluded, bsMolecules, calculationType, atomCoordAngstroms, firstAtomOffset, shells, gaussians, dfCoefMaps, slaters, moCoefficients, linearCombination, isSquaredLinear, coefs, partialCharges, isDensityOnly, points, parameters, testFlags) {
 this.useAbsolute = (testFlags == 2);
 this.bsExcluded = bsExcluded;
-var bsLigand =  new javax.util.BitSet ();
+var bsLigand =  new org.jmol.util.BitSet ();
 bsLigand.or (bsSelected);
 if (bsExcluded != null) {
 bsLigand.andNot (bsExcluded);
@@ -62,7 +62,7 @@ bsLigand.andNot (bsExcluded);
 this.havePoints = (points != null);
 this.isReducedDensity = isDensityOnly;
 if (parameters != null) org.jmol.util.Logger.info ("NCI calculation parameters = " + org.jmol.util.Escape.escape (parameters));
-this.type = Math.round (org.jmol.quantum.NciCalculation.getParameter (parameters, 1, 0, "type"));
+this.type = Clazz.doubleToInt (org.jmol.quantum.NciCalculation.getParameter (parameters, 1, 0, "type"));
 if (this.type != 0 && bsMolecules == null) this.type = 0;
 this.rhoMin = org.jmol.quantum.NciCalculation.getParameter (parameters, 2, 1e-5, "rhoMin");
 this.rhoPlot = org.jmol.quantum.NciCalculation.getParameter (parameters, 3, (this.isPromolecular ? this.DEFAULT_RHOPLOT_PRO : this.DEFAULT_RHOPLOT_SCF), "rhoPlot");
@@ -102,7 +102,7 @@ this.xMin = this.yMin = this.zMin = 0;
 this.xMax = this.yMax = this.zMax = points.length;
 }this.setupCoordinates (volumeData.getOriginFloat (), volumeData.getVolumetricVectorLengths (), bsSelected, atomCoordAngstroms, points, true);
 if (this.qmAtoms != null) {
-var qmMap =  Clazz.newArray (bsSelected.length (), 0);
+var qmMap =  Clazz.newIntArray (bsSelected.length (), 0);
 for (var i = this.qmAtoms.length; --i >= 0; ) {
 qmMap[this.qmAtoms[i].index] = i;
 if (this.qmAtoms[i].znuc < 1) {
@@ -116,12 +116,13 @@ if (this.type != 0) {
 for (var i = 0; i < bsMolecules.length; i++) {
 var bs = org.jmol.util.BitSetUtil.copy (bsMolecules[i]);
 bs.and (bsSelected);
-if (bs.nextSetBit (0) < 0) continue ;for (var j = bs.nextSetBit (0); j >= 0; j = bs.nextSetBit (j + 1)) this.qmAtoms[qmMap[j]].iMolecule = this.nMolecules;
+if (bs.nextSetBit (0) < 0) continue;
+for (var j = bs.nextSetBit (0); j >= 0; j = bs.nextSetBit (j + 1)) this.qmAtoms[qmMap[j]].iMolecule = this.nMolecules;
 
 this.nMolecules++;
 org.jmol.util.Logger.info ("Molecule " + (this.nMolecules) + " (" + bs.cardinality () + " atoms): " + org.jmol.util.Escape.escape (bs));
 }
-this.rhoMolecules =  Clazz.newArray (this.nMolecules, 0);
+this.rhoMolecules =  Clazz.newDoubleArray (this.nMolecules, 0);
 }if (this.nMolecules == 0) this.nMolecules = 1;
 if (this.nMolecules == 1) {
 this.noValuesAtAll = (this.type != 0 && this.type != 1);
@@ -130,7 +131,7 @@ this.type = 0;
 }if (!this.isReducedDensity || !this.isPromolecular) this.initializeEigen ();
 this.doDebug = (org.jmol.util.Logger.debugging);
 return true;
-}, "org.jmol.api.VolumeDataInterface,javax.util.BitSet,javax.util.BitSet,~A,~S,~A,~N,java.util.List,~A,~A,~O,~A,~A,~A,~A,~B,~A,~A,~N");
+}, "org.jmol.api.VolumeDataInterface,org.jmol.util.BitSet,org.jmol.util.BitSet,~A,~S,~A,~N,java.util.List,~A,~A,~O,~A,~A,~B,~A,~A,~B,~A,~A,~N");
 c$.getParameter = Clazz.defineMethod (c$, "getParameter", 
 ($fz = function (parameters, i, def, name) {
 var param = (parameters == null || parameters.length < i + 1 ? 0 : parameters[i]);
@@ -140,7 +141,7 @@ return param;
 }, $fz.isPrivate = true, $fz), "~A,~N,~N,~S");
 Clazz.defineMethod (c$, "getBsOK", 
 ($fz = function () {
-if (this.noValuesAtAll || this.nMolecules == 1) return ;
+if (this.noValuesAtAll || this.nMolecules == 1) return;
 this.bsOK = org.jmol.util.BitSetUtil.newBitSet (this.nX * this.nY * this.nZ);
 this.setXYZBohr (null);
 for (var ix = 0, index = 0; ix < this.countsXYZ[0]; ix++) for (var iy = 0; iy < this.countsXYZ[1]; iy++) for (var iz = 0; iz < this.countsXYZ[2]; index++, iz++) this.processAtoms (ix, iy, iz, index);
@@ -163,14 +164,14 @@ Clazz.superCall (this, org.jmol.quantum.NciCalculation, "initializeOnePoint", []
 Clazz.defineMethod (c$, "initializeEigen", 
 ($fz = function () {
 this.eigen =  new org.jmol.util.Eigen (3);
-this.hess =  Clazz.newArray (3, 3, 0);
+this.hess =  Clazz.newDoubleArray (3, 3, 0);
 }, $fz.isPrivate = true, $fz));
 Clazz.overrideMethod (c$, "getPlane", 
 function (ix, yzPlane) {
 if (this.noValuesAtAll) {
 for (var j = 0; j < this.yzCount; j++) yzPlane[j] = NaN;
 
-return ;
+return;
 }this.isReducedDensity = true;
 this.initialize (this.countsXYZ[0], this.countsXYZ[1], this.countsXYZ[2], null);
 this.setXYZBohr (null);
@@ -182,7 +183,7 @@ for (var iy = 0, i = 0; iy < this.countsXYZ[1]; iy++) for (var iz = 0; iz < this
 }, "~N,~A");
 Clazz.defineMethod (c$, "process", 
 function () {
-if (this.noValuesAtAll) return ;
+if (this.noValuesAtAll) return;
 for (var ix = this.xMax; --ix >= this.xMin; ) {
 for (var iy = this.yMin; iy < this.yMax; iy++) {
 this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
@@ -225,7 +226,8 @@ var znuc = this.qmAtoms[i].znuc;
 var x = this.xBohr[ix] - this.qmAtoms[i].x;
 var y = this.yBohr[iy] - this.qmAtoms[i].y;
 var z = this.zBohr[iz] - this.qmAtoms[i].z;
-if (Math.abs (x) > org.jmol.quantum.NciCalculation.dMax[znuc] || Math.abs (y) > org.jmol.quantum.NciCalculation.dMax[znuc] || Math.abs (z) > org.jmol.quantum.NciCalculation.dMax[znuc]) continue ;var r = Math.sqrt (x * x + y * y + z * z);
+if (Math.abs (x) > org.jmol.quantum.NciCalculation.dMax[znuc] || Math.abs (y) > org.jmol.quantum.NciCalculation.dMax[znuc] || Math.abs (z) > org.jmol.quantum.NciCalculation.dMax[znuc]) continue;
+var r = Math.sqrt (x * x + y * y + z * z);
 var z1 = org.jmol.quantum.NciCalculation.zeta1[znuc];
 var z2 = org.jmol.quantum.NciCalculation.zeta2[znuc];
 var z3 = org.jmol.quantum.NciCalculation.zeta3[znuc];
@@ -291,7 +293,7 @@ this.yzPlanesRho[1] = plane;
 if (this.noValuesAtAll) {
 for (var j = 0; j < this.yzCount; j++) plane[j] = NaN;
 
-return ;
+return;
 }var i0 = 0;
 if (this.dataIsReducedDensity) {
 this.p1 = plane;
@@ -309,7 +311,8 @@ var rho = this.p1[i];
 if (this.bsOK != null && !this.bsOK.get (index + i)) {
 plane[i] = NaN;
 } else if (this.dataIsReducedDensity) {
-continue ;} else if (rho == 0) {
+continue;
+} else if (rho == 0) {
 plane[i] = 0;
 } else if (rho > this.rhoPlot || rho < this.rhoMin || y == 0 || y == this.nY - 1 || z == 0 || z == this.nZ - 1) {
 plane[i] = NaN;
@@ -331,8 +334,8 @@ return (valueA + f * (valueB - valueA));
 Clazz.defineMethod (c$, "getPlaneValue", 
 ($fz = function (vA) {
 var i = (vA % this.yzCount);
-var x = Math.floor (vA / this.yzCount);
-var y = Math.floor (i / this.nZ);
+var x = Clazz.doubleToInt (vA / this.yzCount);
+var y = Clazz.doubleToInt (i / this.nZ);
 var z = i % this.nZ;
 if (x == 0 || x == this.nX - 1 || y == 0 || y == this.nY - 1 || z == 0 || z == this.nZ - 1) return 100.0;
 var iPlane = x % 2;

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.calc");
-Clazz.load (["javax.vecmath.Point3f", "java.util.Hashtable"], "org.jmol.jvxl.calc.MarchingSquares", ["java.lang.Float", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.calc");
+Clazz.load (["org.jmol.util.Point3f", "java.util.Hashtable"], "org.jmol.jvxl.calc.MarchingSquares", ["java.lang.Float", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.surfaceReader = null;
 this.volumeData = null;
@@ -27,10 +27,10 @@ org.jmol.jvxl.calc.MarchingSquares.$MarchingSquares$Triangle$ ();
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.calc, "MarchingSquares");
 Clazz.prepareFields (c$, function () {
-this.pointA =  new javax.vecmath.Point3f ();
-this.pointB =  new javax.vecmath.Point3f ();
+this.pointA =  new org.jmol.util.Point3f ();
+this.pointB =  new org.jmol.util.Point3f ();
 this.contourVertexes =  new Array (1000);
-this.ptTemp =  new javax.vecmath.Point3f ();
+this.ptTemp =  new org.jmol.util.Point3f ();
 this.triangles =  new Array (1000);
 this.htPts =  new java.util.Hashtable ();
 });
@@ -49,7 +49,7 @@ if (this.nContourSegments > 100) this.nContourSegments = 100;
 nContours = contoursDiscrete.length;
 this.nContourSegments = nContours;
 this.contourFromZero = false;
-}}, "org.jmol.jvxl.api.VertexDataServer,org.jmol.jvxl.data.VolumeData,javax.vecmath.Point4f,~A,~N,~N,~B");
+}}, "org.jmol.jvxl.api.VertexDataServer,org.jmol.jvxl.data.VolumeData,org.jmol.util.Point4f,~A,~N,~N,~B");
 Clazz.defineMethod (c$, "getContourType", 
 function () {
 return this.contourType;
@@ -65,7 +65,7 @@ if (this.contourVertexCount == this.contourVertexes.length) this.contourVertexes
 var vPt = this.surfaceReader.addVertexCopy (vertexXYZ, value, -2);
 this.contourVertexes[this.contourVertexCount++] =  new org.jmol.jvxl.calc.MarchingSquares.ContourVertex (vertexXYZ);
 return vPt;
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "setContourData", 
 function (i, value) {
 this.contourVertexes[i].setValue (value);
@@ -77,7 +77,7 @@ return this.contourValuesUsed;
 Clazz.defineMethod (c$, "calcContourPoint", 
 function (cutoff, valueA, valueB, pt) {
 return this.volumeData.calculateFractionalPoint (cutoff, this.pointA, this.pointB, valueA, valueB, pt);
-}, "~N,~N,~N,javax.vecmath.Point3f");
+}, "~N,~N,~N,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addTriangle", 
 function (iA, iB, iC, check, check2) {
 if (this.triangleCount == this.triangles.length) this.triangles = org.jmol.util.ArrayUtil.doubleLength (this.triangles);
@@ -111,7 +111,7 @@ if (value > this.contourPlaneMaximumValue) this.contourPlaneMaximumValue = value
 Clazz.defineMethod (c$, "createContours", 
 ($fz = function (min, max, zeroOffset) {
 var diff = max - min;
-this.contourValuesUsed =  Clazz.newArray (this.nContourSegments, 0);
+this.contourValuesUsed =  Clazz.newFloatArray (this.nContourSegments, 0);
 for (var i = this.triangleCount; --i >= 0; ) this.triangles[i].check = 0;
 
 var minCutoff = -3.4028235E38;
@@ -217,7 +217,7 @@ this.b$["org.jmol.jvxl.calc.MarchingSquares"].addTriangle (e, this.pts[1], d, 4 
 this.b$["org.jmol.jvxl.calc.MarchingSquares"].addTriangle (e, d, this.pts[2], 1 | (this.check & 6), a);
 break;
 default:
-return ;
+return;
 }
 this.isValid = false;
 }, "~N,~N");
@@ -227,12 +227,12 @@ Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
 this.value = 0;
 Clazz.instantialize (this, arguments);
-}, org.jmol.jvxl.calc.MarchingSquares, "ContourVertex", javax.vecmath.Point3f);
+}, org.jmol.jvxl.calc.MarchingSquares, "ContourVertex", org.jmol.util.Point3f);
 Clazz.makeConstructor (c$, 
 function (a) {
 Clazz.superConstructor (this, org.jmol.jvxl.calc.MarchingSquares.ContourVertex, []);
 this.setT (a);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setValue", 
 function (a) {
 this.value = a;

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
+Clazz.declarePackage ("org.jmol.minimize.forcefield");
 Clazz.load (["org.jmol.minimize.forcefield.Calculation", "$.Calculations"], "org.jmol.minimize.forcefield.CalculationsMMFF", ["java.util.ArrayList", "org.jmol.minimize.MinAtom", "$.MinObject", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ffParams = null;
@@ -130,7 +130,7 @@ return this.esCalc.compute (dataIn);
 }
 return 0.0;
 }, "~N,~A");
-Clazz.defineMethod (c$, "getParameter", 
+Clazz.defineMethod (c$, "getParameterObj", 
 function (a) {
 return (a.key == null || a.ddata != null ? a.ddata : this.ffParams.get (a.key));
 }, "org.jmol.minimize.MinObject");
@@ -155,9 +155,9 @@ var energy = this.ff.toUserUnits (c.energy);
 switch (iType) {
 case 1:
 case 2:
-return org.jmol.util.TextFormat.sprintf ("%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", [org.jmol.minimize.MinObject.decodeKey (c.key), this.minAtoms[c.ia].sType, this.minAtoms[c.ib].sType, this.minAtoms[c.ic].sType, [(c.theta * 57.29577951308232), c.dData[1], c.dData[0], energy], [this.minAtoms[c.ia].atom.getAtomNumber (), this.minAtoms[c.ib].atom.getAtomNumber (), this.minAtoms[c.ic].atom.getAtomNumber ()]]);
+return org.jmol.util.TextFormat.sprintf ("%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", "ssssFI", [org.jmol.minimize.MinObject.decodeKey (c.key), this.minAtoms[c.ia].sType, this.minAtoms[c.ib].sType, this.minAtoms[c.ic].sType, [(c.theta * 57.29577951308232), c.dData[1], c.dData[0], energy], [this.minAtoms[c.ia].atom.getAtomNumber (), this.minAtoms[c.ib].atom.getAtomNumber (), this.minAtoms[c.ic].atom.getAtomNumber ()]]);
 case 3:
-return org.jmol.util.TextFormat.sprintf ("%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", [org.jmol.minimize.MinObject.decodeKey (c.key), this.minAtoms[c.ia].sType, this.minAtoms[c.ib].sType, this.minAtoms[c.ic].sType, this.minAtoms[c.id].sType, [(c.theta * 57.29577951308232), c.dData[0], c.dData[1], c.dData[2], energy]]);
+return org.jmol.util.TextFormat.sprintf ("%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", "sssssF", [org.jmol.minimize.MinObject.decodeKey (c.key), this.minAtoms[c.ia].sType, this.minAtoms[c.ib].sType, this.minAtoms[c.ic].sType, this.minAtoms[c.id].sType, [(c.theta * 57.29577951308232), c.dData[0], c.dData[1], c.dData[2], energy]]);
 default:
 return Clazz.superCall (this, org.jmol.minimize.forcefield.CalculationsMMFF, "getDebugLine", [iType, c]);
 }
@@ -175,8 +175,8 @@ Clazz.defineMethod (c$, "setData",
 function (a, b) {
 this.ia = b.data[0];
 this.ib = b.data[1];
-var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (b);
-if (c == null) return ;
+var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (b);
+if (c == null) return;
 a.add ([[this.ia, this.ib], c]);
 }, "java.util.List,org.jmol.minimize.MinBond");
 Clazz.overrideMethod (c$, "compute", 
@@ -208,8 +208,8 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield.CalculationsMMFF, "AngleCalc", org.jmol.minimize.forcefield.Calculation);
 Clazz.defineMethod (c$, "setData", 
 function (a, b) {
-var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (b);
-if (c == null) return ;
+var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (b);
+if (c == null) return;
 a.add ([b.data, c, b.key]);
 }, "java.util.List,org.jmol.minimize.MinAngle");
 Clazz.overrideMethod (c$, "compute", 
@@ -242,12 +242,12 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield.CalculationsMMFF, "SBCalc", org.jmol.minimize.forcefield.Calculation);
 Clazz.defineMethod (c$, "setData", 
 function (a, b) {
-if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[1])) return ;
+if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[1])) return;
 var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (b.sbKey);
-var d = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (b);
-var e = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minBonds[b.data[3]]);
-var f = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minBonds[b.data[4]]);
-if (c == null || d == null || e == null || f == null) return ;
+var d = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (b);
+var e = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minBonds[b.data[3]]);
+var f = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minBonds[b.data[4]]);
+if (c == null || d == null || e == null || f == null) return;
 var g = d[1];
 var h = e[1];
 var i = f[1];
@@ -284,9 +284,9 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield.CalculationsMMFF, "TorsionCalc", org.jmol.minimize.forcefield.Calculation);
 Clazz.defineMethod (c$, "setData", 
 function (a, b) {
-if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[1]) || this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[2])) return ;
-var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (b);
-if (c == null) return ;
+if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[1]) || this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].isLinear (b.data[2])) return;
+var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameterObj (b);
+if (c == null) return;
 a.add ([b.data, c, b.key]);
 }, "java.util.List,org.jmol.minimize.MinTorsion");
 Clazz.overrideMethod (c$, "compute", 
@@ -317,18 +317,18 @@ this.list = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield.CalculationsMMFF, "OOPCalc", org.jmol.minimize.forcefield.Calculation);
 Clazz.prepareFields (c$, function () {
-this.list =  Clazz.newArray (4, 0);
+this.list =  Clazz.newIntArray (4, 0);
 });
 Clazz.defineMethod (c$, "setData", 
 function (a, b) {
-if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].nBonds != 3) return ;
+if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].nBonds != 3) return;
 var c = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].getBondedAtomIndexes ();
 this.list[0] = c[2];
 this.list[1] = b;
 this.list[2] = c[1];
 this.list[3] = c[0];
 var d = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].mmff.getOutOfPlaneParameter (this.list);
-if (d == 0) return ;
+if (d == 0) return;
 var e = [d];
 a.add ([[c[0], b, c[1], c[2]], e]);
 a.add ([[c[1], b, c[2], c[0]], e]);
@@ -363,17 +363,17 @@ this.a = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b];
 this.b = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[c];
 var d = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (this.a.vdwKey);
 var e = this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].getParameter (this.b.vdwKey);
-if (d == null || e == null) return ;
+if (d == null || e == null) return;
 var f = d[0];
 var g = d[1];
 var h = d[2];
 var i = d[3];
-var j = Math.round (d[4]);
+var j = Clazz.doubleToInt (d[4]);
 var k = e[0];
 var l = e[1];
 var m = e[2];
 var n = e[3];
-var o = Math.round (e[4]);
+var o = Clazz.doubleToInt (e[4]);
 var p = h * Math.pow (f, 0.25);
 var q = m * Math.pow (k, 0.25);
 var r = (p - q) / (p + q);
@@ -411,7 +411,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield.CalculationsMMFF, "ESCalc", org.jmol.minimize.forcefield.Calculations.PairCalc, null, Clazz.innerTypeInstance (org.jmol.minimize.forcefield.Calculations.PairCalc, this, null, Clazz.inheritArgs));
 Clazz.overrideMethod (c$, "setData", 
 function (a, b, c) {
-if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].partialCharge == 0 || this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[c].partialCharge == 0) return ;
+if (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].partialCharge == 0 || this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[c].partialCharge == 0) return;
 a.add ([[b, c], [this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].partialCharge, this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[c].partialCharge, (this.b$["org.jmol.minimize.forcefield.CalculationsMMFF"].minAtoms[b].bs14.get (c) ? 249.0537 : 332.0716)]]);
 }, "java.util.List,~N,~N");
 Clazz.overrideMethod (c$, "compute", 

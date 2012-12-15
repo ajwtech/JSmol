@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GamessReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GamessReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomNames = null;
 this.calcOptions = null;
@@ -54,10 +54,10 @@ if (slater != null) {
 slater[2] = nGaussians;
 slatersByAtomType.add (slater);
 }if (atomType != null) shellsByAtomType.put (atomType, slatersByAtomType);
-this.gaussians =  Clazz.newArray (this.gaussianCount, 0);
+this.gaussians = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
 for (var i = 0; i < this.gaussianCount; i++) {
 tokens = gdata.get (i);
-this.gaussians[i] =  Clazz.newArray (tokens.length - 3, 0);
+this.gaussians[i] =  Clazz.newFloatArray (tokens.length - 3, 0);
 for (var j = 3; j < tokens.length; j++) this.gaussians[i][j - 3] = this.parseFloatStr (tokens[j]);
 
 }
@@ -69,7 +69,7 @@ atomType = this.atomNames.get (i);
 var slaters = shellsByAtomType.get (atomType);
 if (slaters == null) {
 org.jmol.util.Logger.error ("slater for atom " + i + " atomType " + atomType + " was not found in listing. Ignoring molecular orbitals");
-return ;
+return;
 }for (var j = 0; j < slaters.size (); j++) {
 slater = slaters.get (j);
 this.shells.add ([i, slater[0], slater[1], slater[2]]);
@@ -86,11 +86,12 @@ var haveFreq = false;
 while (this.line != null && this.line.indexOf ("FREQUENCY:") >= 0) {
 var frequencyCount = 0;
 var tokens = this.getTokens ();
-var frequencies =  Clazz.newArray (tokens.length, 0);
+var frequencies =  Clazz.newFloatArray (tokens.length, 0);
 for (var i = 0; i < tokens.length; i++) {
 var frequency = this.parseFloatStr (tokens[i]);
 if (tokens[i].equals ("I")) frequencies[frequencyCount - 1] = -frequencies[frequencyCount - 1];
-if (Float.isNaN (frequency)) continue ;frequencies[frequencyCount++] = frequency;
+if (Float.isNaN (frequency)) continue;
+frequencies[frequencyCount++] = frequency;
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ((this.vibrationNumber + 1) + " frequency=" + frequency);
 }}
@@ -104,10 +105,11 @@ this.readLine ();
 intensities = this.getTokens ();
 }var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; i++) {
 ignore[i] = !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;if (haveFreq) {
+if (ignore[i]) continue;
+if (haveFreq) {
 this.atomSetCollection.cloneLastAtomSet ();
 } else {
 haveFreq = true;
@@ -128,9 +130,9 @@ var pt1;
 line = line.$replace (')', ' ');
 while ((pt = line.indexOf ("(")) >= 0) {
 pt1 = pt;
-while ((line.charAt (--pt1)).charCodeAt (0) == 32) {
+while (line.charAt (--pt1) == ' ') {
 }
-while ((line.charAt (--pt1)).charCodeAt (0) != 32) {
+while (line.charAt (--pt1) != ' ') {
 }
 line = line.substring (0, ++pt1) + line.substring (pt + 1);
 }
@@ -138,7 +140,7 @@ return line;
 }, "~S");
 Clazz.defineMethod (c$, "setCalculationType", 
 function () {
-if (this.calcOptions == null || this.isTypeSet) return ;
+if (this.calcOptions == null || this.isTypeSet) return;
 this.isTypeSet = true;
 var SCFtype = this.calcOptions.get ("contrl_options_SCFTYP");
 var Runtype = this.calcOptions.get ("contrl_options_RUNTYP");
@@ -151,7 +153,7 @@ var DFTtype = this.calcOptions.get ("contrl_options_DFTTYP");
 var perturb = this.parseIntStr (this.calcOptions.get ("contrl_options_MPLEVL"));
 var CItype = this.calcOptions.get ("contrl_options_CITYP");
 var CCtype = this.calcOptions.get ("contrl_options_CCTYP");
-if (igauss == null && SCFtype == null) return ;
+if (igauss == null && SCFtype == null) return;
 if (this.calculationType.equals ("?")) this.calculationType = "";
 if (igauss != null) {
 if ("0".equals (igauss)) {
@@ -223,9 +225,11 @@ if (this.calcOptions == null) {
 this.calcOptions =  new java.util.Hashtable ();
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("calculationOptions", this.calcOptions);
 }while (this.readLine () != null && (this.line = this.line.trim ()).length > 0) {
-if (this.line.indexOf ("=") < 0) continue ;var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (org.jmol.util.TextFormat.simpleReplace (this.line, "=", " = ") + " ?");
+if (this.line.indexOf ("=") < 0) continue;
+var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (org.jmol.util.TextFormat.simpleReplace (this.line, "=", " = ") + " ?");
 for (var i = 0; i < tokens.length; i++) {
-if (!tokens[i].equals ("=")) continue ;try {
+if (!tokens[i].equals ("=")) continue;
+try {
 var key = type + tokens[i - 1];
 var value = (key.equals ("basis_options_SPLIT3") ? tokens[++i] + " " + tokens[++i] + " " + tokens[++i] : tokens[++i]);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug (key + " = " + value);

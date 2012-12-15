@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.ContactPair", ["java.lang.Float", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.script.Token"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.ContactPair", ["java.lang.Float", "org.jmol.script.Token", "org.jmol.util.Point3f", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.radii = null;
 this.vdws = null;
@@ -16,8 +16,8 @@ this.oldType = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "ContactPair");
 Clazz.prepareFields (c$, function () {
-this.radii =  Clazz.newArray (2, 0);
-this.vdws =  Clazz.newArray (2, 0);
+this.radii =  Clazz.newFloatArray (2, 0);
+this.vdws =  Clazz.newFloatArray (2, 0);
 this.myAtoms =  new Array (2);
 });
 Clazz.makeConstructor (c$, 
@@ -28,11 +28,11 @@ this.vdws[0] = vdwA;
 this.vdws[1] = vdwB;
 this.myAtoms[0] = atoms[i1];
 this.myAtoms[1] = atoms[i2];
-var v = javax.vecmath.Vector3f.newV (this.myAtoms[1]);
+var v = org.jmol.util.Vector3f.newV (this.myAtoms[1]);
 v.sub (this.myAtoms[0]);
 this.d = v.length ();
 var f = (R - r + this.d) / (2 * this.d);
-this.pt =  new javax.vecmath.Point3f ();
+this.pt =  new org.jmol.util.Point3f ();
 this.pt.scaleAdd2 (f, v, this.myAtoms[0]);
 this.score = this.d - vdwA - vdwB;
 this.contactType = (this.score < 0 ? 1073741881 : 1649412112);

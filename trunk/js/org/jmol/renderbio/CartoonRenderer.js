@@ -1,12 +1,10 @@
-﻿Clazz.declarePackage ("org.jmol.renderbio");
-Clazz.load (["org.jmol.renderbio.RocketsRenderer", "javax.vecmath.Point3i"], "org.jmol.renderbio.CartoonRenderer", ["org.jmol.util.Colix"], function () {
+Clazz.declarePackage ("org.jmol.renderbio");
+Clazz.load (["org.jmol.renderbio.RocketsRenderer", "org.jmol.util.Point3f", "$.Point3i"], "org.jmol.renderbio.CartoonRenderer", ["org.jmol.util.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.newRockets = true;
 this.renderAsRockets = false;
 this.renderEdges = false;
-this.colixSugarEdge = 0;
-this.colixWatsonCrickEdge = 0;
-this.colixHoogsteenEdge = 0;
+this.ptConnectScr = null;
 this.ptConnect = null;
 this.ring6Points = null;
 this.ring6Screens = null;
@@ -15,30 +13,31 @@ this.ring5Screens = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.renderbio, "CartoonRenderer", org.jmol.renderbio.RocketsRenderer);
 Clazz.prepareFields (c$, function () {
-this.ptConnect =  new javax.vecmath.Point3i ();
+this.ptConnectScr =  new org.jmol.util.Point3i ();
+this.ptConnect =  new org.jmol.util.Point3f ();
 this.ring6Points =  new Array (6);
 this.ring6Screens =  new Array (6);
 this.ring5Points =  new Array (5);
 this.ring5Screens =  new Array (5);
 {
-this.ring6Screens[5] =  new javax.vecmath.Point3i ();
+this.ring6Screens[5] =  new org.jmol.util.Point3i ();
 for (var i = 5; --i >= 0; ) {
-this.ring5Screens[i] =  new javax.vecmath.Point3i ();
-this.ring6Screens[i] =  new javax.vecmath.Point3i ();
+this.ring5Screens[i] =  new org.jmol.util.Point3i ();
+this.ring6Screens[i] =  new org.jmol.util.Point3i ();
 }
 }});
 Clazz.overrideMethod (c$, "renderBioShape", 
 function (bioShape) {
-if (bioShape.wingVectors == null || this.isCarbohydrate) return ;
-this.calcScreenControlPoints ();
+if (bioShape.wingVectors == null || this.isCarbohydrate) return;
+this.getScreenControlPoints ();
 if (this.isNucleic) {
 this.renderNucleic ();
-return ;
-}var val = this.viewer.getCartoonRocketFlag ();
+return;
+}var val = this.viewer.getCartoonFlag (603979819);
 if (this.renderAsRockets != val) {
 bioShape.falsifyMesh ();
 this.renderAsRockets = val;
-}val = !this.viewer.getRocketBarrelFlag ();
+}val = !this.viewer.getCartoonFlag (603979900);
 if (this.renderArrowHeads != val) {
 bioShape.falsifyMesh ();
 this.renderArrowHeads = val;
@@ -55,25 +54,23 @@ this.viewer.freeTempScreens (this.ribbonBottomScreens);
 }, "org.jmol.shapebio.BioShape");
 Clazz.defineMethod (c$, "renderNucleic", 
 function () {
-this.renderEdges = this.viewer.getCartoonBaseEdgesFlag ();
-var isTranslucent = org.jmol.util.Colix.isColixTranslucent (this.colix);
-if (this.renderEdges) {
-var tl = org.jmol.util.Colix.getColixTranslucencyLevel (this.colix);
-this.colixSugarEdge = org.jmol.util.Colix.getColixTranslucent (10, isTranslucent, tl);
-this.colixWatsonCrickEdge = org.jmol.util.Colix.getColixTranslucent (11, isTranslucent, tl);
-this.colixHoogsteenEdge = org.jmol.util.Colix.getColixTranslucent (7, isTranslucent, tl);
-}var isTraceAlpha = this.viewer.getTraceAlpha ();
+this.renderEdges = this.viewer.getCartoonFlag (603979818);
+var isTraceAlpha = this.viewer.getTraceAlpha ();
 for (var i = this.bsVisible.nextSetBit (0); i >= 0; i = this.bsVisible.nextSetBit (i + 1)) {
 if (isTraceAlpha) {
-this.ptConnect.set (Math.floor ((this.controlPointScreens[i].x + this.controlPointScreens[i + 1].x) / 2), Math.floor ((this.controlPointScreens[i].y + this.controlPointScreens[i + 1].y) / 2), Math.floor ((this.controlPointScreens[i].z + this.controlPointScreens[i + 1].z) / 2));
+this.ptConnectScr.set (Clazz.doubleToInt ((this.controlPointScreens[i].x + this.controlPointScreens[i + 1].x) / 2), Clazz.doubleToInt ((this.controlPointScreens[i].y + this.controlPointScreens[i + 1].y) / 2), Clazz.doubleToInt ((this.controlPointScreens[i].z + this.controlPointScreens[i + 1].z) / 2));
+this.ptConnect.setT (this.controlPoints[i]);
+this.ptConnect.scale (0.5);
+this.ptConnect.scaleAdd2 (0.5, this.controlPoints[i + 1], this.ptConnect);
 } else {
-this.ptConnect.setT (this.controlPointScreens[i + 1]);
+this.ptConnectScr.setT (this.controlPointScreens[i + 1]);
+this.ptConnect.setT (this.controlPoints[i + 1]);
 }this.renderHermiteConic (i, false);
 this.colix = this.getLeadColix (i);
-if (this.g3d.setColix (this.colix)) this.renderNucleicBaseStep (this.monomers[i], this.mads[i], this.ptConnect);
+if (this.setBioColix (this.colix)) this.renderNucleicBaseStep (this.monomers[i], this.mads[i], this.ptConnectScr, this.ptConnect);
 }
 });
-Clazz.defineMethod (c$, "render1", 
+Clazz.overrideMethod (c$, "render1", 
 function () {
 var lastWasSheet = false;
 var lastWasHelix = false;
@@ -91,9 +88,11 @@ var isHelixRocket = (this.renderAsRockets || !this.renderArrowHeads ? isHelix : 
 if (this.bsVisible.get (i)) {
 if (isHelixRocket) {
 } else if (isSheet || isHelix) {
-if (lastWasSheet && isSheet || lastWasHelix && isHelix) this.renderHermiteRibbon (true, i, true);
- else this.renderHermiteArrowHead (i);
+if (lastWasSheet && isSheet || lastWasHelix && isHelix) {
+this.renderHermiteRibbon (true, i, true);
 } else {
+this.renderHermiteArrowHead (i);
+}} else {
 this.renderHermiteConic (i, true);
 }}lastWasSheet = isSheet;
 lastWasHelix = isHelix;
@@ -108,68 +107,76 @@ for (var i = this.bsVisible.nextSetBit (0); i >= 0; i = this.bsVisible.nextSetBi
 this.renderPending ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "renderNucleicBaseStep", 
-($fz = function (nucleotide, thisMad, backboneScreen) {
+($fz = function (nucleotide, thisMad, backboneScreen, ptConnect) {
 if (this.renderEdges) {
 this.renderLeontisWesthofEdges (nucleotide, thisMad);
-return ;
+return;
 }nucleotide.getBaseRing6Points (this.ring6Points);
 this.viewer.transformPoints (this.ring6Points, this.ring6Screens);
 this.renderRing6 ();
 var hasRing5 = nucleotide.maybeGetBaseRing5Points (this.ring5Points);
 var stepScreen;
+var stepPt;
 if (hasRing5) {
 this.viewer.transformPoints (this.ring5Points, this.ring5Screens);
 this.renderRing5 ();
 stepScreen = this.ring5Screens[3];
+stepPt = this.ring5Points[3];
 } else {
 stepScreen = this.ring6Screens[2];
-}this.mad = (thisMad > 1 ? Math.floor (thisMad / 2) : thisMad);
-this.g3d.fillCylinderScreen (3, this.viewer.scaleToScreen (backboneScreen.z, this.mad), backboneScreen, stepScreen);
+stepPt = this.ring6Points[2];
+}this.mad = (thisMad > 1 ? Clazz.doubleToInt (thisMad / 2) : thisMad);
+this.g3d.fillCylinderScreen3I (3, this.viewer.scaleToScreen (backboneScreen.z, this.mad), backboneScreen, stepScreen, ptConnect, stepPt, this.mad / 2000);
 --this.ring6Screens[5].z;
 for (var i = 5; --i >= 0; ) {
 --this.ring6Screens[i].z;
 if (hasRing5) --this.ring5Screens[i].z;
 }
-for (var i = 6; --i > 0; ) this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[i], this.ring6Screens[i - 1]);
+for (var i = 6; --i > 0; ) this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[i], this.ring6Screens[i - 1], this.ring6Points[i], this.ring6Points[i - 1], 0.005);
 
 if (hasRing5) {
-for (var i = 5; --i > 0; ) this.g3d.fillCylinderScreen (3, 3, this.ring5Screens[i], this.ring5Screens[i - 1]);
+for (var i = 5; --i > 0; ) this.g3d.fillCylinderScreen3I (3, 3, this.ring5Screens[i], this.ring5Screens[i - 1], this.ring5Points[i], this.ring5Points[i - 1], 0.005);
 
 } else {
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[5], this.ring6Screens[0]);
-}}, $fz.isPrivate = true, $fz), "org.jmol.modelsetbio.NucleicMonomer,~N,javax.vecmath.Point3i");
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[5], this.ring6Screens[0], this.ring6Points[5], this.ring6Points[0], 0.005);
+}}, $fz.isPrivate = true, $fz), "org.jmol.modelsetbio.NucleicMonomer,~N,org.jmol.util.Point3i,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "renderLeontisWesthofEdges", 
 ($fz = function (nucleotide, thisMad) {
-if (!nucleotide.getEdgePoints (this.ring6Points)) return ;
+if (!nucleotide.getEdgePoints (this.ring6Points)) return;
 this.viewer.transformPoints (this.ring6Points, this.ring6Screens);
 this.renderTriangle ();
-this.mad = (thisMad > 1 ? Math.floor (thisMad / 2) : thisMad);
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[0], this.ring6Screens[1]);
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[1], this.ring6Screens[2]);
-this.g3d.setColix (this.colixSugarEdge);
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[2], this.ring6Screens[3]);
-this.g3d.setColix (this.colixWatsonCrickEdge);
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[3], this.ring6Screens[4]);
-this.g3d.setColix (this.colixHoogsteenEdge);
-this.g3d.fillCylinderScreen (3, 3, this.ring6Screens[4], this.ring6Screens[5]);
+this.mad = (thisMad > 1 ? Clazz.doubleToInt (thisMad / 2) : thisMad);
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[0], this.ring6Screens[1], this.ring6Points[0], this.ring6Points[1], 0.005);
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[1], this.ring6Screens[2], this.ring6Points[1], this.ring6Points[2], 0.005);
+var isTranslucent = org.jmol.util.Colix.isColixTranslucent (this.colix);
+var tl = org.jmol.util.Colix.getColixTranslucencyLevel (this.colix);
+var colixSugarEdge = org.jmol.util.Colix.getColixTranslucent3 (10, isTranslucent, tl);
+var colixWatsonCrickEdge = org.jmol.util.Colix.getColixTranslucent3 (11, isTranslucent, tl);
+var colixHoogsteenEdge = org.jmol.util.Colix.getColixTranslucent3 (7, isTranslucent, tl);
+this.g3d.setColix (colixSugarEdge);
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[2], this.ring6Screens[3], this.ring6Points[2], this.ring6Points[3], 0.005);
+this.g3d.setColix (colixWatsonCrickEdge);
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[3], this.ring6Screens[4], this.ring6Points[3], this.ring6Points[4], 0.005);
+this.g3d.setColix (colixHoogsteenEdge);
+this.g3d.fillCylinderScreen3I (3, 3, this.ring6Screens[4], this.ring6Screens[5], this.ring6Points[4], this.ring6Points[5], 0.005);
 }, $fz.isPrivate = true, $fz), "org.jmol.modelsetbio.NucleicMonomer,~N");
 Clazz.defineMethod (c$, "renderTriangle", 
 ($fz = function () {
 this.g3d.setNoisySurfaceShade (this.ring6Screens[2], this.ring6Screens[3], this.ring6Screens[4]);
-this.g3d.fillTriangle (this.ring6Screens[2], this.ring6Screens[3], this.ring6Screens[4]);
+this.g3d.fillTriangle3i (this.ring6Screens[2], this.ring6Screens[3], this.ring6Screens[4], this.ring6Points[2], this.ring6Points[3], this.ring6Points[4]);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "renderRing6", 
 ($fz = function () {
 this.g3d.setNoisySurfaceShade (this.ring6Screens[0], this.ring6Screens[2], this.ring6Screens[4]);
-this.g3d.fillTriangle (this.ring6Screens[0], this.ring6Screens[2], this.ring6Screens[4]);
-this.g3d.fillTriangle (this.ring6Screens[0], this.ring6Screens[1], this.ring6Screens[2]);
-this.g3d.fillTriangle (this.ring6Screens[0], this.ring6Screens[4], this.ring6Screens[5]);
-this.g3d.fillTriangle (this.ring6Screens[2], this.ring6Screens[3], this.ring6Screens[4]);
+this.g3d.fillTriangle3i (this.ring6Screens[0], this.ring6Screens[2], this.ring6Screens[4], this.ring6Points[0], this.ring6Points[2], this.ring6Points[4]);
+this.g3d.fillTriangle3i (this.ring6Screens[0], this.ring6Screens[1], this.ring6Screens[2], this.ring6Points[0], this.ring6Points[1], this.ring6Points[2]);
+this.g3d.fillTriangle3i (this.ring6Screens[0], this.ring6Screens[4], this.ring6Screens[5], this.ring6Points[0], this.ring6Points[4], this.ring6Points[5]);
+this.g3d.fillTriangle3i (this.ring6Screens[2], this.ring6Screens[3], this.ring6Screens[4], this.ring6Points[2], this.ring6Points[3], this.ring6Points[4]);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "renderRing5", 
 ($fz = function () {
-this.g3d.fillTriangle (this.ring5Screens[0], this.ring5Screens[2], this.ring5Screens[3]);
-this.g3d.fillTriangle (this.ring5Screens[0], this.ring5Screens[1], this.ring5Screens[2]);
-this.g3d.fillTriangle (this.ring5Screens[0], this.ring5Screens[3], this.ring5Screens[4]);
+this.g3d.fillTriangle3i (this.ring5Screens[0], this.ring5Screens[2], this.ring5Screens[3], this.ring5Points[0], this.ring5Points[2], this.ring5Points[3]);
+this.g3d.fillTriangle3i (this.ring5Screens[0], this.ring5Screens[1], this.ring5Screens[2], this.ring5Points[0], this.ring5Points[1], this.ring5Points[2]);
+this.g3d.fillTriangle3i (this.ring5Screens[0], this.ring5Screens[3], this.ring5Screens[4], this.ring5Points[0], this.ring5Points[3], this.ring5Points[4]);
 }, $fz.isPrivate = true, $fz));
 });

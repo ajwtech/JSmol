@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["java.util.Hashtable"], "org.jmol.util.ColorUtil", ["javax.vecmath.Point3f", "org.jmol.util.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (["java.util.Hashtable"], "org.jmol.util.ColorUtil", ["org.jmol.util.Parser", "$.Point3f", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.util, "ColorUtil");
 c$.getArgbFromString = Clazz.defineMethod (c$, "getArgbFromString", 
 function (strColor) {
@@ -8,7 +8,7 @@ if (strColor == null || (len = strColor.length) == 0) return 0;
 var red;
 var grn;
 var blu;
-if ((strColor.charAt (0)).charCodeAt (0) == 91 && (strColor.charAt (len - 1)).charCodeAt (0) == 93) {
+if (strColor.charAt (0) == '[' && strColor.charAt (len - 1) == ']') {
 var check;
 if (strColor.indexOf (",") >= 0) {
 var tokens = org.jmol.util.TextFormat.splitChars (strColor.substring (1, strColor.length - 1), ",");
@@ -30,11 +30,11 @@ return 0;
 if (strColor.indexOf (check) != 1) return 0;
 strColor = "#" + strColor.substring (len - 7, len - 1);
 len = 7;
-}if (len == 7 && (strColor.charAt (0)).charCodeAt (0) == 35) {
+}if (len == 7 && strColor.charAt (0) == '#') {
 try {
-red = Integer.parseInt (strColor.substring (1, 3), 16);
-grn = Integer.parseInt (strColor.substring (3, 5), 16);
-blu = Integer.parseInt (strColor.substring (5, 7), 16);
+red = org.jmol.util.Parser.parseIntRadix (strColor.substring (1, 3), 16);
+grn = org.jmol.util.Parser.parseIntRadix (strColor.substring (3, 5), 16);
+blu = org.jmol.util.Parser.parseIntRadix (strColor.substring (5, 7), 16);
 return org.jmol.util.ColorUtil.colorTriadToInt (red, grn, blu);
 } catch (e) {
 if (Clazz.exceptionOf (e, NumberFormatException)) {
@@ -52,7 +52,7 @@ if (x <= 1 && y <= 1 && z <= 1) {
 if (x > 0) x = x * 256 - 1;
 if (y > 0) y = y * 256 - 1;
 if (z > 0) z = z * 256 - 1;
-}return org.jmol.util.ColorUtil.rgb (Math.round (x), Math.round (y), Math.round (z));
+}return org.jmol.util.ColorUtil.rgb (Clazz.floatToInt (x), Clazz.floatToInt (y), Clazz.floatToInt (z));
 }, "~N,~N,~N");
 c$.rgb = Clazz.defineMethod (c$, "rgb", 
 function (red, grn, blu) {
@@ -61,25 +61,25 @@ return 0xFF000000 | (red << 16) | (grn << 8) | blu;
 c$.colorPointFromString = Clazz.defineMethod (c$, "colorPointFromString", 
 function (colorName, pt) {
 return org.jmol.util.ColorUtil.colorPointFromInt (org.jmol.util.ColorUtil.getArgbFromString (colorName), pt);
-}, "~S,javax.vecmath.Point3f");
+}, "~S,org.jmol.util.Point3f");
 c$.colorPointFromInt2 = Clazz.defineMethod (c$, "colorPointFromInt2", 
 function (color) {
-return javax.vecmath.Point3f.new3 ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+return org.jmol.util.Point3f.new3 ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
 }, "~N");
 c$.colorPtToInt = Clazz.defineMethod (c$, "colorPtToInt", 
 function (pt) {
 return org.jmol.util.ColorUtil.colorTriadToInt (pt.x, pt.y, pt.z);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 c$.colorPointFromInt = Clazz.defineMethod (c$, "colorPointFromInt", 
 function (color, pt) {
 pt.z = color & 0xFF;
 pt.y = (color >> 8) & 0xFF;
 pt.x = (color >> 16) & 0xFF;
 return pt;
-}, "~N,javax.vecmath.Point3f");
+}, "~N,org.jmol.util.Point3f");
 c$.calcGreyscaleRgbFromRgb = Clazz.defineMethod (c$, "calcGreyscaleRgbFromRgb", 
 function (rgb) {
-var grey = Math.floor (((2989 * ((rgb >> 16) & 0xFF)) + (5870 * ((rgb >> 8) & 0xFF)) + (1140 * (rgb & 0xFF)) + 5000) / 10000);
+var grey = (Clazz.doubleToInt (((2989 * ((rgb >> 16) & 0xFF)) + (5870 * ((rgb >> 8) & 0xFF)) + (1140 * (rgb & 0xFF)) + 5000) / 10000)) & 0xFFFFFF;
 return org.jmol.util.ColorUtil.rgb (grey, grey, grey);
 }, "~N");
 Clazz.defineStatics (c$,

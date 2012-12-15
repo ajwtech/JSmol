@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.declarePackage ("org.jmol.adapter.smarter");
 Clazz.load (["org.jmol.api.JmolAdapterBondIterator"], "org.jmol.adapter.smarter.BondIterator", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsAtoms = null;

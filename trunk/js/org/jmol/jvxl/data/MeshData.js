@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (["org.jmol.util.MeshSurface"], "org.jmol.jvxl.data.MeshData", ["java.lang.Float", "java.util.Arrays", "javax.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.util.ArrayUtil"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.data");
+Clazz.load (["org.jmol.util.MeshSurface"], "org.jmol.jvxl.data.MeshData", ["java.lang.Float", "java.util.Arrays", "org.jmol.util.ArrayUtil", "$.BitSet", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.setsSuccessful = false;
 this.vertexIncrement = 1;
@@ -16,7 +16,7 @@ Clazz.defineMethod (c$, "addVertexCopy",
 function (vertex, value, assocVertex) {
 if (assocVertex < 0) this.vertexIncrement = -assocVertex;
 return this.addVertexCopyVal (vertex, value);
-}, "javax.vecmath.Point3f,~N,~N");
+}, "org.jmol.util.Point3f,~N,~N");
 Clazz.defineMethod (c$, "getSurfaceSet", 
 function () {
 return (this.surfaceSet == null ? this.getSurfaceSetForLevel (0) : this.surfaceSet);
@@ -28,22 +28,27 @@ this.surfaceSet =  new Array (100);
 this.nSets = 0;
 }this.setsSuccessful = true;
 for (var i = 0; i < this.polygonCount; i++) if (this.polygonIndexes[i] != null) {
-if (this.bsSlabDisplay != null && !this.bsSlabDisplay.get (i)) continue ;var p = this.polygonIndexes[i];
+if (this.bsSlabDisplay != null && !this.bsSlabDisplay.get (i)) continue;
+var p = this.polygonIndexes[i];
 var pt0 = this.findSet (p[0]);
 var pt1 = this.findSet (p[1]);
 var pt2 = this.findSet (p[2]);
 if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
 this.createSet (p[0], p[1], p[2]);
-continue ;}if (pt0 == pt1 && pt1 == pt2) continue ;if (pt0 >= 0) {
+continue;
+}if (pt0 == pt1 && pt1 == pt2) continue;
+if (pt0 >= 0) {
 this.surfaceSet[pt0].set (p[1]);
 this.surfaceSet[pt0].set (p[2]);
 if (pt1 >= 0 && pt1 != pt0) this.mergeSets (pt0, pt1);
 if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1) this.mergeSets (pt0, pt2);
-continue ;}if (pt1 >= 0) {
+continue;
+}if (pt1 >= 0) {
 this.surfaceSet[pt1].set (p[0]);
 this.surfaceSet[pt1].set (p[2]);
 if (pt2 >= 0 && pt2 != pt1) this.mergeSets (pt1, pt2);
-continue ;}this.surfaceSet[pt2].set (p[0]);
+continue;
+}this.surfaceSet[pt2].set (p[0]);
 this.surfaceSet[pt2].set (p[1]);
 }
 var n = 0;
@@ -72,7 +77,7 @@ for (var i = 0; i < this.nSets; i++) this.surfaceSet[i] = sets[i].bs;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setVertexSets", 
 function (onlyIfNull) {
-if (this.surfaceSet == null) return ;
+if (this.surfaceSet == null) return;
 var nNull = 0;
 for (var i = 0; i < this.nSets; i++) {
 if (this.surfaceSet[i] != null && this.surfaceSet[i].cardinality () == 0) this.surfaceSet[i] = null;
@@ -85,8 +90,8 @@ for (var i = 0, n = 0; i < this.nSets; i++) if (this.surfaceSet[i] != null) bsNe
 this.surfaceSet = bsNew;
 this.nSets -= nNull;
 } else if (onlyIfNull) {
-return ;
-}this.vertexSets =  Clazz.newArray (this.vertexCount, 0);
+return;
+}this.vertexSets =  Clazz.newIntArray (this.vertexCount, 0);
 for (var i = 0; i < this.nSets; i++) for (var j = this.surfaceSet[i].nextSetBit (0); j >= 0; j = this.surfaceSet[i].nextSetBit (j + 1)) this.vertexSets[j] = i;
 
 
@@ -103,7 +108,7 @@ var i;
 for (i = 0; i < this.nSets; i++) if (this.surfaceSet[i] == null) break;
 
 if (i == this.surfaceSet.length) this.surfaceSet = org.jmol.util.ArrayUtil.ensureLength (this.surfaceSet, this.surfaceSet.length + 100);
-this.surfaceSet[i] =  new javax.util.BitSet ();
+this.surfaceSet[i] =  new org.jmol.util.BitSet ();
 this.surfaceSet[i].set (v1);
 this.surfaceSet[i].set (v2);
 this.surfaceSet[i].set (v3);
@@ -133,13 +138,15 @@ function (thisSet, isArea, getSets) {
 if (getSets) this.getSurfaceSet ();
 var justOne = (this.nSets == 0 || thisSet >= 0);
 var n = (justOne ? 1 : this.nSets);
-var v =  Clazz.newArray (n, 0);
-var vAB =  new javax.vecmath.Vector3f ();
-var vAC =  new javax.vecmath.Vector3f ();
-var vTemp =  new javax.vecmath.Vector3f ();
+var v =  Clazz.newDoubleArray (n, 0);
+var vAB =  new org.jmol.util.Vector3f ();
+var vAC =  new org.jmol.util.Vector3f ();
+var vTemp =  new org.jmol.util.Vector3f ();
 for (var i = this.polygonCount; --i >= 0; ) {
-if (!this.setABC (i)) continue ;var iSet = (this.nSets == 0 ? 0 : this.vertexSets[this.iA]);
-if (thisSet >= 0 && iSet != thisSet) continue ;if (isArea) {
+if (!this.setABC (i)) continue;
+var iSet = (this.nSets == 0 ? 0 : this.vertexSets[this.iA]);
+if (thisSet >= 0 && iSet != thisSet) continue;
+if (isArea) {
 vAB.sub2 (this.vertices[this.iB], this.vertices[this.iA]);
 vAC.sub2 (this.vertices[this.iC], this.vertices[this.iA]);
 vTemp.cross (vAB, vAC);
@@ -162,12 +169,12 @@ function (bs) {
 bs.clearAll ();
 for (var i = 0, ipt = 0; i < this.vertexCount; i += this.vertexIncrement, ipt++) if (Float.isNaN (this.vertexValues[i])) bs.set (i);
 
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "invalidateVertices", 
 function (bsInvalid) {
 for (var i = bsInvalid.nextSetBit (0); i >= 0; i = bsInvalid.nextSetBit (i + 1)) this.vertexValues[i] = NaN;
 
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 c$.$MeshData$SSet$ = function () {
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
@@ -180,7 +187,7 @@ Clazz.makeConstructor (c$,
 function (a) {
 this.bs = a;
 this.n = a.cardinality ();
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 c$ = Clazz.p0p ();
 };
 c$.$MeshData$SortSet$ = function () {

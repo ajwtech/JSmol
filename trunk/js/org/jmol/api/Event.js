@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.api");
+Clazz.declarePackage ("org.jmol.api");
 c$ = Clazz.declareType (org.jmol.api, "Event");
 Clazz.defineStatics (c$,
 "MOUSE_LEFT", 16,

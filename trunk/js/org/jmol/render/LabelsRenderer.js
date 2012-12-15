@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.render");
+Clazz.declarePackage ("org.jmol.render");
 Clazz.load (["org.jmol.render.ShapeRenderer"], "org.jmol.render.LabelsRenderer", ["org.jmol.render.TextRenderer", "org.jmol.shape.Labels", "$.Object2d", "$.Text", "org.jmol.util.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fidPrevious = 0;
@@ -9,7 +9,7 @@ this.minZ = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.render, "LabelsRenderer", org.jmol.render.ShapeRenderer);
 Clazz.prepareFields (c$, function () {
-this.minZ =  Clazz.newArray (1, 0);
+this.minZ =  Clazz.newIntArray (1, 0);
 });
 Clazz.defineMethod (c$, "render", 
 function () {
@@ -21,7 +21,7 @@ var bgcolixes = labels.bgcolixes;
 if (this.isExport) bgcolixes = this.g3d.getBgColixes (bgcolixes);
 var fids = labels.fids;
 var offsets = labels.offsets;
-if (labelStrings == null) return ;
+if (labelStrings == null) return false;
 var atoms = this.modelSet.atoms;
 var backgroundColixContrast = this.viewer.getColixBackgroundContrast ();
 var backgroundColor = this.viewer.getBackgroundArgb ();
@@ -32,13 +32,15 @@ this.minZ[0] = 2147483647;
 var isAntialiased = this.g3d.isAntialiased ();
 for (var i = labelStrings.length; --i >= 0; ) {
 var atom = atoms[i];
-if (!atom.isVisible (this.myVisibilityFlag)) continue ;var label = labelStrings[i];
-if (label == null || label.length == 0 || labels.mads != null && labels.mads[i] < 0) continue ;var colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
+if (!atom.isVisible (this.myVisibilityFlag)) continue;
+var label = labelStrings[i];
+if (label == null || label.length == 0 || labels.mads != null && labels.mads[i] < 0) continue;
+var colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
 colix = org.jmol.util.Colix.getColixInherited (colix, atom.getColix ());
-if (org.jmol.util.Colix.isColixTranslucent (colix)) colix = org.jmol.util.Colix.getColixTranslucent (colix, false, 0);
+if (org.jmol.util.Colix.isColixTranslucent (colix)) colix = org.jmol.util.Colix.getColixTranslucent3 (colix, false, 0);
 var bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0 : bgcolixes[i];
 if (bgcolix == 0 && this.g3d.getColorArgbOrGray (colix) == backgroundColor) colix = backgroundColixContrast;
-if (!this.g3d.setColix (colix)) continue ;var fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId : fids[i]);
+var fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId : fids[i]);
 var offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
 var labelsFront = ((offsetFull & 32) != 0);
 var labelsGroup = ((offsetFull & 16) != 0);
@@ -46,7 +48,7 @@ var isExact = ((offsetFull & 128) != 0);
 var offset = offsetFull >> 8;
 var textAlign = org.jmol.shape.Labels.getAlignment (offsetFull);
 var pointer = offsetFull & 3;
-var zSlab = atom.screenZ - Math.floor (atom.screenDiameter / 2) - 3;
+var zSlab = atom.screenZ - Clazz.doubleToInt (atom.screenDiameter / 2) - 3;
 if (zSlab < 1) zSlab = 1;
 var zBox = zSlab;
 if (labelsGroup) {
@@ -60,17 +62,17 @@ iGroup = ig;
 zBox = 1;
 }if (zBox < 1) zBox = 1;
 var text = labels.getLabel (i);
-var boxXY = (!this.isExport || this.viewer.getCreatingImage () ? labels.getBox (i) :  Clazz.newArray (5, 0));
-if (boxXY == null) labels.putBox (i, boxXY =  Clazz.newArray (5, 0));
+var boxXY = (!this.isExport || this.viewer.getCreatingImage () ? labels.getBox (i) :  Clazz.newFloatArray (5, 0));
+if (boxXY == null) labels.putBox (i, boxXY =  Clazz.newFloatArray (5, 0));
 if (text != null) {
-if (text.font == null) text.setFid (fid);
+if (text.font == null) text.setFontFromFid (fid);
 text.setXYZs (atom.screenX, atom.screenY, zBox, zSlab);
 text.setColix (colix);
 text.setBgColix (bgcolix);
 } else {
 var isLeft = (textAlign == 1 || textAlign == 0);
 if (fid != this.fidPrevious || this.ascent == 0) {
-this.g3d.setFont (fid);
+this.g3d.setFontFid (fid);
 this.fidPrevious = fid;
 this.font3d = this.g3d.getFont3DCurrent ();
 if (isLeft) {
@@ -85,7 +87,7 @@ boxXY[1] = atom.screenY;
 org.jmol.render.TextRenderer.renderSimpleLabel (this.g3d, this.font3d, label, colix, bgcolix, boxXY, zBox, zSlab, org.jmol.shape.Object2d.getXOffset (offset), org.jmol.shape.Object2d.getYOffset (offset), this.ascent, this.descent, doPointer, pointerColix, isExact);
 atom = null;
 } else {
-text =  new org.jmol.shape.Text (this.g3d.getGData (), this.font3d, label, colix, bgcolix, atom.screenX, atom.screenY, zBox, zSlab, textAlign, 0);
+text = org.jmol.shape.Text.newLabel (this.g3d.getGData (), this.font3d, label, colix, bgcolix, atom.screenX, atom.screenY, zBox, zSlab, textAlign, 0);
 labels.putLabel (i, text);
 }}if (atom != null) {
 text.setOffset (offset);
@@ -97,5 +99,6 @@ boxXY[0] /= 2;
 boxXY[1] /= 2;
 }boxXY[4] = zBox;
 }
+return false;
 });
 });

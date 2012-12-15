@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.MopacReader", ["java.lang.Exception", "$.Float", "javax.util.BitSet", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.MopacReader", ["java.lang.Exception", "$.Float", "org.jmol.util.BitSet", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.baseAtomIndex = 0;
 this.chargesFound = false;
@@ -94,7 +94,7 @@ atom.elementSymbol = elementSymbol;
 });
 Clazz.defineMethod (c$, "readFrequencies", 
 ($fz = function () {
-var bsOK =  new javax.util.BitSet ();
+var bsOK =  new org.jmol.util.BitSet ();
 var n0 = this.atomSetCollection.getCurrentAtomSetIndex () + 1;
 var tokens;
 var done = false;
@@ -108,12 +108,13 @@ tokens = this.getTokens ();
 this.readLine ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 var freq1 = org.jmol.util.Parser.parseFloatStrict (tokens[0]);
 var ignoreNegative = (freq1 < 0);
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = done || (done = (!ignoreNegative && org.jmol.util.Parser.parseFloatStrict (tokens[i]) < 1)) || !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;bsOK.set (this.vibrationNumber - 1);
+if (ignore[i]) continue;
+bsOK.set (this.vibrationNumber - 1);
 this.atomSetCollection.cloneLastAtomSet ();
 }
 this.fillFrequencyData (iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 2);
@@ -131,7 +132,8 @@ if (freqNo == this.vibrationNumber) break;
 for (var i = this.vibrationNumber - 1; --i >= 0; ) if (info[i] == null) info[i] = info[i + 1];
 
 for (var i = 0, n = n0; i < this.vibrationNumber; i++) {
-if (!bsOK.get (i)) continue ;this.atomSetCollection.setCurrentAtomSetIndex (n++);
+if (!bsOK.get (i)) continue;
+this.atomSetCollection.setCurrentAtomSetIndex (n++);
 this.atomSetCollection.setAtomSetFrequency (null, info[i][2], info[i][0], null);
 }
 }, $fz.isPrivate = true, $fz));

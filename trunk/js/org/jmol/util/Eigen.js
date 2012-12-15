@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Eigen", ["java.lang.Float", "java.util.Arrays", "javax.vecmath.Matrix3f", "$.Vector3f", "org.jmol.util.Escape", "$.Logger", "$.Quadric"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.Eigen", ["java.lang.Float", "java.util.Arrays", "org.jmol.util.Escape", "$.Logger", "$.Matrix3f", "$.Quadric", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.n = 0;
 this.d = null;
@@ -10,9 +10,9 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function (n) {
 this.n = n;
-this.V =  Clazz.newArray (n, n, 0);
-this.d =  Clazz.newArray (n, 0);
-this.e =  Clazz.newArray (n, 0);
+this.V =  Clazz.newDoubleArray (n, n, 0);
+this.d =  Clazz.newDoubleArray (n, 0);
+this.e =  Clazz.newDoubleArray (n, 0);
 }, "~N");
 c$.newM = Clazz.defineMethod (c$, "newM", 
 function (m) {
@@ -30,7 +30,7 @@ Clazz.defineMethod (c$, "set",
 var eigenVectors = this.getEigenvectorsFloatTransposed ();
 var eigenValues = this.getRealEigenvalues ();
 for (var i = 0; i < this.n; i++) {
-if (unitVectors[i] == null) unitVectors[i] =  new javax.vecmath.Vector3f ();
+if (unitVectors[i] == null) unitVectors[i] =  new org.jmol.util.Vector3f ();
 unitVectors[i].setA (eigenVectors[i]);
 lengths[i] = Math.sqrt (Math.abs (eigenValues[i]));
 }
@@ -59,7 +59,7 @@ return this.d;
 });
 Clazz.defineMethod (c$, "getEigenvectorsFloatTransposed", 
 function () {
-var f =  Clazz.newArray (this.n, this.n, 0);
+var f =  Clazz.newFloatArray (this.n, this.n, 0);
 for (var i = this.n; --i >= 0; ) for (var j = this.n; --j >= 0; ) f[j][i] = this.V[i][j];
 
 
@@ -69,7 +69,7 @@ Clazz.defineMethod (c$, "getEigenVectors3",
 function () {
 var v =  new Array (3);
 for (var i = 0; i < 3; i++) {
-v[i] = javax.vecmath.Vector3f.new3 (this.V[0][i], this.V[1][i], this.V[2][i]);
+v[i] = org.jmol.util.Vector3f.new3 (this.V[0][i], this.V[1][i], this.V[2][i]);
 }
 return v;
 });
@@ -265,15 +265,15 @@ c$.getEllipsoidDD = Clazz.defineMethod (c$, "getEllipsoidDD",
 function (a) {
 var eigen =  new org.jmol.util.Eigen (3);
 eigen.calc (a);
-var m =  new javax.vecmath.Matrix3f ();
-var mm =  Clazz.newArray (9, 0);
+var m =  new org.jmol.util.Matrix3f ();
+var mm =  Clazz.newFloatArray (9, 0);
 for (var i = 0, p = 0; i < 3; i++) for (var j = 0; j < 3; j++) mm[p++] = a[i][j];
 
 
 m.setA (mm);
 var evec = eigen.getEigenVectors3 ();
-var n =  new javax.vecmath.Vector3f ();
-var cross =  new javax.vecmath.Vector3f ();
+var n =  new org.jmol.util.Vector3f ();
+var cross =  new org.jmol.util.Vector3f ();
 for (var i = 0; i < 3; i++) {
 n.setT (evec[i]);
 m.transform (n);
@@ -286,14 +286,16 @@ org.jmol.util.Logger.info ("draw id eigv" + i + " " + org.jmol.util.Escape.escap
 }
 org.jmol.util.Logger.info ("eigVl (" + eigen.d[0] + " + " + eigen.e[0] + "I) (" + eigen.d[1] + " + " + eigen.e[1] + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
 var unitVectors =  new Array (3);
-var lengths =  Clazz.newArray (3, 0);
+var lengths =  Clazz.newFloatArray (3, 0);
 eigen.set (unitVectors, lengths);
 org.jmol.util.Eigen.sort (unitVectors, lengths);
 return  new org.jmol.util.Quadric (unitVectors, lengths, false);
 }, "~A");
 c$.getEllipsoid = Clazz.defineMethod (c$, "getEllipsoid", 
 function (vectors, lengths, isThermal) {
-var unitVectors = vectors.clone ();
+var unitVectors =  new Array (vectors.length);
+for (var i = vectors.length; --i >= 0; ) unitVectors[i] = org.jmol.util.Vector3f.newV (vectors[i]);
+
 org.jmol.util.Eigen.sort (unitVectors, lengths);
 return  new org.jmol.util.Quadric (unitVectors, lengths, isThermal);
 }, "~A,~A,~B");
@@ -302,7 +304,7 @@ c$.sort = Clazz.defineMethod (c$, "sort",
 var o = [[vectors[0], Float.$valueOf (Math.abs (lengths[0]))], [vectors[1], Float.$valueOf (Math.abs (lengths[1]))], [vectors[2], Float.$valueOf (Math.abs (lengths[2]))]];
 java.util.Arrays.sort (o,  new org.jmol.util.Eigen.EigenSort ());
 for (var i = 0; i < 3; i++) {
-vectors[i] = javax.vecmath.Vector3f.newV (o[i][0]);
+vectors[i] = org.jmol.util.Vector3f.newV (o[i][0]);
 vectors[i].normalize ();
 lengths[i] = (o[i][1]).floatValue ();
 }

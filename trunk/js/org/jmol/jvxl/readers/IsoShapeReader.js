@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.IsoShapeReader", ["java.util.Random", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger", "$.Measure"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.VolumeDataReader", "org.jmol.util.Point3f"], "org.jmol.jvxl.readers.IsoShapeReader", ["java.util.Random", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger", "$.Measure", "$.StringXBuilder", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.psi_n = 2;
 this.psi_l = 1;
@@ -27,9 +27,9 @@ this.nTries = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoShapeReader", org.jmol.jvxl.readers.VolumeDataReader);
 Clazz.prepareFields (c$, function () {
-this.rfactor =  Clazz.newArray (10, 0);
-this.pfactor =  Clazz.newArray (10, 0);
-this.ptPsi =  new javax.vecmath.Point3f ();
+this.rfactor =  Clazz.newDoubleArray (10, 0);
+this.pfactor =  Clazz.newDoubleArray (10, 0);
+this.ptPsi =  new org.jmol.util.Point3f ();
 this.psi_normalization = 1 / (2 * Math.sqrt (3.141592653589793));
 });
 Clazz.makeConstructor (c$, 
@@ -45,11 +45,11 @@ this.sphere_radiusAngstroms = (o).floatValue ();
 } else {
 this.sphere_radiusAngstroms = 0;
 var data = o;
-this.psi_n = Math.round (data[0]);
-this.psi_l = Math.round (data[1]);
-this.psi_m = Math.round (data[2]);
+this.psi_n = Clazz.floatToInt (data[0]);
+this.psi_l = Clazz.floatToInt (data[1]);
+this.psi_m = Clazz.floatToInt (data[2]);
 this.psi_Znuc = data[3];
-this.monteCarloCount = Math.round (data[4]);
+this.monteCarloCount = Clazz.floatToInt (data[4]);
 }}, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.overrideMethod (c$, "setup", 
 function (isMapData) {
@@ -135,10 +135,10 @@ return this.sphere_radiusAngstroms - Math.sqrt (this.ptTemp.x * this.ptTemp.x + 
 }var value = this.hydrogenAtomPsi (this.ptTemp);
 if (Math.abs (value) < 1.0E-7) value = 0;
 return (this.allowNegative || value >= 0 ? value : 0);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setHeader", 
 ($fz = function (line1) {
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append (line1);
 if (this.sphere_radiusAngstroms > 0) {
 this.jvxlFileHeaderBuffer.append (" rad=").appendF (this.sphere_radiusAngstroms);
@@ -221,12 +221,12 @@ for (var i = 3; --i >= 0; ) if (this.anisotropy[i] > aMax) aMax = this.anisotrop
 this.radius *= aMax;
 }org.jmol.util.Logger.info ("Atomic Orbital radial extent set to " + this.radius + " for cutoff " + this.params.cutoff);
 if (this.params.thePlane != null && this.monteCarloCount > 0) {
-this.planeCenter =  new javax.vecmath.Point3f ();
-this.planeU =  new javax.vecmath.Vector3f ();
+this.planeCenter =  new org.jmol.util.Point3f ();
+this.planeU =  new org.jmol.util.Vector3f ();
 org.jmol.util.Measure.getPlaneProjection (this.center, this.params.thePlane, this.planeCenter, this.planeU);
 this.planeU.set (this.params.thePlane.x, this.params.thePlane.y, this.params.thePlane.z);
 this.planeU.normalize ();
-this.planeV = javax.vecmath.Vector3f.new3 (1, 0, 0);
+this.planeV = org.jmol.util.Vector3f.new3 (1, 0, 0);
 if (Math.abs (this.planeU.dot (this.planeV)) > 0.5) this.planeV.set (0, 1, 0);
 this.planeV.cross (this.planeU, this.planeV);
 this.planeU.cross (this.planeU, this.planeV);
@@ -234,7 +234,7 @@ this.aoMax2 = 0;
 d = this.center.distance (this.planeCenter);
 if (d < this.radius) {
 this.planeRadius = Math.sqrt (this.radius * this.radius - d * d);
-var ir = Math.round ((this.planeRadius * 10));
+var ir = Clazz.floatToInt (this.planeRadius * 10);
 for (var ix = -ir; ix <= ir; ix++) for (var iy = -ir; iy <= ir; iy++) {
 this.ptPsi.setT (this.planeU);
 this.ptPsi.scale (ix / 10);
@@ -263,7 +263,7 @@ var ph = Math.atan2 (pt.y, pt.x);
 var th = Math.atan2 (Math.sqrt (x2y2), pt.z);
 var theta_lm_phi_m = this.angularPart (th, ph, this.psi_m);
 return this.rnl * theta_lm_phi_m;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "angularPart", 
 ($fz = function (th, ph, m) {
 var cth = Math.cos (th);
@@ -283,7 +283,7 @@ return (Math.abs (phi_m) < 0.0000000001 ? 0 : theta_lm * phi_m * this.psi_normal
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
 Clazz.defineMethod (c$, "createMonteCarloOrbital", 
 ($fz = function () {
-if (this.monteCarloDone || this.aoMax2 == 0 || this.params.distance > this.radius) return ;
+if (this.monteCarloDone || this.aoMax2 == 0 || this.params.distance > this.radius) return;
 var isS = (this.psi_m == 0 && this.psi_l == 0);
 this.monteCarloDone = true;
 var value;
@@ -295,7 +295,8 @@ var r;
 if (this.params.distance == 0) {
 r = this.random.nextDouble () * this.radius;
 var rp = r * this.radialPart (r);
-if (rp * rp <= this.aoMax2 * this.random.nextDouble ()) continue ;} else {
+if (rp * rp <= this.aoMax2 * this.random.nextDouble ()) continue;
+} else {
 r = this.params.distance;
 }var u = this.random.nextDouble ();
 var v = this.random.nextDouble ();
@@ -304,7 +305,8 @@ var cosPhi = 2 * v - 1;
 if (!isS) {
 var phi = Math.acos (cosPhi);
 var ap = this.angularPart (phi, theta, this.psi_m);
-if (ap * ap <= this.angMax2 * this.random.nextDouble ()) continue ;}var sinPhi = Math.sin (Math.acos (cosPhi));
+if (ap * ap <= this.angMax2 * this.random.nextDouble ()) continue;
+}var sinPhi = Math.sin (Math.acos (cosPhi));
 var x = r * Math.cos (theta) * sinPhi;
 var y = r * Math.sin (theta) * sinPhi;
 var z = r * cosPhi;
@@ -317,7 +319,8 @@ this.ptPsi.scale (this.random.nextFloat () * this.planeRadius * 2 - this.planeRa
 this.ptPsi.scaleAdd2 (this.random.nextFloat () * this.planeRadius * 2 - this.planeRadius, this.planeV, this.ptPsi);
 this.ptPsi.add (this.planeCenter);
 value = this.getValueAtPoint (this.ptPsi);
-if (value * value <= this.aoMax2 * this.random.nextFloat ()) continue ;}rave += this.ptPsi.distance (this.center);
+if (value * value <= this.aoMax2 * this.random.nextFloat ()) continue;
+}rave += this.ptPsi.distance (this.center);
 this.addVertexCopy (this.ptPsi, value, 0);
 i++;
 }
@@ -329,7 +332,7 @@ switch (this.params.dataType) {
 case 1294:
 if (this.monteCarloCount <= 0) break;
 this.createMonteCarloOrbital ();
-return ;
+return;
 case 70:
 case 71:
 this.ptPsi.set (0, 0, this.eccentricityScale / 2);
@@ -338,7 +341,7 @@ this.ptPsi.add (this.center);
 this.addVertexCopy (this.center, 0, 0);
 this.addVertexCopy (this.ptPsi, 0, 0);
 this.addTriangleCheck (0, 0, 0, 0, 0, false, 0);
-return ;
+return;
 }
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoShapeReader, "readSurfaceData", [isMapData]);
 }, "~B");
@@ -346,7 +349,7 @@ Clazz.defineStatics (c$,
 "A0", 0.52918,
 "ROOT2", 1.414214,
 "ATOMIC_ORBITAL_ZERO_CUT_OFF", 1e-7,
-"fact",  Clazz.newArray (20, 0));
+"fact",  Clazz.newFloatArray (20, 0));
 {
 org.jmol.jvxl.readers.IsoShapeReader.fact[0] = 1;
 for (var i = 1; i < 20; i++) org.jmol.jvxl.readers.IsoShapeReader.fact[i] = org.jmol.jvxl.readers.IsoShapeReader.fact[i - 1] * i;

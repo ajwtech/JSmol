@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.MsmsReader", ["java.io.BufferedReader", "$.InputStreamReader", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.MsmsReader", ["org.jmol.io.JmolBinary", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileName = null;
 Clazz.instantialize (this, arguments);
@@ -29,7 +29,7 @@ this.br.close ();
 this.fileName = org.jmol.util.TextFormat.simpleReplace (this.fileName, ".vert", ".face");
 org.jmol.util.Logger.info ("reading from file " + this.fileName);
 try {
-this.br =  new java.io.BufferedReader ( new java.io.InputStreamReader (this.sg.getAtomDataServer ().getBufferedInputStream (this.fileName)));
+this.br = org.jmol.io.JmolBinary.getInputStreamReader (this.sg.getAtomDataServer ().getBufferedInputStream (this.fileName));
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.info ("Note: file " + this.fileName + " was not found");

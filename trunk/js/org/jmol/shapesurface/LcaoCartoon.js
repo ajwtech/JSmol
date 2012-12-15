@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapesurface");
-Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.LcaoCartoon", ["java.lang.Float", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.util.Colix", "$.Escape", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.shapesurface");
+Clazz.load (["org.jmol.shapesurface.Isosurface"], "org.jmol.shapesurface.LcaoCartoon", ["java.lang.Float", "org.jmol.util.Colix", "$.Escape", "$.StringXBuilder", "$.TextFormat", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.thisType = null;
 this.myColorPt = 0;
@@ -37,18 +37,18 @@ this.thisType = null;
 this.rotationAxis = null;
 this.fullCommand = value;
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["init", null, null]);
-return ;
+return;
 }if ("lcaoID" === propertyName) {
 this.lcaoID = value;
-return ;
+return;
 }if ("thisID" === propertyName) {
 this.lcaoID = value;
 }if ("selectType" === propertyName) {
 this.thisType = value;
-return ;
+return;
 }if ("rotationAxis" === propertyName) {
 this.rotationAxis = value;
-return ;
+return;
 }if ("scale" === propertyName) {
 this.lcaoScale = value;
 }if ("colorRGB" === propertyName) {
@@ -60,38 +60,38 @@ this.thisSet = value;
 this.$translucentLevel = (value).floatValue ();
 }if ("settranslucency" === propertyName) {
 this.isTranslucent = ((value).equals ("translucent"));
-return ;
+return;
 }if ("translucency" === propertyName) {
 this.isTranslucent = ((value).equals ("translucent"));
-if (this.lcaoID == null) return ;
+if (this.lcaoID == null) return;
 }if ("molecular" === propertyName) {
 this.isMolecular = true;
-if (value == null) return ;
+if (value == null) return;
 propertyName = "create";
 }if ("create" === propertyName) {
 this.myColorPt = 0;
 this.thisType = value;
 this.createLcaoCartoon ();
-return ;
+return;
 }if ("lonePair" === propertyName) {
 this.isLonePair = true;
-return ;
+return;
 }if ("lp" === propertyName) {
 this.isLonePair = setInfo = true;
 }if ("radical" === propertyName) {
 this.isRadical = true;
-return ;
+return;
 }if ("rad" === propertyName) {
 this.isRadical = setInfo = true;
 }if ("delete" === propertyName) {
 this.deleteLcaoCartoon ();
-return ;
+return;
 }if ("on" === propertyName) {
 this.setLcaoOn (true);
-return ;
+return;
 }if ("off" === propertyName) {
 this.setLcaoOn (false);
-return ;
+return;
 }if ("slab" === propertyName) {
 this.slabbingObject = value;
 }if ("cap" === propertyName) {
@@ -101,7 +101,7 @@ this.getCapSlabInfo (this.fullCommand);
 }Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", [propertyName, value, bs]);
 if (setInfo || "lobe" === propertyName || "sphere" === propertyName) {
 this.setScriptInfo (null);
-}}, "~S,~O,javax.util.BitSet");
+}}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setLcaoOn", 
 ($fz = function (TF) {
 if (org.jmol.util.TextFormat.isWild (this.lcaoID)) {
@@ -109,7 +109,7 @@ var key = this.lcaoID.toLowerCase ();
 for (var i = this.meshCount; --i >= 0; ) {
 if (org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID.toLowerCase (), key, true, true)) this.meshes[i].visible = TF;
 }
-return ;
+return;
 }var atomCount = this.viewer.getAtomCount ();
 for (var i = atomCount; --i >= 0; ) if (this.lcaoID != null || this.thisSet.get (i)) this.setLcaoOn (i, TF);
 
@@ -123,8 +123,8 @@ for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i].thisID.indexOf (id) 
 Clazz.defineMethod (c$, "deleteLcaoCartoon", 
 ($fz = function () {
 if (org.jmol.util.TextFormat.isWild (this.lcaoID)) {
-this.deleteMesh (this.lcaoID);
-return ;
+this.deleteMeshKey (this.lcaoID);
+return;
 }var atomCount = this.viewer.getAtomCount ();
 for (var i = atomCount; --i >= 0; ) if (this.lcaoID != null || this.thisSet.get (i)) this.deleteLcaoCartoon (i);
 
@@ -132,7 +132,7 @@ for (var i = atomCount; --i >= 0; ) if (this.lcaoID != null || this.thisSet.get 
 Clazz.defineMethod (c$, "deleteLcaoCartoon", 
 ($fz = function (iAtom) {
 var id = this.getID (this.lcaoID, iAtom);
-for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i].thisID.indexOf (id) == 0) this.deleteMesh (i);
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i].thisID.indexOf (id) == 0) this.deleteMeshI (i);
 
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "createLcaoCartoon", 
@@ -148,7 +148,7 @@ Clazz.defineMethod (c$, "createLcaoCartoon",
 ($fz = function (iAtom) {
 var id = this.getID (this.lcaoID, iAtom);
 var isCpk = (this.thisType.equals ("cpk"));
-for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i].thisID.indexOf (id) == 0) this.deleteMesh (i);
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i].thisID.indexOf (id) == 0) this.deleteMeshI (i);
 
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["init", null, null]);
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["thisID", id, null]);
@@ -162,7 +162,7 @@ Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["color
 if (this.cappingObject != null) Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["cap", this.cappingObject, null]);
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["lcaoType", this.thisType, null]);
 Clazz.superCall (this, org.jmol.shapesurface.LcaoCartoon, "setProperty", ["atomIndex", Integer.$valueOf (iAtom), null]);
-var axes = [ new javax.vecmath.Vector3f (),  new javax.vecmath.Vector3f (), javax.vecmath.Vector3f.newV (this.modelSet.atoms[iAtom]),  new javax.vecmath.Vector3f ()];
+var axes = [ new org.jmol.util.Vector3f (),  new org.jmol.util.Vector3f (), org.jmol.util.Vector3f.newV (this.modelSet.atoms[iAtom]),  new org.jmol.util.Vector3f ()];
 if (this.rotationAxis != null) axes[3].setT (this.rotationAxis);
 if (this.isMolecular) {
 if (this.thisType.indexOf ("px") >= 0) {
@@ -191,7 +191,7 @@ return (id != null ? id : (this.isLonePair || this.isRadical ? "lp_" : "lcao_") 
 }, $fz.isPrivate = true, $fz), "~S,~N");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 if (this.lcaoScale != null) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon scale " + this.lcaoScale.floatValue ());
 if (this.lcaoColorNeg != null) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon color " + org.jmol.util.Escape.escapeColor (this.lcaoColorNeg.intValue ()) + " " + org.jmol.util.Escape.escapeColor (this.lcaoColorPos.intValue ()));
 if (this.isTranslucent) org.jmol.shape.Shape.appendCmd (sb, "lcaoCartoon translucent " + this.$translucentLevel);

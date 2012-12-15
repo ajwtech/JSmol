@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.BasisFunctionReader"], "org.jmol.adapter.readers.quantum.MOReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.shellCount = 0;
@@ -26,7 +26,7 @@ this.line = "\nNBOs in the AO basis:";
 this.getNBOs = this.filterMO ();
 this.line = "\nNBOCHARGES";
 this.getNBOCharges = (this.filter != null && this.filterMO ());
-if (this.filter == null) return ;
+if (this.filter == null) return;
 var f = org.jmol.util.TextFormat.simpleReplace (this.filter, "NBOCHARGES", "");
 if (f.length < 3) this.filter = null;
 });
@@ -49,7 +49,7 @@ return true;
 });
 Clazz.defineMethod (c$, "getNboCharges", 
 ($fz = function () {
-if (this.haveNboCharges) return ;
+if (this.haveNboCharges) return;
 this.discardLinesUntilContains ("----");
 this.discardLinesUntilContains ("----");
 this.haveNboCharges = true;
@@ -63,7 +63,7 @@ var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this
 var charge;
 if (tokens == null || tokens.length < 3 || Float.isNaN (charge = this.parseFloatStr (tokens[2]))) {
 org.jmol.util.Logger.info ("Error reading NBO charges: " + this.line);
-return ;
+return;
 }atoms[i].partialCharge = charge;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Atom " + i + " using NBOcharge: " + charge);
 }
@@ -89,7 +89,7 @@ Clazz.defineMethod (c$, "readMolecularOrbitals",
 function (headerType) {
 if (this.ignoreMOs) {
 this.readLine ();
-return ;
+return;
 }this.dfCoefMaps = null;
 if (this.haveNboOrbitals) {
 this.orbitals =  new java.util.ArrayList ();
@@ -141,7 +141,7 @@ if (fCoeffLabels.indexOf ("X") >= 0) isOK = this.getDFMap (fCoeffLabels, org.jmo
 if (nBlank == 2) break;
 if (str.indexOf ("LZ VALUE") >= 0) this.discardLinesUntilBlank ();
 for (var iMo = 0; iMo < nThisLine; iMo++) {
-var coefs =  Clazz.newArray (data[iMo].size (), 0);
+var coefs =  Clazz.newFloatArray (data[iMo].size (), 0);
 var iCoeff = 0;
 while (iCoeff < coefs.length) {
 coefs[iCoeff] = this.parseFloatStr (data[iMo].get (iCoeff));
@@ -153,7 +153,8 @@ moCount = this.setMOType (mos[iMo], moCount);
 this.setMO (mos[iMo]);
 }
 nThisLine = 0;
-if (this.line.length == 0) continue ;break;
+if (this.line.length == 0) continue;
+break;
 }nBlank = 0;
 if (nThisLine == 0) {
 nThisLine = tokens.length;
@@ -169,10 +170,11 @@ mos[i] =  new java.util.Hashtable ();
 data[i] =  new java.util.ArrayList ();
 }
 this.getMOHeader (headerType, tokens, mos, nThisLine);
-continue ;}var nSkip = tokens.length - nThisLine;
+continue;
+}var nSkip = tokens.length - nThisLine;
 var type = tokens[nSkip - 1];
 var ch;
-if ((type.charAt (0)).charCodeAt (0) == 40) {
+if (type.charAt (0) == '(') {
 ch = type.charAt (1);
 if (!this.haveCoeffMap) {
 switch (ch) {
@@ -224,12 +226,12 @@ this.readLine ();
 switch (headerType) {
 default:
 case 0:
-return ;
+return;
 case 3:
 for (var i = 0; i < nThisLine; i++) mos[i].put ("energy",  new Float (tokens[i]));
 
 this.readLines (5);
-return ;
+return;
 case 1:
 tokens = this.getTokens ();
 if (tokens.length == 0) tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
@@ -241,10 +243,10 @@ break;
 case 2:
 var haveSymmetry = (this.line.length > 0 || this.readLine () != null);
 tokens = this.getTokens ();
-for (var i = 0; i < nThisLine; i++) mos[i].put ("occupancy",  new Float ((tokens[i].charAt (0)).charCodeAt (0) == 45 ? 2.0 : this.parseFloatStr (tokens[i])));
+for (var i = 0; i < nThisLine; i++) mos[i].put ("occupancy",  new Float (tokens[i].charAt (0) == '-' ? 2.0 : this.parseFloatStr (tokens[i])));
 
 this.readLine ();
-if (!haveSymmetry) return ;
+if (!haveSymmetry) return;
 }
 if (this.line.length > 0) {
 tokens = this.getTokens ();
@@ -254,7 +256,7 @@ for (var i = 0; i < nThisLine; i++) mos[i].put ("symmetry", tokens[i]);
 Clazz.defineMethod (c$, "addMOData", 
 function (nColumns, data, mos) {
 for (var i = 0; i < nColumns; i++) {
-var coefs =  Clazz.newArray (data[i].size (), 0);
+var coefs =  Clazz.newFloatArray (data[i].size (), 0);
 for (var j = coefs.length; --j >= 0; ) coefs[j] = this.parseFloatStr (data[i].get (j));
 
 mos[i].put ("coefficients", coefs);
@@ -277,16 +279,17 @@ this.alphaBeta = "";
 }}, "~B");
 Clazz.defineMethod (c$, "readSecondOrderData", 
 ($fz = function () {
-if (this.lastMoData == null || this.moTypes == null) return ;
+if (this.lastMoData == null || this.moTypes == null) return;
 var ht =  new java.util.Hashtable ();
 for (var i = this.moTypes.size (); --i >= 0; ) ht.put (org.jmol.util.TextFormat.simpleReplace (this.moTypes.get (i).substring (10), " ", ""),  new Integer (i + this.iMo0));
 
 var strSecondOrderData =  new java.util.ArrayList ();
 this.readLines (5);
 while (this.readLine () != null && this.line.indexOf ("NBO") < 0) {
-if (this.line.length < 5 || (this.line.charAt (4)).charCodeAt (0) != 46) continue ;strSecondOrderData.add ([org.jmol.util.TextFormat.simpleReplace (this.line.substring (5, 27).trim (), " ", ""), org.jmol.util.TextFormat.simpleReplace (this.line.substring (32, 54).trim (), " ", ""), this.line.substring (55, 62).trim (), this.line.substring (71).trim ()]);
+if (this.line.length < 5 || this.line.charAt (4) != '.') continue;
+strSecondOrderData.add ([org.jmol.util.TextFormat.simpleReplace (this.line.substring (5, 27).trim (), " ", ""), org.jmol.util.TextFormat.simpleReplace (this.line.substring (32, 54).trim (), " ", ""), this.line.substring (55, 62).trim (), this.line.substring (71).trim ()]);
 }
-var secondOrderData =  Clazz.newArray (strSecondOrderData.size (), 4, 0);
+var secondOrderData =  Clazz.newFloatArray (strSecondOrderData.size (), 4, 0);
 this.lastMoData.put ("secondOrderData", secondOrderData);
 this.lastMoData = null;
 var IMO;

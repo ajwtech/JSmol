@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.modelset.Measurement"], "org.jmol.modelset.MeasurementPending", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$haveTarget = false;

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.SurfaceFileReader"], "org.jmol.jvxl.readers.VolumeFileReader", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.api.Interface", "org.jmol.atomdata.AtomData", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.SurfaceFileReader"], "org.jmol.jvxl.readers.VolumeFileReader", ["java.lang.Float", "org.jmol.api.Interface", "org.jmol.atomdata.AtomData", "org.jmol.util.ArrayUtil", "$.Logger", "$.Parser", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.endOfData = false;
 this.negativeAtomCount = false;
@@ -48,10 +48,10 @@ return value;
 }, "~N");
 Clazz.defineMethod (c$, "closeReader", 
 function () {
-if (this.readerClosed) return ;
+if (this.readerClosed) return;
 this.readerClosed = true;
 Clazz.superCall (this, org.jmol.jvxl.readers.VolumeFileReader, "closeReader", []);
-if (this.nData == 0 || this.dataMax == -3.4028235E38) return ;
+if (this.nData == 0 || this.dataMax == -3.4028235E38) return;
 this.dataMean /= this.nData;
 org.jmol.util.Logger.info ("VolumeFileReader closing file: " + this.nData + " points read \ndata min/max/mean = " + this.dataMin + "/" + this.dataMax + "/" + this.dataMean);
 });
@@ -80,7 +80,7 @@ org.jmol.util.Logger.info ("voxel grid origin:" + this.volumetricOrigin);
 var downsampleFactor = this.params.downsampleFactor;
 var downsampling = (this.canDownsample && downsampleFactor > 0);
 if (downsampling) {
-this.downsampleRemainders =  Clazz.newArray (3, 0);
+this.downsampleRemainders =  Clazz.newIntArray (3, 0);
 org.jmol.util.Logger.info ("downsample factor = " + downsampleFactor);
 for (var i = 0; i < 3; ++i) {
 var n = this.voxelCounts[i];
@@ -109,7 +109,7 @@ throw e;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "skipComments", 
 function (allowBlankLines) {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 while (this.readLine () != null && (allowBlankLines && this.line.length == 0 || this.line.indexOf ("#") == 0)) sb.append (this.line).appendC ('\n');
 
 return sb.toString ();
@@ -163,12 +163,12 @@ if (this.nSkipY != 0) this.skipVoxels (this.nSkipY);
 if (this.nSkipZ != 0) this.skipVoxels (this.nSkipZ);
 }
 } else {
-this.voxelData =  Clazz.newArray (this.nPointsX, 0);
+this.voxelData = org.jmol.util.ArrayUtil.newFloat3 (this.nPointsX, -1);
 for (var x = 0; x < this.nPointsX; ++x) {
-var plane =  Clazz.newArray (this.nPointsY, 0);
+var plane = org.jmol.util.ArrayUtil.newFloat2 (this.nPointsY);
 this.voxelData[x] = plane;
 for (var y = 0; y < this.nPointsY; ++y) {
-var strip =  Clazz.newArray (this.nPointsZ, 0);
+var strip =  Clazz.newFloatArray (this.nPointsZ, 0);
 plane[y] = strip;
 for (var z = 0; z < this.nPointsZ; ++z) {
 strip[z] = this.recordData (this.getNextVoxelValue ());
@@ -197,9 +197,9 @@ var atomData =  new org.jmol.atomdata.AtomData ();
 atomData.modelIndex = -1;
 atomData.bsSelected = this.params.bsSelected;
 this.sg.fillAtomData (atomData, 1);
-this.qpc.setupCalculation (this.volumeData, this.sg.getBsSelected (), null, null, null, atomData.atomXyz, -1, null, null, null, null, null, null, null, this.params.theProperty, true, null, this.params.parameters, this.params.testFlags);
+this.qpc.setupCalculation (this.volumeData, this.sg.getBsSelected (), null, null, null, atomData.atomXyz, -1, null, null, null, null, null, null, this.params.isSquaredLinear, null, this.params.theProperty, true, null, this.params.parameters, this.params.testFlags);
 this.iPlaneRaw = 1;
-this.qpc.setPlanes (this.yzPlanesRaw =  Clazz.newArray (4, this.yzCount, 0));
+this.qpc.setPlanes (this.yzPlanesRaw =  Clazz.newFloatArray (4, this.yzCount, 0));
 if (this.hasColorData) {
 this.getPlane (this.yzPlanesRaw[0], false);
 this.getPlane (this.yzPlanesRaw[1], false);
@@ -300,7 +300,7 @@ this.line = "0 0 0 0 0 0 0 0 0 0";
 });
 Clazz.overrideMethod (c$, "gotoData", 
 function (n, nPoints) {
-if (!this.params.blockCubeData) return ;
+if (!this.params.blockCubeData) return;
 if (n > 0) org.jmol.util.Logger.info ("skipping " + n + " data sets, " + nPoints + " points each");
 for (var i = 0; i < n; i++) this.skipData (nPoints);
 
@@ -318,10 +318,10 @@ var ich = 0;
 var ichMax = str.length;
 var ch;
 while (ich < ichMax) {
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9)) ++ich;
+while (ich < ichMax && ((ch = str.charAt (ich)) == ' ' || ch == '\t')) ++ich;
 
 if (ich < ichMax) ++count;
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) != 32 && ch.charCodeAt (0) != 9)) ++ich;
+while (ich < ichMax && ((ch = str.charAt (ich)) != ' ' && ch != '\t')) ++ich;
 
 }
 return count;
@@ -349,7 +349,7 @@ if (atomLine.indexOf ("BOHR") < 0) atomLine += " BOHR";
 }atomLine = (atomCount == -2147483648 ? "" : (isXLowToHigh ? "+" : "-") + Math.abs (atomCount)) + atomLine + "\n";
 bs.append (atomLine);
 return isAngstroms;
-}, "~B,~B,~S,~S,javax.util.StringXBuilder");
+}, "~B,~B,~S,~S,org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "getSurfacePointAndFraction", 
 function (cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn) {
 var zero = Clazz.superCall (this, org.jmol.jvxl.readers.VolumeFileReader, "getSurfacePointAndFraction", [cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn]);
@@ -357,13 +357,13 @@ if (this.qpc == null || Float.isNaN (zero) || !this.hasColorData) return zero;
 vA = this.marchingCubes.getLinearOffset (x, y, z, vA);
 vB = this.marchingCubes.getLinearOffset (x, y, z, vB);
 return this.qpc.process (vA, vB, fReturn[0]);
-}, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
+}, "~N,~B,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,~N,~N,~N,~N,~N,~A,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "scaleIsosurface", 
 ($fz = function (scale) {
-if (this.isScaledAlready) return ;
+if (this.isScaledAlready) return;
 this.isScaledAlready = true;
 if (this.isAnisotropic) this.setVolumetricAnisotropy ();
-if (Float.isNaN (scale)) return ;
+if (Float.isNaN (scale)) return;
 org.jmol.util.Logger.info ("applying scaling factor of " + scale);
 this.volumetricOrigin.scaleAdd ((1 - scale) / 2, this.volumetricVectors[0]);
 this.volumetricOrigin.scaleAdd ((1 - scale) / 2, this.volumetricVectors[1]);

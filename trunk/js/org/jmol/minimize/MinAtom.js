@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
-Clazz.load (["java.util.ArrayList", "javax.util.BitSet"], "org.jmol.minimize.MinAtom", null, function () {
+Clazz.declarePackage ("org.jmol.minimize");
+Clazz.load (["java.util.ArrayList", "org.jmol.util.BitSet"], "org.jmol.minimize.MinAtom", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 0;
 this.sType = null;
@@ -19,11 +19,11 @@ this.bondedAtoms = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.minimize, "MinAtom");
 Clazz.prepareFields (c$, function () {
-this.coord =  Clazz.newArray (3, 0);
-this.force =  Clazz.newArray (3, 0);
+this.coord =  Clazz.newDoubleArray (3, 0);
+this.force =  Clazz.newDoubleArray (3, 0);
 this.bonds =  new java.util.ArrayList ();
-this.bsVdw =  new javax.util.BitSet ();
-this.bs14 =  new javax.util.BitSet ();
+this.bsVdw =  new org.jmol.util.BitSet ();
+this.bs14 =  new org.jmol.util.BitSet ();
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
@@ -54,7 +54,7 @@ return null;
 Clazz.defineMethod (c$, "getBondedAtomIndexes", 
 function () {
 if (this.bondedAtoms == null) {
-this.bondedAtoms =  Clazz.newArray (this.nBonds, 0);
+this.bondedAtoms =  Clazz.newIntArray (this.nBonds, 0);
 for (var i = this.nBonds; --i >= 0; ) this.bondedAtoms[i] = this.bonds.get (i).getOtherAtom (this.index);
 
 }return this.bondedAtoms;

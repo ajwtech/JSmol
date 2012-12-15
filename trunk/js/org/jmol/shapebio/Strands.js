@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shapebio");
+Clazz.declarePackage ("org.jmol.shapebio");
 Clazz.load (["org.jmol.shapebio.BioShapeCollection"], "org.jmol.shapebio.Strands", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isMesh = false;

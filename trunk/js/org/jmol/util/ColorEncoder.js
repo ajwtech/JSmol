@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.ColorEncoder", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Escape", "$.Logger", "$.TextFormat", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.paletteBW = null;
@@ -36,7 +36,7 @@ this.argbsRoygb = org.jmol.viewer.JmolConstants.argbsRoygbScale;
 this.argbsRwb = org.jmol.viewer.JmolConstants.argbsRwbScale;
 this.argbsShapely = org.jmol.viewer.JmolConstants.argbsShapely;
 this.argbsAmino = org.jmol.viewer.JmolConstants.argbsAmino;
-this.ihalf = Math.floor (org.jmol.viewer.JmolConstants.argbsRoygbScale.length / 3);
+this.ihalf = Clazz.doubleToInt (org.jmol.viewer.JmolConstants.argbsRoygbScale.length / 3);
 this.propertyColorEncoder = this;
 } else {
 this.propertyColorEncoder = propertyColorEncoder;
@@ -102,7 +102,7 @@ break;
 case 0:
 case 1:
 this.argbsRoygb = this.thisScale;
-this.ihalf = Math.floor (this.argbsRoygb.length / 3);
+this.ihalf = Clazz.doubleToInt (this.argbsRoygb.length / 3);
 break;
 case 6:
 case 7:
@@ -139,7 +139,7 @@ colorScheme = org.jmol.util.TextFormat.simpleReplace (colorScheme, ",", "][");
 while ((pt = colorScheme.indexOf ("[", pt + 1)) >= 0) n++;
 
 if (n == 0) return this.makeColorScheme (name, null, isOverloaded);
-var scale =  Clazz.newArray (n, 0);
+var scale =  Clazz.newIntArray (n, 0);
 n = 0;
 while ((pt = colorScheme.indexOf ("[", pt + 1)) >= 0) {
 var pt2 = colorScheme.indexOf ("]", pt);
@@ -181,7 +181,7 @@ case 8:
 return org.jmol.util.ArrayUtil.arrayCopyRangeI (this.propertyColorEncoder.argbsRoygb, 0, this.propertyColorEncoder.ihalf);
 case 9:
 var a = org.jmol.util.ArrayUtil.arrayCopyRangeI (this.propertyColorEncoder.argbsRoygb, this.propertyColorEncoder.argbsRoygb.length - 2 * this.propertyColorEncoder.ihalf, -1);
-b =  Clazz.newArray (this.propertyColorEncoder.ihalf, 0);
+b =  Clazz.newIntArray (this.propertyColorEncoder.ihalf, 0);
 for (var i = b.length, j = a.length; --i >= 0 && --j >= 0; ) b[i] = a[j--];
 
 return b;
@@ -216,7 +216,7 @@ if (isTranslucent) {
 var f = (hi - val) / (hi - lo);
 if (f > 1) f = 1;
  else if (f < 0.125) f = 0.125;
-colix = org.jmol.util.Colix.getColixTranslucent (colix, true, f);
+colix = org.jmol.util.Colix.getColixTranslucent3 (colix, true, f);
 }return colix;
 }, "~N,~N,~N,~N,~B");
 Clazz.defineMethod (c$, "getPaletteColorCount", 
@@ -283,13 +283,13 @@ return (this.propertyColorEncoder.userScale.length == 0 ? -8355712 : this.proper
 case -13:
 return (this.propertyColorEncoder.userScale.length == 0 ? -8355712 : this.propertyColorEncoder.userScale[org.jmol.util.ColorEncoder.quantize (-val, -hi, -lo, n)]);
 case 2:
-return this.propertyColorEncoder.argbsCpk[org.jmol.util.ColorEncoder.colorIndex (Math.round (val), n)];
+return this.propertyColorEncoder.argbsCpk[org.jmol.util.ColorEncoder.colorIndex (val, n)];
 case 3:
-return org.jmol.util.ColorEncoder.getRasmolScale ()[org.jmol.util.ColorEncoder.colorIndex (Math.round (val), n)];
+return org.jmol.util.ColorEncoder.getRasmolScale ()[org.jmol.util.ColorEncoder.colorIndex (val, n)];
 case 4:
-return this.propertyColorEncoder.argbsShapely[org.jmol.util.ColorEncoder.colorIndex (Math.round (val), n)];
+return this.propertyColorEncoder.argbsShapely[org.jmol.util.ColorEncoder.colorIndex (val, n)];
 case 5:
-return this.propertyColorEncoder.argbsAmino[org.jmol.util.ColorEncoder.colorIndex (Math.round (val), n)];
+return this.propertyColorEncoder.argbsAmino[org.jmol.util.ColorEncoder.colorIndex (val, n)];
 default:
 return -8355712;
 }
@@ -314,7 +314,7 @@ function () {
 var info =  new java.util.Hashtable ();
 var segmentCount = this.getPaletteColorCount (this.currentPalette);
 var colors =  new java.util.ArrayList (segmentCount);
-var values =  Clazz.newArray (segmentCount + 1, 0);
+var values =  Clazz.newFloatArray (segmentCount + 1, 0);
 var quantum = (this.hi - this.lo) / segmentCount;
 var f = quantum * (this.isReversed ? -0.5 : 0.5);
 for (var i = 0; i < segmentCount; i++) {
@@ -364,7 +364,7 @@ return colors;
 c$.getRasmolScale = Clazz.defineMethod (c$, "getRasmolScale", 
 function () {
 if (org.jmol.util.ColorEncoder.rasmolScale != null) return org.jmol.util.ColorEncoder.rasmolScale;
-($t$ = org.jmol.util.ColorEncoder.rasmolScale =  Clazz.newArray (org.jmol.constant.EnumPalette.argbsCpk.length, 0), org.jmol.util.ColorEncoder.prototype.rasmolScale = org.jmol.util.ColorEncoder.rasmolScale, $t$);
+($t$ = org.jmol.util.ColorEncoder.rasmolScale =  Clazz.newIntArray (org.jmol.constant.EnumPalette.argbsCpk.length, 0), org.jmol.util.ColorEncoder.prototype.rasmolScale = org.jmol.util.ColorEncoder.rasmolScale, $t$);
 var argb = org.jmol.constant.EnumPalette.argbsCpkRasmol[0] | 0xFF000000;
 for (var i = org.jmol.util.ColorEncoder.rasmolScale.length; --i >= 0; ) org.jmol.util.ColorEncoder.rasmolScale[i] = argb;
 
@@ -377,7 +377,7 @@ return org.jmol.util.ColorEncoder.rasmolScale;
 Clazz.defineMethod (c$, "getPaletteWB", 
 ($fz = function () {
 if (this.propertyColorEncoder.paletteWB != null) return this.propertyColorEncoder.paletteWB;
-var b =  Clazz.newArray (org.jmol.viewer.JmolConstants.argbsRoygbScale.length, 0);
+var b =  Clazz.newIntArray (org.jmol.viewer.JmolConstants.argbsRoygbScale.length, 0);
 for (var i = 0; i < b.length; i++) {
 var xff = (1 / b.length * (b.length - i));
 b[i] = org.jmol.util.ColorUtil.colorTriadToInt (xff, xff, xff);
@@ -387,7 +387,7 @@ return this.propertyColorEncoder.paletteWB = b;
 c$.getPaletteAtoB = Clazz.defineMethod (c$, "getPaletteAtoB", 
 function (color1, color2, n) {
 if (n < 2) n = org.jmol.viewer.JmolConstants.argbsRoygbScale.length;
-var b =  Clazz.newArray (n, 0);
+var b =  Clazz.newIntArray (n, 0);
 var red1 = (((color1 & 0xFF0000) >> 16) & 0xFF) / 255;
 var green1 = (((color1 & 0xFF00) >> 8) & 0xFF) / 255;
 var blue1 = (color1 & 0xFF) / 255;
@@ -404,7 +404,7 @@ return b;
 Clazz.defineMethod (c$, "getPaletteBW", 
 ($fz = function () {
 if (this.propertyColorEncoder.paletteBW != null) return this.propertyColorEncoder.paletteBW;
-var b =  Clazz.newArray (org.jmol.viewer.JmolConstants.argbsRoygbScale.length, 0);
+var b =  Clazz.newIntArray (org.jmol.viewer.JmolConstants.argbsRoygbScale.length, 0);
 for (var i = 0; i < b.length; i++) {
 var xff = (1 / b.length * i);
 b[i] = org.jmol.util.ColorUtil.colorTriadToInt (xff, xff, xff);
@@ -414,23 +414,23 @@ return this.propertyColorEncoder.paletteBW = b;
 Clazz.defineMethod (c$, "quantize", 
 function (x, isLowEnd) {
 var n = this.getPaletteColorCount (this.currentPalette);
-x = ((Math.round ((x * n))) + (isLowEnd ? 0 : 1)) / n;
+x = ((Clazz.floatToInt (x * n)) + (isLowEnd ? 0 : 1)) / n;
 return (x <= 0 ? this.lo : x >= 1 ? this.hi : this.lo + (this.hi - this.lo) * x);
 }, "~N,~B");
 c$.quantize = Clazz.defineMethod (c$, "quantize", 
 function (val, lo, hi, segmentCount) {
 var range = hi - lo;
-if (range <= 0 || Float.isNaN (val)) return Math.floor (segmentCount / 2);
+if (range <= 0 || Float.isNaN (val)) return Clazz.doubleToInt (segmentCount / 2);
 var t = val - lo;
 if (t <= 0) return 0;
 var quanta = range / segmentCount;
-var q = Math.round ((t / quanta + 0.0001));
+var q = Clazz.floatToInt (t / quanta + 0.0001);
 if (q >= segmentCount) q = segmentCount - 1;
 return q;
 }, "~N,~N,~N,~N");
 c$.colorIndex = Clazz.defineMethod (c$, "colorIndex", 
 ($fz = function (q, segmentCount) {
-return ( new Boolean (q <= 0 | q >= segmentCount).valueOf () ? 0 : q);
+return Clazz.doubleToInt (Math.floor ( new Boolean (q <= 0 | q >= segmentCount).valueOf () ? 0 : q));
 }, $fz.isPrivate = true, $fz), "~N,~N");
 Clazz.defineMethod (c$, "getState", 
 function (s) {
@@ -440,7 +440,7 @@ var name = entry.getKey ();
 if ( new Boolean (name.length > 0 & n++ >= 0).valueOf ()) s.append ("color \"" + name + "=" + org.jmol.util.ColorEncoder.getColorSchemeList (entry.getValue ()) + "\";\n");
 }
 return n;
-}, "javax.util.StringXBuilder");
+}, "org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "getColorScheme", 
 function () {
 return (this.isTranslucent ? "translucent " : "") + (this.currentPalette < 0 ? org.jmol.util.ColorEncoder.getColorSchemeList (this.getColorSchemeArray (this.currentPalette)) : this.getColorSchemeName (this.currentPalette));

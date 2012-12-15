@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.constant");
+Clazz.declarePackage ("org.jmol.constant");
 Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumStructure", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.id = 0;

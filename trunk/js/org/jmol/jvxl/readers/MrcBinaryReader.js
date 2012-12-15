@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.MrcBinaryReader", ["java.lang.Exception", "$.Float", "javax.util.StringXBuilder", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.MrcBinaryReader", ["java.lang.Exception", "$.Float", "org.jmol.util.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.labels = null;
 Clazz.instantialize (this, arguments);
@@ -8,29 +8,29 @@ Clazz.makeConstructor (c$,
 function () {
 Clazz.superConstructor (this, org.jmol.jvxl.readers.MrcBinaryReader, []);
 });
-Clazz.overrideMethod (c$, "init", 
-function (sg) {
+Clazz.defineMethod (c$, "init2", 
+function (sg, brNull) {
 var fileName = sg.getReaderData ();
 Clazz.superCall (this, org.jmol.jvxl.readers.MrcBinaryReader, "init2", [sg, null]);
-this.binarydoc =  new org.jmol.util.BinaryDocument ();
+this.binarydoc = this.newBinaryDocument ();
 this.binarydoc.setStream (sg.getAtomDataServer ().getBufferedInputStream (fileName), true);
 this.nSurfaces = 1;
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 this.allowSigma = true;
-}, "org.jmol.jvxl.readers.SurfaceGenerator");
+}, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
 var ispg;
 var nsymbt;
-var extra =  Clazz.newArray (100, 0);
-var map =  Clazz.newArray (4, 0);
-var machst =  Clazz.newArray (4, 0);
+var extra =  Clazz.newByteArray (100, 0);
+var map =  Clazz.newByteArray (4, 0);
+var machst =  Clazz.newByteArray (4, 0);
 var rmsDeviation;
 var nlabel;
 this.nx = this.binarydoc.readInt ();
 if (this.nx < 0 || this.nx > 256) {
-this.binarydoc.setIsBigEndian (false);
-this.nx = org.jmol.util.BinaryDocument.swapBytes (this.nx);
+this.binarydoc.setStream (null, false);
+this.nx = this.binarydoc.swapBytesI (this.nx);
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 if (this.nx < 0 || this.nx > 1000) {
 org.jmol.util.Logger.info ("nx=" + this.nx + " not displayable as MRC file");
@@ -40,21 +40,24 @@ throw  new Exception ("MRC file type not readable");
 this.nz = this.binarydoc.readInt ();
 this.mode = this.binarydoc.readInt ();
 if (this.mode < 0 || this.mode > 6) {
-this.binarydoc.setIsBigEndian (false);
-this.nx = org.jmol.util.BinaryDocument.swapBytes (this.nx);
-this.ny = org.jmol.util.BinaryDocument.swapBytes (this.ny);
-this.nz = org.jmol.util.BinaryDocument.swapBytes (this.nz);
-this.mode = org.jmol.util.BinaryDocument.swapBytes (this.mode);
+this.binarydoc.setStream (null, false);
+this.nx = this.binarydoc.swapBytesI (this.nx);
+this.ny = this.binarydoc.swapBytesI (this.ny);
+this.nz = this.binarydoc.swapBytesI (this.nz);
+this.mode = this.binarydoc.swapBytesI (this.mode);
 }org.jmol.util.Logger.info ("MRC header: mode: " + this.mode);
+org.jmol.util.Logger.info ("MRC header: nx ny nz: " + this.nx + " " + this.ny + " " + this.nz);
 this.nxyzStart[0] = this.binarydoc.readInt ();
 this.nxyzStart[1] = this.binarydoc.readInt ();
 this.nxyzStart[2] = this.binarydoc.readInt ();
+org.jmol.util.Logger.info ("MRC header: nxyzStart: " + this.nxyzStart[0] + " " + this.nxyzStart[1] + " " + this.nxyzStart[2]);
 this.na = this.binarydoc.readInt ();
 this.nb = this.binarydoc.readInt ();
 this.nc = this.binarydoc.readInt ();
 if (this.na == 0) this.na = this.nx - 1;
 if (this.nb == 0) this.nb = this.ny - 1;
 if (this.nc == 0) this.nc = this.nz - 1;
+org.jmol.util.Logger.info ("MRC header: na nb nc: " + this.na + " " + this.nb + " " + this.nc);
 this.a = this.binarydoc.readFloat ();
 this.b = this.binarydoc.readFloat ();
 this.c = this.binarydoc.readFloat ();
@@ -64,6 +67,7 @@ this.gamma = this.binarydoc.readFloat ();
 this.mapc = this.binarydoc.readInt ();
 this.mapr = this.binarydoc.readInt ();
 this.maps = this.binarydoc.readInt ();
+org.jmol.util.Logger.info ("MRC header: mapc mapr maps: " + this.mapc + " " + this.mapr + " " + this.maps);
 if (this.mapc != 1 && this.params.thePlane == null) this.params.dataXYReversed = true;
 this.dmin = this.binarydoc.readFloat ();
 this.dmax = this.binarydoc.readFloat ();
@@ -72,12 +76,13 @@ org.jmol.util.Logger.info ("MRC header: dmin,dmax,dmean: " + this.dmin + "," + t
 ispg = this.binarydoc.readInt ();
 nsymbt = this.binarydoc.readInt ();
 org.jmol.util.Logger.info ("MRC header: ispg,nsymbt: " + ispg + "," + nsymbt);
-this.binarydoc.readByteArray (extra);
+this.binarydoc.readByteArray (extra, 0, extra.length);
 this.origin.x = this.binarydoc.readFloat ();
 this.origin.y = this.binarydoc.readFloat ();
 this.origin.z = this.binarydoc.readFloat ();
-this.binarydoc.readByteArray (map);
-this.binarydoc.readByteArray (machst);
+org.jmol.util.Logger.info ("MRC header: origin: " + this.origin);
+this.binarydoc.readByteArray (map, 0, map.length);
+this.binarydoc.readByteArray (machst, 0, machst.length);
 rmsDeviation = this.binarydoc.readFloat ();
 org.jmol.util.Logger.info ("MRC header: rms: " + rmsDeviation);
 nlabel = this.binarydoc.readInt ();
@@ -90,7 +95,7 @@ if (i < nlabel) {
 this.labels[i] = s;
 org.jmol.util.Logger.info (this.labels[i]);
 }}
-for (var i = 0; i < nsymbt; i++) {
+for (var i = 0; i < nsymbt; i += 80) {
 var position = this.binarydoc.getPosition ();
 var s = this.binarydoc.readString (80).trim ();
 if (s.indexOf ('\0') != s.lastIndexOf ('\0')) {
@@ -102,10 +107,10 @@ break;
 org.jmol.util.Logger.info ("MRC header: bytes read: " + this.binarydoc.getPosition () + "\n");
 this.getVectorsAndOrigin ();
 if (this.params.thePlane == null && (this.params.cutoffAutomatic || !Float.isNaN (this.params.sigma))) {
-var sigma = (Float.isNaN (this.params.sigma) ? 1 : this.params.sigma);
+var sigma = (this.params.sigma < 0 || Float.isNaN (this.params.sigma) ? 1 : this.params.sigma);
 this.params.cutoff = rmsDeviation * sigma + this.dmean;
 org.jmol.util.Logger.info ("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + this.params.cutoff + ")\n");
-}this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+}this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("MRC DATA ").append (nlabel > 0 ? this.labels[0] : "").append ("\n");
 this.jvxlFileHeaderBuffer.append ("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
 });
@@ -154,11 +159,11 @@ case 3:
 this.binarydoc.readByteArray (org.jmol.jvxl.readers.MrcBinaryReader.b8, 0, 4);
 break;
 case 4:
-this.binarydoc.readByteArray (org.jmol.jvxl.readers.MrcBinaryReader.b8);
+this.binarydoc.readByteArray (org.jmol.jvxl.readers.MrcBinaryReader.b8, 0, 8);
 break;
 }
 
 }, "~N");
 Clazz.defineStatics (c$,
-"b8",  Clazz.newArray (8, 0));
+"b8",  Clazz.newByteArray (8, 0));
 });

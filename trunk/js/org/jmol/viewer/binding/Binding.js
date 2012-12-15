@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "javax.util.StringXBuilder", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.viewer.binding");
+Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "org.jmol.api.Interface", "org.jmol.util.Escape", "$.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.name = null;
 this.bindings = null;
@@ -119,7 +119,7 @@ return mouseAction >> 8;
 }, "~N");
 Clazz.defineMethod (c$, "getBindingInfo", 
 function (actionNames, qualifiers) {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 var qlow = (qualifiers == null || qualifiers.equalsIgnoreCase ("all") ? null : qualifiers.toLowerCase ());
 var names =  new Array (actionNames.length);
 for (var i = 0; i < actionNames.length; i++) names[i] = (qlow == null || actionNames[i].toLowerCase ().indexOf (qlow) >= 0 ?  new java.util.ArrayList () : null);
@@ -127,13 +127,16 @@ for (var i = 0; i < actionNames.length; i++) names[i] = (qlow == null || actionN
 var e = this.bindings.keySet ().iterator ();
 while (e.hasNext ()) {
 var obj = this.bindings.get (e.next ());
-if (!(Clazz.instanceOf (obj, Array))) continue ;var info = obj;
+if (!org.jmol.util.Escape.isAI (obj)) continue;
+var info = obj;
 var i = info[1];
-if (names[i] == null) continue ;names[i].add (org.jmol.viewer.binding.Binding.getMouseActionName (info[0], true));
+if (names[i] == null) continue;
+names[i].add (org.jmol.viewer.binding.Binding.getMouseActionName (info[0], true));
 }
 for (var i = 0; i < actionNames.length; i++) {
 var n;
-if (names[i] == null || (n = names[i].size ()) == 0) continue ;var list = names[i].toArray ();
+if (names[i] == null || (n = names[i].size ()) == 0) continue;
+var list = names[i].toArray ();
 java.util.Arrays.sort (list);
 sb.append (actionNames[i]).append ("\t");
 var sep = "";
@@ -152,7 +155,7 @@ return ((mouseAction & mod) == mod);
 }, $fz.isPrivate = true, $fz), "~N,~N");
 c$.getMouseActionName = Clazz.defineMethod (c$, "getMouseActionName", 
 function (mouseAction, addSortCode) {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 if (mouseAction == 0) return "";
 var isMiddle = (org.jmol.viewer.binding.Binding.includes (mouseAction, 8) && !org.jmol.viewer.binding.Binding.includes (mouseAction, 16) && !org.jmol.viewer.binding.Binding.includes (mouseAction, 4));
 var code = "      ".toCharArray ();
@@ -185,6 +188,10 @@ sb.append ("+down");
 code[0] = '4';
 }return (addSortCode ?  String.instantialize (code) + ":" + sb.toString () : sb.toString ());
 }, "~N,~B");
+c$.newBinding = Clazz.defineMethod (c$, "newBinding", 
+function (name) {
+return org.jmol.api.Interface.getOptionInterface ("viewer.binding." + name + "Binding");
+}, "~S");
 Clazz.defineStatics (c$,
 "WHEEL", 32,
 "LEFT", 16,
@@ -206,5 +213,6 @@ Clazz.defineStatics (c$,
 "WHEELED", 3,
 "PRESSED", 4,
 "RELEASED", 5,
+"DRAGGED2", 6,
 "BUTTON_MODIFIER_MASK", 63);
 });

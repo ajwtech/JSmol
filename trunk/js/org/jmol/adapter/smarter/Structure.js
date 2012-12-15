@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.declarePackage ("org.jmol.adapter.smarter");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetObject"], "org.jmol.adapter.smarter.Structure", ["org.jmol.constant.EnumStructure"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.structureType = null;
@@ -31,7 +31,7 @@ function (modelIndex, structureType, substructureType, structureID, serialID, st
 Clazz.superConstructor (this, org.jmol.adapter.smarter.Structure, []);
 this.structureType = structureType;
 this.substructureType = substructureType;
-if (structureID == null) return ;
+if (structureID == null) return;
 this.atomSetIndex = modelIndex;
 this.structureID = structureID;
 this.strandCount = strandCount;

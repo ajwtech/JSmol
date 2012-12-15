@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.script");
-Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["javax.util.StringXBuilder", "org.jmol.script.ScriptVariable", "$.ScriptVariableInt", "$.Token"], function () {
+Clazz.declarePackage ("org.jmol.script");
+Clazz.load (["java.util.ArrayList", "$.Hashtable"], "org.jmol.script.ScriptFunction", ["org.jmol.script.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.ArrayUtil", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.pt0 = 0;
 this.chpt0 = 0;
@@ -26,10 +26,17 @@ function (ident) {
 return this.variables.containsKey (ident);
 }, "~S");
 Clazz.makeConstructor (c$, 
+function () {
+});
+Clazz.makeConstructor (c$, 
+function (name, tok) {
+this.set (name, tok);
+this.typeName = org.jmol.script.Token.nameOf (tok);
+}, "~S,~N");
+Clazz.defineMethod (c$, "set", 
 function (name, tok) {
 this.name = name;
 this.tok = tok;
-this.typeName = org.jmol.script.Token.nameOf (tok);
 }, "~S,~N");
 Clazz.defineMethod (c$, "setVariables", 
 function (contextVariables, params) {
@@ -38,7 +45,7 @@ for (var i = this.names.size (); --i >= 0; ) {
 var name = this.names.get (i).toLowerCase ();
 var $var = (i < this.nParameters && i < nParams ? params.get (i) : null);
 if ($var != null && $var.tok != 7) $var = org.jmol.script.ScriptVariable.newScriptVariableToken ($var);
-contextVariables.put (name, ($var == null ? org.jmol.script.ScriptVariable.newScriptVariableObj (4, "").setName (name) : $var));
+contextVariables.put (name, ($var == null ? org.jmol.script.ScriptVariable.newVariable (4, "").setName (name) : $var));
 }
 contextVariables.put ("_retval",  new org.jmol.script.ScriptVariableInt (this.tok == 364558 ? 2147483647 : 0));
 }, "java.util.Map,java.util.List");
@@ -46,11 +53,13 @@ Clazz.defineMethod (c$, "unsetVariables",
 function (contextVariables, params) {
 var nParams = (params == null ? 0 : params.size ());
 var nNames = this.names.size ();
-if (nParams == 0 || nNames == 0) return ;
+if (nParams == 0 || nNames == 0) return;
 for (var i = 0; i < nNames && i < nParams; i++) {
 var global = params.get (i);
-if (global.tok != 7) continue ;var local = contextVariables.get (this.names.get (i).toLowerCase ());
-if (local.tok != 7) continue ;global.value = local.value;
+if (global.tok != 7) continue;
+var local = contextVariables.get (this.names.get (i).toLowerCase ());
+if (local.tok != 7) continue;
+global.value = local.value;
 }
 }, "java.util.Map,java.util.List");
 Clazz.defineMethod (c$, "addVariable", 
@@ -66,8 +75,8 @@ var chpt0 = $function.chpt0;
 var nCommands = pt - cmdpt0;
 $function.setScript (script.substring (chpt0, ichCurrentCommand));
 var aatoken = $function.aatoken =  new Array (nCommands);
-$function.lineIndices =  Clazz.newArray (nCommands, 0);
-$function.lineNumbers =  Clazz.newArray (nCommands, 0);
+$function.lineIndices = org.jmol.util.ArrayUtil.newInt2 (nCommands);
+$function.lineNumbers =  Clazz.newShortArray (nCommands, 0);
 var line0 = (lineNumbers[cmdpt0] - 1);
 for (var i = 0; i < nCommands; i++) {
 $function.lineNumbers[i] = (lineNumbers[cmdpt0 + i] - line0);
@@ -89,7 +98,7 @@ if (this.script != null && this.script !== "" && !this.script.endsWith ("\n")) t
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSignature", 
 function () {
-var s =  new javax.util.StringXBuilder ().append (this.typeName).append (" ").append (this.name).append (" (");
+var s =  new org.jmol.util.StringXBuilder ().append (this.typeName).append (" ").append (this.name).append (" (");
 for (var i = 0; i < this.nParameters; i++) {
 if (i > 0) s.append (", ");
 s.append (this.names.get (i));
@@ -99,7 +108,7 @@ return s.toString ();
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
-var s =  new javax.util.StringXBuilder ().append ("/*\n * ").append (this.name).append ("\n */\n").append (this.getSignature ()).append ("{\n");
+var s =  new org.jmol.util.StringXBuilder ().append ("/*\n * ").append (this.name).append ("\n */\n").append (this.getSignature ()).append ("{\n");
 if (this.script != null) s.append (this.script);
 s.append ("}\n");
 return s.toString ();

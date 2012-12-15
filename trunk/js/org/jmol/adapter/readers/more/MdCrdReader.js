@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.MdCrdReader", ["java.lang.Float", "javax.vecmath.Point3f", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.MdCrdReader", ["java.lang.Float", "org.jmol.util.Logger", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ptFloat = 0;
 this.lenLine = 0;
@@ -24,11 +24,11 @@ var isPeriodic = this.htParams.containsKey ("isPeriodic");
 var floatCount = this.templateAtomCount * 3 + (isPeriodic ? 3 : 0);
 while (true) if (this.doGetModel (++this.modelNumber, null)) {
 var trajectoryStep =  new Array (atomCount);
-if (!this.getTrajectoryStep (trajectoryStep, isPeriodic)) return ;
+if (!this.getTrajectoryStep (trajectoryStep, isPeriodic)) return;
 this.trajectorySteps.add (trajectoryStep);
-if (this.isLastModel (this.modelNumber)) return ;
+if (this.isLastModel (this.modelNumber)) return;
 } else {
-if (!this.skipFloats (floatCount)) return ;
+if (!this.skipFloats (floatCount)) return;
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getFloat", 
@@ -46,7 +46,7 @@ Clazz.defineMethod (c$, "getPoint",
 var x = this.getFloat ();
 var y = this.getFloat ();
 var z = this.getFloat ();
-return (Float.isNaN (z) ? null : javax.vecmath.Point3f.new3 (x, y, z));
+return (Float.isNaN (z) ? null : org.jmol.util.Point3f.new3 (x, y, z));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getTrajectoryStep", 
 ($fz = function (trajectoryStep, isPeriodic) {

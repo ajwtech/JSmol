@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["org.jmol.modelset.AtomCollection", "javax.util.BitSet"], "org.jmol.modelset.BondCollection", ["org.jmol.modelset.Bond", "$.BondIteratorSelected", "$.HBond", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.JmolEdge", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.modelset");
+Clazz.load (["org.jmol.modelset.AtomCollection", "org.jmol.util.BitSet"], "org.jmol.modelset.BondCollection", ["org.jmol.modelset.Bond", "$.BondIteratorSelected", "$.HBond", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.JmolEdge", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.molecules = null;
 this.moleculeCount = 0;
@@ -16,12 +16,12 @@ this.haveHiddenBonds = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelset, "BondCollection", org.jmol.modelset.AtomCollection);
 Clazz.prepareFields (c$, function () {
-this.numCached =  Clazz.newArray (5, 0);
+this.numCached =  Clazz.newIntArray (5, 0);
 this.freeBonds =  new Array (5);
 {
 for (var i = 5; --i > 0; ) this.freeBonds[i] =  new Array (200);
 
-}this.bsAromatic =  new javax.util.BitSet ();
+}this.bsAromatic =  new org.jmol.util.BitSet ();
 });
 Clazz.defineMethod (c$, "releaseModelSet", 
 function () {
@@ -47,13 +47,13 @@ function () {
 return this.bondCount;
 });
 Clazz.defineMethod (c$, "getBondIteratorForType", 
-function (bondType, bsSelected) {
-return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, bondType, bsSelected, this.viewer.getBondSelectionModeOr ());
-}, "~N,javax.util.BitSet");
+function (bondType, bsAtoms) {
+return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, bondType, bsAtoms, this.viewer.getBondSelectionModeOr ());
+}, "~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getBondIterator", 
-function (bsSelected) {
-return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, 0, bsSelected, false);
-}, "javax.util.BitSet");
+function (bsBonds) {
+return  new org.jmol.modelset.BondIteratorSelected (this.bonds, this.bondCount, 131071, bsBonds, false);
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getBondAtom1", 
 function (i) {
 return this.bonds[i].atom1;
@@ -91,7 +91,7 @@ return n;
 }, "~N");
 Clazz.defineMethod (c$, "getBondsForSelectedAtoms", 
 function (bsAtoms, bondSelectionModeOr) {
-var bs =  new javax.util.BitSet ();
+var bs =  new org.jmol.util.BitSet ();
 for (var iBond = 0; iBond < this.bondCount; ++iBond) {
 var bond = this.bonds[iBond];
 var isSelected1 = bsAtoms.get (bond.atom1.index);
@@ -99,7 +99,7 @@ var isSelected2 = bsAtoms.get (bond.atom2.index);
 if (( new Boolean (!bondSelectionModeOr & isSelected1 & isSelected2).valueOf ()) || ( new Boolean (bondSelectionModeOr & ( new Boolean (isSelected1 | isSelected2).valueOf ())).valueOf ())) bs.set (iBond);
 }
 return bs;
-}, "javax.util.BitSet,~B");
+}, "org.jmol.util.BitSet,~B");
 Clazz.defineMethod (c$, "bondAtoms", 
 function (atom1, atom2, order, mad, bsBonds, energy, addGroup, isNew) {
 var bond = this.getOrAddBond (atom1, atom2, order, mad, bsBonds, energy, true);
@@ -109,7 +109,7 @@ if (addGroup) {
 atom1.group = atom2.group;
 atom1.group.addAtoms (atom1.index);
 }}return bond;
-}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,javax.util.BitSet,~N,~B,~B");
+}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,org.jmol.util.BitSet,~N,~B,~B");
 Clazz.defineMethod (c$, "getOrAddBond", 
 ($fz = function (atom, atomOther, order, mad, bsBonds, energy, overrideBonding) {
 var i;
@@ -121,11 +121,11 @@ this.bonds[i].setOrder (order);
 this.bonds[i].setMad (mad);
 if (Clazz.instanceOf (this.bonds[i], org.jmol.modelset.HBond)) (this.bonds[i]).energy = energy;
 }} else {
-if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount + 250);
+if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyObject (this.bonds, this.bondCount + 250);
 i = this.setBond (this.bondCount++, this.bondMutually (atom, atomOther, order, mad, energy)).index;
 }if (bsBonds != null) bsBonds.set (i);
 return this.bonds[i];
-}, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,javax.util.BitSet,~N,~B");
+}, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,org.jmol.util.BitSet,~N,~B");
 Clazz.defineMethod (c$, "setBond", 
 function (index, bond) {
 return this.bonds[bond.index = index] = bond;
@@ -169,7 +169,7 @@ if (oldLength < 5 && this.numCached[oldLength] < 200) this.freeBonds[oldLength][
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Bond,~A");
 Clazz.defineMethod (c$, "addHBond", 
 function (atom1, atom2, order, energy) {
-if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount + 250);
+if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyObject (this.bonds, this.bondCount + 250);
 return this.setBond (this.bondCount++, this.bondMutually (atom1, atom2, order, 1, energy)).index;
 }, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N");
 c$.getBondOrder = Clazz.defineMethod (c$, "getBondOrder", 
@@ -189,10 +189,10 @@ return false;
 if (formalChargeA != 0) {
 var formalChargeB = atomB.getFormalCharge ();
 if ((formalChargeA < 0 && formalChargeB < 0) || (formalChargeA > 0 && formalChargeB > 0)) return false;
-}if (atomA.alternateLocationID.charCodeAt (0) != atomB.alternateLocationID.charCodeAt (0) && atomA.alternateLocationID.charCodeAt (0) != 0 && atomB.alternateLocationID.charCodeAt (0) != 0) return false;
+}if (atomA.alternateLocationID != atomB.alternateLocationID && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0') return false;
 this.getOrAddBond (atomA, atomB, order, mad, bsBonds, 0, false);
 return true;
-}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,javax.util.BitSet");
+}, "org.jmol.modelset.Atom,org.jmol.modelset.Atom,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "deleteAllBonds", 
 function () {
 this.viewer.setShapeProperty (1, "reset", null);
@@ -204,7 +204,7 @@ this.bondCount = 0;
 });
 Clazz.defineMethod (c$, "getDefaultMadFromOrder", 
 function (order) {
-return (org.jmol.modelset.Bond.isHydrogen (order) ? 1 : (order & 32768) != 0 ? Math.round ((this.viewer.getStrutDefaultRadius () * 2000)) : this.defaultCovalentMad);
+return (org.jmol.modelset.Bond.isHydrogen (order) ? 1 : (order & 32768) != 0 ? Clazz.doubleToInt (Math.floor (this.viewer.getStrutDefaultRadius () * 2000)) : this.defaultCovalentMad);
 }, "~N");
 Clazz.defineMethod (c$, "deleteConnections", 
 function (minDistance, maxDistance, order, bsA, bsB, isBonds, matchNull, minDistanceSquared, maxDistanceSquared) {
@@ -214,7 +214,7 @@ var dAB = 0;
 var dABcalc = 0;
 if (minDistanceIsFractionRadius) minDistance = -minDistance;
 if (maxDistanceIsFractionRadius) maxDistance = -maxDistance;
-var bsDelete =  new javax.util.BitSet ();
+var bsDelete =  new org.jmol.util.BitSet ();
 var nDeleted = 0;
 var newOrder = order |= 131072;
 if (!matchNull && org.jmol.modelset.Bond.isHydrogen (order)) order = 30720;
@@ -222,7 +222,7 @@ var bsBonds;
 if (isBonds) {
 bsBonds = bsA;
 } else {
-bsBonds =  new javax.util.BitSet ();
+bsBonds =  new org.jmol.util.BitSet ();
 for (var i = bsA.nextSetBit (0); i >= 0; i = bsA.nextSetBit (i + 1)) {
 var a = this.atoms[i];
 if (a.bonds != null) for (var j = a.bonds.length; --j >= 0; ) if (bsB.get (a.getBondedAtomIndex (j))) bsBonds.set (a.bonds[j].index);
@@ -236,17 +236,18 @@ var distanceSquared = atom1.distanceSquared (atom2);
 if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
 dAB = atom1.distance (atom2);
 dABcalc = atom1.getBondingRadiusFloat () + atom2.getBondingRadiusFloat ();
-}if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance : distanceSquared < minDistanceSquared) || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance : distanceSquared > maxDistanceSquared)) continue ;if (matchNull || newOrder == (bond.order & -257 | 131072) || (order & bond.order & 30720) != 0) {
+}if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance : distanceSquared < minDistanceSquared) || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance : distanceSquared > maxDistanceSquared)) continue;
+if (matchNull || newOrder == (bond.order & -257 | 131072) || (order & bond.order & 30720) != 0) {
 bsDelete.set (i);
 nDeleted++;
 }}
 if (nDeleted > 0) this.deleteBonds (bsDelete, false);
 return [0, nDeleted];
-}, "~N,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~N,~N");
+}, "~N,~N,~N,org.jmol.util.BitSet,org.jmol.util.BitSet,~B,~B,~N,~N");
 Clazz.defineMethod (c$, "deleteBonds", 
 function (bsBond, isFullModel) {
 var iDst = bsBond.nextSetBit (0);
-if (iDst < 0) return ;
+if (iDst < 0) return;
 this.resetMolecules ();
 var modelIndexLast = -1;
 var n = bsBond.cardinality ();
@@ -268,7 +269,7 @@ var sets = this.viewer.getShapeProperty (1, "sets");
 if (sets != null) for (var i = 0; i < sets.length; i++) org.jmol.util.BitSetUtil.deleteBits (sets[i], bsBond);
 
 org.jmol.util.BitSetUtil.deleteBits (this.bsAromatic, bsBond);
-}, "javax.util.BitSet,~B");
+}, "org.jmol.util.BitSet,~B");
 Clazz.defineMethod (c$, "resetAromatic", 
 function () {
 for (var i = this.bondCount; --i >= 0; ) {
@@ -282,9 +283,9 @@ this.assignAromaticBondsBs (true, null);
 });
 Clazz.defineMethod (c$, "assignAromaticBondsBs", 
 function (isUserCalculation, bsBonds) {
-if (!isUserCalculation) this.bsAromatic =  new javax.util.BitSet ();
-this.bsAromaticSingle =  new javax.util.BitSet ();
-this.bsAromaticDouble =  new javax.util.BitSet ();
+if (!isUserCalculation) this.bsAromatic =  new org.jmol.util.BitSet ();
+this.bsAromaticSingle =  new org.jmol.util.BitSet ();
+this.bsAromaticDouble =  new org.jmol.util.BitSet ();
 var isAll = (bsBonds == null);
 var i0 = (isAll ? this.bondCount - 1 : bsBonds.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit (i + 1))) {
@@ -307,7 +308,8 @@ isAll = (bsBonds == null);
 i0 = (isAll ? this.bondCount - 1 : bsBonds.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit (i + 1))) {
 bond = this.bonds[i];
-if (!bond.is (515) || this.bsAromaticDouble.get (i) || this.bsAromaticSingle.get (i)) continue ;if (!this.assignAromaticDouble (bond)) this.assignAromaticSingle (bond);
+if (!bond.is (515) || this.bsAromaticDouble.get (i) || this.bsAromaticSingle.get (i)) continue;
+if (!this.assignAromaticDouble (bond)) this.assignAromaticSingle (bond);
 }
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit (i + 1))) {
 bond = this.bonds[i];
@@ -323,7 +325,7 @@ bond.setOrder (513);
 this.assignAromaticNandO (bsBonds);
 this.bsAromaticSingle = null;
 this.bsAromaticDouble = null;
-}, "~B,javax.util.BitSet");
+}, "~B,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "assignAromaticDouble", 
 ($fz = function (bond) {
 var bondIndex = bond.index;
@@ -353,7 +355,8 @@ if (bonds == null || this.assignAromaticSingleHetero (atom)) return false;
 for (var i = bonds.length; --i >= 0; ) {
 var bond = bonds[i];
 var bondIndex = bond.index;
-if (bondIndex == notBondIndex || !bond.isAromatic () || this.bsAromaticSingle.get (bondIndex)) continue ;if (this.bsAromaticDouble.get (bondIndex) || !this.assignAromaticSingle (bond)) {
+if (bondIndex == notBondIndex || !bond.isAromatic () || this.bsAromaticSingle.get (bondIndex)) continue;
+if (this.bsAromaticDouble.get (bondIndex) || !this.assignAromaticSingle (bond)) {
 return false;
 }}
 return true;
@@ -371,7 +374,8 @@ if (bonds[i].isAromatic ()) lastBond = i;
 for (var i = bonds.length; --i >= 0; ) {
 var bond = bonds[i];
 var bondIndex = bond.index;
-if (!bond.isAromatic () || this.bsAromaticDouble.get (bondIndex) || this.bsAromaticSingle.get (bondIndex)) continue ;if (!haveDouble && this.assignAromaticDouble (bond)) haveDouble = true;
+if (!bond.isAromatic () || this.bsAromaticDouble.get (bondIndex) || this.bsAromaticSingle.get (bondIndex)) continue;
+if (!haveDouble && this.assignAromaticDouble (bond)) haveDouble = true;
  else if ((haveDouble || i < lastBond) && !this.assignAromaticSingle (bond)) {
 return false;
 }}
@@ -408,7 +412,8 @@ var isAll = (bsSelected == null);
 var i0 = (isAll ? this.bondCount - 1 : bsSelected.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit (i + 1))) {
 bond = this.bonds[i];
-if (!bond.is (513)) continue ;var atom1;
+if (!bond.is (513)) continue;
+var atom1;
 var atom2 = bond.atom2;
 var n1;
 var n2 = atom2.getElementNumber ();
@@ -420,8 +425,10 @@ n2 = atom2.getElementNumber ();
 } else {
 atom1 = bond.atom1;
 n1 = atom1.getElementNumber ();
-}if (n1 != 7 && n1 != 8) continue ;var valence = atom1.getValence ();
-if (valence < 0) continue ;var bondorder = atom1.getCovalentBondCount ();
+}if (n1 != 7 && n1 != 8) continue;
+var valence = atom1.getValence ();
+if (valence < 0) continue;
+var bondorder = atom1.getCovalentBondCount ();
 var charge = atom1.getFormalCharge ();
 switch (n1) {
 case 7:
@@ -432,7 +439,7 @@ if (valence == 1 && charge == 0 && (n2 == 14 || n2 == 16)) bond.setOrder (514);
 break;
 }
 }
-}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getAtomBitsMaybeDeleted", 
 function (tokType, specInfo) {
 var bs;
@@ -440,14 +447,14 @@ switch (tokType) {
 default:
 return Clazz.superCall (this, org.jmol.modelset.BondCollection, "getAtomBitsMaybeDeleted", [tokType, specInfo]);
 case 1048585:
-bs =  new javax.util.BitSet ();
+bs =  new org.jmol.util.BitSet ();
 for (var i = this.bondCount; --i >= 0; ) if (this.bonds[i].isAromatic ()) {
 bs.set (this.bonds[i].atom1.index);
 bs.set (this.bonds[i].atom2.index);
 }
 return bs;
 case 1678770178:
-bs =  new javax.util.BitSet ();
+bs =  new org.jmol.util.BitSet ();
 var bsBonds = specInfo;
 for (var i = bsBonds.nextSetBit (0); i >= 0; i = bsBonds.nextSetBit (i + 1)) {
 bs.set (this.bonds[i].atom1.index);
@@ -468,17 +475,17 @@ case '3':
 break;
 case 'p':
 case 'm':
-bondOrder = (org.jmol.util.JmolEdge.getBondOrderNumberFromOrder (bond.getCovalentOrder ()).charAt (0)).charCodeAt (0) - 48 + (type.charCodeAt (0) == 112 ? 1 : -1);
+bondOrder = org.jmol.util.JmolEdge.getBondOrderNumberFromOrder (bond.getCovalentOrder ()).charCodeAt (0) - 48 + (type == 'p' ? 1 : -1);
 if (bondOrder > 3) bondOrder = 1;
  else if (bondOrder < 0) bondOrder = 3;
 break;
 default:
 return null;
 }
-var bsAtoms =  new javax.util.BitSet ();
+var bsAtoms =  new org.jmol.util.BitSet ();
 try {
 if (bondOrder == 0) {
-var bs =  new javax.util.BitSet ();
+var bs =  new org.jmol.util.BitSet ();
 bs.set (bond.index);
 bsAtoms.set (bond.getAtomIndex1 ());
 bsAtoms.set (bond.getAtomIndex2 ());
@@ -500,10 +507,10 @@ return bsAtoms;
 }, "~N,~S");
 Clazz.defineMethod (c$, "removeUnnecessaryBonds", 
 function (atom, deleteAtom) {
-var bs =  new javax.util.BitSet ();
-var bsBonds =  new javax.util.BitSet ();
+var bs =  new org.jmol.util.BitSet ();
+var bsBonds =  new org.jmol.util.BitSet ();
 var bonds = atom.bonds;
-if (bonds == null) return ;
+if (bonds == null) return;
 for (var i = 0; i < bonds.length; i++) if (bonds[i].isCovalent ()) {
 var atom2 = bonds[i].getOtherAtom (atom);
 if (atom2.getElementNumber () == 1) bs.set (bonds[i].getOtherAtom (atom).index);

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GaussianReader", ["java.lang.Character", "$.Exception", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Vector3f", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.GaussianReader", ["java.lang.Character", "$.Exception", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Escape", "$.Logger", "$.Parser", "$.TextFormat", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.energyString = "";
 this.energyKey = "";
@@ -66,7 +66,7 @@ return true;
 Clazz.defineMethod (c$, "readSCFDone", 
 ($fz = function () {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensAt (this.line, 11);
-if (tokens.length < 4) return ;
+if (tokens.length < 4) return;
 this.energyKey = tokens[0];
 this.atomSetCollection.setAtomSetEnergy (tokens[2], this.parseFloatStr (tokens[2]));
 this.energyString = tokens[2] + " " + tokens[3];
@@ -123,7 +123,7 @@ this.shellCount++;
 tokens = this.getTokens ();
 atomCount++;
 while (this.readLine ().indexOf ("****") < 0) {
-var slater =  Clazz.newArray (4, 0);
+var slater =  Clazz.newIntArray (4, 0);
 slater[0] = atomCount - 1;
 tokens = this.getTokens ();
 var oType = tokens[0];
@@ -148,7 +148,7 @@ gdata.add (tokens);
 while (this.readLine () != null && this.line.startsWith (" Atom")) {
 this.shellCount++;
 tokens = this.getTokens ();
-var slater =  Clazz.newArray (4, 0);
+var slater =  Clazz.newIntArray (4, 0);
 if (!tokens[1].equals (lastAtom)) atomCount++;
 lastAtom = tokens[1];
 slater[0] = atomCount - 1;
@@ -165,10 +165,10 @@ gdata.add (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.r
 }
 }
 }if (atomCount == 0) atomCount = 1;
-this.gaussians =  Clazz.newArray (this.gaussianCount, 0);
+this.gaussians = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
 for (var i = 0; i < this.gaussianCount; i++) {
 tokens = gdata.get (i);
-this.gaussians[i] =  Clazz.newArray (tokens.length, 0);
+this.gaussians[i] =  Clazz.newFloatArray (tokens.length, 0);
 for (var j = 0; j < tokens.length; j++) this.gaussians[i][j] = this.parseFloatStr (tokens[j]);
 
 }
@@ -177,7 +177,7 @@ org.jmol.util.Logger.info (this.gaussianCount + " gaussian primitives read");
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readMolecularOrbitals", 
 ($fz = function () {
-if (this.shells == null) return ;
+if (this.shells == null) return;
 var mos = org.jmol.util.ArrayUtil.createArrayOfHashtable (5);
 var data = org.jmol.util.ArrayUtil.createArrayOfArrayList (5);
 var nThisLine = 0;
@@ -205,19 +205,23 @@ mos[i].put ("symmetry", sym);
 if (sym.indexOf ("O") >= 0) mos[i].put ("occupancy",  new Float (2));
  else if (sym.indexOf ("V") >= 0) mos[i].put ("occupancy",  new Float (0));
 }}
-if (isNOtype) continue ;this.line = this.readLine ().substring (21);
+if (isNOtype) continue;
+this.line = this.readLine ().substring (21);
 tokens = this.getTokens ();
 if (tokens.length != nThisLine) tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getStrings (this.line, nThisLine, 10);
 for (var i = 0; i < nThisLine; i++) mos[i].put ("energy",  new Float (tokens[i]));
 
-continue ;} else if (this.line.length < 21 || ((this.line.charAt (5)).charCodeAt (0) != 32 && !Character.isDigit (this.line.charAt (5)))) {
-continue ;}try {
+continue;
+} else if (this.line.length < 21 || (this.line.charAt (5) != ' ' && !Character.isDigit (this.line.charAt (5)))) {
+continue;
+}try {
 this.line = org.jmol.util.TextFormat.simpleReplace (this.line, " 0 ", "0  ");
 tokens = this.getTokens ();
 var type = tokens[tokens.length - nThisLine - 1].substring (1);
 if (Character.isDigit (type.charAt (0))) type = type.substring (1);
 if (!this.isQuantumBasisSupported (type.charAt (0)) && "XYZ".indexOf (type.charAt (0)) >= 0) type = (type.length == 2 ? "D" : "F") + type;
-if (!this.isQuantumBasisSupported (type.charAt (0))) continue ;tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getStrings (this.line.substring (this.line.length - 10 * nThisLine), nThisLine, 10);
+if (!this.isQuantumBasisSupported (type.charAt (0))) continue;
+tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getStrings (this.line.substring (this.line.length - 10 * nThisLine), nThisLine, 10);
 for (var i = 0; i < nThisLine; i++) data[i].add (tokens[i]);
 
 } catch (e) {
@@ -245,10 +249,11 @@ var intensities = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensAt (
 var iAtom0 = this.atomSetCollection.getAtomCount ();
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 var frequencyCount = frequencies.length;
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;this.atomSetCollection.cloneLastAtomSet ();
+if (ignore[i]) continue;
+this.atomSetCollection.cloneLastAtomSet ();
 this.atomSetCollection.setAtomSetFrequency ("Calculation " + this.calculationNumber, symmetries[i], frequencies[i], null);
 this.atomSetCollection.setAtomSetModelProperty ("ReducedMass", red_masses[i] + " AMU");
 this.atomSetCollection.setAtomSetModelProperty ("ForceConstant", frc_consts[i] + " mDyne/A");
@@ -261,8 +266,8 @@ this.fillFrequencyData (iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 
 Clazz.defineMethod (c$, "readDipoleMoment", 
 function () {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
-if (tokens.length != 8) return ;
-var dipole = javax.vecmath.Vector3f.new3 (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[5]));
+if (tokens.length != 8) return;
+var dipole = org.jmol.util.Vector3f.new3 (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[5]));
 org.jmol.util.Logger.info ("Molecular dipole for model " + this.atomSetCollection.getAtomSetCount () + " = " + dipole);
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("dipole", dipole);
 });

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.script");
+Clazz.declarePackage ("org.jmol.script");
 Clazz.load (["org.jmol.script.ScriptVariable"], "org.jmol.script.ScriptVariableInt", null, function () {
 c$ = Clazz.declareType (org.jmol.script, "ScriptVariableInt", org.jmol.script.ScriptVariable);
 Clazz.makeConstructor (c$, 

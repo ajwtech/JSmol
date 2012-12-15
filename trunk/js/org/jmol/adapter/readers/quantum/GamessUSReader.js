@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.GamessReader"], "org.jmol.adapter.readers.quantum.GamessUSReader", ["java.lang.Float", "java.util.ArrayList", "javax.vecmath.Vector3f", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.GamessReader"], "org.jmol.adapter.readers.quantum.GamessUSReader", ["java.lang.Float", "java.util.ArrayList", "org.jmol.util.Logger", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lowdenCharges = false;
 Clazz.instantialize (this, arguments);
@@ -69,8 +69,9 @@ this.readLine ();
 this.readLine ();
 while (this.readLine () != null && this.line.length >= 72) {
 var atomName = this.line.substring (1, 2);
-if ((atomName.charAt (0)).charCodeAt (0) == 90) atomName = this.line.substring (2, 3);
- else if (this.parseFloatRange (this.line, 67, 73) == 0) continue ;var x = this.parseFloatRange (this.line, 8, 25);
+if (atomName.charAt (0) == 'Z') atomName = this.line.substring (2, 3);
+ else if (this.parseFloatRange (this.line, 67, 73) == 0) continue;
+var x = this.parseFloatRange (this.line, 8, 25);
 var y = this.parseFloatRange (this.line, 25, 40);
 var z = this.parseFloatRange (this.line, 40, 56);
 if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) break;
@@ -122,7 +123,8 @@ this.readLine ();
 this.readLine ();
 while (this.readLine () != null && (atomName = this.parseTokenRange (this.line, 1, 2)) != null) {
 if (this.parseTokenRange (this.line, 1, 2).equals ("Z")) atomName = this.parseTokenRange (this.line, 2, 3);
- else if (this.parseTokenRange (this.line, 1, 9).equals ("FRAGNAME")) continue ; else atomName = this.parseTokenRange (this.line, 1, 2);
+ else if (this.parseTokenRange (this.line, 1, 9).equals ("FRAGNAME")) continue;
+ else atomName = this.parseTokenRange (this.line, 1, 2);
 var x = this.parseFloatRange (this.line, 16, 31);
 var y = this.parseFloatRange (this.line, 31, 46);
 var z = this.parseFloatRange (this.line, 46, 61);
@@ -147,7 +149,7 @@ tokens = this.getTokens ();
 var poploc = 0;
 for (; ++poploc < tokens.length; ) if (searchstr.equals (tokens[poploc])) break;
 
-if (++poploc >= tokens.length || !"CHARGE".equals (tokens[poploc++])) return ;
+if (++poploc >= tokens.length || !"CHARGE".equals (tokens[poploc++])) return;
 var atoms = this.atomSetCollection.getAtoms ();
 var startAtom = this.atomSetCollection.getLastAtomSetAtomIndex ();
 var endAtom = this.atomSetCollection.getAtomCount ();
@@ -162,10 +164,10 @@ while (this.line != null && ("".equals (this.line.trim ()) || this.line.indexOf 
 this.readLine ();
 }
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
-if (tokens.length != 5) return ;
+if (tokens.length != 5) return;
 if ("DX".equals (tokens[0]) && "DY".equals (tokens[1]) && "DZ".equals (tokens[2])) {
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
-var dipole = javax.vecmath.Vector3f.new3 (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
+var dipole = org.jmol.util.Vector3f.new3 (this.parseFloatStr (tokens[0]), this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]));
 org.jmol.util.Logger.info ("Molecular dipole for model " + this.atomSetCollection.getAtomSetCount () + " = " + dipole);
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("dipole", dipole);
 }});

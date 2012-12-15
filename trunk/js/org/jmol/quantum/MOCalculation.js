@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.quantum");
+Clazz.declarePackage ("org.jmol.quantum");
 Clazz.load (["org.jmol.api.QuantumCalculationInterface", "org.jmol.quantum.QuantumCalculation"], "org.jmol.quantum.MOCalculation", ["org.jmol.constant.EnumQuantumShell", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.CX = null;
@@ -17,12 +17,9 @@ this.slaters = null;
 this.moCoefficients = null;
 this.moCoeff = 0;
 this.gaussianPtr = 0;
-this.isElectronDensity = false;
-this.occupancy = 2;
 this.doNormalize = true;
 this.nwChemMode = false;
 this.dfCoefMaps = null;
-this.voxelDataTemp = null;
 this.linearCombination = null;
 this.coefs = null;
 this.moFactor = 1;
@@ -36,18 +33,19 @@ this.basisType = null;
 this.coeffs = null;
 this.map = null;
 this.integration = 0;
+this.isSquaredLinear = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.quantum, "MOCalculation", org.jmol.quantum.QuantumCalculation, org.jmol.api.QuantumCalculationInterface);
 Clazz.prepareFields (c$, function () {
-this.dfCoefMaps = [ Clazz.newArray (1, 0),  Clazz.newArray (3, 0),  Clazz.newArray (4, 0),  Clazz.newArray (5, 0),  Clazz.newArray (6, 0),  Clazz.newArray (7, 0),  Clazz.newArray (10, 0)];
-this.coeffs =  Clazz.newArray (10, 0);
+this.dfCoefMaps = [ Clazz.newIntArray (1, 0),  Clazz.newIntArray (3, 0),  Clazz.newIntArray (4, 0),  Clazz.newIntArray (5, 0),  Clazz.newIntArray (6, 0),  Clazz.newIntArray (7, 0),  Clazz.newIntArray (10, 0)];
+this.coeffs =  Clazz.newDoubleArray (10, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
 Clazz.superConstructor (this, org.jmol.quantum.MOCalculation, []);
 });
 Clazz.overrideMethod (c$, "setupCalculation", 
-function (volumeData, bsSelected, bsExclude, bsMolecules, calculationType, atomCoordAngstroms, firstAtomOffset, shells, gaussians, dfCoefMaps, slaters, moCoefficients, linearCombination, coefs, partialCharges, doNormalize, points, parameters, testFlags) {
+function (volumeData, bsSelected, bsExclude, bsMolecules, calculationType, atomCoordAngstroms, firstAtomOffset, shells, gaussians, dfCoefMaps, slaters, moCoefficients, linearCombination, isSquaredLinear, coefs, partialCharges, doNormalize, points, parameters, testFlags) {
 this.havePoints = (points != null);
 this.calculationType = calculationType;
 this.firstAtomOffset = firstAtomOffset;
@@ -57,36 +55,36 @@ if (dfCoefMaps != null) this.dfCoefMaps = dfCoefMaps;
 this.slaters = slaters;
 this.moCoefficients = moCoefficients;
 this.linearCombination = linearCombination;
+this.isSquaredLinear = isSquaredLinear;
 this.coefs = coefs;
-this.isElectronDensity = (partialCharges != null);
 this.doNormalize = doNormalize;
 org.jmol.util.Logger.info ("Normalizing AOs: " + doNormalize + " slaters:" + (slaters != null));
 this.countsXYZ = volumeData.getVoxelCounts ();
 this.initialize (this.countsXYZ[0], this.countsXYZ[1], this.countsXYZ[2], points);
 this.voxelData = volumeData.getVoxelData ();
-this.voxelDataTemp = (this.isElectronDensity ?  Clazz.newArray (this.nX, this.nY, this.nZ, 0) : this.voxelData);
+this.voxelDataTemp = (isSquaredLinear ?  Clazz.newFloatArray (this.nX, this.nY, this.nZ, 0) : this.voxelData);
 this.setupCoordinates (volumeData.getOriginFloat (), volumeData.getVolumetricVectorLengths (), bsSelected, atomCoordAngstroms, points, false);
 this.doDebug = (org.jmol.util.Logger.debugging);
 return (slaters != null || this.checkCalculationType ());
-}, "org.jmol.api.VolumeDataInterface,javax.util.BitSet,javax.util.BitSet,~A,~S,~A,~N,java.util.List,~A,~A,~O,~A,~A,~A,~A,~B,~A,~A,~N");
+}, "org.jmol.api.VolumeDataInterface,org.jmol.util.BitSet,org.jmol.util.BitSet,~A,~S,~A,~N,java.util.List,~A,~A,~O,~A,~A,~B,~A,~A,~B,~A,~A,~N");
 Clazz.defineMethod (c$, "initialize", 
 function (nX, nY, nZ, points) {
 Clazz.superCall (this, org.jmol.quantum.MOCalculation, "initialize", [nX, nY, nZ, points]);
-this.CX =  Clazz.newArray (this.nX, 0);
-this.CY =  Clazz.newArray (this.nY, 0);
-this.CZ =  Clazz.newArray (this.nZ, 0);
-this.DXY =  Clazz.newArray (this.nX, 0);
-this.DXZ =  Clazz.newArray (this.nX, 0);
-this.DYZ =  Clazz.newArray (this.nY, 0);
-this.EX =  Clazz.newArray (this.nX, 0);
-this.EY =  Clazz.newArray (this.nY, 0);
-this.EZ =  Clazz.newArray (this.nZ, 0);
+this.CX =  Clazz.newDoubleArray (this.nX, 0);
+this.CY =  Clazz.newDoubleArray (this.nY, 0);
+this.CZ =  Clazz.newDoubleArray (this.nZ, 0);
+this.DXY =  Clazz.newDoubleArray (this.nX, 0);
+this.DXZ =  Clazz.newDoubleArray (this.nX, 0);
+this.DYZ =  Clazz.newDoubleArray (this.nY, 0);
+this.EX =  Clazz.newDoubleArray (this.nX, 0);
+this.EY =  Clazz.newDoubleArray (this.nY, 0);
+this.EZ =  Clazz.newDoubleArray (this.nZ, 0);
 }, "~N,~N,~N,~A");
 Clazz.overrideMethod (c$, "createCube", 
 function () {
 this.setXYZBohr (this.points);
 this.processPoints ();
-if (this.doDebug || this.testing || this.isElectronDensity) this.calculateElectronDensity ();
+if (!this.isSquaredLinear && (this.doDebug || this.testing)) this.calculateElectronDensity ();
 });
 Clazz.overrideMethod (c$, "processPoints", 
 function () {
@@ -98,11 +96,13 @@ this.sum = 0;
 for (var i = 0; i < this.linearCombination.length; i += 2) this.sum += this.linearCombination[i] * this.linearCombination[i];
 
 this.sum = Math.sqrt (this.sum);
-}if (this.sum == 0) return ;
+}if (this.sum == 0) return;
 for (var i = 0; i < this.linearCombination.length; i += 2) {
 this.moFactor = this.linearCombination[i] / this.sum;
-if (this.moFactor == 0) continue ;this.moCoefficients = this.coefs[Math.round (this.linearCombination[i + 1]) - 1];
+if (this.moFactor == 0) continue;
+this.moCoefficients = this.coefs[Clazz.floatToInt (this.linearCombination[i + 1]) - 1];
 this.process ();
+if (this.isSquaredLinear) this.addValuesSquared (1);
 }
 }});
 Clazz.defineMethod (c$, "process", 
@@ -115,13 +115,12 @@ if (this.c < 0) {
 this.c = 0;
 for (var i = 0; i < nShells; i++) this.c += this.normalizeShell (i);
 
-System.out.println ("sum[c^2] = " + this.c + "\t" + Math.sqrt (this.c));
 this.c = Math.sqrt (this.c);
 this.atomIndex = this.firstAtomOffset - 1;
 this.moCoeff = 0;
 }for (var i = 0; i < nShells; i++) this.processShell (i);
 
-return ;
+return;
 }for (var i = 0; i < this.slaters.length; i++) {
 if (!this.processSlater (i)) break;
 }
@@ -163,8 +162,8 @@ this.basisType = org.jmol.constant.EnumQuantumShell.getItem (shell[1]);
 this.gaussianPtr = shell[2];
 this.nGaussians = shell[3];
 this.doShowShellType = this.doDebug;
-if (this.atomIndex != lastAtom && (this.thisAtom = this.qmAtoms[this.atomIndex]) != null) this.thisAtom.setXYZ (true);
-if (!this.setCoeffs (true)) return ;
+if (this.atomIndex != lastAtom && (this.thisAtom = this.qmAtoms[this.atomIndex]) != null) this.thisAtom.setXYZ (this, true);
+if (!this.setCoeffs (true)) return;
 if (this.havePoints) this.setMinMax (-1);
 switch (this.basisType) {
 case org.jmol.constant.EnumQuantumShell.S:
@@ -193,18 +192,19 @@ org.jmol.util.Logger.warn (" Unsupported basis type for atomno=" + (this.atomInd
 break;
 }
 }, $fz.isPrivate = true, $fz), "~N");
-Clazz.defineMethod (c$, "setTemp", 
-($fz = function () {
-for (var ix = this.xMax; --ix >= this.xMin; ) {
-for (var iy = this.yMax; --iy >= this.yMin; ) {
-for (var iz = this.zMax; --iz >= this.zMin; ) {
+Clazz.defineMethod (c$, "addValuesSquared", 
+($fz = function (occupancy) {
+for (var ix = this.nX; --ix >= 0; ) {
+for (var iy = this.nY; --iy >= 0; ) {
+for (var iz = this.nZ; --iz >= 0; ) {
 var value = this.voxelDataTemp[ix][iy][iz];
-this.voxelData[ix][iy][iz] += value * value * this.occupancy;
+if (value == 0) continue;
+this.voxelData[ix][iy][iz] += value * value * occupancy;
 this.voxelDataTemp[ix][iy][iz] = 0;
 }
 }
 }
-}, $fz.isPrivate = true, $fz));
+}, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "getContractionNormalization", 
 ($fz = function (el, cpt) {
 var sum;
@@ -275,13 +275,12 @@ var eX = this.EX[ix];
 if (this.havePoints) this.setMinMax (ix);
 for (var iy = this.yMax; --iy >= this.yMin; ) {
 var eXY = eX * this.EY[iy];
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) this.vd[(this.havePoints ? 0 : iz)] += eXY * this.EZ[iz];
 
 }
 }
 }
-if (this.isElectronDensity) this.setTemp ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addDataP", 
 ($fz = function () {
@@ -296,40 +295,14 @@ norm = this.getContractionNormalization (1, 1);
 norm = 1.42541094;
 }} else {
 norm = 1;
-}if (this.isElectronDensity) {
-for (var ig = 0; ig < this.nGaussians; ig++) {
-var alpha = this.gaussians[this.gaussianPtr + ig][0];
-var c1 = this.gaussians[this.gaussianPtr + ig][1];
-var a = c1;
-if (this.doNormalize) a *= Math.pow (alpha, 1.25) * norm;
-this.calcSP (alpha, 0, a * mx, 0, 0);
-}
-this.setTemp ();
-for (var ig = 0; ig < this.nGaussians; ig++) {
-var alpha = this.gaussians[this.gaussianPtr + ig][0];
-var c1 = this.gaussians[this.gaussianPtr + ig][1];
-var a = c1;
-if (this.doNormalize) a *= Math.pow (alpha, 1.25) * norm;
-this.calcSP (alpha, 0, 0, a * my, 0);
-}
-this.setTemp ();
-for (var ig = 0; ig < this.nGaussians; ig++) {
-var alpha = this.gaussians[this.gaussianPtr + ig][0];
-var c1 = this.gaussians[this.gaussianPtr + ig][1];
-var a = c1;
-if (this.doNormalize) a *= Math.pow (alpha, 1.25) * norm;
-this.calcSP (alpha, 0, 0, 0, a * mz);
-}
-this.setTemp ();
-} else {
-for (var ig = 0; ig < this.nGaussians; ig++) {
+}for (var ig = 0; ig < this.nGaussians; ig++) {
 var alpha = this.gaussians[this.gaussianPtr + ig][0];
 var c1 = this.gaussians[this.gaussianPtr + ig][1];
 var a = c1;
 if (this.doNormalize) a *= Math.pow (alpha, 1.25) * norm;
 this.calcSP (alpha, 0, a * mx, a * my, a * mz);
 }
-}}, $fz.isPrivate = true, $fz));
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addDataSP", 
 ($fz = function () {
 var isP = (this.map.length == 3);
@@ -354,40 +327,6 @@ var a2;
 var c1;
 var c2;
 var alpha;
-if (this.isElectronDensity) {
-if (ms != 0) for (var ig = 0; ig < this.nGaussians; ig++) {
-alpha = this.gaussians[this.gaussianPtr + ig][0];
-c1 = this.gaussians[this.gaussianPtr + ig][1];
-a1 = c1;
-if (this.doNormalize) a1 *= Math.pow (alpha, 0.75) * norm1;
-this.calcSP (alpha, a1 * ms, 0, 0, 0);
-}
-this.setTemp ();
-if (mx != 0) for (var ig = 0; ig < this.nGaussians; ig++) {
-alpha = this.gaussians[this.gaussianPtr + ig][0];
-c2 = this.gaussians[this.gaussianPtr + ig][2];
-a2 = c2;
-if (this.doNormalize) a2 *= Math.pow (alpha, 1.25) * norm2;
-this.calcSP (alpha, 0, a2 * mx, 0, 0);
-}
-this.setTemp ();
-if (my != 0) for (var ig = 0; ig < this.nGaussians; ig++) {
-alpha = this.gaussians[this.gaussianPtr + ig][0];
-c2 = this.gaussians[this.gaussianPtr + ig][2];
-a2 = c2;
-if (this.doNormalize) a2 *= Math.pow (alpha, 1.25) * norm2;
-this.calcSP (alpha, 0, 0, a2 * my, 0);
-}
-this.setTemp ();
-if (mz != 0) for (var ig = 0; ig < this.nGaussians; ig++) {
-alpha = this.gaussians[this.gaussianPtr + ig][0];
-c2 = this.gaussians[this.gaussianPtr + ig][2];
-a2 = c2;
-if (this.doNormalize) a2 *= Math.pow (alpha, 1.25) * norm2;
-this.calcSP (alpha, 0, 0, 0, a2 * mz);
-}
-this.setTemp ();
-} else {
 for (var ig = 0; ig < this.nGaussians; ig++) {
 alpha = this.gaussians[this.gaussianPtr + ig][0];
 c1 = this.gaussians[this.gaussianPtr + ig][1];
@@ -399,7 +338,7 @@ a1 *= Math.pow (alpha, 0.75) * norm1;
 a2 *= Math.pow (alpha, 1.25) * norm2;
 }this.calcSP (alpha, a1 * ms, a2 * mx, a2 * my, a2 * mz);
 }
-}}, $fz.isPrivate = true, $fz));
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setCE", 
 ($fz = function (alpha, as, ax, ay, az) {
 for (var i = this.xMax; --i >= this.xMin; ) {
@@ -434,7 +373,7 @@ if (this.havePoints) this.setMinMax (ix);
 for (var iy = this.yMax; --iy >= this.yMin; ) {
 var eXY = eX * this.EY[iy];
 var cXY = cX + this.CY[iy];
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 this.vd[(this.havePoints ? 0 : iz)] += (cXY + this.CZ[iz]) * eXY * this.EZ[iz];
 }
@@ -443,7 +382,6 @@ this.vd[(this.havePoints ? 0 : iz)] += (cXY + this.CZ[iz]) * eXY * this.EZ[iz];
 }, $fz.isPrivate = true, $fz), "~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "addData6D", 
 ($fz = function () {
-if (this.isElectronDensity) return ;
 var mxx = this.coeffs[0];
 var myy = this.coeffs[1];
 var mzz = this.coeffs[2];
@@ -491,7 +429,7 @@ for (var iy = this.yMax; --iy >= this.yMin; ) {
 var axx_x2__ayy_y2__axy_xy = axx_x2 + (this.CY[iy] + axy_x) * this.Y[iy];
 var axz_x__ayz_y = axz_x + this.DYZ[iy];
 var eXY = eX * this.EY[iy];
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 this.vd[(this.havePoints ? 0 : iz)] += (axx_x2__ayy_y2__axy_xy + (this.CZ[iz] + axz_x__ayz_y) * this.Z[iz]) * eXY * this.EZ[iz];
 }
@@ -501,7 +439,6 @@ this.vd[(this.havePoints ? 0 : iz)] += (axx_x2__ayy_y2__axy_xy + (this.CZ[iz] + 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addData5D", 
 ($fz = function () {
-if (this.isElectronDensity) return ;
 var alpha;
 var c1;
 var a;
@@ -561,7 +498,7 @@ y = this.Y[iy];
 var eXY = eX * this.EY[iy];
 cyy = norm2 * y * y;
 cxy = norm1 * x * y;
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 z = this.Z[iz];
 czz = norm2 * z * z;
@@ -575,7 +512,6 @@ this.vd[(this.havePoints ? 0 : iz)] += (ad0 * (czz - 0.5 * (cxx + cyy)) + ad1p *
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addData10F", 
 ($fz = function () {
-if (this.isElectronDensity) return ;
 var alpha;
 var c1;
 var a;
@@ -658,7 +594,7 @@ var Exy = Ex * this.EY[iy];
 cyyy = ayyy * yy * y;
 cxxy = axxy * xx * y;
 cxyy = axyy * x * yy;
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 z = this.Z[iz];
 zz = z * z;
@@ -676,7 +612,6 @@ this.vd[(this.havePoints ? 0 : iz)] += (cxxx + cyyy + czzz + cxyy + cxxy + cxxz 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addData7F", 
 ($fz = function () {
-if (this.isElectronDensity) return ;
 var alpha;
 var c1;
 var a;
@@ -772,7 +707,7 @@ var eXY = eX * this.EY[iy];
 cyyy = norm3 * y * yy;
 cxyy = norm2 * x * yy;
 cxxy = norm2 * xx * y;
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 z = this.Z[iz];
 zz = z * z;
@@ -813,7 +748,7 @@ if (coef == 0) {
 this.atomIndex = -1;
 return true;
 }coef *= this.moFactor;
-if (this.atomIndex != lastAtom) this.thisAtom.setXYZ (true);
+if (this.atomIndex != lastAtom) this.thisAtom.setXYZ (this, true);
 var a = slater.x;
 var b = slater.y;
 var c = slater.z;
@@ -824,13 +759,14 @@ if (this.havePoints) this.setMinMax (ix);
 for (var iy = this.yMax; --iy >= this.yMin; ) {
 var dy2 = this.Y2[iy];
 var dx2y2 = dx2 + dy2;
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 var dz2 = this.Z2[iz];
 var r2 = dx2y2 + dz2;
 var r = Math.sqrt (r2);
 var exponent = minuszeta * r;
-if (exponent < -50.0) continue ;var value = (coef * Math.exp (exponent) * (3 * dz2 - r2));
+if (exponent < -50.0) continue;
+var value = (coef * Math.exp (exponent) * (3 * dz2 - r2));
 switch (d) {
 case 3:
 value *= r;
@@ -852,13 +788,14 @@ for (var iy = this.yMax; --iy >= this.yMin; ) {
 var dy2 = this.Y2[iy];
 var dx2y2 = dx2 + dy2;
 var dx2my2 = coef * (dx2 - dy2);
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 var dz2 = this.Z2[iz];
 var r2 = dx2y2 + dz2;
 var r = Math.sqrt (r2);
 var exponent = minuszeta * r;
-if (exponent < -50.0) continue ;var value = dx2my2 * Math.exp (exponent);
+if (exponent < -50.0) continue;
+var value = dx2my2 * Math.exp (exponent);
 switch (d) {
 case 3:
 value *= r;
@@ -901,13 +838,14 @@ case 1:
 vdy *= this.Y[iy];
 break;
 }
-this.vd = this.voxelData[ix][(this.havePoints ? 0 : iy)];
+this.vd = this.voxelDataTemp[ix][(this.havePoints ? 0 : iy)];
 for (var iz = this.zMax; --iz >= this.zMin; ) {
 var dz2 = this.Z2[iz];
 var r2 = dx2y2 + dz2;
 var r = Math.sqrt (r2);
 var exponent = minuszeta * r;
-if (exponent < -50.0) continue ;var value = vdy * Math.exp (exponent);
+if (exponent < -50.0) continue;
+var value = vdy * Math.exp (exponent);
 switch (c) {
 case 3:
 value *= this.Z[iz];
@@ -932,7 +870,6 @@ this.vd[(this.havePoints ? 0 : iz)] += value;
 }
 }
 }
-if (this.isElectronDensity) this.setTemp ();
 return true;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "dumpInfo", 
@@ -957,7 +894,7 @@ return (i < 0 || i > org.jmol.quantum.MOCalculation.shellOrder.length ? null : o
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "calculateElectronDensity", 
 function () {
-if (this.points != null) return ;
+if (this.points != null) return;
 for (var ix = this.nX; --ix >= 0; ) for (var iy = this.nY; --iy >= 0; ) for (var iz = this.nZ; --iz >= 0; ) {
 var x = this.voxelData[ix][iy][iz];
 this.integration += x * x;

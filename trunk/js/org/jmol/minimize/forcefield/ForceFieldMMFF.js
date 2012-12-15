@@ -1,17 +1,16 @@
-﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
-Clazz.load (["org.jmol.minimize.forcefield.ForceField"], "org.jmol.minimize.forcefield.ForceFieldMMFF", ["java.lang.Boolean", "$.Double", "$.Float", "$.NullPointerException", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.minimize.MinAtom", "$.MinObject", "org.jmol.minimize.forcefield.AtomType", "$.CalculationsMMFF", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.minimize.forcefield");
+Clazz.load (["org.jmol.minimize.forcefield.ForceField"], "org.jmol.minimize.forcefield.ForceFieldMMFF", ["java.lang.Boolean", "$.Double", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.minimize.MinAtom", "$.MinObject", "org.jmol.minimize.forcefield.AtomType", "$.CalculationsMMFF", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Elements", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.useEmpiricalRules = true;
 this.rawAtomTypes = null;
 this.rawBondTypes = null;
 this.rawMMFF94Charges = null;
 this.vRings = null;
-this.base = null;
 this.typeData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.minimize.forcefield, "ForceFieldMMFF", org.jmol.minimize.forcefield.ForceField);
 Clazz.prepareFields (c$, function () {
-this.typeData =  Clazz.newArray (4, 0);
+this.typeData =  Clazz.newIntArray (4, 0);
 });
 Clazz.defineMethod (c$, "getAtomTypeDescriptions", 
 function () {
@@ -41,7 +40,7 @@ this.fixTypes ();
 this.calc =  new org.jmol.minimize.forcefield.CalculationsMMFF (this, org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minimizer.constraints);
 this.calc.setLoggingEnabled (true);
 return this.calc.setupCalculations ();
-}, "javax.util.BitSet,~N");
+}, "org.jmol.util.BitSet,~N");
 Clazz.defineMethod (c$, "setArrays", 
 function (atoms, bsAtoms, bonds, rawBondCount, doRound, allowUnknowns) {
 var m = this.minimizer;
@@ -51,45 +50,38 @@ if (this.rawAtomTypes == null) return false;
 this.rawBondTypes = this.setBondTypes (bonds, rawBondCount, bsAtoms);
 this.rawMMFF94Charges = org.jmol.minimize.forcefield.ForceFieldMMFF.getPartialCharges (bonds, this.rawBondTypes, atoms, this.rawAtomTypes, bsAtoms, doRound);
 return true;
-}, "~A,javax.util.BitSet,~A,~N,~B,~B");
+}, "~A,org.jmol.util.BitSet,~A,~N,~B,~B");
 Clazz.defineMethod (c$, "getChargeParameters", 
 ($fz = function () {
-if (org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams != null) return ;
-this.getAtomTypes ("mmff/MMFF94-smarts.txt");
+if (org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams != null) return;
+this.getAtomTypes ("MMFF94-smarts.txt");
 var data =  new java.util.Hashtable ();
-this.getMmffParameters ("mmff/mmffpbci.par.txt", data, 1);
-this.getMmffParameters ("mmff/mmffchg.par.txt", data, 34);
+this.getMmffParameters ("mmffpbci.par.txt", data, 1);
+this.getMmffParameters ("mmffchg.par.txt", data, 34);
 ($t$ = org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams = data, org.jmol.minimize.forcefield.ForceFieldMMFF.prototype.ffParams = org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, $t$);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getMinimizationParameters", 
 ($fz = function () {
-if (org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams.containsKey (Integer.$valueOf (-1))) return ;
-this.getMmffParameters ("mmff/mmffang.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 5);
-this.getMmffParameters ("mmff/mmffbndk.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 546);
-this.getMmffParameters ("mmff/mmffbond.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 3);
-this.getMmffParameters ("mmff/mmffoop.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 13);
-this.getMmffParameters ("mmff/mmffstbn.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 21);
-this.getMmffParameters ("mmff/mmffdfsb.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 37);
-this.getMmffParameters ("mmff/mmfftor.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 9);
-this.getMmffParameters ("mmff/mmffvdw.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 17);
+if (org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams.containsKey (Integer.$valueOf (-1))) return;
+this.getMmffParameters ("mmffang.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 5);
+this.getMmffParameters ("mmffbndk.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 546);
+this.getMmffParameters ("mmffbond.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 3);
+this.getMmffParameters ("mmffoop.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 13);
+this.getMmffParameters ("mmffstbn.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 21);
+this.getMmffParameters ("mmffdfsb.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 37);
+this.getMmffParameters ("mmfftor.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 9);
+this.getMmffParameters ("mmffvdw.par.txt", org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams, 17);
 org.jmol.minimize.forcefield.ForceFieldMMFF.ffParams.put (Integer.$valueOf (-1), Boolean.TRUE);
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "getResourceUrl", 
-($fz = function (fileName) {
-{
-if (this.base == null)
-this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
-return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);
-}}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getMmffParameters", 
 ($fz = function (fileName, data, dataType) {
-var url = null;
 var line = null;
 var value = null;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("reading data from " + fileName);
 try {
 var br = this.getBufferedReader (fileName);
-while ((line = br.readLine ()) != null && line.length < 5 || !line.startsWith ("*")) continue ;
+while ((line = br.readLine ()) != null && line.length < 5 || !line.startsWith ("*")) continue;
+
 var a1 = 0;
 var a2 = 127;
 var a3 = 127;
@@ -126,20 +118,23 @@ type = 0;
 break;
 }
 while ((line = br.readLine ()) != null) {
-if (line.length < 5 || line.startsWith ("*")) continue ;switch (dataType) {
+if (line.length < 5 || line.startsWith ("*")) continue;
+switch (dataType) {
 case 546:
 case 13:
 case 1:
 case 37:
 break;
 case 17:
-if ((line.charAt (5)).charCodeAt (0) != 32) continue ;break;
+if (line.charAt (5) != ' ') continue;
+break;
 case 34:
-if ((line.charAt (0)).charCodeAt (0) == 52) continue ;case 5:
+if (line.charAt (0) == '4') continue;
+case 5:
 case 3:
 case 21:
 case 9:
-type = (line.charAt (0)).charCodeAt (0) - 48;
+type = line.charCodeAt (0) - 48;
 break;
 }
 switch (dataType) {
@@ -219,7 +214,8 @@ var br = this.getBufferedReader (fileName);
 var at;
 types.add ( new org.jmol.minimize.forcefield.AtomType (0, 0, 0, 0, 1, "H or NOT FOUND", ""));
 while ((line = br.readLine ()) != null) {
-if (line.length == 0 || line.startsWith ("#")) continue ;var elemNo = Integer.$valueOf (line.substring (3, 5).trim ()).intValue ();
+if (line.length == 0 || line.startsWith ("#")) continue;
+var elemNo = Integer.$valueOf (line.substring (3, 5).trim ()).intValue ();
 var mmType = Integer.$valueOf (line.substring (6, 8).trim ()).intValue ();
 var hType = Integer.$valueOf (line.substring (9, 11).trim ()).intValue ();
 var formalCharge = Float.$valueOf (line.substring (12, 15).trim ()).floatValue () / 12;
@@ -240,16 +236,6 @@ throw e;
 org.jmol.util.Logger.info ((types.size () - 1) + " SMARTS-based atom types read");
 ($t$ = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes = types, org.jmol.minimize.forcefield.ForceFieldMMFF.prototype.atomTypes = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes, $t$);
 }, $fz.isPrivate = true, $fz), "~S");
-Clazz.defineMethod (c$, "getBufferedReader", 
-($fz = function (fileName) {
-var url = null;
-if ((url = this.getResourceUrl (fileName)) == null) {
-System.err.println ("Couldn't find file: " + fileName);
-throw  new NullPointerException ();
-}{
-var a = [null,null];
-return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),a,false);
-}}, $fz.isPrivate = true, $fz), "~S");
 c$.setFlags = Clazz.defineMethod (c$, "setFlags", 
 ($fz = function (at) {
 switch (at.mmType) {
@@ -379,7 +365,7 @@ break;
 }, $fz.isPrivate = true, $fz), "org.jmol.minimize.forcefield.AtomType");
 c$.getPartialCharges = Clazz.defineMethod (c$, "getPartialCharges", 
 function (bonds, bTypes, atoms, aTypes, bsAtoms, doRound) {
-var partialCharges =  Clazz.newArray (atoms.length, 0);
+var partialCharges =  Clazz.newFloatArray (atoms.length, 0);
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) partialCharges[i] = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.get (Math.max (0, aTypes[i])).formalCharge;
 
 var a1 = null;
@@ -388,7 +374,8 @@ a1 = bonds[i].getAtom1 ();
 var a2 = bonds[i].getAtom2 ();
 var ok1 = bsAtoms.get (a1.index);
 var ok2 = bsAtoms.get (a2.index);
-if (!ok1 && !ok2) continue ;var it = aTypes[a1.index];
+if (!ok1 && !ok2) continue;
+var it = aTypes[a1.index];
 var at1 = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.get (Math.max (0, it));
 var type1 = (it < 0 ? -it : at1.mmType);
 it = aTypes[a2.index];
@@ -426,13 +413,13 @@ if (ok2) partialCharges[a2.index] -= dq;
 if (doRound) {
 var abscharge = 0;
 for (var i = partialCharges.length; --i >= 0; ) {
-partialCharges[i] = (Math.round ((partialCharges[i] * 1000))) / 1000;
+partialCharges[i] = (Math.round (partialCharges[i] * 1000)) / 1000;
 abscharge += Math.abs (partialCharges[i]);
 }
 if (abscharge == 0 && a1 != null) {
 partialCharges[a1.index] = -0.0;
 }}return partialCharges;
-}, "~A,~A,~A,~A,javax.util.BitSet,~B");
+}, "~A,~A,~A,~A,org.jmol.util.BitSet,~B");
 c$.isBondType1 = Clazz.defineMethod (c$, "isBondType1", 
 ($fz = function (at1, at2) {
 return at1.sbmb && at2.sbmb || at1.arom && at2.arom;
@@ -461,9 +448,9 @@ c$.setAtomTypes = Clazz.defineMethod (c$, "setAtomTypes",
 ($fz = function (atoms, bsAtoms, smartsMatcher, vRings, allowUnknowns) {
 var bitSets =  new java.util.ArrayList ();
 var smarts =  new Array (org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.size ());
-var types =  Clazz.newArray (atoms.length, 0);
-var bsElements =  new javax.util.BitSet ();
-var bsHydrogen =  new javax.util.BitSet ();
+var types =  Clazz.newIntArray (atoms.length, 0);
+var bsElements =  new org.jmol.util.BitSet ();
+var bsHydrogen =  new org.jmol.util.BitSet ();
 var bsConnected = org.jmol.util.BitSetUtil.copy (bsAtoms);
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
 var a = atoms[i];
@@ -484,15 +471,17 @@ bsElements.set (n);
 var nUsed = 0;
 for (var i = 1; i < org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.size (); i++) {
 var at = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.get (i);
-if (!bsElements.get (at.elemNo)) continue ;smarts[i] = at.smartsCode;
+if (!bsElements.get (at.elemNo)) continue;
+smarts[i] = at.smartsCode;
 nUsed++;
 }
 org.jmol.util.Logger.info (nUsed + " SMARTS matches used");
 smartsMatcher.getSubstructureSets (smarts, atoms, atoms.length, 20, bsConnected, bitSets, vRings);
-var bsDone =  new javax.util.BitSet ();
+var bsDone =  new org.jmol.util.BitSet ();
 for (var j = 0; j < bitSets.size (); j++) {
 var bs = bitSets.get (j);
-if (bs == null) continue ;bs.andNot (bsDone);
+if (bs == null) continue;
+bs.andNot (bsDone);
 for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) types[i] = j;
 
 bsDone.or (bs);
@@ -508,23 +497,24 @@ if (org.jmol.util.Logger.debugging) for (var i = bsConnected.nextSetBit (0); i >
 
 if (!allowUnknowns && bsDone.cardinality () != bsConnected.cardinality ()) return null;
 return types;
-}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet,org.jmol.api.SmilesMatcherInterface,~A,~B");
+}, $fz.isPrivate = true, $fz), "~A,org.jmol.util.BitSet,org.jmol.api.SmilesMatcherInterface,~A,~B");
 Clazz.defineMethod (c$, "setBondTypes", 
 ($fz = function (bonds, bondCount, bsAtoms) {
-var bTypes =  Clazz.newArray (bondCount, 0);
+var bTypes =  Clazz.newIntArray (bondCount, 0);
 for (var i = bondCount; --i >= 0; ) {
 var a1 = bonds[i].getAtom1 ();
 var a2 = bonds[i].getAtom2 ();
 var ok1 = bsAtoms.get (a1.index);
 var ok2 = bsAtoms.get (a2.index);
-if (!ok1 && !ok2) continue ;var it = this.rawAtomTypes[a1.index];
+if (!ok1 && !ok2) continue;
+var it = this.rawAtomTypes[a1.index];
 var at1 = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.get (Math.max (0, it));
 it = this.rawAtomTypes[a2.index];
 var at2 = org.jmol.minimize.forcefield.ForceFieldMMFF.atomTypes.get (Math.max (0, it));
 bTypes[i] = this.getBondType (bonds[i], at1, at2, a1.index, a2.index);
 }
 return bTypes;
-}, $fz.isPrivate = true, $fz), "~A,~N,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "fixTypes", 
 ($fz = function () {
 for (var i = this.minAtomCount; --i >= 0; ) {

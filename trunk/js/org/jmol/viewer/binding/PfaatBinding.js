@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.viewer.binding");
+Clazz.declarePackage ("org.jmol.viewer.binding");
 Clazz.load (["org.jmol.viewer.binding.JmolBinding"], "org.jmol.viewer.binding.PfaatBinding", null, function () {
 c$ = Clazz.declareType (org.jmol.viewer.binding, "PfaatBinding", org.jmol.viewer.binding.JmolBinding);
 Clazz.makeConstructor (c$, 

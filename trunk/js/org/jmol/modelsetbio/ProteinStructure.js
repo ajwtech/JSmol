@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["javax.vecmath.Vector3f"], "org.jmol.modelsetbio.ProteinStructure", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.util.Vector3f"], "org.jmol.modelsetbio.ProteinStructure", ["org.jmol.util.ArrayUtil", "$.Logger", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.apolymer = null;
 this.type = null;
@@ -12,24 +12,24 @@ this.axisB = null;
 this.axisUnitVector = null;
 this.vectorProjection = null;
 this.segments = null;
-this.uniqueID = 0;
+this.strucNo = 0;
 this.structureID = null;
 this.serialID = 0;
 this.strandCount = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelsetbio, "ProteinStructure");
 Clazz.prepareFields (c$, function () {
-this.vectorProjection =  new javax.vecmath.Vector3f ();
+this.vectorProjection =  new org.jmol.util.Vector3f ();
 });
 Clazz.makeConstructor (c$, 
-function (apolymer, type, monomerIndex, monomerCount, id) {
-this.uniqueID = ($t$ = ++ org.jmol.modelsetbio.ProteinStructure.globalSerialID, org.jmol.modelsetbio.ProteinStructure.prototype.globalSerialID = org.jmol.modelsetbio.ProteinStructure.globalSerialID, $t$);
+function (apolymer, type, monomerIndex, monomerCount) {
+this.strucNo = ($t$ = ++ org.jmol.modelsetbio.ProteinStructure.globalStrucNo, org.jmol.modelsetbio.ProteinStructure.prototype.globalStrucNo = org.jmol.modelsetbio.ProteinStructure.globalStrucNo, $t$);
 this.apolymer = apolymer;
 this.type = type;
 this.monomerIndexFirst = monomerIndex;
 this.addMonomer (monomerIndex + monomerCount - 1);
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Creating ProteinStructure " + this.uniqueID + " " + type.getBioStructureTypeName (false) + " from " + this.monomerIndexFirst + " through " + this.monomerIndexLast + " in polymer " + apolymer);
-}, "org.jmol.modelsetbio.AlphaPolymer,org.jmol.constant.EnumStructure,~N,~N,~N");
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Creating ProteinStructure " + this.strucNo + " " + type.getBioStructureTypeName (false) + " from " + this.monomerIndexFirst + " through " + this.monomerIndexLast + " in polymer " + apolymer);
+}, "org.jmol.modelsetbio.AlphaPolymer,org.jmol.constant.EnumStructure,~N,~N");
 Clazz.defineMethod (c$, "addMonomer", 
 function (index) {
 this.monomerIndexFirst = Math.min (this.monomerIndexFirst, index);
@@ -49,15 +49,15 @@ function () {
 });
 Clazz.defineMethod (c$, "calcSegments", 
 function () {
-if (this.segments != null) return ;
+if (this.segments != null) return;
 this.calcAxis ();
 this.segments =  new Array (this.monomerCount + 1);
 this.segments[this.monomerCount] = this.axisB;
 this.segments[0] = this.axisA;
-var axis = javax.vecmath.Vector3f.newV (this.axisUnitVector);
+var axis = org.jmol.util.Vector3f.newV (this.axisUnitVector);
 axis.scale (this.axisB.distance (this.axisA) / this.monomerCount);
 for (var i = 1; i < this.monomerCount; i++) {
-var point = this.segments[i] =  new javax.vecmath.Point3f ();
+var point = this.segments[i] =  new org.jmol.util.Point3f ();
 point.setT (this.segments[i - 1]);
 point.add (axis);
 }
@@ -120,7 +120,7 @@ var leadAtomIndices = this.apolymer.getLeadAtomIndices ();
 var iArray = org.jmol.util.ArrayUtil.arrayCopyRangeI (leadAtomIndices, this.monomerIndexFirst, this.monomerIndexFirst + this.monomerCount);
 info.put ("leadAtomIndices", iArray);
 this.calcAxis ();
-if (this.axisA == null) return ;
+if (this.axisA == null) return;
 info.put ("axisA", this.axisA);
 info.put ("axisB", this.axisB);
 info.put ("axisUnitVector", this.axisUnitVector);
@@ -131,5 +131,5 @@ this.axisA = null;
 this.segments = null;
 });
 Clazz.defineStatics (c$,
-"globalSerialID", 1000);
+"globalStrucNo", 1000);
 });

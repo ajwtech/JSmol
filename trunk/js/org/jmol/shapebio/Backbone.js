@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapebio");
-Clazz.load (["org.jmol.shapebio.BioShapeCollection"], "org.jmol.shapebio.Backbone", ["java.lang.Float", "javax.util.BitSet"], function () {
+Clazz.declarePackage ("org.jmol.shapebio");
+Clazz.load (["org.jmol.shapebio.BioShapeCollection"], "org.jmol.shapebio.Backbone", ["java.lang.Float", "org.jmol.util.BitSet"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsSelected = null;
 Clazz.instantialize (this, arguments);
@@ -17,9 +17,9 @@ Clazz.defineMethod (c$, "setProperty",
 function (propertyName, value, bsSelected) {
 if ("bitset" === propertyName) {
 this.bsSelected = value;
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shapebio.Backbone, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "setShapeSizeRD", 
 function (size, rd, bsSelected) {
 var mad = size;
@@ -28,10 +28,11 @@ var useThisBsSelected = (this.bsSelected != null);
 if (useThisBsSelected) bsSelected = this.bsSelected;
 for (var iShape = this.bioShapes.length; --iShape >= 0; ) {
 var bioShape = this.bioShapes[iShape];
-if (bioShape.monomerCount == 0) continue ;var bondSelectionModeOr = this.viewer.getBondSelectionModeOr ();
+if (bioShape.monomerCount == 0) continue;
+var bondSelectionModeOr = this.viewer.getBondSelectionModeOr ();
 var atomIndices = bioShape.bioPolymer.getLeadAtomIndices ();
 var isVisible = (mad != 0);
-if (bioShape.bsSizeSet == null) bioShape.bsSizeSet =  new javax.util.BitSet ();
+if (bioShape.bsSizeSet == null) bioShape.bsSizeSet =  new org.jmol.util.BitSet ();
 bioShape.isActive = true;
 for (var i = bioShape.monomerCount - 1; --i >= 0; ) {
 var index1 = atomIndices[i];
@@ -42,7 +43,8 @@ if (isAtom1 && isAtom2 || useThisBsSelected && isAtom1 || bondSelectionModeOr &&
 bioShape.monomers[i].setShapeVisibility (this.myVisibilityFlag, isVisible);
 var atomA = this.modelSet.atoms[index1];
 if (rd != null) {
-if (Float.isNaN (rd.values[i])) continue ;mad = Math.round ((rd.values[i] * 2000));
+if (Float.isNaN (rd.values[i])) continue;
+mad = Clazz.floatToShort (rd.values[i] * 2000);
 }var atomB = this.modelSet.atoms[index2];
 var wasVisible = (bioShape.mads[i] != 0);
 if (wasVisible != isVisible) {
@@ -54,10 +56,10 @@ bioShape.bsSizeDefault.setBitTo (i, mad == -1);
 }}
 }
 if (useThisBsSelected) this.bsSelected = null;
-}, "~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
+}, "~N,org.jmol.atomdata.RadiusData,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "setModelClickability", 
 function () {
-if (this.bioShapes == null) return ;
+if (this.bioShapes == null) return;
 for (var iShape = this.bioShapes.length; --iShape >= 0; ) {
 var bioShape = this.bioShapes[iShape];
 var atomIndices = bioShape.bioPolymer.getLeadAtomIndices ();

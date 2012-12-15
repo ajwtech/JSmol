@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.CommandHistory", ["java.util.ArrayList"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.commandList = null;
@@ -30,7 +30,7 @@ this.cursorPos = 0;
 }, "~N");
 Clazz.defineMethod (c$, "setMaxSize", 
 function (maxSize) {
-if (maxSize == this.maxSize) return ;
+if (maxSize == this.maxSize) return;
 if (maxSize < 2) maxSize = 2;
 while (this.nextCommand > maxSize) {
 this.commandList.remove (0);
@@ -61,8 +61,8 @@ return this.commandList.get (this.cursorPos);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "addCommand", 
 function (strCommand) {
-if (!this.isOn && !strCommand.endsWith ("#??")) return ;
-if (strCommand.endsWith ("#----")) return ;
+if (!this.isOn && !strCommand.endsWith ("#??")) return;
+if (strCommand.endsWith ("#----")) return;
 var i;
 while ((i = strCommand.indexOf ("\n")) >= 0) {
 var str = strCommand.substring (0, i);
@@ -111,8 +111,8 @@ return str;
 }, "~N");
 Clazz.defineMethod (c$, "addCommandLine", 
 ($fz = function (command) {
-if (command == null || command.length == 0) return ;
-if (command.endsWith ("#--")) return ;
+if (command == null || command.length == 0) return;
+if (command.endsWith ("#--")) return;
 if (this.nextCommand >= this.maxSize) {
 this.commandList.remove (0);
 this.nextCommand = this.maxSize - 1;

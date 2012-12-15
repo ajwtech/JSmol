@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (null, "org.jmol.modelset.Measurement", ["java.lang.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.AxisAngle4f", "$.Point3f", "$.Vector3f", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.LabelToken", "org.jmol.util.Escape", "$.Measure"], function () {
+Clazz.declarePackage ("org.jmol.modelset");
+Clazz.load (null, "org.jmol.modelset.Measurement", ["java.lang.Float", "java.util.ArrayList", "org.jmol.atomdata.RadiusData", "org.jmol.constant.EnumVdw", "org.jmol.modelset.LabelToken", "org.jmol.util.AxisAngle4f", "$.Escape", "$.Measure", "$.Point3f", "$.StringXBuilder", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.modelSet = null;
@@ -23,7 +23,7 @@ this.tickInfo = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelset, "Measurement");
 Clazz.prepareFields (c$, function () {
-this.countPlusIndices =  Clazz.newArray (5, 0);
+this.countPlusIndices =  Clazz.newIntArray (5, 0);
 });
 Clazz.defineMethod (c$, "getCount", 
 function () {
@@ -179,40 +179,40 @@ return str;
 Clazz.defineMethod (c$, "formatMeasurementAs", 
 function (strFormat, units, useDefault) {
 if (strFormat != null && strFormat.length == 0) strFormat = null;
-if (!useDefault && strFormat != null && strFormat.indexOf (this.countPlusIndices[0] + ":") != 0) return ;
+if (!useDefault && strFormat != null && strFormat.indexOf (this.countPlusIndices[0] + ":") != 0) return;
 this.strFormat = strFormat;
 this.formatMeasurement (units);
 }, "~S,~S,~B");
 Clazz.defineMethod (c$, "formatMeasurement", 
 function (units) {
 this.strMeasurement = null;
-if (Float.isNaN (this.value) || this.count == 0) return ;
+if (Float.isNaN (this.value) || this.count == 0) return;
 switch (this.count) {
 case 2:
 this.strMeasurement = this.formatDistance (units);
-return ;
+return;
 case 3:
 if (this.value == 180) {
 this.aa = null;
 this.pointArc = null;
 } else {
-var vectorBA =  new javax.vecmath.Vector3f ();
-var vectorBC =  new javax.vecmath.Vector3f ();
+var vectorBA =  new org.jmol.util.Vector3f ();
+var vectorBC =  new org.jmol.util.Vector3f ();
 var radians = org.jmol.util.Measure.computeAngle (this.getAtom (1), this.getAtom (2), this.getAtom (3), vectorBA, vectorBC, false);
-var vectorAxis =  new javax.vecmath.Vector3f ();
+var vectorAxis =  new org.jmol.util.Vector3f ();
 vectorAxis.cross (vectorBA, vectorBC);
-this.aa = javax.vecmath.AxisAngle4f.new4 (vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
+this.aa = org.jmol.util.AxisAngle4f.new4 (vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 vectorBA.normalize ();
 vectorBA.scale (0.5);
-this.pointArc = javax.vecmath.Point3f.newP (vectorBA);
+this.pointArc = org.jmol.util.Point3f.newP (vectorBA);
 }case 4:
 this.strMeasurement = this.formatAngle (this.value);
-return ;
+return;
 }
 }, "~S");
 Clazz.defineMethod (c$, "reformatDistanceIfSelected", 
 function () {
-if (this.count != 2) return ;
+if (this.count != 2) return;
 if (this.viewer.isSelected (this.countPlusIndices[1]) && this.viewer.isSelected (this.countPlusIndices[2])) this.formatMeasurement (null);
 });
 Clazz.defineMethod (c$, "formatDistance", 
@@ -250,17 +250,17 @@ var i2 = this.getAtomIndex (2);
 if (i1 >= 0 && i2 >= 0) {
 var vdw = (this.getAtom (1)).getVanderwaalsRadiusFloat (this.viewer, org.jmol.constant.EnumVdw.AUTO) + (this.getAtom (2)).getVanderwaalsRadiusFloat (this.viewer, org.jmol.constant.EnumVdw.AUTO);
 dist /= vdw;
-return (andRound ? Math.round ((dist * 1000 + 0.5)) / 10 : dist * 100);
+return (andRound ? Math.round (dist * 1000) / 10 : dist * 100);
 }units = "ang";
-}if (units.equals ("nm")) return (andRound ? Math.round ((dist * 100 + 0.5)) / 1000 : dist / 10);
-if (units.equals ("pm")) return (andRound ? Math.round ((dist * 1000 + 0.5)) / 10 : dist * 100);
-if (units.equals ("au")) return (andRound ? Math.round ((dist / 0.5291772 * 1000 + 0.5)) / 1000 : dist / 0.5291772);
-}return (andRound ? Math.round ((dist * 100 + 0.5)) / 100 : dist);
+}if (units.equals ("nm")) return (andRound ? Math.round (dist * 100) / 1000 : dist / 10);
+if (units.equals ("pm")) return (andRound ? Math.round (dist * 1000) / 10 : dist * 100);
+if (units.equals ("au")) return (andRound ? Math.round (dist / 0.5291772 * 1000) / 1000 : dist / 0.5291772);
+}return (andRound ? Math.round (dist * 100) / 100 : dist);
 }, "~S,~B");
 Clazz.defineMethod (c$, "formatAngle", 
 ($fz = function (angle) {
 var label = this.getLabelString ();
-if (label.indexOf ("%V") >= 0) angle = (Math.round ((angle * 10 + (angle >= 0 ? 0.5 : -0.5)))) / 10;
+if (label.indexOf ("%V") >= 0) angle = Math.round (angle * 10) / 10;
 return this.formatString (angle, "\u00B0", label);
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "getLabelString", 
@@ -349,7 +349,7 @@ return (atomIndex < 0 ? (withModelIndex ? "modelIndex " + this.getAtom (i).model
 }, "~N,~B,~B");
 Clazz.defineMethod (c$, "setModelIndex", 
 function (modelIndex) {
-if (this.pts == null) return ;
+if (this.pts == null) return;
 for (var i = 0; i < this.count; i++) {
 if (this.pts[i] != null) this.pts[i].modelIndex = modelIndex;
 }
@@ -371,7 +371,8 @@ function (atoms, count) {
 var atomIndexLast = -1;
 for (var i = 1; i <= count; i++) {
 var atomIndex = this.getAtomIndex (i);
-if (atomIndex < 0) continue ;if (atomIndexLast >= 0 && !atoms[atomIndex].isBonded (atoms[atomIndexLast])) return false;
+if (atomIndex < 0) continue;
+if (atomIndexLast >= 0 && !atoms[atomIndex].isBonded (atoms[atomIndexLast])) return false;
 atomIndexLast = atomIndex;
 }
 return true;
@@ -379,7 +380,7 @@ return true;
 Clazz.defineMethod (c$, "getInfoAsString", 
 function (units) {
 var f = this.fixValue (units, true);
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 sb.append (this.count == 2 ? "distance" : this.count == 3 ? "angle" : "dihedral");
 sb.append (" \t").appendF (f);
 sb.append (" \t").append (this.getString ());
@@ -401,7 +402,8 @@ function (atoms, count) {
 var molecule = -1;
 for (var i = 1; i <= count; i++) {
 var atomIndex = this.getAtomIndex (i);
-if (atomIndex < 0) continue ;var m = atoms[atomIndex].getMoleculeNumber (false);
+if (atomIndex < 0) continue;
+var m = atoms[atomIndex].getMoleculeNumber (false);
 if (molecule < 0) molecule = m;
  else if (m != molecule) return false;
 }

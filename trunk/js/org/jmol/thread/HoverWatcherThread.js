@@ -1,49 +1,42 @@
-﻿Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.HoverWatcherThread", ["java.lang.Thread", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.thread");
+Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.HoverWatcherThread", ["java.lang.Thread"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.actionManager = null;
 this.current = null;
 this.moved = null;
-this.viewer = null;
+this.hoverDelay = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.thread, "HoverWatcherThread", org.jmol.thread.JmolThread);
 Clazz.makeConstructor (c$, 
 function (actionManager, current, moved, viewer) {
-Clazz.superConstructor (this, org.jmol.thread.HoverWatcherThread, []);
+Clazz.superConstructor (this, org.jmol.thread.HoverWatcherThread);
+this.setViewer (viewer, "HoverWatcher");
 this.actionManager = actionManager;
 this.current = current;
 this.moved = moved;
-this.viewer = viewer;
-this.setMyName ("HoverWatcher");
 this.start ();
 }, "org.jmol.viewer.ActionManager,org.jmol.viewer.MouseState,org.jmol.viewer.MouseState,org.jmol.viewer.Viewer");
-Clazz.overrideMethod (c$, "run", 
-function () {
-Thread.currentThread ().setPriority (1);
-var hoverDelay;
-try {
-while (!this.$interrupted && (hoverDelay = this.viewer.getHoverDelay ()) > 0) {
-Thread.sleep (hoverDelay);
+Clazz.overrideMethod (c$, "run1", 
+function (mode) {
+while (true) switch (mode) {
+case -1:
+if (!this.isJS) Thread.currentThread ().setPriority (1);
+mode = 0;
+break;
+case 0:
+this.hoverDelay = this.viewer.getHoverDelay ();
+if (this.stopped || this.hoverDelay <= 0 || !this.runSleep (this.hoverDelay, 1)) return;
+mode = 1;
+break;
+case 1:
 if (this.moved.is (this.current)) {
-var currentTime = System.currentTimeMillis ();
-var howLong = (currentTime - this.moved.time);
-if (howLong > hoverDelay && !this.$interrupted) {
+this.currentTime = System.currentTimeMillis ();
+var howLong = (this.currentTime - this.moved.time);
+if (howLong > this.hoverDelay && !this.stopped) {
 this.actionManager.checkHover ();
-}}}
-} catch (e$$) {
-if (Clazz.exceptionOf (e$$, InterruptedException)) {
-var ie = e$$;
-{
-org.jmol.util.Logger.debug ("Hover interrupted");
+}}mode = 0;
+break;
 }
-} else if (Clazz.exceptionOf (e$$, Exception)) {
-var ie = e$$;
-{
-org.jmol.util.Logger.debug ("Hover Exception: " + ie);
-}
-} else {
-throw e$$;
-}
-}
-});
+
+}, "~N");
 });

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.render");
+Clazz.declarePackage ("org.jmol.render");
 Clazz.load (null, "org.jmol.render.ShapeRenderer", ["org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
@@ -33,8 +33,9 @@ this.modelSet = modelSet;
 this.shape = shape;
 this.exportType = g3d.getExportType ();
 this.isExport = (this.exportType != 0);
-this.render ();
+var needsTranslucent = this.render ();
 this.exportType = 0;
 this.isExport = false;
+return needsTranslucent;
 }, "org.jmol.api.JmolRendererInterface,org.jmol.modelset.ModelSet,org.jmol.shape.Shape");
 });

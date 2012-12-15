@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (null, "org.jmol.adapter.readers.quantum.SpartanArchive", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Vector3f", "org.jmol.adapter.smarter.AtomSetCollectionReader", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumQuantumShell", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (null, "org.jmol.adapter.readers.quantum.SpartanArchive", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.adapter.smarter.AtomSetCollectionReader", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.constant.EnumQuantumShell", "org.jmol.util.ArrayUtil", "$.Logger", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomCount = 0;
 this.bondData = null;
@@ -41,7 +41,7 @@ if (doAddAtoms && this.bondData.length > 0) this.addBonds (this.bondData, atomCo
 } else if (this.line.indexOf ("BASIS") == 0) {
 this.readBasis ();
 } else if (this.line.indexOf ("WAVEFUNC") == 0 || this.line.indexOf ("BETA") == 0) {
-if (this.r.readMolecularOrbitals) {
+if (this.r.doReadMolecularOrbitals) {
 this.readMolecularOrbital ();
 haveMOData = true;
 }} else if (this.line.indexOf ("ENERGY") == 0) {
@@ -108,12 +108,12 @@ org.jmol.util.Logger.debug (bondCount + " bonds read");
 Clazz.defineMethod (c$, "readBasis", 
 function () {
 var shells =  new java.util.ArrayList ();
-var gaussians =  Clazz.newArray (this.gaussianCount, 0);
-var typeArray =  Clazz.newArray (this.gaussianCount, 0);
+var gaussians = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
+var typeArray =  Clazz.newIntArray (this.gaussianCount, 0);
 for (var i = 0; i < this.shellCount; i++) {
 var tokens = this.getTokens (this.readLine ());
-var flag4 = ((tokens[4].charAt (0)).charCodeAt (0) == 49);
-var slater =  Clazz.newArray (4, 0);
+var flag4 = (tokens[4].charAt (0) == '1');
+var slater =  Clazz.newIntArray (4, 0);
 slater[0] = this.parseInt (tokens[3]) - 1;
 var iBasis = this.parseInt (tokens[0]);
 switch (iBasis) {
@@ -141,7 +141,7 @@ for (var i = 0; i < this.gaussianCount; i++) {
 var alpha = this.parseFloat (this.readLine ());
 var tokens = this.getTokens (this.readLine ());
 var nData = tokens.length;
-var data =  Clazz.newArray (nData + 1, 0);
+var data =  Clazz.newFloatArray (nData + 1, 0);
 data[0] = alpha;
 switch (org.jmol.api.JmolAdapter.getShellEnumeration (typeArray[i])) {
 case org.jmol.constant.EnumQuantumShell.S:
@@ -216,8 +216,8 @@ function () {
 var tokenPt = 0;
 this.r.orbitals =  new java.util.ArrayList ();
 var tokens = this.getTokens ("");
-var energies =  Clazz.newArray (this.moCount, 0);
-var coefficients =  Clazz.newArray (this.moCount, this.coefCount, 0);
+var energies =  Clazz.newFloatArray (this.moCount, 0);
+var coefficients =  Clazz.newFloatArray (this.moCount, this.coefCount, 0);
 for (var i = 0; i < this.moCount; i++) {
 if (tokenPt == tokens.length) {
 tokens = this.getTokens (this.readLine ());
@@ -258,14 +258,14 @@ this.setDipole (this.getTokens (this.readLine ()));
 });
 Clazz.defineMethod (c$, "setDipole", 
 ($fz = function (tokens) {
-if (tokens.length != 3) return ;
-var dipole = javax.vecmath.Vector3f.new3 (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
+if (tokens.length != 3) return;
+var dipole = org.jmol.util.Vector3f.new3 (this.parseFloat (tokens[0]), this.parseFloat (tokens[1]), this.parseFloat (tokens[2]));
 this.r.atomSetCollection.setAtomSetAuxiliaryInfo ("dipole", dipole);
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "readProperty", 
 ($fz = function () {
 var tokens = this.getTokens (this.line);
-if (tokens.length == 0) return ;
+if (tokens.length == 0) return;
 var isString = (tokens[1].startsWith ("STRING"));
 var keyName = tokens[2];
 var isDipole = (keyName.equals ("DIPOLE_VEC"));
@@ -316,7 +316,7 @@ var vibrations =  new java.util.ArrayList ();
 var freqs =  new java.util.ArrayList ();
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug ("reading VIBFREQ vibration records: frequencyCount = " + frequencyCount);
-}var ignore =  Clazz.newArray (frequencyCount, false);
+}var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; ++i) {
 var atomCount0 = this.r.atomSetCollection.getAtomCount ();
 ignore[i] = !this.r.doGetVibration (i + 1);
@@ -339,7 +339,7 @@ var vibatom =  new java.util.ArrayList ();
 var ifreq = 0;
 var iatom = atomCount;
 var nValues = 3;
-var atomInfo =  Clazz.newArray (3, 0);
+var atomInfo =  Clazz.newFloatArray (3, 0);
 while (this.readLine () != null) {
 var tokens2 = this.getTokens (this.line);
 for (var i = 0; i < tokens2.length; i++) {
@@ -366,7 +366,7 @@ Clazz.defineMethod (c$, "setVibrationsFromProperties",
 ($fz = function () {
 var freq_modes = this.r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo ("FREQ_MODES");
 if (freq_modes == null) {
-return ;
+return;
 }var freq_lab = this.r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo ("FREQ_LAB");
 var freq_val = this.r.atomSetCollection.getAtomSetCollectionAuxiliaryInfo ("FREQ_VAL");
 var frequencyCount = freq_val.size ();
@@ -394,7 +394,8 @@ this.r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("VibFreqs", freqs);
 var atomCount = this.r.atomSetCollection.getFirstAtomSetAtomCount ();
 var iatom = atomCount;
 for (var i = 0; i < frequencyCount; i++) {
-if (!this.r.doGetVibration (i + 1)) continue ;var ipt = 0;
+if (!this.r.doGetVibration (i + 1)) continue;
+var ipt = 0;
 var vib =  new java.util.ArrayList ();
 var mode = freq_modes.get (i);
 for (var ia = 0; ia < atomCount; ia++, iatom++) {

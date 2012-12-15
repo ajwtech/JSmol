@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.quantum");
-Clazz.load (["org.jmol.api.MepCalculationInterface", "org.jmol.quantum.QuantumCalculation"], "org.jmol.quantum.MepCalculation", ["java.io.BufferedReader", "$.ByteArrayInputStream", "$.InputStreamReader", "java.lang.Float", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.quantum");
+Clazz.load (["org.jmol.api.MepCalculationInterface", "org.jmol.quantum.QuantumCalculation"], "org.jmol.quantum.MepCalculation", ["java.io.ByteArrayInputStream", "java.lang.Float", "java.util.Hashtable", "org.jmol.io.JmolBinary", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.distanceMode = 0;
 this.potentials = null;
@@ -29,14 +29,14 @@ if (Float.isNaN (f)) f = 0;
 }if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (atoms[i].getInfo () + " " + f);
 potentials[i] = f;
 }
-}, "~A,~A,javax.util.BitSet,javax.util.BitSet,javax.util.BitSet,~S");
+}, "~A,~A,org.jmol.util.BitSet,org.jmol.util.BitSet,org.jmol.util.BitSet,~S");
 Clazz.defineMethod (c$, "setup", 
 function (calcType, potentials, atomCoordAngstroms, bsSelected) {
 if (calcType >= 0) this.distanceMode = calcType;
 this.potentials = potentials;
 this.atomCoordAngstroms = atomCoordAngstroms;
 this.bsSelected = bsSelected;
-}, "~N,~A,~A,javax.util.BitSet");
+}, "~N,~A,~A,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "calculate", 
 function (volumeData, bsSelected, atomCoordAngstroms, potentials, calcType) {
 this.setup (calcType, potentials, atomCoordAngstroms, bsSelected);
@@ -46,7 +46,7 @@ this.initialize (this.countsXYZ[0], this.countsXYZ[1], this.countsXYZ[2], null);
 this.setupCoordinates (volumeData.getOriginFloat (), volumeData.getVolumetricVectorLengths (), bsSelected, atomCoordAngstroms, null, false);
 this.setXYZBohr (this.points);
 this.process ();
-}, "org.jmol.api.VolumeDataInterface,javax.util.BitSet,~A,~A,~N");
+}, "org.jmol.api.VolumeDataInterface,org.jmol.util.BitSet,~A,~A,~N");
 Clazz.defineMethod (c$, "getValueAtPoint", 
 function (pt) {
 var value = 0;
@@ -56,13 +56,14 @@ var d2 = pt.distanceSquared (this.atomCoordAngstroms[i]);
 value += this.valueFor (x, d2, this.distanceMode);
 }
 return value;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "process", 
 function () {
 for (var atomIndex = this.qmAtoms.length; --atomIndex >= 0; ) {
-if ((this.thisAtom = this.qmAtoms[atomIndex]) == null) continue ;var x0 = this.potentials[atomIndex];
+if ((this.thisAtom = this.qmAtoms[atomIndex]) == null) continue;
+var x0 = this.potentials[atomIndex];
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("process map for atom " + atomIndex + this.thisAtom + "  charge=" + x0);
-this.thisAtom.setXYZ (true);
+this.thisAtom.setXYZ (this, true);
 for (var ix = this.xMax; --ix >= this.xMin; ) {
 var dX = this.X2[ix];
 for (var iy = this.yMax; --iy >= this.yMin; ) {
@@ -111,15 +112,17 @@ if (data == null) {
 var url = null;
 if ((url = this.getClass ().getResource (resourceName)) == null) {
 org.jmol.util.Logger.error ("Couldn't find file: " + resourceName);
-return ;
+return;
 }is = url.getContent ();
 } else {
 is =  new java.io.ByteArrayInputStream (data.getBytes ());
-}br =  new java.io.BufferedReader ( new java.io.InputStreamReader (is));
+}br = org.jmol.io.JmolBinary.getInputStreamReader (is);
 var line;
 while ((line = br.readLine ()) != null) {
-if (line.startsWith ("#")) continue ;var vs = org.jmol.util.Parser.getTokens (line);
-if (vs.length < 2) continue ;if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (line);
+if (line.startsWith ("#")) continue;
+var vs = org.jmol.util.Parser.getTokens (line);
+if (vs.length < 2) continue;
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (line);
 this.htAtomicPotentials.put (vs[0],  new Float (org.jmol.util.Parser.parseFloatStr (vs[1])));
 }
 br.close ();

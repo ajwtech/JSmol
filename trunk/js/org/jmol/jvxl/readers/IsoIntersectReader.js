@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "javax.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader", "org.jmol.util.BitSet"], "org.jmol.jvxl.readers.IsoIntersectReader", ["java.lang.Float"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.myBsA = null;
 this.myBsB = null;
@@ -11,10 +11,10 @@ this.values = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoIntersectReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.prepareFields (c$, function () {
-this.myBsA =  new javax.util.BitSet ();
-this.myBsB =  new javax.util.BitSet ();
+this.myBsA =  new org.jmol.util.BitSet ();
+this.myBsB =  new org.jmol.util.BitSet ();
 this.bsAtomMinMax =  new Array (2);
-this.values =  Clazz.newArray (2, 0);
+this.values =  Clazz.newFloatArray (2, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -26,8 +26,8 @@ this.setup (isMapData);
 if (isMapData) return false;
 this.initializeVolumetricData ();
 this.volumeData.setUnitVectors ();
-this.thisPlaneB =  Clazz.newArray (this.volumeData.getYzCount (), 0);
-this.voxelSource =  Clazz.newArray (this.volumeData.nPoints, 0);
+this.thisPlaneB =  Clazz.newFloatArray (this.volumeData.getYzCount (), 0);
+this.voxelSource =  Clazz.newIntArray (this.volumeData.nPoints, 0);
 this.getAtomMinMax (this.myBsA, this.bsAtomMinMax[0] =  new Array (this.nPointsX));
 this.getAtomMinMax (this.myBsB, this.bsAtomMinMax[1] =  new Array (this.nPointsX));
 return true;
@@ -46,7 +46,7 @@ this.func = this.params.func;
 }if (this.contactPair == null) {
 var bsA = this.params.intersection[0];
 var bsB = this.params.intersection[1];
-var bsSelected =  new javax.util.BitSet ();
+var bsSelected =  new org.jmol.util.BitSet ();
 bsSelected.or (bsA);
 bsSelected.or (bsB);
 this.doUseIterator = true;
@@ -116,7 +116,7 @@ return this.atomDataServer.evalFunctionFloat (this.func[0], this.func[1], this.v
 Clazz.defineMethod (c$, "getValueAtPoint", 
 function (pt) {
 return this.getValue (this.getValueAtPoint (pt, this.myBsA), this.getValueAtPoint (pt, this.myBsB));
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getValueAtPoint", 
 ($fz = function (pt, bs) {
 var value = 3.4028235E38;
@@ -125,7 +125,7 @@ var r = pt.distance (this.atomXyz[iAtom]) - this.atomRadius[iAtom];
 if (r < value) value = r;
 }
 return (value == 3.4028235E38 ? NaN : value);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.BitSet");
 Clazz.defineStatics (c$,
 "TYPE_FUNCTION", 0,
 "TYPE_SUM", 1,

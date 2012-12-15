@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
+Clazz.declarePackage ("org.jmol.minimize.forcefield");
 c$ = Clazz.decorateAsClass (function () {
 this.elemNo = 0;
 this.descr = null;

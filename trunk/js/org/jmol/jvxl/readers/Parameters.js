@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (null, "org.jmol.jvxl.readers.Parameters", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.util.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (null, "org.jmol.jvxl.readers.Parameters", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.util.AxisAngle4f", "$.Escape", "$.Logger", "$.Matrix3f", "$.Point3f", "$.Point4f", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.state = 0;
 this.testFlags = 0;
@@ -107,6 +107,7 @@ this.mappedDataMax = 0;
 this.isColorReversed = false;
 this.isBicolorMap = false;
 this.isSquared = false;
+this.isSquaredLinear = false;
 this.thePlane = null;
 this.isContoured = false;
 this.nContours = 0;
@@ -143,7 +144,7 @@ this.showTiming = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "Parameters");
 Clazz.prepareFields (c$, function () {
-this.anisotropy =  Clazz.newArray (3, 0);
+this.anisotropy =  Clazz.newFloatArray (3, 0);
 });
 Clazz.defineMethod (c$, "initialize", 
 function () {
@@ -158,7 +159,7 @@ this.bsIgnore = null;
 this.bsSelected = null;
 this.bsSolvent = null;
 this.calculationType = "";
-this.center = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
+this.center = org.jmol.util.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
 this.colorBySign = this.colorByPhase = this.colorBySets = false;
 this.colorDensity = false;
 this.colorEncoder = null;
@@ -193,6 +194,7 @@ this.isBicolorMap = this.isCutoffAbsolute = this.isPositiveOnly = false;
 this.isCavity = false;
 this.isColorReversed = false;
 this.isSquared = false;
+this.isSquaredLinear = false;
 this.isContoured = false;
 this.isEccentric = this.isAnisotropic = false;
 this.isMapped = false;
@@ -236,21 +238,21 @@ this.anisotropy[1] = pt.y;
 this.anisotropy[2] = pt.z;
 this.isAnisotropic = true;
 if (this.center.x == 3.4028235E38) this.center.set (0, 0, 0);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setEccentricity", 
 function (info) {
-var ecc = javax.vecmath.Vector3f.new3 (info.x, info.y, info.z);
+var ecc = org.jmol.util.Vector3f.new3 (info.x, info.y, info.z);
 var c = (this.scale > 0 ? this.scale : info.w < 0 ? 1 : ecc.length ());
 var fab_c = Math.abs (info.w);
 ecc.normalize ();
-var z = javax.vecmath.Vector3f.new3 (0, 0, 1);
+var z = org.jmol.util.Vector3f.new3 (0, 0, 1);
 ecc.add (z);
 ecc.normalize ();
 if (Float.isNaN (ecc.x)) ecc.set (1, 0, 0);
-this.eccentricityMatrix =  new javax.vecmath.Matrix3f ();
+this.eccentricityMatrix =  new org.jmol.util.Matrix3f ();
 this.eccentricityMatrix.setIdentity ();
-this.eccentricityMatrix.setAA (javax.vecmath.AxisAngle4f.newVA (ecc, 3.141592653589793));
-this.eccentricityMatrixInverse =  new javax.vecmath.Matrix3f ();
+this.eccentricityMatrix.setAA (org.jmol.util.AxisAngle4f.newVA (ecc, 3.141592653589793));
+this.eccentricityMatrixInverse =  new org.jmol.util.Matrix3f ();
 this.eccentricityMatrixInverse.invertM (this.eccentricityMatrix);
 this.isEccentric = this.isAnisotropic = true;
 this.eccentricityScale = c;
@@ -260,18 +262,18 @@ this.anisotropy[0] = fab_c * c;
 this.anisotropy[1] = fab_c * c;
 this.anisotropy[2] = c;
 if (this.center.x == 3.4028235E38) this.center.set (0, 0, 0);
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setPlane", 
 function (plane) {
 this.thePlane = plane;
 if (this.thePlane.x == 0 && this.thePlane.y == 0 && this.thePlane.z == 0) this.thePlane.z = 1;
 this.isContoured = true;
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setSphere", 
 function (radius) {
 this.dataType = 65;
 this.distance = radius;
-this.setEccentricity (javax.vecmath.Point4f.new4 (0, 0, 1, 1));
+this.setEccentricity (org.jmol.util.Point4f.new4 (0, 0, 1, 1));
 this.cutoff = 1.4E-45;
 this.isCutoffAbsolute = false;
 this.isSilent = !this.logMessages;
@@ -285,7 +287,7 @@ this.setEccentricity (v);
 this.cutoff = 1.4E-45;
 this.isCutoffAbsolute = false;
 this.isSilent = !this.logMessages;
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setEllipsoid", 
 function (bList) {
 this.anisoB = bList;
@@ -306,7 +308,7 @@ this.cutoff = 0.14;
 if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
 }this.isSilent = !this.logMessages;
 this.script = this.getScriptParams () + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "getScriptParams", 
 ($fz = function () {
 return " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale);
@@ -320,7 +322,7 @@ this.cutoff = 0.14;
 if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
 }this.isSilent = !this.logMessages;
 this.script = " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " LP {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setRadical", 
 function (v) {
 this.dataType = 71;
@@ -330,7 +332,7 @@ this.cutoff = 0.14;
 if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
 }this.isSilent = !this.logMessages;
 this.script = " center " + org.jmol.util.Escape.escapePt (this.center) + (Float.isNaN (this.scale) ? "" : " scale " + this.scale) + " RAD {" + v.x + " " + v.y + " " + v.z + " " + v.w + "};";
-}, "javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setLcao", 
 function (type, colorPtr) {
 this.lcaoType = type;
@@ -397,15 +399,15 @@ this.isEccentric = this.isAnisotropic = false;
 Clazz.defineMethod (c$, "setAtomicOrbital", 
 function (nlmZprs) {
 this.dataType = 1294;
-this.setEccentricity (javax.vecmath.Point4f.new4 (0, 0, 1, 1));
-this.psi_n = Math.round (nlmZprs[0]);
-this.psi_l = Math.round (nlmZprs[1]);
-this.psi_m = Math.round (nlmZprs[2]);
+this.setEccentricity (org.jmol.util.Point4f.new4 (0, 0, 1, 1));
+this.psi_n = Clazz.floatToInt (nlmZprs[0]);
+this.psi_l = Clazz.floatToInt (nlmZprs[1]);
+this.psi_m = Clazz.floatToInt (nlmZprs[2]);
 this.psi_Znuc = nlmZprs[3];
-this.psi_monteCarloCount = Math.round (nlmZprs[4]);
+this.psi_monteCarloCount = Clazz.floatToInt (nlmZprs[4]);
 this.distance = nlmZprs[5];
 if (this.distance != 0 || this.thePlane != null) this.allowVolumeRender = false;
-this.randomSeed = Math.round (nlmZprs[6]);
+this.randomSeed = Clazz.floatToInt (nlmZprs[6]);
 this.psi_ptsPerAngstrom = 10;
 if (this.cutoff == 3.4028235E38 || this.cutoff == 0.14) {
 this.cutoff = (this.psi_monteCarloCount > 0 ? 0 : 0.04);
@@ -451,7 +453,7 @@ this.moData =  new java.util.Hashtable ();
 Clazz.defineMethod (c$, "setMO", 
 function (iMo, linearCombination) {
 this.qm_moLinearCombination = linearCombination;
-this.qm_moNumber = (linearCombination == null ? Math.abs (iMo) : Math.round (linearCombination[1]));
+this.qm_moNumber = (linearCombination == null ? Math.abs (iMo) : Clazz.floatToInt (linearCombination[1]));
 this.qmOrbitalType = (this.moData.containsKey ("haveVolumeData") ? 5 : this.moData.containsKey ("gaussians") ? 1 : this.moData.containsKey ("slaters") ? 2 : 0);
 var isElectronDensity = (iMo <= 0 && linearCombination == null);
 if (this.qmOrbitalType == 0) {
@@ -473,10 +475,10 @@ this.title[4] = "?Occupancy = %O";
 }}}this.dataType = 1837;
 if (this.cutoff == 3.4028235E38) {
 this.cutoff = (isElectronDensity ? 0.01 : 0.05);
-if (this.isSquared) this.cutoff = this.cutoff * this.cutoff;
-}this.isEccentric = this.isAnisotropic = false;
+}if (this.isSquared || this.isSquaredLinear) this.cutoff = this.cutoff * this.cutoff;
+this.isEccentric = this.isAnisotropic = false;
 this.isCutoffAbsolute = (this.cutoff > 0 && !this.isPositiveOnly);
-if (this.state >= 2 || this.thePlane != null) return ;
+if (this.state >= 2 || this.thePlane != null) return;
 this.colorBySign = true;
 if (this.colorByPhase && this.colorPhase == 0) this.colorByPhase = false;
 this.isBicolorMap = true;

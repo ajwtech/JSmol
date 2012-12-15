@@ -1,8 +1,8 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Hermite", ["javax.vecmath.Point3f", "$.Vector3f"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.Hermite", ["org.jmol.util.Point3f", "$.Vector3f"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Hermite");
 c$.getHermiteList = Clazz.defineMethod (c$, "getHermiteList", 
-function (tension, p0, p1, p2, p3, p4, list, index0, n) {
+function (tension, p0, p1, p2, p3, p4, list, index0, n, isPt) {
 var nPoints = n + 1;
 var fnPoints = n - 1;
 var x1 = p1.x;
@@ -46,8 +46,8 @@ var h4 = s3 - s2;
 var x = (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
 var y = (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
 var z = (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-if (Clazz.instanceOf (list, Array)) list[index0 + i] = javax.vecmath.Point3f.new3 (x, y, z);
- else list[index0 + i] = javax.vecmath.Vector3f.new3 (x, y, z);
+if (isPt) list[index0 + i] = org.jmol.util.Point3f.new3 (x, y, z);
+ else list[index0 + i] = org.jmol.util.Vector3f.new3 (x, y, z);
 }
-}, "~N,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,~A,~N,~N");
+}, "~N,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,~A,~N,~N,~B");
 });

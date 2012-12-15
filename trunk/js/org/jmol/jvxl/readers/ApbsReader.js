@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.ApbsReader", ["javax.util.StringXBuilder", "org.jmol.util.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.ApbsReader", ["org.jmol.util.Parser", "$.StringXBuilder"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "ApbsReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -14,7 +14,7 @@ this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer = javax.util.StringXBuilder.newS (this.skipComments (false));
+this.jvxlFileHeaderBuffer = org.jmol.util.StringXBuilder.newS (this.skipComments (false));
 while (this.line != null && this.line.length == 0) this.readLine ();
 
 this.jvxlFileHeaderBuffer.append ("APBS OpenDx DATA ").append (this.line).append ("\n");

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.FontLineShape"], "org.jmol.shape.Bbcage", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isVisible = false;
@@ -14,11 +14,11 @@ this.myType = "boundBox";
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 this.isVisible = ((this.mad = this.viewer.getObjectMad (4)) != 0);
-if (!this.isVisible) return ;
+if (!this.isVisible) return;
 var bboxModels = this.viewer.getBoundBoxModels ();
-if (bboxModels == null) return ;
-for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) if (bboxModels.get (i)) return ;
+if (bboxModels == null) return;
+for (var i = bs.nextSetBit (0); i >= 0; i = bs.nextSetBit (i + 1)) if (bboxModels.get (i)) return;
 
 this.isVisible = false;
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 });

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
 Clazz.load (["org.jmol.adapter.readers.cifpdb.PdbReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.P2nReader", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.altNames = null;

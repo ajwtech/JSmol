@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.api");
+Clazz.declarePackage ("org.jmol.api");
 c$ = Clazz.declareType (org.jmol.api, "JmolAdapterAtomIterator");
 Clazz.defineMethod (c$, "getAtomSetIndex", 
 function () {

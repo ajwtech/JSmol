@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.api.JmolMeasurementClient"], "org.jmol.modelset.MeasurementData", ["java.util.ArrayList", "org.jmol.modelset.Measurement", "org.jmol.util.BitSetUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.client = null;
@@ -25,7 +25,7 @@ function (viewer, points, tokAction, radiusData, strFormat, units, tickInfo, mus
 this.viewer = viewer;
 this.tokAction = tokAction;
 this.points = points;
-if (points.size () >= 2 && Clazz.instanceOf (points.get (0), javax.util.BitSet) && Clazz.instanceOf (points.get (1), javax.util.BitSet)) {
+if (points.size () >= 2 && Clazz.instanceOf (points.get (0), org.jmol.util.BitSet) && Clazz.instanceOf (points.get (1), org.jmol.util.BitSet)) {
 this.justOneModel = org.jmol.util.BitSetUtil.haveCommon (viewer.getModelBitSet (points.get (0), false), viewer.getModelBitSet (points.get (1), false));
 }this.radiusData = radiusData;
 this.strFormat = strFormat;
@@ -39,19 +39,19 @@ this.isAll = isAll;
 Clazz.defineMethod (c$, "processNextMeasure", 
 function (m) {
 var value = m.getMeasurement ();
-if (this.radiusData != null && !m.isInRange (this.radiusData, value)) return ;
+if (this.radiusData != null && !m.isInRange (this.radiusData, value)) return;
 if (this.measurementStrings == null) {
 var f = this.minArray[this.iFirstAtom];
 m.value = value;
 value = m.fixValue (this.units, false);
 this.minArray[this.iFirstAtom] = (1 / f == -Infinity ? value : Math.min (f, value));
-return ;
+return;
 }this.measurementStrings.add (m.getStringUsing (this.viewer, this.strFormat, this.units));
 }, "org.jmol.modelset.Measurement");
 Clazz.defineMethod (c$, "getMeasurements", 
 function (asMinArray) {
 if (asMinArray) {
-this.minArray =  Clazz.newArray ((this.points.get (0)).cardinality (), 0);
+this.minArray =  Clazz.newFloatArray ((this.points.get (0)).cardinality (), 0);
 for (var i = 0; i < this.minArray.length; i++) this.minArray[i] = -0.0;
 
 this.define (null, this.viewer.getModelSet ());
@@ -65,19 +65,19 @@ function (client, modelSet) {
 this.client = (client == null ? this : client);
 this.atoms = modelSet.atoms;
 var nPoints = this.points.size ();
-if (nPoints < 2) return ;
+if (nPoints < 2) return;
 var modelIndex = -1;
 var pts =  new Array (4);
-var indices =  Clazz.newArray (5, 0);
+var indices =  Clazz.newIntArray (5, 0);
 var m =  new org.jmol.modelset.Measurement (modelSet, indices, pts, null);
 m.setCount (nPoints);
 var ptLastAtom = -1;
 for (var i = 0; i < nPoints; i++) {
 var obj = this.points.get (i);
-if (Clazz.instanceOf (obj, javax.util.BitSet)) {
+if (Clazz.instanceOf (obj, org.jmol.util.BitSet)) {
 var bs = obj;
 var nAtoms = bs.cardinality ();
-if (nAtoms == 0) return ;
+if (nAtoms == 0) return;
 if (nAtoms > 1) modelIndex = 0;
 ptLastAtom = i;
 if (i == 0) this.iFirstAtom = 0;
@@ -92,19 +92,21 @@ Clazz.defineMethod (c$, "nextMeasure",
 ($fz = function (thispt, ptLastAtom, m, thisModel) {
 if (thispt > ptLastAtom) {
 if (m.isValid () && (!this.mustBeConnected || m.isConnected (this.atoms, thispt)) && (!this.mustNotBeConnected || !m.isConnected (this.atoms, thispt)) && (this.intramolecular == null || m.isIntramolecular (this.atoms, thispt) == this.intramolecular.booleanValue ())) this.client.processNextMeasure (m);
-return ;
+return;
 }var bs = this.points.get (thispt);
 var indices = m.getCountPlusIndices ();
 var thisAtomIndex = (thispt == 0 ? 2147483647 : indices[thispt]);
 if (thisAtomIndex < 0) {
 this.nextMeasure (thispt + 1, ptLastAtom, m, thisModel);
-return ;
+return;
 }var haveNext = false;
 for (var i = bs.nextSetBit (0), pt = 0; i >= 0; i = bs.nextSetBit (i + 1), pt++) {
-if (i == thisAtomIndex) continue ;var modelIndex = this.atoms[i].getModelIndex ();
+if (i == thisAtomIndex) continue;
+var modelIndex = this.atoms[i].getModelIndex ();
 if (thisModel >= 0 && this.justOneModel) {
 if (thispt == 0) thisModel = modelIndex;
- else if (thisModel != modelIndex) continue ;}indices[thispt + 1] = i;
+ else if (thisModel != modelIndex) continue;
+}indices[thispt + 1] = i;
 if (thispt == 0) this.iFirstAtom = pt;
 haveNext = true;
 this.nextMeasure (thispt + 1, ptLastAtom, m, thisModel);

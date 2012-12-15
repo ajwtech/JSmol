@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.declarePackage ("org.jmol.jvxl.readers");
 Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoMepReader", ["org.jmol.api.Interface"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.type = null;

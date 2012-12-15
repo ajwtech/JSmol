@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
+Clazz.declarePackage ("org.jmol.viewer");
 Clazz.load (null, "org.jmol.viewer.ModelManager", ["org.jmol.modelset.ModelLoader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
@@ -46,7 +46,7 @@ if (modelSetName.length == 0) modelSetName = null;
 }this.modelSet = ( new org.jmol.modelset.ModelLoader (this.viewer, modelSetName, loadScript, atomSetCollection, (isAppend ? this.modelSet : null), bsNew)).getModelSet ();
 }if (this.modelSet.getAtomCount () == 0) this.zap ();
 return this.modelSet;
-}, "~S,~S,javax.util.StringXBuilder,~O,javax.util.BitSet,~B");
+}, "~S,~S,org.jmol.util.StringXBuilder,~O,org.jmol.util.BitSet,~B");
 c$.reduceFilename = Clazz.defineMethod (c$, "reduceFilename", 
 ($fz = function (fileName) {
 if (fileName == null) return null;

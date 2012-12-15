@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
+Clazz.declarePackage ("org.jmol.minimize");
 c$ = Clazz.decorateAsClass (function () {
 this.data = null;
 this.type = 0;

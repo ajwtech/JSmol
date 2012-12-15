@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.Monomer"], "org.jmol.modelsetbio.AlphaMonomer", ["javax.vecmath.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Helix", "$.Sheet", "$.Turn", "org.jmol.util.Quaternion"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelsetbio.Monomer"], "org.jmol.modelsetbio.AlphaMonomer", ["org.jmol.constant.EnumStructure", "org.jmol.modelsetbio.Helix", "$.Sheet", "$.Turn", "org.jmol.util.Quaternion", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.proteinStructure = null;
 this.nitrogenHydrogenPoint = null;
@@ -9,7 +9,7 @@ Clazz.overrideMethod (c$, "isProtein",
 function () {
 return true;
 });
-c$.validateAndAllocate = Clazz.defineMethod (c$, "validateAndAllocate", 
+c$.validateAndAllocateA = Clazz.defineMethod (c$, "validateAndAllocateA", 
 function (chain, group3, seqcode, firstIndex, lastIndex, specialAtomIndexes) {
 if (firstIndex != lastIndex || specialAtomIndexes[2] != firstIndex) return null;
 return  new org.jmol.modelsetbio.AlphaMonomer (chain, group3, seqcode, firstIndex, lastIndex, org.jmol.modelsetbio.AlphaMonomer.alphaOffsets);
@@ -31,9 +31,9 @@ function (proteinStructure) {
 this.proteinStructure = proteinStructure;
 if (proteinStructure == null) this.nitrogenHydrogenPoint = null;
 }, "org.jmol.modelsetbio.ProteinStructure");
-Clazz.overrideMethod (c$, "setProteinStructureId", 
-function (id) {
-if (this.proteinStructure != null) this.proteinStructure.uniqueID = id;
+Clazz.overrideMethod (c$, "setStrucNo", 
+function (n) {
+if (this.proteinStructure != null) this.proteinStructure.strucNo = n;
 }, "~N");
 Clazz.overrideMethod (c$, "getProteinStructureType", 
 function () {
@@ -45,7 +45,7 @@ return this.proteinStructure == null ? org.jmol.constant.EnumStructure.NONE : th
 });
 Clazz.overrideMethod (c$, "getStrucNo", 
 function () {
-return this.proteinStructure != null ? this.proteinStructure.uniqueID : 0;
+return this.proteinStructure != null ? this.proteinStructure.strucNo : 0;
 });
 Clazz.overrideMethod (c$, "isHelix", 
 function () {
@@ -66,13 +66,13 @@ case org.jmol.constant.EnumStructure.HELIX:
 case org.jmol.constant.EnumStructure.HELIXALPHA:
 case org.jmol.constant.EnumStructure.HELIX310:
 case org.jmol.constant.EnumStructure.HELIXPI:
-this.setStructure ( new org.jmol.modelsetbio.Helix (this.bioPolymer, this.monomerIndex, 1, 0, type));
+this.setStructure ( new org.jmol.modelsetbio.Helix (this.bioPolymer, this.monomerIndex, 1, type));
 break;
 case org.jmol.constant.EnumStructure.SHEET:
-this.setStructure ( new org.jmol.modelsetbio.Sheet (this.bioPolymer, this.monomerIndex, 1, 0, type));
+this.setStructure ( new org.jmol.modelsetbio.Sheet (this.bioPolymer, this.monomerIndex, 1, type));
 break;
 case org.jmol.constant.EnumStructure.TURN:
-this.setStructure ( new org.jmol.modelsetbio.Turn (this.bioPolymer, this.monomerIndex, 1, 0));
+this.setStructure ( new org.jmol.modelsetbio.Turn (this.bioPolymer, this.monomerIndex, 1));
 break;
 case org.jmol.constant.EnumStructure.NONE:
 this.setStructure (null);
@@ -120,8 +120,8 @@ return this.getHelixData2 (tokType, qType, mStep);
 }, "~N,~S,~N");
 Clazz.overrideMethod (c$, "getQuaternion", 
 function (qType) {
-var vA =  new javax.vecmath.Vector3f ();
-var vB =  new javax.vecmath.Vector3f ();
+var vA =  new org.jmol.util.Vector3f ();
+var vB =  new org.jmol.util.Vector3f ();
 var vC = null;
 switch (qType) {
 default:

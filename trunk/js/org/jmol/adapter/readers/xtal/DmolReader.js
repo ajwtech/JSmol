@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.DmolReader", ["java.lang.Double", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.unitCellData = null;
@@ -24,7 +24,7 @@ this.readFreq ();
 });
 Clazz.defineMethod (c$, "readCellParam", 
 ($fz = function () {
-this.unitCellData =  Clazz.newArray (9, 0);
+this.unitCellData =  Clazz.newFloatArray (9, 0);
 for (var n = 0, i = 0; n < 3; n++) {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.unitCellData[i++] = this.parseFloatStr (!this.geomOpt ? tokens[0] : tokens[4]) * 0.5291772;
@@ -76,19 +76,20 @@ Clazz.defineMethod (c$, "readFreq",
 ($fz = function () {
 var lastAtomCount = 0;
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
-while (this.readLine () != null && (this.line.charAt (1)).charCodeAt (0) == 32) {
+while (this.readLine () != null && this.line.charAt (1) == ' ') {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
-var frequencyCount = Math.floor (tokens.length / 2);
-var frequencies =  Clazz.newArray (frequencyCount, 0);
+var frequencyCount = Clazz.doubleToInt (tokens.length / 2);
+var frequencies =  Clazz.newFloatArray (frequencyCount, 0);
 for (var i = 1, n = 0; i < tokens.length; i += 2, n++) {
 frequencies[n] = this.parseFloatStr (tokens[i]);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ((this.vibrationNumber + n) + " frequency=" + frequencies[n]);
 }
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 var iAtom0 = 0;
 for (var i = 0; i < frequencyCount; i++) {
 ignore[i] = (!this.doGetVibration (++this.vibrationNumber));
-if (ignore[i]) continue ;this.applySymmetryAndSetTrajectory ();
+if (ignore[i]) continue;
+this.applySymmetryAndSetTrajectory ();
 lastAtomCount = this.cloneLastAtomSet (atomCount, null);
 if (i == 0) iAtom0 = this.atomSetCollection.getLastAtomSetAtomIndex ();
 this.atomSetCollection.setAtomSetFrequency (null, null, String.valueOf (frequencies[i]), null);

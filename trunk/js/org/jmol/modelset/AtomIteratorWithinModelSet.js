@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.modelset.AtomIteratorWithinModel"], "org.jmol.modelset.AtomIteratorWithinModelSet", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsModels = null;
@@ -10,13 +10,13 @@ Clazz.makeConstructor (c$,
 function (bsModels) {
 Clazz.superConstructor (this, org.jmol.modelset.AtomIteratorWithinModelSet, []);
 this.bsModels = bsModels;
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setCenter", 
 function (center, distance) {
 this.center = center;
 this.distance = distance;
 this.set (0);
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "set", 
 ($fz = function (iModel) {
 if ((this.modelIndex = this.bsModels.nextSetBit (iModel)) < 0 || (this.cubeIterator = this.bspf.getCubeIterator (this.modelIndex)) == null) return false;

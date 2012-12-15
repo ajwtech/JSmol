@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.bspt");
+Clazz.declarePackage ("org.jmol.bspt");
 Clazz.load (["org.jmol.bspt.Element"], "org.jmol.bspt.Node", ["java.lang.NullPointerException", "org.jmol.bspt.Leaf", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dim = 0;
@@ -58,7 +58,7 @@ if (dimValue < this.minRight) this.minRight = dimValue;
  else if (dimValue > this.maxRight) this.maxRight = dimValue;
 this.eleRight = this.eleRight.addTuple (level + 1, tuple);
 }return this;
-}, "~N,javax.vecmath.Point3f");
+}, "~N,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "dump", 
 function (level, sb) {
 sb.append ("\nnode LEFT" + level);
@@ -67,7 +67,7 @@ for (var i = 0; i < level; ++i) sb.append ("->");
 
 sb.append (" RIGHT" + level);
 this.eleRight.dump (level + 1, sb);
-}, "~N,javax.util.StringXBuilder");
+}, "~N,org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "toString", 
 function () {
 return this.eleLeft.toString () + this.dim + ":" + "\n" + this.eleRight.toString ();
@@ -75,5 +75,5 @@ return this.eleLeft.toString () + this.dim + ":" + "\n" + this.eleRight.toString
 c$.getDimensionValue = Clazz.defineMethod (c$, "getDimensionValue", 
 function (pt, dim) {
 return (dim == 0 ? pt.x : dim == 1 ? pt.y : pt.z);
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 });

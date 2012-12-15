@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.MOReader", "java.util.ArrayList", "$.Hashtable"], "org.jmol.adapter.readers.quantum.PsiReader", ["java.lang.Float", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomNames = null;
@@ -89,7 +89,7 @@ case 3:
 if (slater != null) {
 slatersByUniqueAtom.add (slater);
 }ipt = 1;
-slater =  Clazz.newArray (3, 0);
+slater =  Clazz.newIntArray (3, 0);
 slater[0] = org.jmol.api.JmolAdapter.getQuantumShellTagID (tokens[0]);
 slater[1] = this.gaussianCount;
 this.shellCount++;
@@ -107,10 +107,10 @@ slatersByUniqueAtom.add (slater);
 this.gaussianCount += nGaussians;
 this.readLine ();
 }
-var garray =  Clazz.newArray (this.gaussianCount, 0);
+var garray = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
 for (var i = 0; i < this.gaussianCount; i++) {
 tokens = gdata.get (i);
-garray[i] =  Clazz.newArray (tokens.length, 0);
+garray[i] =  Clazz.newFloatArray (tokens.length, 0);
 for (var j = 0; j < tokens.length; j++) garray[i][j] = this.parseFloatStr (tokens[j]);
 
 }
@@ -135,7 +135,7 @@ var iUnique = this.uniqueAtomMap.get (atomType).intValue ();
 var slaters = this.shellsByUniqueAtom.get (iUnique);
 if (slaters == null) {
 org.jmol.util.Logger.error ("slater for atom " + i + " atomType " + atomType + " was not found in listing. Ignoring molecular orbitals");
-return ;
+return;
 }for (var j = 0; j < slaters.size (); j++) {
 var slater = slaters.get (j);
 sdata.add ([i, slater[0], slater[1], slater[2]]);
@@ -150,7 +150,7 @@ var data = org.jmol.util.ArrayUtil.createArrayOfArrayList (5);
 var nThisLine = 0;
 while (this.readLine () != null && this.line.toUpperCase ().indexOf ("DENS") < 0) {
 var tokens = this.getTokens ();
-var ptData = ((this.line.charAt (5)).charCodeAt (0) == 32 ? 2 : 4);
+var ptData = (this.line.charAt (5) == ' ' ? 2 : 4);
 if (this.line.indexOf ("                    ") == 0) {
 this.addMOData (nThisLine, data, mos);
 nThisLine = tokens.length;
@@ -164,7 +164,8 @@ tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getStrings (this.readL
 for (var i = 0; i < nThisLine; i++) {
 mos[i].put ("energy",  new Float (tokens[i]));
 }
-continue ;}try {
+continue;
+}try {
 for (var i = 0; i < nThisLine; i++) {
 data[i].add (tokens[i + ptData]);
 }
@@ -189,8 +190,9 @@ var tokens;
 while (this.readLine () != null && this.line.indexOf ("Frequency") >= 0) {
 tokens = this.getTokens ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();
-var ignore =  Clazz.newArray (1, false);
-if (!this.doGetVibration (++this.vibrationNumber)) continue ;this.atomSetCollection.cloneLastAtomSet ();
+var ignore =  Clazz.newBooleanArray (1, false);
+if (!this.doGetVibration (++this.vibrationNumber)) continue;
+this.atomSetCollection.cloneLastAtomSet ();
 this.atomSetCollection.setAtomSetFrequency (null, null, tokens[1], null);
 this.readLines (2);
 this.fillFrequencyData (iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);

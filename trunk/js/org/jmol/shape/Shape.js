@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (null, "org.jmol.shape.Shape", ["org.jmol.constant.EnumPalette", "org.jmol.util.Colix", "$.Logger", "org.jmol.viewer.JmolConstants", "$.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
@@ -44,23 +44,23 @@ function (size, rd, bsSelected) {
 this.setXmlProperty ("size", (rd == null ? Integer.$valueOf (size) : rd), bsSelected);
 if (rd == null) this.setSize (size, bsSelected);
  else this.setSizeRD (rd, bsSelected);
-}, "~N,org.jmol.atomdata.RadiusData,javax.util.BitSet");
+}, "~N,org.jmol.atomdata.RadiusData,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setSize", 
 function (size, bsSelected) {
-}, "~N,javax.util.BitSet");
+}, "~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
-}, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
+}, "org.jmol.atomdata.RadiusData,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setShapeProperty", 
 function (propertyName, value, bsSelected) {
 if (!this.setXmlProperty (propertyName, value, bsSelected)) this.setProperty (propertyName, value, bsSelected == null ? this.viewer.getSelectionSet (false) : bsSelected);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setXmlProperty", 
 ($fz = function (propertyName, value, bs) {
 var myType = org.jmol.viewer.JmolConstants.shapeClassBases[this.shapeID];
 if (org.jmol.util.Logger.debuggingHigh && this.shapeID != 33) org.jmol.util.Logger.info (myType + " setProperty: " + propertyName + " = " + value);
 return false;
-}, $fz.isPrivate = true, $fz), "~S,~O,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bsSelected) {
 if (propertyName === "setProperties") {
@@ -69,14 +69,14 @@ while (propertyList.size () > 0) {
 var data = propertyList.remove (0);
 this.setShapeProperty ((data[0]).intern (), data[1], null);
 }
-return ;
+return;
 }if (propertyName === "translucentLevel") {
 this.translucentLevel = (value).floatValue ();
-return ;
+return;
 }if (propertyName === "refreshTrajectories") {
-return ;
+return;
 }org.jmol.util.Logger.warn ("unassigned " + org.jmol.viewer.JmolConstants.shapeClassBases[this.shapeID] + " + shape setProperty:" + propertyName + ":" + value);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 return false;
@@ -95,40 +95,40 @@ return false;
 }, "~N,~N");
 Clazz.defineMethod (c$, "findNearestAtomIndex", 
 function (xMouse, yMouse, closest, bsNot) {
-}, "~N,~N,~A,javax.util.BitSet");
+}, "~N,~N,~A,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "checkBoundsMinMax", 
 function (pointMin, pointMax) {
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setModelClickability", 
 function () {
 });
 Clazz.defineMethod (c$, "checkObjectClicked", 
 function (x, y, modifiers, bsVisible) {
 return null;
-}, "~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 return false;
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "checkObjectDragged", 
 function (prevX, prevY, x, y, modifiers, bsVisible) {
 return false;
-}, "~N,~N,~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "coordinateInRange", 
 function (x, y, vertex, dmin2, ptXY) {
 this.viewer.transformPtScr (vertex, ptXY);
 var d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
 return (d2 < dmin2 ? d2 : -1);
-}, "~N,~N,javax.vecmath.Point3f,~N,javax.vecmath.Point3i");
+}, "~N,~N,org.jmol.util.Point3f,~N,org.jmol.util.Point3i");
 Clazz.defineMethod (c$, "setColix", 
 function (colix, paletteID, atomIndex) {
-return this.setColix (colix, paletteID, this.modelSet.atoms[atomIndex]);
+return this.setColixA (colix, paletteID, this.modelSet.atoms[atomIndex]);
 }, "~N,~N,~N");
-Clazz.defineMethod (c$, "setColix", 
+Clazz.defineMethod (c$, "setColixA", 
 function (colix, paletteID, atom) {
 return (colix == 2 ? this.viewer.getColixAtomPalette (atom, paletteID) : colix);
 }, "~N,~N,org.jmol.modelset.Atom");
-Clazz.defineMethod (c$, "setColix", 
+Clazz.defineMethod (c$, "setColixB", 
 function (colix, pid, bond) {
 return (colix == 2 ? this.viewer.getColixBondPalette (bond, pid) : colix);
 }, "~N,~N,org.jmol.modelset.Bond");
@@ -142,7 +142,7 @@ return null;
 });
 Clazz.defineMethod (c$, "setVisibilityFlags", 
 function (bs) {
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 c$.setStateInfo = Clazz.defineMethod (c$, "setStateInfo", 
 function (ht, i, key) {
 org.jmol.shape.Shape.setStateInfo (ht, i, i, key);
@@ -153,22 +153,22 @@ org.jmol.viewer.StateManager.setStateInfo (ht, i1, i2, key);
 }, "java.util.Map,~N,~N,~S");
 c$.getShapeCommands = Clazz.defineMethod (c$, "getShapeCommands", 
 function (htDefine, htMore) {
-return org.jmol.viewer.StateManager.getCommands (htDefine, htMore);
+return org.jmol.viewer.StateManager.getCommands (htDefine, htMore, "select");
 }, "java.util.Map,java.util.Map");
-c$.getShapeCommands = Clazz.defineMethod (c$, "getShapeCommands", 
+c$.getShapeCommandsSel = Clazz.defineMethod (c$, "getShapeCommandsSel", 
 function (htDefine, htMore, selectCmd) {
 return org.jmol.viewer.StateManager.getCommands (htDefine, htMore, selectCmd);
 }, "java.util.Map,java.util.Map,~S");
 c$.appendCmd = Clazz.defineMethod (c$, "appendCmd", 
 function (s, cmd) {
 org.jmol.viewer.StateManager.appendCmd (s, cmd);
-}, "javax.util.StringXBuilder,~S");
+}, "org.jmol.util.StringXBuilder,~S");
 c$.getFontCommand = Clazz.defineMethod (c$, "getFontCommand", 
 function (type, font) {
 if (font == null) return "";
 return "font " + type + " " + font.fontSizeNominal + " " + font.fontFace + " " + font.fontStyle;
 }, "~S,org.jmol.util.JmolFont");
-Clazz.defineMethod (c$, "getColorCommand", 
+Clazz.defineMethod (c$, "getColorCommandUnk", 
 function (type, colix) {
 return this.getColorCommand (type, org.jmol.constant.EnumPalette.UNKNOWN.id, colix);
 }, "~S,~N");

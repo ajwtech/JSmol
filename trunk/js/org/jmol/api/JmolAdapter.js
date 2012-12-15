@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.api");
+Clazz.declarePackage ("org.jmol.api");
 Clazz.load (["org.jmol.constant.EnumQuantumShell"], "org.jmol.api.JmolAdapter", ["java.util.Hashtable", "org.jmol.api.JmolViewer", "org.jmol.modelset.Group", "org.jmol.util.Elements", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.adapterName = null;
@@ -92,10 +92,6 @@ c$.canonizeAlternateLocationID = Clazz.defineMethod (c$, "canonizeAlternateLocat
 function (altLoc) {
 return org.jmol.api.JmolAdapter.canonizeAlphaDigit (altLoc);
 }, "~S");
-Clazz.defineMethod (c$, "specialLoad", 
-function (name, type) {
-return null;
-}, "~S,~S");
 Clazz.defineStatics (c$,
 "ORDER_COVALENT_SINGLE", 1,
 "ORDER_COVALENT_DOUBLE", 2,
@@ -121,4 +117,6 @@ c$.SHELL_F_SPHERICAL = c$.prototype.SHELL_F_SPHERICAL = org.jmol.constant.EnumQu
 c$.SHELL_F_CARTESIAN = c$.prototype.SHELL_F_CARTESIAN = org.jmol.constant.EnumQuantumShell.F_CARTESIAN.id;
 c$.SUPPORTED_BASIS_FUNCTIONS = c$.prototype.SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
 c$.NOTE_SCRIPT_FILE = c$.prototype.NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
+Clazz.defineStatics (c$,
+"cellParamNames", ["_cell_length_a", "_cell_length_b", "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"]);
 });

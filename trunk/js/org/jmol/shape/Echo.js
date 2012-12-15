@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Echo", ["javax.util.StringXBuilder", "org.jmol.shape.Object2d", "$.Text", "org.jmol.util.Escape", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Echo", ["org.jmol.shape.Object2d", "$.Text", "org.jmol.util.Escape", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.shape, "Echo", org.jmol.shape.TextShape);
 Clazz.defineMethod (c$, "initShape", 
 function () {
@@ -12,7 +12,7 @@ if ("scalereference" === propertyName) {
 if (this.currentObject != null) {
 var val = (value).floatValue ();
 this.currentObject.setScalePixelsPerMicron (val == 0 ? 0 : 10000 / val);
-}return ;
+}return;
 }if ("xyz" === propertyName) {
 if (this.currentObject != null && this.viewer.getFontScaling ()) this.currentObject.setScalePixelsPerMicron (this.viewer.getScalePixelsPerAngstrom (false) * 10000);
 }if ("scale" === propertyName) {
@@ -22,9 +22,9 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 e.next ().setScale ((value).floatValue ());
 }
-}return ;
+}return;
 }(this.currentObject).setScale ((value).floatValue ());
-return ;
+return;
 }if ("image" === propertyName) {
 if (this.currentObject == null) {
 if (this.isAll) {
@@ -32,14 +32,14 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 e.next ().setImage (value);
 }
-}return ;
+}return;
 }(this.currentObject).setImage (value);
-return ;
+return;
 }if ("thisID" === propertyName) {
 var target = value;
 this.currentObject = this.objects.get (target);
 if (this.currentObject == null && org.jmol.util.TextFormat.isWild (target)) this.thisID = target.toUpperCase ();
-return ;
+return;
 }if ("hidden" === propertyName) {
 var isHidden = (value).booleanValue ();
 if (this.currentObject == null) {
@@ -49,10 +49,10 @@ while (e.hasNext ()) {
 var text = e.next ();
 if (this.isAll || org.jmol.util.TextFormat.isMatch (text.target.toUpperCase (), this.thisID, true, true)) text.hidden = isHidden;
 }
-}return ;
+}return;
 }(this.currentObject).hidden = isHidden;
-return ;
-}if (org.jmol.shape.Object2d.setProperty (propertyName, value, this.currentObject)) return ;
+return;
+}if (org.jmol.shape.Object2d.setProperty (propertyName, value, this.currentObject)) return;
 if ("target" === propertyName) {
 this.thisID = null;
 var target = (value).intern ().toLowerCase ();
@@ -71,18 +71,18 @@ valign = 3;
 halign = 2;
 } else if ("bottom" === target) {
 valign = 2;
-}text =  new org.jmol.shape.Text (this.viewer, this.gdata, this.gdata.getFont3DFS ("Serif", 20), target, 10, valign, halign, 0);
+}text = org.jmol.shape.Text.newEcho (this.viewer, this.gdata, this.gdata.getFont3DFS ("Serif", 20), target, 10, valign, halign, 0);
 text.setAdjustForWindow (true);
 this.objects.put (target, text);
-if (this.currentFont != null) text.setFont (this.currentFont);
-if (this.currentColor != null) text.setColix (this.currentColor);
-if (this.currentBgColor != null) text.setBgColix (this.currentBgColor);
+if (this.currentFont != null) text.setFont (this.currentFont, true);
+if (this.currentColor != null) text.setColixO (this.currentColor);
+if (this.currentBgColor != null) text.setBgColixO (this.currentBgColor);
 if (this.currentTranslucentLevel != 0) text.setTranslucent (this.currentTranslucentLevel, false);
 if (this.currentBgTranslucentLevel != 0) text.setTranslucent (this.currentBgTranslucentLevel, true);
 }this.currentObject = text;
-return ;
+return;
 }}Clazz.superCall (this, org.jmol.shape.Echo, "setProperty", [propertyName, value, null]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getPropertyData", 
 function (property, data) {
 if (property === "checkID") {
@@ -100,7 +100,7 @@ return false;
 }, "~S,~A");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 s.append ("\n  set echo off;\n");
 var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {

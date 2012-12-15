@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.MagResReader", ["org.jmol.util.Eigen", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.cellParams = null;
@@ -25,7 +25,7 @@ this.readTensor ();
 Clazz.defineMethod (c$, "readCellParams", 
 ($fz = function () {
 var tokens = this.getTokens ();
-this.cellParams =  Clazz.newArray (9, 0);
+this.cellParams =  Clazz.newFloatArray (9, 0);
 for (var i = 0; i < 9; i++) this.cellParams[i] = this.parseFloatStr (tokens[i + 1]) * 0.5291772;
 
 this.addPrimitiveLatticeVector (0, this.cellParams, 0);
@@ -50,7 +50,7 @@ Clazz.defineMethod (c$, "readTensor",
 ($fz = function () {
 var isJ = (this.line.indexOf ("J-") >= 0);
 this.atomSetCollection.setAtomSetName (this.line.trim ());
-var data =  Clazz.newArray (9, 0);
+var data =  Clazz.newFloatArray (9, 0);
 this.readLine ();
 var s = org.jmol.util.TextFormat.simpleReplace (this.readLine () + this.readLine () + this.readLine (), "-", " -");
 this.fillFloatArray (s, 0, data);
@@ -58,9 +58,9 @@ var f = 3;
 if (isJ) {
 this.discardLinesUntilContains ("Isotropic");
 var iso = this.parseFloatStr (this.getTokens ()[3]);
-if (Math.abs (iso) > this.maxIso) return ;
+if (Math.abs (iso) > this.maxIso) return;
 f = 0.04;
-}var a =  Clazz.newArray (3, 3, 0);
+}var a =  Clazz.newDoubleArray (3, 3, 0);
 for (var i = 0, pt = 0; i < 3; i++) for (var j = 0; j < 3; j++) a[i][j] = data[pt++];
 
 

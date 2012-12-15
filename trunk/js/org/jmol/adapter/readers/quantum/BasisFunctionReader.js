@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.ArrayList", "$.Hashtable"], "org.jmol.adapter.readers.quantum.BasisFunctionReader", ["java.lang.Character", "java.util.Arrays", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.shells = null;
@@ -10,6 +10,7 @@ this.alphaBeta = "";
 this.dfCoefMaps = null;
 this.filterTokens = null;
 this.filterIsNot = false;
+this.nCoef = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.quantum, "BasisFunctionReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
@@ -19,7 +20,7 @@ this.orbitals =  new java.util.ArrayList ();
 Clazz.defineMethod (c$, "filterMO", 
 function () {
 var isHeader = (this.line.indexOf ('\n') == 0);
-if (!isHeader && !this.readMolecularOrbitals) return false;
+if (!isHeader && !this.doReadMolecularOrbitals) return false;
 if (this.filter == null) return true;
 var isOK = true;
 var nOK = 0;
@@ -61,7 +62,8 @@ var pt = jmolList.indexOf (key);
 if (pt >= 0) {
 pt /= 6;
 this.dfCoefMaps[shellType][pt] = i - pt;
-continue ;}}isOK = false;
+continue;
+}}isOK = false;
 }
 if (!isOK) {
 org.jmol.util.Logger.error ("Disabling orbitals of type " + shellType + " -- Cannot read orbital order for: " + fileList + "\n expecting: " + jmolList);
@@ -76,7 +78,7 @@ return this.dfCoefMaps;
 c$.canonicalizeQuantumSubshellTag = Clazz.defineMethod (c$, "canonicalizeQuantumSubshellTag", 
 function (tag) {
 var firstChar = tag.charAt (0);
-if (firstChar.charCodeAt (0) == 88 || firstChar.charCodeAt (0) == 89 || firstChar.charCodeAt (0) == 90) {
+if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
 var sorted = tag.toCharArray ();
 java.util.Arrays.sort (sorted);
 return  String.instantialize (sorted);
@@ -84,11 +86,14 @@ return  String.instantialize (sorted);
 }, "~S");
 Clazz.defineMethod (c$, "fixSlaterTypes", 
 function (typeOld, typeNew) {
-if (this.shells == null) return ;
+if (this.shells == null) return 0;
+this.nCoef = 0;
 for (var i = this.shells.size (); --i >= 0; ) {
 var slater = this.shells.get (i);
 if (slater[1] == typeOld) slater[1] = typeNew;
+this.nCoef += this.getDfCoefMaps ()[slater[1]].length;
 }
+return this.nCoef;
 }, "~N,~N");
 Clazz.defineStatics (c$,
 "CANONICAL_DC_LIST", "DXX   DYY   DZZ   DXY   DXZ   DYZ",

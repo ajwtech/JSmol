@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.Dsn6BinaryReader", ["java.io.ByteArrayInputStream", "$.DataInputStream", "javax.util.StringXBuilder", "org.jmol.util.BinaryDocument", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.Dsn6BinaryReader", ["java.io.ByteArrayInputStream", "$.DataInputStream", "org.jmol.util.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.byteFactor = 0;
 this.xyCount = 0;
@@ -16,26 +16,26 @@ Clazz.makeConstructor (c$,
 function () {
 Clazz.superConstructor (this, org.jmol.jvxl.readers.Dsn6BinaryReader, []);
 });
-Clazz.overrideMethod (c$, "init", 
-function (sg) {
+Clazz.defineMethod (c$, "init2", 
+function (sg, brNull) {
 Clazz.superCall (this, org.jmol.jvxl.readers.Dsn6BinaryReader, "init2", [sg, null]);
-this.binarydoc =  new org.jmol.util.BinaryDocument ();
+this.binarydoc = this.newBinaryDocument ();
 var o2 = sg.getReaderData ();
 var fileName = o2[0];
 var data = o2[1];
 if (data == null) this.binarydoc.setStream (sg.getAtomDataServer ().getBufferedInputStream (fileName), true);
- else this.binarydoc.setStream ( new java.io.DataInputStream ( new java.io.ByteArrayInputStream (data.getBytes ())));
+ else this.binarydoc.setStreamData ( new java.io.DataInputStream ( new java.io.ByteArrayInputStream (data.getBytes ())), true);
 if (this.params.thePlane == null) this.params.insideOut = !this.params.insideOut;
 this.nSurfaces = 1;
-}, "org.jmol.jvxl.readers.SurfaceGenerator");
+}, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-var header =  Clazz.newArray (19, 0);
+var header =  Clazz.newShortArray (19, 0);
 for (var i = 0; i < 19; i++) header[i] = this.binarydoc.readShort ();
 
 if (header[18] != 100) {
-this.binarydoc.setIsBigEndian (false);
-for (var i = 0; i < 19; i++) header[i] = org.jmol.util.BinaryDocument.swapBytes (header[i]);
+this.binarydoc.setStream (null, false);
+for (var i = 0; i < 19; i++) header[i] = this.binarydoc.swapBytesS (header[i]);
 
 }this.nxyzStart[0] = header[0];
 this.nxyzStart[1] = header[1];
@@ -67,8 +67,8 @@ var dminError1 = (0 - header17 - 0.5) * header19 / (header16 - 0.5);
 var dminError2 = (0 - header17 + 0.5) * header19 / (header16 + 0.5);
 var dmaxError1 = (255 - header17 - 0.5) * header19 / (header16 - 0.5);
 var dmaxError2 = (255 - header17 + 0.5) * header19 / (header16 + 0.5);
-var dminError = Math.round (((dminError2 - dminError1) / 0.002)) * 0.001;
-var dmaxError = Math.round (((dmaxError2 - dmaxError1) / 0.002)) * 0.001;
+var dminError = Math.round ((dminError2 - dminError1) / 0.002) * 0.001;
+var dmaxError = Math.round ((dmaxError2 - dmaxError1) / 0.002) * 0.001;
 org.jmol.util.Logger.info ("DNS6 dmin,dmax = " + this.dmin + "+/-" + dminError + "," + this.dmax + "+/-" + dmaxError);
 this.a /= scalingFactor;
 this.b /= scalingFactor;
@@ -81,31 +81,31 @@ this.getVectorsAndOrigin ();
 this.setCutoffAutomatic ();
 this.xyCount = this.nx * this.ny;
 this.brickLayerVoxelCount = this.xyCount * 8;
-this.nBrickX = Math.floor ((this.nx + 7) / 8);
-this.nBrickY = Math.floor ((this.ny + 7) / 8);
+this.nBrickX = Clazz.doubleToInt ((this.nx + 7) / 8);
+this.nBrickY = Clazz.doubleToInt ((this.ny + 7) / 8);
 this.brickRowByteCount = this.nBrickX * 512;
 this.brickLayerByteCount = this.brickRowByteCount * this.nBrickY;
-this.brickLayer =  Clazz.newArray (this.brickLayerByteCount, 0);
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.brickLayer =  Clazz.newByteArray (this.brickLayerByteCount, 0);
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append ("DNS6/O progressive brick data reader\n");
 this.jvxlFileHeaderBuffer.append ("see http://www.uoxray.uoregon.edu/tnt/manual/node104.html\n");
 });
 Clazz.defineMethod (c$, "readBrickLayer", 
 ($fz = function () {
-this.binarydoc.readByteArray (this.brickLayer);
+this.binarydoc.readByteArray (this.brickLayer, 0, this.brickLayerByteCount);
 this.pt = 0;
 this.nBytes = this.binarydoc.getPosition ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getBrickValue", 
 ($fz = function (pt) {
 var x = pt % this.nx;
-var y = (Math.floor (pt / this.nx)) % this.ny;
-var z = Math.floor (pt / this.xyCount);
+var y = (Clazz.doubleToInt (pt / this.nx)) % this.ny;
+var z = Clazz.doubleToInt (pt / this.xyCount);
 var brickX = x % 8;
 var brickY = y % 8;
 var brickZ = z % 8;
-var bX = Math.floor (x / 8);
-var bY = Math.floor (y / 8);
+var bX = Clazz.doubleToInt (x / 8);
+var bY = Clazz.doubleToInt (y / 8);
 var bPt = bY * 512 * this.nBrickX + bX * 512 + brickZ * 64 + brickY * 8 + brickX;
 if (bPt % 2 == 0) bPt++;
  else bPt--;

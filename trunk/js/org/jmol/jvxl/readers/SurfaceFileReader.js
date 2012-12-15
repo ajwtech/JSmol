@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.SurfaceFileReader", ["org.jmol.util.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.SurfaceFileReader", ["org.jmol.api.Interface", "org.jmol.util.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.br = null;
 this.binarydoc = null;
@@ -9,7 +9,7 @@ this.next = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "SurfaceFileReader", org.jmol.jvxl.readers.SurfaceReader);
 Clazz.prepareFields (c$, function () {
-this.next =  Clazz.newArray (1, 0);
+this.next =  Clazz.newIntArray (1, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -20,6 +20,10 @@ function (sg, br) {
 this.init (sg);
 this.br = br;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
+Clazz.defineMethod (c$, "newBinaryDocument", 
+function () {
+return org.jmol.api.Interface.getOptionInterface ("io2.BinaryDocument");
+});
 Clazz.overrideMethod (c$, "setOutputStream", 
 function (os) {
 if (this.binarydoc == null) this.os = os;
@@ -102,8 +106,10 @@ this.line = this.br.readLine ();
 if (this.line != null) {
 this.nBytes += this.line.length;
 if (this.os != null) {
-this.os.write (this.line.getBytes ());
-this.os.write ('\n'.charCodeAt (0));
-}}return this.line;
+var b = this.line.getBytes ();
+this.os.write (b, 0, b.length);
+{
+this.os.writeByteAsInt(0x0A);
+}}}return this.line;
 });
 });

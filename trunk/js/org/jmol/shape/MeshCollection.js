@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.MeshCollection", ["java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.script.Token", "org.jmol.shape.Mesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape", "$.Logger", "$.TextFormat", "org.jmol.viewer.StateManager"], function () {
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.MeshCollection", ["java.util.Hashtable", "org.jmol.script.Token", "org.jmol.shape.Mesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape", "$.Logger", "$.Point3f", "$.StringXBuilder", "$.TextFormat", "org.jmol.viewer.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.meshCount = 0;
 this.meshes = null;
@@ -86,58 +86,58 @@ if (propertyName === "setXml") {
 if (this.currentMesh != null) this.currentMesh.xmlProperties = this.xmlProperties;
 }if ("init" === propertyName) {
 this.title = null;
-return ;
+return;
 }if ("link" === propertyName) {
 if (this.meshCount >= 2 && this.currentMesh != null) this.currentMesh.linkedMesh = this.meshes[this.meshCount - 2];
-return ;
+return;
 }if ("lattice" === propertyName) {
 if (this.currentMesh != null) this.currentMesh.lattice = value;
-return ;
+return;
 }if ("variables" === propertyName) {
 if (this.currentMesh != null && this.currentMesh.scriptCommand != null && !this.currentMesh.scriptCommand.startsWith ("{")) this.currentMesh.scriptCommand = "{\n" + org.jmol.viewer.StateManager.getVariableList (value, 0, false, false) + "\n" + this.currentMesh.scriptCommand;
-return ;
+return;
 }if ("thisID" === propertyName) {
 var id = value;
 this.setMesh (id);
 this.checkExplicit (id);
-return ;
+return;
 }if ("title" === propertyName) {
 if (value == null) {
 this.title = null;
-} else if (Clazz.instanceOf (value, Array)) {
-this.title = value;
-} else {
+} else if (Clazz.instanceOf (value, String)) {
 var nLine = 1;
 var lines = value;
-for (var i = lines.length; --i >= 0; ) if ((lines.charAt (i)).charCodeAt (0) == 124) nLine++;
+for (var i = lines.length; --i >= 0; ) if (lines.charAt (i) == '|') nLine++;
 
 this.title =  new Array (nLine);
 nLine = 0;
 var i0 = -1;
-for (var i = 0; i < lines.length; i++) if ((lines.charAt (i)).charCodeAt (0) == 124) {
+for (var i = 0; i < lines.length; i++) if (lines.charAt (i) == '|') {
 this.title[nLine++] = lines.substring (i0 + 1, i);
 i0 = i;
 }
 this.title[nLine] = lines.substring (i0 + 1);
-}return ;
+} else {
+this.title = value;
+}return;
 }if ("delete" === propertyName) {
 this.deleteMesh ();
-return ;
+return;
 }if ("reset" === propertyName) {
 var thisID = value;
-if (this.setMesh (thisID) == null) return ;
+if (this.setMesh (thisID) == null) return;
 this.setMesh (thisID);
-return ;
+return;
 }if ("color" === propertyName) {
-if (value == null) return ;
-this.colix = org.jmol.util.Colix.getColix (value);
+if (value == null) return;
+this.colix = org.jmol.util.Colix.getColixO (value);
 this.color = (value).intValue ();
 if (this.currentMesh != null) this.currentMesh.color = this.color;
 this.setTokenProperty (1766856708, false, false);
-return ;
+return;
 }if ("translucency" === propertyName) {
 this.setTokenProperty (1073742180, ((value).equals ("translucent")), false);
-return ;
+return;
 }if ("hidden" === propertyName) {
 value = Integer.$valueOf ((value).booleanValue () ? 1048588 : 1048589);
 propertyName = "token";
@@ -197,12 +197,12 @@ org.jmol.util.Logger.error ("PROBLEM IN MESHCOLLECTION: token? " + org.jmol.scri
 }
 this.setTokenProperty (tok, test, false);
 if (tok2 != 0) this.setTokenProperty (tok2, test, true);
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shape.MeshCollection, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "checkExplicit", 
 function (id) {
-if (this.explicitID) return ;
+if (this.explicitID) return;
 this.explicitID = (id != null && !id.equals ("+PREVIOUS_MESH+"));
 if (this.explicitID) this.previousMeshID = id;
 }, "~S");
@@ -219,22 +219,22 @@ if (this.linkedMesh != null) this.setMeshTokenProperty (this.linkedMesh, tokProp
 }}, $fz.isPrivate = true, $fz), "~N,~B,~B");
 Clazz.defineMethod (c$, "setMeshTokenProperty", 
 ($fz = function (m, tokProp, bProp, testD) {
-if (testD && (!m.havePlanarContours || m.drawTriangles == m.showContourLines)) return ;
+if (testD && (!m.havePlanarContours || m.drawTriangles == m.showContourLines)) return;
 switch (tokProp) {
 case 1610625028:
 m.bsDisplay = this.bsDisplay;
 if (this.bsDisplay == null && this.displayWithinPoints != null) m.setShowWithin (this.displayWithinPoints, this.displayWithinDistance2, this.isDisplayWithinNot);
-return ;
+return;
 case 1048589:
 m.visible = bProp;
-return ;
+return;
 case 1766856708:
 m.colix = this.colix;
-return ;
+return;
 case 1073742180:
 m.setTranslucent (bProp, this.translucentLevel);
 if (m.bsSlabGhost != null) m.resetSlab ();
-return ;
+return;
 default:
 m.setTokenProperty (tokProp, bProp);
 }
@@ -268,7 +268,7 @@ var id = data[0];
 var index = (data[1]).intValue ();
 var m;
 if ((m = this.getMesh (id)) == null || m.vertices == null) return false;
-if (index == 2147483647) data[2] = javax.vecmath.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
+if (index == 2147483647) data[2] = org.jmol.util.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
  else data[2] = m.vertices[m.getVertexIndexFromNumber (index)];
 return true;
 }return false;
@@ -284,12 +284,13 @@ return Integer.$valueOf (n);
 }if (property === "ID") return (this.currentMesh == null ? null : this.currentMesh.thisID);
 if (property.startsWith ("list")) {
 this.clean ();
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 var k = 0;
 var id = (property.equals ("list") ? null : property.substring (5));
 for (var i = 0; i < this.meshCount; i++) {
 m = this.meshes[i];
-if (id != null && !id.equalsIgnoreCase (m.thisID)) continue ;sb.appendI ((++k)).append (" id:" + m.thisID).append ("; model:" + this.viewer.getModelNumberDotted (m.modelIndex)).append ("; vertices:" + m.vertexCount).append ("; polygons:" + m.polygonCount).append ("; visible:" + m.visible);
+if (id != null && !id.equalsIgnoreCase (m.thisID)) continue;
+sb.appendI ((++k)).append (" id:" + m.thisID).append ("; model:" + this.viewer.getModelNumberDotted (m.modelIndex)).append ("; vertices:" + m.vertexCount).append ("; polygons:" + m.polygonCount).append ("; visible:" + m.visible);
 var range = this.getProperty ("dataRange", 0);
 if (range != null) sb.append ("; dataRange:").append (org.jmol.util.Escape.escape (range));
 if (m.title != null) {
@@ -305,7 +306,8 @@ if (info != null) sb.append (info).appendC ('\n');
 }}
 return sb.toString ();
 }if (property === "vertices") return this.getVertices (this.currentMesh);
-if (property === "getInfo") return (this.currentMesh == null ? null : this.currentMesh.getInfo ());
+if (property === "getInfo") return (this.currentMesh == null ? null : this.currentMesh.getInfo (false));
+if (property === "getData") return (this.currentMesh == null ? null : this.currentMesh.getInfo (true));
 return null;
 }, "~S,~N");
 Clazz.defineMethod (c$, "getVertices", 
@@ -315,16 +317,16 @@ return mesh.vertices;
 }, $fz.isPrivate = true, $fz), "org.jmol.shape.Mesh");
 Clazz.defineMethod (c$, "clean", 
 function () {
-for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] == null || this.meshes[i].vertexCount == 0) this.deleteMesh (i);
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] == null || this.meshes[i].vertexCount == 0) this.deleteMeshI (i);
 
 });
 Clazz.defineMethod (c$, "deleteMesh", 
 ($fz = function () {
-if (this.explicitID && this.currentMesh != null) this.deleteMesh (this.currentMesh.index);
- else this.deleteMesh (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID : null);
+if (this.explicitID && this.currentMesh != null) this.deleteMeshI (this.currentMesh.index);
+ else this.deleteMeshKey (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID : null);
 this.currentMesh = null;
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "deleteMesh", 
+Clazz.defineMethod (c$, "deleteMeshKey", 
 function (key) {
 if (key == null || key.length == 0) {
 for (var i = this.meshCount; --i >= 0; ) this.meshes[i] = null;
@@ -335,10 +337,10 @@ if (this.htObjects != null) this.htObjects.clear ();
 } else {
 key = key.toLowerCase ();
 for (var i = this.meshCount; --i >= 0; ) {
-if (org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID.toLowerCase (), key, true, true)) this.deleteMesh (i);
+if (org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID.toLowerCase (), key, true, true)) this.deleteMeshI (i);
 }
 }}, "~S");
-Clazz.defineMethod (c$, "deleteMesh", 
+Clazz.defineMethod (c$, "deleteMeshI", 
 function (i) {
 if (this.htObjects != null) this.htObjects.remove (this.meshes[i].thisID.toUpperCase ());
 for (var j = i + 1; j < this.meshCount; ++j) this.meshes[--this.meshes[j].index] = this.meshes[j];
@@ -374,11 +376,11 @@ for (var i = this.meshCount; --i >= 0; ) {
 var mesh = this.meshes[i];
 mesh.visibilityFlags = (mesh.visible && mesh.isValid && (mesh.modelIndex < 0 || bs.get (mesh.modelIndex) && (mesh.atomIndex < 0 || !this.modelSet.isAtomHidden (mesh.atomIndex) && !(bsDeleted != null && bsDeleted.get (mesh.atomIndex)))) ? this.myVisibilityFlag : 0);
 }
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setStatusPicked", 
 function (flag, v) {
 this.viewer.setStatusAtomPicked (flag, "[\"" + this.myType + "\"," + org.jmol.util.Escape.escapeStr (this.pickedMesh.thisID) + "," + +this.pickedModel + "," + this.pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," + (this.pickedMesh.title == null ? "\"\"" : org.jmol.util.Escape.escapeStr (this.pickedMesh.title[0])) + "]");
-}, "~N,javax.vecmath.Point3f");
+}, "~N,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getPickedPoint", 
 function (v, modelIndex) {
 var map =  new java.util.Hashtable ();
@@ -390,7 +392,7 @@ map.put ("id", this.pickedMesh.thisID);
 map.put ("vertex", Integer.$valueOf (this.pickedVertex + 1));
 map.put ("type", this.myType);
 }return map;
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.defineStatics (c$,
 "PREVIOUS_MESH_ID", "+PREVIOUS_MESH+");
 });

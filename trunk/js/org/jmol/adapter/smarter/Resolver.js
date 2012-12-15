@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (null, "org.jmol.adapter.smarter.Resolver", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.StringTokenizer", "org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.util.LimitedLineReader", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.load (null, "org.jmol.adapter.smarter.Resolver", ["java.lang.Character", "$.Float", "java.util.StringTokenizer", "org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.io.LimitedLineReader", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.adapter.smarter, "Resolver");
 c$.getReaderClassBase = Clazz.defineMethod (c$, "getReaderClassBase", 
 function (type) {
@@ -22,36 +22,6 @@ throw e;
 }
 }
 }, "java.io.BufferedReader");
-c$.specialLoad = Clazz.defineMethod (c$, "specialLoad", 
-function (name, type) {
-var pt = name.lastIndexOf (".spardir");
-var isPreliminary = (type.equals ("filesNeeded?"));
-if (isPreliminary) {
-if (name.endsWith (".spt")) return [null, null, null];
-if (name.endsWith (".spardir.zip")) return ["SpartanSmol", "Directory Entry ", name + "|output"];
-name = name.$replace ('\\', '/');
-if (!name.endsWith (".spardir") && name.indexOf (".spardir/") < 0) return null;
-if (pt < 0) return null;
-if (name.lastIndexOf ("/") > pt) {
-return ["SpartanSmol", "Directory Entry ", name + "/input", name + "/archive", name + "/Molecule:asBinaryString", name + "/proparc"];
-}return ["SpartanSmol", "Directory Entry ", name + "/output"];
-}var dirNums = org.jmol.adapter.smarter.Resolver.getSpartanDirs (type);
-if (dirNums.length == 0 && name.endsWith (".spardir.zip") && type.indexOf (".zip|output") >= 0) {
-var sname = name.$replace ('\\', '/');
-pt = sname.lastIndexOf ("/");
-sname = name + "|" + name.substring (pt + 1, name.length - 4);
-return ["SpartanSmol", sname, sname + "/output"];
-}return org.jmol.adapter.smarter.Resolver.getSpartanFileList (name, dirNums);
-}, "~S,~S");
-c$.checkSpecialInZip = Clazz.defineMethod (c$, "checkSpecialInZip", 
-function (zipDirectory) {
-var name;
-return (zipDirectory.length < 2 ? null : (name = zipDirectory[1]).endsWith (".spardir/") || zipDirectory.length == 2 ? ["", (name.endsWith ("/") ? name.substring (0, name.length - 1) : name)] : null);
-}, "~A");
-c$.checkSpecialData = Clazz.defineMethod (c$, "checkSpecialData", 
-function (is, zipDirectory) {
-return null;
-}, "java.io.InputStream,~A");
 c$.getAtomCollectionReader = Clazz.defineMethod (c$, "getAtomCollectionReader", 
 function (fullName, type, bufferedReader, htParams, ptFile) {
 var atomSetCollectionReader = null;
@@ -64,12 +34,12 @@ if (readerName == null) errMsg = "unrecognized file format type " + type;
  else org.jmol.util.Logger.info ("The Resolver assumes " + readerName);
 } else {
 readerName = org.jmol.adapter.smarter.Resolver.determineAtomSetCollectionReader (bufferedReader, true);
-if ((readerName.charAt (0)).charCodeAt (0) == 10) {
+if (readerName.charAt (0) == '\n') {
 type = htParams.get ("defaultType");
 if (type != null) {
 type = org.jmol.adapter.smarter.Resolver.getReaderFromType (type);
 if (type != null) readerName = type;
-}}if ((readerName.charAt (0)).charCodeAt (0) == 10) errMsg = "unrecognized file format for file " + fullName + "\n" + readerName;
+}}if (readerName.charAt (0) == '\n') errMsg = "unrecognized file format for file " + fullName + "\n" + readerName;
  else if (readerName.equals ("spt")) errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
  else if (!fullName.equals ("ligand")) org.jmol.util.Logger.info ("The Resolver thinks " + readerName);
 }if (errMsg != null) {
@@ -100,7 +70,7 @@ return atomSetCollectionReader;
 if (Clazz.exceptionOf (e, Exception)) {
 err = "uncaught error in file loading for " + className;
 org.jmol.util.Logger.error (err);
-e.printStackTrace ();
+System.out.println (e.getMessage ());
 return err;
 } else {
 throw e;
@@ -131,49 +101,9 @@ throw e;
 }
 }
 }, "~O,java.util.Map");
-c$.getSpartanFileList = Clazz.defineMethod (c$, "getSpartanFileList", 
-($fz = function (name, dirNums) {
-var files =  new Array (2 + dirNums.length * 5);
-files[0] = "SpartanSmol";
-files[1] = "Directory Entry ";
-var pt = 2;
-name = name.$replace ('\\', '/');
-if (name.endsWith ("/")) name = name.substring (0, name.length - 1);
-for (var i = 0; i < dirNums.length; i++) {
-var path = name + (Character.isDigit (dirNums[i].charAt (0)) ? "/Profile." + dirNums[i] : "/" + dirNums[i]);
-files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
-files[pt++] = path + "/input";
-files[pt++] = path + "/archive";
-files[pt++] = path + "/Molecule:asBinaryString";
-files[pt++] = path + "/proparc";
-}
-return files;
-}, $fz.isPrivate = true, $fz), "~S,~A");
-c$.getSpartanDirs = Clazz.defineMethod (c$, "getSpartanDirs", 
-($fz = function (outputFileData) {
-if (outputFileData == null) return [];
-if (outputFileData.startsWith ("java.io.FileNotFoundException") || outputFileData.startsWith ("FILE NOT FOUND") || outputFileData.indexOf ("<html") >= 0) return ["M0001"];
-var v =  new java.util.ArrayList ();
-var token;
-var lasttoken = "";
-try {
-var tokens =  new java.util.StringTokenizer (outputFileData, " \t\r\n");
-while (tokens.hasMoreTokens ()) {
-if ((token = tokens.nextToken ()).equals (")")) v.add (lasttoken);
- else if (token.equals ("Start-") && tokens.nextToken ().equals ("Molecule")) v.add (org.jmol.util.TextFormat.split (tokens.nextToken (), '"')[1]);
-lasttoken = token;
-}
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
-return v.toArray ( new Array (v.size ()));
-}, $fz.isPrivate = true, $fz), "~S");
 c$.determineAtomSetCollectionReader = Clazz.defineMethod (c$, "determineAtomSetCollectionReader", 
 ($fz = function (bufferedReader, returnLines) {
-var llr =  new org.jmol.util.LimitedLineReader (bufferedReader, 16384);
+var llr =  new org.jmol.io.LimitedLineReader (bufferedReader, 16384);
 var leader = llr.getHeader (64).trim ();
 for (var i = 0; i < org.jmol.adapter.smarter.Resolver.fileStartsWithRecords.length; ++i) {
 var recordTags = org.jmol.adapter.smarter.Resolver.fileStartsWithRecords[i];
@@ -204,7 +134,8 @@ for (var i = 0; i < org.jmol.adapter.smarter.Resolver.headerContainsRecords.leng
 var recordTags = org.jmol.adapter.smarter.Resolver.headerContainsRecords[i];
 for (var j = 1; j < recordTags.length; ++j) {
 var recordTag = recordTags[j];
-if (header.indexOf (recordTag) < 0) continue ;var type = recordTags[0];
+if (header.indexOf (recordTag) < 0) continue;
+var type = recordTags[0];
 return (!type.equals ("Xml") ? type : header.indexOf ("<!DOCTYPE HTML PUBLIC") < 0 && header.indexOf ("XHTML") < 0 && (header.indexOf ("xhtml") < 0 || header.indexOf ("<cml") >= 0) ? org.jmol.adapter.smarter.Resolver.getXmlType (header) : null);
 }
 }
@@ -285,7 +216,8 @@ c$.checkAims = Clazz.defineMethod (c$, "checkAims",
 for (var i = 0; i < lines.length; i++) {
 if (lines[i].startsWith ("mol 1")) return false;
 var tokens = org.jmol.util.Parser.getTokens (lines[i]);
-if (tokens.length == 0) continue ;if (tokens[0].startsWith ("atom") && tokens.length >= 5 || tokens[0].startsWith ("multipole") && tokens.length >= 6 || tokens[0].startsWith ("lattice_vector") && tokens.length >= 4) return true;
+if (tokens.length == 0) continue;
+if (tokens[0].startsWith ("atom") && tokens.length >= 5 || tokens[0].startsWith ("multipole") && tokens.length >= 6 || tokens[0].startsWith ("lattice_vector") && tokens.length >= 4) return true;
 }
 return false;
 }, $fz.isPrivate = true, $fz), "~A");
@@ -407,7 +339,7 @@ c$.checkOdyssey = Clazz.defineMethod (c$, "checkOdyssey",
 var i;
 for (i = 0; i < lines.length; i++) if (!lines[i].startsWith ("C ") && lines[i].length != 0) break;
 
-if (i >= lines.length || (lines[i].charAt (0)).charCodeAt (0) != 32 || (i = i + 2) + 1 >= lines.length) return false;
+if (i >= lines.length || lines[i].charAt (0) != ' ' || (i = i + 2) + 1 >= lines.length) return false;
 try {
 var spin = Integer.parseInt (lines[i].substring (2).trim ());
 var charge = Integer.parseInt (lines[i].substring (0, 2).trim ());

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.TempArray", ["javax.vecmath.Point3f", "$.Point3i"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.TempArray", ["org.jmol.util.Point3f", "$.Point3i"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lengthsFreePoints = null;
 this.freePoints = null;
@@ -10,11 +10,11 @@ this.freeEnum = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "TempArray");
 Clazz.prepareFields (c$, function () {
-this.lengthsFreePoints =  Clazz.newArray (6, 0);
+this.lengthsFreePoints =  Clazz.newIntArray (6, 0);
 this.freePoints =  new Array (6);
-this.lengthsFreeScreens =  Clazz.newArray (6, 0);
+this.lengthsFreeScreens =  Clazz.newIntArray (6, 0);
 this.freeScreens =  new Array (6);
-this.lengthsFreeEnum =  Clazz.newArray (2, 0);
+this.lengthsFreeEnum =  Clazz.newIntArray (2, 0);
 this.freeEnum =  new Array (2);
 });
 Clazz.makeConstructor (c$, 
@@ -70,7 +70,7 @@ if (iFit > 0) {
 tempPoints = this.freePoints[iFit];
 } else {
 tempPoints =  new Array (size);
-for (var i = size; --i >= 0; ) tempPoints[i] =  new javax.vecmath.Point3f ();
+for (var i = size; --i >= 0; ) tempPoints[i] =  new org.jmol.util.Point3f ();
 
 }return tempPoints;
 }, "~N");
@@ -78,7 +78,7 @@ Clazz.defineMethod (c$, "freeTempPoints",
 function (tempPoints) {
 for (var i = 0; i < this.freePoints.length; i++) if (this.freePoints[i] === tempPoints) {
 this.lengthsFreePoints[i] = tempPoints.length;
-return ;
+return;
 }
 var iFree = org.jmol.util.TempArray.findShorter (tempPoints.length, this.lengthsFreePoints);
 if (iFree >= 0) this.freePoints[iFree] = tempPoints;
@@ -98,7 +98,7 @@ if (iFit > 0) {
 tempScreens = this.freeScreens[iFit];
 } else {
 tempScreens =  new Array (size);
-for (var i = size; --i >= 0; ) tempScreens[i] =  new javax.vecmath.Point3i ();
+for (var i = size; --i >= 0; ) tempScreens[i] =  new org.jmol.util.Point3i ();
 
 }return tempScreens;
 }, "~N");
@@ -106,7 +106,7 @@ Clazz.defineMethod (c$, "freeTempScreens",
 function (tempScreens) {
 for (var i = 0; i < this.freeScreens.length; i++) if (this.freeScreens[i] === tempScreens) {
 this.lengthsFreeScreens[i] = tempScreens.length;
-return ;
+return;
 }
 var iFree = org.jmol.util.TempArray.findShorter (tempScreens.length, this.lengthsFreeScreens);
 if (iFree >= 0) this.freeScreens[iFree] = tempScreens;
@@ -125,7 +125,7 @@ Clazz.defineMethod (c$, "freeTempEnum",
 function (tempEnum) {
 for (var i = 0; i < this.freeEnum.length; i++) if (this.freeEnum[i] === tempEnum) {
 this.lengthsFreeEnum[i] = tempEnum.length;
-return ;
+return;
 }
 var iFree = org.jmol.util.TempArray.findShorter (tempEnum.length, this.lengthsFreeEnum);
 if (iFree >= 0) this.freeEnum[iFree] = tempEnum;

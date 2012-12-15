@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.smiles");
+Clazz.declarePackage ("org.jmol.smiles");
 Clazz.load (["org.jmol.util.JmolEdge"], "org.jmol.smiles.SmilesBond", ["org.jmol.smiles.InvalidSmilesException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atom1 = null;
@@ -91,7 +91,7 @@ c$.isBondType = Clazz.defineMethod (c$, "isBondType",
 function (ch, isSearch, isBioSequence) {
 if ("-=#:/\\.+!,&;@~^'".indexOf (ch) < 0) return false;
 if (!isSearch && "-=#:/\\.~^'".indexOf (ch) < 0) throw  new org.jmol.smiles.InvalidSmilesException ("SMARTS bond type " + ch + " not allowed in SMILES");
-if (isBioSequence && ch.charCodeAt (0) == 126) return false;
+if (isBioSequence && ch == '~') return false;
 return true;
 }, "~S,~B,~B");
 c$.getBondTypeFromCode = Clazz.defineMethod (c$, "getBondTypeFromCode", 

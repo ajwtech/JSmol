@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.declarePackage ("org.jmol.jvxl.readers");
 Clazz.load (["org.jmol.jvxl.readers.IsoFxyReader"], "org.jmol.jvxl.readers.IsoFxyzReader", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$data = null;

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.constant");
+Clazz.declarePackage ("org.jmol.constant");
 c$ = Clazz.declareType (org.jmol.constant, "StaticConstants");
 Clazz.defineStatics (c$,
 "PALETTE_VOLATILE", 0x40,

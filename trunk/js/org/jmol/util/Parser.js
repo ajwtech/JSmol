@@ -1,18 +1,18 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Parser", ["java.lang.Float", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.Parser", ["java.lang.Float", "org.jmol.util.ArrayUtil", "$.Logger", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Parser");
 c$.parseStringInfestedFloatArray = Clazz.defineMethod (c$, "parseStringInfestedFloatArray", 
 function (str, bs, data) {
 return org.jmol.util.Parser.parseFloatArrayBsData (org.jmol.util.Parser.getTokens (str), bs, data);
-}, "~S,javax.util.BitSet,~A");
+}, "~S,org.jmol.util.BitSet,~A");
 c$.parseFloatArray = Clazz.defineMethod (c$, "parseFloatArray", 
 function (str) {
-return org.jmol.util.Parser.parseFloatArrayNext (str,  Clazz.newArray (1, 0));
+return org.jmol.util.Parser.parseFloatArrayNext (str,  Clazz.newIntArray (1, 0));
 }, "~S");
 c$.parseFloatArrayNext = Clazz.defineMethod (c$, "parseFloatArrayNext", 
 function (str, next) {
 var pt = next[0];
-if (pt < 0) return  Clazz.newArray (0, 0);
+if (pt < 0) return  Clazz.newFloatArray (0, 0);
 pt = str.indexOf ("[", pt);
 if (pt >= 0) str = str.substring (pt + 1);
 next[0] = pt + 1;
@@ -21,7 +21,7 @@ if (pt < 0) pt = str.length;
  else str = str.substring (0, pt);
 next[0] += pt + 1;
 var tokens = org.jmol.util.Parser.getTokens (str);
-var f =  Clazz.newArray (tokens.length, 0);
+var f =  Clazz.newFloatArray (tokens.length, 0);
 var n = org.jmol.util.Parser.parseFloatArrayBsData (tokens, null, f);
 for (var i = n; i < f.length; i++) f[i] = NaN;
 
@@ -42,7 +42,7 @@ if (!Float.isNaN (f)) data[(max = i)] = f;
 if (n == nTokens) break;
 }
 return max + 1;
-}, "~A,javax.util.BitSet,~A");
+}, "~A,org.jmol.util.BitSet,~A");
 c$.fixDataString = Clazz.defineMethod (c$, "fixDataString", 
 ($fz = function (str) {
 str = str.$replace (';', str.indexOf ('\n') < 0 ? '\n' : ' ');
@@ -56,10 +56,10 @@ function (str) {
 str = org.jmol.util.Parser.fixDataString (str);
 var lines = org.jmol.util.Parser.markLines (str, '\n');
 var nLines = lines.length;
-var data =  Clazz.newArray (nLines, 0);
+var data = org.jmol.util.ArrayUtil.newFloat2 (nLines);
 for (var iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
 var tokens = org.jmol.util.Parser.getTokens (str.substring (pt, lines[iLine]));
-org.jmol.util.Parser.parseFloatArrayData (tokens, data[iLine] =  Clazz.newArray (tokens.length, 0));
+org.jmol.util.Parser.parseFloatArrayData (tokens, data[iLine] =  Clazz.newFloatArray (tokens.length, 0));
 }
 return data;
 }, "~S");
@@ -69,24 +69,25 @@ str = org.jmol.util.Parser.fixDataString (str);
 var lines = org.jmol.util.Parser.markLines (str, '\n');
 var nLines = lines.length;
 var tokens = org.jmol.util.Parser.getTokens (str.substring (0, lines[0]));
-if (tokens.length != 3) return  Clazz.newArray (0, 0, 0, 0);
+if (tokens.length != 3) return  Clazz.newFloatArray (0, 0, 0, 0);
 var nX = org.jmol.util.Parser.parseInt (tokens[0]);
 var nY = org.jmol.util.Parser.parseInt (tokens[1]);
 var nZ = org.jmol.util.Parser.parseInt (tokens[2]);
-if (nX < 1 || nY < 1 || nZ < 1) return  Clazz.newArray (1, 1, 1, 0);
-var data =  Clazz.newArray (nX, nY, 0);
+if (nX < 1 || nY < 1 || nZ < 1) return  Clazz.newFloatArray (1, 1, 1, 0);
+var data = org.jmol.util.ArrayUtil.newFloat3 (nX, nY);
 var iX = 0;
 var iY = 0;
 for (var iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
 tokens = org.jmol.util.Parser.getTokens (str.substring (pt, lines[iLine]));
-if (tokens.length < nZ) continue ;org.jmol.util.Parser.parseFloatArrayData (tokens, data[iX][iY] =  Clazz.newArray (tokens.length, 0));
+if (tokens.length < nZ) continue;
+org.jmol.util.Parser.parseFloatArrayData (tokens, data[iX][iY] =  Clazz.newFloatArray (tokens.length, 0));
 if (++iY == nY) {
 iX++;
 iY = 0;
 }}
 if (iX != nX) {
 org.jmol.util.Logger.info ("Error reading 3D data -- nX = " + nX + ", but only " + iX + " blocks read");
-return  Clazz.newArray (1, 1, 1, 0);
+return  Clazz.newFloatArray (1, 1, 1, 0);
 }return data;
 }, "~S");
 c$.setSelectedFloats = Clazz.defineMethod (c$, "setSelectedFloats", 
@@ -95,7 +96,7 @@ var isAll = (bs == null);
 var i0 = (isAll ? 0 : bs.nextSetBit (0));
 for (var i = i0; i >= 0 && i < data.length; i = (isAll ? i + 1 : bs.nextSetBit (i + 1))) data[i] = f;
 
-}, "~N,javax.util.BitSet,~A");
+}, "~N,org.jmol.util.BitSet,~A");
 c$.extractData = Clazz.defineMethod (c$, "extractData", 
 function (data, field, nBytes, firstLine) {
 return org.jmol.util.Parser.parseFloatArrayFromMatchAndField (data, null, 0, 0, null, field, nBytes, null, firstLine);
@@ -109,7 +110,7 @@ var lines = org.jmol.util.Parser.markLines (str, (str.indexOf ('\n') >= 0 ? '\n'
 var iLine = (firstLine <= 1 || firstLine >= lines.length ? 0 : firstLine - 1);
 var pt = (iLine == 0 ? 0 : lines[iLine - 1]);
 var nLines = lines.length;
-if (data == null) data =  Clazz.newArray (nLines - iLine, 0);
+if (data == null) data =  Clazz.newFloatArray (nLines - iLine, 0);
 var len = data.length;
 var minLen = (fieldColumnCount <= 0 ? Math.max (field, fieldMatch) : Math.max (field + fieldColumnCount, fieldMatch + fieldMatchColumnCount) - 1);
 var haveBitSet = (bs != null);
@@ -118,11 +119,14 @@ var line = str.substring (pt, lines[iLine]).trim ();
 pt = lines[iLine];
 var tokens = (fieldColumnCount <= 0 ? org.jmol.util.Parser.getTokens (line) : null);
 if (fieldColumnCount <= 0) {
-if (tokens.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (tokens[field - 1]))) continue ;} else {
-if (line.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (line.substring (field - 1, field + fieldColumnCount - 1)))) continue ;}var iData;
+if (tokens.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (tokens[field - 1]))) continue;
+} else {
+if (line.length < minLen || Float.isNaN (f = org.jmol.util.Parser.parseFloatStr (line.substring (field - 1, field + fieldColumnCount - 1)))) continue;
+}var iData;
 if (isMatch) {
 iData = org.jmol.util.Parser.parseInt (tokens == null ? line.substring (fieldMatch - 1, fieldMatch + fieldMatchColumnCount - 1) : tokens[fieldMatch - 1]);
-if (iData == -2147483648 || iData < 0 || iData >= len || (iData = matchData[iData]) < 0) continue ;if (haveBitSet) bs.set (iData);
+if (iData == -2147483648 || iData < 0 || iData >= len || (iData = matchData[iData]) < 0) continue;
+if (haveBitSet) bs.set (iData);
 } else {
 if (haveBitSet) i = bs.nextSetBit (i + 1);
  else i++;
@@ -131,7 +135,7 @@ iData = i;
 }data[iData] = f;
 }
 return data;
-}, "~S,javax.util.BitSet,~N,~N,~A,~N,~N,~A,~N");
+}, "~S,org.jmol.util.BitSet,~N,~N,~A,~N,~N,~A,~N");
 c$.parseFloatArrayData = Clazz.defineMethod (c$, "parseFloatArrayData", 
 function (tokens, data) {
 org.jmol.util.Parser.parseFloatArrayDataN (tokens, data, data.length);
@@ -181,11 +185,11 @@ return org.jmol.util.Parser.parseTrimmedChecked (str, ichStart, cch);
 c$.markLines = Clazz.defineMethod (c$, "markLines", 
 function (data, eol) {
 var nLines = 0;
-for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == eol.charCodeAt (0)) nLines++;
+for (var i = data.length; --i >= 0; ) if (data.charAt (i) == eol) nLines++;
 
-var lines =  Clazz.newArray (nLines + 1, 0);
+var lines =  Clazz.newIntArray (nLines + 1, 0);
 lines[nLines--] = data.length;
-for (var i = data.length; --i >= 0; ) if ((data.charAt (i)).charCodeAt (0) == eol.charCodeAt (0)) lines[nLines--] = i + 1;
+for (var i = data.length; --i >= 0; ) if (data.charAt (i) == eol) lines[nLines--] = i + 1;
 
 return lines;
 }, "~S,~S");
@@ -211,20 +215,20 @@ if (isStrict && str.indexOf ('\n') != str.lastIndexOf ('\n')) return NaN;
 while (ich < ichMax && org.jmol.util.Parser.isWhiteSpace (str, ich)) ++ich;
 
 var negative = false;
-if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == 45) {
+if (ich < ichMax && str.charAt (ich) == '-') {
 ++ich;
 negative = true;
 }var ch = String.fromCharCode (0);
-while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+while (ich < ichMax && (ch = str.charAt (ich)) >= '0' && ch <= '9') {
 value = value * 10 + (ch.charCodeAt (0) - 48);
 ++ich;
 digitSeen = true;
 }
 var isDecimal = false;
-if (ch.charCodeAt (0) == 46) {
+if (ch == '.') {
 isDecimal = true;
 var iscale = 0;
-while (++ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+while (++ich < ichMax && (ch = str.charAt (ich)) >= '0' && ch <= '9') {
 if (iscale < org.jmol.util.Parser.decimalScale.length) value += (ch.charCodeAt (0) - 48) * org.jmol.util.Parser.decimalScale[iscale];
 ++iscale;
 digitSeen = true;
@@ -232,11 +236,11 @@ digitSeen = true;
 }var isExponent = false;
 if (!digitSeen) value = NaN;
  else if (negative) value = -value;
-if (ich < ichMax && (ch.charCodeAt (0) == 69 || ch.charCodeAt (0) == 101 || ch.charCodeAt (0) == 68)) {
+if (ich < ichMax && (ch == 'E' || ch == 'e' || ch == 'D')) {
 isExponent = true;
 if (++ich >= ichMax) return NaN;
 ch = str.charAt (ich);
-if ((ch.charCodeAt (0) == 43) && (++ich >= ichMax)) return NaN;
+if ((ch == '+') && (++ich >= ichMax)) return NaN;
 next[0] = ich;
 var exponent = org.jmol.util.Parser.parseIntChecked (str, ichMax, next);
 if (exponent == -2147483648) return NaN;
@@ -251,7 +255,7 @@ return (!isStrict || (!isExponent || isDecimal) && org.jmol.util.Parser.checkTra
 c$.checkTrailingText = Clazz.defineMethod (c$, "checkTrailingText", 
 ($fz = function (str, ich, ichMax) {
 var ch;
-while (ich < ichMax && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9 || ch.charCodeAt (0) == 10 || ch.charCodeAt (0) == 59)) ++ich;
+while (ich < ichMax && ((ch = str.charAt (ich)) == ' ' || ch == '\t' || ch == '\n' || ch == ';')) ++ich;
 
 return (ich == ichMax);
 }, $fz.isPrivate = true, $fz), "~S,~N,~N");
@@ -278,10 +282,10 @@ var ch;
 while (ich < ichMax && org.jmol.util.Parser.isWhiteSpace (str, ich)) ++ich;
 
 var negative = false;
-if (ich < ichMax && (str.charAt (ich)).charCodeAt (0) == 45) {
+if (ich < ichMax && str.charAt (ich) == '-') {
 negative = true;
 ++ich;
-}while (ich < ichMax && ((ch = str.charAt (ich))).charCodeAt (0) >= 48 && ch <= '9') {
+}while (ich < ichMax && (ch = str.charAt (ich)) >= '0' && ch <= '9') {
 value = value * 10 + (ch.charCodeAt (0) - 48);
 digitSeen = true;
 ++ich;
@@ -298,7 +302,7 @@ var cchLine = line.length;
 if (ich < 0 || ich > cchLine) return null;
 var tokenCount = org.jmol.util.Parser.countTokens (line, ich);
 var tokens =  new Array (tokenCount);
-var next =  Clazz.newArray (1, 0);
+var next =  Clazz.newIntArray (1, 0);
 next[0] = ich;
 for (var i = 0; i < tokenCount; ++i) tokens[i] = org.jmol.util.Parser.parseTokenChecked (line, cchLine, next);
 
@@ -379,7 +383,7 @@ if (i < 0 || (i = value.indexOf ("\"", i)) < 0) return "";
 next[0] = ++i;
 value = value.substring (i);
 i = -1;
-while (++i < value.length && (value.charAt (i)).charCodeAt (0) != 34) if ((value.charAt (i)).charCodeAt (0) == 92) i++;
+while (++i < value.length && value.charAt (i) != '"') if (value.charAt (i) == '\\') i++;
 
 next[0] += i + 1;
 return value.substring (0, i);
@@ -387,7 +391,7 @@ return value.substring (0, i);
 c$.isWhiteSpace = Clazz.defineMethod (c$, "isWhiteSpace", 
 ($fz = function (str, ich) {
 var ch;
-return (ich >= 0 && (((ch = str.charAt (ich))).charCodeAt (0) == 32 || ch.charCodeAt (0) == 9 || ch.charCodeAt (0) == 10));
+return (ich >= 0 && ((ch = str.charAt (ich)) == ' ' || ch == '\t' || ch == '\n'));
 }, $fz.isPrivate = true, $fz), "~S,~N");
 c$.isOneOf = Clazz.defineMethod (c$, "isOneOf", 
 function (key, semiList) {
@@ -398,6 +402,15 @@ function (info, name) {
 var i = info.indexOf (name + "=");
 return (i < 0 ? null : org.jmol.util.Parser.getQuotedStringAt (info, i));
 }, "~S,~S");
+c$.parseIntRadix = Clazz.defineMethod (c$, "parseIntRadix", 
+function (s, i) {
+{
+return Integer.parseIntRadix(s, i); // special
+}}, "~S,~N");
+c$.approx = Clazz.defineMethod (c$, "approx", 
+function (f, n) {
+return Math.round (f * n) / n;
+}, "~N,~N");
 Clazz.defineStatics (c$,
 "decimalScale", [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001],
 "tensScale", [10, 100, 1000, 10000, 100000, 1000000]);

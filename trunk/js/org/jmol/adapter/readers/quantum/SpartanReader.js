@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.BasisFunctionReader"], "org.jmol.adapter.readers.quantum.SpartanReader", ["java.lang.Float", "java.util.Hashtable", "org.jmol.adapter.readers.quantum.SpartanArchive"], function () {
 c$ = Clazz.declareType (org.jmol.adapter.readers.quantum, "SpartanReader", org.jmol.adapter.readers.quantum.BasisFunctionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
@@ -47,7 +47,7 @@ this.discardLinesUntilNonBlank ();
 var lineBaseFreqCount = this.vibrationNumber;
 this.next[0] = 16;
 var lineFreqCount;
-var ignore =  Clazz.newArray (3, false);
+var ignore =  Clazz.newBooleanArray (3, false);
 for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
 var frequency = this.parseFloat ();
 if (Float.isNaN (frequency)) break;
@@ -56,7 +56,7 @@ if (!ignore[lineFreqCount]) {
 if (this.vibrationNumber > 1) this.atomSetCollection.cloneFirstAtomSet (0);
 this.atomSetCollection.setAtomSetFrequency (null, null, "" + frequency, null);
 }}
-if (lineFreqCount == 0) return ;
+if (lineFreqCount == 0) return;
 this.readLines (2);
 for (var i = 0; i < atomCount; ++i) {
 this.readLine ();

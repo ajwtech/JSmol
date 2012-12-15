@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.MOReader"], "org.jmol.adapter.readers.quantum.NWChemReader", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.adapter.readers.quantum.BasisFunctionReader", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.taskNumber = 1;
@@ -66,7 +66,7 @@ return true;
 if (this.equivalentAtomSets == 0) return true;
 this.readPartialCharges ();
 return true;
-}if (this.line.contains ("Basis \"ao basis\"") && this.readMolecularOrbitals) {
+}if (this.line.contains ("Basis \"ao basis\"") && this.doReadMolecularOrbitals) {
 return this.readBasis ();
 }if (this.line.contains ("Final Molecular Orbital Analysis")) {
 if (this.equivalentAtomSets == 0) return true;
@@ -128,8 +128,8 @@ throw e;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtSign", 
 ($fz = function () {
-if ((this.line.charAt (2)).charCodeAt (0) == 83) {
-if (this.readLines (2) == null) return ;
+if (this.line.charAt (2) == 'S') {
+if (this.readLines (2) == null) return;
 }var tokens = this.getTokens ();
 if (!this.haveEnergy) {
 this.setEnergies ("E", tokens[2], this.equivalentAtomSets);
@@ -201,10 +201,11 @@ var iAtom0 = this.atomSetCollection.getAtomCount ();
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 if (firstTime) iAtom0 -= atomCount;
 System.out.println ("freq " + firstTime + " " + iAtom0 + " " + atomCount);
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = (tokens[i].equals ("0.00") || !this.doGetVibration (++this.vibrationNumber));
-if (ignore[i]) continue ;if (!firstTime) this.atomSetCollection.cloneLastAtomSet ();
+if (ignore[i]) continue;
+if (!firstTime) this.atomSetCollection.cloneLastAtomSet ();
 firstTime = false;
 this.atomSetCollection.setAtomSetFrequency (path, null, tokens[i], null);
 }
@@ -216,8 +217,9 @@ try {
 this.discardLinesUntilContains ("Projected Infra Red Intensities");
 this.readLines (2);
 for (var i = this.vibrationNumber, idx = firstFrequencyAtomSetIndex; --i >= 0; ) {
-if (this.readLine () == null) return ;
-if (!this.doGetVibration (i + 1)) continue ;tokens = this.getTokens ();
+if (this.readLine () == null) return;
+if (!this.doGetVibration (i + 1)) continue;
+tokens = this.getTokens ();
 var iset = this.atomSetCollection.getCurrentAtomSetIndex ();
 this.atomSetCollection.setCurrentAtomSetIndex (idx++);
 this.atomSetCollection.setAtomSetFrequency (null, null, tokens[i], null);
@@ -242,7 +244,7 @@ for (var i = i0; i < atomCount; ++i) {
 while (atoms[i].elementNumber == 0) ++i;
 
 do {
-if (this.readLine () == null || this.line.length < 3) return ;
+if (this.readLine () == null || this.line.length < 3) return;
 tokens = this.getTokens ();
 } while (tokens[0].indexOf (".") >= 0);
 atoms[i].partialCharge = this.parseIntStr (tokens[2]) - this.parseFloatStr (tokens[3]);
@@ -273,7 +275,7 @@ var atomData = null;
 var shellData = null;
 while (this.line != null) {
 var nBlankLines = 0;
-while (this.line.length < 3 || (this.line.charAt (2)).charCodeAt (0) == 32) {
+while (this.line.length < 3 || this.line.charAt (2) == ' ') {
 shellData =  new java.util.ArrayList ();
 this.readLine ();
 if (this.line.length < 3) nBlankLines++;
@@ -285,7 +287,8 @@ atomData =  new java.util.ArrayList ();
 atomInfo.put (atomSym, atomData);
 this.readLine ();
 this.readLine ();
-continue ;}while (this.line != null && this.line.length > 3) {
+continue;
+}while (this.line != null && this.line.length > 3) {
 var tokens = this.getTokens ();
 var o = [tokens[1], [this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3])]];
 shellData.add (o);
@@ -318,7 +321,7 @@ case 'F':
 this.nBasisFunctions += nF;
 break;
 }
-var slater =  Clazz.newArray (4, 0);
+var slater =  Clazz.newIntArray (4, 0);
 slater[0] = i;
 slater[1] = (isD6F10 ? org.jmol.api.JmolAdapter.getQuantumShellTagID (type) : org.jmol.api.JmolAdapter.getQuantumShellTagIDSpherical (type));
 slater[2] = this.gaussianCount;
@@ -329,7 +332,7 @@ for (var ifunc = 0; ifunc < nGaussians; ifunc++) gdata.add (shellData.get (ifunc
 this.gaussianCount += nGaussians;
 }
 }
-this.gaussians =  Clazz.newArray (this.gaussianCount, 0);
+this.gaussians = org.jmol.util.ArrayUtil.newFloat2 (this.gaussianCount);
 for (var i = 0; i < this.gaussianCount; i++) this.gaussians[i] = gdata.get (i);
 
 return true;
@@ -342,7 +345,7 @@ var isBeta = false;
 if (doClear && !this.readROHFonly) {
 this.moInfo =  new java.util.Hashtable ();
 }while (this.line != null) {
-while ((this.line.length < 3 || (this.line.charAt (1)).charCodeAt (0) == 32) && this.line.indexOf ("Final") < 0) {
+while ((this.line.length < 3 || this.line.charAt (1) == ' ') && this.line.indexOf ("Final") < 0) {
 this.readLine ();
 }
 org.jmol.util.Logger.info (this.line);
@@ -351,7 +354,8 @@ if (this.line.indexOf ("MO") >= 0) break;
 if (this.line.indexOf ("Final Beta") >= 0) {
 isBeta = true;
 }this.readLine ();
-continue ;}if ((this.line.charAt (1)).charCodeAt (0) != 86) break;
+continue;
+}if (this.line.charAt (1) != 'V') break;
 this.line = this.line.$replace ('=', ' ');
 var tokens = this.getTokens ();
 var iMo = this.parseIntStr (tokens[1]);
@@ -367,7 +371,7 @@ var coefs = null;
 if (this.readROHFonly) {
 this.setMO (mo);
 mo.put ("type", "ROHF " + (++moCount));
-coefs =  Clazz.newArray (this.nBasisFunctions, 0);
+coefs =  Clazz.newFloatArray (this.nBasisFunctions, 0);
 mo.put ("coefficients", coefs);
 } else {
 this.moInfo.put (Integer.$valueOf (isBeta ? -iMo : iMo), mo);
@@ -375,7 +379,7 @@ this.moInfo.put (Integer.$valueOf (isBeta ? -iMo : iMo), mo);
 if (this.readROHFonly) {
 tokens = this.getTokens ();
 coefs[this.parseIntStr (tokens[0]) - 1] = this.parseFloatStr (tokens[1]);
-var pt = Math.floor (tokens.length / 2);
+var pt = Clazz.doubleToInt (tokens.length / 2);
 if (pt == 5 || pt == 6) coefs[this.parseIntStr (tokens[pt]) - 1] = this.parseFloatStr (tokens[pt + 1]);
 }}
 }
@@ -404,7 +408,8 @@ if (!this.filterMO ()) break;
 isBeta = true;
 iListed = 0;
 this.readLine ();
-continue ;}this.readLine ();
+continue;
+}this.readLine ();
 var tokens = this.getTokens ();
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug (tokens.length + " --- " + this.line);
@@ -421,7 +426,7 @@ while (this.readLine () != null && this.line.length > 0) for (var i = 0, pt = pt
 
 
 for (var iMo = 0; iMo < nThisLine; iMo++) {
-var coefs =  Clazz.newArray (data[iMo].size (), 0);
+var coefs =  Clazz.newFloatArray (data[iMo].size (), 0);
 var iCoeff = 0;
 while (iCoeff < coefs.length) {
 coefs[iCoeff] = this.parseFloatStr (data[iMo].get (iCoeff));

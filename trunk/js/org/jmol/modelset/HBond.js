@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 Clazz.load (["org.jmol.modelset.Bond"], "org.jmol.modelset.HBond", ["org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.energy = 0;
@@ -25,7 +25,7 @@ this.paletteID = paletteID;
 }, "~N");
 c$.getEnergy = Clazz.defineMethod (c$, "getEnergy", 
 function (distAH, distCH, distCD, distAD) {
-var energy = Math.round (Math.floor (-27888.0 / distAH - -27888.0 / distAD + -27888.0 / distCD - -27888.0 / distCH + 0.5));
+var energy = Math.round (-27888.0 / distAH - -27888.0 / distAD + -27888.0 / distCD - -27888.0 / distCH);
 return energy;
 }, "~N,~N,~N,~N");
 Clazz.defineStatics (c$,

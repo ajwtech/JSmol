@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (["java.lang.Enum"], "org.jmol.util.JmolEdge", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = -1;
@@ -74,7 +74,7 @@ return order & 7;
 }, "~N");
 c$.getBondOrderFromFloat = Clazz.defineMethod (c$, "getBondOrderFromFloat", 
 function (fOrder) {
-switch (Math.round ((fOrder * 10))) {
+switch (Clazz.floatToInt (fOrder * 10)) {
 case 10:
 return 1;
 case 5:

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["javax.util.BitSet", "$.StringXBuilder"], "org.jmol.modelset.Model", ["java.util.Hashtable", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
+Clazz.declarePackage ("org.jmol.modelset");
+Clazz.load (["org.jmol.util.BitSet", "$.StringXBuilder"], "org.jmol.modelset.Model", ["java.util.Hashtable", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelSet = null;
 this.modelIndex = 0;
@@ -43,9 +43,9 @@ this.unitCell = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelset, "Model");
 Clazz.prepareFields (c$, function () {
-this.loadScript =  new javax.util.StringXBuilder ();
-this.bsAtoms =  new javax.util.BitSet ();
-this.bsAtomsDeleted =  new javax.util.BitSet ();
+this.loadScript =  new org.jmol.util.StringXBuilder ();
+this.bsAtoms =  new org.jmol.util.BitSet ();
+this.bsAtomsDeleted =  new org.jmol.util.BitSet ();
 this.chains =  new Array (8);
 });
 Clazz.defineMethod (c$, "getModelSet", 
@@ -119,7 +119,7 @@ return this.chains;
 });
 Clazz.defineMethod (c$, "getChainCount", 
 function (countWater) {
-if (this.chainCount > 1 && !countWater) for (var i = 0; i < this.chainCount; i++) if ((this.chains[i].chainID).charCodeAt (0) == 0) return this.chainCount - 1;
+if (this.chainCount > 1 && !countWater) for (var i = 0; i < this.chainCount; i++) if (this.chains[i].chainID == '\0') return this.chainCount - 1;
 
 return this.chainCount;
 }, "~B");
@@ -135,7 +135,7 @@ Clazz.defineMethod (c$, "calcSelectedGroupsCount",
 function (bsSelected) {
 for (var i = this.chainCount; --i >= 0; ) this.chains[i].calcSelectedGroupsCount (bsSelected);
 
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getGroupCount", 
 function () {
 if (this.groupCount < 0) {
@@ -152,7 +152,7 @@ Clazz.defineMethod (c$, "getChain",
 function (chainID) {
 for (var i = this.chainCount; --i >= 0; ) {
 var chain = this.chains[i];
-if (chain.chainID.charCodeAt (0) == chainID.charCodeAt (0)) return chain;
+if (chain.chainID == chainID) return chain;
 }
 return null;
 }, "~S");
@@ -165,56 +165,56 @@ for (var i = 0; i < this.chainCount; i++) this.chains[i].fixIndices (nAtomsDelet
 
 org.jmol.util.BitSetUtil.deleteBits (this.bsAtoms, bsDeleted);
 org.jmol.util.BitSetUtil.deleteBits (this.bsAtomsDeleted, bsDeleted);
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "freeze", 
 function () {
-this.chains = org.jmol.util.ArrayUtil.arrayCopyOpt (this.chains, this.chainCount);
+this.chains = org.jmol.util.ArrayUtil.arrayCopyObject (this.chains, this.chainCount);
 this.groupCount = -1;
 this.getGroupCount ();
-for (var i = 0; i < this.chainCount; ++i) this.chains[i].groups = org.jmol.util.ArrayUtil.arrayCopyOpt (this.chains[i].groups, this.chains[i].groupCount);
+for (var i = 0; i < this.chainCount; ++i) this.chains[i].groups = org.jmol.util.ArrayUtil.arrayCopyObject (this.chains[i].groups, this.chains[i].groupCount);
 
 });
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, type, ctype, isDraw, bsSelected, sb, tokens, pdbCONECT, bsWritten) {
-}, "org.jmol.viewer.Viewer,~S,~S,~B,javax.util.BitSet,org.jmol.util.OutputStringBuilder,~A,javax.util.StringXBuilder,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~B,org.jmol.util.BitSet,org.jmol.io.OutputStringBuilder,~A,org.jmol.util.StringXBuilder,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getDefaultLargePDBRendering", 
 function (sb, maxAtoms) {
-}, "javax.util.StringXBuilder,~N");
+}, "org.jmol.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "getBioBranches", 
 function (bioBranches) {
 return bioBranches;
 }, "java.util.List");
 Clazz.defineMethod (c$, "getGroupsWithin", 
 function (nResidues, bs, bsResult) {
-}, "~N,javax.util.BitSet,javax.util.BitSet");
+}, "~N,org.jmol.util.BitSet,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getSequenceBits", 
 function (specInfo, bs, bsResult) {
-}, "~S,javax.util.BitSet,javax.util.BitSet");
+}, "~S,org.jmol.util.BitSet,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getRasmolHydrogenBonds", 
 function (bsA, bsB, vHBonds, nucleicOnly, nMax, dsspIgnoreHydrogens, bsHBonds) {
-}, "javax.util.BitSet,javax.util.BitSet,java.util.List,~B,~N,~B,javax.util.BitSet");
+}, "org.jmol.util.BitSet,org.jmol.util.BitSet,java.util.List,~B,~N,~B,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "clearRasmolHydrogenBonds", 
 function (bsAtoms) {
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "clearBioPolymers", 
 function () {
 });
 Clazz.defineMethod (c$, "calcSelectedMonomersCount", 
 function (bsSelected) {
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "calculatePolymers", 
 function (groups, groupCount, baseGroupIndex, modelsExcluded) {
-}, "~A,~N,~N,javax.util.BitSet");
+}, "~A,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getAllPolymerInfo", 
 function (bs, finalInfo, modelVector) {
-}, "javax.util.BitSet,java.util.Map,java.util.List");
+}, "org.jmol.util.BitSet,java.util.Map,java.util.List");
 Clazz.defineMethod (c$, "getBioPolymerCount", 
 function () {
 return 0;
 });
 Clazz.defineMethod (c$, "getPolymerPointsAndVectors", 
 function (bs, vList, isTraceAlpha, sheetSmoothing) {
-}, "javax.util.BitSet,java.util.List,~B,~N");
+}, "org.jmol.util.BitSet,java.util.List,~B,~N");
 Clazz.defineMethod (c$, "getPolymerLeadMidPoints", 
 function (iPolymer) {
 return null;
@@ -238,28 +238,28 @@ sb.append ("\nNumber of Atoms ..... " + (this.modelSet.atomCount - nHetero));
 if (nHetero > 0) sb.append (" (" + nHetero + ")");
 sb.append ("\nNumber of Bonds ..... " + this.modelSet.bondCount);
 sb.append ("\nNumber of Models ...... " + this.modelSet.modelCount);
-}, "javax.util.StringXBuilder,~N");
+}, "org.jmol.util.StringXBuilder,~N");
 Clazz.defineMethod (c$, "calculateStruts", 
 function (modelSet, bs1, bs2) {
 return 0;
-}, "org.jmol.modelset.ModelSet,javax.util.BitSet,javax.util.BitSet");
+}, "org.jmol.modelset.ModelSet,org.jmol.util.BitSet,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "calculateStraightness", 
 function (viewer, ctype, qtype, mStep) {
 }, "org.jmol.viewer.Viewer,~S,~S,~N");
 Clazz.defineMethod (c$, "selectSeqcodeRange", 
 function (seqcodeA, seqcodeB, chainID, bs, caseSensitive) {
-}, "~N,~N,~S,javax.util.BitSet,~B");
+}, "~N,~N,~S,org.jmol.util.BitSet,~B");
 Clazz.defineMethod (c$, "setConformation", 
 function (bsConformation) {
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getPdbConformation", 
 function (bsConformation, conformationIndex) {
 return false;
-}, "javax.util.BitSet,~N");
+}, "org.jmol.util.BitSet,~N");
 Clazz.defineMethod (c$, "getProteinStructureState", 
 function (bsAtoms, taintedOnly, needPhiPsi, mode) {
 return null;
-}, "javax.util.BitSet,~B,~B,~N");
+}, "org.jmol.util.BitSet,~B,~B,~N");
 Clazz.defineMethod (c$, "getFullPDBHeader", 
 function () {
 return null;

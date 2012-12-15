@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.SlaterReader"], "org.jmol.adapter.readers.quantum.AdfReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.quantum.SlaterData", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.htSymmetries = null;
@@ -24,7 +24,7 @@ if (!this.doGetModel (++this.modelNumber, null)) return this.checkLastModel ();
 this.readCoordinates ();
 return true;
 }if (this.line.indexOf (" ======  Eigenvectors (rows) in BAS representation") >= 0) {
-if (this.readMolecularOrbitals) this.readMolecularOrbitals (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.symLine)[1]);
+if (this.doReadMolecularOrbitals) this.readMolecularOrbitals (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.symLine)[1]);
 return true;
 }if (!this.doProcessLines) return true;
 if (this.line.indexOf ("Energy:") >= 0) {
@@ -57,7 +57,8 @@ if (tokens.length < 5) break;
 var symbol = tokens[1];
 if (org.jmol.api.JmolAdapter.getElementNumber (symbol) < 1) {
 this.nXX++;
-continue ;}var atom = this.atomSetCollection.addNewAtom ();
+continue;
+}var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = symbol;
 this.setAtomCoordXYZ (atom, this.parseFloatStr (tokens[pt0]), this.parseFloatStr (tokens[pt0 + 1]), this.parseFloatStr (tokens[pt0 + 2]));
 }
@@ -68,16 +69,17 @@ this.readLine ();
 while (this.readLine () != null) {
 while (this.readLine () != null && this.line.indexOf (".") < 0 && this.line.indexOf ("====") < 0) {
 }
-if (this.line == null || this.line.indexOf (".") < 0) return ;
+if (this.line == null || this.line.indexOf (".") < 0) return;
 var frequencies = this.getTokens ();
 this.readLine ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 var frequencyCount = frequencies.length;
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;this.atomSetCollection.cloneLastAtomSet ();
+if (ignore[i]) continue;
+this.atomSetCollection.cloneLastAtomSet ();
 this.atomSetCollection.setAtomSetFrequency (null, null, frequencies[i], null);
 }
 this.readLines (this.nXX);
@@ -102,7 +104,7 @@ this.vSymmetries.add (sd);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readSlaterBasis", 
 ($fz = function () {
-if (this.vSymmetries == null) return ;
+if (this.vSymmetries == null) return;
 var nBF = 0;
 for (var i = 0; i < this.vSymmetries.size (); i++) {
 var sd = this.vSymmetries.get (i);
@@ -110,15 +112,15 @@ org.jmol.util.Logger.info (sd.sym);
 this.discardLinesUntilContains ("=== " + sd.sym + " ===");
 if (this.line == null) {
 org.jmol.util.Logger.error ("Symmetry slater basis section not found: " + sd.sym);
-return ;
+return;
 }sd.nSFO = this.parseIntStr (this.readLine ().substring (15));
 sd.nBF = this.parseIntStr (this.readLine ().substring (75));
 var funcList = "";
 while (this.readLine () != null && this.line.length > 1) funcList += this.line;
 
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (funcList);
-if (tokens.length != sd.nBF) return ;
-sd.basisFunctions =  Clazz.newArray (tokens.length, 0);
+if (tokens.length != sd.nBF) return;
+sd.basisFunctions =  Clazz.newIntArray (tokens.length, 0);
 for (var j = tokens.length; --j >= 0; ) {
 var n = this.parseIntStr (tokens[j]);
 if (n > nBF) nBF = n;
@@ -128,13 +130,13 @@ sd.basisFunctions[j] = n - 1;
 this.slaterArray =  new Array (nBF);
 this.discardLinesUntilContains ("(power of)");
 this.readLines (2);
-while (this.readLine () != null && this.line.length > 2 && (this.line.charAt (2)).charCodeAt (0) == 32) {
+while (this.readLine () != null && this.line.length > 2 && this.line.charAt (2) == ' ') {
 var data = this.line;
 while (this.readLine ().indexOf ("---") < 0) data += this.line;
 
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (data);
 var nAtoms = tokens.length - 1;
-var atomList =  Clazz.newArray (nAtoms, 0);
+var atomList =  Clazz.newIntArray (nAtoms, 0);
 for (var i = 1; i <= nAtoms; i++) atomList[i - 1] = this.parseIntStr (tokens[i]) - 1;
 
 this.readLine ();
@@ -161,12 +163,12 @@ this.slaterArray[ptBF].index = ptBF;
 Clazz.defineMethod (c$, "readMolecularOrbitals", 
 ($fz = function (sym) {
 var sd = this.htSymmetries.get (sym);
-if (sd == null) return ;
+if (sd == null) return;
 var ptSym = sd.index;
 var isLast = (ptSym == this.vSymmetries.size () - 1);
 var n = 0;
 var nBF = this.slaterArray.length;
-sd.coefs =  Clazz.newArray (sd.nSFO, nBF, 0);
+sd.coefs =  Clazz.newFloatArray (sd.nSFO, nBF, 0);
 while (n < sd.nBF) {
 this.readLine ();
 var nLine = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ()).length;
@@ -186,7 +188,7 @@ mo.put ("coefficients", sd.coefs[i]);
 mo.put ("id", sym + " " + (i + 1));
 sd.mos[i] = mo;
 }
-if (!isLast) return ;
+if (!isLast) return;
 this.discardLinesUntilContains ("Orbital Energies, all Irreps");
 this.readLines (4);
 while (this.readLine () != null && this.line.length > 10) {

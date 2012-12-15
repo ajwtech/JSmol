@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.declarePackage ("org.jmol.adapter.smarter");
 Clazz.load (["org.jmol.api.JmolAdapterAtomIterator"], "org.jmol.adapter.smarter.AtomIterator", ["java.lang.Float", "org.jmol.api.JmolAdapter"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.iatom = 0;
