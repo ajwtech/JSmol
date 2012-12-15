@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-10 03:51:32 -0600 (Sat, 10 Nov 2012) $
- * $Revision: 17707 $
+ * $Date: 2012-12-11 19:59:41 -0600 (Tue, 11 Dec 2012) $
+ * $Revision: 17804 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -123,6 +123,14 @@ public abstract class JmolAdapter {
 
 
   String adapterName;
+  final public static String[] cellParamNames = { 
+    "_cell_length_a", 
+    "_cell_length_b",
+    "_cell_length_c", 
+    "_cell_angle_alpha", 
+    "_cell_angle_beta",
+    "_cell_angle_gamma" 
+  };
 
   public JmolAdapter(String adapterName) {
     this.adapterName = adapterName;

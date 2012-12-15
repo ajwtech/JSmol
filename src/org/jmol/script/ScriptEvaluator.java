@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-06 10:56:07 -0600 (Thu, 06 Dec 2012) $
- * $Revision: 17789 $
+ * $Date: 2012-12-13 06:21:47 -0600 (Thu, 13 Dec 2012) $
+ * $Revision: 17807 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -7790,44 +7790,6 @@ public class ScriptEvaluator {
   }
 
   private void color() throws ScriptException {
-    
-//    if (statementLength == 1 && viewer.getTestFlag(1) && !isSyntaxCheck) {
-//      // a little test...
-//      Point3f pt = new Point3f();
-//      float[] hsl = new float[3];
-//
-//      int n = 20;
-//      for (int r = 0; r <= 260; r += n)
-//        for (int g = 0; g <= 260; g += n)
-//          for (int b = 0; b <= 260; b += n) {
-//            if (r > 255)
-//              r = 255;
-//            if (g > 255)
-//              g = 255;
-//            if (b > 255)
-//              b = 255;
-//            ColorEncoder.RGBtoHSL(r, g, b, hsl);
-//            if (Float.isNaN(hsl[1]))
-//              hsl[1] = 1;//continue;
-//            pt.x = (float) (10 * hsl[1] * Math.cos(Math.PI * 2 * hsl[0]));
-//            pt.y = (float) (10 * hsl[1] * Math.sin(Math.PI * 2 * hsl[0]));
-//            pt.z = hsl[2] * 20 - 10;
-//            viewer.log("draw c_"
-//                + r
-//                + "_"
-//                + g
-//                + "_"
-//                + b
-//                + " "
-//                + Escape.escape(pt)
-//                + " color "
-//                + Escape.escapeColor(ColorUtil.colorTriadToInt(r / 255f,
-//                    g / 255f, b / 255f))
-//            //+ " \"" + (int) (hsv[0] * 240) + " "+ (int) (hsv[1] * 240) + " "+ (int) (hsv[2] * 240) + "\""
-//                );
-//          }
-//      return;
-//    }
     int i = 1;
     if (isColorParam(1)) {
       theTok = Token.atoms;
@@ -8081,6 +8043,9 @@ public class ScriptEvaluator {
             translucency = parameterAsString(index);
             if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
+          } else if (isColorParam(index)){
+            argb = getArgbParamOrNone(index, false);
+            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));            
           }
           // checkLength(index + 1);
           // iToken = index;
@@ -8261,7 +8226,8 @@ public class ScriptEvaluator {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      if (isIsosurface && colorvalue1 != null)
+      if (colorvalue1 != null 
+          && (isIsosurface || shapeType == JmolConstants.SHAPE_CARTOON || shapeType == JmolConstants.SHAPE_RIBBONS))
         setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
       else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);
@@ -8278,20 +8244,6 @@ public class ScriptEvaluator {
       viewer.selectBonds(null);
   }
 
-  private void colorShapeBs(int shapeType, int typeMask, int argb,
-                          String translucency, float translucentLevel, BitSet bs) {
-
-    if (typeMask != 0) {
-      setShapeProperty(shapeType = JmolConstants.SHAPE_STICKS, "type", Integer
-          .valueOf(typeMask));
-    }
-    setShapePropertyBs(shapeType, "color", Integer.valueOf(argb), bs);
-    if (translucency != null)
-      setShapeTranslucency(shapeType, "", translucency, translucentLevel, bs);
-    if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
-          .valueOf(JmolEdge.BOND_COVALENT_MASK));
-  }
 
   private void setShapeTranslucency(int shapeType, String prefix,
                                     String translucency,
@@ -12173,9 +12125,16 @@ public class ScriptEvaluator {
         checkLength(++iToken);
         if (!isSyntaxCheck) {
           n = viewer.calculateStruts(bs, bs2);
-          if (n > 0)
-            colorShapeBs(JmolConstants.SHAPE_STRUTS, JmolEdge.BOND_STRUT,
-                0x0FFFFFF, "translucent", 0.5f, null);
+          if (n > 0) {
+            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+                .valueOf(JmolEdge.BOND_STRUT));
+            setShapePropertyBs(JmolConstants.SHAPE_STICKS, "color", Integer
+                .valueOf(0x0FFFFFF), null);
+            setShapeTranslucency(JmolConstants.SHAPE_STICKS, "", "translucent",
+                0.5f, null);
+            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+                .valueOf(JmolEdge.BOND_COVALENT_MASK));
+          }
           showString(GT._("{0} struts added", n));
         }
         return;
@@ -12205,22 +12164,22 @@ public class ScriptEvaluator {
         default:
           isFrom = true;
         }
-        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken) : viewer
-            .getSelectionSet(false));
+        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken)
+            : viewer.getSelectionSet(false));
         checkLength(++iToken);
         if (!isSyntaxCheck)
           viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
-// Removed in Jmol 13.0.RC4
-//      case Token.volume:
-//        checkLength(2);
-//        if (!isSyntaxCheck) {
-//          float val = viewer.getVolume(null, null);
-//          showString("" + Math.round(val * 10) / 10f + " A^3; "
-//              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
-//              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
-//        }
-//        return;
+        // Removed in Jmol 13.0.RC4
+        //      case Token.volume:
+        //        checkLength(2);
+        //        if (!isSyntaxCheck) {
+        //          float val = viewer.getVolume(null, null);
+        //          showString("" + Math.round(val * 10) / 10f + " A^3; "
+        //              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
+        //              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
+        //        }
+        //        return;
       }
       if (n != Integer.MIN_VALUE) {
         scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));

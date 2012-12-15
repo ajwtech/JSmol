@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-31 20:44:24 -0500 (Wed, 31 Oct 2012) $
- * $Revision: 17700 $
+ * $Date: 2012-12-13 04:37:11 -0600 (Thu, 13 Dec 2012) $
+ * $Revision: 17805 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -180,8 +180,10 @@ public class SticksRenderer extends ShapeRenderer {
       boolean doA = !Colix.isColixTranslucent(colixA);
       boolean doB = !Colix.isColixTranslucent(colixB);
       if (!doA || !doB) {
-        if (!doA && !doB)
+        if (!doA && !doB && !needTranslucent) {
+          g3d.setColix(!doA ? colixA : colixB);
           return true;
+        }
         needTranslucent = true;
       }
     }
