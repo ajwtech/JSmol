@@ -78,7 +78,7 @@ this.domObj =  new Array (1);
 {
 this.domObj[0] =
 parent.viewer.applet._createDomNode("xmlReader"
-,reader.lock.lock);
+,this.reader.lock.lock);
 }this.walkDOMTree ();
 {
 parent.viewer.applet._createDomNode("xmlReader",null);

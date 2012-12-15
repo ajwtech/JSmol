@@ -24,10 +24,8 @@
 
 package org.jmol.adapter.readers.xml;
 
-import java.io.BufferedReader;
 
 
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -52,21 +50,21 @@ public class XmlVaspReader extends XmlReader {
   private boolean isE_fr_energy = false;
   private String enthalpy = null;
   private String gibbsEnergy = null;
+  private String[] myAttributes = { "name" }; 
   
   XmlVaspReader() {
   }
   
   @Override
   protected String[] getDOMAttributes() {
-    return new String[] { "name" };
+    return myAttributes;
   }
 
   @Override
   protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader) throws Exception {
+                            Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, saxReader);
+    super.processXml(parent, saxReader);
   }
 
   @Override

@@ -10,7 +10,7 @@ this.haveControlPointScreens = false;
 this.aspectRatio = 0;
 this.hermiteLevel = 0;
 this.sheetSmoothing = 0;
-this.meshElliptical = false;
+this.cartoonFancy = false;
 this.meshes = null;
 this.meshReady = null;
 this.bsRenderMesh = null;
@@ -91,17 +91,17 @@ var TF = this.isExport || this.viewer.getHighResolution ();
 if (TF != this.isHighRes) this.invalidateMesh = true;
 this.isHighRes = TF;
 var v = this.viewer.getCartoonFlag (603979820);
-if (this.meshElliptical != v) {
+if (this.cartoonFancy != v) {
 this.invalidateMesh = true;
-this.meshElliptical = v;
+this.cartoonFancy = v;
 }var val1 = this.viewer.getHermiteLevel ();
 val1 = (val1 <= 0 ? -val1 : this.viewer.getInMotion () ? 0 : val1);
-if (this.meshElliptical) val1 = Math.max (val1, 3);
+if (this.cartoonFancy) val1 = Math.max (val1, 3);
 if (val1 != this.hermiteLevel) this.invalidateMesh = true;
 this.hermiteLevel = Math.min (val1, 8);
 var val = this.viewer.getRibbonAspectRatio ();
 val = Math.min (Math.max (0, val), 20);
-if (this.meshElliptical && val >= 16) val = 4;
+if (this.cartoonFancy && val >= 16) val = 4;
 if (this.hermiteLevel == 0) val = 0;
 if (val != this.aspectRatio && val != 0 && val1 != 0) this.invalidateMesh = true;
 this.aspectRatio = val;
@@ -354,11 +354,12 @@ Clazz.defineMethod (c$, "createMesh",
 this.setNeighbors (i);
 if (this.controlPoints[i].distance (this.controlPoints[this.iNext]) == 0) return false;
 var isEccentric = (aspectRatio != 1 && this.wingVectors != null);
-var hermiteLevel = Math.max (this.hermiteLevel, 5);
 var isFlatMesh = (aspectRatio == 0);
-var isElliptical = (this.meshElliptical || hermiteLevel >= 6);
+var isElliptical = (this.cartoonFancy || this.hermiteLevel >= 6);
+var hermiteLevel = Math.max (this.hermiteLevel, 5);
 var nHermites = (hermiteLevel + 1) * 2 + 1;
 var nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2);
+var angle = ((isFlatMesh ? 3.141592653589793 / (nPer - 1) : 6.283185307179586 / nPer));
 var mesh = this.meshes[i] =  new org.jmol.shape.Mesh ("mesh_" + this.shapeID + "_" + i, 0, i);
 var variableRadius = (madBeg != madMid || madMid != madEnd);
 if (this.controlHermites == null || this.controlHermites.length < nHermites + 1) {
@@ -382,49 +383,62 @@ this.ptNext.set (radius3, radius3, 0);
 org.jmol.util.Hermite.getHermiteList (4, this.ptPrev, this.pt, this.pt1, this.ptNext, this.ptNext, this.radiusHermites, 0, (nHermites + 1) >> 1, true);
 }var nPoints = 0;
 var iMid = nHermites >> 1;
-var angle = (6.283185307179586 / nPer);
+var kpt1 = Clazz.doubleToInt ((nPer + 2) / 4);
+var kpt2 = Clazz.doubleToInt ((3 * nPer + 2) / 4);
+var mode = (!isEccentric ? 0 : isFlatMesh ? 1 : isElliptical ? 2 : 3);
+var useMat = (mode == 0 || mode == 3);
 for (var p = 0; p < nHermites; p++) {
 this.norm.sub2 (this.controlHermites[p + 1], this.controlHermites[p]);
 var scale = (!variableRadius ? radius1 : p < iMid ? this.radiusHermites[p].x : this.radiusHermites[p - iMid].y);
-if (isEccentric) {
 this.wing.setT (this.wingHermites[p]);
 this.wing1.setT (this.wing);
-if (isFlatMesh) {
-angle = (3.141592653589793 / (nPer - 1));
-} else if (isElliptical) {
+switch (mode) {
+case 1:
+break;
+case 2:
 this.wing1.cross (this.norm, this.wing);
 this.wing1.normalize ();
 this.wing1.scale (this.wing.length () / aspectRatio);
-} else {
+break;
+case 3:
 this.wing.scale (2 / aspectRatio);
 this.wing1.sub (this.wing);
-}} else {
-this.wing.cross (this.wingHermites[p], this.norm);
+break;
+case 0:
+this.wing.cross (this.wing, this.norm);
 this.wing.normalize ();
-}this.wing.scale (scale);
+break;
+}
+this.wing.scale (scale);
 this.wing1.scale (scale);
+if (useMat) {
 this.aa.setVA (this.norm, angle);
 this.mat.setAA (this.aa);
-this.pt1.setT (this.controlHermites[p]);
+}this.pt1.setT (this.controlHermites[p]);
 var theta = (isFlatMesh ? 0 : angle);
 for (var k = 0; k < nPer; k++, theta += angle) {
-if (k > 0 && (!isElliptical || !isEccentric)) this.mat.transform (this.wing);
-if (isEccentric) {
-if (isFlatMesh) {
+if (useMat && k > 0) this.mat.transform (this.wing);
+switch (mode) {
+case 1:
 this.wingT.setT (this.wing1);
 this.wingT.scale (Math.cos (theta));
-} else if (isElliptical) {
+break;
+case 2:
 this.wingT.setT (this.wing1);
 this.wingT.scale (Math.sin (theta));
 this.wingT.scaleAdd2 (Math.cos (theta), this.wing, this.wingT);
-} else {
+break;
+case 3:
 this.wingT.setT (this.wing);
-if (k == Clazz.doubleToInt ((nPer + 2) / 4) || k == Clazz.doubleToInt ((3 * nPer + 2) / 4)) this.wing1.scale (-1);
+if (k == kpt1 || k == kpt2) this.wing1.scale (-1);
 this.wingT.add (this.wing1);
-}this.pt.add2 (this.pt1, this.wingT);
-} else {
-this.pt.add2 (this.pt1, this.wing);
-}mesh.addVertexCopy (this.pt);
+break;
+case 0:
+this.wingT.setT (this.wing);
+break;
+}
+this.pt.add2 (this.pt1, this.wingT);
+mesh.addVertexCopy (this.pt);
 }
 if (p > 0) {
 var nLast = (isFlatMesh ? nPer - 1 : nPer);
@@ -482,5 +496,9 @@ this.meshes[i].initialize (1073741958, null, null);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineStatics (c$,
 "ABSOLUTE_MIN_MESH_SIZE", 3,
-"MIN_MESH_RENDER_SIZE", 8);
+"MIN_MESH_RENDER_SIZE", 8,
+"MODE_TUBE", 0,
+"MODE_FLAT", 1,
+"MODE_ELLIPTICAL", 2,
+"MODE_NONELLIPTICAL", 3);
 });

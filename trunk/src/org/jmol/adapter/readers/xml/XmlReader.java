@@ -29,7 +29,6 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Resolver;
 import org.jmol.api.Interface;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -92,26 +91,20 @@ public class XmlReader extends AtomSetCollectionReader {
   protected Atom atom;
   protected String[] domAttributes;
   protected XmlReader parent; // XmlReader itself; to be assigned by the subReader
-  public Map<String, String> atts = new Hashtable<String, String>();
+  public Map<String, String> atts;
 
   /////////////// file reader option //////////////
 
   @Override
   public void initializeReader() throws Exception {
+    atts = new Hashtable<String, String>();
     setMyError(parseXML());
     continuing = false;
-    /**
-     * @j2sNative
-     * 
-     *            this.viewer.applet._createDomNode("xmlReader",null);
-     * 
-     */
-    {
-    }
   }
 
   private void setMyError(String err) {
-    if (err != null && (atomSetCollection == null || atomSetCollection.errorMessage == null)) {
+    if (err != null
+        && (atomSetCollection == null || atomSetCollection.errorMessage == null)) {
       atomSetCollection = new AtomSetCollection("xml", this, null, null);
       atomSetCollection.errorMessage = err;
     }
@@ -154,20 +147,11 @@ public class XmlReader extends AtomSetCollectionReader {
       className = Resolver.getReaderClassBase(name);
       Class<?> atomSetCollectionReaderClass = Class.forName(className);
       thisReader = (XmlReader) atomSetCollectionReaderClass.newInstance();
-      /**
-       * 
-       * @j2sNative this.domObj[0] =
-       *            this.viewer.applet._createDomNode("xmlReader"
-       *            ,this.reader.lock.lock);
-       * 
-       */
-      {
-      }
     } catch (Exception e) {
       return "File reader was not found: " + className;
     }
     try {
-      thisReader.processXml(this, atomSetCollection, reader, saxReader);
+      thisReader.processXml(this, saxReader);
     } catch (Exception e) {
       return "Error reading XML: " + e.getMessage();
     }
@@ -177,24 +161,38 @@ public class XmlReader extends AtomSetCollectionReader {
   /**
    * 
    * @param parent
-   * @param atomSetCollection
-   * @param reader
    * @param saxReader
    * @throws Exception
    */
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader)
+  protected void processXml(XmlReader parent, Object saxReader)
       throws Exception {
     this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    this.reader = reader;
+    atomSetCollection = parent.atomSetCollection;
+    reader = parent.reader;
+    atts = parent.atts;
     if (saxReader == null) {
-      domObj = parent.domObj;
       domAttributes = getDOMAttributes();
       attribs = new Object[1];
       attArgs = new Object[1];
+      domObj = new Object[1];
+      /**
+       * 
+       * @j2sNative this.domObj[0] =
+       *            parent.viewer.applet._createDomNode("xmlReader"
+       *            ,this.reader.lock.lock);
+       * 
+       */
+      {
+      }
       walkDOMTree();
+      /**
+       * @j2sNative
+       * 
+       *            parent.viewer.applet._createDomNode("xmlReader",null);
+       * 
+       */
+      {
+      }
     } else {
       JmolXmlHandler saxHandler = (JmolXmlHandler) Interface
           .getOptionInterface("adapter.readers.xml.XmlHandler");
@@ -219,7 +217,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
   @Override
   protected void processDOM(Object DOMNode) {
-    domObj[0] = DOMNode;
+    domObj = new Object[] { DOMNode };
     setMyError(selectReaderAndGo(null));
   }
 

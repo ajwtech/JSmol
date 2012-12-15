@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-22 07:15:56 -0600 (Thu, 22 Nov 2012) $
- * $Revision: 17744 $
+ * $Date: 2012-12-13 06:21:47 -0600 (Thu, 13 Dec 2012) $
+ * $Revision: 17807 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -138,6 +138,20 @@ public abstract class BioShapeCollection extends Shape {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0)
           bioShape.setColixBS(colix, pid, bsSelected);
+      }
+      return;
+    }
+    if ("colorPhase" == propertyName) {
+      // cartoons and ribbons only
+      Object[] twoColors = (Object[]) value; 
+      short colixBack = Colix.getColixO(twoColors[0]);
+      short colix = Colix.getColixO(twoColors[1]);
+      for (int i = bioShapes.length; --i >= 0;) {
+        BioShape bioShape = bioShapes[i];
+        if (bioShape.monomerCount > 0) {
+          bioShape.setColixBS(colix, (byte)0, bsSelected);
+          bioShape.setColixBack(colixBack, bsSelected);
+        }
       }
       return;
     }
