@@ -1,16 +1,21 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelset.Group"], "org.jmol.modelsetbio.Monomer", ["java.lang.Float", "javax.vecmath.Point3f", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger", "$.Measure", "$.Quaternion", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelset.Group"], "org.jmol.modelsetbio.Monomer", ["java.lang.Float", "org.jmol.constant.EnumStructure", "org.jmol.util.Logger", "$.Measure", "$.Point3f", "$.Quaternion", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bioPolymer = null;
 this.offsets = null;
 this.monomerIndex = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelsetbio, "Monomer", org.jmol.modelset.Group);
+c$.have = Clazz.defineMethod (c$, "have", 
+function (offsets, n) {
+return (offsets[n] & 0xFF) != 0xFF;
+}, "~A,~N");
 Clazz.makeConstructor (c$, 
 function (chain, group3, seqcode, firstAtomIndex, lastAtomIndex, interestingAtomOffsets) {
 Clazz.superConstructor (this, org.jmol.modelsetbio.Monomer, [chain, group3, seqcode, firstAtomIndex, lastAtomIndex]);
 this.offsets = interestingAtomOffsets;
-if (this.offsets[0] >= 0) this.leadAtomIndex = firstAtomIndex + (this.offsets[0] & 0xFF);
+var offset = this.offsets[0] & 0xFF;
+if (offset != 255) this.leadAtomIndex = firstAtomIndex + offset;
 }, "org.jmol.modelset.Chain,~S,~N,~N,~N,~A");
 Clazz.overrideMethod (c$, "getGroups", 
 function () {
@@ -48,7 +53,7 @@ return (this.bioPolymer == null ? -1 : this.bioPolymer.bioPolymerIndexInModel);
 c$.scanForOffsets = Clazz.defineMethod (c$, "scanForOffsets", 
 function (firstAtomIndex, specialAtomIndexes, interestingAtomIDs) {
 var interestingCount = interestingAtomIDs.length;
-var offsets =  Clazz.newArray (interestingCount, 0);
+var offsets =  Clazz.newByteArray (interestingCount, 0);
 for (var i = interestingCount; --i >= 0; ) {
 var atomIndex;
 var atomID = interestingAtomIDs[i];
@@ -89,7 +94,7 @@ Clazz.defineMethod (c$, "isSheet",
 function () {
 return false;
 });
-Clazz.overrideMethod (c$, "setProteinStructureId", 
+Clazz.overrideMethod (c$, "setStrucNo", 
 function (id) {
 }, "~N");
 Clazz.defineMethod (c$, "getAtomFromOffsetIndex", 
@@ -158,7 +163,7 @@ Clazz.defineMethod (c$, "getMyInfo",
 function () {
 var info = Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getGroupInfo", [this.groupIndex]);
 var chainID = this.chain.chainID;
-info.put ("chain", (chainID.charCodeAt (0) == 0 ? "" : "" + chainID));
+info.put ("chain", (chainID == '\0' ? "" : "" + chainID));
 var seqNum = this.getSeqNumber ();
 var insCode = this.getInsertionCode ();
 if (seqNum > 0) info.put ("sequenceNumber", Integer.$valueOf (seqNum));
@@ -173,7 +178,7 @@ f = this.getGroupParameter (1112539150);
 if (!Float.isNaN (f)) info.put ("theta",  new Float (f));
 var structure = this.getProteinStructure ();
 if (structure != null) {
-info.put ("structureId", Integer.$valueOf (structure.uniqueID));
+info.put ("structureId", Integer.$valueOf (structure.strucNo));
 info.put ("structureType", structure.type.getBioStructureTypeName (false));
 }info.put ("shapeVisibilityFlags", Integer.$valueOf (this.shapeVisibilityFlags));
 return info;
@@ -185,43 +190,48 @@ return (structure == null ? "" : structure.type.getBioStructureTypeName (false))
 });
 Clazz.defineMethod (c$, "getConformation", 
 function (atoms, bsConformation, conformationIndex) {
-var ch = '\0';
+var ch = '\u0000';
 for (var i = this.firstAtomIndex; i <= this.lastAtomIndex; i++) {
 var atom = atoms[i];
 var altloc = atom.getAlternateLocationID ();
-if (altloc.charCodeAt (0) == 0) continue ;if (conformationIndex >= 0 && altloc.charCodeAt (0) != ch.charCodeAt (0)) {
+if (altloc == '\0') continue;
+if (conformationIndex >= 0 && altloc != ch) {
 ch = altloc;
 conformationIndex--;
-}if (conformationIndex < 0 && altloc.charCodeAt (0) != ch.charCodeAt (0)) bsConformation.clear (i);
+}if (conformationIndex < 0 && altloc != ch) bsConformation.clear (i);
 }
-}, "~A,javax.util.BitSet,~N");
+}, "~A,org.jmol.util.BitSet,~N");
 Clazz.defineMethod (c$, "updateOffsetsForAlternativeLocations", 
 function (atoms, bsSelected) {
 for (var offsetIndex = this.offsets.length; --offsetIndex >= 0; ) {
 var offset = this.offsets[offsetIndex] & 0xFF;
-if (offset == 255) continue ;var iThis = this.firstAtomIndex + offset;
+if (offset == 255) continue;
+var iThis = this.firstAtomIndex + offset;
 var atom = atoms[iThis];
 var thisID = atom.getAtomID ();
-if ((atom.getAlternateLocationID ()).charCodeAt (0) == 0) continue ;var nScan = this.lastAtomIndex - this.firstAtomIndex;
+if ((atom.getAlternateLocationID ()).charCodeAt (0) == 0) continue;
+var nScan = this.lastAtomIndex - this.firstAtomIndex;
 for (var i = 1; i <= nScan; i++) {
 var iNew = iThis + i;
 if (iNew > this.lastAtomIndex) iNew -= nScan + 1;
 var offsetNew = iNew - this.firstAtomIndex;
-if (offsetNew < 0 || offsetNew > 255 || iNew == iThis || !bsSelected.get (iNew)) continue ;var atomID = atoms[iNew].getAtomID ();
-if (atomID != thisID || atomID == 0 && !atoms[iNew].getAtomName ().equals (atom.getAtomName ())) continue ;if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atom);
+if (offsetNew < 0 || offsetNew > 255 || iNew == iThis || !bsSelected.get (iNew)) continue;
+var atomID = atoms[iNew].getAtomID ();
+if (atomID != thisID || atomID == 0 && !atoms[iNew].getAtomName ().equals (atom.getAtomName ())) continue;
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atom);
 this.offsets[offsetIndex] = offsetNew;
 break;
 }
 }
-}, "~A,javax.util.BitSet");
+}, "~A,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getMonomerSequenceAtoms", 
 function (bsInclude, bsResult) {
 Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "selectAtoms", [bsResult]);
 bsResult.and (bsInclude);
-}, "javax.util.BitSet,javax.util.BitSet");
+}, "org.jmol.util.BitSet,org.jmol.util.BitSet");
 c$.checkOptional = Clazz.defineMethod (c$, "checkOptional", 
 function (offsets, atom, firstAtomIndex, index) {
-if (offsets[atom] >= 0) return true;
+if (org.jmol.modelsetbio.Monomer.have (offsets, atom)) return true;
 if (index < 0) return false;
 offsets[atom] = (index - firstAtomIndex);
 return true;
@@ -237,7 +247,7 @@ var prev = (mStep < 1 || this.monomerIndex <= 0 ? null : this.bioPolymer.monomer
 var q2 = this.getQuaternion (qType);
 var q1 = (mStep < 1 ? org.jmol.util.Quaternion.getQuaternionFrameV (org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, false) : prev == null ? null : prev.getQuaternion (qType));
 if (q1 == null || q2 == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
-var a = (mStep < 1 ? javax.vecmath.Point3f.new3 (0, 0, 0) : prev.getQuaternionFrameCenter (qType));
+var a = (mStep < 1 ? org.jmol.util.Point3f.new3 (0, 0, 0) : prev.getQuaternionFrameCenter (qType));
 var b = this.getQuaternionFrameCenter (qType);
 if (a == null || b == null) return Clazz.superCall (this, org.jmol.modelsetbio.Monomer, "getHelixData", [tokType, qType, mStep]);
 return org.jmol.util.Measure.computeHelicalAxis (tokType == 135176 ? "helixaxis" + this.getUniqueID () : null, tokType, a, b, q2.div (q1));
@@ -246,18 +256,18 @@ Clazz.defineMethod (c$, "getUniqueID",
 function () {
 var cid = this.getChainID ();
 var a = this.getLeadAtom ();
-var id = (a == null ? "" : "_" + a.getModelIndex ()) + "_" + this.getResno () + (cid.charCodeAt (0) == 0 ? "" : "" + cid);
+var id = (a == null ? "" : "_" + a.getModelIndex ()) + "_" + this.getResno () + (cid == '\0' ? "" : "" + cid);
 cid = (a == null ? '\0' : this.getLeadAtom ().getAlternateLocationID ());
-if (cid.charCodeAt (0) != 0) id += (cid).charCodeAt (0);
+if (cid != '\0') id += cid;
 return id;
 });
 Clazz.overrideMethod (c$, "isCrossLinked", 
 function (g) {
-for (var i = this.firstAtomIndex; i <= this.lastAtomIndex; i++) if (this.getCrossLink (i, null, g)) return true;
+for (var i = this.firstAtomIndex; i <= this.lastAtomIndex; i++) if (this.getCrossLinkGroup (i, null, g)) return true;
 
 return false;
 }, "org.jmol.modelset.Group");
-Clazz.overrideMethod (c$, "getCrossLinkLeadAtomIndexes", 
+Clazz.overrideMethod (c$, "getCrossLinkLead", 
 function (vReturn) {
 for (var i = this.firstAtomIndex; i <= this.lastAtomIndex; i++) if (this.getCrossLink (i, vReturn) && vReturn == null) return true;
 
@@ -265,9 +275,9 @@ return false;
 }, "java.util.List");
 Clazz.defineMethod (c$, "getCrossLink", 
 function (i, vReturn) {
-return this.getCrossLink (i, vReturn, null);
+return this.getCrossLinkGroup (i, vReturn, null);
 }, "~N,java.util.List");
-Clazz.defineMethod (c$, "getCrossLink", 
+Clazz.defineMethod (c$, "getCrossLinkGroup", 
 ($fz = function (i, vReturn, group) {
 var atom = this.chain.getAtom (i);
 var bonds = atom.getBonds ();
@@ -278,7 +288,8 @@ var checkPrevious = (vReturn == null && group == null);
 for (var j = 0; j < bonds.length; j++) {
 var a = bonds[j].getOtherAtom (atom);
 var g = a.getGroup ();
-if (group != null && g !== group) continue ;var iPolymer = g.getBioPolymerIndexInModel ();
+if (group != null && g !== group) continue;
+var iPolymer = g.getBioPolymerIndexInModel ();
 var igroup = g.getMonomerIndex ();
 if (checkPrevious) {
 if (iPolymer == ibp && igroup == this.monomerIndex - 1) return true;

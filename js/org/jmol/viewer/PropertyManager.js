@@ -1,10 +1,10 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.viewer");
+Clazz.load (null, "org.jmol.viewer.PropertyManager", ["java.lang.Float", "java.util.ArrayList", "$.Arrays", "$.Hashtable", "org.jmol.script.ScriptEvaluator", "$.ScriptVariable", "$.ScriptVariableInt", "$.Token", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "PropertyManager");
 c$.getPropertyNumber = Clazz.defineMethod (c$, "getPropertyNumber", 
 function (infoType) {
 if (infoType == null) return -1;
-for (var i = 0; i < 38; i++) if (infoType.equalsIgnoreCase (org.jmol.viewer.PropertyManager.getPropertyName (i))) return i;
+for (var i = 0; i < 39; i++) if (infoType.equalsIgnoreCase (org.jmol.viewer.PropertyManager.getPropertyName (i))) return i;
 
 return -1;
 }, "~S");
@@ -21,7 +21,7 @@ return (type.length > 0 && type !== "<atom selection>");
 }, "~S");
 c$.getProperty = Clazz.defineMethod (c$, "getProperty", 
 function (viewer, returnType, infoType, paramInfo) {
-if (org.jmol.viewer.PropertyManager.propertyTypes.length != 114) org.jmol.util.Logger.warn ("propertyTypes is not the right length: " + org.jmol.viewer.PropertyManager.propertyTypes.length + " != " + 114);
+if (org.jmol.viewer.PropertyManager.propertyTypes.length != 117) org.jmol.util.Logger.warn ("propertyTypes is not the right length: " + org.jmol.viewer.PropertyManager.propertyTypes.length + " != " + 117);
 var info;
 if (infoType.indexOf (".") >= 0 || infoType.indexOf ("[") >= 0) {
 info = org.jmol.viewer.PropertyManager.getModelProperty (viewer, infoType, paramInfo);
@@ -45,7 +45,7 @@ propertyName = names[0];
 var n;
 for (var i = 1; i < names.length; i++) {
 if ((n = org.jmol.util.Parser.parseInt (names[i])) != -2147483648) args[i] =  new org.jmol.script.ScriptVariableInt (n);
- else args[i] = org.jmol.script.ScriptVariable.newScriptVariableObj (4, names[i]);
+ else args[i] = org.jmol.script.ScriptVariable.newVariable (4, names[i]);
 }
 return org.jmol.viewer.PropertyManager.extractProperty (org.jmol.viewer.PropertyManager.getProperty (viewer, null, propertyName, propertyValue), args, 1);
 }, "org.jmol.viewer.Viewer,~S,~O");
@@ -56,42 +56,42 @@ var pt;
 var arg = args[ptr++];
 switch (arg.tok) {
 case 2:
-pt = org.jmol.script.ScriptVariable.iValue (arg) - 1;
+pt = arg.asInt () - 1;
 if (Clazz.instanceOf (property, java.util.List)) {
 var v = property;
 if (pt < 0) pt += v.size ();
 if (pt >= 0 && pt < v.size ()) return org.jmol.viewer.PropertyManager.extractProperty (v.get (pt), args, ptr);
 return "";
-}if (Clazz.instanceOf (property, Array)) {
-var slist = property;
-if (pt < 0) pt += slist.length;
-if (pt >= 0 && pt < slist.length) return slist[pt];
-return "";
-}if (Clazz.instanceOf (property, javax.vecmath.Matrix3f)) {
+}if (Clazz.instanceOf (property, org.jmol.util.Matrix3f)) {
 var m = property;
 var f = [[m.m00, m.m01, m.m02], [m.m10, m.m11, m.m12], [m.m20, m.m21, m.m22]];
 if (pt < 0) pt += 3;
 if (pt >= 0 && pt < 3) return org.jmol.viewer.PropertyManager.extractProperty (f, args, --ptr);
 return "";
-}if (Clazz.instanceOf (property, Array)) {
-var flist = property;
-if (pt < 0) pt += flist.length;
-if (pt >= 0 && pt < flist.length) return  new Float (flist[pt]);
-return "";
-}if (Clazz.instanceOf (property, Array)) {
+}if (org.jmol.util.Escape.isAI (property)) {
 var ilist = property;
 if (pt < 0) pt += ilist.length;
 if (pt >= 0 && pt < ilist.length) return Integer.$valueOf (ilist[pt]);
 return "";
-}if (Clazz.instanceOf (property, Array)) {
+}if (org.jmol.util.Escape.isAF (property)) {
+var flist = property;
+if (pt < 0) pt += flist.length;
+if (pt >= 0 && pt < flist.length) return  new Float (flist[pt]);
+return "";
+}if (org.jmol.util.Escape.isAII (property)) {
+var iilist = property;
+if (pt < 0) pt += iilist.length;
+if (pt >= 0 && pt < iilist.length) return org.jmol.viewer.PropertyManager.extractProperty (iilist[pt], args, ptr);
+return "";
+}if (org.jmol.util.Escape.isAFF (property)) {
 var fflist = property;
 if (pt < 0) pt += fflist.length;
 if (pt >= 0 && pt < fflist.length) return org.jmol.viewer.PropertyManager.extractProperty (fflist[pt], args, ptr);
 return "";
-}if (Clazz.instanceOf (property, Array)) {
-var iilist = property;
-if (pt < 0) pt += iilist.length;
-if (pt >= 0 && pt < iilist.length) return org.jmol.viewer.PropertyManager.extractProperty (iilist[pt], args, ptr);
+}if (org.jmol.util.Escape.isAS (property)) {
+var slist = property;
+if (pt < 0) pt += slist.length;
+if (pt >= 0 && pt < slist.length) return slist[pt];
 return "";
 }if (Clazz.instanceOf (property, Array)) {
 var olist = property;
@@ -173,16 +173,16 @@ case 10:
 return viewer.getRotationCenter ();
 case 16:
 return viewer.getAllChainInfo (myParam);
-case 36:
-return viewer.getProperty ("DATA_API", "consoleText", null);
 case 37:
+return viewer.getProperty ("DATA_API", "consoleText", null);
+case 38:
 return viewer.getJspecViewProperties (myParam);
 case 26:
 return viewer.getData (myParam.toString ());
 case 33:
 return viewer.getErrorMessageUn ();
 case 28:
-return org.jmol.script.ScriptEvaluator.evaluateExpression (viewer, myParam.toString ());
+return org.jmol.script.ScriptEvaluator.evaluateExpression (viewer, myParam.toString (), false);
 case 20:
 return viewer.getModelExtract (myParam, true, "MOL");
 case 32:
@@ -208,6 +208,8 @@ if (width < 0 && height < 0) height = width = -1;
 return viewer.getImageAs (returnType == null ? "JPEG" : "JPG64", -1, width, height, null, null);
 case 35:
 return viewer.getShapeProperty (23, "getInfo");
+case 36:
+return viewer.getShapeProperty (23, "getData");
 case 21:
 return viewer.getStatusChanged (myParam.toString ());
 case 22:
@@ -241,17 +243,17 @@ return viewer.getStateInfo (myParam.toString (), 0, 0);
 case 12:
 return viewer.getMatrixRotate ();
 }
-var data =  new Array (38);
-for (var i = 0; i < 38; i++) {
+var data =  new Array (39);
+for (var i = 0; i < 39; i++) {
 var paramType = org.jmol.viewer.PropertyManager.getParamType (i);
 var paramDefault = org.jmol.viewer.PropertyManager.getDefaultParam (i);
 var name = org.jmol.viewer.PropertyManager.getPropertyName (i);
-data[i] = ((name.charAt (0)).charCodeAt (0) == 88 ? "" : name + (paramType !== "" ? " " + org.jmol.viewer.PropertyManager.getParamType (i) + (paramDefault !== "" ? " #default: " + org.jmol.viewer.PropertyManager.getDefaultParam (i) : "") : ""));
+data[i] = (name.charAt (0) == 'X' ? "" : name + (paramType !== "" ? " " + org.jmol.viewer.PropertyManager.getParamType (i) + (paramDefault !== "" ? " #default: " + org.jmol.viewer.PropertyManager.getDefaultParam (i) : "") : ""));
 }
 java.util.Arrays.sort (data);
-var info =  new javax.util.StringXBuilder ();
+var info =  new org.jmol.util.StringXBuilder ();
 info.append ("getProperty ERROR\n").append (infoType).append ("?\nOptions include:\n");
-for (var i = 0; i < 38; i++) if (data[i].length > 0) info.append ("\n getProperty ").append (data[i]);
+for (var i = 0; i < 39; i++) if (data[i].length > 0) info.append ("\n getProperty ").append (data[i]);
 
 return info.toString ();
 }, $fz.isPrivate = true, $fz), "org.jmol.viewer.Viewer,~S,~O,~S");
@@ -264,12 +266,13 @@ if (Clazz.instanceOf (objHeader, java.util.Map)) {
 return (haveType ? (objHeader).get (type) : objHeader);
 }var lines = org.jmol.util.TextFormat.split (objHeader, '\n');
 var keyLast = "";
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 if (haveType) type = type.toUpperCase ();
 var key = "";
 for (var i = 0; i < lines.length; i++) {
 var line = lines[i];
-if (line.length < 12) continue ;key = line.substring (0, 6).trim ();
+if (line.length < 12) continue;
+key = line.substring (0, 6).trim ();
 var cont = line.substring (7, 10).trim ();
 if (key.equals ("REMARK")) {
 key += cont;
@@ -277,7 +280,7 @@ key += cont;
 if (haveType && keyLast.equals (type)) return sb.toString ();
 if (!haveType) {
 ht.put (keyLast, sb.toString ());
-sb =  new javax.util.StringXBuilder ();
+sb =  new org.jmol.util.StringXBuilder ();
 }keyLast = key;
 }if (!haveType || key.equals (type)) sb.append (line.substring (10).trim ()).appendC ('\n');
 }
@@ -288,7 +291,7 @@ return ht;
 }, "~O,~S");
 Clazz.defineStatics (c$,
 "atomExpression", "<atom selection>");
-c$.propertyTypes = c$.prototype.propertyTypes = ["appletInfo", "", "", "fileName", "", "", "fileHeader", "", "", "fileContents", "<pathname>", "", "fileContents", "", "", "animationInfo", "", "", "modelInfo", "<atom selection>", "{*}", "ligandInfo", "<atom selection>", "{*}", "shapeInfo", "", "", "measurementInfo", "", "", "centerInfo", "", "", "orientationInfo", "", "", "transformInfo", "", "", "atomList", "<atom selection>", "(visible)", "atomInfo", "<atom selection>", "(visible)", "bondInfo", "<atom selection>", "(visible)", "chainInfo", "<atom selection>", "(visible)", "polymerInfo", "<atom selection>", "(visible)", "moleculeInfo", "<atom selection>", "(visible)", "stateInfo", "<state type>", "all", "extractModel", "<atom selection>", "(visible)", "jmolStatus", "statusNameList", "", "jmolViewer", "", "", "messageQueue", "", "", "auxiliaryInfo", "<atom selection>", "{*}", "boundBoxInfo", "", "", "dataInfo", "<data type>", "types", "image", "", "", "evaluate", "<expression>", "", "menu", "<type>", "current", "minimizationInfo", "", "", "pointGroupInfo", "<atom selection>", "(visible)", "fileInfo", "<type>", "", "errorMessage", "", "", "mouseInfo", "", "", "isosurfaceInfo", "", "", "consoleText", "", "", "jspecView", "<key>", ""];
+c$.propertyTypes = c$.prototype.propertyTypes = ["appletInfo", "", "", "fileName", "", "", "fileHeader", "", "", "fileContents", "<pathname>", "", "fileContents", "", "", "animationInfo", "", "", "modelInfo", "<atom selection>", "{*}", "ligandInfo", "<atom selection>", "{*}", "shapeInfo", "", "", "measurementInfo", "", "", "centerInfo", "", "", "orientationInfo", "", "", "transformInfo", "", "", "atomList", "<atom selection>", "(visible)", "atomInfo", "<atom selection>", "(visible)", "bondInfo", "<atom selection>", "(visible)", "chainInfo", "<atom selection>", "(visible)", "polymerInfo", "<atom selection>", "(visible)", "moleculeInfo", "<atom selection>", "(visible)", "stateInfo", "<state type>", "all", "extractModel", "<atom selection>", "(visible)", "jmolStatus", "statusNameList", "", "jmolViewer", "", "", "messageQueue", "", "", "auxiliaryInfo", "<atom selection>", "{*}", "boundBoxInfo", "", "", "dataInfo", "<data type>", "types", "image", "", "", "evaluate", "<expression>", "", "menu", "<type>", "current", "minimizationInfo", "", "", "pointGroupInfo", "<atom selection>", "(visible)", "fileInfo", "<type>", "", "errorMessage", "", "", "mouseInfo", "", "", "isosurfaceInfo", "", "", "isosurfaceData", "", "", "consoleText", "", "", "jspecView", "<key>", ""];
 Clazz.defineStatics (c$,
 "PROP_APPLET_INFO", 0,
 "PROP_FILENAME", 1,
@@ -326,8 +329,9 @@ Clazz.defineStatics (c$,
 "PROP_ERROR_MESSAGE", 33,
 "PROP_MOUSE_INFO", 34,
 "PROP_ISOSURFACE_INFO", 35,
-"PROP_CONSOLE_TEXT", 36,
-"PROP_JSPECVIEW", 37,
-"PROP_COUNT", 38,
+"PROP_ISOSURFACE_DATA", 36,
+"PROP_CONSOLE_TEXT", 37,
+"PROP_JSPECVIEW", 38,
+"PROP_COUNT", 39,
 "readableTypes", ["", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu", "minimizationInfo"]);
 });

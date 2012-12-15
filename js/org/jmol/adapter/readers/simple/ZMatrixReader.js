@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.ArrayList", "$.Hashtable", "javax.vecmath.Point3f", "$.Point4f", "$.Vector3f"], "org.jmol.adapter.readers.simple.ZMatrixReader", ["java.lang.Character", "$.Exception", "$.Float", "org.jmol.adapter.smarter.Atom", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger", "$.Measure", "$.Quaternion"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.ArrayList", "$.Hashtable", "org.jmol.util.Point3f", "$.Point4f", "$.Vector3f"], "org.jmol.adapter.readers.simple.ZMatrixReader", ["java.lang.Character", "$.Exception", "$.Float", "org.jmol.adapter.smarter.Atom", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger", "$.Measure", "$.Quaternion"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomCount = 0;
 this.vAtoms = null;
@@ -22,11 +22,11 @@ this.vAtoms =  new java.util.ArrayList ();
 this.atomMap =  new java.util.Hashtable ();
 this.lineBuffer =  new java.util.ArrayList ();
 this.symbolicMap =  new java.util.Hashtable ();
-this.pt0 =  new javax.vecmath.Point3f ();
-this.v1 =  new javax.vecmath.Vector3f ();
-this.v2 =  new javax.vecmath.Vector3f ();
-this.plane1 =  new javax.vecmath.Point4f ();
-this.plane2 =  new javax.vecmath.Point4f ();
+this.pt0 =  new org.jmol.util.Point3f ();
+this.v1 =  new org.jmol.util.Vector3f ();
+this.v2 =  new org.jmol.util.Vector3f ();
+this.plane1 =  new org.jmol.util.Point4f ();
+this.plane2 =  new org.jmol.util.Point4f ();
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -63,7 +63,7 @@ Clazz.superCall (this, org.jmol.adapter.readers.simple.ZMatrixReader, "finalizeR
 });
 Clazz.defineMethod (c$, "getSymbolic", 
 ($fz = function () {
-if (this.symbolicMap.containsKey (this.tokens[0])) return ;
+if (this.symbolicMap.containsKey (this.tokens[0])) return;
 var f = this.parseFloatStr (this.tokens[1]);
 this.symbolicMap.put (this.tokens[0], Float.$valueOf (f));
 org.jmol.util.Logger.info ("symbolic " + this.tokens[0] + " = " + f);
@@ -89,7 +89,7 @@ var bondOrder = 0;
 switch (this.tokens.length) {
 case 8:
 case 6:
-bondOrder = Math.round (this.getValue (this.tokens.length - 1));
+bondOrder = Clazz.floatToInt (this.getValue (this.tokens.length - 1));
 case 5:
 if (this.tokens.length == 5 && this.tokens[1].equals ("0")) {
 atom.set (this.getValue (2), this.getValue (3), this.getValue (4));
@@ -111,7 +111,7 @@ case 4:
 if (this.getAtomIndex (1) < 0) {
 atom.set (this.getValue (1), this.getValue (2), this.getValue (3));
 break;
-}bondOrder = Math.round (this.getValue (3));
+}bondOrder = Clazz.floatToInt (this.getValue (3));
 case 3:
 f = this.getValue (2);
 if (this.atomCount != 1 || (ia = this.getAtomIndex (1)) != 0) {

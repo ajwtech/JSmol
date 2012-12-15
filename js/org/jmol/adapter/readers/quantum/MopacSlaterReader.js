@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.SlaterReader"], "org.jmol.adapter.readers.quantum.MopacSlaterReader", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomicNumbers = null;
@@ -10,12 +10,12 @@ var pt = "S Px Py Pz  Dx2-y2Dxz Dz2 Dyz Dxy".indexOf (type);
 switch (pt) {
 case 0:
 this.addSlater (iAtom, 0, 0, 0, org.jmol.adapter.readers.quantum.MopacSlaterReader.getNPQs (atomicNumber) - 1, zeta, coef);
-return ;
+return;
 case 2:
 case 5:
 case 8:
 this.addSlater (iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0, org.jmol.adapter.readers.quantum.MopacSlaterReader.getNPQp (atomicNumber) - 2, zeta, coef);
-return ;
+return;
 }
 pt = (pt >> 2) * 3 - 9;
 this.addSlater (iAtom, org.jmol.adapter.readers.quantum.MopacSlaterReader.sphericalDValues[pt++], org.jmol.adapter.readers.quantum.MopacSlaterReader.sphericalDValues[pt++], org.jmol.adapter.readers.quantum.MopacSlaterReader.sphericalDValues[pt++], org.jmol.adapter.readers.quantum.MopacSlaterReader.getNPQd (atomicNumber) - 3, zeta, coef);

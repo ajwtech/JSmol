@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.FontShape", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.font3d = null;
@@ -13,8 +13,8 @@ Clazz.overrideMethod (c$, "setProperty",
 function (propertyName, value, bs) {
 if ("font" === propertyName) {
 this.font3d = value;
-return ;
-}}, "~S,~O,javax.util.BitSet");
+return;
+}}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var s = this.viewer.getObjectState (this.myType);

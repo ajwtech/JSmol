@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
-Clazz.load (["org.jmol.api.MinimizerInterface"], "org.jmol.minimize.Minimizer", ["java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "org.jmol.i18n.GT", "org.jmol.minimize.MinAngle", "$.MinAtom", "$.MinBond", "$.MinTorsion", "org.jmol.minimize.forcefield.ForceFieldMMFF", "$.ForceFieldUFF", "org.jmol.thread.MinimizationThread", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.minimize");
+Clazz.load (["org.jmol.api.MinimizerInterface"], "org.jmol.minimize.Minimizer", ["java.util.ArrayList", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.minimize.MinAngle", "$.MinAtom", "$.MinBond", "$.MinTorsion", "org.jmol.minimize.forcefield.ForceFieldMMFF", "$.ForceFieldUFF", "org.jmol.thread.MinimizationThread", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.atoms = null;
@@ -42,27 +42,27 @@ if (propertyName.equals ("ff")) {
 if (!this.ff.equals (value)) {
 this.setProperty ("clear", null);
 this.ff = value;
-}return ;
+}return;
 }if (propertyName.equals ("cancel")) {
 this.stopMinimization (false);
-return ;
+return;
 }if (propertyName.equals ("clear")) {
 if (this.minAtoms != null) {
 this.stopMinimization (false);
 this.clear ();
-}return ;
+}return;
 }if (propertyName.equals ("constraint")) {
 this.addConstraint (value);
-return ;
+return;
 }if (propertyName.equals ("fixed")) {
 this.bsFixedDefault = value;
-return ;
+return;
 }if (propertyName.equals ("stop")) {
 this.stopMinimization (true);
-return ;
+return;
 }if (propertyName.equals ("viewer")) {
 this.viewer = value;
-return ;
+return;
 }}, "~S,~O");
 Clazz.overrideMethod (c$, "getProperty", 
 function (propertyName, param) {
@@ -72,12 +72,12 @@ return (this.pFF == null ? "" : this.pFF.getLogData ());
 }, "~S,~N");
 Clazz.defineMethod (c$, "addConstraint", 
 ($fz = function (c) {
-if (c == null) return ;
+if (c == null) return;
 var atoms = c[0];
 var nAtoms = atoms[0];
 if (nAtoms == 0) {
 this.constraints = null;
-return ;
+return;
 }if (this.constraints == null) {
 this.constraints =  new java.util.ArrayList ();
 this.constraintMap =  new java.util.Hashtable ();
@@ -88,7 +88,7 @@ if (nAtoms == 4) org.jmol.util.ArrayUtil.swapInt (atoms, 2, 3);
 var c1 = this.constraintMap.get (id);
 if (c1 != null) {
 c1[2] = c[2];
-return ;
+return;
 }this.constraintMap.put (id, c);
 this.constraints.add (c);
 }, $fz.isPrivate = true, $fz), "~A");
@@ -174,7 +174,7 @@ if (steps <= 0) this.getEnergyOnly ();
  else if (this.isSilent || !this.viewer.useMinimizationThread ()) this.minimizeWithoutThread ();
  else this.setMinimizationOn (true);
 return true;
-}, "~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~S");
+}, "~N,~N,org.jmol.util.BitSet,org.jmol.util.BitSet,~B,~B,~S");
 Clazz.defineMethod (c$, "setEnergyUnits", 
 ($fz = function () {
 var s = this.viewer.getEnergyUnits ();
@@ -183,10 +183,10 @@ this.units = (s.equalsIgnoreCase ("kcal") ? "kcal" : "kJ");
 Clazz.defineMethod (c$, "setupMinimization", 
 ($fz = function () {
 this.coordSaved = null;
-this.atomMap =  Clazz.newArray (this.atoms.length, 0);
+this.atomMap =  Clazz.newIntArray (this.atoms.length, 0);
 this.minAtoms =  new Array (this.atomCount);
 this.elemnoMax = 0;
-var bsElements =  new javax.util.BitSet ();
+var bsElements =  new org.jmol.util.BitSet ();
 for (var i = this.bsAtoms.nextSetBit (0), pt = 0; i >= 0; i = this.bsAtoms.nextSetBit (i + 1), pt++) {
 var atom = this.atoms[i];
 this.atomMap[i] = pt;
@@ -216,14 +216,14 @@ this.getForceField ("UFF");
 return this.setModel (bsElements);
 }return false;
 }return true;
-}, $fz.isPrivate = true, $fz), "javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setAtomPositions", 
 ($fz = function () {
 for (var i = 0; i < this.atomCount; i++) this.minAtoms[i].set ();
 
 this.bsMinFixed = null;
 if (this.bsFixed != null) {
-this.bsMinFixed =  new javax.util.BitSet ();
+this.bsMinFixed =  new org.jmol.util.BitSet ();
 for (var i = this.bsAtoms.nextSetBit (0), pt = 0; i >= 0; i = this.bsAtoms.nextSetBit (i + 1), pt++) if (this.bsFixed.get (i)) this.bsMinFixed.set (pt);
 
 }}, $fz.isPrivate = true, $fz));
@@ -235,7 +235,8 @@ var i1;
 var i2;
 for (var i = 0; i < this.rawBondCount; i++) {
 var bond = this.bonds[i];
-if (!this.bsAtoms.get (i1 = bond.getAtomIndex1 ()) || !this.bsAtoms.get (i2 = bond.getAtomIndex2 ())) continue ;if (i2 < i1) {
+if (!this.bsAtoms.get (i1 = bond.getAtomIndex1 ()) || !this.bsAtoms.get (i2 = bond.getAtomIndex2 ())) continue;
+if (i2 < i1) {
 var ii = i1;
 i1 = i2;
 i2 = ii;
@@ -335,7 +336,7 @@ this.viewer.setStringProperty ("_minimizationForceField", ff);
 }, "~S");
 Clazz.overrideMethod (c$, "minimizationOn", 
 function () {
-return this.minimizationOn ();
+return this.$minimizationOn;
 });
 Clazz.defineMethod (c$, "setMinimizationOn", 
 ($fz = function (minimizationOn) {
@@ -343,14 +344,14 @@ this.$minimizationOn = minimizationOn;
 if (!minimizationOn) {
 if (this.minimizationThread != null) {
 this.minimizationThread = null;
-}return ;
+}return;
 }if (this.minimizationThread == null) {
-this.minimizationThread =  new org.jmol.thread.MinimizationThread (this);
+this.minimizationThread =  new org.jmol.thread.MinimizationThread (this, this.viewer);
 this.minimizationThread.start ();
 }}, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "getEnergyOnly", 
 ($fz = function () {
-if (this.pFF == null || this.viewer == null) return ;
+if (this.pFF == null || this.viewer == null) return;
 this.pFF.steepestDescentInitialize (this.steps, this.crit);
 this.viewer.setFloatProperty ("_minimizationEnergyDiff", 0);
 this.reportEnergy ();
@@ -416,14 +417,14 @@ org.jmol.util.Logger.info ("minimizer: endMinimization");
 });
 Clazz.defineMethod (c$, "saveCoordinates", 
 ($fz = function () {
-if (this.coordSaved == null) this.coordSaved =  Clazz.newArray (this.atomCount, 3, 0);
+if (this.coordSaved == null) this.coordSaved =  Clazz.newDoubleArray (this.atomCount, 3, 0);
 for (var i = 0; i < this.atomCount; i++) for (var j = 0; j < 3; j++) this.coordSaved[i][j] = this.minAtoms[i].coord[j];
 
 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "restoreCoordinates", 
 ($fz = function () {
-if (this.coordSaved == null) return ;
+if (this.coordSaved == null) return;
 for (var i = 0; i < this.atomCount; i++) for (var j = 0; j < 3; j++) this.minAtoms[i].coord[j] = this.coordSaved[i][j];
 
 
@@ -431,14 +432,14 @@ this.updateAtomXYZ ();
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "stopMinimization", 
 function (coordAreOK) {
-if (!this.$minimizationOn) return ;
+if (!this.$minimizationOn) return;
 this.setMinimizationOn (false);
 if (coordAreOK) this.endMinimization ();
  else this.restoreCoordinates ();
 }, "~B");
 Clazz.defineMethod (c$, "updateAtomXYZ", 
 function () {
-if (this.steps <= 0) return ;
+if (this.steps <= 0) return;
 for (var i = 0; i < this.atomCount; i++) {
 var minAtom = this.minAtoms[i];
 var atom = minAtom.atom;
@@ -450,7 +451,7 @@ this.viewer.refreshMeasures (false);
 });
 Clazz.defineMethod (c$, "minimizeWithoutThread", 
 ($fz = function () {
-if (!this.startMinimization ()) return ;
+if (!this.startMinimization ()) return;
 while (this.stepMinimization ()) {
 }
 this.endMinimization ();
@@ -467,5 +468,5 @@ var ff =  new org.jmol.minimize.forcefield.ForceFieldMMFF (this);
 ff.setArrays (atoms, bsAtoms, bonds, bondCount, true, true);
 this.viewer.setAtomProperty (bsAtoms, 1087375361, 0, 0, null, null, ff.getAtomTypeDescriptions ());
 this.viewer.setAtomProperty (bsAtoms, 1112541196, 0, 0, null, ff.getPartialCharges (), null);
-}, "~A,~N,~A,javax.util.BitSet");
+}, "~A,~N,~A,org.jmol.util.BitSet");
 });

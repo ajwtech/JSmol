@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CastepDensityReader", ["java.lang.Character", "javax.util.StringXBuilder"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader"], "org.jmol.jvxl.readers.CastepDensityReader", ["java.lang.Character", "org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nFilePoints = 0;
 this.nSkip = 0;
@@ -17,7 +17,7 @@ this.isAngstroms = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 while (this.readLine () != null && this.line.indexOf (".") < 0) {
 }
 for (var i = 0; i < 3; ++i) {
@@ -31,6 +31,7 @@ this.voxelCounts[0] = (this.nPointsX = this.parseIntStr (this.line)) + 1;
 this.voxelCounts[1] = (this.nPointsY = this.parseInt ()) + 1;
 this.voxelCounts[2] = (this.nPointsZ = this.parseInt ()) + 1;
 this.nFilePoints = (this.nPointsX++) * (this.nPointsY++) * (this.nPointsZ++);
+this.volumetricOrigin.set (0, 0, 0);
 for (var i = 0; i < 3; i++) {
 this.volumetricVectors[i].scale (1 / (this.voxelCounts[i] - 1));
 if (this.isAnisotropic) this.setVectorAnisotropy (this.volumetricVectors[i]);
@@ -45,7 +46,7 @@ this.nSkip = n;
 Clazz.overrideMethod (c$, "readSurfaceData", 
 function (isMapData) {
 this.initializeSurfaceData ();
-this.voxelData =  Clazz.newArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0);
+this.voxelData =  Clazz.newFloatArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0);
 this.readLine ();
 var tokens = this.getTokens ();
 if (this.nSkip > 0 && tokens.length < 3 + this.nSurfaces) {

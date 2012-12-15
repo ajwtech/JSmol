@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.AmpacReader", ["javax.vecmath.Point3f"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.AmpacReader", ["org.jmol.util.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomCount = 0;
 this.freqAtom0 = -1;
@@ -35,7 +35,7 @@ while (this.readLine () != null) {
 var tokens = this.getTokens ();
 if (tokens.length < 5) break;
 if (haveFreq) {
-this.atomPositions[this.atomCount] = javax.vecmath.Point3f.new3 (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
+this.atomPositions[this.atomCount] = org.jmol.util.Point3f.new3 (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 } else {
 var symbol = tokens[1];
 var atom = this.atomSetCollection.addNewAtom ();
@@ -57,7 +57,7 @@ atoms[i].partialCharge = this.partialCharges[i % this.atomCount];
 Clazz.defineMethod (c$, "readPartialCharges", 
 ($fz = function () {
 this.readLine ();
-this.partialCharges =  Clazz.newArray (this.atomCount, 0);
+this.partialCharges =  Clazz.newFloatArray (this.atomCount, 0);
 var tokens;
 for (var i = 0; i < this.atomCount; i++) {
 if (this.readLine () == null || (tokens = this.getTokens ()).length < 4) break;
@@ -75,10 +75,11 @@ while (this.readLine () != null && this.line.indexOf ("IR I") < 0) {
 var iAtom0 = this.atomSetCollection.getAtomCount ();
 if (this.vibrationNumber == 0) this.freqAtom0 = iAtom0;
 var frequencyCount = frequencies.length - 2;
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;this.atomSetCollection.cloneLastAtomSet ();
+if (ignore[i]) continue;
+this.atomSetCollection.cloneLastAtomSet ();
 this.atomSetCollection.setAtomSetName (frequencies[i + 2] + " cm^-1");
 this.atomSetCollection.setAtomSetModelProperty ("Frequency", frequencies[i + 2] + " cm^-1");
 this.atomSetCollection.setAtomSetModelProperty (".PATH", "Frequencies");

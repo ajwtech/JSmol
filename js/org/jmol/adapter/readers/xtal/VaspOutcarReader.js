@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.VaspOutcarReader", ["java.lang.Double", "java.util.ArrayList", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomNames = null;
@@ -17,7 +17,7 @@ this.temp = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.xtal, "VaspOutcarReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
-this.unitCellData =  Clazz.newArray (18, 0);
+this.unitCellData =  Clazz.newFloatArray (18, 0);
 });
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
@@ -65,13 +65,14 @@ if (pt == 2) this.line = this.line.$replace ("_", " ");
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf (":") + 1));
 var sym = tokens[pt];
 var key = ";" + sym + ";";
-if (elementList.indexOf (key) >= 0) continue ;elementList += key;
+if (elementList.indexOf (key) >= 0) continue;
+elementList += key;
 this.elementNames.add (sym);
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtomCountAndSetNames", 
 ($fz = function () {
-var numofElement =  Clazz.newArray (100, 0);
+var numofElement =  Clazz.newIntArray (100, 0);
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (this.line.indexOf ("=") + 1));
 this.atomCount = 0;
 for (var i = 0; i < tokens.length; i++) this.atomCount += (numofElement[i] = this.parseIntStr (tokens[i].trim ()));
@@ -144,7 +145,7 @@ this.gibbsEntropy = Double.$valueOf (enthalpy - this.gibbsEnergy.doubleValue ())
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setAtomSetInfo", 
 ($fz = function () {
-if (this.gibbsEnergy == null) return ;
+if (this.gibbsEnergy == null) return;
 this.atomSetCollection.setAtomSetEnergy ("" + this.gibbsEnergy, this.gibbsEnergy.floatValue ());
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("Energy", this.gibbsEnergy);
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("Entropy", this.gibbsEntropy);
@@ -187,7 +188,7 @@ this.readLines (3);
 } else {
 this.discardLinesUntilContains ("Eigenvectors after division by SQRT(mass)");
 this.readLines (5);
-}var ignore =  Clazz.newArray (1, false);
+}var ignore =  Clazz.newBooleanArray (1, false);
 while (this.readLine () != null && (this.line.contains ("f  = ") || this.line.contains ("f/i= "))) {
 this.applySymmetryAndSetTrajectory ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();

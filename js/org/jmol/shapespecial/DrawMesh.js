@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.Mesh", "javax.util.BitSet", "javax.vecmath.Vector3f", "org.jmol.shapespecial.Draw"], "org.jmol.shapespecial.DrawMesh", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.BitSetUtil"], function () {
+Clazz.declarePackage ("org.jmol.shapespecial");
+Clazz.load (["org.jmol.shape.Mesh", "org.jmol.shapespecial.Draw", "org.jmol.util.BitSet", "$.Vector3f"], "org.jmol.shapespecial.DrawMesh", ["org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelFlags = null;
 this.drawType = null;
@@ -19,8 +19,8 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial, "DrawMesh", org.jmol.shape.Mesh);
 Clazz.prepareFields (c$, function () {
 this.drawType = org.jmol.shapespecial.Draw.EnumDrawType.NONE;
-this.axis = javax.vecmath.Vector3f.new3 (1, 0, 0);
-this.bsMeshesVisible =  new javax.util.BitSet ();
+this.axis = org.jmol.util.Vector3f.new3 (1, 0, 0);
+this.bsMeshesVisible =  new org.jmol.util.BitSet ();
 });
 Clazz.defineMethod (c$, "setCenters", 
 function () {
@@ -30,15 +30,17 @@ if (this.ptCenters == null) this.setCenter (-1);
 });
 Clazz.defineMethod (c$, "setCenter", 
 function (iModel) {
-var center = javax.vecmath.Point3f.new3 (0, 0, 0);
+var center = org.jmol.util.Point3f.new3 (0, 0, 0);
 var iptlast = -1;
 var ipt = 0;
 var n = 0;
 for (var i = this.polygonCount; --i >= 0; ) {
-if (iModel >= 0 && i != iModel || this.polygonIndexes[i] == null) continue ;iptlast = -1;
+if (iModel >= 0 && i != iModel || this.polygonIndexes[i] == null) continue;
+iptlast = -1;
 for (var iV = (this.drawType === org.jmol.shapespecial.Draw.EnumDrawType.POLYGON) ? 3 : this.polygonIndexes[i].length; --iV >= 0; ) {
 ipt = this.polygonIndexes[i][iV];
-if (ipt == iptlast) continue ;iptlast = ipt;
+if (ipt == iptlast) continue;
+iptlast = ipt;
 center.add (this.vertices[ipt]);
 n++;
 }
@@ -56,10 +58,10 @@ Clazz.defineMethod (c$, "offset",
 function (offset) {
 this.rotateTranslate (null, offset, false);
 this.setCenters ();
-}, "javax.vecmath.Vector3f");
+}, "org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "deleteAtoms", 
 function (modelIndex) {
-if (modelIndex >= this.polygonCount) return ;
+if (modelIndex >= this.polygonCount) return;
 this.polygonCount--;
 this.polygonIndexes = org.jmol.util.ArrayUtil.deleteElements (this.polygonIndexes, modelIndex, 1);
 this.drawTypes = org.jmol.util.ArrayUtil.deleteElements (this.drawTypes, modelIndex, 1);

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.EspressoReader", ["java.lang.Double"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.cellParams = null;
@@ -39,7 +39,7 @@ Clazz.defineMethod (c$, "readCellParam",
 ($fz = function (andAPar) {
 var i0 = (andAPar ? 0 : 3);
 if (andAPar && this.line.contains ("=")) this.aPar = this.parseFloatStr (this.line.substring (this.line.indexOf ("=") + 1)) * 0.5291772;
-this.cellParams =  Clazz.newArray (9, 0);
+this.cellParams =  Clazz.newFloatArray (9, 0);
 for (var n = 0, i = 0; n < 3; n++) {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ());
 this.cellParams[i++] = this.parseFloatStr (tokens[i0]) * this.aPar;

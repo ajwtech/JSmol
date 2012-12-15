@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["java.util.Hashtable"], "org.jmol.symmetry.SpaceGroup", ["java.lang.Character", "java.util.Arrays", "javax.util.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.symmetry.HallInfo", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.ArrayUtil", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.load (["java.util.Hashtable"], "org.jmol.symmetry.SpaceGroup", ["java.lang.Character", "java.util.Arrays", "org.jmol.symmetry.HallInfo", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.ArrayUtil", "$.Logger", "$.Matrix4f", "$.Parser", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 0;
 this.name = "unknown!";
@@ -45,8 +45,8 @@ var sg = null;
 if (desiredSpaceGroupIndex >= 0) {
 sg = org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[desiredSpaceGroupIndex];
 } else {
-sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name, notionalUnitcell);
-if (sg == null) sg = org.jmol.symmetry.SpaceGroup.createSpaceGroup (name);
+sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroupNA (name, notionalUnitcell);
+if (sg == null) sg = org.jmol.symmetry.SpaceGroup.createSpaceGroupN (name);
 }if (sg != null) sg.generateAllOperators (null);
 return sg;
 }, "~N,~S,~A");
@@ -68,7 +68,7 @@ if (sg != null) this.name = sg.getName ();
 if (doNormalize && count > 0 && atoms != null) {
 this.finalOperations[0] =  new org.jmol.symmetry.SymmetryOperation (this.operations[0], atoms, atomIndex, count, true);
 var atom = atoms[atomIndex];
-var c = javax.vecmath.Point3f.newP (atom);
+var c = org.jmol.util.Point3f.newP (atom);
 this.finalOperations[0].transform (c);
 if (c.distance (atom) > 0.0001) for (var i = 0; i < count; i++) {
 atom = atoms[atomIndex + i];
@@ -95,31 +95,31 @@ return this.finalOperations[i].getXyz (doNormalize);
 Clazz.defineMethod (c$, "newPoint", 
 function (i, atom1, atom2, transX, transY, transZ) {
 this.finalOperations[i].newPoint (atom1, atom2, transX, transY, transZ);
-}, "~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N");
+}, "~N,org.jmol.util.Point3f,org.jmol.util.Point3f,~N,~N,~N");
 Clazz.defineMethod (c$, "rotateEllipsoid", 
 function (i, ptTemp, axes, unitCell, ptTemp1, ptTemp2) {
 return this.finalOperations[i].rotateEllipsoid (ptTemp, axes, unitCell, ptTemp1, ptTemp2);
-}, "~N,javax.vecmath.Point3f,~A,org.jmol.symmetry.UnitCell,javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, "~N,org.jmol.util.Point3f,~A,org.jmol.symmetry.UnitCell,org.jmol.util.Point3f,org.jmol.util.Point3f");
 c$.getInfo = Clazz.defineMethod (c$, "getInfo", 
 function (spaceGroup, cellInfo) {
 var sg;
 if (cellInfo != null) {
 if (spaceGroup.indexOf ("[") >= 0) spaceGroup = spaceGroup.substring (0, spaceGroup.indexOf ("[")).trim ();
 if (spaceGroup.equals ("unspecified!")) return "no space group identified in file";
-sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (spaceGroup, cellInfo.getNotionalUnitCell ());
+sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroupNA (spaceGroup, cellInfo.getNotionalUnitCell ());
 } else if (spaceGroup.equalsIgnoreCase ("ALL")) {
 return org.jmol.symmetry.SpaceGroup.dumpAll ();
 } else if (spaceGroup.equalsIgnoreCase ("ALLSEITZ")) {
 return org.jmol.symmetry.SpaceGroup.dumpAllSeitz ();
 } else {
-sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (spaceGroup);
+sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroupN (spaceGroup);
 if (sg == null) {
-sg = org.jmol.symmetry.SpaceGroup.createSpaceGroup (spaceGroup);
+sg = org.jmol.symmetry.SpaceGroup.createSpaceGroupN (spaceGroup);
 } else {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 while (sg != null) {
 sb.append (sg.dumpInfo (null));
-sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (spaceGroup, sg);
+sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroupNS (spaceGroup, sg);
 }
 return sb.toString ();
 }}return sg == null ? "?" : sg.dumpInfo (cellInfo);
@@ -128,7 +128,7 @@ Clazz.defineMethod (c$, "dumpInfo",
 function (cellInfo) {
 var info = this.dumpCanonicalSeitzList ();
 if (Clazz.instanceOf (info, org.jmol.symmetry.SpaceGroup)) return (info).dumpInfo (null);
-var sb =  new javax.util.StringXBuilder ().append ("\nHermann-Mauguin symbol: ");
+var sb =  new org.jmol.util.StringXBuilder ().append ("\nHermann-Mauguin symbol: ");
 sb.append (this.hmSymbol).append (this.hmSymbolExt.length > 0 ? ":" + this.hmSymbolExt : "").append ("\ninternational table number: ").append (this.intlTableNumber).append (this.intlTableNumberExt.length > 0 ? ":" + this.intlTableNumberExt : "").append ("\n\n").appendI (this.operationCount).append (" operators").append (!this.hallInfo.hallSymbol.equals ("--") ? " from Hall symbol " + this.hallInfo.hallSymbol : "").append (": ");
 for (var i = 0; i < this.operationCount; i++) {
 sb.append ("\n").append (this.operations[i].xyz);
@@ -145,7 +145,7 @@ Clazz.defineMethod (c$, "getLatticeDesignation",
 function () {
 return this.latticeCode + ": " + org.jmol.symmetry.HallTranslation.getLatticeDesignation (this.latticeParameter);
 });
-Clazz.defineMethod (c$, "setLattice", 
+Clazz.defineMethod (c$, "setLatticeParam", 
 function (latticeParameter) {
 this.latticeParameter = latticeParameter;
 this.latticeCode = org.jmol.symmetry.HallTranslation.getLatticeCode (latticeParameter);
@@ -175,7 +175,7 @@ var list =  new Array (this.operationCount);
 for (var i = 0; i < this.operationCount; i++) list[i] = org.jmol.symmetry.SymmetryOperation.dumpCanonicalSeitz (this.operations[i]);
 
 java.util.Arrays.sort (list, 0, this.operationCount);
-var sb =  new javax.util.StringXBuilder ().append ("\n[");
+var sb =  new org.jmol.util.StringXBuilder ().append ("\n[");
 for (var i = 0; i < this.operationCount; i++) sb.append (list[i].$replace ('\t', ' ').$replace ('\n', ' ')).append ("; ");
 
 sb.append ("]");
@@ -192,14 +192,14 @@ return null;
 }, $fz.isPrivate = true, $fz), "~S");
 c$.dumpAll = Clazz.defineMethod (c$, "dumpAll", 
 ($fz = function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions.length; i++) sb.append ("\n----------------------\n" + org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i].dumpInfo (null));
 
 return sb.toString ();
 }, $fz.isPrivate = true, $fz));
 c$.dumpAllSeitz = Clazz.defineMethod (c$, "dumpAllSeitz", 
 ($fz = function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions.length; i++) sb.append ("\n").appendO (org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i].dumpCanonicalSeitzList ());
 
 return sb.toString ();
@@ -210,10 +210,10 @@ this.latticeCode = latticeCode;
 this.latticeParameter = org.jmol.symmetry.HallTranslation.getLatticeIndex (latticeCode);
 if (!isCentrosymmetric) this.latticeParameter = -this.latticeParameter;
 }, $fz.isPrivate = true, $fz), "~S,~B");
-c$.createSpaceGroup = Clazz.defineMethod (c$, "createSpaceGroup", 
+c$.createSpaceGroupN = Clazz.defineMethod (c$, "createSpaceGroupN", 
 ($fz = function (name) {
 name = name.trim ();
-var sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name);
+var sg = org.jmol.symmetry.SpaceGroup.determineSpaceGroupN (name);
 var hallInfo;
 if (sg == null) {
 hallInfo =  new org.jmol.symmetry.HallInfo (name);
@@ -232,7 +232,7 @@ Clazz.defineMethod (c$, "addOperation",
 if (xyz0 == null || xyz0.length < 3) {
 this.xyzList =  new java.util.Hashtable ();
 return -1;
-}var isSpecial = ((xyz0.charAt (0)).charCodeAt (0) == 61);
+}var isSpecial = (xyz0.charAt (0) == '=');
 if (isSpecial) xyz0 = xyz0.substring (1);
 if (this.xyzList.containsKey (xyz0)) return this.xyzList.get (xyz0).intValue ();
 var symmetryOperation =  new org.jmol.symmetry.SymmetryOperation (this.doNormalize, opId);
@@ -247,7 +247,7 @@ this.xyzList.put (xyz, Integer.$valueOf (this.operationCount));
 if (this.operations == null) {
 this.operations =  new Array (4);
 this.operationCount = 0;
-}if (this.operationCount == this.operations.length) this.operations = org.jmol.util.ArrayUtil.arrayCopyOpt (this.operations, this.operationCount * 2);
+}if (this.operationCount == this.operations.length) this.operations = org.jmol.util.ArrayUtil.arrayCopyObject (this.operations, this.operationCount * 2);
 this.operations[this.operationCount++] = symmetryOperation;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("\naddOperation " + this.operationCount + symmetryOperation.dumpInfo ());
 return this.operationCount - 1;
@@ -264,17 +264,17 @@ Clazz.defineMethod (c$, "generateAllOperators",
 ($fz = function (h) {
 if (h == null) {
 h = this.hallInfo;
-if (this.operationCount > 0) return ;
+if (this.operationCount > 0) return;
 this.operations =  new Array (4);
 this.operationCount = 0;
 if (this.hallInfo == null || this.hallInfo.nRotations == 0) h = this.hallInfo =  new org.jmol.symmetry.HallInfo (this.hallSymbol);
 this.setLattice (this.hallInfo.latticeCode, this.hallInfo.isCentrosymmetric);
 this.addOperation (null, 0);
 this.addSymmetry ("x,y,z", 0);
-}var mat1 =  new javax.vecmath.Matrix4f ();
-var operation =  new javax.vecmath.Matrix4f ();
+}var mat1 =  new org.jmol.util.Matrix4f ();
+var operation =  new org.jmol.util.Matrix4f ();
 var newOps =  new Array (7);
-for (var i = 0; i < 7; i++) newOps[i] =  new javax.vecmath.Matrix4f ();
+for (var i = 0; i < 7; i++) newOps[i] =  new org.jmol.util.Matrix4f ();
 
 for (var i = 0; i < h.nRotations; i++) {
 mat1.setM (h.rotationTerms[i].seitzMatrix12ths);
@@ -288,27 +288,27 @@ for (var k = 0; k < nOps; k++) {
 operation.mul2 (newOps[j], this.operations[k]);
 org.jmol.symmetry.SymmetryOperation.normalizeTranslation (operation);
 var xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (operation, true, true, true);
-this.addSymmetry (xyz, operation);
+this.addSymmetrySM (xyz, operation);
 }
 }
 }
 }, $fz.isPrivate = true, $fz), "org.jmol.symmetry.HallInfo");
-Clazz.defineMethod (c$, "addSymmetry", 
+Clazz.defineMethod (c$, "addSymmetrySM", 
 ($fz = function (xyz, operation) {
 var iop = this.addOperation (xyz, 0);
-if (iop < 0) return ;
+if (iop < 0) return;
 var symmetryOperation = this.operations[iop];
 symmetryOperation.setM (operation);
-}, $fz.isPrivate = true, $fz), "~S,javax.vecmath.Matrix4f");
-c$.determineSpaceGroup = Clazz.defineMethod (c$, "determineSpaceGroup", 
+}, $fz.isPrivate = true, $fz), "~S,org.jmol.util.Matrix4f");
+c$.determineSpaceGroupN = Clazz.defineMethod (c$, "determineSpaceGroupN", 
 ($fz = function (name) {
 return org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name, 0, 0, 0, 0, 0, 0, -1);
 }, $fz.isPrivate = true, $fz), "~S");
-c$.determineSpaceGroup = Clazz.defineMethod (c$, "determineSpaceGroup", 
+c$.determineSpaceGroupNS = Clazz.defineMethod (c$, "determineSpaceGroupNS", 
 ($fz = function (name, sg) {
 return org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name, 0, 0, 0, 0, 0, 0, sg.index);
 }, $fz.isPrivate = true, $fz), "~S,org.jmol.symmetry.SpaceGroup");
-c$.determineSpaceGroup = Clazz.defineMethod (c$, "determineSpaceGroup", 
+c$.determineSpaceGroupNA = Clazz.defineMethod (c$, "determineSpaceGroupNA", 
 ($fz = function (name, notionalUnitcell) {
 if (notionalUnitcell == null) return org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name, 0, 0, 0, 0, 0, 0, -1);
 return org.jmol.symmetry.SpaceGroup.determineSpaceGroup (name, notionalUnitcell[0], notionalUnitcell[1], notionalUnitcell[2], notionalUnitcell[3], notionalUnitcell[4], notionalUnitcell[5], -1);
@@ -333,7 +333,7 @@ var haveExtension = false;
 name = name.$replace ('_', ' ');
 if (name.length >= 2) {
 i = (name.indexOf ("-") == 0 ? 2 : 1);
-if (i < name.length && (name.charAt (i)).charCodeAt (0) != 32) name = name.substring (0, i) + " " + name.substring (i);
+if (i < name.length && name.charAt (i) != ' ') name = name.substring (0, i) + " " + name.substring (i);
 name = name.substring (0, 2).toUpperCase () + name.substring (2);
 }var ext = "";
 if ((i = name.indexOf (":")) > 0) {
@@ -371,14 +371,14 @@ s = org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i];
 if (s.hmSymbolAbbrShort.equals (abbr) && s.intlTableNumberExt.equals (ext)) return i;
 }
 var uniqueAxis = org.jmol.symmetry.SpaceGroup.determineUniqueAxis (a, b, c, alpha, beta, gamma);
-if (!haveExtension || (ext.charAt (0)).charCodeAt (0) == 63) for (i = lastIndex; --i >= 0; ) {
+if (!haveExtension || ext.charAt (0) == '?') for (i = lastIndex; --i >= 0; ) {
 s = org.jmol.symmetry.SpaceGroup.spaceGroupDefinitions[i];
 if (s.hmSymbolAbbr.equals (abbr) || s.hmSymbolAbbrShort.equals (abbr)) {
 switch (s.ambiguityType) {
 case '\0':
 return i;
 case 'a':
-if (s.uniqueAxis.charCodeAt (0) == uniqueAxis.charCodeAt (0) || uniqueAxis.charCodeAt (0) == 0) return i;
+if (s.uniqueAxis == uniqueAxis || uniqueAxis == '\0') return i;
 break;
 case 'o':
 if (ext.length == 0) {
@@ -387,7 +387,7 @@ if (s.hmSymbolExt.equals ("2")) return i;
 break;
 case 't':
 if (ext.length == 0) {
-if (s.axisChoice.charCodeAt (0) == 104) return i;
+if (s.axisChoice == 'h') return i;
 } else if ((s.axisChoice + "").equals (ext)) return i;
 break;
 }
@@ -442,7 +442,7 @@ this.hmSymbolAbbrShort = org.jmol.util.TextFormat.simpleReplace (this.hmSymbolAb
 this.hallSymbol = terms[3];
 if (this.hallSymbol.length > 1) this.hallSymbol = this.hallSymbol.substring (0, 2).toUpperCase () + this.hallSymbol.substring (2);
 var info = this.intlTableNumber + this.hallSymbol;
-if ((this.intlTableNumber.charAt (0)).charCodeAt (0) != 48 && org.jmol.symmetry.SpaceGroup.lastInfo.equals (info)) ($t$ = org.jmol.symmetry.SpaceGroup.ambiguousNames += this.hmSymbol + ";", org.jmol.symmetry.SpaceGroup.prototype.ambiguousNames = org.jmol.symmetry.SpaceGroup.ambiguousNames, $t$);
+if (this.intlTableNumber.charAt (0) != '0' && org.jmol.symmetry.SpaceGroup.lastInfo.equals (info)) ($t$ = org.jmol.symmetry.SpaceGroup.ambiguousNames += this.hmSymbol + ";", org.jmol.symmetry.SpaceGroup.prototype.ambiguousNames = org.jmol.symmetry.SpaceGroup.ambiguousNames, $t$);
 ($t$ = org.jmol.symmetry.SpaceGroup.lastInfo = info, org.jmol.symmetry.SpaceGroup.prototype.lastInfo = org.jmol.symmetry.SpaceGroup.lastInfo, $t$);
 this.name = this.hallSymbol + " [" + this.hmSymbolFull + "] #" + this.intlTableNumber;
 }, $fz.isPrivate = true, $fz), "~S");

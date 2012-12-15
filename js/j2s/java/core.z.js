@@ -1,6 +1,6 @@
-___JmolDate="$Date: 2012-12-05 21:20:15 -0600 (Wed, 05 Dec 2012) $"
+___JmolDate="$Date: 2012-12-08 08:11:44 -0600 (Sat, 08 Dec 2012) $"
 ___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
-___JmolVersion="13.1.10_dev"
+___JmolVersion="13.1.11_dev"
 // core.z.js
 //
 // BH 11/6/2012 8:26:33 PM added instanceof Int32Array in String.instantialize
@@ -4164,37 +4164,6 @@ this.requests.add ([key, value]);
 }, "~S,~S");
 });
 // 
-//// org\jmol\awtjs\JmolURLConnection.js 
-// 
-Clazz.declarePackage ("org.jmol.awtjs");
-Clazz.load (["java.net.URLConnection"], "org.jmol.awtjs.JmolURLConnection", null, function () {
-c$ = Clazz.decorateAsClass (function () {
-this.bytesOut = null;
-this.postOut = "";
-Clazz.instantialize (this, arguments);
-}, org.jmol.awtjs, "JmolURLConnection", java.net.URLConnection);
-Clazz.defineMethod (c$, "doAjax", 
-($fz = function () {
-{
-return Jmol._doAjax(this.url, this.postOut, this.bytesOut);
-}}, $fz.isPrivate = true, $fz));
-Clazz.overrideMethod (c$, "connect", 
-function () {
-});
-Clazz.defineMethod (c$, "outputBytes", 
-function (bytes) {
-this.bytesOut = bytes;
-}, "~A");
-Clazz.defineMethod (c$, "outputString", 
-function (post) {
-this.postOut = post;
-}, "~S");
-Clazz.defineMethod (c$, "getStringXBuilder", 
-function () {
-return this.doAjax ();
-});
-});
-// 
 //// org\jmol\awtjs2d\JmolURLConnection.js 
 // 
 Clazz.declarePackage ("org.jmol.awtjs2d");
@@ -4228,7 +4197,7 @@ return this.doAjax ();
 // 
 //// java\lang\AbstractStringBuilder.js 
 // 
-$_L(null,"java.lang.AbstractStringBuilder",["java.io.InvalidObjectException","java.lang.ArrayIndexOutOfBoundsException","$.IndexOutOfBoundsException","$.NegativeArraySizeException","$.NullPointerException","$.StringIndexOutOfBoundsException"],function(){
+$_L(null,"java.lang.AbstractStringBuilder",["java.io.InvalidObjectException","java.lang.ArrayIndexOutOfBoundsException","$.IndexOutOfBoundsException","$.NegativeArraySizeException","$.NullPointerException","$.StringIndexOutOfBoundsException",null],function(){
 c$=$_C(function(){
 this.value=null;
 this.count=0;
@@ -5907,464 +5876,6 @@ this.array=newArray;
 this.firstIndex=0;
 this.lastIndex=this.array.length;
 });
-});
-// 
-//// java\util\ResourceBundle.js 
-// 
-$_L(null,"java.util.ResourceBundle",["java.lang.NullPointerException","java.util.Enumeration","$.MissingResourceException","net.sf.j2s.ajax.HttpRequest"],function(){
-c$=$_C(function(){
-this.parent=null;
-this.locale=null;
-this.bundleName=null;
-$_Z(this,arguments);
-},java.util,"ResourceBundle");
-$_K(c$,
-function(){
-});
-$_M(c$,"getString",
-function(key){
-return this.getObject(key);
-},"~S");
-$_M(c$,"getStringArray",
-function(key){
-return this.getObject(key);
-},"~S");
-$_M(c$,"getObject",
-function(key){
-var obj=this.handleGetObject(key);
-if(obj==null){
-if(this.parent!=null){
-obj=this.parent.getObject(key);
-}if(obj==null)throw new java.util.MissingResourceException("Can't find resource for bundle "+this.getClass().getName()+", key "+key,this.getClass().getName(),key);
-}return obj;
-},"~S");
-$_M(c$,"getLocale",
-function(){
-return this.locale;
-});
-$_M(c$,"setParent",
-function(parent){
-this.parent=parent;
-},"java.util.ResourceBundle");
-c$.getBundle=$_M(c$,"getBundle",
-function(baseName){
-return java.util.ResourceBundle.getBundleImpl(baseName,null,null);
-},"~S");
-c$.getBundle=$_M(c$,"getBundle",
-function(baseName,locale){
-return java.util.ResourceBundle.getBundleImpl(baseName,locale,null);
-},"~S,java.util.Locale");
-c$.getBundle=$_M(c$,"getBundle",
-function(baseName,locale,loader){
-if(loader==null){
-throw new NullPointerException();
-}return java.util.ResourceBundle.getBundleImpl(baseName,locale,loader);
-},"~S,java.util.Locale,ClassLoader");
-c$.getBundleImpl=$_M(c$,"getBundleImpl",
-($fz=function(baseName,locale,loader){
-if(baseName==null){
-throw new NullPointerException();
-}for(var i=0;i<java.util.ResourceBundle.caches.length;i++){
-if(java.util.ResourceBundle.caches[i].bundleName===baseName){
-return java.util.ResourceBundle.caches[i];
-}}
-var bundle=new java.util.ResourceBundle.TextResourceBundle(baseName);
-java.util.ResourceBundle.caches[java.util.ResourceBundle.caches.length]=bundle;
-return bundle;
-},$fz.isPrivate=true,$fz),"~S,java.util.Locale,ClassLoader");
-c$.registerBundle=$_M(c$,"registerBundle",
-function(baseName,content){
-for(var i=0;i<java.util.ResourceBundle.caches.length;i++){
-if(java.util.ResourceBundle.caches[i].bundleName===baseName){
-return;
-}}
-java.util.ResourceBundle.caches[java.util.ResourceBundle.caches.length]=new java.util.ResourceBundle.TextResourceBundle(baseName,content);
-},"~S,~S");
-$_H();
-c$=$_C(function(){
-this.map=null;
-this.keys=null;
-this.content=null;
-this.initialized=false;
-$_Z(this,arguments);
-},java.util.ResourceBundle,"TextResourceBundle",java.util.ResourceBundle);
-$_Y(c$,function(){
-this.map=new Array(0);
-this.keys=new Array(0);
-});
-$_K(c$,
-function(a){
-$_R(this,java.util.ResourceBundle.TextResourceBundle,[]);
-this.bundleName=a;
-},"~S");
-$_K(c$,
-function(a,b){
-$_R(this,java.util.ResourceBundle.TextResourceBundle,[]);
-this.bundleName=a;
-this.content=b;
-},"~S,~S");
-$_M(c$,"evalString",
-function(a){
-var r=new Array();
-var b=false;
-var x=0;
-for(var i=0;i<a.length;i++){
-var c=a.charAt(i);
-if(b){
-if(c=='f') r[r.length] = '\f';
-else if(c=='t') r[r.length] = '\t';
-else if(c=='r') r[r.length] = '\r';
-else if(c=='n') r[r.length] = '\n';
-else if(c=='\'') r[r.length] = '\'';
-else if(c=='\"') r[r.length] = '\"';
-else if(c=='\\') r[r.length] = '\\';
-else if(c=='u'){
-r[r.length]=eval("\"\\u"+a.substring(i+1,i+5)+"\"");
-i+=4;
-}
-x=i+1;
-b=false;
-}else if(c=='\\'){
-if(x!=i){
-r[r.length]=a.substring(x,i);
-}
-b=true;
-}
-}
-if(!b){
-r[r.length]=a.substring(x,a.length);
-}
-return r.join('');
-},"~S");
-$_M(c$,"initBundle",
-($fz=function(){
-if(this.initialized){
-return;
-}this.initialized=true;
-var a=null;
-var b=this.bundleName;
-if(this.content==null){
-var n=b.replace(/\./g,'/')+".properties";
-var p=Clazz.binaryFolders;
-if(p==null){
-p=["bin","","j2slib"];
-}
-var r=new net.sf.j2s.ajax.HttpRequest();
-var x=0;
-while(a==null&&x<p.length){
-var q=p[x];
-if(q.length>0&&q.lastIndexOf("/")!=q.length-1){
-q+="/";
-}
-try{
-r.open("GET",q+n,false);
-r.send();
-a=r.getResponseText();
-}catch(e){
-r=new net.sf.j2s.ajax.HttpRequest();
-}
-x++;
-}
-}if(this.content==null){
-this.content=a;
-}if(this.content==null){
-return;
-}var c=this.content.$plit("\n");
-for(var d=0;d<c.length;d++){
-var e=c[d].trim();
-if(!e.startsWith("#")){
-var f=e.indexOf('=');
-if(f!=-1){
-var g=e.substring(0,f).trim();
-var h=e.substring(f+1).trim();
-if(h.indexOf('\\')!=-1){
-h=this.evalString(h);
-}var i=this.map;
-var j=this.keys;
-{
-if(i[g]==null){
-j[j.length]=g;
-}
-i[g]=h;
-}}}}
-},$fz.isPrivate=true,$fz));
-$_V(c$,"getKeys",
-function(){
-return(($_D("java.util.ResourceBundle$TextResourceBundle$1")?0:java.util.ResourceBundle.TextResourceBundle.$ResourceBundle$TextResourceBundle$1$()),$_N(java.util.ResourceBundle$TextResourceBundle$1,this,null));
-});
-$_V(c$,"handleGetObject",
-function(a){
-if(!this.initialized){
-this.initBundle();
-}var b=this.map;
-{
-return b[a];
-}return b;
-},"~S");
-c$.$ResourceBundle$TextResourceBundle$1$=function(){
-$_H();
-c$=$_C(function(){
-$_B(this,arguments);
-this.index=-1;
-$_Z(this,arguments);
-},java.util,"ResourceBundle$TextResourceBundle$1",null,java.util.Enumeration);
-$_V(c$,"nextElement",
-function(){
-this.index++;
-return this.b$["java.util.ResourceBundle.TextResourceBundle"].keys[this.index];
-});
-$_V(c$,"hasMoreElements",
-function(){
-return this.index<this.b$["java.util.ResourceBundle.TextResourceBundle"].keys.length-1;
-});
-c$=$_P();
-};
-c$=$_P();
-c$.caches=c$.prototype.caches=new Array(0);
-});
-// 
-//// java\util\Locale.js 
-// 
-$_L(null,"java.util.Locale",["java.lang.InternalError","$.NullPointerException","java.util.MissingResourceException"],function(){
-c$=$_C(function(){
-this.language="";
-this.country="";
-this.variant="";
-this.hashcode=-1;
-$_Z(this,arguments);
-},java.util,"Locale",null,[Cloneable,java.io.Serializable]);
-$_K(c$,
-function(language,country,variant){
-this.language=this.convertOldISOCodes(language);
-this.country=country.toUpperCase();
-this.variant=variant.intern();
-},"~S,~S,~S");
-$_K(c$,
-function(language,country){
-this.construct(language,country,"");
-},"~S,~S");
-$_K(c$,
-function(language){
-this.construct(language,"","");
-},"~S");
-c$.getDefault=$_M(c$,"getDefault",
-function(){
-if(java.util.Locale.defaultLocale==null){
-var language="en";
-var country="US";
-var variant="";
-navigator.userAgent.replace(/;\s*([a-zA-Z]{2,})[-_]([a-zA-Z]{2,});/,function($0,$1,$2){
-language=$1;
-country=$2;
-});
-java.util.Locale.defaultLocale=new java.util.Locale(language,country,variant);
-}return java.util.Locale.defaultLocale;
-});
-c$.setDefault=$_M(c$,"setDefault",
-function(newLocale){
-if(newLocale==null)throw new NullPointerException("Can't set default locale to NULL");
-{
-java.util.Locale.defaultLocale=newLocale;
-}},"java.util.Locale");
-c$.getAvailableLocales=$_M(c$,"getAvailableLocales",
-function(){
-var lcl=java.util.Locale;
-return[
-lcl.ENGLISH,
-lcl.ENGLISH,
-lcl.FRENCH,
-lcl.GERMAN,
-lcl.ITALIAN,
-lcl.JAPANESE,
-lcl.KOREAN,
-lcl.CHINESE,
-lcl.SIMPLIFIED_CHINESE,
-lcl.TRADITIONAL_CHINESE,
-lcl.FRANCE,
-lcl.GERMANY,
-lcl.ITALY,
-lcl.JAPAN,
-lcl.KOREA,
-lcl.CHINA,
-lcl.PRC,
-lcl.TAIWAN,
-lcl.UK,
-lcl.US,
-lcl.CANADA,
-lcl.CANADA_FRENCH
-];
-});
-c$.getISOCountries=$_M(c$,"getISOCountries",
-function(){
-if(java.util.Locale.isoCountries==null){
-($t$=java.util.Locale.isoCountries=new Array(Math.floor(",ADAND,AEARE,AFAFG,AGATG,AIAIA,ALALB,AMARM,ANANT,AOAGO,AQATA,ARARG,ASASM,ATAUT,AUAUS,AWABW,AZAZE,BABIH,BBBRB,BDBGD,BEBEL,BFBFA,BGBGR,BHBHR,BIBDI,BJBEN,BMBMU,BNBRN,BOBOL,BRBRA,BSBHS,BTBTN,BVBVT,BWBWA,BYBLR,BZBLZ,CACAN,CCCCK,CFCAF,CGCOG,CHCHE,CICIV,CKCOK,CLCHL,CMCMR,CNCHN,COCOL,CRCRI,CUCUB,CVCPV,CXCXR,CYCYP,CZCZE,DEDEU,DJDJI,DKDNK,DMDMA,DODOM,DZDZA,ECECU,EEEST,EGEGY,EHESH,ERERI,ESESP,ETETH,FIFIN,FJFJI,FKFLK,FMFSM,FOFRO,FRFRA,FXFXX,GAGAB,GBGBR,GDGRD,GEGEO,GFGUF,GHGHA,GIGIB,GLGRL,GMGMB,GNGIN,GPGLP,GQGNQ,GRGRC,GSSGS,GTGTM,GUGUM,GWGNB,GYGUY,HKHKG,HMHMD,HNHND,HRHRV,HTHTI,HUHUN,IDIDN,IEIRL,ILISR,ININD,IOIOT,IQIRQ,IRIRN,ISISL,ITITA,JMJAM,JOJOR,JPJPN,KEKEN,KGKGZ,KHKHM,KIKIR,KMCOM,KNKNA,KPPRK,KRKOR,KWKWT,KYCYM,KZKAZ,LALAO,LBLBN,LCLCA,LILIE,LKLKA,LRLBR,LSLSO,LTLTU,LULUX,LVLVA,LYLBY,MAMAR,MCMCO,MDMDA,MGMDG,MHMHL,MKMKD,MLMLI,MMMMR,MNMNG,MOMAC,MPMNP,MQMTQ,MRMRT,MSMSR,MTMLT,MUMUS,MVMDV,MWMWI,MXMEX,MYMYS,MZMOZ,NANAM,NCNCL,NENER,NFNFK,NGNGA,NINIC,NLNLD,NONOR,NPNPL,NRNRU,NUNIU,NZNZL,OMOMN,PAPAN,PEPER,PFPYF,PGPNG,PHPHL,PKPAK,PLPOL,PMSPM,PNPCN,PRPRI,PTPRT,PWPLW,PYPRY,QAQAT,REREU,ROROM,RURUS,RWRWA,SASAU,SBSLB,SCSYC,SDSDN,SESWE,SGSGP,SHSHN,SISVN,SJSJM,SKSVK,SLSLE,SMSMR,SNSEN,SOSOM,SRSUR,STSTP,SVSLV,SYSYR,SZSWZ,TCTCA,TDTCD,TFATF,TGTGO,THTHA,TJTJK,TKTKL,TMTKM,TNTUN,TOTON,TPTMP,TRTUR,TTTTO,TVTUV,TWTWN,TZTZA,UAUKR,UGUGA,UMUMI,USUSA,UYURY,UZUZB,VAVAT,VCVCT,VEVEN,VGVGB,VIVIR,VNVNM,VUVUT,WFWLF,WSWSM,YEYEM,YTMYT,YUYUG,ZAZAF,ZMZMB,ZRZAR,ZWZWE".length/6)),java.util.Locale.prototype.isoCountries=java.util.Locale.isoCountries,$t$);
-for(var i=0;i<java.util.Locale.isoCountries.length;i++)java.util.Locale.isoCountries[i]=",ADAND,AEARE,AFAFG,AGATG,AIAIA,ALALB,AMARM,ANANT,AOAGO,AQATA,ARARG,ASASM,ATAUT,AUAUS,AWABW,AZAZE,BABIH,BBBRB,BDBGD,BEBEL,BFBFA,BGBGR,BHBHR,BIBDI,BJBEN,BMBMU,BNBRN,BOBOL,BRBRA,BSBHS,BTBTN,BVBVT,BWBWA,BYBLR,BZBLZ,CACAN,CCCCK,CFCAF,CGCOG,CHCHE,CICIV,CKCOK,CLCHL,CMCMR,CNCHN,COCOL,CRCRI,CUCUB,CVCPV,CXCXR,CYCYP,CZCZE,DEDEU,DJDJI,DKDNK,DMDMA,DODOM,DZDZA,ECECU,EEEST,EGEGY,EHESH,ERERI,ESESP,ETETH,FIFIN,FJFJI,FKFLK,FMFSM,FOFRO,FRFRA,FXFXX,GAGAB,GBGBR,GDGRD,GEGEO,GFGUF,GHGHA,GIGIB,GLGRL,GMGMB,GNGIN,GPGLP,GQGNQ,GRGRC,GSSGS,GTGTM,GUGUM,GWGNB,GYGUY,HKHKG,HMHMD,HNHND,HRHRV,HTHTI,HUHUN,IDIDN,IEIRL,ILISR,ININD,IOIOT,IQIRQ,IRIRN,ISISL,ITITA,JMJAM,JOJOR,JPJPN,KEKEN,KGKGZ,KHKHM,KIKIR,KMCOM,KNKNA,KPPRK,KRKOR,KWKWT,KYCYM,KZKAZ,LALAO,LBLBN,LCLCA,LILIE,LKLKA,LRLBR,LSLSO,LTLTU,LULUX,LVLVA,LYLBY,MAMAR,MCMCO,MDMDA,MGMDG,MHMHL,MKMKD,MLMLI,MMMMR,MNMNG,MOMAC,MPMNP,MQMTQ,MRMRT,MSMSR,MTMLT,MUMUS,MVMDV,MWMWI,MXMEX,MYMYS,MZMOZ,NANAM,NCNCL,NENER,NFNFK,NGNGA,NINIC,NLNLD,NONOR,NPNPL,NRNRU,NUNIU,NZNZL,OMOMN,PAPAN,PEPER,PFPYF,PGPNG,PHPHL,PKPAK,PLPOL,PMSPM,PNPCN,PRPRI,PTPRT,PWPLW,PYPRY,QAQAT,REREU,ROROM,RURUS,RWRWA,SASAU,SBSLB,SCSYC,SDSDN,SESWE,SGSGP,SHSHN,SISVN,SJSJM,SKSVK,SLSLE,SMSMR,SNSEN,SOSOM,SRSUR,STSTP,SVSLV,SYSYR,SZSWZ,TCTCA,TDTCD,TFATF,TGTGO,THTHA,TJTJK,TKTKL,TMTKM,TNTUN,TOTON,TPTMP,TRTUR,TTTTO,TVTUV,TWTWN,TZTZA,UAUKR,UGUGA,UMUMI,USUSA,UYURY,UZUZB,VAVAT,VCVCT,VEVEN,VGVGB,VIVIR,VNVNM,VUVUT,WFWLF,WSWSM,YEYEM,YTMYT,YUYUG,ZAZAF,ZMZMB,ZRZAR,ZWZWE".substring((i*6)+1,(i*6)+3);
-
-}var result=new Array(java.util.Locale.isoCountries.length);
-System.arraycopy(java.util.Locale.isoCountries,0,result,0,java.util.Locale.isoCountries.length);
-return result;
-});
-c$.getISOLanguages=$_M(c$,"getISOLanguages",
-function(){
-if(java.util.Locale.isoLanguages==null){
-($t$=java.util.Locale.isoLanguages=new Array(Math.floor(",aaaar,ababk,afafr,amamh,arara,asasm,ayaym,azaze,babak,bebel,bgbul,bhbih,bibis,bnben,bobod,brbre,cacat,cocos,csces,cycym,dadan,dedeu,dzdzo,elell,eneng,eoepo,esspa,etest,eueus,fafas,fifin,fjfij,fofao,frfra,fyfry,gagai,gdgdh,glglg,gngrn,guguj,hahau,heheb,hihin,hrhrv,huhun,hyhye,iaina,idind,ieile,ikipk,inind,isisl,itita,iuiku,iwheb,jajpn,jiyid,jwjaw,kakat,kkkaz,klkal,kmkhm,knkan,kokor,kskas,kukur,kykir,lalat,lnlin,lolao,ltlit,lvlav,mgmlg,mimri,mkmkd,mlmal,mnmon,momol,mrmar,msmsa,mtmlt,mymya,nanau,nenep,nlnld,nonor,ococi,omorm,orori,papan,plpol,pspus,ptpor,quque,rmroh,rnrun,roron,rurus,rwkin,sasan,sdsnd,sgsag,shsrp,sisin,skslk,slslv,smsmo,snsna,sosom,sqsqi,srsrp,ssssw,stsot,susun,svswe,swswa,tatam,tetel,tgtgk,ththa,titir,tktuk,tltgl,tntsn,toton,trtur,tstso,tttat,twtwi,uguig,ukukr,ururd,uzuzb,vivie,vovol,wowol,xhxho,yiyid,yoyor,zazha,zhzho,zuzul".length/6)),java.util.Locale.prototype.isoLanguages=java.util.Locale.isoLanguages,$t$);
-for(var i=0;i<java.util.Locale.isoLanguages.length;i++)java.util.Locale.isoLanguages[i]=",aaaar,ababk,afafr,amamh,arara,asasm,ayaym,azaze,babak,bebel,bgbul,bhbih,bibis,bnben,bobod,brbre,cacat,cocos,csces,cycym,dadan,dedeu,dzdzo,elell,eneng,eoepo,esspa,etest,eueus,fafas,fifin,fjfij,fofao,frfra,fyfry,gagai,gdgdh,glglg,gngrn,guguj,hahau,heheb,hihin,hrhrv,huhun,hyhye,iaina,idind,ieile,ikipk,inind,isisl,itita,iuiku,iwheb,jajpn,jiyid,jwjaw,kakat,kkkaz,klkal,kmkhm,knkan,kokor,kskas,kukur,kykir,lalat,lnlin,lolao,ltlit,lvlav,mgmlg,mimri,mkmkd,mlmal,mnmon,momol,mrmar,msmsa,mtmlt,mymya,nanau,nenep,nlnld,nonor,ococi,omorm,orori,papan,plpol,pspus,ptpor,quque,rmroh,rnrun,roron,rurus,rwkin,sasan,sdsnd,sgsag,shsrp,sisin,skslk,slslv,smsmo,snsna,sosom,sqsqi,srsrp,ssssw,stsot,susun,svswe,swswa,tatam,tetel,tgtgk,ththa,titir,tktuk,tltgl,tntsn,toton,trtur,tstso,tttat,twtwi,uguig,ukukr,ururd,uzuzb,vivie,vovol,wowol,xhxho,yiyid,yoyor,zazha,zhzho,zuzul".substring((i*6)+1,(i*6)+3);
-
-}var result=new Array(java.util.Locale.isoLanguages.length);
-System.arraycopy(java.util.Locale.isoLanguages,0,result,0,java.util.Locale.isoLanguages.length);
-return result;
-});
-$_M(c$,"getLanguage",
-function(){
-return this.language;
-});
-$_M(c$,"getCountry",
-function(){
-return this.country;
-});
-$_M(c$,"getVariant",
-function(){
-return this.variant;
-});
-$_V(c$,"toString",
-function(){
-var l=this.language.length!=0;
-var c=this.country.length!=0;
-var v=this.variant.length!=0;
-var result=this.language;
-if(c||(l&&v)){
-result+='_'+this.country;
-}if(v&&(l||c)){
-result+='_'+this.variant;
-}return result;
-});
-$_M(c$,"getISO3Language",
-function(){
-var length=this.language.length;
-if(length==0){
-return"";
-}var index=",aaaar,ababk,afafr,amamh,arara,asasm,ayaym,azaze,babak,bebel,bgbul,bhbih,bibis,bnben,bobod,brbre,cacat,cocos,csces,cycym,dadan,dedeu,dzdzo,elell,eneng,eoepo,esspa,etest,eueus,fafas,fifin,fjfij,fofao,frfra,fyfry,gagai,gdgdh,glglg,gngrn,guguj,hahau,heheb,hihin,hrhrv,huhun,hyhye,iaina,idind,ieile,ikipk,inind,isisl,itita,iuiku,iwheb,jajpn,jiyid,jwjaw,kakat,kkkaz,klkal,kmkhm,knkan,kokor,kskas,kukur,kykir,lalat,lnlin,lolao,ltlit,lvlav,mgmlg,mimri,mkmkd,mlmal,mnmon,momol,mrmar,msmsa,mtmlt,mymya,nanau,nenep,nlnld,nonor,ococi,omorm,orori,papan,plpol,pspus,ptpor,quque,rmroh,rnrun,roron,rurus,rwkin,sasan,sdsnd,sgsag,shsrp,sisin,skslk,slslv,smsmo,snsna,sosom,sqsqi,srsrp,ssssw,stsot,susun,svswe,swswa,tatam,tetel,tgtgk,ththa,titir,tktuk,tltgl,tntsn,toton,trtur,tstso,tttat,twtwi,uguig,ukukr,ururd,uzuzb,vivie,vovol,wowol,xhxho,yiyid,yoyor,zazha,zhzho,zuzul".indexOf(","+this.language);
-if(index==-1||length!=2){
-throw new java.util.MissingResourceException("Couldn't find 3-letter language code for "+this.language,"LocaleElements_"+this.toString(),"ShortLanguage");
-}return",aaaar,ababk,afafr,amamh,arara,asasm,ayaym,azaze,babak,bebel,bgbul,bhbih,bibis,bnben,bobod,brbre,cacat,cocos,csces,cycym,dadan,dedeu,dzdzo,elell,eneng,eoepo,esspa,etest,eueus,fafas,fifin,fjfij,fofao,frfra,fyfry,gagai,gdgdh,glglg,gngrn,guguj,hahau,heheb,hihin,hrhrv,huhun,hyhye,iaina,idind,ieile,ikipk,inind,isisl,itita,iuiku,iwheb,jajpn,jiyid,jwjaw,kakat,kkkaz,klkal,kmkhm,knkan,kokor,kskas,kukur,kykir,lalat,lnlin,lolao,ltlit,lvlav,mgmlg,mimri,mkmkd,mlmal,mnmon,momol,mrmar,msmsa,mtmlt,mymya,nanau,nenep,nlnld,nonor,ococi,omorm,orori,papan,plpol,pspus,ptpor,quque,rmroh,rnrun,roron,rurus,rwkin,sasan,sdsnd,sgsag,shsrp,sisin,skslk,slslv,smsmo,snsna,sosom,sqsqi,srsrp,ssssw,stsot,susun,svswe,swswa,tatam,tetel,tgtgk,ththa,titir,tktuk,tltgl,tntsn,toton,trtur,tstso,tttat,twtwi,uguig,ukukr,ururd,uzuzb,vivie,vovol,wowol,xhxho,yiyid,yoyor,zazha,zhzho,zuzul".substring(index+3,index+6);
-});
-$_M(c$,"getISO3Country",
-function(){
-var length=this.country.length;
-if(length==0){
-return"";
-}var index=",ADAND,AEARE,AFAFG,AGATG,AIAIA,ALALB,AMARM,ANANT,AOAGO,AQATA,ARARG,ASASM,ATAUT,AUAUS,AWABW,AZAZE,BABIH,BBBRB,BDBGD,BEBEL,BFBFA,BGBGR,BHBHR,BIBDI,BJBEN,BMBMU,BNBRN,BOBOL,BRBRA,BSBHS,BTBTN,BVBVT,BWBWA,BYBLR,BZBLZ,CACAN,CCCCK,CFCAF,CGCOG,CHCHE,CICIV,CKCOK,CLCHL,CMCMR,CNCHN,COCOL,CRCRI,CUCUB,CVCPV,CXCXR,CYCYP,CZCZE,DEDEU,DJDJI,DKDNK,DMDMA,DODOM,DZDZA,ECECU,EEEST,EGEGY,EHESH,ERERI,ESESP,ETETH,FIFIN,FJFJI,FKFLK,FMFSM,FOFRO,FRFRA,FXFXX,GAGAB,GBGBR,GDGRD,GEGEO,GFGUF,GHGHA,GIGIB,GLGRL,GMGMB,GNGIN,GPGLP,GQGNQ,GRGRC,GSSGS,GTGTM,GUGUM,GWGNB,GYGUY,HKHKG,HMHMD,HNHND,HRHRV,HTHTI,HUHUN,IDIDN,IEIRL,ILISR,ININD,IOIOT,IQIRQ,IRIRN,ISISL,ITITA,JMJAM,JOJOR,JPJPN,KEKEN,KGKGZ,KHKHM,KIKIR,KMCOM,KNKNA,KPPRK,KRKOR,KWKWT,KYCYM,KZKAZ,LALAO,LBLBN,LCLCA,LILIE,LKLKA,LRLBR,LSLSO,LTLTU,LULUX,LVLVA,LYLBY,MAMAR,MCMCO,MDMDA,MGMDG,MHMHL,MKMKD,MLMLI,MMMMR,MNMNG,MOMAC,MPMNP,MQMTQ,MRMRT,MSMSR,MTMLT,MUMUS,MVMDV,MWMWI,MXMEX,MYMYS,MZMOZ,NANAM,NCNCL,NENER,NFNFK,NGNGA,NINIC,NLNLD,NONOR,NPNPL,NRNRU,NUNIU,NZNZL,OMOMN,PAPAN,PEPER,PFPYF,PGPNG,PHPHL,PKPAK,PLPOL,PMSPM,PNPCN,PRPRI,PTPRT,PWPLW,PYPRY,QAQAT,REREU,ROROM,RURUS,RWRWA,SASAU,SBSLB,SCSYC,SDSDN,SESWE,SGSGP,SHSHN,SISVN,SJSJM,SKSVK,SLSLE,SMSMR,SNSEN,SOSOM,SRSUR,STSTP,SVSLV,SYSYR,SZSWZ,TCTCA,TDTCD,TFATF,TGTGO,THTHA,TJTJK,TKTKL,TMTKM,TNTUN,TOTON,TPTMP,TRTUR,TTTTO,TVTUV,TWTWN,TZTZA,UAUKR,UGUGA,UMUMI,USUSA,UYURY,UZUZB,VAVAT,VCVCT,VEVEN,VGVGB,VIVIR,VNVNM,VUVUT,WFWLF,WSWSM,YEYEM,YTMYT,YUYUG,ZAZAF,ZMZMB,ZRZAR,ZWZWE".indexOf(","+this.country);
-if(index==-1||length!=2){
-throw new java.util.MissingResourceException("Couldn't find 3-letter country code for "+this.country,"LocaleElements_"+this.toString(),"ShortCountry");
-}return",ADAND,AEARE,AFAFG,AGATG,AIAIA,ALALB,AMARM,ANANT,AOAGO,AQATA,ARARG,ASASM,ATAUT,AUAUS,AWABW,AZAZE,BABIH,BBBRB,BDBGD,BEBEL,BFBFA,BGBGR,BHBHR,BIBDI,BJBEN,BMBMU,BNBRN,BOBOL,BRBRA,BSBHS,BTBTN,BVBVT,BWBWA,BYBLR,BZBLZ,CACAN,CCCCK,CFCAF,CGCOG,CHCHE,CICIV,CKCOK,CLCHL,CMCMR,CNCHN,COCOL,CRCRI,CUCUB,CVCPV,CXCXR,CYCYP,CZCZE,DEDEU,DJDJI,DKDNK,DMDMA,DODOM,DZDZA,ECECU,EEEST,EGEGY,EHESH,ERERI,ESESP,ETETH,FIFIN,FJFJI,FKFLK,FMFSM,FOFRO,FRFRA,FXFXX,GAGAB,GBGBR,GDGRD,GEGEO,GFGUF,GHGHA,GIGIB,GLGRL,GMGMB,GNGIN,GPGLP,GQGNQ,GRGRC,GSSGS,GTGTM,GUGUM,GWGNB,GYGUY,HKHKG,HMHMD,HNHND,HRHRV,HTHTI,HUHUN,IDIDN,IEIRL,ILISR,ININD,IOIOT,IQIRQ,IRIRN,ISISL,ITITA,JMJAM,JOJOR,JPJPN,KEKEN,KGKGZ,KHKHM,KIKIR,KMCOM,KNKNA,KPPRK,KRKOR,KWKWT,KYCYM,KZKAZ,LALAO,LBLBN,LCLCA,LILIE,LKLKA,LRLBR,LSLSO,LTLTU,LULUX,LVLVA,LYLBY,MAMAR,MCMCO,MDMDA,MGMDG,MHMHL,MKMKD,MLMLI,MMMMR,MNMNG,MOMAC,MPMNP,MQMTQ,MRMRT,MSMSR,MTMLT,MUMUS,MVMDV,MWMWI,MXMEX,MYMYS,MZMOZ,NANAM,NCNCL,NENER,NFNFK,NGNGA,NINIC,NLNLD,NONOR,NPNPL,NRNRU,NUNIU,NZNZL,OMOMN,PAPAN,PEPER,PFPYF,PGPNG,PHPHL,PKPAK,PLPOL,PMSPM,PNPCN,PRPRI,PTPRT,PWPLW,PYPRY,QAQAT,REREU,ROROM,RURUS,RWRWA,SASAU,SBSLB,SCSYC,SDSDN,SESWE,SGSGP,SHSHN,SISVN,SJSJM,SKSVK,SLSLE,SMSMR,SNSEN,SOSOM,SRSUR,STSTP,SVSLV,SYSYR,SZSWZ,TCTCA,TDTCD,TFATF,TGTGO,THTHA,TJTJK,TKTKL,TMTKM,TNTUN,TOTON,TPTMP,TRTUR,TTTTO,TVTUV,TWTWN,TZTZA,UAUKR,UGUGA,UMUMI,USUSA,UYURY,UZUZB,VAVAT,VCVCT,VEVEN,VGVGB,VIVIR,VNVNM,VUVUT,WFWLF,WSWSM,YEYEM,YTMYT,YUYUG,ZAZAF,ZMZMB,ZRZAR,ZWZWE".substring(index+3,index+6);
-});
-$_M(c$,"getDisplayLanguage",
-function(){
-return this.getDisplayLanguage(java.util.Locale.getDefault());
-});
-$_M(c$,"getDisplayLanguage",
-function(inLocale){
-return inLocale.language;
-},"java.util.Locale");
-$_M(c$,"getDisplayCountry",
-function(){
-return this.getDisplayCountry(java.util.Locale.getDefault());
-});
-$_M(c$,"getDisplayCountry",
-function(inLocale){
-return inLocale.country;
-},"java.util.Locale");
-$_M(c$,"getDisplayVariant",
-function(){
-return this.getDisplayVariant(java.util.Locale.getDefault());
-});
-$_M(c$,"getDisplayVariant",
-function(inLocale){
-return inLocale.variant;
-},"java.util.Locale");
-$_M(c$,"getDisplayName",
-function(){
-return this.getDisplayName(java.util.Locale.getDefault());
-});
-$_M(c$,"getDisplayName",
-function(inLocale){
-var s=inLocale.language+"_"+inLocale.country;
-var v=inLocale.variant;
-if(v!=null&&v.length!=0){
-return s+"("+v+")";
-}else{
-return s;
-}
-},"java.util.Locale");
-$_M(c$,"clone",
-function(){
-try{
-var that=$_U(this,java.util.Locale,"clone",[]);
-return that;
-}catch(e){
-if($_O(e,CloneNotSupportedException)){
-throw new InternalError();
-}else{
-throw e;
-}
-}
-});
-$_V(c$,"hashCode",
-function(){
-if(this.hashcode==-1){
-this.hashcode=this.language.hashCode()^this.country.hashCode()^this.variant.hashCode();
-}return this.hashcode;
-});
-$_V(c$,"equals",
-function(obj){
-if(this===obj)return true;
-if(!($_O(obj,java.util.Locale)))return false;
-var other=obj;
-if(this.hashCode()!=other.hashCode())return false;
-if(this.language!==other.language)return false;
-if(this.country!==other.country)return false;
-if(this.variant!==other.variant)return false;
-return true;
-},"~O");
-$_M(c$,"convertOldISOCodes",
-($fz=function(language){
-language=language.toLowerCase();
-if(language==="he"){
-return"iw";
-}else if(language==="yi"){
-return"ji";
-}else if(language==="id"){
-return"in";
-}else{
-return language;
-}},$fz.isPrivate=true,$fz),"~S");
-c$.ENGLISH=c$.prototype.ENGLISH=new java.util.Locale("en","","");
-c$.FRENCH=c$.prototype.FRENCH=new java.util.Locale("fr","","");
-c$.GERMAN=c$.prototype.GERMAN=new java.util.Locale("de","","");
-c$.ITALIAN=c$.prototype.ITALIAN=new java.util.Locale("it","","");
-c$.JAPANESE=c$.prototype.JAPANESE=new java.util.Locale("ja","","");
-c$.KOREAN=c$.prototype.KOREAN=new java.util.Locale("ko","","");
-c$.CHINESE=c$.prototype.CHINESE=new java.util.Locale("zh","","");
-c$.SIMPLIFIED_CHINESE=c$.prototype.SIMPLIFIED_CHINESE=new java.util.Locale("zh","CN","");
-c$.TRADITIONAL_CHINESE=c$.prototype.TRADITIONAL_CHINESE=new java.util.Locale("zh","TW","");
-c$.FRANCE=c$.prototype.FRANCE=new java.util.Locale("fr","FR","");
-c$.GERMANY=c$.prototype.GERMANY=new java.util.Locale("de","DE","");
-c$.ITALY=c$.prototype.ITALY=new java.util.Locale("it","IT","");
-c$.JAPAN=c$.prototype.JAPAN=new java.util.Locale("ja","JP","");
-c$.KOREA=c$.prototype.KOREA=new java.util.Locale("ko","KR","");
-c$.CHINA=c$.prototype.CHINA=new java.util.Locale("zh","CN","");
-c$.PRC=c$.prototype.PRC=new java.util.Locale("zh","CN","");
-c$.TAIWAN=c$.prototype.TAIWAN=new java.util.Locale("zh","TW","");
-c$.UK=c$.prototype.UK=new java.util.Locale("en","GB","");
-c$.US=c$.prototype.US=new java.util.Locale("en","US","");
-c$.CANADA=c$.prototype.CANADA=new java.util.Locale("en","CA","");
-c$.CANADA_FRENCH=c$.prototype.CANADA_FRENCH=new java.util.Locale("fr","CA","");
-$_S(c$,
-"defaultLocale",null,
-"isoLanguages",null,
-"compressedIsoLanguages",",aaaar,ababk,afafr,amamh,arara,asasm,ayaym,azaze,babak,bebel,bgbul,bhbih,bibis,bnben,bobod,brbre,cacat,cocos,csces,cycym,dadan,dedeu,dzdzo,elell,eneng,eoepo,esspa,etest,eueus,fafas,fifin,fjfij,fofao,frfra,fyfry,gagai,gdgdh,glglg,gngrn,guguj,hahau,heheb,hihin,hrhrv,huhun,hyhye,iaina,idind,ieile,ikipk,inind,isisl,itita,iuiku,iwheb,jajpn,jiyid,jwjaw,kakat,kkkaz,klkal,kmkhm,knkan,kokor,kskas,kukur,kykir,lalat,lnlin,lolao,ltlit,lvlav,mgmlg,mimri,mkmkd,mlmal,mnmon,momol,mrmar,msmsa,mtmlt,mymya,nanau,nenep,nlnld,nonor,ococi,omorm,orori,papan,plpol,pspus,ptpor,quque,rmroh,rnrun,roron,rurus,rwkin,sasan,sdsnd,sgsag,shsrp,sisin,skslk,slslv,smsmo,snsna,sosom,sqsqi,srsrp,ssssw,stsot,susun,svswe,swswa,tatam,tetel,tgtgk,ththa,titir,tktuk,tltgl,tntsn,toton,trtur,tstso,tttat,twtwi,uguig,ukukr,ururd,uzuzb,vivie,vovol,wowol,xhxho,yiyid,yoyor,zazha,zhzho,zuzul",
-"isoCountries",null,
-"compressedIsoCountries",",ADAND,AEARE,AFAFG,AGATG,AIAIA,ALALB,AMARM,ANANT,AOAGO,AQATA,ARARG,ASASM,ATAUT,AUAUS,AWABW,AZAZE,BABIH,BBBRB,BDBGD,BEBEL,BFBFA,BGBGR,BHBHR,BIBDI,BJBEN,BMBMU,BNBRN,BOBOL,BRBRA,BSBHS,BTBTN,BVBVT,BWBWA,BYBLR,BZBLZ,CACAN,CCCCK,CFCAF,CGCOG,CHCHE,CICIV,CKCOK,CLCHL,CMCMR,CNCHN,COCOL,CRCRI,CUCUB,CVCPV,CXCXR,CYCYP,CZCZE,DEDEU,DJDJI,DKDNK,DMDMA,DODOM,DZDZA,ECECU,EEEST,EGEGY,EHESH,ERERI,ESESP,ETETH,FIFIN,FJFJI,FKFLK,FMFSM,FOFRO,FRFRA,FXFXX,GAGAB,GBGBR,GDGRD,GEGEO,GFGUF,GHGHA,GIGIB,GLGRL,GMGMB,GNGIN,GPGLP,GQGNQ,GRGRC,GSSGS,GTGTM,GUGUM,GWGNB,GYGUY,HKHKG,HMHMD,HNHND,HRHRV,HTHTI,HUHUN,IDIDN,IEIRL,ILISR,ININD,IOIOT,IQIRQ,IRIRN,ISISL,ITITA,JMJAM,JOJOR,JPJPN,KEKEN,KGKGZ,KHKHM,KIKIR,KMCOM,KNKNA,KPPRK,KRKOR,KWKWT,KYCYM,KZKAZ,LALAO,LBLBN,LCLCA,LILIE,LKLKA,LRLBR,LSLSO,LTLTU,LULUX,LVLVA,LYLBY,MAMAR,MCMCO,MDMDA,MGMDG,MHMHL,MKMKD,MLMLI,MMMMR,MNMNG,MOMAC,MPMNP,MQMTQ,MRMRT,MSMSR,MTMLT,MUMUS,MVMDV,MWMWI,MXMEX,MYMYS,MZMOZ,NANAM,NCNCL,NENER,NFNFK,NGNGA,NINIC,NLNLD,NONOR,NPNPL,NRNRU,NUNIU,NZNZL,OMOMN,PAPAN,PEPER,PFPYF,PGPNG,PHPHL,PKPAK,PLPOL,PMSPM,PNPCN,PRPRI,PTPRT,PWPLW,PYPRY,QAQAT,REREU,ROROM,RURUS,RWRWA,SASAU,SBSLB,SCSYC,SDSDN,SESWE,SGSGP,SHSHN,SISVN,SJSJM,SKSVK,SLSLE,SMSMR,SNSEN,SOSOM,SRSUR,STSTP,SVSLV,SYSYR,SZSWZ,TCTCA,TDTCD,TFATF,TGTGO,THTHA,TJTJK,TKTKL,TMTKM,TNTUN,TOTON,TPTMP,TRTUR,TTTTO,TVTUV,TWTWN,TZTZA,UAUKR,UGUGA,UMUMI,USUSA,UYURY,UZUZB,VAVAT,VCVCT,VEVEN,VGVGB,VIVIR,VNVNM,VUVUT,WFWLF,WSWSM,YEYEM,YTMYT,YUYUG,ZAZAF,ZMZMB,ZRZAR,ZWZWE");
 });
 // 
 //// java\util\AbstractSet.js 
@@ -9630,7 +9141,7 @@ this.notifyCallback (org.jmol.constant.EnumCallback.EVAL, [null, a]);
 return "";
 }try {
 {
-return "" + eval(a);
+return "" + eval(a);// strEval -- Java2Script is compressing this file for some reason
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error ("# error evaluating " + a + ":" + e.toString ());
@@ -9830,7 +9341,7 @@ c$.htRegistry = c$.prototype.htRegistry =  new java.util.Hashtable ();
 // 
 //// java\lang\Enum.js 
 // 
-$_L(null,"java.lang.Enum",["java.lang.CloneNotSupportedException","$.IllegalArgumentException","$.NullPointerException","java.security.AccessController","$.PrivilegedExceptionAction"],function(){
+$_L(null,"java.lang.Enum",["java.lang.CloneNotSupportedException","$.IllegalArgumentException","$.NullPointerException","java.security.AccessController","$.PrivilegedExceptionAction",null],function(){
 c$=$_C(function(){
 this.$name=null;
 this.$ordinal=0;
@@ -11980,14 +11491,15 @@ c$=$_C(function(){
 this.pattern=null;
 $_Z(this,arguments);
 },java.text,"MessageFormat");
-$_K(c$,
-function(pattern){
-this.pattern=pattern;
-},"~S");
-$_K(c$,
-function(pattern,locale){
-this.pattern=pattern;
-},"~S,java.util.Locale");
+
+//$_K(c$,
+//function(pattern){
+//this.pattern=pattern;
+//},"~S");
+//$_K(c$,
+//function(pattern,locale){
+//this.pattern=pattern;
+//},"~S,java.util.Locale");
 c$.format=$_M(c$,"format",
 function(pattern,args){
 return pattern.replace(/\{(\d+)\}/g,function($0,$1){
@@ -11996,10 +11508,10 @@ if(args==null)return null;
 return args[i];
 });
 },"~S,~A");
-$_M(c$,"format",
-function(obj){
-return java.text.MessageFormat.format(this.pattern,[obj]);
-},"~O");
+//$_M(c$,"format",
+//function(obj){
+//return java.text.MessageFormat.format(this.pattern,[obj]);
+//},"~O");
 // 
 //// org\jmol\script\Token.js 
 // 
@@ -19702,7 +19214,7 @@ this.apiPlatform.renderScreenImage (this, g, currentSize);
 Clazz.defineMethod (c$, "getJsObjectInfo", 
 function (jsObject, method, args) {
 return this.apiPlatform.getJsObjectInfo (jsObject, method, args);
-}, "~O,~S,~A");
+}, "~A,~S,~A");
 c$.getJmolValueAsString = Clazz.defineMethod (c$, "getJmolValueAsString", 
 function (jmolViewer, $var) {
 return (jmolViewer == null ? "" : "" + jmolViewer.getParameter ($var));
@@ -27796,7 +27308,7 @@ this.out.close ();
 // 
 //// java\io\BufferedOutputStream.js 
 // 
-$_L(["java.io.FilterOutputStream"],"java.io.BufferedOutputStream",["java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException","$.NullPointerException"],function(){
+$_L(["java.io.FilterOutputStream"],"java.io.BufferedOutputStream",["java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException","$.NullPointerException",null],function(){
 c$=$_C(function(){
 this.buf=null;
 this.count=0;
@@ -28192,7 +27704,7 @@ $_S(c$,
 // 
 //// java\io\BufferedWriter.js 
 // 
-$_L(["java.io.Writer"],"java.io.BufferedWriter",["java.io.IOException","java.lang.IllegalArgumentException","$.IndexOutOfBoundsException","$.StringIndexOutOfBoundsException"],function(){
+$_L(["java.io.Writer"],"java.io.BufferedWriter",["java.io.IOException","java.lang.IllegalArgumentException","$.IndexOutOfBoundsException","$.StringIndexOutOfBoundsException",null],function(){
 c$=$_C(function(){
 this.out=null;
 this.buf=null;
@@ -28320,7 +27832,7 @@ this.pos+=available;
 // 
 //// java\io\StringReader.js 
 // 
-$_L(["java.io.Reader"],"java.io.StringReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException"],function(){
+$_L(["java.io.Reader"],"java.io.StringReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException",null],function(){
 c$=$_C(function(){
 this.str=null;
 this.markpos=-1;
@@ -28754,6 +28266,8 @@ c$.SHELL_F_SPHERICAL = c$.prototype.SHELL_F_SPHERICAL = org.jmol.constant.EnumQu
 c$.SHELL_F_CARTESIAN = c$.prototype.SHELL_F_CARTESIAN = org.jmol.constant.EnumQuantumShell.F_CARTESIAN.id;
 c$.SUPPORTED_BASIS_FUNCTIONS = c$.prototype.SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
 c$.NOTE_SCRIPT_FILE = c$.prototype.NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
+Clazz.defineStatics (c$,
+"cellParamNames", ["_cell_length_a", "_cell_length_b", "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"]);
 });
 // 
 //// org\jmol\adapter\smarter\SmarterJmolAdapter.js 
@@ -28829,7 +28343,7 @@ if (atomSetCollection.errorMessage != null) return atomSetCollection.errorMessag
 return atomSetCollection;
 } catch (e) {
 try {
-System.out.println (e.getMessage ());
+System.out.println (e.toString ());
 } catch (ee) {
 if (Clazz.exceptionOf (ee, Exception)) {
 org.jmol.util.Logger.error (e.toString ());
@@ -32292,10 +31806,10 @@ function (node) {
 this.initialize ();
 this.atomSetCollection =  new org.jmol.adapter.smarter.AtomSetCollection (this.readerName, this, null, null);
 this.initializeReader ();
-this.processXml (node);
+this.processDOM (node);
 return this.finish ();
 }, "~O");
-Clazz.defineMethod (c$, "processXml", 
+Clazz.defineMethod (c$, "processDOM", 
 function (DOMNode) {
 }, "~O");
 Clazz.defineMethod (c$, "processBinaryDocument", 
@@ -42964,6 +42478,9 @@ isTranslucent = (this.theTok == 1073742180);
 if (isTranslucent || this.theTok == 1073742074) {
 translucency = this.parameterAsString (index);
 if (isTranslucent && this.isFloatParameter (index + 1)) translucentLevel = this.getTranslucentLevel (++index);
+} else if (this.isColorParam (index)) {
+argb = this.getArgbParamOrNone (index, false);
+colorvalue1 = (argb == 0 ? null : Integer.$valueOf (argb));
 }}} else if (shapeType == 25) {
 this.iToken--;
 } else {
@@ -43084,21 +42601,13 @@ case 1095761934:
 this.viewer.calcSelectedMoleculesCount ();
 break;
 }
-if (isIsosurface && colorvalue1 != null) this.setShapeProperty (shapeType, "colorPhase", [colorvalue1, colorvalue]);
+if (colorvalue1 != null && (isIsosurface || shapeType == 11 || shapeType == 14)) this.setShapeProperty (shapeType, "colorPhase", [colorvalue1, colorvalue]);
  else if (bs == null) this.setShapeProperty (shapeType, prefix + "color", colorvalue);
  else this.setShapePropertyBs (shapeType, prefix + "color", colorvalue, bs);
 }if (translucency != null) this.setShapeTranslucency (shapeType, prefix, translucency, translucentLevel, bs);
 if (typeMask != 0) this.setShapeProperty (1, "type", Integer.$valueOf (1023));
 if (doClearBondSet) this.viewer.selectBonds (null);
 }, $fz.isPrivate = true, $fz), "~N,~N,~B");
-Clazz.defineMethod (c$, "colorShapeBs", 
-($fz = function (shapeType, typeMask, argb, translucency, translucentLevel, bs) {
-if (typeMask != 0) {
-this.setShapeProperty (shapeType = 1, "type", Integer.$valueOf (typeMask));
-}this.setShapePropertyBs (shapeType, "color", Integer.$valueOf (argb), bs);
-if (translucency != null) this.setShapeTranslucency (shapeType, "", translucency, translucentLevel, bs);
-if (typeMask != 0) this.setShapeProperty (1, "type", Integer.$valueOf (1023));
-}, $fz.isPrivate = true, $fz), "~N,~N,~N,~S,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setShapeTranslucency", 
 ($fz = function (shapeType, prefix, translucency, translucentLevel, bs) {
 if (translucentLevel == 3.4028235E38) translucentLevel = this.viewer.getDefaultTranslucent ();
@@ -45826,8 +45335,12 @@ bs2 = (this.iToken + 1 < this.statementLength ? this.atomExpressionAt (++this.iT
 this.checkLength (++this.iToken);
 if (!this.isSyntaxCheck) {
 n = this.viewer.calculateStruts (bs, bs2);
-if (n > 0) this.colorShapeBs (4, 32768, 0x0FFFFFF, "translucent", 0.5, null);
-this.showString (org.jmol.i18n.GT._ ("{0} struts added", n));
+if (n > 0) {
+this.setShapeProperty (1, "type", Integer.$valueOf (32768));
+this.setShapePropertyBs (1, "color", Integer.$valueOf (0x0FFFFFF), null);
+this.setShapeTranslucency (1, "", "translucent", 0.5, null);
+this.setShapeProperty (1, "type", Integer.$valueOf (1023));
+}this.showString (org.jmol.i18n.GT._ ("{0} struts added", n));
 }return;
 case 3145756:
 isSurface = true;
@@ -66476,6 +65989,7 @@ this.polygonIndexes = null;
 this.isTriangleSet = false;
 this.haveQuads = false;
 this.colix = 0;
+this.colixBack = 0;
 this.isColorSolid = true;
 this.offset = null;
 this.altVertices = null;
@@ -66550,6 +66064,10 @@ return this.polygonIndexes;
 Clazz.defineMethod (c$, "setColix", 
 function (colix) {
 this.colix = colix;
+}, "~N");
+Clazz.defineMethod (c$, "setColixBack", 
+function (colix) {
+this.colixBack = colix;
 }, "~N");
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertex) {
@@ -67443,7 +66961,7 @@ return (current.x == this.x && current.y == this.y && current.time == this.time)
 //// org\jmol\viewer\ActionManager.js 
 // 
 Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["org.jmol.util.Rectangle", "org.jmol.viewer.MouseState"], "org.jmol.viewer.ActionManager", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.MeasurementPending", "org.jmol.script.ScriptEvaluator", "org.jmol.thread.HoverWatcherThread", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Point3f", "$.Point3fi", "$.TextFormat", "org.jmol.viewer.binding.Binding", "$.DragBinding", "$.JmolBinding", "$.PfaatBinding", "$.RasmolBinding"], function () {
+Clazz.load (["org.jmol.util.Rectangle", "org.jmol.viewer.MouseState"], "org.jmol.viewer.ActionManager", ["java.lang.Character", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.i18n.GT", "org.jmol.modelset.MeasurementPending", "org.jmol.script.ScriptEvaluator", "org.jmol.thread.HoverWatcherThread", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Point3f", "$.Point3fi", "$.TextFormat", "org.jmol.viewer.binding.Binding", "$.JmolBinding"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.binding = null;
@@ -68402,14 +67920,14 @@ this.pickingStyleSelect = pickingStyle;
 }this.rubberbandSelectionMode = false;
 switch (this.pickingStyleSelect) {
 case 2:
-if (this.binding.getName () !== "extendedSelect") this.setBinding (this.pfaatBinding = (this.pfaatBinding == null ?  new org.jmol.viewer.binding.PfaatBinding () : this.pfaatBinding));
+if (this.binding.getName () !== "extendedSelect") this.setBinding (this.pfaatBinding = (this.pfaatBinding == null ? org.jmol.viewer.binding.Binding.newBinding ("Pfaat") : this.pfaatBinding));
 break;
 case 3:
-if (this.binding.getName () !== "drag") this.setBinding (this.dragBinding = (this.dragBinding == null ?  new org.jmol.viewer.binding.DragBinding () : this.dragBinding));
+if (this.binding.getName () !== "drag") this.setBinding (this.dragBinding = (this.dragBinding == null ? org.jmol.viewer.binding.Binding.newBinding ("drag") : this.dragBinding));
 this.rubberbandSelectionMode = true;
 break;
 case 1:
-if (this.binding.getName () !== "selectOrToggle") this.setBinding (this.rasmolBinding = (this.rasmolBinding == null ?  new org.jmol.viewer.binding.RasmolBinding () : this.rasmolBinding));
+if (this.binding.getName () !== "selectOrToggle") this.setBinding (this.rasmolBinding = (this.rasmolBinding == null ? org.jmol.viewer.binding.Binding.newBinding ("Rasmol") : this.rasmolBinding));
 break;
 default:
 if (this.binding !== this.jmolBinding) this.setBinding (this.jmolBinding);
@@ -70612,7 +70130,7 @@ break;
 //// org\jmol\viewer\binding\Binding.js 
 // 
 Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "org.jmol.util.Escape", "$.Logger", "$.StringXBuilder"], function () {
+Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.binding.Binding", ["java.lang.Boolean", "java.util.ArrayList", "$.Arrays", "org.jmol.api.Interface", "org.jmol.util.Escape", "$.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.name = null;
 this.bindings = null;
@@ -70801,6 +70319,10 @@ sb.append ("+down");
 code[0] = '4';
 }return (addSortCode ?  String.instantialize (code) + ":" + sb.toString () : sb.toString ());
 }, "~N,~B");
+c$.newBinding = Clazz.defineMethod (c$, "newBinding", 
+function (name) {
+return org.jmol.api.Interface.getOptionInterface ("viewer.binding." + name + "Binding");
+}, "~S");
 Clazz.defineStatics (c$,
 "WHEEL", 32,
 "LEFT", 16,
@@ -70925,144 +70447,6 @@ this.bind (272, 41);
 this.bind (272, 42);
 this.bind (272, 43);
 });
-});
-// 
-//// org\jmol\viewer\binding\PfaatBinding.js 
-// 
-Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["org.jmol.viewer.binding.JmolBinding"], "org.jmol.viewer.binding.PfaatBinding", null, function () {
-c$ = Clazz.declareType (org.jmol.viewer.binding, "PfaatBinding", org.jmol.viewer.binding.JmolBinding);
-Clazz.makeConstructor (c$, 
-function () {
-Clazz.superConstructor (this, org.jmol.viewer.binding.PfaatBinding, ["extendedSelect"]);
-this.setSelectBindings ();
-});
-Clazz.defineMethod (c$, "setSelectBindings", 
-($fz = function () {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
-this.bind (272, 16);
-this.bind (272, 17);
-this.bind (273, 18);
-this.bind (281, 19);
-this.bind (280, 20);
-}, $fz.isPrivate = true, $fz));
-});
-// 
-//// org\jmol\viewer\binding\RasmolBinding.js 
-// 
-Clazz.declarePackage ("org.jmol.viewer.binding");
-Clazz.load (["org.jmol.viewer.binding.JmolBinding"], "org.jmol.viewer.binding.RasmolBinding", null, function () {
-c$ = Clazz.declareType (org.jmol.viewer.binding, "RasmolBinding", org.jmol.viewer.binding.JmolBinding);
-Clazz.makeConstructor (c$, 
-function () {
-Clazz.superConstructor (this, org.jmol.viewer.binding.RasmolBinding, ["selectOrToggle"]);
-this.setSelectBindings ();
-});
-Clazz.defineMethod (c$, "setSelectBindings", 
-($fz = function () {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
-this.bind (272, 16);
-this.bind (273, 18);
-}, $fz.isPrivate = true, $fz));
-});
-// 
-//// org\jmol\thread\ScriptParallelProcessor.js 
-// 
-Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (["org.jmol.script.ScriptFunction", "java.util.ArrayList"], "org.jmol.thread.ScriptParallelProcessor", ["java.util.concurrent.Executors", "org.jmol.script.ScriptProcess", "org.jmol.thread.ScriptProcessRunnable", "org.jmol.util.Logger", "org.jmol.viewer.ShapeManager", "$.Viewer"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.viewer = null;
-this.counter = 0;
-this.error = null;
-this.lock = null;
-this.processes = null;
-Clazz.instantialize (this, arguments);
-}, org.jmol.thread, "ScriptParallelProcessor", org.jmol.script.ScriptFunction);
-Clazz.prepareFields (c$, function () {
-this.lock =  new JavaObject ();
-this.processes =  new java.util.ArrayList ();
-});
-c$.getExecutor = Clazz.defineMethod (c$, "getExecutor", 
-function () {
-return java.util.concurrent.Executors.newCachedThreadPool ();
-});
-Clazz.defineMethod (c$, "runAllProcesses", 
-function (viewer, inParallel) {
-if (this.processes.size () == 0) return;
-this.viewer = viewer;
-inParallel = new Boolean (inParallel & (!viewer.isParallel () && viewer.setParallel (true))).valueOf ();
-var vShapeManagers =  new java.util.ArrayList ();
-this.error = null;
-this.counter = 0;
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("running " + this.processes.size () + " processes on " + org.jmol.viewer.Viewer.nProcessors + " processesors inParallel=" + inParallel);
-this.counter = this.processes.size ();
-for (var i = this.processes.size (); --i >= 0; ) {
-var shapeManager = null;
-if (inParallel) {
-shapeManager =  new org.jmol.viewer.ShapeManager (viewer, viewer.getModelSet ());
-vShapeManagers.add (shapeManager);
-}this.runProcess (this.processes.remove (0), shapeManager);
-}
-{
-while (this.counter > 0) {
-try {
-this.lock.wait ();
-} catch (e) {
-if (Clazz.exceptionOf (e, InterruptedException)) {
-} else {
-throw e;
-}
-}
-if (this.error != null) throw this.error;
-}
-}this.mergeResults (vShapeManagers);
-viewer.setParallel (false);
-}, "org.jmol.viewer.Viewer,~B");
-Clazz.defineMethod (c$, "mergeResults", 
-function (vShapeManagers) {
-try {
-for (var i = 0; i < vShapeManagers.size (); i++) this.viewer.mergeShapes (vShapeManagers.get (i).getShapes ());
-
-} catch (e) {
-if (Clazz.exceptionOf (e, Error)) {
-throw e;
-} else {
-throw e;
-}
-} finally {
-this.counter = -1;
-vShapeManagers = null;
-}
-}, "java.util.List");
-Clazz.defineMethod (c$, "clearShapeManager", 
-function (er) {
-{
-this.error = er;
-this.notifyAll ();
-}}, "Error");
-Clazz.defineMethod (c$, "addProcess", 
-function (name, context) {
-this.processes.add ( new org.jmol.script.ScriptProcess (name, context));
-}, "~S,org.jmol.script.ScriptContext");
-Clazz.defineMethod (c$, "runProcess", 
-($fz = function (process, shapeManager) {
-var r =  new org.jmol.thread.ScriptProcessRunnable (this, process, this.lock, shapeManager);
-var exec = (shapeManager == null ? null : this.viewer.getExecutor ());
-if (exec != null) {
-exec.execute (r);
-} else {
-r.run ();
-}}, $fz.isPrivate = true, $fz), "org.jmol.script.ScriptProcess,org.jmol.viewer.ShapeManager");
-Clazz.defineMethod (c$, "eval", 
-function (context, shapeManager) {
-this.viewer.evalContext (context, shapeManager);
-}, "org.jmol.script.ScriptContext,org.jmol.viewer.ShapeManager");
 });
 // 
 //// org\jmol\thread\TimeoutThread.js 
@@ -71847,67 +71231,6 @@ var ce =  new org.jmol.util.ColorEncoder (this.propertyColorEncoder);
 ce.currentPalette = ce.createColorScheme (colorScheme, false, true);
 return (ce.currentPalette == 2147483647 ? null : ce);
 }, "~S");
-});
-// 
-//// org\jmol\script\ScriptProcess.js 
-// 
-Clazz.declarePackage ("org.jmol.script");
-c$ = Clazz.decorateAsClass (function () {
-this.processName = null;
-this.context = null;
-Clazz.instantialize (this, arguments);
-}, org.jmol.script, "ScriptProcess");
-Clazz.makeConstructor (c$, 
-function (name, context) {
-this.processName = name;
-this.context = context;
-}, "~S,org.jmol.script.ScriptContext");
-// 
-//// org\jmol\thread\ScriptProcessRunnable.js 
-// 
-Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (null, "org.jmol.thread.ScriptProcessRunnable", ["org.jmol.util.Logger"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.parallelProcessor = null;
-this.process = null;
-this.processLock = null;
-this.shapeManager = null;
-Clazz.instantialize (this, arguments);
-}, org.jmol.thread, "ScriptProcessRunnable", null, Runnable);
-Clazz.makeConstructor (c$, 
-function (parallelProcessor, process, lock, shapeManager) {
-this.parallelProcessor = parallelProcessor;
-this.process = process;
-this.processLock = lock;
-this.shapeManager = shapeManager;
-}, "org.jmol.thread.ScriptParallelProcessor,org.jmol.script.ScriptProcess,~O,org.jmol.viewer.ShapeManager");
-Clazz.overrideMethod (c$, "run", 
-function () {
-try {
-if (this.parallelProcessor.error == null) {
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Running process " + this.process.processName + " " + this.process.context.pc + " - " + (this.process.context.pcEnd - 1));
-this.parallelProcessor.eval (this.process.context, this.shapeManager);
-if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.debug ("Process " + this.process.processName + " complete");
-}} catch (e$$) {
-if (Clazz.exceptionOf (e$$, Exception)) {
-var e = e$$;
-{
-if (this.parallelProcessor.tok != 364558) e.printStackTrace ();
-}
-} else if (Clazz.exceptionOf (e$$, Error)) {
-var er = e$$;
-{
-this.parallelProcessor.clearShapeManager (er);
-}
-} else {
-throw e$$;
-}
-} finally {
-{
---this.parallelProcessor.counter;
-this.processLock.notifyAll ();
-}}
-});
 });
 // 
 //// org\jmol\viewer\ShapeManager.js 
@@ -77310,9 +76633,11 @@ break;
 this.doEndMove = true;
 this.targetTime += this.frameTimeMillis;
 this.currentTime = System.currentTimeMillis ();
-if (this.currentTime >= this.targetTime) {
+var doRender = (this.currentTime < this.targetTime);
+if (!doRender && this.isJS) {
 this.targetTime = this.currentTime;
-}this.viewer.requestRepaintAndWait ();
+doRender = true;
+}if (doRender) this.viewer.requestRepaintAndWait ();
 if (this.transformManager.motion == null || !this.isJS && this.eval != null && !this.viewer.isScriptExecuting ()) {
 this.stopped = true;
 break;
@@ -77584,8 +76909,10 @@ return true;
 });
 Clazz.overrideMethod (c$, "getJsObjectInfo", 
 function (jsObject, method, args) {
-return null;
-}, "~O,~S,~A");
+{
+if (method == "localName")return jsObject[0]["nodeName"];
+return (args == null ? jsObject[0][method] : jsObject[0][method](args[0]));
+}}, "~A,~S,~A");
 Clazz.overrideMethod (c$, "isHeadless", 
 function () {
 return false;
@@ -78697,8 +78024,7 @@ return this.platform.hasContent ();
 });
 Clazz.overrideMethod (c$, "setColor", 
 function (argb) {
-this.argbCurrent = argb;
-this.argbNoisyUp = this.argbNoisyDn = argb;
+this.argbCurrent = this.argbNoisyUp = this.argbNoisyDn = argb;
 }, "~N");
 Clazz.overrideMethod (c$, "setColix", 
 function (colix) {
@@ -79009,9 +78335,16 @@ function (tension, s0, s1, s2, s3) {
 this.hermite3d.renderHermiteRope (false, tension, 0, 0, 0, s0, s1, s2, s3);
 }, "~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
 Clazz.overrideMethod (c$, "drawHermite7", 
-function (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio) {
-this.hermite3d.renderHermiteRibbon (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio);
-}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N");
+function (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, colixBack) {
+if (colixBack == 0) {
+this.hermite3d.renderHermiteRibbon (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, 0);
+return;
+}this.hermite3d.renderHermiteRibbon (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, 1);
+var colix = this.colixCurrent;
+this.setColix (colixBack);
+this.hermite3d.renderHermiteRibbon (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, -1);
+this.setColix (colix);
+}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N,~N");
 Clazz.overrideMethod (c$, "fillHermite", 
 function (tension, diameterBeg, diameterMid, diameterEnd, s0, s1, s2, s3) {
 this.hermite3d.renderHermiteRope (true, tension, diameterBeg, diameterMid, diameterEnd, s0, s1, s2, s3);
@@ -79034,10 +78367,12 @@ this.setColorNoisy (this.getShadeIndex (normix));
 this.triangle3d.fillTriangleXYZ (xScreenA, yScreenA, zScreenA, xScreenB, yScreenB, zScreenB, xScreenC, yScreenC, zScreenC, false);
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "fillTriangle3f", 
-function (screenA, screenB, screenC) {
-this.setColorNoisy (this.getShadeIndexP3 (screenA, screenB, screenC));
+function (screenA, screenB, screenC, setNoisy) {
+var i = this.getShadeIndexP3 (screenA, screenB, screenC);
+if (setNoisy) this.setColorNoisy (i);
+ else this.setColor (this.shadesCurrent[i]);
 this.triangle3d.fillTriangleP3f (screenA, screenB, screenC, false);
-}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,~B");
 Clazz.overrideMethod (c$, "fillTriangle3i", 
 function (screenA, screenB, screenC, ptA, ptB, ptC) {
 this.triangle3d.fillTriangleP3i (screenA, screenB, screenC, false);
@@ -80220,7 +79555,7 @@ this.sLeft[sp] = s;
 } while (sp >= 0);
 }, "~B,~N,~N,~N,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
 Clazz.defineMethod (c$, "renderHermiteRibbon", 
-function (fill, border, tension, p0, p1, p2, p3, p4, p5, p6, p7, aspectRatio) {
+function (fill, border, tension, p0, p1, p2, p3, p4, p5, p6, p7, aspectRatio, fillType) {
 if (p0.z == 1 || p1.z == 1 || p2.z == 1 || p3.z == 1 || p4.z == 1 || p5.z == 1 || p6.z == 1 || p7.z == 1) return;
 if (!fill) {
 this.renderParallelPair (fill, tension, p0, p1, p2, p3, p4, p5, p6, p7);
@@ -80296,8 +79631,12 @@ this.g3d.fillQuadrilateral (this.a1, this.b1, this.b2, this.a2);
 this.g3d.fillQuadrilateral (this.c1, this.d1, this.d2, this.c2);
 closeEnd = true;
 } else {
+if (fillType == 0) {
 this.g3d.fillQuadrilateral (a, b, d, c);
-}this.needToFill[sp] = false;
+} else {
+if (fillType == org.jmol.g3d.HermiteRenderer.isFront (a, b, d)) this.g3d.fillTriangle3f (a, b, d, false);
+if (fillType == org.jmol.g3d.HermiteRenderer.isFront (a, d, c)) this.g3d.fillTriangle3f (a, d, c, false);
+}}this.needToFill[sp] = false;
 }if (dxTop2 + dyTop2 < 2 && dxBot2 + dyBot2 < 2) {
 --sp;
 continue;
@@ -80336,7 +79675,14 @@ this.c1.z += 1;
 this.c2.z += 1;
 this.a2.z += 1;
 this.g3d.fillQuadrilateral (this.a1, this.c1, this.c2, this.a2);
-}}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N");
+}}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N,~N");
+c$.isFront = Clazz.defineMethod (c$, "isFront", 
+($fz = function (a, b, c) {
+org.jmol.g3d.HermiteRenderer.vAB.sub2 (b, a);
+org.jmol.g3d.HermiteRenderer.vAC.sub2 (c, a);
+org.jmol.g3d.HermiteRenderer.vAB.cross (org.jmol.g3d.HermiteRenderer.vAB, org.jmol.g3d.HermiteRenderer.vAC);
+return (org.jmol.g3d.HermiteRenderer.vAB.z < 0 ? -1 : 1);
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "renderParallelPair", 
 ($fz = function (fill, tension, p0, p1, p2, p3, p4, p5, p6, p7) {
 var endPoints = [p2, p1, p6, p5];
@@ -80442,6 +79788,8 @@ a1.setT (a);
 if (direction == 1) a1.add (depth);
  else a1.sub (depth);
 }, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,~N");
+c$.vAB = c$.prototype.vAB =  new org.jmol.util.Vector3f ();
+c$.vAC = c$.prototype.vAC =  new org.jmol.util.Vector3f ();
 });
 // 
 //// org\jmol\g3d\ImageRenderer.js 
@@ -83647,8 +82995,10 @@ if (!this.isExport && !this.isPass2) {
 var doA = !org.jmol.util.Colix.isColixTranslucent (this.colixA);
 var doB = !org.jmol.util.Colix.isColixTranslucent (this.colixB);
 if (!doA || !doB) {
-if (!doA && !doB) return true;
-needTranslucent = true;
+if (!doA && !doB && !needTranslucent) {
+this.g3d.setColix (!doA ? this.colixA : this.colixB);
+return true;
+}needTranslucent = true;
 }}this.bondOrder = order & -131073;
 if ((this.bondOrder & 224) == 0) {
 if ((this.bondOrder & 256) != 0) this.bondOrder &= -257;
@@ -85235,6 +84585,135 @@ return;
 }, "~S,~O,org.jmol.util.BitSet");
 });
 // 
+//// org\jmol\shape\Axes.js 
+// 
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.FontLineShape", "org.jmol.util.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "$.StringXBuilder", "org.jmol.viewer.JmolConstants"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.axisXY = null;
+this.scale = 0;
+this.fixedOrigin = null;
+this.originPoint = null;
+this.axisPoints = null;
+this.labels = null;
+this.ptTemp = null;
+this.corner = null;
+Clazz.instantialize (this, arguments);
+}, org.jmol.shape, "Axes", org.jmol.shape.FontLineShape);
+Clazz.prepareFields (c$, function () {
+this.axisXY =  new org.jmol.util.Point3f ();
+this.originPoint =  new org.jmol.util.Point3f ();
+this.axisPoints =  new Array (6);
+{
+for (var i = 6; --i >= 0; ) this.axisPoints[i] =  new org.jmol.util.Point3f ();
+
+}this.ptTemp =  new org.jmol.util.Point3f ();
+this.corner =  new org.jmol.util.Vector3f ();
+});
+Clazz.defineMethod (c$, "getOriginPoint", 
+function (isDataFrame) {
+return (isDataFrame ? org.jmol.shape.Axes.pt0 : this.originPoint);
+}, "~B");
+Clazz.defineMethod (c$, "getAxisPoint", 
+function (i, isDataFrame) {
+if (!isDataFrame && this.axisXY.z == 0) return this.axisPoints[i];
+this.ptTemp.setT (this.axisPoints[i]);
+this.ptTemp.sub (this.originPoint);
+this.ptTemp.scale (0.5);
+return this.ptTemp;
+}, "~N,~B");
+Clazz.defineMethod (c$, "setProperty", 
+function (propertyName, value, bs) {
+if ("position" === propertyName) {
+this.axisXY = value;
+return;
+}if ("origin" === propertyName) {
+if (value == null) {
+this.fixedOrigin = null;
+} else {
+if (this.fixedOrigin == null) this.fixedOrigin =  new org.jmol.util.Point3f ();
+this.fixedOrigin.setT (value);
+}this.initShape ();
+return;
+}if ("labels" === propertyName) {
+this.labels = value;
+return;
+}if ("labelsOn" === propertyName) {
+this.labels = null;
+return;
+}if ("labelsOff" === propertyName) {
+this.labels = ["", "", ""];
+return;
+}Clazz.superCall (this, org.jmol.shape.Axes, "setProperty", [propertyName, value, bs]);
+}, "~S,~O,org.jmol.util.BitSet");
+Clazz.defineMethod (c$, "initShape", 
+function () {
+Clazz.superCall (this, org.jmol.shape.Axes, "initShape", []);
+this.myType = "axes";
+this.font3d = this.gdata.getFont3D (14);
+var axesMode = this.viewer.getAxesMode ();
+if (this.fixedOrigin == null) this.originPoint.set (0, 0, 0);
+ else this.originPoint.setT (this.fixedOrigin);
+if (axesMode === org.jmol.constant.EnumAxesMode.UNITCELL && this.modelSet.getCellInfos () != null) {
+var unitcell = this.viewer.getCurrentUnitCell ();
+if (unitcell != null) {
+var vectors = unitcell.getUnitCellVertices ();
+var offset = unitcell.getCartesianOffset ();
+if (this.fixedOrigin == null) {
+this.originPoint.setT (offset);
+} else {
+offset = this.fixedOrigin;
+}this.scale = this.viewer.getAxesScale () / 2;
+this.axisPoints[0].scaleAdd2 (this.scale, vectors[4], offset);
+this.axisPoints[1].scaleAdd2 (this.scale, vectors[2], offset);
+this.axisPoints[2].scaleAdd2 (this.scale, vectors[1], offset);
+return;
+}} else if (axesMode === org.jmol.constant.EnumAxesMode.BOUNDBOX) {
+if (this.fixedOrigin == null) this.originPoint.setT (this.viewer.getBoundBoxCenter ());
+}this.setScale (this.viewer.getAxesScale () / 2);
+});
+Clazz.overrideMethod (c$, "getProperty", 
+function (property, index) {
+if (property === "axisPoints") return this.axisPoints;
+if (property === "origin") return this.fixedOrigin;
+if (property === "axesTypeXY") return (this.axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
+return null;
+}, "~S,~N");
+Clazz.defineMethod (c$, "setScale", 
+function (scale) {
+this.scale = scale;
+this.corner.setT (this.viewer.getBoundBoxCornerVector ());
+for (var i = 6; --i >= 0; ) {
+var axisPoint = this.axisPoints[i];
+axisPoint.setT (org.jmol.viewer.JmolConstants.unitAxisVectors[i]);
+if (this.corner.x < 1.5) this.corner.x = 1.5;
+if (this.corner.y < 1.5) this.corner.y = 1.5;
+if (this.corner.z < 1.5) this.corner.z = 1.5;
+if (this.axisXY.z == 0) {
+axisPoint.x *= this.corner.x * scale;
+axisPoint.y *= this.corner.y * scale;
+axisPoint.z *= this.corner.z * scale;
+}axisPoint.add (this.originPoint);
+}
+}, "~N");
+Clazz.defineMethod (c$, "getShapeState", 
+function () {
+var sb =  new org.jmol.util.StringXBuilder ();
+sb.append ("  axes scale ").appendF (this.viewer.getAxesScale ()).append (";\n");
+if (this.fixedOrigin != null) sb.append ("  axes center ").append (org.jmol.util.Escape.escapePt (this.fixedOrigin)).append (";\n");
+if (this.axisXY.z != 0) sb.append ("  axes position [").appendI (Clazz.floatToInt (this.axisXY.x)).append (" ").appendI (Clazz.floatToInt (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
+if (this.labels != null) {
+sb.append ("  axes labels ");
+for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.escapeStr (this.labels[i])).append (" ");
+
+sb.append (";\n");
+}return Clazz.superCall (this, org.jmol.shape.Axes, "getShapeState", []) + sb;
+});
+c$.pt0 = c$.prototype.pt0 =  new org.jmol.util.Point3f ();
+Clazz.defineStatics (c$,
+"MIN_AXIS_LEN", 1.5);
+});
+// 
 //// org\jmol\shape\Echo.js 
 // 
 Clazz.declarePackage ("org.jmol.shape");
@@ -85673,117 +85152,6 @@ xy[1] += this.lineHeight;
 }, "~A,~N");
 });
 // 
-//// org\jmol\render\EchoRenderer.js 
-// 
-Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.render.ShapeRenderer", "org.jmol.util.Point3i"], "org.jmol.render.EchoRenderer", ["org.jmol.render.TextRenderer", "org.jmol.util.Colix"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.imageFontScaling = 0;
-this.ptAtom = null;
-this.pt = null;
-Clazz.instantialize (this, arguments);
-}, org.jmol.render, "EchoRenderer", org.jmol.render.ShapeRenderer);
-Clazz.prepareFields (c$, function () {
-this.pt =  new org.jmol.util.Point3i ();
-});
-Clazz.defineMethod (c$, "render", 
-function () {
-if (this.viewer.isPreviewOnly ()) return false;
-var echo = this.shape;
-var e = echo.objects.values ().iterator ();
-var scalePixelsPerMicron = (this.viewer.getFontScaling () ? this.viewer.getScalePixelsPerAngstrom (true) * 10000 : 0);
-this.imageFontScaling = this.viewer.getImageFontScaling ();
-var haveTranslucent = false;
-while (e.hasNext ()) {
-var t = e.next ();
-if (!t.visible || t.hidden) {
-continue;
-}if (t.valign == 4) {
-this.viewer.transformPtScr (t.xyz, this.pt);
-t.setXYZs (this.pt.x, this.pt.y, this.pt.z, this.pt.z);
-} else if (t.movableZPercent != 2147483647) {
-var z = this.viewer.zValueFromPercent (t.movableZPercent);
-t.setZs (z, z);
-}org.jmol.render.TextRenderer.render (t, this.g3d, scalePixelsPerMicron, this.imageFontScaling, false, null);
-if (org.jmol.util.Colix.isColixTranslucent (t.bgcolix) || org.jmol.util.Colix.isColixTranslucent (t.colix)) haveTranslucent = true;
-}
-if (!this.isExport) {
-var frameTitle = this.viewer.getFrameTitle ();
-if (frameTitle != null && frameTitle.length > 0) {
-if (this.g3d.setColix (this.viewer.getColixBackgroundContrast ())) {
-if (frameTitle.indexOf ("%{") >= 0 || frameTitle.indexOf ("@{") >= 0) frameTitle = this.viewer.formatText (frameTitle);
-this.renderFrameTitle (frameTitle);
-}}}return haveTranslucent;
-});
-Clazz.defineMethod (c$, "renderFrameTitle", 
-($fz = function (frameTitle) {
-var fid = this.g3d.getFontFidFS ("Serif", 14 * this.imageFontScaling);
-this.g3d.setFontFid (fid);
-var y = Clazz.doubleToInt (Math.floor (this.viewer.getScreenHeight () * (this.g3d.isAntialiased () ? 2 : 1) - 10 * this.imageFontScaling));
-var x = Clazz.doubleToInt (Math.floor (5 * this.imageFontScaling));
-this.g3d.drawStringNoSlab (frameTitle, null, x, y, 0, 0);
-}, $fz.isPrivate = true, $fz), "~S");
-});
-// 
-//// org\jmol\render\TextRenderer.js 
-// 
-Clazz.declarePackage ("org.jmol.render");
-Clazz.load (null, "org.jmol.render.TextRenderer", ["org.jmol.shape.Text"], function () {
-c$ = Clazz.declareType (org.jmol.render, "TextRenderer");
-c$.render = Clazz.defineMethod (c$, "render", 
-function (text, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY) {
-if (text == null || text.image == null && text.lines == null) return;
-text.setPosition (g3d.getRenderWidth (), g3d.getRenderHeight (), scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
-if (text.image == null && text.bgcolix != 0) {
-if (g3d.setColix (text.bgcolix)) org.jmol.render.TextRenderer.showBox (g3d, text.colix, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY), text.z + 2, text.zSlab, Clazz.floatToInt (text.boxWidth), Clazz.floatToInt (text.boxHeight), text.fontScale, text.isLabelOrHover);
-}if (g3d.setColix (text.colix)) {
-if (text.image == null) {
-var xy =  Clazz.newFloatArray (3, 0);
-for (var i = 0; i < text.lines.length; i++) {
-text.setXYA (xy, i);
-g3d.drawString (text.lines[i], text.font, Clazz.floatToInt (xy[0]), Clazz.floatToInt (xy[1]), text.z, text.zSlab, text.bgcolix);
-}
-} else {
-g3d.drawImage (text.image, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY), text.z, text.zSlab, text.bgcolix, Clazz.floatToInt (text.boxWidth), Clazz.floatToInt (text.boxHeight));
-}org.jmol.render.TextRenderer.drawPointer (text, g3d);
-}return;
-}, "org.jmol.shape.Text,org.jmol.api.JmolRendererInterface,~N,~N,~B,~A");
-c$.drawPointer = Clazz.defineMethod (c$, "drawPointer", 
-function (text, g3d) {
-if ((text.pointer & 1) != 0) {
-if (!g3d.setColix ((text.pointer & 2) != 0 && text.bgcolix != 0 ? text.bgcolix : text.colix)) return;
-if (text.boxX > text.movableX) g3d.drawLineXYZ (text.movableX, text.movableY, text.zSlab, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY + text.boxHeight / 2), text.zSlab);
- else if (text.boxX + text.boxWidth < text.movableX) g3d.drawLineXYZ (text.movableX, text.movableY, text.zSlab, Clazz.floatToInt (text.boxX + text.boxWidth), Clazz.floatToInt (text.boxY + text.boxHeight / 2), text.zSlab);
-}}, "org.jmol.shape.Text,org.jmol.api.JmolRendererInterface");
-c$.showBox = Clazz.defineMethod (c$, "showBox", 
-($fz = function (g3d, colix, x, y, z, zSlab, boxWidth, boxHeight, imageFontScaling, atomBased) {
-g3d.fillRect (x, y, z, zSlab, boxWidth, boxHeight);
-g3d.setColix (colix);
-if (!atomBased) return;
-if (imageFontScaling >= 2) {
-g3d.drawRect (x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
-} else {
-g3d.drawRect (x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
-}}, $fz.isPrivate = true, $fz), "org.jmol.api.JmolRendererInterface,~N,~N,~N,~N,~N,~N,~N,~N,~B");
-c$.renderSimpleLabel = Clazz.defineMethod (c$, "renderSimpleLabel", 
-function (g3d, font, strLabel, colix, bgcolix, boxXY, z, zSlab, xOffset, yOffset, ascent, descent, doPointer, pointerColix, isExact) {
-var boxWidth = font.stringWidth (strLabel) + 8;
-var boxHeight = ascent + descent + 8;
-var x0 = Clazz.floatToInt (boxXY[0]);
-var y0 = Clazz.floatToInt (boxXY[1]);
-org.jmol.shape.Text.setBoxXY (boxWidth, boxHeight, xOffset, yOffset, boxXY, isExact);
-var x = boxXY[0];
-var y = boxXY[1];
-if (bgcolix != 0 && g3d.setColix (bgcolix)) org.jmol.render.TextRenderer.showBox (g3d, colix, Clazz.floatToInt (x), Clazz.floatToInt (y), z, zSlab, Clazz.floatToInt (boxWidth), Clazz.floatToInt (boxHeight), 1, true);
- else g3d.setColix (colix);
-g3d.drawString (strLabel, font, Clazz.floatToInt (x + 4), Clazz.floatToInt (y + 4 + ascent), z - 1, zSlab, bgcolix);
-if (doPointer) {
-g3d.setColix (pointerColix);
-if (xOffset > 0) g3d.drawLineXYZ (x0, y0, zSlab, Clazz.floatToInt (x), Clazz.floatToInt (y + boxHeight / 2), zSlab);
- else if (xOffset < 0) g3d.drawLineXYZ (x0, y0, zSlab, Clazz.floatToInt (x + boxWidth), Clazz.floatToInt (y + boxHeight / 2), zSlab);
-}}, "org.jmol.api.JmolRendererInterface,org.jmol.util.JmolFont,~S,~N,~N,~A,~N,~N,~N,~N,~N,~N,~B,~N,~B");
-});
-// 
 //// org\jmol\shape\Halos.js 
 // 
 Clazz.declarePackage ("org.jmol.shape");
@@ -85829,82 +85197,6 @@ var state = Clazz.superCall (this, org.jmol.shape.Halos, "getShapeState", []) + 
 if (this.bsHighlight != null) state += "  set highlight " + org.jmol.util.Escape.escape (this.bsHighlight) + "; " + this.getColorCommandUnk ("highlight", this.colixHighlight) + ";\n";
 return state;
 });
-});
-// 
-//// org\jmol\render\HalosRenderer.js 
-// 
-Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.render.ShapeRenderer"], "org.jmol.render.HalosRenderer", ["org.jmol.util.Colix"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.isAntialiased = false;
-Clazz.instantialize (this, arguments);
-}, org.jmol.render, "HalosRenderer", org.jmol.render.ShapeRenderer);
-Clazz.defineMethod (c$, "render", 
-function () {
-var halos = this.shape;
-var selectDisplayTrue = this.viewer.getSelectionHaloEnabled (true);
-var showHiddenSelections = (selectDisplayTrue && this.viewer.getShowHiddenSelectionHalos ());
-if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue) return false;
-this.isAntialiased = this.g3d.isAntialiased ();
-var atoms = this.modelSet.atoms;
-var bsSelected = (selectDisplayTrue ? this.viewer.getSelectionSet (false) : null);
-var needTranslucent = false;
-for (var i = this.modelSet.getAtomCount (); --i >= 0; ) {
-var atom = atoms[i];
-if ((atom.getShapeVisibilityFlags () & 1) == 0) continue;
-var isHidden = this.modelSet.isAtomHidden (i);
-this.mad = (halos.mads == null ? 0 : halos.mads[i]);
-this.colix = (halos.colixes == null || i >= halos.colixes.length ? 0 : halos.colixes[i]);
-if (selectDisplayTrue && bsSelected.get (i)) {
-if (isHidden && !showHiddenSelections) continue;
-if (this.mad == 0) this.mad = -1;
-if (this.colix == 0) this.colix = halos.colixSelection;
-if (this.colix == 2) this.colix = 23;
- else if (this.colix == 0) this.colix = org.jmol.util.Colix.getColixInherited (this.colix, atom.getColix ());
-} else if (isHidden) {
-continue;
-} else {
-this.colix = org.jmol.util.Colix.getColixInherited (this.colix, atom.getColix ());
-}if (this.mad != 0) {
-if (this.render1 (atom)) needTranslucent = true;
-}if (!isHidden && halos.bsHighlight != null && halos.bsHighlight.get (i)) {
-this.mad = -2;
-this.colix = halos.colixHighlight;
-if (this.render1 (atom)) needTranslucent = true;
-}}
-return needTranslucent;
-});
-Clazz.defineMethod (c$, "render1", 
-function (atom) {
-var colixFill = (this.mad == -2 ? 0 : org.jmol.util.Colix.getColixTranslucent3 (this.colix, true, 0.5));
-var needTranslucent = (this.mad != -2);
-if (!this.g3d.setColix (this.colix)) {
-needTranslucent = true;
-this.colix = 0;
-if (colixFill == 0 || !this.g3d.setColix (colixFill)) return needTranslucent;
-}var z = atom.screenZ;
-var diameter = this.mad;
-if (diameter < 0) {
-diameter = atom.screenDiameter;
-if (diameter == 0) {
-var ellipsemax = atom.getADPMinMax (true);
-if (ellipsemax > 0) diameter = this.viewer.scaleToScreen (z, Clazz.doubleToInt (Math.floor (ellipsemax * 2000)));
-if (diameter == 0) {
-diameter = this.viewer.scaleToScreen (z, this.mad == -2 ? 250 : 500);
-}}} else {
-diameter = this.viewer.scaleToScreen (z, this.mad);
-}var d = diameter;
-if (this.isAntialiased) d /= 2;
-var more = (d / 2);
-if (this.mad == -2) more /= 2;
-if (more < 8) more = 8;
-if (more > 20) more = 20;
-d += more;
-if (this.isAntialiased) d *= 2;
-if (d < 1) return false;
-this.g3d.drawFilledCircle (this.colix, colixFill, Clazz.doubleToInt (Math.floor (d)), atom.screenX, atom.screenY, atom.screenZ);
-return needTranslucent;
-}, "org.jmol.modelset.Atom");
 });
 // 
 //// org\jmol\shape\Labels.js 
@@ -86360,6 +85652,1182 @@ Clazz.defineStatics (c$,
 "FLAG_OFFSET", 8);
 });
 // 
+//// org\jmol\shape\Hover.js 
+// 
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Hover", ["java.util.Hashtable", "org.jmol.shape.Text", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.hoverText = null;
+this.atomIndex = -1;
+this.xy = null;
+this.text = null;
+this.labelFormat = "%U";
+this.atomFormats = null;
+this.specialLabel = null;
+Clazz.instantialize (this, arguments);
+}, org.jmol.shape, "Hover", org.jmol.shape.TextShape);
+Clazz.defineMethod (c$, "initShape", 
+function () {
+Clazz.superCall (this, org.jmol.shape.Hover, "initShape", []);
+this.isHover = true;
+var font3d = this.gdata.getFont3DFSS ("SansSerif", "Plain", 12);
+var bgcolix = org.jmol.util.Colix.getColixS ("#FFFFC3");
+var colix = 4;
+this.currentObject = this.hoverText = org.jmol.shape.Text.newLabel (this.gdata, font3d, null, colix, bgcolix, 0, 0, 1, -2147483648, 1, 0);
+this.hoverText.setAdjustForWindow (true);
+});
+Clazz.defineMethod (c$, "setProperty", 
+function (propertyName, value, bsSelected) {
+if ("target" === propertyName) {
+if (value == null) this.atomIndex = -1;
+ else {
+this.atomIndex = (value).intValue ();
+}return;
+}if ("text" === propertyName) {
+this.text = value;
+if (this.text != null && this.text.length == 0) this.text = null;
+return;
+}if ("specialLabel" === propertyName) {
+this.specialLabel = value;
+return;
+}if ("atomLabel" === propertyName) {
+var text = value;
+if (text != null && text.length == 0) text = null;
+var count = this.viewer.getAtomCount ();
+if (this.atomFormats == null || this.atomFormats.length < count) this.atomFormats =  new Array (count);
+for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) this.atomFormats[i] = text;
+
+return;
+}if ("xy" === propertyName) {
+this.xy = value;
+return;
+}if ("label" === propertyName) {
+this.labelFormat = value;
+if (this.labelFormat != null && this.labelFormat.length == 0) this.labelFormat = null;
+return;
+}if (propertyName === "deleteModelAtoms") {
+if (this.atomFormats != null) {
+var firstAtomDeleted = ((value)[2])[1];
+var nAtomsDeleted = ((value)[2])[2];
+this.atomFormats = org.jmol.util.ArrayUtil.deleteElements (this.atomFormats, firstAtomDeleted, nAtomsDeleted);
+}this.atomIndex = -1;
+return;
+}Clazz.superCall (this, org.jmol.shape.Hover, "setProperty", [propertyName, value, null]);
+}, "~S,~O,org.jmol.util.BitSet");
+Clazz.overrideMethod (c$, "getShapeState", 
+function () {
+var temp =  new java.util.Hashtable ();
+if (this.atomFormats != null) for (var i = this.viewer.getAtomCount (); --i >= 0; ) if (this.atomFormats[i] != null) org.jmol.shape.Shape.setStateInfo (temp, i, "set hoverLabel " + org.jmol.util.Escape.escapeStr (this.atomFormats[i]));
+
+return "\n  hover " + org.jmol.util.Escape.escapeStr ((this.labelFormat == null ? "" : this.labelFormat)) + ";\n" + org.jmol.shape.Shape.getShapeCommands (temp, null);
+});
+Clazz.defineStatics (c$,
+"FONTFACE", "SansSerif",
+"FONTSTYLE", "Plain",
+"FONTSIZE", 12);
+});
+// 
+//// org\jmol\shape\Mesh.js 
+// 
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.util.MeshSurface", "$.Point3f", "$.Vector3f"], "org.jmol.shape.Mesh", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "org.jmol.script.Token", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Matrix3f", "$.Matrix4f", "$.Measure", "$.Normix", "$.StringXBuilder"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.title = null;
+this.meshColix = 0;
+this.normixes = null;
+this.lineData = null;
+this.thisID = null;
+this.isValid = true;
+this.scriptCommand = null;
+this.colorCommand = null;
+this.lattice = null;
+this.visible = true;
+this.lighting = 1073741958;
+this.scale = 1;
+this.haveXyPoints = false;
+this.diameter = 0;
+this.width = 0;
+this.ptCenter = null;
+this.linkedMesh = null;
+this.vertexColorMap = null;
+this.color = 0;
+this.unitCell = null;
+this.scale3d = 0;
+this.index = 0;
+this.atomIndex = -1;
+this.modelIndex = -1;
+this.visibilityFlags = 0;
+this.insideOut = false;
+this.checkByteCount = 0;
+this.showContourLines = false;
+this.showPoints = false;
+this.drawTriangles = false;
+this.fillTriangles = true;
+this.showTriangles = false;
+this.frontOnly = false;
+this.isTwoSided = true;
+this.havePlanarContours = false;
+this.bsTemp = null;
+this.vAB = null;
+this.vAC = null;
+this.vTemp = null;
+this.xmlProperties = null;
+this.colorDensity = false;
+this.cappingObject = null;
+this.slabbingObject = null;
+this.connections = null;
+this.recalcAltVertices = false;
+Clazz.instantialize (this, arguments);
+}, org.jmol.shape, "Mesh", org.jmol.util.MeshSurface);
+Clazz.prepareFields (c$, function () {
+this.ptCenter = org.jmol.util.Point3f.new3 (0, 0, 0);
+this.vAB =  new org.jmol.util.Vector3f ();
+this.vAC =  new org.jmol.util.Vector3f ();
+this.vTemp =  new org.jmol.util.Vector3f ();
+});
+Clazz.defineMethod (c$, "setVisibilityFlags", 
+function (n) {
+this.visibilityFlags = n;
+}, "~N");
+Clazz.makeConstructor (c$, 
+function (thisID, colix, index) {
+Clazz.superConstructor (this, org.jmol.shape.Mesh, []);
+if ("+PREVIOUS_MESH+".equals (thisID)) thisID = null;
+this.thisID = thisID;
+this.colix = colix;
+this.index = index;
+}, "~S,~N,~N");
+Clazz.defineMethod (c$, "clear", 
+function (meshType) {
+this.altVertices = null;
+this.bsDisplay = null;
+this.bsSlabDisplay = null;
+this.bsSlabGhost = null;
+this.cappingObject = null;
+this.colix = 23;
+this.colorDensity = false;
+this.connections = null;
+this.diameter = 0;
+this.drawTriangles = false;
+this.fillTriangles = true;
+this.frontOnly = false;
+this.havePlanarContours = false;
+this.haveXyPoints = false;
+this.isTriangleSet = false;
+this.isTwoSided = false;
+this.lattice = null;
+this.mat4 = null;
+this.normixes = null;
+this.scale3d = 0;
+this.polygonIndexes = null;
+this.scale = 1;
+this.showContourLines = false;
+this.showPoints = false;
+this.showTriangles = false;
+this.slabbingObject = null;
+this.slabOptions = null;
+this.title = null;
+this.unitCell = null;
+this.vertexCount0 = this.polygonCount0 = this.vertexCount = this.polygonCount = 0;
+this.vertices = null;
+this.spanningVectors = null;
+this.meshType = meshType;
+}, "~S");
+Clazz.defineMethod (c$, "initialize", 
+function (lighting, vertices, plane) {
+if (vertices == null) vertices = this.vertices;
+var normals = this.getNormals (vertices, plane);
+this.setNormixes (normals);
+this.lighting = 1073741958;
+if (this.insideOut) this.invertNormixes ();
+this.setLighting (lighting);
+}, "~N,~A,org.jmol.util.Point4f");
+Clazz.defineMethod (c$, "setNormixes", 
+function (normals) {
+this.normixes =  Clazz.newShortArray (this.normixCount, 0);
+if (this.bsTemp == null) this.bsTemp = org.jmol.util.Normix.newVertexBitSet ();
+if (this.haveXyPoints) for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = 9999;
+
+ else for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = org.jmol.util.Normix.getNormixV (normals[i], this.bsTemp);
+
+}, "~A");
+Clazz.defineMethod (c$, "getNormals", 
+function (vertices, plane) {
+this.normixCount = (this.isTriangleSet ? this.polygonCount : this.vertexCount);
+var normals =  new Array (this.normixCount);
+for (var i = this.normixCount; --i >= 0; ) normals[i] =  new org.jmol.util.Vector3f ();
+
+if (plane == null) {
+this.sumVertexNormals (vertices, normals);
+} else {
+var normal = org.jmol.util.Vector3f.new3 (plane.x, plane.y, plane.z);
+for (var i = this.normixCount; --i >= 0; ) normals[i] = normal;
+
+}if (!this.isTriangleSet) for (var i = this.normixCount; --i >= 0; ) normals[i].normalize ();
+
+return normals;
+}, "~A,org.jmol.util.Point4f");
+Clazz.defineMethod (c$, "setLighting", 
+function (lighting) {
+this.isTwoSided = (lighting == 1073741964);
+if (lighting == this.lighting) return;
+this.flipLighting (this.lighting);
+this.flipLighting (this.lighting = lighting);
+}, "~N");
+Clazz.defineMethod (c$, "flipLighting", 
+($fz = function (lighting) {
+if (lighting == 1073741964) for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = ~this.normixes[i];
+
+ else if ((lighting == 1073741958) == this.insideOut) this.invertNormixes ();
+}, $fz.isPrivate = true, $fz), "~N");
+Clazz.defineMethod (c$, "invertNormixes", 
+($fz = function () {
+org.jmol.util.Normix.setInverseNormixes ();
+for (var i = this.normixCount; --i >= 0; ) this.normixes[i] = org.jmol.util.Normix.getInverseNormix (this.normixes[i]);
+
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "setTranslucent", 
+function (isTranslucent, iLevel) {
+this.colix = org.jmol.util.Colix.getColixTranslucent3 (this.colix, isTranslucent, iLevel);
+}, "~B,~N");
+Clazz.defineMethod (c$, "sumVertexNormals", 
+function (vertices, normals) {
+var adjustment = this.checkByteCount;
+var min = this.getMinDistanceForVertexGrouping ();
+min *= min;
+for (var i = this.polygonCount; --i >= 0; ) {
+try {
+if (!this.setABC (i)) continue;
+var vA = vertices[this.iA];
+var vB = vertices[this.iB];
+var vC = vertices[this.iC];
+if (vA.distanceSquared (vB) < min || vB.distanceSquared (vC) < min || vA.distanceSquared (vC) < min) continue;
+org.jmol.util.Measure.calcNormalizedNormal (vA, vB, vC, this.vTemp, this.vAB, this.vAC);
+if (this.isTriangleSet) {
+normals[i].setT (this.vTemp);
+continue;
+}var l = this.vTemp.length ();
+if (l > 0.9 && l < 1.1) for (var j = this.polygonIndexes[i].length - adjustment; --j >= 0; ) {
+var k = this.polygonIndexes[i][j];
+normals[k].add (this.vTemp);
+}
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+} else {
+throw e;
+}
+}
+}
+}, "~A,~A");
+Clazz.defineMethod (c$, "getMinDistanceForVertexGrouping", 
+function () {
+return 0.0001;
+});
+Clazz.defineMethod (c$, "getState", 
+function (type) {
+var s =  new org.jmol.util.StringXBuilder ();
+s.append (type);
+if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escapeStr (this.thisID));
+if (this.lattice != null) s.append (" lattice ").append (org.jmol.util.Escape.escapePt (this.lattice));
+if (this.meshColix != 0) s.append (" color mesh ").append (org.jmol.util.Colix.getHexCode (this.meshColix));
+s.append (this.getRendering ());
+if (!this.visible) s.append (" hidden");
+if (this.bsDisplay != null) {
+s.append (";\n  ").append (type);
+if (!type.equals ("mo")) s.append (" ID ").append (org.jmol.util.Escape.escapeStr (this.thisID));
+s.append (" display " + org.jmol.util.Escape.escape (this.bsDisplay));
+}return s.toString ();
+}, "~S");
+Clazz.defineMethod (c$, "getRendering", 
+function () {
+var s =  new org.jmol.util.StringXBuilder ();
+s.append (this.fillTriangles ? " fill" : " noFill");
+s.append (this.drawTriangles ? " mesh" : " noMesh");
+s.append (this.showPoints ? " dots" : " noDots");
+s.append (this.frontOnly ? " frontOnly" : " notFrontOnly");
+if (this.showContourLines) s.append (" contourlines");
+if (this.showTriangles) s.append (" triangles");
+s.append (" ").append (org.jmol.script.Token.nameOf (this.lighting));
+return s.toString ();
+});
+Clazz.defineMethod (c$, "getOffsetVertices", 
+function (thePlane) {
+if (this.altVertices != null && !this.recalcAltVertices) return this.altVertices;
+System.out.println ("Mesh  recalculating vertices");
+this.altVertices =  new Array (this.vertexCount);
+for (var i = 0; i < this.vertexCount; i++) this.altVertices[i] = org.jmol.util.Point3f.newP (this.vertices[i]);
+
+var normal = null;
+var val = 0;
+if (this.scale3d != 0 && this.vertexValues != null && thePlane != null) {
+normal = org.jmol.util.Vector3f.new3 (thePlane.x, thePlane.y, thePlane.z);
+normal.normalize ();
+normal.scale (this.scale3d);
+if (this.mat4 != null) {
+var m3 =  new org.jmol.util.Matrix3f ();
+this.mat4.getRotationScale (m3);
+m3.transform (normal);
+}}for (var i = 0; i < this.vertexCount; i++) {
+if (this.vertexValues != null && Float.isNaN (val = this.vertexValues[i])) continue;
+if (this.mat4 != null) this.mat4.transform (this.altVertices[i]);
+var pt = this.altVertices[i];
+if (normal != null && val != 0) pt.scaleAdd2 (val, normal, pt);
+}
+this.initialize (this.lighting, this.altVertices, null);
+this.recalcAltVertices = false;
+return this.altVertices;
+}, "org.jmol.util.Point4f");
+Clazz.defineMethod (c$, "setShowWithin", 
+function (showWithinPoints, showWithinDistance2, isWithinNot) {
+if (showWithinPoints.size () == 0) {
+this.bsDisplay = (isWithinNot ? org.jmol.util.BitSetUtil.newBitSet2 (0, this.vertexCount) : null);
+return;
+}this.bsDisplay =  new org.jmol.util.BitSet ();
+for (var i = 0; i < this.vertexCount; i++) if (org.jmol.shape.Mesh.checkWithin (this.vertices[i], showWithinPoints, showWithinDistance2, isWithinNot)) this.bsDisplay.set (i);
+
+}, "java.util.List,~N,~B");
+c$.checkWithin = Clazz.defineMethod (c$, "checkWithin", 
+function (pti, withinPoints, withinDistance2, isWithinNot) {
+if (withinPoints.size () != 0) for (var i = withinPoints.size (); --i >= 0; ) if (pti.distanceSquared (withinPoints.get (i)) <= withinDistance2) return !isWithinNot;
+
+return isWithinNot;
+}, "org.jmol.util.Point3f,java.util.List,~N,~B");
+Clazz.defineMethod (c$, "getVertexIndexFromNumber", 
+function (vertexIndex) {
+if (--vertexIndex < 0) vertexIndex = this.vertexCount + vertexIndex;
+return (this.vertexCount <= vertexIndex ? this.vertexCount - 1 : vertexIndex < 0 ? 0 : vertexIndex);
+}, "~N");
+Clazz.defineMethod (c$, "getVisibleVertexBitSet", 
+function () {
+var bs =  new org.jmol.util.BitSet ();
+if (this.polygonCount == 0 && this.bsSlabDisplay != null) org.jmol.util.BitSetUtil.copy2 (this.bsSlabDisplay, bs);
+ else for (var i = this.polygonCount; --i >= 0; ) if (this.bsSlabDisplay == null || this.bsSlabDisplay.get (i)) {
+var vertexIndexes = this.polygonIndexes[i];
+if (vertexIndexes == null) continue;
+bs.set (vertexIndexes[0]);
+bs.set (vertexIndexes[1]);
+bs.set (vertexIndexes[2]);
+}
+return bs;
+});
+Clazz.defineMethod (c$, "getVisibleGhostBitSet", 
+function () {
+var bs =  new org.jmol.util.BitSet ();
+if (this.polygonCount == 0 && this.bsSlabGhost != null) org.jmol.util.BitSetUtil.copy2 (this.bsSlabGhost, bs);
+ else for (var i = this.polygonCount; --i >= 0; ) if (this.bsSlabGhost == null || this.bsSlabGhost.get (i)) {
+var vertexIndexes = this.polygonIndexes[i];
+if (vertexIndexes == null) continue;
+bs.set (vertexIndexes[0]);
+bs.set (vertexIndexes[1]);
+bs.set (vertexIndexes[2]);
+}
+return bs;
+});
+Clazz.defineMethod (c$, "setTokenProperty", 
+function (tokProp, bProp) {
+switch (tokProp) {
+case 1073742058:
+case 1073741960:
+this.frontOnly = (tokProp == 1073741960 ? bProp : !bProp);
+return;
+case 1073741958:
+case 1073741862:
+case 1073741964:
+this.setLighting (tokProp);
+return;
+case 1073742042:
+case 1113198595:
+this.showPoints = (tokProp == 1113198595 ? bProp : !bProp);
+return;
+case 1073742052:
+case 1073742018:
+this.drawTriangles = (tokProp == 1073742018 ? bProp : !bProp);
+return;
+case 1073742046:
+case 1073741938:
+this.fillTriangles = (tokProp == 1073741938 ? bProp : !bProp);
+return;
+case 1073742060:
+case 1073742182:
+this.showTriangles = (tokProp == 1073742182 ? bProp : !bProp);
+return;
+case 1073742039:
+case 1073741898:
+this.showContourLines = (tokProp == 1073741898 ? bProp : !bProp);
+return;
+}
+}, "~N,~B");
+Clazz.defineMethod (c$, "getInfo", 
+function (isAll) {
+var info =  new java.util.Hashtable ();
+info.put ("id", this.thisID);
+info.put ("vertexCount", Integer.$valueOf (this.vertexCount));
+info.put ("polygonCount", Integer.$valueOf (this.polygonCount));
+info.put ("haveQuads", Boolean.$valueOf (this.haveQuads));
+info.put ("haveValues", Boolean.$valueOf (this.vertexValues != null));
+if (this.vertexCount > 0 && isAll) info.put ("vertices", org.jmol.util.ArrayUtil.arrayCopyPt (this.vertices, this.vertexCount));
+if (this.vertexValues != null && isAll) info.put ("vertexValues", org.jmol.util.ArrayUtil.arrayCopyF (this.vertexValues, this.vertexCount));
+if (this.polygonCount > 0 && isAll) info.put ("polygons", org.jmol.util.ArrayUtil.arrayCopyII (this.polygonIndexes, this.polygonCount));
+return info;
+}, "~B");
+Clazz.defineMethod (c$, "getBoundingBox", 
+function () {
+return null;
+});
+Clazz.defineMethod (c$, "getUnitCell", 
+function () {
+return null;
+});
+Clazz.defineMethod (c$, "rotateTranslate", 
+function (q, offset, isAbsolute) {
+if (q == null && offset == null) {
+this.mat4 = null;
+return;
+}var m3 =  new org.jmol.util.Matrix3f ();
+var v =  new org.jmol.util.Vector3f ();
+if (this.mat4 == null) {
+this.mat4 =  new org.jmol.util.Matrix4f ();
+this.mat4.setIdentity ();
+}this.mat4.getRotationScale (m3);
+this.mat4.get (v);
+if (q == null) {
+if (isAbsolute) v.setT (offset);
+ else v.add (offset);
+} else {
+m3.mul (q.getMatrix ());
+}this.mat4 = org.jmol.util.Matrix4f.newMV (m3, v);
+this.recalcAltVertices = true;
+}, "org.jmol.util.Quaternion,org.jmol.util.Tuple3f,~B");
+Clazz.defineMethod (c$, "getNormalsTemp", 
+function () {
+return (this.normalsTemp == null ? (this.normalsTemp = this.getNormals (this.vertices, null)) : this.normalsTemp);
+});
+Clazz.defineStatics (c$,
+"PREVIOUS_MESH_ID", "+PREVIOUS_MESH+");
+});
+// 
+//// org\jmol\shape\MeshCollection.js 
+// 
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.Shape"], "org.jmol.shape.MeshCollection", ["java.util.Hashtable", "org.jmol.script.Token", "org.jmol.shape.Mesh", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape", "$.Logger", "$.Point3f", "$.StringXBuilder", "$.TextFormat", "org.jmol.viewer.StateManager"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.meshCount = 0;
+this.meshes = null;
+this.currentMesh = null;
+this.isFixed = false;
+this.nUnnamed = 0;
+this.colix = 0;
+this.myType = null;
+this.explicitID = false;
+this.previousMeshID = null;
+this.linkedMesh = null;
+this.modelIndex = 0;
+this.displayWithinDistance2 = 0;
+this.isDisplayWithinNot = false;
+this.displayWithinPoints = null;
+this.bsDisplay = null;
+this.title = null;
+this.pickedMesh = null;
+this.pickedModel = 0;
+this.pickedVertex = 0;
+this.pickedPt = null;
+this.connections = null;
+this.htObjects = null;
+this.color = 0;
+Clazz.instantialize (this, arguments);
+}, org.jmol.shape, "MeshCollection", org.jmol.shape.Shape);
+Clazz.prepareFields (c$, function () {
+this.meshes =  new Array (4);
+});
+Clazz.defineMethod (c$, "setMesh", 
+($fz = function (thisID) {
+this.linkedMesh = null;
+if (thisID == null || org.jmol.util.TextFormat.isWild (thisID)) {
+if (thisID != null) this.previousMeshID = thisID;
+this.currentMesh = null;
+return null;
+}this.currentMesh = this.getMesh (thisID);
+if (this.currentMesh == null) {
+this.allocMesh (thisID, null);
+} else if (thisID.equals ("+PREVIOUS_MESH+")) {
+this.linkedMesh = this.currentMesh.linkedMesh;
+}if (this.currentMesh.thisID == null) {
+if (this.nUnnamed == 0 || this.getMesh (this.myType + this.nUnnamed) != null) this.nUnnamed++;
+this.currentMesh.thisID = this.myType + this.nUnnamed;
+if (this.htObjects != null) this.htObjects.put (this.currentMesh.thisID.toUpperCase (), this.currentMesh);
+}this.previousMeshID = this.currentMesh.thisID;
+return this.currentMesh;
+}, $fz.isPrivate = true, $fz), "~S");
+Clazz.defineMethod (c$, "allocMesh", 
+function (thisID, m) {
+var index = this.meshCount++;
+this.meshes = org.jmol.util.ArrayUtil.ensureLength (this.meshes, this.meshCount * 2);
+this.currentMesh = this.meshes[index] = (m == null ?  new org.jmol.shape.Mesh (thisID, this.colix, index) : m);
+this.currentMesh.color = this.color;
+this.currentMesh.index = index;
+if (thisID != null && this.htObjects != null) this.htObjects.put (thisID.toUpperCase (), this.currentMesh);
+this.previousMeshID = null;
+}, "~S,org.jmol.shape.Mesh");
+Clazz.overrideMethod (c$, "merge", 
+function (shape) {
+var mc = shape;
+for (var i = 0; i < mc.meshCount; i++) {
+if (mc.meshes[i] != null) {
+var m = mc.meshes[i];
+var m0 = this.getMesh (m.thisID);
+if (m0 == null) {
+this.allocMesh (m.thisID, m);
+} else {
+this.meshes[m0.index] = m;
+m.index = m0.index;
+}}}
+this.previousMeshID = null;
+this.currentMesh = null;
+}, "org.jmol.shape.Shape");
+Clazz.defineMethod (c$, "initShape", 
+function () {
+Clazz.superCall (this, org.jmol.shape.MeshCollection, "initShape", []);
+this.colix = 5;
+this.color = 0xFFFFFFFF;
+});
+Clazz.defineMethod (c$, "setProperty", 
+function (propertyName, value, bs) {
+if (propertyName === "setXml") {
+if (this.currentMesh != null) this.currentMesh.xmlProperties = this.xmlProperties;
+}if ("init" === propertyName) {
+this.title = null;
+return;
+}if ("link" === propertyName) {
+if (this.meshCount >= 2 && this.currentMesh != null) this.currentMesh.linkedMesh = this.meshes[this.meshCount - 2];
+return;
+}if ("lattice" === propertyName) {
+if (this.currentMesh != null) this.currentMesh.lattice = value;
+return;
+}if ("variables" === propertyName) {
+if (this.currentMesh != null && this.currentMesh.scriptCommand != null && !this.currentMesh.scriptCommand.startsWith ("{")) this.currentMesh.scriptCommand = "{\n" + org.jmol.viewer.StateManager.getVariableList (value, 0, false, false) + "\n" + this.currentMesh.scriptCommand;
+return;
+}if ("thisID" === propertyName) {
+var id = value;
+this.setMesh (id);
+this.checkExplicit (id);
+return;
+}if ("title" === propertyName) {
+if (value == null) {
+this.title = null;
+} else if (Clazz.instanceOf (value, String)) {
+var nLine = 1;
+var lines = value;
+for (var i = lines.length; --i >= 0; ) if (lines.charAt (i) == '|') nLine++;
+
+this.title =  new Array (nLine);
+nLine = 0;
+var i0 = -1;
+for (var i = 0; i < lines.length; i++) if (lines.charAt (i) == '|') {
+this.title[nLine++] = lines.substring (i0 + 1, i);
+i0 = i;
+}
+this.title[nLine] = lines.substring (i0 + 1);
+} else {
+this.title = value;
+}return;
+}if ("delete" === propertyName) {
+this.deleteMesh ();
+return;
+}if ("reset" === propertyName) {
+var thisID = value;
+if (this.setMesh (thisID) == null) return;
+this.setMesh (thisID);
+return;
+}if ("color" === propertyName) {
+if (value == null) return;
+this.colix = org.jmol.util.Colix.getColixO (value);
+this.color = (value).intValue ();
+if (this.currentMesh != null) this.currentMesh.color = this.color;
+this.setTokenProperty (1766856708, false, false);
+return;
+}if ("translucency" === propertyName) {
+this.setTokenProperty (1073742180, ((value).equals ("translucent")), false);
+return;
+}if ("hidden" === propertyName) {
+value = Integer.$valueOf ((value).booleanValue () ? 1048588 : 1048589);
+propertyName = "token";
+}if ("token" === propertyName) {
+var tok = (value).intValue ();
+var tok2 = 0;
+var test = true;
+switch (tok) {
+case 1610625028:
+case 1048589:
+case 1073741958:
+case 1073741862:
+case 1073741964:
+case 1113198595:
+case 1073741938:
+case 1073742182:
+case 1073741960:
+break;
+case 1048588:
+test = false;
+tok = 1048589;
+break;
+case 1073741898:
+tok2 = 1073742018;
+break;
+case 1073742039:
+test = false;
+tok = 1073741898;
+tok2 = 1073742018;
+break;
+case 1073742018:
+tok2 = 1073741898;
+break;
+case 1073742052:
+test = false;
+tok = 1073742018;
+tok2 = 1073741898;
+break;
+case 1073742042:
+test = false;
+tok = 1113198595;
+break;
+case 1073742046:
+test = false;
+tok = 1073741938;
+break;
+case 1073742060:
+test = false;
+tok = 1073742182;
+break;
+case 1073742058:
+test = false;
+tok = 1073741960;
+break;
+default:
+org.jmol.util.Logger.error ("PROBLEM IN MESHCOLLECTION: token? " + org.jmol.script.Token.nameOf (tok));
+}
+this.setTokenProperty (tok, test, false);
+if (tok2 != 0) this.setTokenProperty (tok2, test, true);
+return;
+}Clazz.superCall (this, org.jmol.shape.MeshCollection, "setProperty", [propertyName, value, bs]);
+}, "~S,~O,org.jmol.util.BitSet");
+Clazz.defineMethod (c$, "checkExplicit", 
+function (id) {
+if (this.explicitID) return;
+this.explicitID = (id != null && !id.equals ("+PREVIOUS_MESH+"));
+if (this.explicitID) this.previousMeshID = id;
+}, "~S");
+Clazz.defineMethod (c$, "setTokenProperty", 
+($fz = function (tokProp, bProp, testD) {
+if (this.currentMesh == null) {
+var key = (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID.toUpperCase () : null);
+if (key != null && key.length == 0) key = null;
+for (var i = 0; i < this.meshCount; i++) if (key == null || org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID.toUpperCase (), key, true, true)) this.setMeshTokenProperty (this.meshes[i], tokProp, bProp, testD);
+
+} else {
+this.setMeshTokenProperty (this.currentMesh, tokProp, bProp, testD);
+if (this.linkedMesh != null) this.setMeshTokenProperty (this.linkedMesh, tokProp, bProp, testD);
+}}, $fz.isPrivate = true, $fz), "~N,~B,~B");
+Clazz.defineMethod (c$, "setMeshTokenProperty", 
+($fz = function (m, tokProp, bProp, testD) {
+if (testD && (!m.havePlanarContours || m.drawTriangles == m.showContourLines)) return;
+switch (tokProp) {
+case 1610625028:
+m.bsDisplay = this.bsDisplay;
+if (this.bsDisplay == null && this.displayWithinPoints != null) m.setShowWithin (this.displayWithinPoints, this.displayWithinDistance2, this.isDisplayWithinNot);
+return;
+case 1048589:
+m.visible = bProp;
+return;
+case 1766856708:
+m.colix = this.colix;
+return;
+case 1073742180:
+m.setTranslucent (bProp, this.translucentLevel);
+if (m.bsSlabGhost != null) m.resetSlab ();
+return;
+default:
+m.setTokenProperty (tokProp, bProp);
+}
+}, $fz.isPrivate = true, $fz), "org.jmol.shape.Mesh,~N,~B,~B");
+Clazz.overrideMethod (c$, "getPropertyData", 
+function (property, data) {
+if (property === "getNames") {
+var map = data[0];
+var withDollar = (data[1]).booleanValue ();
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] != null && this.meshes[i].vertexCount != 0) map.put ((withDollar ? "$" : "") + this.meshes[i].thisID, org.jmol.script.Token.tokenOr);
+
+return true;
+}if (property === "getVertices") {
+var m = this.getMesh (data[0]);
+if (m == null) return false;
+data[1] = m.vertices;
+data[2] = m.getVisibleVertexBitSet ();
+return true;
+}if (property === "checkID") {
+var key = (data[0]).toUpperCase ();
+var isWild = org.jmol.util.TextFormat.isWild (key);
+for (var i = this.meshCount; --i >= 0; ) {
+var id = this.meshes[i].thisID;
+if (id.equalsIgnoreCase (key) || isWild && org.jmol.util.TextFormat.isMatch (id.toUpperCase (), key, true, true)) {
+data[1] = id;
+return true;
+}}
+return false;
+}if (property === "getCenter") {
+var id = data[0];
+var index = (data[1]).intValue ();
+var m;
+if ((m = this.getMesh (id)) == null || m.vertices == null) return false;
+if (index == 2147483647) data[2] = org.jmol.util.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
+ else data[2] = m.vertices[m.getVertexIndexFromNumber (index)];
+return true;
+}return false;
+}, "~S,~A");
+Clazz.overrideMethod (c$, "getProperty", 
+function (property, index) {
+var m;
+if (property === "count") {
+var n = 0;
+for (var i = 0; i < this.meshCount; i++) if ((m = this.meshes[i]) != null && m.vertexCount > 0) n++;
+
+return Integer.$valueOf (n);
+}if (property === "ID") return (this.currentMesh == null ? null : this.currentMesh.thisID);
+if (property.startsWith ("list")) {
+this.clean ();
+var sb =  new org.jmol.util.StringXBuilder ();
+var k = 0;
+var id = (property.equals ("list") ? null : property.substring (5));
+for (var i = 0; i < this.meshCount; i++) {
+m = this.meshes[i];
+if (id != null && !id.equalsIgnoreCase (m.thisID)) continue;
+sb.appendI ((++k)).append (" id:" + m.thisID).append ("; model:" + this.viewer.getModelNumberDotted (m.modelIndex)).append ("; vertices:" + m.vertexCount).append ("; polygons:" + m.polygonCount).append ("; visible:" + m.visible);
+var range = this.getProperty ("dataRange", 0);
+if (range != null) sb.append ("; dataRange:").append (org.jmol.util.Escape.escape (range));
+if (m.title != null) {
+var s = "";
+for (var j = 0; j < m.title.length; j++) s += (j == 0 ? "; title:" : " | ") + m.title[j];
+
+if (s.length > 10000) s = s.substring (0, 10000) + "...";
+sb.append (s);
+}sb.appendC ('\n');
+if (id != null) {
+var info = this.getProperty ("jvxlFileInfo", 0);
+if (info != null) sb.append (info).appendC ('\n');
+}}
+return sb.toString ();
+}if (property === "vertices") return this.getVertices (this.currentMesh);
+if (property === "getInfo") return (this.currentMesh == null ? null : this.currentMesh.getInfo (false));
+if (property === "getData") return (this.currentMesh == null ? null : this.currentMesh.getInfo (true));
+return null;
+}, "~S,~N");
+Clazz.defineMethod (c$, "getVertices", 
+($fz = function (mesh) {
+if (mesh == null) return null;
+return mesh.vertices;
+}, $fz.isPrivate = true, $fz), "org.jmol.shape.Mesh");
+Clazz.defineMethod (c$, "clean", 
+function () {
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] == null || this.meshes[i].vertexCount == 0) this.deleteMeshI (i);
+
+});
+Clazz.defineMethod (c$, "deleteMesh", 
+($fz = function () {
+if (this.explicitID && this.currentMesh != null) this.deleteMeshI (this.currentMesh.index);
+ else this.deleteMeshKey (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID : null);
+this.currentMesh = null;
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "deleteMeshKey", 
+function (key) {
+if (key == null || key.length == 0) {
+for (var i = this.meshCount; --i >= 0; ) this.meshes[i] = null;
+
+this.meshCount = 0;
+this.nUnnamed = 0;
+if (this.htObjects != null) this.htObjects.clear ();
+} else {
+key = key.toLowerCase ();
+for (var i = this.meshCount; --i >= 0; ) {
+if (org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID.toLowerCase (), key, true, true)) this.deleteMeshI (i);
+}
+}}, "~S");
+Clazz.defineMethod (c$, "deleteMeshI", 
+function (i) {
+if (this.htObjects != null) this.htObjects.remove (this.meshes[i].thisID.toUpperCase ());
+for (var j = i + 1; j < this.meshCount; ++j) this.meshes[--this.meshes[j].index] = this.meshes[j];
+
+this.meshes[--this.meshCount] = null;
+}, "~N");
+Clazz.defineMethod (c$, "getMesh", 
+function (thisID) {
+var i = this.getIndexFromName (thisID);
+return (i < 0 ? null : this.meshes[i]);
+}, "~S");
+Clazz.overrideMethod (c$, "getIndexFromName", 
+function (thisID) {
+if ("+PREVIOUS_MESH+".equals (thisID)) return (this.previousMeshID == null ? this.meshCount - 1 : this.getIndexFromName (this.previousMeshID));
+if (org.jmol.util.TextFormat.isWild (thisID)) {
+thisID = thisID.toLowerCase ();
+for (var i = this.meshCount; --i >= 0; ) {
+if (this.meshes[i] != null && org.jmol.util.TextFormat.isMatch (this.meshes[i].thisID, thisID, true, true)) return i;
+}
+} else {
+if (this.htObjects != null) {
+var m = this.htObjects.get (thisID.toUpperCase ());
+return (m == null ? -1 : m.index);
+}for (var i = this.meshCount; --i >= 0; ) {
+if (this.meshes[i] != null && this.meshes[i].vertexCount != 0 && thisID.equalsIgnoreCase (this.meshes[i].thisID)) return i;
+}
+}return -1;
+}, "~S");
+Clazz.overrideMethod (c$, "setVisibilityFlags", 
+function (bs) {
+var bsDeleted = this.viewer.getDeletedAtoms ();
+for (var i = this.meshCount; --i >= 0; ) {
+var mesh = this.meshes[i];
+mesh.visibilityFlags = (mesh.visible && mesh.isValid && (mesh.modelIndex < 0 || bs.get (mesh.modelIndex) && (mesh.atomIndex < 0 || !this.modelSet.isAtomHidden (mesh.atomIndex) && !(bsDeleted != null && bsDeleted.get (mesh.atomIndex)))) ? this.myVisibilityFlag : 0);
+}
+}, "org.jmol.util.BitSet");
+Clazz.defineMethod (c$, "setStatusPicked", 
+function (flag, v) {
+this.viewer.setStatusAtomPicked (flag, "[\"" + this.myType + "\"," + org.jmol.util.Escape.escapeStr (this.pickedMesh.thisID) + "," + +this.pickedModel + "," + this.pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," + (this.pickedMesh.title == null ? "\"\"" : org.jmol.util.Escape.escapeStr (this.pickedMesh.title[0])) + "]");
+}, "~N,org.jmol.util.Point3f");
+Clazz.defineMethod (c$, "getPickedPoint", 
+function (v, modelIndex) {
+var map =  new java.util.Hashtable ();
+if (v != null) {
+map.put ("pt", v);
+map.put ("modelIndex", Integer.$valueOf (modelIndex));
+map.put ("model", this.viewer.getModelNumberDotted (modelIndex));
+map.put ("id", this.pickedMesh.thisID);
+map.put ("vertex", Integer.$valueOf (this.pickedVertex + 1));
+map.put ("type", this.myType);
+}return map;
+}, "org.jmol.util.Point3f,~N");
+Clazz.defineStatics (c$,
+"PREVIOUS_MESH_ID", "+PREVIOUS_MESH+");
+});
+// 
+//// org\jmol\render\AxesRenderer.js 
+// 
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.FontLineShapeRenderer", "org.jmol.util.Point3f"], "org.jmol.render.AxesRenderer", ["org.jmol.constant.EnumAxesMode", "org.jmol.util.Point3fi"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.screens = null;
+this.originScreen = null;
+this.colixes = null;
+Clazz.instantialize (this, arguments);
+}, org.jmol.render, "AxesRenderer", org.jmol.render.FontLineShapeRenderer);
+Clazz.prepareFields (c$, function () {
+this.screens =  new Array (6);
+{
+for (var i = 6; --i >= 0; ) this.screens[i] =  new org.jmol.util.Point3f ();
+
+}this.originScreen =  new org.jmol.util.Point3f ();
+this.colixes =  Clazz.newShortArray (3, 0);
+});
+Clazz.overrideMethod (c$, "initRenderer", 
+function () {
+this.endcap = 2;
+this.draw000 = false;
+});
+Clazz.defineMethod (c$, "render", 
+function () {
+var axes = this.shape;
+var mad = this.viewer.getObjectMad (1);
+if (mad == 0 || !this.g3d.checkTranslucent (false)) return false;
+var isXY = (axes.axisXY.z != 0);
+if (!isXY && this.viewer.isNavigating () && this.viewer.getNavigationPeriodic ()) return false;
+var axesMode = this.viewer.getAxesMode ();
+this.imageFontScaling = this.viewer.getImageFontScaling ();
+if (this.viewer.areAxesTainted ()) {
+var f = axes.font3d;
+axes.initShape ();
+if (f != null) axes.font3d = f;
+}this.font3d = this.g3d.getFont3DScaled (axes.font3d, this.imageFontScaling);
+var cellInfos = this.modelSet.getCellInfos ();
+var modelIndex = this.viewer.getCurrentModelIndex ();
+var isUnitCell = (axesMode === org.jmol.constant.EnumAxesMode.UNITCELL);
+if (this.viewer.isJmolDataFrameForModel (modelIndex) && !this.viewer.getModelSet ().getJmolFrameType (modelIndex).equals ("plot data") || isUnitCell && modelIndex < 0) return false;
+var nPoints = 6;
+var labelPtr = 0;
+if (isUnitCell && cellInfos != null) {
+nPoints = 3;
+labelPtr = 6;
+} else if (isXY) {
+nPoints = 3;
+labelPtr = 9;
+} else if (axesMode === org.jmol.constant.EnumAxesMode.BOUNDBOX) {
+nPoints = 6;
+labelPtr = (this.viewer.getAxesOrientationRasmol () ? 15 : 9);
+}if (axes.labels != null) {
+if (nPoints != 3) nPoints = axes.labels.length;
+labelPtr = -1;
+}var isDataFrame = this.viewer.isJmolDataFrame ();
+var slab = this.g3d.getSlab ();
+var diameter = mad;
+var drawTicks = false;
+if (isXY) {
+if (this.exportType == 1) return false;
+if (mad >= 20) {
+diameter = (mad > 500 ? 5 : Clazz.doubleToInt (mad / 100));
+if (diameter == 0) diameter = 2;
+} else {
+if (this.g3d.isAntialiased ()) diameter += diameter;
+}this.g3d.setSlab (0);
+this.pt0.setT (this.viewer.transformPt (axes.axisXY));
+this.originScreen.set (this.pt0.x, this.pt0.y, this.pt0.z);
+var zoomDimension = this.viewer.getScreenDim ();
+var scaleFactor = zoomDimension / 10 * axes.scale;
+if (this.g3d.isAntialiased ()) scaleFactor *= 2;
+for (var i = 0; i < 3; i++) {
+this.viewer.rotatePoint (axes.getAxisPoint (i, false), this.screens[i]);
+this.screens[i].z *= -1;
+this.screens[i].scaleAdd2 (scaleFactor, this.screens[i], this.originScreen);
+}
+} else {
+drawTicks = (axes.tickInfos != null);
+if (drawTicks) {
+if (this.atomA == null) {
+this.atomA =  new org.jmol.util.Point3fi ();
+this.atomB =  new org.jmol.util.Point3fi ();
+}this.atomA.setT (axes.getOriginPoint (isDataFrame));
+}this.viewer.transformPtNoClip (axes.getOriginPoint (isDataFrame), this.originScreen);
+diameter = this.getDiameter (Clazz.floatToInt (this.originScreen.z), mad);
+for (var i = nPoints; --i >= 0; ) this.viewer.transformPtNoClip (axes.getAxisPoint (i, isDataFrame), this.screens[i]);
+
+}var xCenter = this.originScreen.x;
+var yCenter = this.originScreen.y;
+this.colixes[0] = this.viewer.getObjectColix (1);
+this.colixes[1] = this.viewer.getObjectColix (2);
+this.colixes[2] = this.viewer.getObjectColix (3);
+for (var i = nPoints; --i >= 0; ) {
+this.colix = this.colixes[i % 3];
+this.g3d.setColix (this.colix);
+var label = (axes.labels == null ? org.jmol.render.AxesRenderer.axisLabels[i + labelPtr] : i < axes.labels.length ? axes.labels[i] : null);
+if (label != null && label.length > 0) this.renderLabel (label, this.screens[i].x, this.screens[i].y, this.screens[i].z, xCenter, yCenter);
+if (drawTicks) {
+this.tickInfo = axes.tickInfos[(i % 3) + 1];
+if (this.tickInfo == null) this.tickInfo = axes.tickInfos[0];
+this.atomB.setT (axes.getAxisPoint (i, isDataFrame));
+if (this.tickInfo != null) {
+this.tickInfo.first = 0;
+this.tickInfo.signFactor = (i % 6 >= 3 ? -1 : 1);
+}}this.renderLine (this.originScreen, this.screens[i], diameter, this.pt0, this.pt1, drawTicks && this.tickInfo != null);
+}
+if (nPoints == 3 && !isXY) {
+this.colix = this.viewer.getColixBackgroundContrast ();
+this.g3d.setColix (this.colix);
+this.renderLabel ("0", this.originScreen.x, this.originScreen.y, this.originScreen.z, xCenter, yCenter);
+}if (isXY) this.g3d.setSlab (slab);
+return false;
+});
+Clazz.defineMethod (c$, "renderLabel", 
+($fz = function (str, x, y, z, xCenter, yCenter) {
+var strAscent = this.font3d.getAscent ();
+var strWidth = this.font3d.stringWidth (str);
+var dx = x - xCenter;
+var dy = y - yCenter;
+if ((dx != 0 || dy != 0)) {
+var dist = Math.sqrt (dx * dx + dy * dy);
+dx = (strWidth * 0.75 * dx / dist);
+dy = (strAscent * 0.75 * dy / dist);
+x += dx;
+y += dy;
+}var xStrBaseline = Math.floor (x - strWidth / 2);
+var yStrBaseline = Math.floor (y + strAscent / 2);
+this.g3d.drawString (str, this.font3d, Clazz.doubleToInt (xStrBaseline), Clazz.doubleToInt (yStrBaseline), Clazz.floatToInt (z), Clazz.floatToInt (z), 0);
+}, $fz.isPrivate = true, $fz), "~S,~N,~N,~N,~N,~N");
+Clazz.defineStatics (c$,
+"axisLabels", ["+X", "+Y", "+Z", null, null, null, "a", "b", "c", "X", "Y", "Z", null, null, null, "X", null, "Z", null, "(Y)", null]);
+});
+// 
+//// org\jmol\render\EchoRenderer.js 
+// 
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.ShapeRenderer", "org.jmol.util.Point3i"], "org.jmol.render.EchoRenderer", ["org.jmol.render.TextRenderer", "org.jmol.util.Colix"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.imageFontScaling = 0;
+this.ptAtom = null;
+this.pt = null;
+Clazz.instantialize (this, arguments);
+}, org.jmol.render, "EchoRenderer", org.jmol.render.ShapeRenderer);
+Clazz.prepareFields (c$, function () {
+this.pt =  new org.jmol.util.Point3i ();
+});
+Clazz.defineMethod (c$, "render", 
+function () {
+if (this.viewer.isPreviewOnly ()) return false;
+var echo = this.shape;
+var e = echo.objects.values ().iterator ();
+var scalePixelsPerMicron = (this.viewer.getFontScaling () ? this.viewer.getScalePixelsPerAngstrom (true) * 10000 : 0);
+this.imageFontScaling = this.viewer.getImageFontScaling ();
+var haveTranslucent = false;
+while (e.hasNext ()) {
+var t = e.next ();
+if (!t.visible || t.hidden) {
+continue;
+}if (t.valign == 4) {
+this.viewer.transformPtScr (t.xyz, this.pt);
+t.setXYZs (this.pt.x, this.pt.y, this.pt.z, this.pt.z);
+} else if (t.movableZPercent != 2147483647) {
+var z = this.viewer.zValueFromPercent (t.movableZPercent);
+t.setZs (z, z);
+}org.jmol.render.TextRenderer.render (t, this.g3d, scalePixelsPerMicron, this.imageFontScaling, false, null);
+if (org.jmol.util.Colix.isColixTranslucent (t.bgcolix) || org.jmol.util.Colix.isColixTranslucent (t.colix)) haveTranslucent = true;
+}
+if (!this.isExport) {
+var frameTitle = this.viewer.getFrameTitle ();
+if (frameTitle != null && frameTitle.length > 0) {
+if (this.g3d.setColix (this.viewer.getColixBackgroundContrast ())) {
+if (frameTitle.indexOf ("%{") >= 0 || frameTitle.indexOf ("@{") >= 0) frameTitle = this.viewer.formatText (frameTitle);
+this.renderFrameTitle (frameTitle);
+}}}return haveTranslucent;
+});
+Clazz.defineMethod (c$, "renderFrameTitle", 
+($fz = function (frameTitle) {
+var fid = this.g3d.getFontFidFS ("Serif", 14 * this.imageFontScaling);
+this.g3d.setFontFid (fid);
+var y = Clazz.doubleToInt (Math.floor (this.viewer.getScreenHeight () * (this.g3d.isAntialiased () ? 2 : 1) - 10 * this.imageFontScaling));
+var x = Clazz.doubleToInt (Math.floor (5 * this.imageFontScaling));
+this.g3d.drawStringNoSlab (frameTitle, null, x, y, 0, 0);
+}, $fz.isPrivate = true, $fz), "~S");
+});
+// 
+//// org\jmol\render\TextRenderer.js 
+// 
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (null, "org.jmol.render.TextRenderer", ["org.jmol.shape.Text"], function () {
+c$ = Clazz.declareType (org.jmol.render, "TextRenderer");
+c$.render = Clazz.defineMethod (c$, "render", 
+function (text, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY) {
+if (text == null || text.image == null && text.lines == null) return;
+text.setPosition (g3d.getRenderWidth (), g3d.getRenderHeight (), scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
+if (text.image == null && text.bgcolix != 0) {
+if (g3d.setColix (text.bgcolix)) org.jmol.render.TextRenderer.showBox (g3d, text.colix, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY), text.z + 2, text.zSlab, Clazz.floatToInt (text.boxWidth), Clazz.floatToInt (text.boxHeight), text.fontScale, text.isLabelOrHover);
+}if (g3d.setColix (text.colix)) {
+if (text.image == null) {
+var xy =  Clazz.newFloatArray (3, 0);
+for (var i = 0; i < text.lines.length; i++) {
+text.setXYA (xy, i);
+g3d.drawString (text.lines[i], text.font, Clazz.floatToInt (xy[0]), Clazz.floatToInt (xy[1]), text.z, text.zSlab, text.bgcolix);
+}
+} else {
+g3d.drawImage (text.image, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY), text.z, text.zSlab, text.bgcolix, Clazz.floatToInt (text.boxWidth), Clazz.floatToInt (text.boxHeight));
+}org.jmol.render.TextRenderer.drawPointer (text, g3d);
+}return;
+}, "org.jmol.shape.Text,org.jmol.api.JmolRendererInterface,~N,~N,~B,~A");
+c$.drawPointer = Clazz.defineMethod (c$, "drawPointer", 
+function (text, g3d) {
+if ((text.pointer & 1) != 0) {
+if (!g3d.setColix ((text.pointer & 2) != 0 && text.bgcolix != 0 ? text.bgcolix : text.colix)) return;
+if (text.boxX > text.movableX) g3d.drawLineXYZ (text.movableX, text.movableY, text.zSlab, Clazz.floatToInt (text.boxX), Clazz.floatToInt (text.boxY + text.boxHeight / 2), text.zSlab);
+ else if (text.boxX + text.boxWidth < text.movableX) g3d.drawLineXYZ (text.movableX, text.movableY, text.zSlab, Clazz.floatToInt (text.boxX + text.boxWidth), Clazz.floatToInt (text.boxY + text.boxHeight / 2), text.zSlab);
+}}, "org.jmol.shape.Text,org.jmol.api.JmolRendererInterface");
+c$.showBox = Clazz.defineMethod (c$, "showBox", 
+($fz = function (g3d, colix, x, y, z, zSlab, boxWidth, boxHeight, imageFontScaling, atomBased) {
+g3d.fillRect (x, y, z, zSlab, boxWidth, boxHeight);
+g3d.setColix (colix);
+if (!atomBased) return;
+if (imageFontScaling >= 2) {
+g3d.drawRect (x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
+} else {
+g3d.drawRect (x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
+}}, $fz.isPrivate = true, $fz), "org.jmol.api.JmolRendererInterface,~N,~N,~N,~N,~N,~N,~N,~N,~B");
+c$.renderSimpleLabel = Clazz.defineMethod (c$, "renderSimpleLabel", 
+function (g3d, font, strLabel, colix, bgcolix, boxXY, z, zSlab, xOffset, yOffset, ascent, descent, doPointer, pointerColix, isExact) {
+var boxWidth = font.stringWidth (strLabel) + 8;
+var boxHeight = ascent + descent + 8;
+var x0 = Clazz.floatToInt (boxXY[0]);
+var y0 = Clazz.floatToInt (boxXY[1]);
+org.jmol.shape.Text.setBoxXY (boxWidth, boxHeight, xOffset, yOffset, boxXY, isExact);
+var x = boxXY[0];
+var y = boxXY[1];
+if (bgcolix != 0 && g3d.setColix (bgcolix)) org.jmol.render.TextRenderer.showBox (g3d, colix, Clazz.floatToInt (x), Clazz.floatToInt (y), z, zSlab, Clazz.floatToInt (boxWidth), Clazz.floatToInt (boxHeight), 1, true);
+ else g3d.setColix (colix);
+g3d.drawString (strLabel, font, Clazz.floatToInt (x + 4), Clazz.floatToInt (y + 4 + ascent), z - 1, zSlab, bgcolix);
+if (doPointer) {
+g3d.setColix (pointerColix);
+if (xOffset > 0) g3d.drawLineXYZ (x0, y0, zSlab, Clazz.floatToInt (x), Clazz.floatToInt (y + boxHeight / 2), zSlab);
+ else if (xOffset < 0) g3d.drawLineXYZ (x0, y0, zSlab, Clazz.floatToInt (x + boxWidth), Clazz.floatToInt (y + boxHeight / 2), zSlab);
+}}, "org.jmol.api.JmolRendererInterface,org.jmol.util.JmolFont,~S,~N,~N,~A,~N,~N,~N,~N,~N,~N,~B,~N,~B");
+});
+// 
+//// org\jmol\render\HalosRenderer.js 
+// 
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.ShapeRenderer"], "org.jmol.render.HalosRenderer", ["org.jmol.util.Colix"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.isAntialiased = false;
+Clazz.instantialize (this, arguments);
+}, org.jmol.render, "HalosRenderer", org.jmol.render.ShapeRenderer);
+Clazz.defineMethod (c$, "render", 
+function () {
+var halos = this.shape;
+var selectDisplayTrue = this.viewer.getSelectionHaloEnabled (true);
+var showHiddenSelections = (selectDisplayTrue && this.viewer.getShowHiddenSelectionHalos ());
+if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue) return false;
+this.isAntialiased = this.g3d.isAntialiased ();
+var atoms = this.modelSet.atoms;
+var bsSelected = (selectDisplayTrue ? this.viewer.getSelectionSet (false) : null);
+var needTranslucent = false;
+for (var i = this.modelSet.getAtomCount (); --i >= 0; ) {
+var atom = atoms[i];
+if ((atom.getShapeVisibilityFlags () & 1) == 0) continue;
+var isHidden = this.modelSet.isAtomHidden (i);
+this.mad = (halos.mads == null ? 0 : halos.mads[i]);
+this.colix = (halos.colixes == null || i >= halos.colixes.length ? 0 : halos.colixes[i]);
+if (selectDisplayTrue && bsSelected.get (i)) {
+if (isHidden && !showHiddenSelections) continue;
+if (this.mad == 0) this.mad = -1;
+if (this.colix == 0) this.colix = halos.colixSelection;
+if (this.colix == 2) this.colix = 23;
+ else if (this.colix == 0) this.colix = org.jmol.util.Colix.getColixInherited (this.colix, atom.getColix ());
+} else if (isHidden) {
+continue;
+} else {
+this.colix = org.jmol.util.Colix.getColixInherited (this.colix, atom.getColix ());
+}if (this.mad != 0) {
+if (this.render1 (atom)) needTranslucent = true;
+}if (!isHidden && halos.bsHighlight != null && halos.bsHighlight.get (i)) {
+this.mad = -2;
+this.colix = halos.colixHighlight;
+if (this.render1 (atom)) needTranslucent = true;
+}}
+return needTranslucent;
+});
+Clazz.defineMethod (c$, "render1", 
+function (atom) {
+var colixFill = (this.mad == -2 ? 0 : org.jmol.util.Colix.getColixTranslucent3 (this.colix, true, 0.5));
+var needTranslucent = (this.mad != -2);
+if (!this.g3d.setColix (this.colix)) {
+needTranslucent = true;
+this.colix = 0;
+if (colixFill == 0 || !this.g3d.setColix (colixFill)) return needTranslucent;
+}var z = atom.screenZ;
+var diameter = this.mad;
+if (diameter < 0) {
+diameter = atom.screenDiameter;
+if (diameter == 0) {
+var ellipsemax = atom.getADPMinMax (true);
+if (ellipsemax > 0) diameter = this.viewer.scaleToScreen (z, Clazz.doubleToInt (Math.floor (ellipsemax * 2000)));
+if (diameter == 0) {
+diameter = this.viewer.scaleToScreen (z, this.mad == -2 ? 250 : 500);
+}}} else {
+diameter = this.viewer.scaleToScreen (z, this.mad);
+}var d = diameter;
+if (this.isAntialiased) d /= 2;
+var more = (d / 2);
+if (this.mad == -2) more /= 2;
+if (more < 8) more = 8;
+if (more > 20) more = 20;
+d += more;
+if (this.isAntialiased) d *= 2;
+if (d < 1) return false;
+this.g3d.drawFilledCircle (this.colix, colixFill, Clazz.doubleToInt (Math.floor (d)), atom.screenX, atom.screenY, atom.screenZ);
+return needTranslucent;
+}, "org.jmol.modelset.Atom");
+});
+// 
 //// org\jmol\render\LabelsRenderer.js 
 // 
 Clazz.declarePackage ("org.jmol.render");
@@ -86467,81 +86935,6 @@ return false;
 });
 });
 // 
-//// org\jmol\shape\Hover.js 
-// 
-Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.TextShape"], "org.jmol.shape.Hover", ["java.util.Hashtable", "org.jmol.shape.Text", "org.jmol.util.ArrayUtil", "$.Colix", "$.Escape"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.hoverText = null;
-this.atomIndex = -1;
-this.xy = null;
-this.text = null;
-this.labelFormat = "%U";
-this.atomFormats = null;
-this.specialLabel = null;
-Clazz.instantialize (this, arguments);
-}, org.jmol.shape, "Hover", org.jmol.shape.TextShape);
-Clazz.defineMethod (c$, "initShape", 
-function () {
-Clazz.superCall (this, org.jmol.shape.Hover, "initShape", []);
-this.isHover = true;
-var font3d = this.gdata.getFont3DFSS ("SansSerif", "Plain", 12);
-var bgcolix = org.jmol.util.Colix.getColixS ("#FFFFC3");
-var colix = 4;
-this.currentObject = this.hoverText = org.jmol.shape.Text.newLabel (this.gdata, font3d, null, colix, bgcolix, 0, 0, 1, -2147483648, 1, 0);
-this.hoverText.setAdjustForWindow (true);
-});
-Clazz.defineMethod (c$, "setProperty", 
-function (propertyName, value, bsSelected) {
-if ("target" === propertyName) {
-if (value == null) this.atomIndex = -1;
- else {
-this.atomIndex = (value).intValue ();
-}return;
-}if ("text" === propertyName) {
-this.text = value;
-if (this.text != null && this.text.length == 0) this.text = null;
-return;
-}if ("specialLabel" === propertyName) {
-this.specialLabel = value;
-return;
-}if ("atomLabel" === propertyName) {
-var text = value;
-if (text != null && text.length == 0) text = null;
-var count = this.viewer.getAtomCount ();
-if (this.atomFormats == null || this.atomFormats.length < count) this.atomFormats =  new Array (count);
-for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) this.atomFormats[i] = text;
-
-return;
-}if ("xy" === propertyName) {
-this.xy = value;
-return;
-}if ("label" === propertyName) {
-this.labelFormat = value;
-if (this.labelFormat != null && this.labelFormat.length == 0) this.labelFormat = null;
-return;
-}if (propertyName === "deleteModelAtoms") {
-if (this.atomFormats != null) {
-var firstAtomDeleted = ((value)[2])[1];
-var nAtomsDeleted = ((value)[2])[2];
-this.atomFormats = org.jmol.util.ArrayUtil.deleteElements (this.atomFormats, firstAtomDeleted, nAtomsDeleted);
-}this.atomIndex = -1;
-return;
-}Clazz.superCall (this, org.jmol.shape.Hover, "setProperty", [propertyName, value, null]);
-}, "~S,~O,org.jmol.util.BitSet");
-Clazz.overrideMethod (c$, "getShapeState", 
-function () {
-var temp =  new java.util.Hashtable ();
-if (this.atomFormats != null) for (var i = this.viewer.getAtomCount (); --i >= 0; ) if (this.atomFormats[i] != null) org.jmol.shape.Shape.setStateInfo (temp, i, "set hoverLabel " + org.jmol.util.Escape.escapeStr (this.atomFormats[i]));
-
-return "\n  hover " + org.jmol.util.Escape.escapeStr ((this.labelFormat == null ? "" : this.labelFormat)) + ";\n" + org.jmol.shape.Shape.getShapeCommands (temp, null);
-});
-Clazz.defineStatics (c$,
-"FONTFACE", "SansSerif",
-"FONTSTYLE", "Plain",
-"FONTSIZE", 12);
-});
-// 
 //// org\jmol\render\HoverRenderer.js 
 // 
 Clazz.declarePackage ("org.jmol.render");
@@ -86576,15 +86969,297 @@ return (this.viewer.isJmolDataFrameForModel (atom.getModelIndex ()) && label.equ
 }, "org.jmol.modelset.Atom,~S");
 });
 // 
+//// org\jmol\render\MeshRenderer.js 
+// 
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.ShapeRenderer", "org.jmol.util.BitSet", "$.Point3f", "$.Point3i"], "org.jmol.render.MeshRenderer", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.mesh = null;
+this.vertices = null;
+this.normixes = null;
+this.screens = null;
+this.transformedVectors = null;
+this.vertexCount = 0;
+this.imageFontScaling = 0;
+this.scalePixelsPerMicron = 0;
+this.diameter = 0;
+this.width = 0;
+this.isTranslucent = false;
+this.frontOnly = false;
+this.antialias = false;
+this.haveBsDisplay = false;
+this.haveBsSlabDisplay = false;
+this.haveBsSlabGhost = false;
+this.thePlane = null;
+this.latticeOffset = null;
+this.pt1f = null;
+this.pt2f = null;
+this.pt1i = null;
+this.pt2i = null;
+this.pt3i = null;
+this.exportPass = 0;
+this.needTranslucent = false;
+this.doRender = false;
+this.volumeRender = false;
+this.bsSlab = null;
+this.bsPolygons = null;
+Clazz.instantialize (this, arguments);
+}, org.jmol.render, "MeshRenderer", org.jmol.render.ShapeRenderer);
+Clazz.prepareFields (c$, function () {
+this.latticeOffset =  new org.jmol.util.Point3f ();
+this.pt1f =  new org.jmol.util.Point3f ();
+this.pt2f =  new org.jmol.util.Point3f ();
+this.pt1i =  new org.jmol.util.Point3i ();
+this.pt2i =  new org.jmol.util.Point3i ();
+this.pt3i =  new org.jmol.util.Point3i ();
+this.bsPolygons =  new org.jmol.util.BitSet ();
+});
+Clazz.defineMethod (c$, "render", 
+function () {
+this.needTranslucent = false;
+this.antialias = this.g3d.isAntialiased ();
+var mc = this.shape;
+for (var i = mc.meshCount; --i >= 0; ) this.renderMesh (mc.meshes[i]);
+
+return this.needTranslucent;
+});
+Clazz.defineMethod (c$, "renderMesh", 
+function (mesh) {
+this.mesh = mesh;
+if (!this.setVariables ()) return false;
+if (!this.doRender) return mesh.title != null;
+this.latticeOffset.set (0, 0, 0);
+for (var i = this.vertexCount; --i >= 0; ) if (this.vertices[i] != null) this.viewer.transformPtScr (this.vertices[i], this.screens[i]);
+
+if (mesh.lattice == null || mesh.modelIndex < 0) {
+this.render2 (this.isExport);
+} else {
+var unitcell = mesh.unitCell;
+if (unitcell == null) unitcell = this.viewer.getModelUnitCell (mesh.modelIndex);
+if (unitcell == null) unitcell = mesh.getUnitCell ();
+if (unitcell != null) {
+var vTemp =  new org.jmol.util.Point3f ();
+var minXYZ =  new org.jmol.util.Point3i ();
+var maxXYZ = org.jmol.util.Point3i.new3 (Clazz.floatToInt (mesh.lattice.x), Clazz.floatToInt (mesh.lattice.y), Clazz.floatToInt (mesh.lattice.z));
+unitcell.setMinMaxLatticeParameters (minXYZ, maxXYZ);
+for (var tx = minXYZ.x; tx < maxXYZ.x; tx++) for (var ty = minXYZ.y; ty < maxXYZ.y; ty++) for (var tz = minXYZ.z; tz < maxXYZ.z; tz++) {
+this.latticeOffset.set (tx, ty, tz);
+unitcell.toCartesian (this.latticeOffset, false);
+for (var i = this.vertexCount; --i >= 0; ) {
+vTemp.setT (this.vertices[i]);
+vTemp.add (this.latticeOffset);
+this.viewer.transformPtScr (vTemp, this.screens[i]);
+}
+this.render2 (this.isExport);
+}
+
+
+}}if (this.screens != null) this.viewer.freeTempScreens (this.screens);
+return true;
+}, "org.jmol.shape.Mesh");
+Clazz.defineMethod (c$, "setVariables", 
+($fz = function () {
+if (this.mesh.visibilityFlags == 0) return false;
+if (this.mesh.bsSlabGhost != null) this.g3d.setColix (this.mesh.slabColix);
+this.haveBsSlabGhost = (this.mesh.bsSlabGhost != null && (this.isExport ? this.exportPass == 2 : this.g3d.isPass2 ()));
+this.isTranslucent = this.haveBsSlabGhost || org.jmol.util.Colix.isColixTranslucent (this.mesh.colix);
+if (this.isTranslucent || this.volumeRender) this.needTranslucent = true;
+this.doRender = (this.setColix (this.mesh.colix) || this.mesh.showContourLines);
+if (!this.doRender || this.haveBsSlabGhost && !(this.doRender = this.g3d.setColix (this.mesh.slabColix))) {
+this.vertices = this.mesh.vertices;
+return true;
+}this.vertices = (this.mesh.scale3d == 0 && this.mesh.mat4 == null ? this.mesh.vertices : this.mesh.getOffsetVertices (this.thePlane));
+if (this.mesh.lineData == null) {
+if ((this.vertexCount = this.mesh.vertexCount) == 0) return false;
+this.normixes = this.mesh.normixes;
+if (this.normixes == null || this.vertices == null) return false;
+this.haveBsDisplay = (this.mesh.bsDisplay != null);
+this.haveBsSlabDisplay = (this.haveBsSlabGhost || this.mesh.bsSlabDisplay != null);
+this.bsSlab = (this.haveBsSlabGhost ? this.mesh.bsSlabGhost : this.haveBsSlabDisplay ? this.mesh.bsSlabDisplay : null);
+this.frontOnly = !this.viewer.getSlabEnabled () && this.mesh.frontOnly && !this.mesh.isTwoSided && !this.haveBsSlabDisplay;
+this.screens = this.viewer.allocTempScreens (this.vertexCount);
+if (this.frontOnly) this.transformedVectors = this.g3d.getTransformedVertexVectors ();
+if (this.transformedVectors == null) this.frontOnly = false;
+}return true;
+}, $fz.isPrivate = true, $fz));
+Clazz.defineMethod (c$, "setColix", 
+function (colix) {
+if (this.haveBsSlabGhost) return true;
+if (this.volumeRender && !this.isTranslucent) colix = org.jmol.util.Colix.getColixTranslucent3 (colix, true, 0.8);
+this.colix = colix;
+if (org.jmol.util.Colix.isColixLastAvailable (colix)) this.g3d.setColor (this.mesh.color);
+return this.g3d.setColix (colix);
+}, "~N");
+Clazz.defineMethod (c$, "isPolygonDisplayable", 
+function (i) {
+return true;
+}, "~N");
+Clazz.defineMethod (c$, "render2", 
+function (generateSet) {
+if (!this.g3d.setColix (this.haveBsSlabGhost ? this.mesh.slabColix : this.colix)) return;
+if (this.mesh.showPoints || this.mesh.polygonCount == 0) this.renderPoints ();
+if (this.haveBsSlabGhost ? this.mesh.slabMeshType == 1073742018 : this.mesh.drawTriangles) this.renderTriangles (false, this.mesh.showTriangles, false);
+if (this.haveBsSlabGhost ? this.mesh.slabMeshType == 1073741938 : this.mesh.fillTriangles) this.renderTriangles (true, this.mesh.showTriangles, generateSet);
+}, "~B");
+Clazz.defineMethod (c$, "renderPoints", 
+function () {
+if (this.mesh.isTriangleSet) {
+var polygonIndexes = this.mesh.polygonIndexes;
+var bsPoints = org.jmol.util.BitSetUtil.newBitSet (this.mesh.vertexCount);
+if (this.haveBsDisplay) {
+bsPoints.setBits (0, this.mesh.vertexCount);
+bsPoints.andNot (this.mesh.bsDisplay);
+}for (var i = this.mesh.polygonCount; --i >= 0; ) {
+if (!this.isPolygonDisplayable (i)) continue;
+var p = polygonIndexes[i];
+if (this.frontOnly && this.transformedVectors[this.normixes[i]].z < 0) continue;
+for (var j = p.length - 1; --j >= 0; ) {
+var pt = p[j];
+if (bsPoints.get (pt)) continue;
+bsPoints.set (pt);
+this.g3d.fillSphereI (4, this.screens[pt]);
+}
+}
+return;
+}for (var i = this.vertexCount; --i >= 0; ) if (!this.frontOnly || this.transformedVectors[this.normixes[i]].z >= 0) this.g3d.fillSphereI (4, this.screens[i]);
+
+});
+Clazz.defineMethod (c$, "renderTriangles", 
+function (fill, iShowTriangles, generateSet) {
+var polygonIndexes = this.mesh.polygonIndexes;
+this.colix = (this.haveBsSlabGhost ? this.mesh.slabColix : this.mesh.colix);
+this.g3d.setColix (this.colix);
+if (generateSet) {
+if (this.frontOnly && fill) this.frontOnly = false;
+this.bsPolygons.clearAll ();
+}for (var i = this.mesh.polygonCount; --i >= 0; ) {
+if (!this.isPolygonDisplayable (i)) continue;
+var vertexIndexes = polygonIndexes[i];
+var iA = vertexIndexes[0];
+var iB = vertexIndexes[1];
+var iC = vertexIndexes[2];
+if (this.haveBsDisplay && (!this.mesh.bsDisplay.get (iA) || !this.mesh.bsDisplay.get (iB) || !this.mesh.bsDisplay.get (iC))) continue;
+if (iB == iC) {
+this.drawLine (iA, iB, fill, this.vertices[iA], this.vertices[iB], this.screens[iA], this.screens[iB]);
+continue;
+}var check;
+if (this.mesh.isTriangleSet) {
+var normix = this.normixes[i];
+if (!this.g3d.isDirectedTowardsCamera (normix)) continue;
+if (fill) {
+if (this.isExport) {
+this.g3d.fillTriangle3CN (this.screens[iC], this.colix, normix, this.screens[iB], this.colix, normix, this.screens[iA], this.colix, normix);
+} else if (iShowTriangles) {
+this.g3d.fillTriangle (this.screens[iA], this.colix, normix, this.screens[iB], this.colix, normix, this.screens[iC], this.colix, normix, 0.1);
+} else {
+this.g3d.fillTriangle3CN (this.screens[iA], this.colix, normix, this.screens[iB], this.colix, normix, this.screens[iC], this.colix, normix);
+}continue;
+}check = vertexIndexes[3];
+if (iShowTriangles) check = 7;
+if ((check & 1) == 1) this.drawLine (iA, iB, true, this.vertices[iA], this.vertices[iB], this.screens[iA], this.screens[iB]);
+if ((check & 2) == 2) this.drawLine (iB, iC, true, this.vertices[iB], this.vertices[iC], this.screens[iB], this.screens[iC]);
+if ((check & 4) == 4) this.drawLine (iA, iC, true, this.vertices[iA], this.vertices[iC], this.screens[iA], this.screens[iC]);
+continue;
+}var nA = this.normixes[iA];
+var nB = this.normixes[iB];
+var nC = this.normixes[iC];
+check = this.checkNormals (nA, nB, nC);
+if (fill && check != 7) continue;
+switch (vertexIndexes.length) {
+case 3:
+if (fill) {
+if (generateSet) {
+this.bsPolygons.set (i);
+continue;
+}if (iShowTriangles) {
+this.g3d.fillTriangle (this.screens[iA], this.colix, nA, this.screens[iB], this.colix, nB, this.screens[iC], this.colix, nC, 0.1);
+continue;
+}this.g3d.fillTriangle3CN (this.screens[iA], this.colix, nA, this.screens[iB], this.colix, nB, this.screens[iC], this.colix, nC);
+continue;
+}this.drawTriangle (this.screens[iA], this.colix, this.screens[iB], this.colix, this.screens[iC], this.colix, check, 1);
+continue;
+case 4:
+var iD = vertexIndexes[3];
+var nD = this.normixes[iD];
+if (this.frontOnly && (check != 7 || this.transformedVectors[nD].z < 0)) continue;
+if (fill) {
+if (generateSet) {
+this.bsPolygons.set (i);
+continue;
+}this.g3d.fillQuadrilateral3i (this.screens[iA], this.colix, nA, this.screens[iB], this.colix, nB, this.screens[iC], this.colix, nC, this.screens[iD], this.colix, nD);
+continue;
+}this.g3d.drawQuadrilateral (this.colix, this.screens[iA], this.screens[iB], this.screens[iC], this.screens[iD]);
+}
+}
+if (generateSet) this.exportSurface (this.colix);
+}, "~B,~B,~B");
+Clazz.defineMethod (c$, "drawTriangle", 
+function (screenA, colixA, screenB, colixB, screenC, colixC, check, diam) {
+if (this.antialias || diam != 1) {
+if (this.antialias) diam <<= 1;
+if ((check & 1) == 1) this.g3d.fillCylinderXYZ (colixA, colixB, 1, diam, screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
+if ((check & 2) == 2) this.g3d.fillCylinderXYZ (colixB, colixC, 1, diam, screenB.x, screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
+if ((check & 4) == 4) this.g3d.fillCylinderXYZ (colixA, colixC, 1, diam, screenA.x, screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
+} else {
+this.g3d.drawTriangle3C (screenA, colixA, screenB, colixB, screenC, colixC, check);
+}}, "org.jmol.util.Point3i,~N,org.jmol.util.Point3i,~N,org.jmol.util.Point3i,~N,~N,~N");
+Clazz.defineMethod (c$, "checkNormals", 
+function (nA, nB, nC) {
+var check = 7;
+if (this.frontOnly) {
+if (this.transformedVectors[nA].z < 0) check ^= 1;
+if (this.transformedVectors[nB].z < 0) check ^= 2;
+if (this.transformedVectors[nC].z < 0) check ^= 4;
+}return check;
+}, "~N,~N,~N");
+Clazz.defineMethod (c$, "drawLine", 
+function (iA, iB, fill, vA, vB, sA, sB) {
+var endCap = (iA != iB && !fill ? 0 : this.width < 0 || this.width == -0.0 || iA != iB && this.isTranslucent ? 2 : 3);
+if (this.width == 0) {
+if (this.diameter == 0) this.diameter = (this.mesh.diameter > 0 ? this.mesh.diameter : iA == iB ? 7 : 3);
+if (this.exportType == 1) {
+this.pt1f.setT (vA);
+this.pt1f.add (vB);
+this.pt1f.scale (0.5);
+this.viewer.transformPtScr (this.pt1f, this.pt1i);
+this.diameter = Clazz.doubleToInt (Math.floor (this.viewer.unscaleToScreen (this.pt1i.z, this.diameter) * 1000));
+}if (iA == iB) {
+this.g3d.fillSphereI (this.diameter, sA);
+} else {
+this.g3d.fillCylinder (endCap, this.diameter, sA, sB);
+}} else {
+this.pt1f.setT (vA);
+this.pt1f.add (vB);
+this.pt1f.scale (0.5);
+this.viewer.transformPtScr (this.pt1f, this.pt1i);
+var mad = Clazz.doubleToInt (Math.floor (Math.abs (this.width) * 1000));
+this.diameter = (this.exportType == 1 ? mad : this.viewer.scaleToScreen (this.pt1i.z, mad));
+if (this.diameter == 0) this.diameter = 1;
+this.viewer.transformPt3f (vA, this.pt1f);
+this.viewer.transformPt3f (vB, this.pt2f);
+this.g3d.fillCylinderBits (endCap, this.diameter, this.pt1f, this.pt2f);
+}}, "~N,~N,~B,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3i,org.jmol.util.Point3i");
+Clazz.defineMethod (c$, "exportSurface", 
+function (colix) {
+this.mesh.normals = this.mesh.getNormals (this.vertices, null);
+this.mesh.bsPolygons = this.bsPolygons;
+this.mesh.offset = this.latticeOffset;
+this.g3d.drawSurface (this.mesh, colix);
+this.mesh.normals = null;
+this.mesh.bsPolygons = null;
+}, "~N");
+});
+// 
 //// org\jmol\exportjs\Export3D.js 
 // 
 Clazz.declarePackage ("org.jmol.exportjs");
-Clazz.load (["org.jmol.api.JmolRendererInterface", "org.jmol.util.Point3f", "$.Point3i"], "org.jmol.exportjs.Export3D", null, function () {
+Clazz.load (["org.jmol.api.JmolRendererInterface", "org.jmol.util.Point3f", "$.Point3i"], "org.jmol.exportjs.Export3D", ["org.jmol.g3d.HermiteRenderer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.exporter = null;
 this.privateKey = 0;
 this.g3d = null;
 this.colix = 0;
+this.hermite3d = null;
 this.width = 0;
 this.height = 0;
 this.slab = 0;
@@ -86607,6 +87282,7 @@ this.ptBi =  new org.jmol.util.Point3i ();
 });
 Clazz.makeConstructor (c$, 
 function () {
+this.hermite3d =  new org.jmol.g3d.HermiteRenderer (this);
 });
 Clazz.overrideMethod (c$, "getExportType", 
 function () {
@@ -86837,13 +87513,16 @@ this.exporter.fillConeScreen (this.colix, endcap, screenDiameter, pointBase, scr
 }, "~N,~N,org.jmol.util.Point3f,org.jmol.util.Point3f");
 Clazz.overrideMethod (c$, "drawHermite4", 
 function (tension, s0, s1, s2, s3) {
+this.hermite3d.renderHermiteRope (false, tension, 0, 0, 0, s0, s1, s2, s3);
 }, "~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
 Clazz.overrideMethod (c$, "fillHermite", 
 function (tension, diameterBeg, diameterMid, diameterEnd, s0, s1, s2, s3) {
+this.hermite3d.renderHermiteRope (true, tension, diameterBeg, diameterMid, diameterEnd, s0, s1, s2, s3);
 }, "~N,~N,~N,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
 Clazz.overrideMethod (c$, "drawHermite7", 
-function (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio) {
-}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N");
+function (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, colixBack) {
+this.hermite3d.renderHermiteRibbon (fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7, aspectRatio, 0);
+}, "~B,~B,~N,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i,~N,~N");
 Clazz.overrideMethod (c$, "drawTriangle3C", 
 function (screenA, colixA, screenB, colixB, screenC, colixC, check) {
 if ((check & 1) == 1) this.drawLine (colixA, colixB, screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
@@ -86873,9 +87552,9 @@ this.ptC.set (xpointC, ypointC, zpointC);
 this.exporter.fillTriangle (this.colix, this.ptA, this.ptB, this.ptC, true, false);
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "fillTriangle3f", 
-function (pointA, pointB, pointC) {
+function (pointA, pointB, pointC, setNoisy) {
 this.exporter.fillTriangle (this.colix, pointA, pointB, pointC, false, false);
-}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,~B");
 Clazz.overrideMethod (c$, "fillTriangle3i", 
 function (pointA, pointB, pointC, ptA, ptB, ptC) {
 this.exporter.fillTriangle (this.colix, ptA, ptB, ptC, true, true);
@@ -87588,7 +88267,7 @@ return false;
 // 
 //// java\io\FileOutputStream.js 
 // 
-$_L(["java.io.Closeable","$.OutputStream"],"java.io.FileOutputStream",["java.lang.IndexOutOfBoundsException","$.NullPointerException"],function(){
+$_L(["java.io.Closeable","$.OutputStream"],"java.io.FileOutputStream",["java.lang.IndexOutOfBoundsException","$.NullPointerException",null],function(){
 c$=$_C(function(){
 this.fd=null;
 this.innerFD=false;

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.api.VertexDataServer", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.SurfaceReader", ["java.lang.Float", "javax.util.BitSet", "org.jmol.jvxl.calc.MarchingCubes", "$.MarchingSquares", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.util.BoxInfo", "$.Colix", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.api.VertexDataServer", "org.jmol.util.Point3f"], "org.jmol.jvxl.readers.SurfaceReader", ["java.lang.Float", "org.jmol.jvxl.calc.MarchingCubes", "$.MarchingSquares", "org.jmol.jvxl.data.JvxlCoder", "$.MeshData", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BoxInfo", "$.Colix", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.sg = null;
 this.meshDataServer = null;
@@ -68,7 +68,7 @@ this.haveSetAnisotropy = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "SurfaceReader", null, org.jmol.jvxl.api.VertexDataServer);
 Clazz.prepareFields (c$, function () {
-this.ptTemp =  new javax.vecmath.Point3f ();
+this.ptTemp =  new org.jmol.util.Point3f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -95,14 +95,14 @@ this.meshData = sg.getMeshData ();
 this.jvxlData = sg.getJvxlData ();
 this.setVolumeData (sg.getVolumeData ());
 this.meshDataServer = sg.getMeshDataServer ();
-this.cJvxlEdgeNaN = String.fromCharCode ((125));
+this.cJvxlEdgeNaN = String.fromCharCode (125);
 }, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.defineMethod (c$, "setOutputStream", 
 function (os) {
 }, "java.io.OutputStream");
 Clazz.defineMethod (c$, "newVoxelDataCube", 
 function () {
-this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0));
+this.volumeData.setVoxelDataAsArray (this.voxelData =  Clazz.newFloatArray (this.nPointsX, this.nPointsY, this.nPointsZ, 0));
 });
 Clazz.defineMethod (c$, "setVolumeData", 
 function (v) {
@@ -215,7 +215,7 @@ this.params.mappedDataMin = 3.4028235E38;
 });
 Clazz.defineMethod (c$, "discardTempData", 
 function (discardAll) {
-if (!discardAll) return ;
+if (!discardAll) return;
 this.voxelData = null;
 this.sg.setMarchingSquares (this.marchingSquares = null);
 this.marchingCubes = null;
@@ -260,9 +260,9 @@ Clazz.defineMethod (c$, "initPlanes",
 function () {
 this.yzCount = this.nPointsY * this.nPointsZ;
 if (!this.isQuiet) org.jmol.util.Logger.info ("reading data progressively -- yzCount = " + this.yzCount);
-this.yzPlanes =  Clazz.newArray (2, 0);
-this.yzPlanes[0] =  Clazz.newArray (this.yzCount, 0);
-this.yzPlanes[1] =  Clazz.newArray (this.yzCount, 0);
+this.yzPlanes = org.jmol.util.ArrayUtil.newFloat2 (2);
+this.yzPlanes[0] =  Clazz.newFloatArray (this.yzCount, 0);
+this.yzPlanes[1] =  Clazz.newFloatArray (this.yzCount, 0);
 });
 Clazz.overrideMethod (c$, "getValue", 
 function (x, y, z, ptyz) {
@@ -277,13 +277,13 @@ try {
 this.readSurfaceData (false);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-e.printStackTrace ();
+System.out.println (e.getMessage ());
 org.jmol.util.Logger.error ("Exception in SurfaceReader::readSurfaceData: " + e.getMessage ());
 } else {
 throw e;
 }
 }
-return ;
+return;
 }this.contourVertexCount = 0;
 var contourType = -1;
 this.marchingSquares = null;
@@ -316,7 +316,7 @@ this.marchingCubes.calcVertexPoint (x, y, z, vB, this.ptTemp);
 this.addVertexCopy (valueA < valueB ? pointA : this.ptTemp, Math.min (valueA, valueB), -3);
 this.addVertexCopy (valueA < valueB ? this.ptTemp : pointA, Math.max (valueA, valueB), -3);
 }return n;
-}, "~N,~B,~N,~N,~N,javax.vecmath.Point3i,~N,~N,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~B,~A");
+}, "~N,~B,~N,~N,~N,org.jmol.util.Point3i,~N,~N,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,~B,~A");
 Clazz.defineMethod (c$, "getSurfacePointAndFraction", 
 function (cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn) {
 var diff = valueB - valueA;
@@ -327,13 +327,13 @@ fraction = NaN;
 }fReturn[0] = fraction;
 ptReturn.scaleAdd2 (fraction, edgeVector, pointA);
 return valueA + fraction * diff;
-}, "~N,~B,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,~N,~N,~N,~N,~N,~A,javax.vecmath.Point3f");
+}, "~N,~B,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,~N,~N,~N,~N,~N,~A,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addVertexCopy", 
 function (vertexXYZ, value, assocVertex) {
 if (Float.isNaN (value) && assocVertex != -3) return -1;
 if (this.meshDataServer == null) return this.meshData.addVertexCopy (vertexXYZ, value, assocVertex);
 return this.meshDataServer.addVertexCopy (vertexXYZ, value, assocVertex);
-}, "javax.vecmath.Point3f,~N,~N");
+}, "org.jmol.util.Point3f,~N,~N");
 Clazz.defineMethod (c$, "addTriangleCheck", 
 function (iA, iB, iC, check, check2, isAbsolute, color) {
 if (this.marchingSquares != null && this.params.isContoured) {
@@ -367,7 +367,7 @@ this.colorFractionBase = this.jvxlData.colorFractionBase = 35;
 this.colorFractionRange = this.jvxlData.colorFractionRange = 90;
 if (this.params.colorPhase == 0) this.params.colorPhase = 1;
 if (this.meshDataServer == null) {
-this.meshData.vertexColixes =  Clazz.newArray (this.meshData.vertexCount, 0);
+this.meshData.vertexColixes =  Clazz.newShortArray (this.meshData.vertexCount, 0);
 } else {
 this.meshDataServer.fillMeshData (this.meshData, 1, null);
 if (this.params.contactPair == null) this.meshDataServer.fillMeshData (this.meshData, 2, null);
@@ -380,12 +380,12 @@ this.jvxlData.maxColorIndex = 0;
 this.jvxlData.contourValues = this.params.contoursDiscrete;
 this.jvxlData.isColorReversed = this.params.isColorReversed;
 if (!this.params.colorDensity) if (this.params.isBicolorMap && !this.params.isContoured || this.params.colorBySign) {
-this.jvxlData.minColorIndex = org.jmol.util.Colix.getColixTranslucent (org.jmol.util.Colix.getColix (this.params.isColorReversed ? this.params.colorPos : this.params.colorNeg), this.jvxlData.translucency != 0, this.jvxlData.translucency);
-this.jvxlData.maxColorIndex = org.jmol.util.Colix.getColixTranslucent (org.jmol.util.Colix.getColix (this.params.isColorReversed ? this.params.colorNeg : this.params.colorPos), this.jvxlData.translucency != 0, this.jvxlData.translucency);
+this.jvxlData.minColorIndex = org.jmol.util.Colix.getColixTranslucent3 (org.jmol.util.Colix.getColix (this.params.isColorReversed ? this.params.colorPos : this.params.colorNeg), this.jvxlData.translucency != 0, this.jvxlData.translucency);
+this.jvxlData.maxColorIndex = org.jmol.util.Colix.getColixTranslucent3 (org.jmol.util.Colix.getColix (this.params.isColorReversed ? this.params.colorNeg : this.params.colorPos), this.jvxlData.translucency != 0, this.jvxlData.translucency);
 }this.jvxlData.isTruncated = (this.jvxlData.minColorIndex >= 0 && !this.params.isContoured);
 var useMeshDataValues = this.jvxlDataIs2dContour || this.hasColorData || this.vertexDataOnly || this.params.colorDensity || this.params.isBicolorMap && !this.params.isContoured;
 if (!useMeshDataValues) {
-if (this.haveSurfaceAtoms && this.meshData.vertexSource == null) this.meshData.vertexSource =  Clazz.newArray (this.meshData.vertexCount, 0);
+if (this.haveSurfaceAtoms && this.meshData.vertexSource == null) this.meshData.vertexSource =  Clazz.newIntArray (this.meshData.vertexCount, 0);
 var min = 3.4028235E38;
 var max = -3.4028235E38;
 var value;
@@ -437,10 +437,10 @@ vertexColixes[i] = this.params.colorEncoder.getColorIndex (value);
 }}
 if ((this.params.nContours > 0 || this.jvxlData.contourValues != null) && this.jvxlData.contourColixes == null) {
 var n = (this.jvxlData.contourValues == null ? this.params.nContours : this.jvxlData.contourValues.length);
-var colors = this.jvxlData.contourColixes =  Clazz.newArray (n, 0);
+var colors = this.jvxlData.contourColixes =  Clazz.newShortArray (n, 0);
 var values = this.jvxlData.contourValues;
 if (values == null) values = this.jvxlData.contourValuesUsed;
-if (this.jvxlData.contourValuesUsed == null) this.jvxlData.contourValuesUsed = (values == null ?  Clazz.newArray (n, 0) : values);
+if (this.jvxlData.contourValuesUsed == null) this.jvxlData.contourValuesUsed = (values == null ?  Clazz.newFloatArray (n, 0) : values);
 var dv = (valueBlue - valueRed) / (n + 1);
 this.params.colorEncoder.setRange (this.params.valueMappedToRed, this.params.valueMappedToBlue, this.params.isColorReversed);
 for (var i = 0; i < n; i++) {
@@ -482,7 +482,7 @@ case 8:
 return (pt.z * pt.z * 2 - pt.x * pt.x - pt.y * pt.y > 0 ? 1 : -1);
 }
 return 1;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getMinMaxMappedValues", 
 function (haveData) {
 if (this.minMax != null && this.minMax[0] != 3.4028235E38) return this.minMax;
@@ -491,8 +491,10 @@ var min = 3.4028235E38;
 var max = -3.4028235E38;
 if (this.params.usePropertyForColorRange && this.params.theProperty != null) {
 for (var i = 0; i < this.params.theProperty.length; i++) {
-if (this.params.rangeSelected && !this.params.bsSelected.get (i)) continue ;var p = this.params.theProperty[i];
-if (Float.isNaN (p)) continue ;if (p < min) min = p;
+if (this.params.rangeSelected && !this.params.bsSelected.get (i)) continue;
+var p = this.params.theProperty[i];
+if (Float.isNaN (p)) continue;
+if (p < min) min = p;
 if (p > max) max = p;
 }
 return (this.minMax = [min, max]);
@@ -519,7 +521,7 @@ Clazz.defineMethod (c$, "updateSurfaceData",
 function () {
 this.meshData.setVertexSets (true);
 this.updateTriangles ();
-if (this.params.bsExcluded[1] == null) this.params.bsExcluded[1] =  new javax.util.BitSet ();
+if (this.params.bsExcluded[1] == null) this.params.bsExcluded[1] =  new org.jmol.util.BitSet ();
 this.meshData.updateInvalidatedVertices (this.params.bsExcluded[1]);
 });
 Clazz.defineMethod (c$, "selectPocket", 
@@ -557,17 +559,17 @@ pt.x *= this.anisotropy[0];
 pt.y *= this.anisotropy[1];
 pt.z *= this.anisotropy[2];
 pt.add (this.center);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setVectorAnisotropy", 
 function (v) {
 this.haveSetAnisotropy = true;
 v.x *= this.anisotropy[0];
 v.y *= this.anisotropy[1];
 v.z *= this.anisotropy[2];
-}, "javax.vecmath.Vector3f");
+}, "org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "setVolumetricAnisotropy", 
 function () {
-if (this.haveSetAnisotropy) return ;
+if (this.haveSetAnisotropy) return;
 this.setVolumetricOriginAnisotropy ();
 this.setVectorAnisotropy (this.volumetricVectors[0]);
 this.setVectorAnisotropy (this.volumetricVectors[1]);
@@ -589,14 +591,14 @@ if (!Float.isNaN (p.x)) this.setBoundingBox (p, 0);
 Clazz.defineMethod (c$, "setBoundingBox", 
 function (pt, margin) {
 if (this.xyzMin == null) {
-this.xyzMin = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
-this.xyzMax = javax.vecmath.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
+this.xyzMin = org.jmol.util.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
+this.xyzMax = org.jmol.util.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
 }org.jmol.util.BoxInfo.addPoint (pt, this.xyzMin, this.xyzMax, margin);
-}, "javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "getValueAtPoint", 
 function (pt) {
 return 0;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "initializeMapping", 
 function () {
 });

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shapebio");
+Clazz.declarePackage ("org.jmol.shapebio");
 Clazz.load (["org.jmol.shapebio.BioShapeCollection"], "org.jmol.shapebio.Rockets", null, function () {
 c$ = Clazz.declareType (org.jmol.shapebio, "Rockets", org.jmol.shapebio.BioShapeCollection);
 Clazz.defineMethod (c$, "initShape", 

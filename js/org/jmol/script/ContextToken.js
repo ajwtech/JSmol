@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.script");
+Clazz.declarePackage ("org.jmol.script");
 Clazz.load (["org.jmol.script.Token"], "org.jmol.script.ContextToken", ["java.util.Hashtable", "org.jmol.script.ScriptCompiler"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.contextVariables = null;

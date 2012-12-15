@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "javax.util.BitSet", "$.StringXBuilder", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.Escape", "$.Logger", "$.Parser", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.load (["org.jmol.adapter.readers.molxyz.MolReader", "java.util.ArrayList"], "org.jmol.adapter.readers.more.JcampdxReader", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "org.jmol.adapter.smarter.SmarterJmolAdapter", "org.jmol.util.BitSet", "$.Escape", "$.Logger", "$.Parser", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelID = null;
 this.models = null;
@@ -30,11 +30,11 @@ this.htParams.remove ("modelNumber");
 if (this.htParams.containsKey ("zipSet")) {
 this.peakIndex = this.htParams.get ("peakIndex");
 if (this.peakIndex == null) {
-this.peakIndex =  Clazz.newArray (1, 0);
+this.peakIndex =  Clazz.newIntArray (1, 0);
 this.htParams.put ("peakIndex", this.peakIndex);
 }if (!this.htParams.containsKey ("subFileName")) this.peakFilePath = org.jmol.util.Escape.escapeStr (org.jmol.util.TextFormat.split (this.filePath, '|')[0]);
 } else {
-this.peakIndex =  Clazz.newArray (1, 0);
+this.peakIndex =  Clazz.newIntArray (1, 0);
 }if (!this.checkFilterKey ("NOSYNC")) this.addJmolScript ("sync on");
 });
 Clazz.overrideMethod (c$, "checkLine", 
@@ -83,7 +83,7 @@ Clazz.defineMethod (c$, "updateModelIDs",
 var n = this.atomSetCollection.getAtomSetCount ();
 if (isFirst && n == model0 + 2) {
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("modelID", this.modelID);
-return ;
+return;
 }for (var pt = 0, i = model0; ++i < n; ) {
 this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("modelID", this.modelID + "." + (++pt), i);
 }
@@ -107,7 +107,7 @@ var modelType = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.l
 var vibScale = org.jmol.util.Parser.parseFloatStr (org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "vibrationScale"));
 if (modelType.equals ("xyzvib")) modelType = "xyz";
  else if (modelType.length == 0) modelType = null;
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 while (this.readLine () != null && !this.line.contains ("</ModelData>")) sb.append (this.line).appendC ('\n');
 
 var data = sb.toString ();
@@ -142,7 +142,7 @@ var n0 = this.atomSetCollection.getAtomSetAtomCount (ibase);
 var n = a.getAtomCount ();
 if (n % n0 != 0) {
 org.jmol.util.Logger.warn ("atom count in secondary model (" + n + ") is not a multiple of " + n0 + " -- bonding ignored");
-return ;
+return;
 }var bonds = this.atomSetCollection.getBonds ();
 var b0 = 0;
 for (var i = 0; i < ibase; i++) b0 += this.atomSetCollection.getAtomSetBondCount (i);
@@ -154,7 +154,7 @@ for (var j = 0; j < nModels; j++) {
 var i0 = a.getAtomSetAtomIndex (j) - ii0;
 if (a.getAtomSetAtomCount (j) != n0) {
 org.jmol.util.Logger.warn ("atom set atom count in secondary model (" + a.getAtomSetAtomCount (j) + ") is not equal to " + n0 + " -- bonding ignored");
-return ;
+return;
 }for (var i = b0; i < b1; i++) a.addNewBondWithOrder (bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);
 
 }
@@ -172,8 +172,8 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processPeakData", 
 ($fz = function () {
-if (this.peakData.size () == 0) return ;
-var bsModels =  new javax.util.BitSet ();
+if (this.peakData.size () == 0) return;
+var bsModels =  new org.jmol.util.BitSet ();
 var n = this.peakData.size ();
 var havePeaks = (n > 0);
 for (var p = 0; p < n; p++) {
@@ -183,7 +183,8 @@ this.modelID = org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.li
 var i = this.findModelById (this.modelID);
 if (i < 0) {
 org.jmol.util.Logger.warn ("cannot find model " + this.modelID + " required for " + this.line);
-continue ;}this.addType (i, type);
+continue;
+}this.addType (i, type);
 var title = type + ": " + org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "title");
 var key = "jdxAtomSelect_" + org.jmol.adapter.readers.more.JcampdxReader.getAttribute (this.line, "type");
 bsModels.set (i);
@@ -222,7 +223,7 @@ this.atomSetCollection.centralize ();
 Clazz.defineMethod (c$, "addType", 
 ($fz = function (imodel, type) {
 var types = this.addType (this.atomSetCollection.getAtomSetAuxiliaryInfoValue (imodel, "spectrumTypes"), type);
-if (types == null) return ;
+if (types == null) return;
 this.atomSetCollection.setAtomSetAuxiliaryInfoForSet ("spectrumTypes", types, imodel);
 var s = this.addType (this.allTypes, type);
 if (s != null) this.allTypes = s;

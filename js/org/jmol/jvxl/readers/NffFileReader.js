@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PolygonFileReader", "java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.NffFileReader", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ColorUtil", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.PolygonFileReader", "java.util.Hashtable", "org.jmol.util.Point3f"], "org.jmol.jvxl.readers.NffFileReader", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ColorUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nPolygons = 0;
 this.vertexMap = null;
@@ -8,7 +8,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "NffFileReader", org.jmol.jvxl.readers.PolygonFileReader);
 Clazz.prepareFields (c$, function () {
 this.vertexMap =  new java.util.Hashtable ();
-this.pt =  new javax.vecmath.Point3f ();
+this.pt =  new org.jmol.util.Point3f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -29,20 +29,24 @@ function () {
 var color = 0xFF0000;
 try {
 while (this.readLine () != null) {
-if (this.line.length == 0) continue ;var tokens = this.getTokens ();
+if (this.line.length == 0) continue;
+var tokens = this.getTokens ();
 switch (this.line.charAt (0)) {
 case '#':
 this.vertexMap.clear ();
-continue ;case 'f':
+continue;
+case 'f':
 color = org.jmol.util.ColorUtil.colorTriadToInt (this.parseFloatStr (tokens[1]), this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]));
-continue ;case 'p':
+continue;
+case 'p':
 if (this.line.equals ("pp 3")) {
 var i1 = this.getVertex ();
 var i2 = this.getVertex ();
 var i3 = this.getVertex ();
 this.nTriangles++;
 this.addTriangleCheck (i1, i2, i3, 7, 0, false, color);
-}continue ;}
+}continue;
+}
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {

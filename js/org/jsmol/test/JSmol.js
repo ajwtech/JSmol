@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jsmol.test");
-Clazz.load (["java.lang.Enum", "java.util.BitSet", "javax.vecmath.Point3f"], "org.jsmol.test.JSmol", ["org.jsmol.test.EnumTest"], function () {
+Clazz.declarePackage ("org.jsmol.test");
+Clazz.load (["java.lang.Enum", "org.jmol.util.BitSet", "$.Point3f"], "org.jsmol.test.JSmol", ["org.jsmol.test.EnumTest"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.testing = 22;
 Clazz.instantialize (this, arguments);
@@ -31,9 +31,9 @@ Clazz.defineEnumConstant (c$, "B", 1, []);
 Clazz.defineEnumConstant (c$, "C", 2, []);
 Clazz.defineEnumConstant (c$, "D", 3, []);
 c$ = Clazz.p0p ();
-c$.bs = c$.prototype.bs =  new java.util.BitSet ();
+c$.bs = c$.prototype.bs =  new org.jmol.util.BitSet ();
 {
 org.jsmol.test.JSmol.bs.set (5);
 org.jsmol.test.JSmol.bs.set (6);
-}c$.pt = c$.prototype.pt = javax.vecmath.Point3f.new3 (2, 3, 4);
+}c$.pt = c$.prototype.pt = org.jmol.util.Point3f.new3 (2, 3, 4);
 });

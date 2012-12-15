@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.minimize.forcefield");
-Clazz.load (["org.jmol.minimize.forcefield.ForceField", "org.jmol.script.Token"], "org.jmol.minimize.forcefield.ForceFieldUFF", ["java.io.BufferedReader", "$.InputStreamReader", "java.lang.NullPointerException", "java.util.ArrayList", "$.Hashtable", "org.jmol.minimize.forcefield.CalculationsUFF", "$.FFParam", "org.jmol.util.Elements", "$.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.minimize.forcefield");
+Clazz.load (["org.jmol.minimize.forcefield.ForceField", "org.jmol.script.Token"], "org.jmol.minimize.forcefield.ForceFieldUFF", ["java.util.ArrayList", "$.Hashtable", "org.jmol.minimize.forcefield.CalculationsUFF", "$.FFParam", "org.jmol.util.Elements", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bsAromatic = null;
 Clazz.instantialize (this, arguments);
@@ -23,7 +23,7 @@ if (org.jmol.minimize.forcefield.ForceFieldUFF.ffParams == null && (($t$ = org.j
 this.setAtomTypes (bsElements, elemnoMax);
 this.calc =  new org.jmol.minimize.forcefield.CalculationsUFF (this, org.jmol.minimize.forcefield.ForceFieldUFF.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minimizer.constraints);
 return this.calc.setupCalculations ();
-}, "javax.util.BitSet,~N");
+}, "org.jmol.util.BitSet,~N");
 Clazz.defineMethod (c$, "setAtomTypes", 
 ($fz = function (bsElements, elemnoMax) {
 var nTypes = org.jmol.minimize.forcefield.ForceFieldUFF.atomTypes.size ();
@@ -31,23 +31,24 @@ bsElements.clear (0);
 for (var i = 0; i < nTypes; i++) {
 var data = org.jmol.minimize.forcefield.ForceFieldUFF.atomTypes.get (i);
 var smarts = data[0];
-if (smarts == null) continue ;var search = this.getSearch (smarts, elemnoMax, bsElements);
+if (smarts == null) continue;
+var search = this.getSearch (smarts, elemnoMax, bsElements);
 if (bsElements.get (0)) bsElements.clear (0);
  else if (search == null) break;
  else for (var j = this.minimizer.bsAtoms.nextSetBit (0), pt = 0; j < this.minimizer.atoms.length && j >= 0; j = this.minimizer.bsAtoms.nextSetBit (j + 1), pt++) if (search.get (j)) this.minAtoms[pt].sType = data[1].intern ();
 
 }
-}, $fz.isPrivate = true, $fz), "javax.util.BitSet,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.BitSet,~N");
 Clazz.defineMethod (c$, "getSearch", 
 ($fz = function (smarts, elemnoMax, bsElements) {
 var search = null;
 var len = smarts.length;
 search = org.jmol.minimize.forcefield.ForceFieldUFF.tokenTypes[0];
-var n = (smarts.charAt (len - 2)).charCodeAt (0) - 48;
+var n = smarts.charCodeAt (len - 2) - 48;
 var elemNo = 0;
 if (n >= 10) n = 0;
 var isAromatic = false;
-if ((smarts.charAt (1)).charCodeAt (0) == 35) {
+if (smarts.charAt (1) == '#') {
 elemNo = org.jmol.util.Parser.parseInt (smarts.substring (2, len - 1));
 } else {
 var s = smarts.substring (1, (n > 0 ? len - 3 : len - 1));
@@ -81,34 +82,31 @@ break;
 }
 search[2].intValue = elemNo;
 var v = this.minimizer.viewer.evaluateExpression (search);
-if (!(Clazz.instanceOf (v, javax.util.BitSet))) return null;
+if (!(Clazz.instanceOf (v, org.jmol.util.BitSet))) return null;
 var bs = v;
 if (isAromatic && bs.cardinality () > 0) {
 if (this.bsAromatic == null) this.bsAromatic = this.minimizer.viewer.evaluateExpression (org.jmol.minimize.forcefield.ForceFieldUFF.tokenTypes[3]);
 bs.and (this.bsAromatic);
 }if (org.jmol.util.Logger.debugging && bs.cardinality () > 0) org.jmol.util.Logger.debug (smarts + " minimize atoms=" + bs);
 return bs;
-}, $fz.isPrivate = true, $fz), "~S,~N,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~S,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getFFParameters", 
 ($fz = function () {
 var ffParam;
 var temp =  new java.util.Hashtable ();
-var url = null;
-var fileName = "uff/UFF.txt";
+var fileName = "UFF.txt";
 var br = null;
 try {
-if ((url = this.getClass ().getResource (fileName)) == null) {
-System.err.println ("Couldn't find file: " + fileName);
-throw  new NullPointerException ();
-}br =  new java.io.BufferedReader ( new java.io.InputStreamReader (url.getContent ()));
+br = this.getBufferedReader (fileName);
 var line;
 while ((line = br.readLine ()) != null) {
 var vs = org.jmol.util.Parser.getTokens (line);
-if (vs.length < 13) continue ;if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (line);
+if (vs.length < 13) continue;
+if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info (line);
 if (line.substring (0, 5).equals ("param")) {
 ffParam =  new org.jmol.minimize.forcefield.FFParam ();
 temp.put (vs[1], ffParam);
-ffParam.dVal =  Clazz.newArray (11, 0);
+ffParam.dVal =  Clazz.newDoubleArray (11, 0);
 ffParam.sVal =  new Array (1);
 ffParam.sVal[0] = vs[1];
 ffParam.dVal[0] = org.jmol.util.Parser.parseFloatStr (vs[2]);
@@ -122,7 +120,7 @@ ffParam.dVal[7] = org.jmol.util.Parser.parseFloatStr (vs[9]);
 ffParam.dVal[8] = org.jmol.util.Parser.parseFloatStr (vs[10]);
 ffParam.dVal[9] = org.jmol.util.Parser.parseFloatStr (vs[11]);
 ffParam.dVal[10] = org.jmol.util.Parser.parseFloatStr (vs[12]);
-ffParam.iVal =  Clazz.newArray (1, 0);
+ffParam.iVal =  Clazz.newIntArray (1, 0);
 var coord = (vs[1].length > 2 ? vs[1].charAt (2) : '1');
 switch (coord) {
 case 'R':
@@ -164,13 +162,9 @@ return temp;
 Clazz.defineMethod (c$, "getAtomTypes", 
 ($fz = function () {
 var types =  new java.util.ArrayList ();
-var url = null;
-var fileName = "uff/UFF.txt";
+var fileName = "UFF.txt";
 try {
-if ((url = this.getClass ().getResource (fileName)) == null) {
-System.err.println ("Couldn't find file: " + fileName);
-throw  new NullPointerException ();
-}var br =  new java.io.BufferedReader ( new java.io.InputStreamReader (url.getContent ()));
+var br = this.getBufferedReader (fileName);
 var line;
 while ((line = br.readLine ()) != null) {
 if (line.length > 4 && line.substring (0, 4).equals ("atom")) {

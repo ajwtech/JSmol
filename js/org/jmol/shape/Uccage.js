@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.FontLineShape"], "org.jmol.shape.Uccage", null, function () {
 c$ = Clazz.declareType (org.jmol.shape, "Uccage", org.jmol.shape.FontLineShape);
 Clazz.defineMethod (c$, "getShapeState", 

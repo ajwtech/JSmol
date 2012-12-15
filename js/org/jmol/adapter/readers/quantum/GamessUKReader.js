@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.GamessReader"], "org.jmol.adapter.readers.quantum.GamessUKReader", ["java.lang.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.AtomSetCollectionReader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.symmetries = null;
@@ -42,9 +42,10 @@ this.discardLinesUntilContains ("atom");
 this.discardLinesUntilContains ("*****");
 this.atomSetCollection.newAtomSet ();
 while (this.readLine () != null && this.line.indexOf ("*****") < 0) {
-if ((this.line.charAt (14)).charCodeAt (0) == 32) continue ;var tokens = this.getTokens ();
+if (this.line.charAt (14) == ' ') continue;
+var tokens = this.getTokens ();
 var atomName = tokens[1];
-var atomicNumber = Math.round (this.parseFloatStr (tokens[2]));
+var atomicNumber = Clazz.floatToInt (this.parseFloatStr (tokens[2]));
 var x = this.parseFloatStr (tokens[3]);
 var y = this.parseFloatStr (tokens[4]);
 var z = this.parseFloatStr (tokens[5]);
@@ -73,7 +74,7 @@ this.occupancies.add ( new Float (this.parseFloatStr (tokens[5])));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setOrbitalSymmetryAndOccupancy", 
 ($fz = function () {
-if (this.symmetries.size () < this.orbitals.size ()) return ;
+if (this.symmetries.size () < this.orbitals.size ()) return;
 for (var i = this.orbitals.size (); --i >= 0; ) {
 var mo = this.orbitals.get (i);
 mo.put ("symmetry", this.symmetries.get (i));

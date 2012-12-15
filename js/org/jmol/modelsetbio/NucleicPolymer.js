@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.BioPolymer"], "org.jmol.modelsetbio.NucleicPolymer", ["javax.vecmath.Point4f", "$.Vector3f", "org.jmol.modelset.HBond", "org.jmol.util.Measure"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelsetbio.BioPolymer"], "org.jmol.modelsetbio.NucleicPolymer", ["org.jmol.modelset.HBond", "org.jmol.util.Measure", "$.Point4f", "$.Vector3f"], function () {
 c$ = Clazz.declareType (org.jmol.modelsetbio, "NucleicPolymer", org.jmol.modelsetbio.BioPolymer);
 Clazz.makeConstructor (c$, 
 function (monomers) {
@@ -36,24 +36,28 @@ return true;
 Clazz.overrideMethod (c$, "calcRasmolHydrogenBonds", 
 function (polymer, bsA, bsB, vAtoms, nMaxPerResidue, min, checkDistances, dsspIgnoreHydrogens) {
 var other = polymer;
-var vNorm =  new javax.vecmath.Vector3f ();
-var vAB =  new javax.vecmath.Vector3f ();
-var vAC =  new javax.vecmath.Vector3f ();
+var vNorm =  new org.jmol.util.Vector3f ();
+var vAB =  new org.jmol.util.Vector3f ();
+var vAC =  new org.jmol.util.Vector3f ();
 for (var i = this.monomerCount; --i >= 0; ) {
 var myNucleotide = this.monomers[i];
-if (!myNucleotide.isPurine ()) continue ;var myN3 = myNucleotide.getN3 ();
+if (!myNucleotide.isPurine ()) continue;
+var myN3 = myNucleotide.getN3 ();
 var isInA = bsA.get (myN3.index);
-if (!isInA && !bsB.get (myN3.index)) continue ;var myN1 = myNucleotide.getN1 ();
+if (!isInA && !bsB.get (myN3.index)) continue;
+var myN1 = myNucleotide.getN1 ();
 var myN9 = myNucleotide.getN0 ();
-var plane =  new javax.vecmath.Point4f ();
+var plane =  new org.jmol.util.Point4f ();
 org.jmol.util.Measure.getPlaneThroughPoints (myN3, myN1, myN9, vNorm, vAB, vAC, plane);
 var bestN3 = null;
 var minDist2 = 25;
 var bestNucleotide = null;
 for (var j = other.monomerCount; --j >= 0; ) {
 var otherNucleotide = other.monomers[j];
-if (!otherNucleotide.isPyrimidine ()) continue ;var otherN3 = otherNucleotide.getN3 ();
-if (isInA ? !bsB.get (otherN3.index) : !bsA.get (otherN3.index)) continue ;var otherN1 = otherNucleotide.getN0 ();
+if (!otherNucleotide.isPyrimidine ()) continue;
+var otherN3 = otherNucleotide.getN3 ();
+if (isInA ? !bsB.get (otherN3.index) : !bsA.get (otherN3.index)) continue;
+var otherN1 = otherNucleotide.getN0 ();
 var dist2 = myN1.distanceSquared (otherN3);
 if (dist2 < minDist2 && myN9.distanceSquared (otherN1) > 50 && Math.abs (org.jmol.util.Measure.distanceToPlane (plane, otherN3)) < 1) {
 bestNucleotide = otherNucleotide;
@@ -63,13 +67,16 @@ minDist2 = dist2;
 var n = 0;
 if (bestN3 != null) {
 n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myN1, bestN3);
-if (n >= nMaxPerResidue) continue ;if (myNucleotide.isGuanine ()) {
+if (n >= nMaxPerResidue) continue;
+if (myNucleotide.isGuanine ()) {
 n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.getN2 (), bestNucleotide.getO2 ());
-if (n >= nMaxPerResidue) continue ;n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.getO6 (), bestNucleotide.getN4 ());
-if (n >= nMaxPerResidue) continue ;} else {
+if (n >= nMaxPerResidue) continue;
+n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.getO6 (), bestNucleotide.getN4 ());
+if (n >= nMaxPerResidue) continue;
+} else {
 n += org.jmol.modelsetbio.NucleicPolymer.addHydrogenBond (vAtoms, myNucleotide.getN6 (), bestNucleotide.getO4 ());
 }}}
-}, "org.jmol.modelsetbio.BioPolymer,javax.util.BitSet,javax.util.BitSet,java.util.List,~N,~A,~B,~B");
+}, "org.jmol.modelsetbio.BioPolymer,org.jmol.util.BitSet,org.jmol.util.BitSet,java.util.List,~N,~A,~B,~B");
 c$.addHydrogenBond = Clazz.defineMethod (c$, "addHydrogenBond", 
 function (vAtoms, atom1, atom2) {
 if (atom1 == null || atom2 == null) return 0;
@@ -79,5 +86,5 @@ return 1;
 Clazz.defineMethod (c$, "getPdbData", 
 function (viewer, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten) {
 org.jmol.modelsetbio.BioPolymer.getPdbData (viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
-}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,javax.util.BitSet,javax.util.BitSet,~B,~B,~B,~A,org.jmol.util.OutputStringBuilder,javax.util.StringXBuilder,javax.util.BitSet");
+}, "org.jmol.viewer.Viewer,~S,~S,~N,~N,org.jmol.util.BitSet,org.jmol.util.BitSet,~B,~B,~B,~A,org.jmol.io.OutputStringBuilder,org.jmol.util.StringXBuilder,org.jmol.util.BitSet");
 });

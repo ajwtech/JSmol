@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "javax.vecmath.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.shapespecial");
+Clazz.load (["java.lang.Enum", "org.jmol.shape.MeshCollection", "org.jmol.util.Point3i", "$.Vector3f"], "org.jmol.shapespecial.Draw", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.shapespecial.DrawMesh", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Measure", "$.MeshSurface", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmeshes = null;
 this.thisMesh = null;
@@ -46,10 +46,10 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial, "Draw", org.jmol.shape.MeshCollection);
 Clazz.prepareFields (c$, function () {
 this.dmeshes =  new Array (4);
-this.offset =  new javax.vecmath.Vector3f ();
-this.vAB =  new javax.vecmath.Vector3f ();
-this.vAC =  new javax.vecmath.Vector3f ();
-this.ptXY =  new javax.vecmath.Point3i ();
+this.offset =  new org.jmol.util.Vector3f ();
+this.vAB =  new org.jmol.util.Vector3f ();
+this.vAC =  new org.jmol.util.Vector3f ();
+this.ptXY =  new org.jmol.util.Point3i ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -70,7 +70,7 @@ function (propertyName, value, bs) {
 this.currentMesh = this.thisMesh;
 Clazz.superCall (this, org.jmol.shapespecial.Draw, "setProperty", [propertyName, value, bs]);
 this.thisMesh = this.currentMesh;
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "initShape", 
 function () {
 Clazz.superCall (this, org.jmol.shapespecial.Draw, "initShape", []);
@@ -102,112 +102,112 @@ this.boundBox = null;
 this.explicitID = false;
 this.setPropertySuper ("thisID", "+PREVIOUS_MESH+", null);
 this.setPropertySuper ("init", value, bs);
-return ;
+return;
 }if ("length" === propertyName) {
 this.length = (value).floatValue ();
-return ;
+return;
 }if ("fixed" === propertyName) {
 this.isFixed = (value).booleanValue ();
-return ;
+return;
 }if ("intersect" === propertyName) {
-if (Clazz.instanceOf (value, Array)) this.boundBox = value;
- else this.intersectID = value;
-return ;
+if (Clazz.instanceOf (value, String)) this.intersectID = value;
+ else this.boundBox = value;
+return;
 }if ("slab" === propertyName) {
 var meshIndex = this.getIndexFromName (value);
 if (meshIndex < 0) {
-return ;
+return;
 }var m = this.meshes[meshIndex];
-if (m.checkByteCount != 1) return ;
-this.slabData = org.jmol.util.MeshSurface.newSlab (m.vertices, m.vertexCount,  Clazz.newArray (m.vertexCount, 0), m.polygonIndexes, m.polygonCount, 1);
-return ;
+if (m.checkByteCount != 1) return;
+this.slabData = org.jmol.util.MeshSurface.newSlab (m.vertices, m.vertexCount,  Clazz.newFloatArray (m.vertexCount, 0), m.polygonIndexes, m.polygonCount, 1);
+return;
 }if ("lineData" === propertyName) {
 this.lineData =  new java.util.ArrayList ();
 if (this.indicatedModelIndex < 0) this.indicatedModelIndex = this.viewer.getCurrentModelIndex ();
 var fdata = value;
-var n = Math.floor (fdata.length / 6);
-for (var i = 0, pt = 0; i < n; i++) this.lineData.add ([javax.vecmath.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++]), javax.vecmath.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++])]);
+var n = Clazz.doubleToInt (fdata.length / 6);
+for (var i = 0, pt = 0; i < n; i++) this.lineData.add ([org.jmol.util.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++]), org.jmol.util.Point3f.new3 (fdata[pt++], fdata[pt++], fdata[pt++])]);
 
-return ;
+return;
 }if ("modelIndex" === propertyName) {
 this.indicatedModelIndex = (value).intValue ();
-if (this.indicatedModelIndex < 0 || this.indicatedModelIndex >= this.viewer.getModelCount ()) return ;
+if (this.indicatedModelIndex < 0 || this.indicatedModelIndex >= this.viewer.getModelCount ()) return;
 this.vData.add ([Integer.$valueOf (4), (this.modelInfo = [this.indicatedModelIndex, 0])]);
-return ;
+return;
 }if ("planedef" === propertyName) {
 this.plane = value;
-if (this.intersectID != null || this.boundBox != null || this.slabData != null) return ;
+if (this.intersectID != null || this.boundBox != null || this.slabData != null) return;
 if (this.isCircle || this.isArc) this.isPlane = true;
-this.vData.add ([Integer.$valueOf (1), javax.vecmath.Point3f.new3 (NaN, NaN, NaN)]);
-return ;
+this.vData.add ([Integer.$valueOf (1), org.jmol.util.Point3f.new3 (NaN, NaN, NaN)]);
+return;
 }if ("perp" === propertyName) {
 this.isPerpendicular = true;
-return ;
+return;
 }if ("cylinder" === propertyName) {
 this.isCylinder = true;
-return ;
+return;
 }if ("plane" === propertyName) {
 this.isPlane = true;
-return ;
+return;
 }if ("curve" === propertyName) {
 this.isCurve = true;
-return ;
+return;
 }if ("arrow" === propertyName) {
 this.isArrow = true;
-return ;
+return;
 }if ("line" === propertyName) {
 this.isLine = true;
 this.isCurve = true;
-return ;
+return;
 }if ("arc" === propertyName) {
 this.isCurve = true;
 this.isArc = true;
 if (this.isArrow) {
 this.isArrow = false;
 this.isVector = true;
-}return ;
+}return;
 }if ("circle" === propertyName) {
 this.isCircle = true;
-return ;
+return;
 }if ("vector" === propertyName) {
 this.isArrow = true;
 this.isVector = true;
-return ;
+return;
 }if ("vertices" === propertyName) {
 this.isVertices = true;
-return ;
+return;
 }if ("reverse" === propertyName) {
 this.isReversed = true;
-return ;
+return;
 }if ("nohead" === propertyName) {
 this.noHead = true;
-return ;
+return;
 }if ("isbarb" === propertyName) {
 this.isBarb = true;
-return ;
+return;
 }if ("rotate45" === propertyName) {
 this.isRotated45 = true;
-return ;
+return;
 }if ("crossed" === propertyName) {
 this.isCrossed = true;
-return ;
+return;
 }if ("points" === propertyName) {
 this.newScale = (value).floatValue () / 100;
 if (this.newScale == 0) this.newScale = 1;
-return ;
+return;
 }if ("scale" === propertyName) {
 this.newScale = (value).floatValue () / 100;
 if (this.newScale == 0) this.newScale = 0.01;
 if (this.thisMesh != null) {
 org.jmol.shapespecial.Draw.scaleDrawing (this.thisMesh, this.newScale);
 this.thisMesh.initialize (1073741964, null, null);
-}return ;
+}return;
 }if ("diameter" === propertyName) {
 this.diameter = (value).intValue ();
-return ;
+return;
 }if ("width" === propertyName) {
 this.width = (value).floatValue ();
-return ;
+return;
 }if ("identifier" === propertyName) {
 var thisID = value;
 var meshIndex = this.getIndexFromName (thisID);
@@ -218,29 +218,29 @@ this.nidentifiers++;
 } else {
 org.jmol.util.Logger.error ("draw identifier " + value + " not found");
 this.isValid = false;
-}return ;
+}return;
 }if ("polygon" === propertyName) {
 this.polygon = value;
 if (this.polygon == null) this.polygon =  new java.util.ArrayList ();
-return ;
+return;
 }if ("coord" === propertyName) {
 this.vData.add ([Integer.$valueOf (1), value]);
 if (this.indicatedModelIndex >= 0) this.modelInfo[1]++;
-return ;
+return;
 }if ("offset" === propertyName) {
-this.offset = javax.vecmath.Vector3f.newV (value);
+this.offset = org.jmol.util.Vector3f.newV (value);
 if (this.thisMesh != null) this.thisMesh.offset (this.offset);
-return ;
+return;
 }if ("atomSet" === propertyName) {
-if (org.jmol.util.BitSetUtil.cardinalityOf (value) == 0) return ;
+if (org.jmol.util.BitSetUtil.cardinalityOf (value) == 0) return;
 var bsAtoms = value;
 this.vData.add ([Integer.$valueOf (3), bsAtoms]);
 this.nbitsets++;
 if (this.isCircle && this.diameter == 0 && this.width == 0) this.width = this.viewer.calcRotationRadiusBs (bsAtoms) * 2.0;
-return ;
+return;
 }if ("modelBasedPoints" === propertyName) {
 this.vData.add ([Integer.$valueOf (5), value]);
-return ;
+return;
 }if ("set" === propertyName) {
 if (this.thisMesh == null) {
 this.allocMesh (null, null);
@@ -257,16 +257,18 @@ this.thisMesh.visible = true;
 }this.nPoints = -1;
 this.vData = null;
 this.lineData = null;
-return ;
+return;
 }if (propertyName === "deleteModelAtoms") {
 var modelIndex = ((value)[2])[0];
 for (var i = this.meshCount; --i >= 0; ) {
 var m = this.dmeshes[i];
-if (m == null) continue ;var deleteMesh = (m.modelIndex == modelIndex);
+if (m == null) continue;
+var deleteMesh = (m.modelIndex == modelIndex);
 if (m.modelFlags != null) {
 m.deleteAtoms (modelIndex);
 deleteMesh = (m.modelFlags.length () == 0);
-if (!deleteMesh) continue ;}if (deleteMesh) {
+if (!deleteMesh) continue;
+}if (deleteMesh) {
 this.meshCount--;
 if (this.meshes[i] === this.currentMesh) this.currentMesh = this.thisMesh = null;
 this.meshes = this.dmeshes = org.jmol.util.ArrayUtil.deleteElements (this.meshes, i, 1);
@@ -274,9 +276,9 @@ this.meshes = this.dmeshes = org.jmol.util.ArrayUtil.deleteElements (this.meshes
 this.meshes[i].modelIndex--;
 }}
 this.resetObjects ();
-return ;
+return;
 }this.setPropertySuper (propertyName, value, bs);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "resetObjects", 
 ($fz = function () {
 this.htObjects.clear ();
@@ -327,7 +329,7 @@ throw e;
 id = axisID;
 }var m = this.getMesh (id);
 if (m == null || m.vertices == null) return null;
-if (vertexIndex == 2147483647) return javax.vecmath.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
+if (vertexIndex == 2147483647) return org.jmol.util.Point3f.new3 (m.index + 1, this.meshCount, m.vertexCount);
 if (vertexIndex != -2147483648) vertexIndex = m.getVertexIndexFromNumber (vertexIndex);
 return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null || modelIndex < 0 || modelIndex >= m.ptCenters.length ? m.ptCenter : m.ptCenters[modelIndex]);
 }, $fz.isPrivate = true, $fz), "~S,~N,~N");
@@ -379,9 +381,9 @@ this.setPolygon (0);
 this.thisMesh.modelIndex = -1;
 this.thisMesh.setPolygonCount (modelCount);
 this.thisMesh.ptCenters =  new Array (modelCount);
-this.thisMesh.modelFlags =  new javax.util.BitSet ();
+this.thisMesh.modelFlags =  new org.jmol.util.BitSet ();
 this.thisMesh.drawTypes =  new Array (modelCount);
-this.thisMesh.drawVertexCounts =  Clazz.newArray (modelCount, 0);
+this.thisMesh.drawVertexCounts =  Clazz.newIntArray (modelCount, 0);
 this.thisMesh.vertexCount = 0;
 if (this.indicatedModelIndex >= 0) {
 this.setPoints (-1, 0);
@@ -403,7 +405,7 @@ this.thisMesh.drawVertexCount = -1;
 this.thisMesh.modelFlags.set (iModel);
 } else {
 this.thisMesh.drawTypes[iModel] = org.jmol.shapespecial.Draw.EnumDrawType.NONE;
-this.thisMesh.polygonIndexes[iModel] =  Clazz.newArray (0, 0);
+this.thisMesh.polygonIndexes[iModel] =  Clazz.newIntArray (0, 0);
 }}
 }}this.thisMesh.isVector = this.isVector;
 this.thisMesh.noHead = this.noHead;
@@ -419,7 +421,7 @@ return true;
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.overrideMethod (c$, "clean", 
 function () {
-for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] == null || this.meshes[i].vertexCount == 0 && this.meshes[i].connections == null) this.deleteMesh (i);
+for (var i = this.meshCount; --i >= 0; ) if (this.meshes[i] == null || this.meshes[i].vertexCount == 0 && this.meshes[i].connections == null) this.deleteMeshI (i);
 
 });
 Clazz.defineMethod (c$, "setIntersectData", 
@@ -430,7 +432,7 @@ if (this.plane == null) {
 var vData =  new java.util.ArrayList ();
 var data = [this.intersectID, this.plane, vData, null];
 this.viewer.getShapePropertyData (23, "intersectPlane", data);
-if (vData.size () == 0) return ;
+if (vData.size () == 0) return;
 this.indicatedModelIndex = (data[3]).intValue ();
 this.lineData = vData;
 }}, $fz.isPrivate = true, $fz));
@@ -446,13 +448,13 @@ Clazz.defineMethod (c$, "addPoint",
 ($fz = function (newPt, iModel) {
 var isOK = (iModel < 0 || this.bsAllModels.get (iModel));
 if (this.makePoints) {
-if (!isOK) return ;
-this.ptList[this.nPoints] = javax.vecmath.Point3f.newP (newPt);
+if (!isOK) return;
+this.ptList[this.nPoints] = org.jmol.util.Point3f.newP (newPt);
 if (newPt.z == 3.4028235E38 || newPt.z == -3.4028235E38) this.thisMesh.haveXyPoints = true;
 } else if (iModel >= 0) {
 this.bsAllModels.set (iModel);
 }this.nPoints++;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "setPoints", 
 ($fz = function (iModel, n) {
 this.makePoints = (n >= 0);
@@ -474,7 +476,7 @@ this.nPoints = modelInfo[1];
 var nVertices = Math.max (this.nPoints, 3);
 var n0 = this.thisMesh.vertexCount;
 if (this.nPoints > 0) {
-var p = this.thisMesh.polygonIndexes[modelIndex] =  Clazz.newArray (nVertices, 0);
+var p = this.thisMesh.polygonIndexes[modelIndex] =  Clazz.newIntArray (nVertices, 0);
 for (var j = 0; j < this.nPoints; j++) {
 info = this.vData.get (++i);
 p[j] = this.thisMesh.addVertexCopy (info[1]);
@@ -500,7 +502,7 @@ var m = this.dmeshes[idInfo[0]];
 var isReversed = (idInfo[1] == 1);
 var isVertices = (idInfo[2] == 1);
 if (m.modelIndex > 0 && m.modelIndex != iModel) return false;
-if (this.bsAllModels == null) this.bsAllModels =  new javax.util.BitSet ();
+if (this.bsAllModels == null) this.bsAllModels =  new org.jmol.util.BitSet ();
 if (this.isPlane && !this.isCircle || this.isPerpendicular || isVertices) {
 if (isReversed) {
 if (iModel < 0 || iModel >= m.polygonCount) for (var ipt = m.drawVertexCount; --ipt >= 0; ) this.addPoint (m.vertices[ipt], iModel);
@@ -518,13 +520,13 @@ if (iModel < 0 || m.ptCenters == null || m.ptCenters[iModel] == null) this.addPo
 }break;
 case 5:
 var modelBasedPoints = info[1];
-if (this.bsAllModels == null) this.bsAllModels =  new javax.util.BitSet ();
+if (this.bsAllModels == null) this.bsAllModels =  new org.jmol.util.BitSet ();
 for (var j = 0; j < modelBasedPoints.length; j++) if (iModel < 0 || j == iModel) {
 var point = org.jmol.util.Escape.unescapePointOrBitsetOrMatrixOrArray (modelBasedPoints[j]);
 this.bsAllModels.set (j);
-if (Clazz.instanceOf (point, javax.vecmath.Point3f)) {
+if (Clazz.instanceOf (point, org.jmol.util.Point3f)) {
 this.addPoint (point, j);
-} else if (Clazz.instanceOf (point, javax.util.BitSet)) {
+} else if (Clazz.instanceOf (point, org.jmol.util.BitSet)) {
 bs = point;
 if (bsModel != null) bs.and (bsModel);
 if (bs.length () > 0) this.addPoint (this.viewer.getAtomSetCenter (bs), j);
@@ -579,43 +581,43 @@ this.vAC.scale (0.005);
 this.ptList[0].sub (this.vAC);
 this.vAC.scale (2);
 }this.vAC.add (this.ptList[0]);
-this.ptList[1] = javax.vecmath.Point3f.newP (this.vAC);
+this.ptList[1] = org.jmol.util.Point3f.newP (this.vAC);
 drawType = (this.isArrow ? org.jmol.shapespecial.Draw.EnumDrawType.ARROW : this.isArc ? org.jmol.shapespecial.Draw.EnumDrawType.ARC : org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE);
 }if (this.isArc) {
 dist = Math.abs (dist);
 if (nVertices > 3) {
 } else if (nVertices == 3) {
-this.ptList[3] = javax.vecmath.Point3f.newP (this.ptList[2]);
+this.ptList[3] = org.jmol.util.Point3f.newP (this.ptList[2]);
 this.ptList[2] = org.jmol.shapespecial.Draw.randomPoint ();
 } else {
 if (nVertices == 2) {
 this.ptList[2] = org.jmol.shapespecial.Draw.randomPoint ();
-}this.ptList[3] = javax.vecmath.Point3f.new3 (0, 360, 0);
+}this.ptList[3] = org.jmol.util.Point3f.new3 (0, 360, 0);
 }if (this.plane != null) this.ptList[3].z *= dist;
 nVertices = 4;
 }this.plane = null;
 } else if (drawType === org.jmol.shapespecial.Draw.EnumDrawType.POINT) {
 var pt;
-var center =  new javax.vecmath.Point3f ();
-var normal =  new javax.vecmath.Vector3f ();
+var center =  new org.jmol.util.Point3f ();
+var normal =  new org.jmol.util.Vector3f ();
 if (nVertices == 2 && this.plane != null) {
-this.ptList[1] = javax.vecmath.Point3f.newP (this.ptList[0]);
-var vTemp =  new javax.vecmath.Vector3f ();
+this.ptList[1] = org.jmol.util.Point3f.newP (this.ptList[0]);
+var vTemp =  new org.jmol.util.Vector3f ();
 org.jmol.util.Measure.getPlaneProjection (this.ptList[1], this.plane, this.ptList[1], vTemp);
 nVertices = -2;
 if (this.isArrow) drawType = org.jmol.shapespecial.Draw.EnumDrawType.ARROW;
 this.plane = null;
 }if (nVertices == 3 && this.isPlane && !this.isPerpendicular) {
-pt = javax.vecmath.Point3f.newP (this.ptList[1]);
+pt = org.jmol.util.Point3f.newP (this.ptList[1]);
 pt.sub (this.ptList[0]);
 pt.scale (0.5);
-this.ptList[3] = javax.vecmath.Point3f.newP (this.ptList[2]);
+this.ptList[3] = org.jmol.util.Point3f.newP (this.ptList[2]);
 this.ptList[2].add (pt);
 this.ptList[3].sub (pt);
 nVertices = 4;
 } else if (nVertices >= 3 && !this.isPlane && this.isPerpendicular) {
 org.jmol.util.Measure.calcNormalizedNormal (this.ptList[0], this.ptList[1], this.ptList[2], normal, this.vAB, this.vAC);
-center =  new javax.vecmath.Point3f ();
+center =  new org.jmol.util.Point3f ();
 org.jmol.util.Measure.calcAveragePointN (this.ptList, nVertices, center);
 dist = (this.length == 3.4028235E38 ? this.ptList[0].distance (center) : this.length);
 normal.scale (dist);
@@ -631,13 +633,13 @@ if (this.isPlane && this.isRotated45) dist *= 1.4142;
 org.jmol.util.Measure.getNormalToLine (this.ptList[0], this.ptList[1], normal);
 normal.scale (dist);
 if (this.isPlane) {
-this.ptList[2] = javax.vecmath.Point3f.newP (center);
+this.ptList[2] = org.jmol.util.Point3f.newP (center);
 this.ptList[2].sub (normal);
-pt = javax.vecmath.Point3f.newP (center);
+pt = org.jmol.util.Point3f.newP (center);
 pt.add (normal);
 org.jmol.util.Measure.calcNormalizedNormal (this.ptList[0], this.ptList[1], this.ptList[2], normal, this.vAB, this.vAC);
 normal.scale (dist);
-this.ptList[3] = javax.vecmath.Point3f.newP (center);
+this.ptList[3] = org.jmol.util.Point3f.newP (center);
 this.ptList[3].add (normal);
 this.ptList[1].setT (center);
 this.ptList[1].sub (normal);
@@ -679,35 +681,37 @@ drawType = (this.thisMesh.connections == null ? org.jmol.shapespecial.Draw.EnumD
 }
 }this.thisMesh.drawType = drawType;
 this.thisMesh.drawVertexCount = nVertices;
-if (nVertices == 0) return ;
+if (nVertices == 0) return;
 var nVertices0 = this.thisMesh.vertexCount;
 for (var i = 0; i < nVertices; i++) {
 this.thisMesh.addVertexCopy (this.ptList[i]);
 }
 var npoints = (nVertices < 3 ? 3 : nVertices);
 this.thisMesh.setPolygonCount (nPoly + 1);
-this.thisMesh.polygonIndexes[nPoly] =  Clazz.newArray (npoints, 0);
+this.thisMesh.polygonIndexes[nPoly] =  Clazz.newIntArray (npoints, 0);
 for (var i = 0; i < npoints; i++) {
 this.thisMesh.polygonIndexes[nPoly][i] = nVertices0 + (i < nVertices ? i : nVertices - 1);
 }
-return ;
+return;
 }, $fz.isPrivate = true, $fz), "~N");
 c$.scaleDrawing = Clazz.defineMethod (c$, "scaleDrawing", 
 ($fz = function (mesh, newScale) {
-if (newScale == 0 || mesh.vertexCount == 0 || mesh.scale == newScale) return ;
+if (newScale == 0 || mesh.vertexCount == 0 || mesh.scale == newScale) return;
 var f = newScale / mesh.scale;
 mesh.scale = newScale;
-if (mesh.haveXyPoints || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCLE || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE) return ;
-var diff =  new javax.vecmath.Vector3f ();
+if (mesh.haveXyPoints || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.ARC || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCLE || mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.CIRCULARPLANE) return;
+var diff =  new org.jmol.util.Vector3f ();
 var iptlast = -1;
 var ipt = 0;
 for (var i = mesh.polygonCount; --i >= 0; ) {
 var center = (mesh.isVector ? mesh.vertices[0] : mesh.ptCenters == null ? mesh.ptCenter : mesh.ptCenters[i]);
-if (center == null) return ;
-if (mesh.polygonIndexes[i] == null) continue ;iptlast = -1;
+if (center == null) return;
+if (mesh.polygonIndexes[i] == null) continue;
+iptlast = -1;
 for (var iV = mesh.polygonIndexes[i].length; --iV >= 0; ) {
 ipt = mesh.polygonIndexes[i][iV];
-if (ipt == iptlast) continue ;iptlast = ipt;
+if (ipt == iptlast) continue;
+iptlast = ipt;
 diff.sub2 (mesh.vertices[ipt], center);
 diff.scale (f);
 diff.add (center);
@@ -717,13 +721,13 @@ mesh.vertices[ipt].setT (diff);
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.DrawMesh,~N");
 c$.setAxes = Clazz.defineMethod (c$, "setAxes", 
 ($fz = function (m) {
-m.axis = javax.vecmath.Vector3f.new3 (0, 0, 0);
+m.axis = org.jmol.util.Vector3f.new3 (0, 0, 0);
 m.axes =  new Array (m.polygonCount > 0 ? m.polygonCount : 1);
-if (m.vertices == null) return ;
+if (m.vertices == null) return;
 var n = 0;
 for (var i = m.polygonCount; --i >= 0; ) {
 var p = m.polygonIndexes[i];
-m.axes[i] =  new javax.vecmath.Vector3f ();
+m.axes[i] =  new org.jmol.util.Vector3f ();
 if (p == null || p.length == 0) {
 } else if (m.drawVertexCount == 2 || m.drawVertexCount < 0 && m.drawVertexCounts[i] == 2) {
 m.axes[i].sub2 (m.vertices[p[0]], m.vertices[p[1]]);
@@ -733,7 +737,7 @@ org.jmol.util.Measure.calcNormalizedNormal (m.vertices[p[0]], m.vertices[p[1]], 
 n++;
 }m.axis.add (m.axes[i]);
 }
-if (n == 0) return ;
+if (n == 0) return;
 m.axis.scale (1 / n);
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.DrawMesh");
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
@@ -741,7 +745,8 @@ function (bs) {
 for (var i = 0; i < this.meshCount; i++) {
 var m = this.dmeshes[i];
 if (m == null) {
-continue ;}m.visibilityFlags = (m.isValid && m.visible ? this.myVisibilityFlag : 0);
+continue;
+}m.visibilityFlags = (m.isValid && m.visible ? this.myVisibilityFlag : 0);
 if (m.modelIndex >= 0 && !bs.get (m.modelIndex) || m.modelFlags != null && !org.jmol.util.BitSetUtil.haveCommon (bs, m.modelFlags)) {
 m.visibilityFlags = 0;
 } else if (m.modelFlags != null) {
@@ -749,7 +754,7 @@ m.bsMeshesVisible.clearAll ();
 m.bsMeshesVisible.or (m.modelFlags);
 m.bsMeshesVisible.and (bs);
 }}
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
 function (x, y, action, bsVisible) {
 var isPickingMode = (this.viewer.getPickingMode () == 4);
@@ -772,7 +777,7 @@ this.viewer.startSpinningAxis (this.pickedMesh.vertices[this.pickedMesh.polygonI
 } else {
 this.viewer.startSpinningAxis (this.pickedMesh.vertices[this.pickedMesh.polygonIndexes[this.pickedModel][0]], this.pickedMesh.vertices[this.pickedMesh.polygonIndexes[this.pickedModel][1]], isClockwise);
 }return this.getPickedPoint (null, 0);
-}, "~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (!this.viewer.getDrawHover ()) return false;
@@ -782,10 +787,10 @@ if (this.gdata.isDisplayAntialiased ()) {
 x <<= 1;
 y <<= 1;
 }var s = (this.pickedMesh.title == null ? this.pickedMesh.thisID : this.pickedMesh.title[0]);
-if (s.length > 1 && (s.charAt (0)).charCodeAt (0) == 62) s = s.substring (1);
+if (s.length > 1 && s.charAt (0) == '>') s = s.substring (1);
 this.viewer.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectDragged", 
 function (prevX, prevY, x, y, action, bsVisible) {
 if (this.viewer.getPickingMode () != 4) return false;
@@ -801,18 +806,18 @@ var dm = this.pickedMesh;
 this.move2D (dm, dm.polygonIndexes[this.pickedModel], this.pickedVertex, x, y, moveAll);
 this.thisMesh = dm;
 return true;
-}, "~N,~N,~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "move2D", 
 ($fz = function (mesh, vertexes, iVertex, x, y, moveAll) {
-if (vertexes == null || vertexes.length == 0) return ;
+if (vertexes == null || vertexes.length == 0) return;
 if (this.gdata.isAntialiased ()) {
 x <<= 1;
 y <<= 1;
-}var pt =  new javax.vecmath.Point3f ();
+}var pt =  new org.jmol.util.Point3f ();
 var ptVertex = vertexes[iVertex];
-var coord = javax.vecmath.Point3f.newP (mesh.vertices[ptVertex]);
-var newcoord =  new javax.vecmath.Point3f ();
-var move =  new javax.vecmath.Vector3f ();
+var coord = org.jmol.util.Point3f.newP (mesh.vertices[ptVertex]);
+var newcoord =  new org.jmol.util.Point3f ();
+var move =  new org.jmol.util.Vector3f ();
 this.viewer.transformPt3f (coord, pt);
 pt.x = x;
 pt.y = y;
@@ -821,12 +826,14 @@ move.setT (newcoord);
 move.sub (coord);
 if (mesh.isTriangleSet) iVertex = ptVertex;
 var n = (!moveAll ? iVertex + 1 : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
-var bsMoved =  new javax.util.BitSet ();
+var bsMoved =  new org.jmol.util.BitSet ();
 for (var i = (moveAll ? 0 : iVertex); i < n; i++) if (moveAll || i == iVertex) {
 var k = (mesh.isTriangleSet ? i : vertexes[i]);
-if (bsMoved.get (k)) continue ;bsMoved.set (k);
+if (bsMoved.get (k)) continue;
+bsMoved.set (k);
 mesh.vertices[k].add (move);
 }
+if (mesh.altVertices != null) mesh.recalcAltVertices = true;
 mesh.setCenters ();
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.DrawMesh,~A,~N,~N,~N,~B");
 Clazz.defineMethod (c$, "findPickedObject", 
@@ -844,7 +851,8 @@ var m = this.dmeshes[i];
 if (m.visibilityFlags != 0) {
 var mCount = (m.isTriangleSet ? m.polygonCount : m.modelFlags == null ? 1 : this.viewer.getModelCount ());
 for (var iModel = mCount; --iModel >= 0; ) {
-if (m.modelFlags != null && !m.modelFlags.get (iModel) || m.polygonIndexes == null || !m.isTriangleSet && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)) continue ;for (var iVertex = (m.isTriangleSet ? 3 : m.polygonIndexes[iModel].length); --iVertex >= 0; ) {
+if (m.modelFlags != null && !m.modelFlags.get (iModel) || m.polygonIndexes == null || !m.isTriangleSet && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)) continue;
+for (var iVertex = (m.isTriangleSet ? 3 : m.polygonIndexes[iModel].length); --iVertex >= 0; ) {
 try {
 var pt = m.vertices[m.polygonIndexes[iModel][iVertex]];
 var d2 = this.coordinateInRange (x, y, pt, dmin2, this.ptXY);
@@ -865,11 +873,11 @@ throw e;
 }
 }}
 return (this.pickedMesh != null);
-}, $fz.isPrivate = true, $fz), "~N,~N,~B,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~N,~N,~B,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getDrawCommand", 
 ($fz = function (mesh) {
 if (mesh != null) return this.getDrawCommand (mesh, mesh.modelIndex);
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 var key = (this.explicitID && this.previousMeshID != null && org.jmol.util.TextFormat.isWild (this.previousMeshID) ? this.previousMeshID.toUpperCase () : null);
 if (key != null && key.length == 0) key = null;
 for (var i = 0; i < this.meshCount; i++) {
@@ -881,7 +889,7 @@ return sb.toString ();
 Clazz.defineMethod (c$, "getDrawCommand", 
 ($fz = function (mesh, iModel) {
 if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.NONE && mesh.lineData == null && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null) return "";
-var str =  new javax.util.StringXBuilder ();
+var str =  new org.jmol.util.StringXBuilder ();
 var modelCount = this.viewer.getModelCount ();
 if (!mesh.isFixed && iModel >= 0 && modelCount > 1) org.jmol.shape.Shape.appendCmd (str, "frame " + this.viewer.getModelNumberDotted (iModel));
 str.append ("  draw ID ").append (org.jmol.util.Escape.escapeStr (mesh.thisID));
@@ -956,14 +964,14 @@ for (var i = 0; i < mesh.vertexCount; i++) str.append (" ").append (org.jmol.uti
 
 str.append (" ").appendI (mesh.polygonCount);
 for (var i = 0; i < mesh.polygonCount; i++) if (mesh.polygonIndexes[i] == null) str.append (" [0 0 0 0]");
- else str.append (" ").append (org.jmol.util.Escape.escapeArray (mesh.polygonIndexes[i]));
+ else str.append (" ").append (org.jmol.util.Escape.escapeAI (mesh.polygonIndexes[i]));
 
 } else {
 var s = org.jmol.shapespecial.Draw.getVertexList (mesh, iModel, nVertices);
 if (s.indexOf ("NaN") >= 0) return "";
 str.append (s);
 }}if (mesh.mat4 != null) {
-var v =  new javax.vecmath.Vector3f ();
+var v =  new org.jmol.util.Vector3f ();
 mesh.mat4.get (v);
 str.append (" offset ").append (org.jmol.util.Escape.escapePt (v));
 }if (mesh.title != null) {
@@ -973,7 +981,7 @@ for (var i = 0; i < mesh.title.length; i++) s += "|" + mesh.title[i];
 str.append (org.jmol.util.Escape.escapeStr (s.substring (1)));
 }str.append (";\n");
 org.jmol.shape.Shape.appendCmd (str, mesh.getState ("draw"));
-org.jmol.shape.Shape.appendCmd (str, this.getColorCommand ("draw", mesh.colix));
+org.jmol.shape.Shape.appendCmd (str, this.getColorCommandUnk ("draw", mesh.colix));
 return str.toString ();
 }, $fz.isPrivate = true, $fz), "org.jmol.shapespecial.DrawMesh,~N");
 c$.isPolygonDisplayable = Clazz.defineMethod (c$, "isPolygonDisplayable", 
@@ -989,9 +997,9 @@ var adjustPt = (mesh.isVector && mesh.drawType !== org.jmol.shapespecial.Draw.En
 for (var i = 0; i < nVertices; i++) {
 var pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
 if (pt.z == 3.4028235E38 || pt.z == -3.4028235E38) {
-str += (i == 0 ? " " : " ,") + "[" + Math.round (pt.x) + " " + Math.round (pt.y) + (pt.z < 0 ? " %]" : "]");
+str += (i == 0 ? " " : " ,") + "[" + Clazz.floatToInt (pt.x) + " " + Clazz.floatToInt (pt.y) + (pt.z < 0 ? " %]" : "]");
 } else if (adjustPt && i == 1) {
-var pt1 = javax.vecmath.Point3f.newP (pt);
+var pt1 = org.jmol.util.Point3f.newP (pt);
 pt1.sub (mesh.vertices[mesh.polygonIndexes[iModel][0]]);
 str += " " + org.jmol.util.Escape.escapePt (pt1);
 } else {
@@ -1011,7 +1019,8 @@ function () {
 var V =  new java.util.ArrayList ();
 for (var i = 0; i < this.meshCount; i++) {
 var mesh = this.dmeshes[i];
-if (mesh.vertexCount == 0) continue ;var info =  new java.util.Hashtable ();
+if (mesh.vertexCount == 0) continue;
+var info =  new java.util.Hashtable ();
 info.put ("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
 info.put ("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
 info.put ("drawType", mesh.drawType.$$name);
@@ -1022,7 +1031,8 @@ if (mesh.drawType === org.jmol.shapespecial.Draw.EnumDrawType.MULTIPLE) {
 var m =  new java.util.ArrayList ();
 var modelCount = this.viewer.getModelCount ();
 for (var k = 0; k < modelCount; k++) {
-if (mesh.ptCenters[k] == null) continue ;var mInfo =  new java.util.Hashtable ();
+if (mesh.ptCenters[k] == null) continue;
+var mInfo =  new java.util.Hashtable ();
 mInfo.put ("modelIndex", Integer.$valueOf (k));
 mInfo.put ("command", this.getDrawCommand (mesh, k));
 mInfo.put ("center", mesh.ptCenters[k]);
@@ -1054,19 +1064,20 @@ return V;
 });
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 s.append ("\n");
 org.jmol.shape.Shape.appendCmd (s, "draw delete");
 for (var i = 0; i < this.meshCount; i++) {
 var mesh = this.dmeshes[i];
-if (mesh.vertexCount == 0 && mesh.lineData == null) continue ;s.append (this.getDrawCommand (mesh, mesh.modelIndex));
+if (mesh.vertexCount == 0 && mesh.lineData == null) continue;
+s.append (this.getDrawCommand (mesh, mesh.modelIndex));
 if (!mesh.visible) s.append (" draw " + mesh.thisID + " off;\n");
 }
 return s.toString ();
 });
 c$.randomPoint = Clazz.defineMethod (c$, "randomPoint", 
 function () {
-return javax.vecmath.Point3f.new3 (Math.random (), Math.random (), Math.random ());
+return org.jmol.util.Point3f.new3 (Math.random (), Math.random (), Math.random ());
 });
 Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {

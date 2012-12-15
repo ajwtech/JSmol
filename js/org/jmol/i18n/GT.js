@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.i18n");
+Clazz.declarePackage ("org.jmol.i18n");
 Clazz.load (null, "org.jmol.i18n.GT", ["java.text.MessageFormat"], function () {
 c$ = Clazz.declareType (org.jmol.i18n, "GT");
 Clazz.makeConstructor (c$, 

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.ObjReader", ["java.util.Hashtable", "javax.util.BitSet", "javax.vecmath.Point3f", "org.jmol.util.ColorUtil", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.ObjReader", ["java.util.Hashtable", "org.jmol.util.BitSet", "$.ColorUtil", "$.Parser", "$.Point3f"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "ObjReader", org.jmol.jvxl.readers.PmeshReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -14,7 +14,7 @@ this.setHeader ();
 Clazz.overrideMethod (c$, "readVertices", 
 function () {
 this.pmeshError = "pmesh ERROR: invalid vertex/face list";
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 var color = 0;
 var ia;
 var ib;
@@ -25,12 +25,13 @@ var nPts = 0;
 var htPymol =  new java.util.Hashtable ();
 var ipt = null;
 var spt = null;
-var pymolMap =  Clazz.newArray (3, 0);
-var bsOK =  new javax.util.BitSet ();
+var pymolMap =  Clazz.newIntArray (3, 0);
+var bsOK =  new org.jmol.util.BitSet ();
 while (this.readLine () != null) {
-if (this.line.length < 2 || (this.line.charAt (1)).charCodeAt (0) != 32) {
+if (this.line.length < 2 || this.line.charAt (1) != ' ') {
 if (this.params.readAllData && this.line.startsWith ("usemtl")) color = org.jmol.util.ColorUtil.getArgbFromString ("[x" + this.line.substring (8) + "]");
-continue ;}switch (this.line.charAt (0)) {
+continue;
+}switch (this.line.charAt (0)) {
 case 'v':
 this.next[0] = 2;
 pt.set (org.jmol.util.Parser.parseFloatNext (this.line, this.next), org.jmol.util.Parser.parseFloatNext (this.line, this.next), org.jmol.util.Parser.parseFloatNext (this.line, this.next));
@@ -64,16 +65,19 @@ ia = org.jmol.util.Parser.parseInt (tokens[1]) - 1;
 ib = org.jmol.util.Parser.parseInt (tokens[2]) - 1;
 ic = org.jmol.util.Parser.parseInt (tokens[3]) - 1;
 this.pmeshError = " " + ia + " " + ib + " " + ic + " " + this.line;
-if (!bsOK.get (ia) || !bsOK.get (ib) || !bsOK.get (ic)) continue ;if (vertexCount == 4) {
+if (!bsOK.get (ia) || !bsOK.get (ib) || !bsOK.get (ic)) continue;
+if (vertexCount == 4) {
 id = org.jmol.util.Parser.parseInt (tokens[4]) - 1;
 var isOK = (bsOK.get (id));
 this.nTriangles = this.addTriangleCheck (ia, ib, ic, (isOK ? 3 : 7), 0, false, color);
 if (isOK) this.nTriangles = this.addTriangleCheck (ia, ic, id, 6, 0, false, color);
-continue ;}} else {
+continue;
+}} else {
 ia = pymolMap[0];
 ib = pymolMap[1];
 ic = pymolMap[2];
-if (ia < 0 || ib < 0 || ic < 0) continue ;}this.nTriangles = this.addTriangleCheck (ia, ib, ic, 7, 0, false, color);
+if (ia < 0 || ib < 0 || ic < 0) continue;
+}this.nTriangles = this.addTriangleCheck (ia, ib, ic, 7, 0, false, color);
 break;
 case 'g':
 htPymol = null;

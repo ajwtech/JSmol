@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (null, "org.jmol.shapespecial.Dipole", ["javax.util.StringXBuilder", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.util.Colix", "$.Escape"], function () {
+Clazz.declarePackage ("org.jmol.shapespecial");
+Clazz.load (null, "org.jmol.shapespecial.Dipole", ["org.jmol.util.Colix", "$.Escape", "$.Point3f", "$.StringXBuilder", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.thisID = "";
 this.mad = 0;
@@ -44,7 +44,7 @@ this.type = 0;
 }, "~N,~S,~S,~N,~N,~B");
 Clazz.defineMethod (c$, "setTranslucent", 
 function (isTranslucent, translucentLevel) {
-this.colix = org.jmol.util.Colix.getColixTranslucent (this.colix, isTranslucent, translucentLevel);
+this.colix = org.jmol.util.Colix.getColixTranslucent3 (this.colix, isTranslucent, translucentLevel);
 }, "~B,~N");
 Clazz.defineMethod (c$, "set", 
 function (thisID, dipoleInfo, atoms, dipoleValue, mad, offsetAngstroms, offsetPercent, offsetSide, origin, vector) {
@@ -55,8 +55,8 @@ this.mad = mad;
 this.offsetAngstroms = offsetAngstroms;
 this.offsetPercent = offsetPercent;
 this.offsetSide = offsetSide;
-this.vector = javax.vecmath.Vector3f.newV (vector);
-this.origin = javax.vecmath.Point3f.newP (origin);
+this.vector = org.jmol.util.Vector3f.newV (vector);
+this.origin = org.jmol.util.Point3f.newP (origin);
 this.haveAtoms = (atoms[0] != null);
 if (this.haveAtoms) {
 this.atoms[0] = atoms[0];
@@ -64,31 +64,31 @@ this.atoms[1] = atoms[1];
 this.centerDipole ();
 } else {
 this.center = null;
-}}, "~S,~S,~A,~N,~N,~N,~N,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f");
+}}, "~S,~S,~A,~N,~N,~N,~N,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "set", 
 ($fz = function (pt1, pt2) {
-this.coords[0] = javax.vecmath.Point3f.newP (pt1);
-this.coords[1] = javax.vecmath.Point3f.newP (pt2);
+this.coords[0] = org.jmol.util.Point3f.newP (pt1);
+this.coords[1] = org.jmol.util.Point3f.newP (pt2);
 this.isValid = (this.coords[0].distance (this.coords[1]) > 0.1);
 if (this.dipoleValue < 0) {
-this.origin = javax.vecmath.Point3f.newP (pt2);
-this.vector = javax.vecmath.Vector3f.newV (pt1);
+this.origin = org.jmol.util.Point3f.newP (pt2);
+this.vector = org.jmol.util.Vector3f.newV (pt1);
 this.dipoleValue = -this.dipoleValue;
 } else {
-this.origin = javax.vecmath.Point3f.newP (pt1);
-this.vector = javax.vecmath.Vector3f.newV (pt2);
+this.origin = org.jmol.util.Point3f.newP (pt1);
+this.vector = org.jmol.util.Vector3f.newV (pt2);
 }this.dipoleInfo = "" + this.origin + this.vector;
 this.vector.sub (this.origin);
 if (this.dipoleValue == 0) this.dipoleValue = this.vector.length ();
  else this.vector.scale (this.dipoleValue / this.vector.length ());
 this.type = 1;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "set", 
 function (value) {
 var d = this.dipoleValue;
 this.dipoleValue = value;
 if (value == 0) this.isValid = false;
-if (this.vector == null) return ;
+if (this.vector == null) return;
 this.vector.scale (this.dipoleValue / this.vector.length ());
 if (d * this.dipoleValue < 0) this.origin.sub (this.vector);
 }, "~N");
@@ -97,15 +97,15 @@ function (pt1, pt2, value) {
 this.dipoleValue = value;
 this.atoms[0] = null;
 this.set (pt1, pt2);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "set", 
 function (pt1, dipole) {
 this.set (dipole.length ());
-var pt2 = javax.vecmath.Point3f.newP (pt1);
+var pt2 = org.jmol.util.Point3f.newP (pt1);
 pt2.add (dipole);
 this.set (pt1, pt2);
 this.type = 5;
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "set", 
 function (atom1, atom2, value) {
 this.set (value);
@@ -120,10 +120,10 @@ this.centerDipole ();
 Clazz.defineMethod (c$, "centerDipole", 
 function () {
 this.isValid = (this.atoms[0] !== this.atoms[1] && this.dipoleValue != 0);
-if (!this.isValid) return ;
+if (!this.isValid) return;
 var f = this.atoms[0].distance (this.atoms[1]) / (2 * this.dipoleValue) - 0.5;
 this.origin.scaleAdd2 (f, this.vector, this.atoms[0]);
-this.center =  new javax.vecmath.Point3f ();
+this.center =  new org.jmol.util.Point3f ();
 this.center.scaleAdd2 (0.5, this.vector, this.origin);
 this.bond = this.atoms[0].getBond (this.atoms[1]);
 this.type = (this.bond == null ? 2 : 3);
@@ -135,7 +135,7 @@ return (this.type == 2 || this.type == 3);
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
 if (!this.isValid) return "";
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 s.append ("dipole ID ").append (this.thisID);
 if (this.haveAtoms) s.append (" ({").appendI (this.atoms[0].getIndex ()).append (" ").appendI (this.atoms[1].getIndex ()).append ("})");
  else if (this.coords[0] == null) return "";

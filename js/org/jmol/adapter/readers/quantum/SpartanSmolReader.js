@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.SpartanInputReader"], "org.jmol.adapter.readers.quantum.SpartanSmolReader", ["java.lang.Boolean", "$.Double", "java.util.Hashtable", "javax.util.StringXBuilder", "org.jmol.adapter.readers.quantum.SpartanArchive", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.SpartanInputReader"], "org.jmol.adapter.readers.quantum.SpartanSmolReader", ["java.lang.Boolean", "java.util.Hashtable", "org.jmol.adapter.readers.quantum.SpartanArchive", "org.jmol.util.Logger", "$.Parser", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.iHaveModelStatement = false;
 this.isCompoundDocument = false;
@@ -93,24 +93,49 @@ return $private.apply (this, arguments);
 var mat;
 var binaryCodes = this.readLine ();
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (binaryCodes.trim ());
-if (tokens.length < 16) return ;
-var bytes =  Clazz.newArray (tokens.length, 0);
-for (var i = 0; i < tokens.length; i++) bytes[i] = Integer.parseInt (tokens[i], 16);
+if (tokens.length < 16) return;
+var bytes =  Clazz.newByteArray (tokens.length, 0);
+for (var i = 0; i < tokens.length; i++) bytes[i] = org.jmol.util.Parser.parseIntRadix (tokens[i], 16);
 
-mat =  Clazz.newArray (16, 0);
-for (var i = 16, j = bytes.length; --i >= 0; j -= 8) mat[i] = this.bytesToDoubleToFloat (bytes, j);
+mat =  Clazz.newFloatArray (16, 0);
+for (var i = 16, j = bytes.length; --i >= 0; j -= 8) mat[i] = org.jmol.adapter.readers.quantum.SpartanSmolReader.bytesToDoubleToFloat (bytes, j);
 
 this.setTransform (mat[0], mat[1], mat[2], mat[4], mat[5], mat[6], mat[8], mat[9], mat[10]);
 }, $fz.isPrivate = true, $fz));
-Clazz.defineMethod (c$, "bytesToDoubleToFloat", 
+c$.bytesToDoubleToFloat = Clazz.defineMethod (c$, "bytesToDoubleToFloat", 
 ($fz = function (bytes, j) {
-var d = Double.longBitsToDouble (((bytes[--j]) & 0xff) << 56 | ((bytes[--j]) & 0xff) << 48 | ((bytes[--j]) & 0xff) << 40 | ((bytes[--j]) & 0xff) << 32 | ((bytes[--j]) & 0xff) << 24 | ((bytes[--j]) & 0xff) << 16 | ((bytes[--j]) & 0xff) << 8 | ((bytes[--j]) & 0xff));
-return d;
-}, $fz.isPrivate = true, $fz), "~A,~N");
+{
+{
+var o = org.jmol.adapter.readers.quantum.SpartanSmolReader;
+if (o.fracIEEE == null);
+o.setFracIEEE();
+var b1 = bytes[--j] & 0xFF;
+var b2 = bytes[--j] & 0xFF;
+var b3 = bytes[--j] & 0xFF;
+var b4 = bytes[--j] & 0xFF;
+var b5 = bytes[--j] & 0xFF;
+var s = ((b1 & 0x80) == 0 ? 1 : -1);
+var e = ((b1 & 0x7F) << 4 | (b2 >> 4)) - 1026;
+b2 = (b2 & 0xF) | 0x10;
+return s * (o.shiftIEEE(b2, e) + o.shiftIEEE(b3, e - 8) + o.shiftIEEE(b4, e - 16)
++ o.shiftIEEE(b5, e - 24));
+}}}, $fz.isPrivate = true, $fz), "~A,~N");
+c$.setFracIEEE = Clazz.defineMethod (c$, "setFracIEEE", 
+function () {
+($t$ = org.jmol.adapter.readers.quantum.SpartanSmolReader.fracIEEE =  Clazz.newFloatArray (270, 0), org.jmol.adapter.readers.quantum.SpartanSmolReader.prototype.fracIEEE = org.jmol.adapter.readers.quantum.SpartanSmolReader.fracIEEE, $t$);
+for (var i = 0; i < 270; i++) org.jmol.adapter.readers.quantum.SpartanSmolReader.fracIEEE[i] = Math.pow (2, i - 141);
+
+});
+c$.shiftIEEE = Clazz.defineMethod (c$, "shiftIEEE", 
+function (f, i) {
+if (f == 0 || i < -140) return 0;
+if (i > 128) return 3.4028235E38;
+return f * org.jmol.adapter.readers.quantum.SpartanSmolReader.fracIEEE[i + 140];
+}, "~N,~N");
 Clazz.defineMethod (c$, "readOutput", 
 ($fz = function () {
 this.titles =  new java.util.Hashtable ();
-var header =  new javax.util.StringXBuilder ();
+var header =  new org.jmol.util.StringXBuilder ();
 var pt;
 while (this.readLine () != null && !this.line.startsWith ("END ")) {
 header.append (this.line).append ("\n");
@@ -127,14 +152,14 @@ if (this.atomCount == 0 || !this.isTrajectory) this.atomCount += this.modelAtomC
 }}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "setCharges", 
 ($fz = function () {
-if (this.haveCharges || this.atomSetCollection.getAtomCount () == 0) return ;
+if (this.haveCharges || this.atomSetCollection.getAtomCount () == 0) return;
 this.haveCharges = (this.espCharges && this.atomSetCollection.setAtomSetCollectionPartialCharges ("ESPCHARGES") || this.atomSetCollection.setAtomSetCollectionPartialCharges ("MULCHARGES") || this.atomSetCollection.setAtomSetCollectionPartialCharges ("Q1_CHARGES") || this.atomSetCollection.setAtomSetCollectionPartialCharges ("ESPCHARGES"));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readProperties", 
 ($fz = function () {
 if (this.spartanArchive == null) {
 this.readLine ();
-return ;
+return;
 }this.spartanArchive.readProperties ();
 this.readLine ();
 this.setCharges ();
@@ -163,4 +188,6 @@ org.jmol.util.Logger.debug (this.modelName);
 this.readLine ();
 return true;
 }, $fz.isPrivate = true, $fz));
+Clazz.defineStatics (c$,
+"fracIEEE", null);
 });

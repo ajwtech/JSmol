@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.atomdata");
+Clazz.declarePackage ("org.jmol.atomdata");
 c$ = Clazz.decorateAsClass (function () {
 this.programInfo = null;
 this.fileName = null;

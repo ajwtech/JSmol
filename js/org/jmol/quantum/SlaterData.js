@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.quantum");
+Clazz.declarePackage ("org.jmol.quantum");
 c$ = Clazz.decorateAsClass (function () {
 this.isCore = false;
 this.iAtom = 0;

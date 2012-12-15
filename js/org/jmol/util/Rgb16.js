@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Rgb16", ["javax.util.StringXBuilder"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.Rgb16", ["org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.rScaled = 0;
 this.gScaled = 0;
@@ -29,9 +29,9 @@ this.bScaled = other.bScaled;
 }, "org.jmol.util.Rgb16");
 Clazz.defineMethod (c$, "diffDiv", 
 function (rgb16A, rgb16B, divisor) {
-this.rScaled = Math.floor ((rgb16A.rScaled - rgb16B.rScaled) / divisor);
-this.gScaled = Math.floor ((rgb16A.gScaled - rgb16B.gScaled) / divisor);
-this.bScaled = Math.floor ((rgb16A.bScaled - rgb16B.bScaled) / divisor);
+this.rScaled = Clazz.doubleToInt ((rgb16A.rScaled - rgb16B.rScaled) / divisor);
+this.gScaled = Clazz.doubleToInt ((rgb16A.gScaled - rgb16B.gScaled) / divisor);
+this.bScaled = Clazz.doubleToInt ((rgb16A.bScaled - rgb16B.bScaled) / divisor);
 }, "org.jmol.util.Rgb16,org.jmol.util.Rgb16,~N");
 Clazz.defineMethod (c$, "setAndIncrement", 
 function (base, other) {
@@ -48,6 +48,6 @@ return (0xFF000000 | ((this.rScaled << 8) & 0x00FF0000) | (this.gScaled & 0x0000
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
-return  new javax.util.StringXBuilder ().append ("Rgb16(").appendI (this.rScaled).appendC (',').appendI (this.gScaled).appendC (',').appendI (this.bScaled).append (" -> ").appendI ((this.rScaled >> 8) & 0xFF).appendC (',').appendI ((this.gScaled >> 8) & 0xFF).appendC (',').appendI ((this.bScaled >> 8) & 0xFF).appendC (')').toString ();
+return  new org.jmol.util.StringXBuilder ().append ("Rgb16(").appendI (this.rScaled).appendC (',').appendI (this.gScaled).appendC (',').appendI (this.bScaled).append (" -> ").appendI ((this.rScaled >> 8) & 0xFF).appendC (',').appendI ((this.gScaled >> 8) & 0xFF).appendC (',').appendI ((this.bScaled >> 8) & 0xFF).appendC (')').toString ();
 });
 });

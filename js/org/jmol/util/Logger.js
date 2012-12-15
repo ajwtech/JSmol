@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (["java.util.Hashtable", "org.jmol.util.DefaultLogger"], "org.jmol.util.Logger", ["java.lang.Long", "$.Runtime"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Logger");
 c$.getProperty = Clazz.defineMethod (c$, "getProperty", 
@@ -64,7 +64,7 @@ function (log) {
 }, "~B");
 c$.debug = Clazz.defineMethod (c$, "debug", 
 function (txt) {
-if (!org.jmol.util.Logger.debugging) return ;
+if (!org.jmol.util.Logger.debugging) return;
 try {
 org.jmol.util.Logger._logger.debug (txt);
 } catch (t) {
@@ -134,7 +134,7 @@ org.jmol.util.Logger._logger.fatalEx (txt, e);
 }, "~S,Throwable");
 c$.startTimer = Clazz.defineMethod (c$, "startTimer", 
 function (msg) {
-if (msg == null) return ;
+if (msg == null) return;
 org.jmol.util.Logger.htTiming.put (msg, Long.$valueOf (System.currentTimeMillis ()));
 }, "~S");
 c$.checkTimer = Clazz.defineMethod (c$, "checkTimer", 
@@ -171,7 +171,7 @@ Clazz.defineStatics (c$,
 "LEVEL_DEBUG", 5,
 "LEVEL_DEBUGHIGH", 6,
 "LEVEL_MAX", 7,
-"_activeLevels",  Clazz.newArray (7, false),
+"_activeLevels",  Clazz.newBooleanArray (7, false),
 "_logLevel", false,
 "debugging", false,
 "debuggingHigh", false);

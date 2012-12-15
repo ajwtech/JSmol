@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
+Clazz.declarePackage ("org.jmol.viewer");
 c$ = Clazz.decorateAsClass (function () {
 this.x = -1000;
 this.y = -1000;
@@ -29,7 +29,7 @@ return (Math.abs (this.x - x) <= xyRange && Math.abs (this.y - y) <= xyRange);
 }, "~N,~N,~N");
 Clazz.defineMethod (c$, "check", 
 function (xyRange, x, y, modifiers, time, delayMax) {
-return (this.inRange (xyRange, x, y) && this.modifiers == modifiers && (time - this.time) < delayMax);
+return (this.modifiers == modifiers && (delayMax >= 2147483647 ? this.inRange (xyRange, x, y) : (time - this.time) < delayMax));
 }, "~N,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "is", 
 function (current) {

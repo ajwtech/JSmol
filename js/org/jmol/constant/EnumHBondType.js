@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.constant");
+Clazz.declarePackage ("org.jmol.constant");
 Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumHBondType", null, function () {
 c$ = Clazz.declareType (org.jmol.constant, "EnumHBondType", Enum);
 c$.getType = Clazz.defineMethod (c$, "getType", 

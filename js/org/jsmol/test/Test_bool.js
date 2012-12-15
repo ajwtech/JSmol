@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jsmol.test");
+Clazz.declarePackage ("org.jsmol.test");
 Clazz.load (null, "org.jsmol.test.Test_bool", ["java.lang.Boolean", "java.util.Hashtable"], function () {
 c$ = Clazz.declareType (org.jsmol.test, "Test_bool");
 c$.main = Clazz.defineMethod (c$, "main", 

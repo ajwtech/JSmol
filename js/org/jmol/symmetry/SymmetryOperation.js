@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Matrix4f", "$.Point3f"], "org.jmol.symmetry.SymmetryOperation", ["java.lang.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.Point4f", "$.Vector3f", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.Parser", "$.Quaternion", "$.TextFormat", "$.TriangleData"], function () {
+Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.load (["org.jmol.util.Matrix4f", "$.Point3f"], "org.jmol.symmetry.SymmetryOperation", ["java.lang.Float", "java.util.ArrayList", "org.jmol.util.Escape", "$.Logger", "$.Measure", "$.Parser", "$.Point4f", "$.Quaternion", "$.StringXBuilder", "$.TextFormat", "$.TriangleData", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.xyzOriginal = null;
 this.xyz = null;
@@ -9,10 +9,10 @@ this.opId = 0;
 this.temp3 = null;
 this.atomTest = null;
 Clazz.instantialize (this, arguments);
-}, org.jmol.symmetry, "SymmetryOperation", javax.vecmath.Matrix4f);
+}, org.jmol.symmetry, "SymmetryOperation", org.jmol.util.Matrix4f);
 Clazz.prepareFields (c$, function () {
-this.temp3 =  new javax.vecmath.Point3f ();
-this.atomTest =  new javax.vecmath.Point3f ();
+this.temp3 =  new org.jmol.util.Point3f ();
+this.atomTest =  new org.jmol.util.Point3f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -51,25 +51,25 @@ function (atom1, atom2, transX, transY, transZ) {
 this.temp3.setT (atom1);
 this.transform2 (this.temp3, this.temp3);
 atom2.set (this.temp3.x + transX, this.temp3.y + transY, this.temp3.z + transZ);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,~N,~N,~N");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,~N,~N,~N");
 Clazz.defineMethod (c$, "dumpInfo", 
 function () {
 return "\n" + this.xyz + "\ninternal matrix representation:\n" + (this).toString ();
 });
 c$.dumpSeitz = Clazz.defineMethod (c$, "dumpSeitz", 
 function (s) {
-return  new javax.util.StringXBuilder ().append ("{\t").appendI (Math.round (s.m00)).append ("\t").appendI (Math.round (s.m01)).append ("\t").appendI (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m10)).append ("\t").appendI (Math.round (s.m11)).append ("\t").appendI (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m20)).append ("\t").appendI (Math.round (s.m21)).append ("\t").appendI (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
-}, "javax.vecmath.Matrix4f");
+return  new org.jmol.util.StringXBuilder ().append ("{\t").appendI (Clazz.floatToInt (s.m00)).append ("\t").appendI (Clazz.floatToInt (s.m01)).append ("\t").appendI (Clazz.floatToInt (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03)).append ("\t}\n").append ("{\t").appendI (Clazz.floatToInt (s.m10)).append ("\t").appendI (Clazz.floatToInt (s.m11)).append ("\t").appendI (Clazz.floatToInt (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13)).append ("\t}\n").append ("{\t").appendI (Clazz.floatToInt (s.m20)).append ("\t").appendI (Clazz.floatToInt (s.m21)).append ("\t").appendI (Clazz.floatToInt (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
+}, "org.jmol.util.Matrix4f");
 c$.dumpCanonicalSeitz = Clazz.defineMethod (c$, "dumpCanonicalSeitz", 
 function (s) {
-return  new javax.util.StringXBuilder ().append ("{\t").appendI (Math.round (s.m00)).append ("\t").appendI (Math.round (s.m01)).append ("\t").appendI (Math.round (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03 + 12)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m10)).append ("\t").appendI (Math.round (s.m11)).append ("\t").appendI (Math.round (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13 + 12)).append ("\t}\n").append ("{\t").appendI (Math.round (s.m20)).append ("\t").appendI (Math.round (s.m21)).append ("\t").appendI (Math.round (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23 + 12)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
-}, "javax.vecmath.Matrix4f");
+return  new org.jmol.util.StringXBuilder ().append ("{\t").appendI (Clazz.floatToInt (s.m00)).append ("\t").appendI (Clazz.floatToInt (s.m01)).append ("\t").appendI (Clazz.floatToInt (s.m02)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m03 + 12)).append ("\t}\n").append ("{\t").appendI (Clazz.floatToInt (s.m10)).append ("\t").appendI (Clazz.floatToInt (s.m11)).append ("\t").appendI (Clazz.floatToInt (s.m12)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m13 + 12)).append ("\t}\n").append ("{\t").appendI (Clazz.floatToInt (s.m20)).append ("\t").appendI (Clazz.floatToInt (s.m21)).append ("\t").appendI (Clazz.floatToInt (s.m22)).append ("\t").append (org.jmol.symmetry.SymmetryOperation.twelfthsOf (s.m23 + 12)).append ("\t}\n").append ("{\t0\t0\t0\t1\t}\n").toString ();
+}, "org.jmol.util.Matrix4f");
 Clazz.defineMethod (c$, "setMatrixFromXYZ", 
 function (xyz) {
 if (xyz == null) return false;
 this.xyzOriginal = xyz;
 xyz = xyz.toLowerCase ();
-var temp =  Clazz.newArray (16, 0);
+var temp =  Clazz.newFloatArray (16, 0);
 var isReverse = (xyz.startsWith ("!"));
 if (isReverse) xyz = xyz.substring (1);
 if (xyz.indexOf ("xyz matrix:") == 0) {
@@ -140,13 +140,17 @@ case ' ':
 case '{':
 case '}':
 case '!':
-continue ;case '-':
+continue;
+case '-':
 isNegative = true;
-continue ;case '+':
+continue;
+case '+':
 isNegative = false;
-continue ;case '/':
+continue;
+case '/':
 isDenominator = true;
-continue ;case 'X':
+continue;
+case 'X':
 case 'x':
 x = (isNegative ? -1 : 1);
 if (allowScaling && iValue != 0) {
@@ -192,14 +196,17 @@ break;
 case '.':
 isDecimal = true;
 decimalMultiplier = 1;
-continue ;case '0':
-if (!isDecimal && (isDenominator || !allowScaling)) continue ;default:
+continue;
+case '0':
+if (!isDecimal && (isDenominator || !allowScaling)) continue;
+default:
 var ich = ch.charCodeAt (0) - 48;
 if (isDecimal && ich >= 0 && ich <= 9) {
 decimalMultiplier /= 10;
 if (iValue < 0) isNegative = true;
 iValue += decimalMultiplier * ich * (isNegative ? -1 : 1);
-continue ;}if (ich >= 0 && ich <= 9) {
+continue;
+}if (ich >= 0 && ich <= 9) {
 if (isDenominator) {
 iValue /= ich;
 } else {
@@ -225,7 +232,7 @@ while (iValue <= -6) iValue += 12;
 c$.getXYZFromMatrix = Clazz.defineMethod (c$, "getXYZFromMatrix", 
 function (mat, is12ths, allPositive, halfOrLess) {
 var str = "";
-var row =  Clazz.newArray (4, 0);
+var row =  Clazz.newFloatArray (4, 0);
 for (var i = 0; i < 3; i++) {
 mat.getRow (i, row);
 var term = "";
@@ -233,11 +240,11 @@ if (row[0] != 0) term += (row[0] < 0 ? "-" : "+") + "x";
 if (row[1] != 0) term += (row[1] < 0 ? "-" : "+") + "y";
 if (row[2] != 0) term += (row[2] < 0 ? "-" : "+") + "z";
 term += org.jmol.symmetry.SymmetryOperation.xyzFraction ((is12ths ? row[3] : row[3] * 12), allPositive, halfOrLess);
-if (term.length > 0 && (term.charAt (0)).charCodeAt (0) == 43) term = term.substring (1);
+if (term.length > 0 && term.charAt (0) == '+') term = term.substring (1);
 str += "," + term;
 }
 return str.substring (1);
-}, "javax.vecmath.Matrix4f,~B,~B,~B");
+}, "org.jmol.util.Matrix4f,~B,~B,~B");
 c$.twelfthsOf = Clazz.defineMethod (c$, "twelfthsOf", 
 ($fz = function (n12ths) {
 var str = "";
@@ -247,7 +254,7 @@ if (i12ths == -12) return "-1";
 if (i12ths < 0) {
 i12ths = -i12ths;
 if (i12ths % 12 != 0) str = "-";
-}var n = Math.floor (i12ths / 12);
+}var n = Clazz.doubleToInt (i12ths / 12);
 if (n < 1) return str + org.jmol.symmetry.SymmetryOperation.twelfths[i12ths % 12];
 var m = 0;
 switch (i12ths % 12) {
@@ -275,7 +282,7 @@ case 6:
 m = 2;
 break;
 }
-return str + (Math.floor (i12ths * m / 12)) + "/" + m;
+return str + (Clazz.doubleToInt (i12ths * m / 12)) + "/" + m;
 }, $fz.isPrivate = true, $fz), "~N");
 c$.xyzFraction = Clazz.defineMethod (c$, "xyzFraction", 
 ($fz = function (n12ths, allPositive, halfOrLess) {
@@ -286,7 +293,7 @@ while (n12ths < 0) n12ths += 12;
 } else if (halfOrLess && n12ths > 6) {
 n12ths -= 12;
 }var s = org.jmol.symmetry.SymmetryOperation.twelfthsOf (n12ths);
-return ((s.charAt (0)).charCodeAt (0) == 48 ? "" : n12ths > 0 ? "+" + s : s);
+return (s.charAt (0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
 }, $fz.isPrivate = true, $fz), "~N,~B,~B");
 Clazz.defineMethod (c$, "setOffset", 
 ($fz = function (atoms, atomIndex, count) {
@@ -319,7 +326,7 @@ Clazz.defineMethod (c$, "transformCartesian",
 unitcell.toFractional (pt, false);
 this.transform (pt);
 unitcell.toCartesian (pt, false);
-}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.UnitCell,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.UnitCell,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "rotateEllipsoid", 
 function (cartCenter, vectors, unitcell, ptTemp1, ptTemp2) {
 var vRot =  new Array (3);
@@ -329,28 +336,28 @@ for (var i = vectors.length; --i >= 0; ) {
 ptTemp1.setT (cartCenter);
 ptTemp1.add (vectors[i]);
 this.transformCartesian (unitcell, ptTemp1);
-vRot[i] = javax.vecmath.Vector3f.newV (ptTemp1);
+vRot[i] = org.jmol.util.Vector3f.newV (ptTemp1);
 vRot[i].sub (ptTemp2);
 }
 return vRot;
-}, "javax.vecmath.Point3f,~A,org.jmol.symmetry.UnitCell,javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f,~A,org.jmol.symmetry.UnitCell,org.jmol.util.Point3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "getDescription", 
 function (uc, pt00, ptTarget, id) {
 if (!this.isFinalized) this.doFinalize ();
 return org.jmol.symmetry.SymmetryOperation.getDescription (this, this.xyzOriginal, uc, pt00, ptTarget, id);
-}, "org.jmol.api.SymmetryInterface,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
+}, "org.jmol.api.SymmetryInterface,org.jmol.util.Point3f,org.jmol.util.Point3f,~S");
 c$.getDescription = Clazz.defineMethod (c$, "getDescription", 
 ($fz = function (m, xyzOriginal, uc, pt00, ptTarget, id) {
-var vtemp =  new javax.vecmath.Vector3f ();
-var ptemp =  new javax.vecmath.Point3f ();
-var pt01 =  new javax.vecmath.Point3f ();
-var pt02 =  new javax.vecmath.Point3f ();
-var pt03 =  new javax.vecmath.Point3f ();
-var ftrans =  new javax.vecmath.Vector3f ();
-var vtrans =  new javax.vecmath.Vector3f ();
+var vtemp =  new org.jmol.util.Vector3f ();
+var ptemp =  new org.jmol.util.Point3f ();
+var pt01 =  new org.jmol.util.Point3f ();
+var pt02 =  new org.jmol.util.Point3f ();
+var pt03 =  new org.jmol.util.Point3f ();
+var ftrans =  new org.jmol.util.Vector3f ();
+var vtrans =  new org.jmol.util.Vector3f ();
 var xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (m, false, false, false);
 var typeOnly = (id == null);
-if (pt00 == null || Float.isNaN (pt00.x)) pt00 =  new javax.vecmath.Point3f ();
+if (pt00 == null || Float.isNaN (pt00.x)) pt00 =  new org.jmol.util.Point3f ();
 if (ptTarget != null) {
 pt01.setT (pt00);
 pt02.setT (ptTarget);
@@ -373,10 +380,10 @@ pt02.set (0, 0, 0);
 pt01.add (pt00);
 pt02.add (pt00);
 pt03.add (pt00);
-var p0 = javax.vecmath.Point3f.newP (pt00);
-var p1 = javax.vecmath.Point3f.newP (pt01);
-var p2 = javax.vecmath.Point3f.newP (pt02);
-var p3 = javax.vecmath.Point3f.newP (pt03);
+var p0 = org.jmol.util.Point3f.newP (pt00);
+var p1 = org.jmol.util.Point3f.newP (pt01);
+var p2 = org.jmol.util.Point3f.newP (pt02);
+var p3 = org.jmol.util.Point3f.newP (pt03);
 uc.toFractional (p0, false);
 uc.toFractional (p1, false);
 uc.toFractional (p2, false);
@@ -394,11 +401,11 @@ uc.toCartesian (p0, false);
 uc.toCartesian (p1, false);
 uc.toCartesian (p2, false);
 uc.toCartesian (p3, false);
-var v01 =  new javax.vecmath.Vector3f ();
+var v01 =  new org.jmol.util.Vector3f ();
 v01.sub2 (p1, p0);
-var v02 =  new javax.vecmath.Vector3f ();
+var v02 =  new org.jmol.util.Vector3f ();
 v02.sub2 (p2, p0);
-var v03 =  new javax.vecmath.Vector3f ();
+var v03 =  new org.jmol.util.Vector3f ();
 v03.sub2 (p3, p0);
 vtemp.cross (v01, v02);
 var haveinversion = (vtemp.dot (v03) < 0);
@@ -410,13 +417,13 @@ p3.scaleAdd2 (-2, v03, p3);
 info = org.jmol.util.Measure.computeHelicalAxis (null, 135266306, pt00, p0, org.jmol.util.Quaternion.getQuaternionFrame (p0, p1, p2).div (org.jmol.util.Quaternion.getQuaternionFrame (pt00, pt01, pt02)));
 var pa1 = info[0];
 var ax1 = info[1];
-var ang1 = Math.round (Math.abs (org.jmol.symmetry.SymmetryOperation.approx ((info[3]).x, 1)));
+var ang1 = Clazz.floatToInt (Math.abs (org.jmol.util.Parser.approx ((info[3]).x, 1)));
 var pitch1 = org.jmol.symmetry.SymmetryOperation.approx ((info[3]).y);
 if (haveinversion) {
 p1.scaleAdd2 (2, v01, p1);
 p2.scaleAdd2 (2, v02, p2);
 p3.scaleAdd2 (2, v03, p3);
-}var trans = javax.vecmath.Vector3f.newV (p0);
+}var trans = org.jmol.util.Vector3f.newV (p0);
 trans.sub (pt00);
 if (trans.length () < 0.1) trans = null;
 var ptinv = null;
@@ -428,13 +435,13 @@ var isinversion = false;
 var ismirrorplane = false;
 if (isrotation || haveinversion) trans = null;
 if (haveinversion && istranslation) {
-ipt = javax.vecmath.Point3f.newP (pt00);
+ipt = org.jmol.util.Point3f.newP (pt00);
 ipt.add (p0);
 ipt.scale (0.5);
 ptinv = p0;
 isinversion = true;
 } else if (haveinversion) {
-var d = (pitch1 == 0 ?  new javax.vecmath.Vector3f () : ax1);
+var d = (pitch1 == 0 ?  new org.jmol.util.Vector3f () : ax1);
 var f = 0;
 switch (ang1) {
 case 60:
@@ -447,12 +454,12 @@ case 90:
 f = 1;
 break;
 case 180:
-pt0 =  new javax.vecmath.Point3f ();
+pt0 =  new org.jmol.util.Point3f ();
 pt0.setT (pt00);
 pt0.add (d);
 pa1.scaleAdd2 (0.5, d, pt00);
 if (pt0.distance (p0) > 0.1) {
-trans = javax.vecmath.Vector3f.newV (p0);
+trans = org.jmol.util.Vector3f.newV (p0);
 trans.sub (pt0);
 ptemp.setT (trans);
 uc.toFractional (ptemp, false);
@@ -471,9 +478,9 @@ vtemp.sub (pa1);
 vtemp.sub (d);
 vtemp.scale (f);
 pa1.add (vtemp);
-ipt =  new javax.vecmath.Point3f ();
+ipt =  new org.jmol.util.Point3f ();
 ipt.scaleAdd2 (0.5, d, pa1);
-ptinv =  new javax.vecmath.Point3f ();
+ptinv =  new org.jmol.util.Point3f ();
 ptinv.scaleAdd2 (-2, ipt, pt00);
 ptinv.scale (-1);
 }} else if (trans != null) {
@@ -491,7 +498,7 @@ trans.setT (ptemp);
 }var ang = ang1;
 org.jmol.symmetry.SymmetryOperation.approx0 (ax1);
 if (isrotation) {
-var pt1 =  new javax.vecmath.Point3f ();
+var pt1 =  new org.jmol.util.Point3f ();
 vtemp.setT (ax1);
 var ang2 = ang1;
 if (haveinversion) {
@@ -513,7 +520,7 @@ if (ax1.z < 0 || ax1.z == 0 && (ax1.y < 0 || ax1.y == 0 && ax1.x < 0)) {
 ax1.scale (-1);
 ang1 = -ang1;
 }}var info1 = "identity";
-var draw1 =  new javax.util.StringXBuilder ();
+var draw1 =  new org.jmol.util.StringXBuilder ();
 var drawid;
 if (isinversion) {
 ptemp.setT (ipt);
@@ -521,14 +528,14 @@ uc.toFractional (ptemp, false);
 info1 = "inversion center|" + org.jmol.symmetry.SymmetryOperation.fcoord (ptemp);
 } else if (isrotation) {
 if (haveinversion) {
-info1 = "" + (Math.floor (360 / ang)) + "-bar axis";
+info1 = "" + (Clazz.doubleToInt (360 / ang)) + "-bar axis";
 } else if (pitch1 != 0) {
-info1 = "" + (Math.floor (360 / ang)) + "-fold screw axis";
+info1 = "" + (Clazz.doubleToInt (360 / ang)) + "-fold screw axis";
 ptemp.setT (ax1);
 uc.toFractional (ptemp, false);
 info1 += "|translation: " + org.jmol.symmetry.SymmetryOperation.fcoord (ptemp);
 } else {
-info1 = "C" + (Math.floor (360 / ang)) + " axis";
+info1 = "C" + (Clazz.doubleToInt (360 / ang)) + " axis";
 }} else if (trans != null) {
 var s = " " + org.jmol.symmetry.SymmetryOperation.fcoord (ftrans);
 if (istranslation) {
@@ -553,7 +560,7 @@ info1 += "|inversion center at " + org.jmol.symmetry.SymmetryOperation.fcoord (p
 }var cmds = null;
 if (!typeOnly) {
 drawid = "\ndraw ID " + id + "_";
-draw1 =  new javax.util.StringXBuilder ();
+draw1 =  new org.jmol.util.StringXBuilder ();
 draw1.append ("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
 draw1.append (drawid).append ("* delete");
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame1X", 0.15, pt00, pt01, "red");
@@ -573,7 +580,7 @@ ptemp.scaleAdd2 (0.9, ptemp, p0);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "frame2Z", 0.2, p0, ptemp, "purple");
 var color;
 if (isrotation) {
-var pt1 =  new javax.vecmath.Point3f ();
+var pt1 =  new org.jmol.util.Point3f ();
 color = "red";
 ang = ang1;
 var scale = 1.0;
@@ -635,7 +642,7 @@ org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "planeFrameZ", 0.1
 vtemp.setT (ax1);
 vtemp.normalize ();
 var w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
-var plane = javax.vecmath.Point4f.new4 (vtemp.x, vtemp.y, vtemp.z, w);
+var plane = org.jmol.util.Point4f.new4 (vtemp.x, vtemp.y, vtemp.z, w);
 var v =  new java.util.ArrayList ();
 v.add (uc.getCanonicalCopy (1.05));
 org.jmol.util.TriangleData.intersectPlane (plane, v, 3);
@@ -666,7 +673,7 @@ ptemp.add (pt00);
 ptemp.sub (pt03);
 org.jmol.symmetry.SymmetryOperation.drawLine (draw1, drawid + "invFrameZ", 0.15, ptinv, ptemp, "translucent blue");
 }}if (trans != null) {
-if (pt0 == null) pt0 = javax.vecmath.Point3f.newP (pt00);
+if (pt0 == null) pt0 = org.jmol.util.Point3f.newP (pt00);
 draw1.append (drawid).append ("transVector vector ").append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (trans));
 }draw1.append ("\nvar pt00 = " + org.jmol.util.Escape.escapePt (pt00));
 draw1.append ("\nvar p0 = " + org.jmol.util.Escape.escapePt (p0));
@@ -686,10 +693,10 @@ if (isrotation) {
 if (haveinversion) {
 } else if (pitch1 == 0) {
 } else {
-trans = javax.vecmath.Vector3f.newV (ax1);
+trans = org.jmol.util.Vector3f.newV (ax1);
 ptemp.setT (trans);
 uc.toFractional (ptemp, false);
-ftrans = javax.vecmath.Vector3f.newV (ptemp);
+ftrans = org.jmol.util.Vector3f.newV (ptemp);
 }if (haveinversion && pitch1 != 0) {
 }}if (ismirrorplane) {
 if (trans != null) {
@@ -705,29 +712,29 @@ pa1 = null;
 ax1 = null;
 }if (ax1 != null) ax1.normalize ();
 var m2 = null;
-m2 = javax.vecmath.Matrix4f.newM (m);
+m2 = org.jmol.util.Matrix4f.newM (m);
 if (vtrans.length () != 0) {
 m2.m03 += vtrans.x;
 m2.m13 += vtrans.y;
 m2.m23 += vtrans.z;
 }xyz = org.jmol.symmetry.SymmetryOperation.getXYZFromMatrix (m2, false, false, false);
 return [xyz, xyzOriginal, info1, cmds, org.jmol.symmetry.SymmetryOperation.approx0 (ftrans), org.jmol.symmetry.SymmetryOperation.approx0 (trans), org.jmol.symmetry.SymmetryOperation.approx0 (ipt), org.jmol.symmetry.SymmetryOperation.approx0 (pa1), org.jmol.symmetry.SymmetryOperation.approx0 (ax1), Integer.$valueOf (ang1), m2, vtrans];
-}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.SymmetryOperation,~S,org.jmol.api.SymmetryInterface,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
+}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.SymmetryOperation,~S,org.jmol.api.SymmetryInterface,org.jmol.util.Point3f,org.jmol.util.Point3f,~S");
 c$.drawLine = Clazz.defineMethod (c$, "drawLine", 
 ($fz = function (s, id, diameter, pt0, pt1, color) {
 s.append (id).append (" diameter ").appendF (diameter).append (org.jmol.util.Escape.escapePt (pt0)).append (org.jmol.util.Escape.escapePt (pt1)).append (" color ").append (color);
-}, $fz.isPrivate = true, $fz), "javax.util.StringXBuilder,~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,~S");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.StringXBuilder,~S,~N,org.jmol.util.Point3f,org.jmol.util.Point3f,~S");
 c$.fcoord = Clazz.defineMethod (c$, "fcoord", 
 function (p) {
 return org.jmol.symmetry.SymmetryOperation.fc (p.x) + " " + org.jmol.symmetry.SymmetryOperation.fc (p.y) + " " + org.jmol.symmetry.SymmetryOperation.fc (p.z);
-}, "javax.vecmath.Tuple3f");
+}, "org.jmol.util.Tuple3f");
 c$.fc = Clazz.defineMethod (c$, "fc", 
 ($fz = function (x) {
 var xabs = Math.abs (x);
-var x24 = Math.round (org.jmol.symmetry.SymmetryOperation.approx (xabs * 24));
+var x24 = Clazz.floatToInt (org.jmol.symmetry.SymmetryOperation.approx (xabs * 24));
 var m = (x < 0 ? "-" : "");
 if (x24 % 8 != 0) return m + org.jmol.symmetry.SymmetryOperation.twelfthsOf (x24 >> 1);
-return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (Math.floor (x24 / 8)) + "/3");
+return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (Clazz.doubleToInt (x24 / 8)) + "/3");
 }, $fz.isPrivate = true, $fz), "~N");
 c$.approx0 = Clazz.defineMethod (c$, "approx0", 
 ($fz = function (pt) {
@@ -736,7 +743,7 @@ if (Math.abs (pt.x) < 0.0001) pt.x = 0;
 if (Math.abs (pt.y) < 0.0001) pt.y = 0;
 if (Math.abs (pt.z) < 0.0001) pt.z = 0;
 }return pt;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Tuple3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Tuple3f");
 c$.approx = Clazz.defineMethod (c$, "approx", 
 ($fz = function (pt) {
 if (pt != null) {
@@ -744,21 +751,17 @@ pt.x = org.jmol.symmetry.SymmetryOperation.approx (pt.x);
 pt.y = org.jmol.symmetry.SymmetryOperation.approx (pt.y);
 pt.z = org.jmol.symmetry.SymmetryOperation.approx (pt.z);
 }return pt;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Tuple3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Tuple3f");
 c$.approx = Clazz.defineMethod (c$, "approx", 
 ($fz = function (f) {
-return org.jmol.symmetry.SymmetryOperation.approx (f, 100);
+return org.jmol.util.Parser.approx (f, 100);
 }, $fz.isPrivate = true, $fz), "~N");
-c$.approx = Clazz.defineMethod (c$, "approx", 
-($fz = function (f, n) {
-return (Math.round ((f * n + 0.5 * (f < 0 ? -1 : 1))) / n);
-}, $fz.isPrivate = true, $fz), "~N,~N");
 c$.normalizeTranslation = Clazz.defineMethod (c$, "normalizeTranslation", 
 function (operation) {
-operation.m03 = (Math.round (operation.m03) + 12) % 12;
-operation.m13 = (Math.round (operation.m13) + 12) % 12;
-operation.m23 = (Math.round (operation.m23) + 12) % 12;
-}, "javax.vecmath.Matrix4f");
+operation.m03 = (Clazz.floatToInt (operation.m03) + 12) % 12;
+operation.m13 = (Clazz.floatToInt (operation.m13) + 12) % 12;
+operation.m23 = (Clazz.floatToInt (operation.m23) + 12) % 12;
+}, "org.jmol.util.Matrix4f");
 Clazz.defineStatics (c$,
 "twelfths", ["0", "1/12", "1/6", "1/4", "1/3", "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12"]);
 });

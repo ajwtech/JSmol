@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.SlaterReader", "java.util.Hashtable"], "org.jmol.adapter.readers.quantum.DgridReader", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.quantum.SlaterData", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.SlaterReader", "java.util.Hashtable"], "org.jmol.adapter.readers.quantum.DgridReader", ["java.lang.Float", "org.jmol.quantum.SlaterData", "org.jmol.util.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.title = null;
 this.htExponents = null;
@@ -21,7 +21,7 @@ return true;
 this.readCoordinates ();
 return true;
 }if (this.line.indexOf (" MO  DATA ") >= 0) {
-if (this.readMolecularOrbitals) this.readMolecularOrbitals ();
+if (this.doReadMolecularOrbitals) this.readMolecularOrbitals ();
 return true;
 }return true;
 });
@@ -63,13 +63,13 @@ while (this.line != null && this.line.indexOf (":") != 0) {
 this.discardLinesUntilContains ("sym: ");
 var symmetry = this.line.substring (4, 10).trim ();
 if (symmetry.indexOf ("_FC") >= 0) break;
-var data =  new javax.util.StringXBuilder ();
+var data =  new org.jmol.util.StringXBuilder ();
 data.append (this.line.substring (15));
 while (this.readLine () != null && this.line.length >= 15) data.append (this.line);
 
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (data.toString ());
-var nFuncs = Math.floor (tokens.length / 2);
-var ptSlater =  Clazz.newArray (nFuncs, 0);
+var nFuncs = Clazz.doubleToInt (tokens.length / 2);
+var ptSlater =  Clazz.newIntArray (nFuncs, 0);
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = 0, pt = 0; i < tokens.length; ) {
 var iAtom = this.parseIntStr (tokens[i++]) - 1;
@@ -88,13 +88,13 @@ this.readLine ();
 while (this.line != null && this.line.length >= 20) {
 var iOrb = this.parseIntStr (this.line.substring (0, 10));
 var energy = this.parseFloatStr (this.line.substring (10, 20));
-var cData =  new javax.util.StringXBuilder ();
+var cData =  new org.jmol.util.StringXBuilder ();
 cData.append (this.line.substring (20));
 while (this.readLine () != null && this.line.length >= 10) {
-if ((this.line.charAt (3)).charCodeAt (0) != 32) break;
+if (this.line.charAt (3) != ' ') break;
 cData.append (this.line);
 }
-var list =  Clazz.newArray (this.slaters.size (), 0);
+var list =  Clazz.newFloatArray (this.slaters.size (), 0);
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (cData.toString ());
 if (tokens.length != nFuncs) org.jmol.util.Logger.error ("DgridReader: number of coefficients (" + tokens.length + ") does not equal number of functions (" + nFuncs + ")");
 for (var i = 0; i < tokens.length; i++) {
@@ -165,7 +165,7 @@ abc = ch;
 }
 var r = (exp - el - 1);
 var code = atomSymbol + xyz.substring (0, 2);
-if (type.charCodeAt (0) != 32) code += "_" + type;
+if (type != ' ') code += "_" + type;
 var f = this.htExponents.get (code);
 var zeta = 0;
 if (f == null) org.jmol.util.Logger.error ("Exponent for " + code + " not found");

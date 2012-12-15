@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["org.jmol.util.ColorEncoder"], "org.jmol.viewer.ColorManager", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Elements", "$.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.viewer");
+Clazz.load (["org.jmol.util.ColorEncoder"], "org.jmol.viewer.ColorManager", ["java.lang.Float", "org.jmol.constant.EnumPalette", "org.jmol.util.ArrayUtil", "$.Colix", "$.ColorUtil", "$.Elements", "$.Logger", "$.StringXBuilder", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.propertyColorEncoder = null;
 this.viewer = null;
@@ -37,7 +37,7 @@ Clazz.defineMethod (c$, "setDefaultColors",
 function (isRasmol) {
 if (isRasmol) {
 this.isDefaultColorRasmol = true;
-this.argbsCpk = org.jmol.util.ColorEncoder.getRasmolScale ().clone ();
+this.argbsCpk = org.jmol.util.ArrayUtil.arrayCopyI (org.jmol.util.ColorEncoder.getRasmolScale (), -1);
 } else {
 this.isDefaultColorRasmol = false;
 this.argbsCpk = org.jmol.constant.EnumPalette.argbsCpk;
@@ -162,7 +162,7 @@ return org.jmol.viewer.JmolConstants.altArgbsCpk[org.jmol.util.Elements.altEleme
 }, $fz.isPrivate = true, $fz), "~N,~N");
 Clazz.defineMethod (c$, "setElementArgb", 
 function (id, argb) {
-if (argb == 1073741992 && this.argbsCpk === org.jmol.constant.EnumPalette.argbsCpk) return ;
+if (argb == 1073741992 && this.argbsCpk === org.jmol.constant.EnumPalette.argbsCpk) return;
 argb = this.getJmolOrRasmolArgb (id, argb);
 if (this.argbsCpk === org.jmol.constant.EnumPalette.argbsCpk) {
 this.argbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.constant.EnumPalette.argbsCpk, 0, -1);
@@ -170,7 +170,7 @@ this.altArgbsCpk = org.jmol.util.ArrayUtil.arrayCopyRangeI (org.jmol.viewer.Jmol
 }if (id < org.jmol.util.Elements.elementNumberMax) {
 this.argbsCpk[id] = argb;
 this.g3d.changeColixArgb (id, argb);
-return ;
+return;
 }id = org.jmol.util.Elements.altElementIndexFromNumber (id);
 this.altArgbsCpk[id] = argb;
 this.g3d.changeColixArgb ((org.jmol.util.Elements.elementNumberMax + id), argb);
@@ -186,16 +186,17 @@ this.colorData = data;
 this.propertyColorEncoder.currentPalette = this.propertyColorEncoder.createColorScheme (colorScheme, true, false);
 this.propertyColorEncoder.hi = 1.4E-45;
 this.propertyColorEncoder.lo = 3.4028235E38;
-if (data == null) return ;
+if (data == null) return;
 var isAll = (bs == null);
 var d;
 var i0 = (isAll ? data.length - 1 : bs.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bs.nextSetBit (i + 1))) {
-if (Float.isNaN (d = data[i])) continue ;this.propertyColorEncoder.hi = Math.max (this.propertyColorEncoder.hi, d);
+if (Float.isNaN (d = data[i])) continue;
+this.propertyColorEncoder.hi = Math.max (this.propertyColorEncoder.hi, d);
 this.propertyColorEncoder.lo = Math.min (this.propertyColorEncoder.lo, d);
 }
 this.setPropertyColorRange (this.propertyColorEncoder.lo, this.propertyColorEncoder.hi);
-}, "~A,javax.util.BitSet,~S");
+}, "~A,org.jmol.util.BitSet,~S");
 Clazz.defineMethod (c$, "setPropertyColorRange", 
 function (min, max) {
 this.propertyColorEncoder.setRange (min, max, min > max);
@@ -212,11 +213,11 @@ this.propertyColorEncoder.isTranslucent = isTranslucent;
 }, "~S,~B,~B");
 Clazz.defineMethod (c$, "getState", 
 function (sfunc) {
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 var n = this.propertyColorEncoder.getState (s);
 if (n > 0 && sfunc != null) sfunc.append ("\n  _setColorState\n");
 return (n > 0 && sfunc != null ? "function _setColorState() {\n" + s.append ("}\n\n").toString () : s.toString ());
-}, "javax.util.StringXBuilder");
+}, "org.jmol.util.StringXBuilder");
 Clazz.defineMethod (c$, "setUserScale", 
 function (scale) {
 this.propertyColorEncoder.setUserScale (scale);

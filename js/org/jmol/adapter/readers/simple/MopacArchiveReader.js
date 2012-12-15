@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
-Clazz.load (["org.jmol.adapter.readers.simple.ZMatrixReader"], "org.jmol.adapter.readers.simple.MopacArchiveReader", ["java.lang.Float", "javax.vecmath.Point3f", "org.jmol.adapter.smarter.Atom", "org.jmol.api.JmolAdapter"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.load (["org.jmol.adapter.readers.simple.ZMatrixReader"], "org.jmol.adapter.readers.simple.MopacArchiveReader", ["java.lang.Float", "org.jmol.adapter.smarter.Atom", "org.jmol.api.JmolAdapter", "org.jmol.util.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.energyWithUnits = null;
 Clazz.instantialize (this, arguments);
@@ -45,7 +45,7 @@ this.vAtoms.add (atom =  new org.jmol.adapter.smarter.Atom ());
 atom.x = this.parseFloatStr (this.line.substring (5, 18));
 atom.y = this.parseFloatStr (this.line.substring (21, 34));
 atom.z = this.parseFloatStr (this.line.substring (37, 50));
-if (this.line.length > 58 && (this.line.charAt (58)).charCodeAt (0) != 32) {
+if (this.line.length > 58 && this.line.charAt (58) != ' ') {
 switch (this.atomCount) {
 case 0:
 break;
@@ -71,7 +71,7 @@ this.setSpaceGroupName ("P1");
 var nTv = this.vAtoms.size () - this.atomCount;
 for (var i = nTv; i < 3; i++) this.vAtoms.add ( new org.jmol.adapter.smarter.Atom ());
 
-var xyz =  Clazz.newArray (9, 0);
+var xyz =  Clazz.newFloatArray (9, 0);
 for (var i = 0; i < 3; i++) {
 var j = i * 3;
 atom = this.vAtoms.get (this.atomCount + i);
@@ -83,8 +83,8 @@ xyz[j + 2] = atom.z;
 }
 for (var i = this.atomCount; --i >= 0; ) this.setAtomCoord (this.vAtoms.get (i));
 
-var ptMax = javax.vecmath.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
-var ptMin = javax.vecmath.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
+var ptMax = org.jmol.util.Point3f.new3 (-3.4028235E38, -3.4028235E38, -3.4028235E38);
+var ptMin = org.jmol.util.Point3f.new3 (3.4028235E38, 3.4028235E38, 3.4028235E38);
 if (this.doCentralize) {
 for (var i = this.atomCount; --i >= 0; ) {
 atom = this.vAtoms.get (i);
@@ -95,7 +95,7 @@ ptMin.x = Math.min (ptMin.x, atom.x);
 ptMin.y = Math.min (ptMin.y, atom.y);
 ptMin.z = Math.min (ptMin.z, atom.z);
 }
-var ptCenter =  new javax.vecmath.Point3f ();
+var ptCenter =  new org.jmol.util.Point3f ();
 switch (nTv) {
 case 3:
 ptCenter.x = 0.5;

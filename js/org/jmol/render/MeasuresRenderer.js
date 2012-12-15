@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.render.FontLineShapeRenderer", "javax.vecmath.AxisAngle4f", "$.Matrix3f"], "org.jmol.render.MeasuresRenderer", null, function () {
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.render.FontLineShapeRenderer", "org.jmol.util.AxisAngle4f", "$.Matrix3f"], "org.jmol.render.MeasuresRenderer", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.measurement = null;
 this.doJustify = false;
@@ -8,31 +8,33 @@ this.matrixT = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.render, "MeasuresRenderer", org.jmol.render.FontLineShapeRenderer);
 Clazz.prepareFields (c$, function () {
-this.aaT =  new javax.vecmath.AxisAngle4f ();
-this.matrixT =  new javax.vecmath.Matrix3f ();
+this.aaT =  new org.jmol.util.AxisAngle4f ();
+this.matrixT =  new org.jmol.util.Matrix3f ();
 });
 Clazz.defineMethod (c$, "render", 
 function () {
-if (!this.g3d.checkTranslucent (false)) return ;
+if (!this.g3d.checkTranslucent (false)) return false;
 var measures = this.shape;
 this.doJustify = this.viewer.getJustifyMeasurements ();
 this.mad = measures.mad;
 this.imageFontScaling = this.viewer.getImageFontScaling ();
 this.font3d = this.g3d.getFont3DScaled (measures.font3d, this.imageFontScaling);
 this.renderPendingMeasurement (measures.measurementPending);
-if (!this.viewer.getShowMeasurements ()) return ;
+if (!this.viewer.getShowMeasurements ()) return false;
 var showMeasurementLabels = this.viewer.getShowMeasurementLabels ();
 var dynamicMeasurements = this.viewer.getDynamicMeasurements ();
 measures.setVisibilityInfo ();
 for (var i = measures.measurementCount; --i >= 0; ) {
 var m = measures.measurements.get (i);
 if (dynamicMeasurements || m.isDynamic ()) m.refresh ();
-if (!m.isVisible ()) continue ;this.colix = m.getColix ();
+if (!m.isVisible ()) continue;
+this.colix = m.getColix ();
 if (this.colix == 0) this.colix = measures.colix;
 if (this.colix == 0) this.colix = this.viewer.getColixBackgroundContrast ();
 this.g3d.setColix (this.colix);
 this.renderMeasurement (m.getCount (), m, showMeasurementLabels);
 }
+return false;
 });
 Clazz.defineMethod (c$, "getAtom", 
 ($fz = function (i) {
@@ -80,16 +82,16 @@ this.tickInfo = this.measurement.getTickInfo ();
 if (this.tickInfo != null) {
 this.drawLine (this.atomA.screenX, this.atomA.screenY, this.atomA.screenZ, this.atomB.screenX, this.atomB.screenY, this.atomB.screenZ, this.mad);
 if (this.tickInfo != null) this.drawTicks (this.atomA, this.atomB, this.mad, renderLabel);
-return ;
+return;
 }var zA = this.atomA.screenZ - this.atomA.screenDiameter - 10;
 var zB = this.atomB.screenZ - this.atomB.screenDiameter - 10;
 var radius = this.drawLine (this.atomA.screenX, this.atomA.screenY, zA, this.atomB.screenX, this.atomB.screenY, zB, this.mad);
-if (!renderLabel) return ;
+if (!renderLabel) return;
 if (this.mad > 0) radius <<= 1;
-var z = Math.floor ((zA + zB) / 2);
+var z = Clazz.doubleToInt ((zA + zB) / 2);
 if (z < 1) z = 1;
-var x = Math.floor ((this.atomA.screenX + this.atomB.screenX) / 2);
-var y = Math.floor ((this.atomA.screenY + this.atomB.screenY) / 2);
+var x = Clazz.doubleToInt ((this.atomA.screenX + this.atomB.screenX) / 2);
+var y = Clazz.doubleToInt ((this.atomA.screenY + this.atomB.screenY) / 2);
 this.drawString (x, y, z, radius, this.doJustify && (x - this.atomA.screenX) * (y - this.atomA.screenY) > 0, false, false, (this.doJustify ? 0 : 2147483647), this.measurement.getString ());
 }, "~B");
 Clazz.defineMethod (c$, "renderAngle", 
@@ -100,17 +102,17 @@ var zB = this.atomB.screenZ - zOffset;
 var zC = this.atomC.screenZ - this.atomC.screenDiameter - 10;
 var radius = this.drawLine (this.atomA.screenX, this.atomA.screenY, zA, this.atomB.screenX, this.atomB.screenY, zB, this.mad);
 radius += this.drawLine (this.atomB.screenX, this.atomB.screenY, zB, this.atomC.screenX, this.atomC.screenY, zC, this.mad);
-if (!renderLabel) return ;
-radius = Math.floor ((radius + 1) / 2);
+if (!renderLabel) return;
+radius = Clazz.doubleToInt ((radius + 1) / 2);
 var aa = this.measurement.getAxisAngle ();
 if (aa == null) {
-var offset = Math.round ((5 * this.imageFontScaling));
+var offset = Clazz.doubleToInt (Math.floor (5 * this.imageFontScaling));
 this.drawString (this.atomB.screenX + offset, this.atomB.screenY - offset, zB, radius, false, false, false, (this.doJustify ? 0 : 2147483647), this.measurement.getString ());
-return ;
-}var dotCount = Math.round (((aa.angle / (6.283185307179586)) * 64));
+return;
+}var dotCount = Clazz.doubleToInt (Math.floor ((aa.angle / (6.283185307179586)) * 64));
 var stepAngle = aa.angle / dotCount;
 this.aaT.setAA (aa);
-var iMid = Math.floor (dotCount / 2);
+var iMid = Clazz.doubleToInt (dotCount / 2);
 var ptArc = this.measurement.getPointArc ();
 for (var i = dotCount; --i >= 0; ) {
 this.aaT.angle = i * stepAngle;
@@ -141,15 +143,15 @@ var zD = this.atomD.screenZ - this.atomD.screenDiameter - 10;
 var radius = this.drawLine (this.atomA.screenX, this.atomA.screenY, zA, this.atomB.screenX, this.atomB.screenY, zB, this.mad);
 radius += this.drawLine (this.atomB.screenX, this.atomB.screenY, zB, this.atomC.screenX, this.atomC.screenY, zC, this.mad);
 radius += this.drawLine (this.atomC.screenX, this.atomC.screenY, zC, this.atomD.screenX, this.atomD.screenY, zD, this.mad);
-if (!renderLabel) return ;
+if (!renderLabel) return;
 radius /= 3;
-this.drawString (Math.floor ((this.atomA.screenX + this.atomB.screenX + this.atomC.screenX + this.atomD.screenX) / 4), Math.floor ((this.atomA.screenY + this.atomB.screenY + this.atomC.screenY + this.atomD.screenY) / 4), Math.floor ((zA + zB + zC + zD) / 4), radius, false, false, false, (this.doJustify ? 0 : 2147483647), this.measurement.getString ());
+this.drawString (Clazz.doubleToInt ((this.atomA.screenX + this.atomB.screenX + this.atomC.screenX + this.atomD.screenX) / 4), Clazz.doubleToInt ((this.atomA.screenY + this.atomB.screenY + this.atomC.screenY + this.atomD.screenY) / 4), Clazz.doubleToInt ((zA + zB + zC + zD) / 4), radius, false, false, false, (this.doJustify ? 0 : 2147483647), this.measurement.getString ());
 }, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "renderPendingMeasurement", 
 ($fz = function (measurementPending) {
-if (this.isExport || measurementPending == null) return ;
+if (this.isExport || measurementPending == null) return;
 var count = measurementPending.getCount ();
-if (count == 0) return ;
+if (count == 0) return;
 this.g3d.setColix (measurementPending.traceX == -2147483648 ? this.viewer.getColixRubberband () : count == 2 ? 20 : 23);
 measurementPending.refresh ();
 if (measurementPending.haveTarget ()) this.renderMeasurement (count, measurementPending, measurementPending.traceX == -2147483648);
@@ -170,7 +172,7 @@ y <<= 1;
 }, $fz.isPrivate = true, $fz), "~N,org.jmol.modelset.MeasurementPending");
 Clazz.defineMethod (c$, "drawLine", 
 function (x1, y1, z1, x2, y2, z2, mad) {
-var diameter = (mad >= 20 && this.exportType != 1 ? this.viewer.scaleToScreen (Math.floor ((z1 + z2) / 2), mad) : mad);
+var diameter = (mad >= 20 && this.exportType != 1 ? this.viewer.scaleToScreen (Clazz.doubleToInt ((z1 + z2) / 2), mad) : mad);
 return Clazz.superCall (this, org.jmol.render.MeasuresRenderer, "drawLine", [x1, y1, z1, x2, y2, z2, diameter]);
 }, "~N,~N,~N,~N,~N,~N,~N");
 });

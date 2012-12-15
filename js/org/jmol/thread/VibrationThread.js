@@ -1,38 +1,42 @@
-﻿Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.VibrationThread", ["java.lang.Thread"], function () {
+Clazz.declarePackage ("org.jmol.thread");
+Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.VibrationThread", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.transformManager = null;
-this.viewer = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.thread, "VibrationThread", org.jmol.thread.JmolThread);
 Clazz.makeConstructor (c$, 
 function (transformManager, viewer) {
-Clazz.superConstructor (this, org.jmol.thread.VibrationThread, []);
+Clazz.superConstructor (this, org.jmol.thread.VibrationThread);
+this.setViewer (viewer, "VibrationThread");
 this.transformManager = transformManager;
-this.viewer = viewer;
-this.setMyName ("VibrationThread");
 }, "org.jmol.viewer.TransformManager,org.jmol.viewer.Viewer");
-Clazz.overrideMethod (c$, "run", 
-function () {
-var startTime = System.currentTimeMillis ();
-var lastRepaintTime = startTime;
-try {
-do {
-var currentTime = System.currentTimeMillis ();
-var elapsed = (currentTime - lastRepaintTime);
-var sleepTime = 33 - elapsed;
-if (sleepTime > 0) Thread.sleep (sleepTime);
-lastRepaintTime = currentTime = System.currentTimeMillis ();
-elapsed = (currentTime - startTime);
+Clazz.overrideMethod (c$, "run1", 
+function (mode) {
+var elapsed;
+while (true) switch (mode) {
+case -1:
+this.lastRepaintTime = this.startTime = System.currentTimeMillis ();
+this.viewer.startHoverWatcher (false);
+mode = 0;
+break;
+case 0:
+elapsed = (System.currentTimeMillis () - this.lastRepaintTime);
+this.sleepTime = 33 - elapsed;
+if (!this.runSleep (this.sleepTime, 1)) return;
+mode = 1;
+break;
+case 1:
+this.lastRepaintTime = System.currentTimeMillis ();
+elapsed = (this.lastRepaintTime - this.startTime);
 var t = (elapsed % this.transformManager.vibrationPeriodMs) / this.transformManager.vibrationPeriodMs;
 this.transformManager.setVibrationT (t);
 this.viewer.refresh (3, "VibrationThread:run()");
-} while (!this.isInterrupted ());
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
+mode = (this.checkInterrupted () ? -2 : 0);
+break;
+case -2:
+this.viewer.startHoverWatcher (true);
+return;
 }
-}
-});
+
+}, "~N");
 });

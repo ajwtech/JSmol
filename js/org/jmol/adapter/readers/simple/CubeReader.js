@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.CubeReader", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomCount = 0;
@@ -30,7 +30,7 @@ Clazz.defineMethod (c$, "readAtomCountAndOrigin",
 this.readLine ();
 this.isAngstroms = (this.line.indexOf ("ANGSTROMS") >= 0);
 var tokens = this.getTokens ();
-if ((tokens[0].charAt (0)).charCodeAt (0) == 43) tokens[0] = tokens[0].substring (1);
+if (tokens[0].charAt (0) == '+') tokens[0] = tokens[0].substring (1);
 this.atomCount = Math.abs (this.parseIntStr (tokens[0]));
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtoms", 

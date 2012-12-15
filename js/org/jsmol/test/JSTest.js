@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jsmol.test");
-Clazz.load (["org.jsmol.test.JSmol", "javax.vecmath.Point3f"], "org.jsmol.test.JSTest", ["java.lang.Boolean", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jsmol.test");
+Clazz.load (["org.jsmol.test.JSmol", "org.jmol.util.Point3f"], "org.jsmol.test.JSTest", ["java.lang.Boolean", "org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 if (!Clazz.isClassDefined ("org.jsmol.test.JSTest.TestInner")) {
 org.jsmol.test.JSTest.$JSTest$TestInner$ ();
@@ -20,7 +20,7 @@ Clazz.superConstructor (this, org.jsmol.test.JSTest);
 System.out.println ("testing123");
 this.sayHello ("JSTest constructor -- after super()");
 this.testStatic ();
-org.jsmol.test.JSmol.bs.set (Math.round ((12 + org.jsmol.test.JSTest.pt2.x)));
+org.jsmol.test.JSmol.bs.set (Clazz.floatToInt (12 + org.jsmol.test.JSTest.pt2.x));
 org.jsmol.test.JSmol.pt.x = -1;
 this.sayHello ("OK-JSTest pt2.x = " + org.jsmol.test.JSTest.pt2);
 org.jsmol.test.JSTest.pt2.x -= 1;
@@ -44,7 +44,7 @@ var b = '@';
 var c = 2 + b.charCodeAt (0);
 var d = 2;
 var e = "3" + b;
-var f = String.fromCharCode ((b.charCodeAt (0) + d));
+var f = String.fromCharCode (b.charCodeAt (0) + d);
 System.out.println ("x,x1,x2=" + c + "," + e + "," + f);
 this.b$["org.jsmol.test.JSTest"].sayHello (this.checkMap ('K'));
 this.b$["org.jsmol.test.JSTest"].sayHello (this.myTest ("test"));
@@ -75,7 +75,7 @@ return Boolean.TRUE;
 }, "~S");
 c$ = Clazz.p0p ();
 };
-c$.pt2 = c$.prototype.pt2 = javax.vecmath.Point3f.new3 (2, 3, 4);
+c$.pt2 = c$.prototype.pt2 = org.jmol.util.Point3f.new3 (2, 3, 4);
 Clazz.defineStatics (c$,
 "testArray", ["a", "b", "c", "d"]);
 });

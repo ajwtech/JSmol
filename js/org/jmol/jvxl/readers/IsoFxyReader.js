@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoFxyReader", ["javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.AtomDataReader"], "org.jmol.jvxl.readers.IsoFxyReader", ["org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.data = null;
 this.isPlanarMapping = false;
@@ -8,7 +8,7 @@ this.values = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "IsoFxyReader", org.jmol.jvxl.readers.AtomDataReader);
 Clazz.prepareFields (c$, function () {
-this.values =  Clazz.newArray (3, 0);
+this.values =  Clazz.newFloatArray (3, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -33,7 +33,7 @@ Clazz.defineMethod (c$, "setup",
 function (type) {
 this.func = this.params.func;
 var functionName = this.params.functionInfo.get (0);
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 this.jvxlFileHeaderBuffer.append (type).append ("\n").append (functionName).append ("\n");
 if (this.params.thePlane != null || this.data == null && !this.useOriginStepsPoints) this.setVolumeForPlane ();
  else if (this.data == null) this.setVolumeDataParams ();
@@ -44,18 +44,18 @@ Clazz.defineMethod (c$, "setVolumeData",
 function () {
 if (this.data == null) {
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoFxyReader, "setVolumeData", []);
-return ;
+return;
 }this.volumetricOrigin.setT (this.params.functionInfo.get (1));
 for (var i = 0; i < 3; i++) {
 var info = this.params.functionInfo.get (i + 2);
-this.voxelCounts[i] = Math.abs (Math.round (info.x));
+this.voxelCounts[i] = Math.abs (Clazz.floatToInt (info.x));
 this.volumetricVectors[i].set (info.y, info.z, info.w);
 }
 if (this.isAnisotropic) this.setVolumetricAnisotropy ();
 });
 Clazz.defineMethod (c$, "readSurfaceData", 
 function (isMapData) {
-if (this.volumeData.sr != null) return ;
+if (this.volumeData.sr != null) return;
 Clazz.superCall (this, org.jmol.jvxl.readers.IsoFxyReader, "readSurfaceData", [isMapData]);
 }, "~B");
 Clazz.defineMethod (c$, "getPlane", 
@@ -87,7 +87,7 @@ this.values[0] = pt.x;
 this.values[1] = pt.y;
 this.values[2] = pt.z;
 return this.atomDataServer.evalFunctionFloat (this.func[0], this.func[1], this.values);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "evaluateValue", 
 function (x, y, z) {
 this.volumeData.voxelPtToXYZ (x, y, z, this.ptTemp);

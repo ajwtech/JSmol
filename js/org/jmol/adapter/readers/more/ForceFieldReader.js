@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Properties"], "org.jmol.adapter.readers.more.ForceFieldReader", ["java.lang.Character", "org.jmol.adapter.smarter.Atom"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.userAtomTypes = null;
@@ -34,11 +34,11 @@ var ch0 = atomType.charAt (0);
 var ch1 = atomType.charAt (1);
 var isXx = (Character.isUpperCase (ch0) && Character.isLowerCase (ch1));
 if (" IM IP sz az sy ay ayt ".indexOf (atomType) >= 0) {
-if (ch0.charCodeAt (0) == 73) {
+if (ch0 == 'I') {
 elementSymbol = atom.atomName.substring (0, 2);
 if (!Character.isLowerCase (elementSymbol.charAt (1))) elementSymbol = elementSymbol.substring (0, 1);
 } else {
-elementSymbol = (ch0.charCodeAt (0) == 115 ? "Si" : "Al");
+elementSymbol = (ch0 == 's' ? "Si" : "Al");
 }} else if (nChar == 2 && isXx) {
 } else if (Character.isLetter (ch0) && !Character.isLetter (ch1)) {
 elementSymbol = "" + Character.toUpperCase (ch0);
@@ -74,7 +74,7 @@ if (atomType != null && atomType.length == 1) return atomType;
 var len = XX.length;
 var ch1 = ' ';
 i = 0;
-while (i < len && ((ch1 = XX.charAt (i++))).charCodeAt (0) <= 57) {
+while (i < len && (ch1 = XX.charAt (i++)) <= '9') {
 }
 var ch2 = (i < len ? XX.charAt (i) : ' ');
 var full = group3 + "." + ch1 + ch2;

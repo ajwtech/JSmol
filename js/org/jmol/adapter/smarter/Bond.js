@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.declarePackage ("org.jmol.adapter.smarter");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetObject"], "org.jmol.adapter.smarter.Bond", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomIndex1 = 0;

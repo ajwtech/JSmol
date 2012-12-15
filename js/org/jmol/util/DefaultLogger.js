@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (["org.jmol.util.LoggerInterface"], "org.jmol.util.DefaultLogger", ["org.jmol.util.Logger"], function () {
 c$ = Clazz.declareType (org.jmol.util, "DefaultLogger", null, org.jmol.util.LoggerInterface);
 Clazz.defineMethod (c$, "log", 

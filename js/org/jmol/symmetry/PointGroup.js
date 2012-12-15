@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.symmetry.PointGroup", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "javax.util.StringXBuilder", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.load (["org.jmol.util.Point3f", "$.Vector3f"], "org.jmol.symmetry.PointGroup", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Quaternion", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.drawInfo = null;
 this.info = null;
@@ -34,10 +34,10 @@ org.jmol.symmetry.PointGroup.$PointGroup$Operation$ ();
 Clazz.instantialize (this, arguments);
 }, org.jmol.symmetry, "PointGroup");
 Clazz.prepareFields (c$, function () {
-this.nAxes =  Clazz.newArray (org.jmol.symmetry.PointGroup.maxAxis, 0);
+this.nAxes =  Clazz.newIntArray (org.jmol.symmetry.PointGroup.maxAxis, 0);
 this.axes =  new Array (org.jmol.symmetry.PointGroup.maxAxis);
-this.vTemp =  new javax.vecmath.Vector3f ();
-this.center =  new javax.vecmath.Point3f ();
+this.vTemp =  new org.jmol.util.Vector3f ();
+this.center =  new org.jmol.util.Point3f ();
 });
 Clazz.defineMethod (c$, "getName", 
 function () {
@@ -47,7 +47,7 @@ c$.getPointGroup = Clazz.defineMethod (c$, "getPointGroup",
 function (pgLast, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance) {
 var pg =  new org.jmol.symmetry.PointGroup ();
 return (pg.set (pgLast, atomset, bsAtoms, haveVibration, distanceTolerance, linearTolerance) ? pg : pgLast);
-}, "org.jmol.symmetry.PointGroup,~A,javax.util.BitSet,~B,~N,~N");
+}, "org.jmol.symmetry.PointGroup,~A,org.jmol.util.BitSet,~B,~N,~N");
 Clazz.makeConstructor (c$, 
 ($fz = function () {
 }, $fz.isPrivate = true, $fz));
@@ -74,7 +74,7 @@ return true;
 if (haveVibration) {
 var atomVibs =  new Array (this.points.length);
 for (var i = this.points.length; --i >= 0; ) {
-atomVibs[i] = javax.vecmath.Point3f.newP (this.points[i]);
+atomVibs[i] = org.jmol.util.Point3f.newP (this.points[i]);
 var v = this.atoms[i].getVibrationVector ();
 if (v != null) atomVibs[i].add (v);
 }
@@ -135,7 +135,7 @@ this.name = "S" + n;
 } else {
 this.name = "D" + (n - 14);
 }} else {
-if (n < 14) n = Math.floor (n / 2);
+if (n < 14) n = Clazz.doubleToInt (n / 2);
  else n -= 14;
 if (nPlanes == n) {
 this.name = "D" + n + "d";
@@ -157,12 +157,12 @@ if (n < 14) n /= 2;
  else n -= 14;
 this.name = "C" + n + "h";
 }}return true;
-}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.PointGroup,~A,javax.util.BitSet,~B,~N,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.symmetry.PointGroup,~A,org.jmol.util.BitSet,~B,~N,~N");
 Clazz.defineMethod (c$, "setPrincipalAxis", 
 ($fz = function (n, nPlanes) {
 var principalPlane = this.setPrincipalPlane (n, nPlanes);
 if (nPlanes == 0 && n < 14 || this.nAxes[n] == 1) {
-if (nPlanes > 0 && n < 14) n = 14 + Math.floor (n / 2);
+if (nPlanes > 0 && n < 14) n = 14 + Clazz.doubleToInt (n / 2);
 return this.axes[n][0];
 }if (principalPlane == null) return null;
 for (var i = 0; i < this.nAxes[16]; i++) if (this.isParallel (principalPlane.normalOrAxis, this.axes[16][i].normalOrAxis)) {
@@ -194,11 +194,11 @@ var atomCount = org.jmol.util.BitSetUtil.cardinalityOf (bsAtoms);
 if (atomCount > 100) return false;
 this.points =  new Array (atomCount);
 this.atoms =  new Array (atomCount);
-this.elements =  Clazz.newArray (atomCount, 0);
+this.elements =  Clazz.newIntArray (atomCount, 0);
 if (atomCount == 0) return true;
 this.nAtoms = 0;
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
-this.points[this.nAtoms] = javax.vecmath.Point3f.newP (atomset[i]);
+this.points[this.nAtoms] = org.jmol.util.Point3f.newP (atomset[i]);
 this.atoms[this.nAtoms] = atomset[i];
 var bondIndex = 1 + Math.max (3, atomset[i].getCovalentBondCount ());
 this.elements[this.nAtoms] = atomset[i].getElementNumber () * bondIndex;
@@ -211,7 +211,7 @@ if (r < this.distanceTolerance) this.centerAtomIndex = i;
 this.radius = Math.max (this.radius, r);
 }
 return true;
-}, $fz.isPrivate = true, $fz), "~A,javax.util.BitSet");
+}, $fz.isPrivate = true, $fz), "~A,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "findInversionCenter", 
 ($fz = function () {
 this.haveInversionCenter = this.checkOperation (null, this.center, -1);
@@ -221,7 +221,7 @@ this.axes[1][0] = Clazz.innerTypeInstance (org.jmol.symmetry.PointGroup.Operatio
 }}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "checkOperation", 
 ($fz = function (q, center, iOrder) {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 var nFound = 0;
 var isInversion = (iOrder < 14);
 out : for (var i = this.points.length; --i >= 0 && nFound < this.points.length; ) if (i == this.centerAtomIndex) {
@@ -241,25 +241,30 @@ this.vTemp.sub2 (center, pt);
 pt.scaleAdd2 (2, this.vTemp, pt);
 }if ((q != null || isInversion) && pt.distance (a1) < this.distanceTolerance) {
 nFound++;
-continue ;}for (var j = this.points.length; --j >= 0; ) {
-if (j == i || this.elements[j] != e1) continue ;var a2 = this.points[j];
+continue;
+}for (var j = this.points.length; --j >= 0; ) {
+if (j == i || this.elements[j] != e1) continue;
+var a2 = this.points[j];
 if (pt.distance (a2) < this.distanceTolerance) {
 nFound++;
-continue out;}}
+continue out;
+}}
 }
 return nFound == this.points.length;
-}, $fz.isPrivate = true, $fz), "org.jmol.util.Quaternion,javax.vecmath.Point3f,~N");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Quaternion,org.jmol.util.Point3f,~N");
 Clazz.defineMethod (c$, "isLinear", 
 ($fz = function (atoms) {
 var v1 = null;
 if (atoms.length < 2) return false;
 for (var i = atoms.length; --i >= 0; ) {
-if (i == this.centerAtomIndex) continue ;if (v1 == null) {
-v1 =  new javax.vecmath.Vector3f ();
+if (i == this.centerAtomIndex) continue;
+if (v1 == null) {
+v1 =  new org.jmol.util.Vector3f ();
 v1.sub2 (atoms[i], this.center);
 v1.normalize ();
 this.vTemp.setT (v1);
-continue ;}this.vTemp.sub2 (atoms[i], this.center);
+continue;
+}this.vTemp.sub2 (atoms[i], this.center);
 this.vTemp.normalize ();
 if (!this.isParallel (v1, this.vTemp)) return false;
 }
@@ -268,53 +273,57 @@ return true;
 Clazz.defineMethod (c$, "isParallel", 
 ($fz = function (v1, v2) {
 return (Math.abs (v1.dot (v2)) >= this.cosTolerance);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "isPerpendicular", 
 ($fz = function (v1, v2) {
 return (Math.abs (v1.dot (v2)) <= 1 - this.cosTolerance);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "getElementCounts", 
 ($fz = function () {
 for (var i = this.points.length; --i >= 0; ) {
 var e1 = this.elements[i];
 if (e1 > this.maxElement) this.maxElement = e1;
 }
-this.eCounts =  Clazz.newArray (++this.maxElement, 0);
+this.eCounts =  Clazz.newIntArray (++this.maxElement, 0);
 for (var i = this.points.length; --i >= 0; ) this.eCounts[this.elements[i]]++;
 
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "findCAxes", 
 ($fz = function () {
-var v1 =  new javax.vecmath.Vector3f ();
-var v2 =  new javax.vecmath.Vector3f ();
-var v3 =  new javax.vecmath.Vector3f ();
+var v1 =  new org.jmol.util.Vector3f ();
+var v2 =  new org.jmol.util.Vector3f ();
+var v3 =  new org.jmol.util.Vector3f ();
 for (var i = this.points.length; --i >= 0; ) {
-if (i == this.centerAtomIndex) continue ;var a1 = this.points[i];
+if (i == this.centerAtomIndex) continue;
+var a1 = this.points[i];
 var e1 = this.elements[i];
 for (var j = this.points.length; --j > i; ) {
 var a2 = this.points[j];
-if (this.elements[j] != e1) continue ;v1.sub2 (a1, this.center);
+if (this.elements[j] != e1) continue;
+v1.sub2 (a1, this.center);
 v2.sub2 (a2, this.center);
 v1.normalize ();
 v2.normalize ();
 if (this.isParallel (v1, v2)) {
 this.getAllAxes (v1);
-continue ;}if (this.nAxes[16] < org.jmol.symmetry.PointGroup.axesMaxN[16]) {
+continue;
+}if (this.nAxes[16] < org.jmol.symmetry.PointGroup.axesMaxN[16]) {
 v3.setT (a1);
 v3.add (a2);
 v3.scale (0.5);
 v3.sub (this.center);
 this.getAllAxes (v3);
 }var order = (6.283185307179586 / v1.angle (v2));
-var iOrder = Math.round ((order + 0.01));
+var iOrder = Clazz.doubleToInt (Math.floor (order + 0.01));
 var isIntegerOrder = (order - iOrder <= 0.02);
-if (!isIntegerOrder || (iOrder = iOrder + 14) >= org.jmol.symmetry.PointGroup.maxAxis) continue ;if (this.nAxes[iOrder] < org.jmol.symmetry.PointGroup.axesMaxN[iOrder]) {
+if (!isIntegerOrder || (iOrder = iOrder + 14) >= org.jmol.symmetry.PointGroup.maxAxis) continue;
+if (this.nAxes[iOrder] < org.jmol.symmetry.PointGroup.axesMaxN[iOrder]) {
 v3.cross (v1, v2);
 this.checkAxisOrder (iOrder, v3, this.center);
 }}
 }
 var vs =  new Array (this.nAxes[16] * 2);
-for (var i = 0; i < vs.length; i++) vs[i] =  new javax.vecmath.Vector3f ();
+for (var i = 0; i < vs.length; i++) vs[i] =  new org.jmol.util.Vector3f ();
 
 var n = 0;
 for (var i = 0; i < this.nAxes[16]; i++) {
@@ -326,7 +335,8 @@ for (var i = vs.length; --i >= 2; ) for (var j = i; --j >= 1; ) for (var k = j; 
 v3.setT (vs[i]);
 v3.add (vs[j]);
 v3.add (vs[k]);
-if (v3.length () < 1.0) continue ;this.checkAxisOrder (17, v3, this.center);
+if (v3.length () < 1.0) continue;
+this.checkAxisOrder (17, v3, this.center);
 }
 
 
@@ -356,13 +366,15 @@ if (this.nAxes[19] == org.jmol.symmetry.PointGroup.axesMaxN[19]) break out;
 vs =  new Array (this.maxElement);
 for (var i = this.points.length; --i >= 0; ) {
 var e1 = this.elements[i];
-if (vs[e1] == null) vs[e1] =  new javax.vecmath.Vector3f ();
- else if (this.haveInversionCenter) continue ;vs[e1].add (this.points[i]);
+if (vs[e1] == null) vs[e1] =  new org.jmol.util.Vector3f ();
+ else if (this.haveInversionCenter) continue;
+vs[e1].add (this.points[i]);
 }
 if (!this.haveInversionCenter) for (var i = 0; i < this.maxElement; i++) if (vs[i] != null) vs[i].scale (1 / this.eCounts[i]);
 
 for (var i = 0; i < this.maxElement; i++) if (vs[i] != null) for (var j = 0; j < this.maxElement; j++) {
-if (i == j || vs[j] == null) continue ;if (this.haveInversionCenter) {
+if (i == j || vs[j] == null) continue;
+if (this.haveInversionCenter) {
 v1.cross (vs[i], vs[j]);
 } else {
 v1.setT (vs[i]);
@@ -376,7 +388,7 @@ Clazz.defineMethod (c$, "getAllAxes",
 ($fz = function (v3) {
 for (var o = 16; o < org.jmol.symmetry.PointGroup.maxAxis; o++) if (this.nAxes[o] < org.jmol.symmetry.PointGroup.axesMaxN[o]) this.checkAxisOrder (o, v3, this.center);
 
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "getHighestOrder", 
 ($fz = function () {
 var n = 0;
@@ -405,7 +417,7 @@ break;
 }
 v.normalize ();
 if (this.haveAxis (iOrder, v)) return false;
-var q = org.jmol.util.Quaternion.newVA (v, (iOrder < 14 ? 180 : 0) + Math.floor (360 / (iOrder % 14)));
+var q = org.jmol.util.Quaternion.newVA (v, (iOrder < 14 ? 180 : 0) + Clazz.doubleToInt (360 / (iOrder % 14)));
 if (!this.checkOperation (q, center, iOrder)) return false;
 this.addAxis (iOrder, v);
 switch (iOrder) {
@@ -438,13 +450,13 @@ this.addAxis (18, v);
 break;
 }
 return true;
-}, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Vector3f,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.Vector3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addAxis", 
 ($fz = function (iOrder, v) {
-if (this.haveAxis (iOrder, v)) return ;
+if (this.haveAxis (iOrder, v)) return;
 if (this.axes[iOrder] == null) this.axes[iOrder] =  new Array (org.jmol.symmetry.PointGroup.axesMaxN[iOrder]);
 this.axes[iOrder][this.nAxes[iOrder]++] = Clazz.innerTypeInstance (org.jmol.symmetry.PointGroup.Operation, this, null, v, iOrder);
-}, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "haveAxis", 
 ($fz = function (iOrder, v) {
 if (this.nAxes[iOrder] == org.jmol.symmetry.PointGroup.axesMaxN[iOrder]) {
@@ -453,20 +465,22 @@ return true;
 if (this.isParallel (v, this.axes[iOrder][i].normalOrAxis)) return true;
 }
 return false;
-}, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "findPlanes", 
 ($fz = function () {
-var pt =  new javax.vecmath.Point3f ();
-var v1 =  new javax.vecmath.Vector3f ();
-var v2 =  new javax.vecmath.Vector3f ();
-var v3 =  new javax.vecmath.Vector3f ();
+var pt =  new org.jmol.util.Point3f ();
+var v1 =  new org.jmol.util.Vector3f ();
+var v2 =  new org.jmol.util.Vector3f ();
+var v3 =  new org.jmol.util.Vector3f ();
 var nPlanes = 0;
 var haveAxes = (this.getHighestOrder () > 1);
 for (var i = this.points.length; --i >= 0; ) {
-if (i == this.centerAtomIndex) continue ;var a1 = this.points[i];
+if (i == this.centerAtomIndex) continue;
+var a1 = this.points[i];
 var e1 = this.elements[i];
 for (var j = this.points.length; --j > i; ) {
-if (haveAxes && this.elements[j] != e1) continue ;var a2 = this.points[j];
+if (haveAxes && this.elements[j] != e1) continue;
+var a2 = this.points[j];
 pt.add2 (a1, a2);
 pt.scale (0.5);
 v1.sub2 (a1, this.center);
@@ -491,7 +505,7 @@ Clazz.defineMethod (c$, "getPlane",
 ($fz = function (v3) {
 if (!this.haveAxis (0, v3) && this.checkOperation (org.jmol.util.Quaternion.newVA (v3, 180), this.center, -1)) this.axes[0][this.nAxes[0]++] = Clazz.innerTypeInstance (org.jmol.symmetry.PointGroup.Operation, this, null, v3);
 return this.nAxes[0];
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "findAdditionalAxes", 
 ($fz = function (nPlanes) {
 var planes = this.axes[0];
@@ -512,15 +526,15 @@ this.checkAxisOrder (16, this.vTemp, this.center);
 Clazz.defineMethod (c$, "getInfo", 
 function (modelIndex, asDraw, asInfo, type, index, scaleFactor) {
 this.info = (asInfo ?  new java.util.Hashtable () : null);
-var v =  new javax.vecmath.Vector3f ();
+var v =  new org.jmol.util.Vector3f ();
 var op;
 if (scaleFactor == 0) scaleFactor = 1;
 this.scale = scaleFactor;
-var nType =  Clazz.newArray (4, 2, 0);
+var nType =  Clazz.newIntArray (4, 2, 0);
 for (var i = 1; i < org.jmol.symmetry.PointGroup.maxAxis; i++) for (var j = this.nAxes[i]; --j >= 0; ) nType[this.axes[i][j].type][0]++;
 
 
-var sb =  new javax.util.StringXBuilder ().append ("# ").appendI (this.nAtoms).append (" atoms\n");
+var sb =  new org.jmol.util.StringXBuilder ().append ("# ").appendI (this.nAtoms).append (" atoms\n");
 if (asDraw) {
 var haveType = (type != null && type.length > 0);
 this.drawType = type = (haveType ? type : "");
@@ -534,11 +548,13 @@ if (!haveType || type.equalsIgnoreCase ("Ci")) sb.append ("draw pg0").append (m)
 var offset = 0.1;
 for (var i = 2; i < org.jmol.symmetry.PointGroup.maxAxis; i++) {
 if (i == 14) offset = 0.1;
-if (this.nAxes[i] == 0) continue ;var label = this.axes[i][0].getLabel ();
+if (this.nAxes[i] == 0) continue;
+var label = this.axes[i][0].getLabel ();
 offset += 0.25;
 var scale = scaleFactor * this.radius + offset;
 if (!haveType || type.equalsIgnoreCase (label) || anyProperAxis && i >= 14 || anyImproperAxis && i < 14) for (var j = 0; j < this.nAxes[i]; j++) {
-if (index > 0 && j + 1 != index) continue ;op = this.axes[i][j];
+if (index > 0 && j + 1 != index) continue;
+op = this.axes[i][j];
 v.setT (op.normalOrAxis);
 v.add (this.center);
 if (op.type == 2) scale = -scale;
@@ -549,7 +565,8 @@ sb.append (org.jmol.util.Escape.escapePt (v)).append ("\"").append (label).appen
 }
 }
 if (!haveType || type.equalsIgnoreCase ("Cs")) for (var j = 0; j < this.nAxes[0]; j++) {
-if (index > 0 && j + 1 != index) continue ;op = this.axes[0][j];
+if (index > 0 && j + 1 != index) continue;
+op = this.axes[0][j];
 sb.append ("draw pgvp").append (m).appendI (j + 1).append ("disk scale ").appendF (scaleFactor * this.radius * 2).append (" CIRCLE PLANE ").append (org.jmol.util.Escape.escapePt (this.center));
 v.setT (op.normalOrAxis);
 v.add (this.center);
@@ -660,15 +677,15 @@ this.type = (b < 14 ? 2 : 1);
 this.order = b % 14;
 this.normalOrAxis = org.jmol.util.Quaternion.newVA (a, 180).getNormal ();
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("new operation -- " + (this.order == b ? "S" : "C") + this.order + " " + this.normalOrAxis);
-}, "javax.vecmath.Vector3f,~N");
+}, "org.jmol.util.Vector3f,~N");
 Clazz.makeConstructor (c$, 
 function (a) {
-if (a == null) return ;
+if (a == null) return;
 this.index = ++this.b$["org.jmol.symmetry.PointGroup"].nOps;
 this.type = 0;
 this.normalOrAxis = org.jmol.util.Quaternion.newVA (a, 180).getNormal ();
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("new operation -- plane " + this.normalOrAxis);
-}, "javax.vecmath.Vector3f");
+}, "org.jmol.util.Vector3f");
 Clazz.defineMethod (c$, "getLabel", 
 function () {
 switch (this.type) {

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.InputStreamReader", "$.StringReader", "java.lang.Float", "javax.util.BitSet", "javax.vecmath.Point4f", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.Parameters", "$.SurfaceReader", "org.jmol.util.ArrayUtil", "$.Logger", "$.Measure", "$.Parser", "$.SurfaceFileTyper", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.util.Point3f", "$.Vector3f"], "org.jmol.jvxl.readers.SurfaceGenerator", ["java.io.BufferedReader", "$.StringReader", "java.lang.Float", "org.jmol.io.JmolBinary", "org.jmol.jvxl.data.JvxlCoder", "$.JvxlData", "$.MeshData", "$.VolumeData", "org.jmol.jvxl.readers.Parameters", "$.SurfaceReader", "org.jmol.util.ArrayUtil", "$.BitSet", "$.Escape", "$.Logger", "$.Measure", "$.Parser", "$.Point4f", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.jvxlData = null;
 this.meshData = null;
@@ -23,10 +23,10 @@ this.readerData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "SurfaceGenerator");
 Clazz.prepareFields (c$, function () {
-this.vAC =  new javax.vecmath.Vector3f ();
-this.vAB =  new javax.vecmath.Vector3f ();
-this.vNorm =  new javax.vecmath.Vector3f ();
-this.ptRef = javax.vecmath.Point3f.new3 (0, 0, 1e15);
+this.vAC =  new org.jmol.util.Vector3f ();
+this.vAB =  new org.jmol.util.Vector3f ();
+this.vNorm =  new org.jmol.util.Vector3f ();
+this.ptRef = org.jmol.util.Point3f.new3 (0, 0, 1e15);
 });
 Clazz.defineMethod (c$, "isValid", 
 function () {
@@ -204,7 +204,7 @@ this.params.boundingBox = (value)[1];
 return true;
 }if ("boundingBox" === propertyName) {
 var pts = value;
-this.params.boundingBox = [javax.vecmath.Point3f.newP (pts[0]), javax.vecmath.Point3f.newP (pts[pts.length - 1])];
+this.params.boundingBox = [org.jmol.util.Point3f.newP (pts[0]), org.jmol.util.Point3f.newP (pts[pts.length - 1])];
 return true;
 }if ("func" === propertyName) {
 this.params.func = value;
@@ -234,7 +234,7 @@ return true;
 if (value == null) {
 this.params.title = null;
 return true;
-} else if (Clazz.instanceOf (value, Array)) {
+} else if (org.jmol.util.Escape.isAS (value)) {
 this.params.title = value;
 for (var i = 0; i < this.params.title.length; i++) if (this.params.title[i].length > 0) org.jmol.util.Logger.info (this.params.title[i]);
 
@@ -287,7 +287,10 @@ return true;
 this.params.addHydrogens = (value).booleanValue ();
 return true;
 }if ("squareData" === propertyName) {
-this.params.isSquared = (value).booleanValue ();
+this.params.isSquared = (value == null ? false : (value).booleanValue ());
+return true;
+}if ("squareLinear" === propertyName) {
+this.params.isSquaredLinear = (value == null ? false : (value).booleanValue ());
 return true;
 }if ("gridPoints" === propertyName) {
 this.params.iAddGridPoints = true;
@@ -413,10 +416,10 @@ return true;
 }if ("contour" === propertyName) {
 this.params.isContoured = true;
 var n;
-if (Clazz.instanceOf (value, Array)) {
+if (org.jmol.util.Escape.isAF (value)) {
 this.params.contoursDiscrete = value;
 this.params.nContours = this.params.contoursDiscrete.length;
-} else if (Clazz.instanceOf (value, javax.vecmath.Point3f)) {
+} else if (Clazz.instanceOf (value, org.jmol.util.Point3f)) {
 var pt = this.params.contourIncrements = value;
 var from = pt.x;
 var to = pt.y;
@@ -425,7 +428,7 @@ if (step <= 0) step = 1;
 n = 0;
 for (var p = from; p <= to + step / 10; p += step, n++) {
 }
-this.params.contoursDiscrete =  Clazz.newArray (n, 0);
+this.params.contoursDiscrete =  Clazz.newFloatArray (n, 0);
 var p = from;
 for (var i = 0; i < n; i++, p += step) {
 this.params.contoursDiscrete[i] = p;
@@ -461,8 +464,8 @@ this.surfaceReader = this.newReader ("IsoShapeReader");
 this.generateSurface ();
 return true;
 }if ("ellipsoid" === propertyName) {
-if (Clazz.instanceOf (value, javax.vecmath.Point4f)) this.params.setEllipsoid (value);
- else if (Clazz.instanceOf (value, Array)) this.params.setEllipsoid (value);
+if (Clazz.instanceOf (value, org.jmol.util.Point4f)) this.params.setEllipsoid (value);
+ else if (org.jmol.util.Escape.isAF (value)) this.params.setEllipsoid (value);
  else return true;
 this.readerData =  new Float (this.params.distance);
 this.surfaceReader = this.newReader ("IsoShapeReader");
@@ -497,12 +500,12 @@ if (!this.params.setAtomicOrbital (value)) {
 this.$isValid = false;
 return true;
 }this.readerData = [this.params.psi_n, this.params.psi_l, this.params.psi_m, this.params.psi_Znuc, this.params.psi_monteCarloCount];
-this.surfaceReader = this.newReader ("IsoShape");
+this.surfaceReader = this.newReader ("IsoShapeReader");
 this.processState ();
 return true;
 }if ("functionXY" === propertyName) {
 this.params.setFunctionXY (value);
-if (this.params.isContoured) this.volumeData.setPlaneParameters (javax.vecmath.Point4f.new4 (0, 0, 1, 0));
+if (this.params.isContoured) this.volumeData.setPlaneParameters (org.jmol.util.Point4f.new4 (0, 0, 1, 0));
 if ((this.params.functionInfo.get (0)).indexOf ("_xyz") >= 0) this.getFunctionZfromXY ();
 this.processState ();
 return true;
@@ -590,7 +593,7 @@ return true;
 }if ("periodic" === propertyName) {
 this.params.isPeriodic = true;
 }return false;
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "newReader", 
 ($fz = function (name) {
 var sr = org.jmol.jvxl.readers.SurfaceGenerator.getInterface (name);
@@ -677,18 +680,18 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "generateSurface", 
 ($fz = function () {
-if (++this.params.state != 2) return ;
+if (++this.params.state != 2) return;
 this.setReader ();
 var haveMeshDataServer = (this.meshDataServer != null);
 if (this.params.colorBySign) this.params.isBicolorMap = true;
 if (this.surfaceReader == null) {
 org.jmol.util.Logger.error ("surfaceReader is null for " + this.params.dataType);
-return ;
+return;
 }if (!this.surfaceReader.createIsosurface (false)) {
 org.jmol.util.Logger.error ("Could not create isosurface");
 this.params.cutoff = NaN;
 this.surfaceReader.closeReader ();
-return ;
+return;
 }if (this.params.pocket != null && haveMeshDataServer) this.surfaceReader.selectPocket (!this.params.pocket.booleanValue ());
 if (this.params.minSet > 0) this.surfaceReader.excludeMinimumSet ();
 if (this.params.maxSet > 0) this.surfaceReader.excludeMaximumSet ();
@@ -716,8 +719,8 @@ this.colorIsosurface ();
 Clazz.defineMethod (c$, "mapSurface", 
 ($fz = function () {
 if (this.params.state == 1 && this.params.thePlane != null) this.params.state++;
-if (++this.params.state < 3) return ;
-if (!this.setReader ()) return ;
+if (++this.params.state < 3) return;
+if (!this.setReader ()) return;
 if (this.params.isPeriodic) this.volumeData.isPeriodic = true;
 if (this.params.thePlane != null) {
 var isSquared = this.params.isSquared;
@@ -729,7 +732,7 @@ this.volumeData.setMappingPlane (null);
 if (this.meshDataServer != null) this.meshDataServer.notifySurfaceGenerationCompleted ();
 if (this.params.dataType == 1205) {
 this.surfaceReader.discardTempData (true);
-return ;
+return;
 }this.params.isSquared = isSquared;
 this.params.mappedDataMin = 3.4028235E38;
 this.surfaceReader.readVolumeData (true);
@@ -775,7 +778,7 @@ if (Clazz.instanceOf (value, String)) {
 data = value;
 value =  new java.io.BufferedReader ( new java.io.StringReader (value));
 }var br = value;
-if (fileType == null) fileType = org.jmol.util.SurfaceFileTyper.determineSurfaceFileType (br);
+if (fileType == null) fileType = org.jmol.io.JmolBinary.determineSurfaceFileType (br);
 if (fileType != null && fileType.startsWith ("UPPSALA")) {
 var fname = this.params.fileName;
 fname = fname.substring (0, fname.indexOf ("/", 10));
@@ -785,8 +788,15 @@ value = this.atomDataServer.getBufferedInputStream (fname);
 if (value == null) {
 org.jmol.util.Logger.error ("Isosurface: could not open file " + fname);
 return null;
-}br =  new java.io.BufferedReader ( new java.io.InputStreamReader (value));
-fileType = org.jmol.util.SurfaceFileTyper.determineSurfaceFileType (br);
+}try {
+br = org.jmol.io.JmolBinary.getInputStreamReader (value);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+} else {
+throw e;
+}
+}
+fileType = org.jmol.io.JmolBinary.determineSurfaceFileType (br);
 }if (fileType == null) fileType = "UNKNOWN";
 org.jmol.util.Logger.info ("data file type was determined to be " + fileType);
 if (fileType.equals ("Jvxl+")) return this.newReaderBr ("JvxlReader", br);
@@ -809,7 +819,7 @@ throw e;
 }
 br = null;
 this.readerData = this.params.fileName;
-return this.newReader ("MrcBinaryReader");
+return this.newReaderBr ("MrcBinaryReader", br);
 }this.readerData = [this.params.fileName, data];
 if (fileType.equals ("DSN6")) {
 try {
@@ -821,7 +831,7 @@ throw e;
 }
 }
 br = null;
-return this.newReader ("Dsn6BinaryReader");
+return this.newReaderBr ("Dsn6BinaryReader", br);
 }if (fileType.equals ("Efvet")) {
 return this.newReaderBr ("EfvetReader", br);
 }if (fileType.equals ("Pmesh")) {
@@ -860,22 +870,22 @@ return this.params.lcaoType;
 Clazz.defineMethod (c$, "getFunctionZfromXY", 
 ($fz = function () {
 var origin = this.params.functionInfo.get (1);
-var counts =  Clazz.newArray (3, 0);
-var nearest =  Clazz.newArray (3, 0);
+var counts =  Clazz.newIntArray (3, 0);
+var nearest =  Clazz.newIntArray (3, 0);
 var vectors =  new Array (3);
 for (var i = 0; i < 3; i++) {
 var info = this.params.functionInfo.get (i + 2);
-counts[i] = Math.abs (Math.round (info.x));
-vectors[i] = javax.vecmath.Vector3f.new3 (info.y, info.z, info.w);
+counts[i] = Math.abs (Clazz.floatToInt (info.x));
+vectors[i] = org.jmol.util.Vector3f.new3 (info.y, info.z, info.w);
 }
 var nx = counts[0];
 var ny = counts[1];
-var pt =  new javax.vecmath.Point3f ();
-var pta =  new javax.vecmath.Point3f ();
-var ptb =  new javax.vecmath.Point3f ();
-var ptc =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
+var pta =  new org.jmol.util.Point3f ();
+var ptb =  new org.jmol.util.Point3f ();
+var ptc =  new org.jmol.util.Point3f ();
 var data = this.params.functionInfo.get (5);
-var data2 =  Clazz.newArray (nx, ny, 0);
+var data2 =  Clazz.newFloatArray (nx, ny, 0);
 var d;
 for (var i = 0; i < nx; i++) for (var j = 0; j < ny; j++) {
 pt.scaleAdd2 (i, vectors[0], origin);
@@ -897,7 +907,7 @@ Clazz.defineMethod (c$, "distanceVerticalToPlane",
 ($fz = function (x, y, pta, ptb, ptc) {
 var d = org.jmol.util.Measure.getDirectedNormalThroughPoints (pta, ptb, ptc, this.ptRef, this.vNorm, this.vAB, this.vAC);
 return (this.vNorm.x * x + this.vNorm.y * y + d) / -this.vNorm.z;
-}, $fz.isPrivate = true, $fz), "~N,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "~N,~N,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f");
 c$.findNearestThreePoints = Clazz.defineMethod (c$, "findNearestThreePoints", 
 ($fz = function (x, y, xyz, result) {
 var d;
@@ -934,7 +944,7 @@ return dist1;
 }, $fz.isPrivate = true, $fz), "~N,~N,~A,~A");
 Clazz.defineMethod (c$, "addRequiredFile", 
 function (fileName) {
-if (this.meshDataServer == null) return ;
+if (this.meshDataServer == null) return;
 this.meshDataServer.addRequiredFile (fileName);
 }, "~S");
 Clazz.defineMethod (c$, "log", 
@@ -944,9 +954,9 @@ if (this.atomDataServer == null) System.out.println (msg);
 }, "~S");
 Clazz.defineMethod (c$, "setOutputStream", 
 function (binaryDoc, os) {
-if (this.meshDataServer == null) return ;
+if (this.meshDataServer == null) return;
 this.meshDataServer.setOutputStream (binaryDoc, os);
-}, "~O,java.io.OutputStream");
+}, "org.jmol.api.JmolDocument,java.io.OutputStream");
 Clazz.defineMethod (c$, "isFullyLit", 
 function () {
 return (this.params.thePlane != null || this.params.fullyLit);
@@ -958,7 +968,7 @@ return this.bsVdw;
 Clazz.defineMethod (c$, "fillAtomData", 
 function (atomData, mode) {
 if ((mode & 2) != 0 && atomData.bsSelected != null) {
-if (this.bsVdw == null) this.bsVdw =  new javax.util.BitSet ();
+if (this.bsVdw == null) this.bsVdw =  new org.jmol.util.BitSet ();
 this.bsVdw.or (atomData.bsSelected);
 }this.atomDataServer.fillAtomData (atomData, mode);
 }, "org.jmol.atomdata.AtomData,~N");

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
-Clazz.load (["org.jmol.adapter.readers.more.BinaryReader"], "org.jmol.adapter.readers.more.BinaryDcdReader", ["javax.util.StringXBuilder", "javax.vecmath.Point3f", "org.jmol.util.BitSetUtil", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.load (["org.jmol.adapter.readers.more.BinaryReader"], "org.jmol.adapter.readers.more.BinaryDcdReader", ["org.jmol.util.BitSetUtil", "$.Escape", "$.Logger", "$.Point3f", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nModels = 0;
 this.nAtoms = 0;
@@ -16,9 +16,9 @@ this.initializeTrajectoryFile ();
 });
 Clazz.overrideMethod (c$, "readDocument", 
 function () {
-var bytes =  Clazz.newArray (40, 0);
+var bytes =  Clazz.newByteArray (40, 0);
 var n = this.binaryDoc.readInt ();
-this.binaryDoc.setIsBigEndian (n != 0x54);
+this.binaryDoc.setStream (null, n != 0x54);
 n = this.binaryDoc.readInt ();
 this.nModels = this.binaryDoc.readInt ();
 this.binaryDoc.readInt ();
@@ -28,7 +28,7 @@ this.binaryDoc.readInt ();
 this.binaryDoc.readInt ();
 this.binaryDoc.readInt ();
 var ndegf = this.binaryDoc.readInt ();
-this.nFree = Math.floor (ndegf / 3);
+this.nFree = Clazz.doubleToInt (ndegf / 3);
 var nFixed = this.binaryDoc.readInt ();
 this.binaryDoc.readInt ();
 this.binaryDoc.readByteArray (bytes, 0, 36);
@@ -36,7 +36,7 @@ this.binaryDoc.readInt ();
 n = this.binaryDoc.readInt ();
 n = this.binaryDoc.readInt ();
 n = this.binaryDoc.readInt ();
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < n; i++) sb.append (this.binaryDoc.readString (80).trim ()).appendC ('\n');
 
 n = this.binaryDoc.readInt ();
@@ -50,18 +50,18 @@ this.binaryDoc.readInt ();
 this.bsFree = org.jmol.util.BitSetUtil.newBitSet (this.nFree);
 for (var i = 0; i < this.nFree; i++) this.bsFree.set (this.binaryDoc.readInt () - 1);
 
-n = Math.floor (this.binaryDoc.readInt () / 4);
+n = Clazz.doubleToInt (this.binaryDoc.readInt () / 4);
 org.jmol.util.Logger.info ("free: " + this.bsFree.cardinality () + " " + org.jmol.util.Escape.escape (this.bsFree));
 }this.readCoordinates ();
 org.jmol.util.Logger.info ("Total number of trajectory steps=" + this.trajectorySteps.size ());
 });
 Clazz.defineMethod (c$, "readFloatArray", 
 ($fz = function () {
-var n = Math.floor (this.binaryDoc.readInt () / 4);
-var data =  Clazz.newArray (n, 0);
+var n = Clazz.doubleToInt (this.binaryDoc.readInt () / 4);
+var data =  Clazz.newFloatArray (n, 0);
 for (var i = 0; i < n; i++) data[i] = this.binaryDoc.readFloat ();
 
-n = Math.floor (this.binaryDoc.readInt () / 4);
+n = Clazz.doubleToInt (this.binaryDoc.readInt () / 4);
 if (org.jmol.util.Logger.debugging) System.out.println (this.modelNumber + " " + this.binaryDoc.getPosition () + ": " + n + " " + data[0] + "\t" + data[1] + "\t" + data[2]);
 return data;
 }, $fz.isPrivate = true, $fz));
@@ -70,9 +70,9 @@ Clazz.defineMethod (c$, "readCoordinates",
 var atomCount = (this.bsFilter == null ? this.templateAtomCount : (this.htParams.get ("filteredAtomCount")).intValue ());
 for (var i = 0; i < this.nModels; i++) if (this.doGetModel (++this.modelNumber, null)) {
 var trajectoryStep =  new Array (atomCount);
-if (!this.getTrajectoryStep (trajectoryStep)) return ;
+if (!this.getTrajectoryStep (trajectoryStep)) return;
 this.trajectorySteps.add (trajectoryStep);
-if (this.isLastModel (this.modelNumber)) return ;
+if (this.isLastModel (this.modelNumber)) return;
 } else {
 this.readFloatArray ();
 this.readFloatArray ();
@@ -93,7 +93,7 @@ this.xAll = x;
 this.yAll = y;
 this.zAll = z;
 }for (var i = 0, vpt = 0; i < this.nAtoms; i++) {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 if (bs == null || bs.get (i)) {
 pt.set (x[vpt], y[vpt], z[vpt]);
 vpt++;

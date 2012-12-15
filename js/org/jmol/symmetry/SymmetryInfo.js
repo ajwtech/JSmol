@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.declarePackage ("org.jmol.symmetry");
 Clazz.load (null, "org.jmol.symmetry.SymmetryInfo", ["org.jmol.util.SimpleUnitCell"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.coordinatesAreFractional = false;

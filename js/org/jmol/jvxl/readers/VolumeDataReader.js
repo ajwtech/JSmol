@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.VolumeDataReader", ["javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.SurfaceReader"], "org.jmol.jvxl.readers.VolumeDataReader", ["org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.ArrayUtil", "$.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dataType = 0;
 this.precalculateVoxelData = false;
@@ -25,7 +25,7 @@ this.allowMapData = true;
 }, "org.jmol.jvxl.readers.SurfaceGenerator");
 Clazz.defineMethod (c$, "setup", 
 function (isMapData) {
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ().append ("volume data read from file\n\n");
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ().append ("volume data read from file\n\n");
 org.jmol.jvxl.data.JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms (this.volumeData, this.jvxlFileHeaderBuffer);
 }, "~B");
 Clazz.overrideMethod (c$, "readVolumeParameters", 
@@ -40,7 +40,7 @@ try {
 this.readSurfaceData (isMapData);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-e.printStackTrace ();
+System.out.println (e.getMessage ());
 return false;
 } else {
 throw e;
@@ -50,17 +50,17 @@ return true;
 }, "~B");
 Clazz.defineMethod (c$, "readVoxelDataIndividually", 
 function (isMapData) {
-if (isMapData && !this.allowMapData) return ;
+if (isMapData && !this.allowMapData) return;
 if (!isMapData || this.volumeData.sr != null) {
 this.volumeData.setVoxelDataAsArray (this.voxelData = null);
-return ;
+return;
 }this.newVoxelDataCube ();
 for (var x = 0; x < this.nPointsX; ++x) {
-var plane =  Clazz.newArray (this.nPointsY, 0);
+var plane = org.jmol.util.ArrayUtil.newFloat2 (this.nPointsY);
 this.voxelData[x] = plane;
 var ptyz = 0;
 for (var y = 0; y < this.nPointsY; ++y) {
-var strip = plane[y] =  Clazz.newArray (this.nPointsZ, 0);
+var strip = plane[y] =  Clazz.newFloatArray (this.nPointsZ, 0);
 for (var z = 0; z < this.nPointsZ; ++z, ++ptyz) {
 strip[z] = this.getValue (x, y, z, ptyz);
 }
@@ -81,9 +81,9 @@ return false;
 this.volumetricVectors[0].set (this.params.steps.x, 0, 0);
 this.volumetricVectors[1].set (0, this.params.steps.y, 0);
 this.volumetricVectors[2].set (0, 0, this.params.steps.z);
-this.voxelCounts[0] = Math.round (this.params.points.x);
-this.voxelCounts[1] = Math.round (this.params.points.y);
-this.voxelCounts[2] = Math.round (this.params.points.z);
+this.voxelCounts[0] = Clazz.floatToInt (this.params.points.x);
+this.voxelCounts[1] = Clazz.floatToInt (this.params.points.y);
+this.voxelCounts[2] = Clazz.floatToInt (this.params.points.z);
 if (this.voxelCounts[0] < 1 || this.voxelCounts[1] < 1 || this.voxelCounts[2] < 1) return false;
 this.showGridInfo ();
 return true;
@@ -110,7 +110,7 @@ max = 10;
 }var range = max - min;
 var resolution = this.params.resolution;
 if (resolution != 3.4028235E38) ptsPerAngstrom = resolution;
-nGrid = Math.round ((range * ptsPerAngstrom)) + 1;
+nGrid = Clazz.doubleToInt (Math.floor (range * ptsPerAngstrom)) + 1;
 if (nGrid > gridMax) {
 if ((this.dataType & 256) > 0) {
 if (resolution == 3.4028235E38) {
@@ -123,7 +123,7 @@ nGrid = gridMax;
 }}ptsPerAngstrom = (nGrid - 1) / range;
 if (ptsPerAngstrom < minPointsPerAngstrom) {
 ptsPerAngstrom = minPointsPerAngstrom;
-nGrid = Math.round ((ptsPerAngstrom * range + 1));
+nGrid = Clazz.doubleToInt (Math.floor (ptsPerAngstrom * range + 1));
 ptsPerAngstrom = (nGrid - 1) / range;
 }d = this.volumeData.volumetricVectorLengths[index] = 1 / ptsPerAngstrom;
 this.voxelCounts[index] = nGrid;
@@ -151,7 +151,7 @@ function (isMapData) {
 if (this.isProgressive && !isMapData) {
 this.nDataPoints = this.volumeData.setVoxelCounts (this.nPointsX, this.nPointsY, this.nPointsZ);
 this.voxelData = null;
-return ;
+return;
 }if (this.precalculateVoxelData) this.generateCube ();
  else this.readVoxelDataIndividually (isMapData);
 }, "~B");

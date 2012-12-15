@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.SiestaReader", ["java.lang.Double"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.noAtoms = 0;
@@ -6,7 +6,7 @@ this.unitCellData = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.xtal, "SiestaReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
-this.unitCellData =  Clazz.newArray (9, 0);
+this.unitCellData =  Clazz.newFloatArray (9, 0);
 });
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {

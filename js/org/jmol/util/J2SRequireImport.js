@@ -1,1 +1,1 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");

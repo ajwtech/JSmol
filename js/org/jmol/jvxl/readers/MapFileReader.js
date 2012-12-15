@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader", "javax.vecmath.Point3f"], "org.jmol.jvxl.readers.MapFileReader", ["org.jmol.util.Logger", "$.SimpleUnitCell"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.VolumeFileReader", "org.jmol.util.Point3f"], "org.jmol.jvxl.readers.MapFileReader", ["org.jmol.util.Logger", "$.SimpleUnitCell"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.dmin = 3.4028235E38;
 this.dmax = 0;
@@ -28,9 +28,9 @@ this.vectors = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.jvxl.readers, "MapFileReader", org.jmol.jvxl.readers.VolumeFileReader);
 Clazz.prepareFields (c$, function () {
-this.nxyzStart =  Clazz.newArray (3, 0);
-this.origin =  new javax.vecmath.Point3f ();
-this.adjustment =  new javax.vecmath.Point3f ();
+this.nxyzStart =  Clazz.newIntArray (3, 0);
+this.origin =  new org.jmol.util.Point3f ();
+this.adjustment =  new org.jmol.util.Point3f ();
 this.vectors =  new Array (3);
 });
 Clazz.makeConstructor (c$, 
@@ -42,7 +42,7 @@ function (sg, br) {
 Clazz.superCall (this, org.jmol.jvxl.readers.MapFileReader, "init2", [sg, br]);
 this.isAngstroms = true;
 this.adjustment = sg.getParams ().center;
-if (this.adjustment.x == 3.4028235E38) this.adjustment =  new javax.vecmath.Point3f ();
+if (this.adjustment.x == 3.4028235E38) this.adjustment =  new org.jmol.util.Point3f ();
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.defineMethod (c$, "getVectorsAndOrigin", 
 function () {
@@ -53,9 +53,9 @@ org.jmol.util.Logger.info ("grid parameters: a,b,c,alpha,beta,gamma: " + this.a 
 org.jmol.util.Logger.info ("grid parameters: mapc,mapr,maps: " + this.mapc + "," + this.mapr + "," + this.maps);
 org.jmol.util.Logger.info ("grid parameters: originX,Y,Z: " + this.origin);
 var unitCell = org.jmol.util.SimpleUnitCell.newA ([this.a / this.na, this.b / this.nb, this.c / this.nc, this.alpha, this.beta, this.gamma]);
-this.vectors[0] = javax.vecmath.Point3f.new3 (1, 0, 0);
-this.vectors[1] = javax.vecmath.Point3f.new3 (0, 1, 0);
-this.vectors[2] = javax.vecmath.Point3f.new3 (0, 0, 1);
+this.vectors[0] = org.jmol.util.Point3f.new3 (1, 0, 0);
+this.vectors[1] = org.jmol.util.Point3f.new3 (0, 1, 0);
+this.vectors[2] = org.jmol.util.Point3f.new3 (0, 0, 1);
 unitCell.toCartesian (this.vectors[0], false);
 unitCell.toCartesian (this.vectors[1], false);
 unitCell.toCartesian (this.vectors[2], false);
@@ -70,7 +70,7 @@ this.volumetricVectors[0].setT (this.vectors[this.maps - 1]);
 this.volumetricVectors[1].setT (this.vectors[this.mapr - 1]);
 this.volumetricVectors[2].setT (this.vectors[this.mapc - 1]);
 if (this.origin.x == 0 && this.origin.y == 0 && this.origin.z == 0) {
-var xyz2crs =  Clazz.newArray (3, 0);
+var xyz2crs =  Clazz.newIntArray (3, 0);
 xyz2crs[this.mapc - 1] = 0;
 xyz2crs[this.mapr - 1] = 1;
 xyz2crs[this.maps - 1] = 2;

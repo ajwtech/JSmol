@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.Monomer"], "org.jmol.modelsetbio.PhosphorusMonomer", ["javax.vecmath.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.Quaternion"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelsetbio.Monomer"], "org.jmol.modelsetbio.PhosphorusMonomer", ["org.jmol.constant.EnumStructure", "org.jmol.util.Quaternion", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$isPurine = false;
 this.$isPyrimidine = false;
@@ -9,7 +9,7 @@ Clazz.overrideMethod (c$, "isNucleic",
 function () {
 return true;
 });
-c$.validateAndAllocate = Clazz.defineMethod (c$, "validateAndAllocate", 
+c$.validateAndAllocateP = Clazz.defineMethod (c$, "validateAndAllocateP", 
 function (chain, group3, seqcode, firstIndex, lastIndex, specialAtomIndexes) {
 if (firstIndex != lastIndex || specialAtomIndexes[13] != firstIndex) return null;
 return  new org.jmol.modelsetbio.PhosphorusMonomer (chain, group3, seqcode, firstIndex, lastIndex, org.jmol.modelsetbio.PhosphorusMonomer.phosphorusOffsets);
@@ -70,8 +70,8 @@ var ptB;
 ptA = this.bioPolymer.monomers[i + 1].getAtomFromOffsetIndex (0);
 ptB = this.bioPolymer.monomers[i - 1].getAtomFromOffsetIndex (0);
 if (ptP == null || ptA == null || ptB == null) return null;
-var vA =  new javax.vecmath.Vector3f ();
-var vB =  new javax.vecmath.Vector3f ();
+var vA =  new org.jmol.util.Vector3f ();
+var vB =  new org.jmol.util.Vector3f ();
 vA.sub2 (ptA, ptP);
 vB.sub2 (ptB, ptP);
 return org.jmol.util.Quaternion.getQuaternionFrameV (vA, vB, null, false);

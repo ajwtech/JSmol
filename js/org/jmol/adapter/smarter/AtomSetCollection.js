@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["java.util.Hashtable", "javax.vecmath.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Collections", "$.Properties", "javax.util.BitSet", "$.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3i", "$.Vector3f", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Parser", "$.Quadric", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.load (["java.util.Hashtable", "org.jmol.util.Point3f"], "org.jmol.adapter.smarter.AtomSetCollection", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Collections", "$.Properties", "org.jmol.adapter.smarter.Atom", "$.Bond", "$.SmarterJmolAdapter", "org.jmol.api.Interface", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Escape", "$.Logger", "$.Matrix4f", "$.Parser", "$.Point3i", "$.Quadric", "$.StringXBuilder", "$.TextFormat", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.fileTypeName = null;
 this.collectionName = null;
@@ -75,16 +75,16 @@ this.atomSetCollectionAuxiliaryInfo =  new java.util.Hashtable ();
 this.atoms =  new Array (256);
 this.bonds =  new Array (256);
 this.structures =  new Array (16);
-this.atomSetNumbers =  Clazz.newArray (16, 0);
-this.atomSetAtomIndexes =  Clazz.newArray (16, 0);
-this.atomSetAtomCounts =  Clazz.newArray (16, 0);
-this.atomSetBondCounts =  Clazz.newArray (16, 0);
+this.atomSetNumbers =  Clazz.newIntArray (16, 0);
+this.atomSetAtomIndexes =  Clazz.newIntArray (16, 0);
+this.atomSetAtomCounts =  Clazz.newIntArray (16, 0);
+this.atomSetBondCounts =  Clazz.newIntArray (16, 0);
 this.atomSetAuxiliaryInfo =  new Array (16);
-this.notionalUnitCell =  Clazz.newArray (6, 0);
-this.ptOffset =  new javax.vecmath.Point3f ();
-this.ptTemp =  new javax.vecmath.Point3f ();
-this.ptTemp1 =  new javax.vecmath.Point3f ();
-this.ptTemp2 =  new javax.vecmath.Point3f ();
+this.notionalUnitCell =  Clazz.newFloatArray (6, 0);
+this.ptOffset =  new org.jmol.util.Point3f ();
+this.ptTemp =  new org.jmol.util.Point3f ();
+this.ptTemp1 =  new org.jmol.util.Point3f ();
+this.ptTemp2 =  new org.jmol.util.Point3f ();
 this.atomSymbolicMap =  new java.util.Hashtable ();
 });
 Clazz.defineMethod (c$, "getFileTypeName", 
@@ -99,7 +99,7 @@ Clazz.defineMethod (c$, "setCollectionName",
 function (collectionName) {
 if (collectionName != null) {
 collectionName = collectionName.trim ();
-if (collectionName.length == 0) return ;
+if (collectionName.length == 0) return;
 this.collectionName = collectionName;
 }}, "~S");
 Clazz.defineMethod (c$, "getAtomSetCollectionAuxiliaryInfoMap", 
@@ -195,7 +195,7 @@ Clazz.defineMethod (c$, "appendAtomSetCollectionList",
 var n = list.size ();
 if (n == 0) {
 this.errorMessage = "No file found!";
-return ;
+return;
 }for (var i = 0; i < n; i++) {
 var o = list.get (i);
 if (Clazz.instanceOf (o, java.util.List)) this.appendAtomSetCollectionList (o);
@@ -214,7 +214,7 @@ function (collectionIndex, collection) {
 var existingAtomsCount = this.atomCount;
 this.setAtomSetCollectionAuxiliaryInfo ("loadState", collection.getAtomSetCollectionAuxiliaryInfo ("loadState"));
 if (collection.bsAtoms != null) {
-if (this.bsAtoms == null) this.bsAtoms =  new javax.util.BitSet ();
+if (this.bsAtoms == null) this.bsAtoms =  new org.jmol.util.BitSet ();
 for (var i = collection.bsAtoms.nextSetBit (0); i >= 0; i = collection.bsAtoms.nextSetBit (i + 1)) this.bsAtoms.set (existingAtomsCount + i);
 
 }var clonedAtoms = 0;
@@ -287,7 +287,7 @@ for (var i = 0; i < this.atomSetCount; i++) lists[i] =  new java.util.ArrayList 
 
 for (var i = 0; i < this.atomCount; i++) lists[this.atoms[i].atomSetIndex].add (this.atoms[i]);
 
-var newIndex =  Clazz.newArray (this.atomCount, 0);
+var newIndex =  Clazz.newIntArray (this.atomCount, 0);
 var n = this.atomCount;
 for (var i = this.atomSetCount; --i >= 0; ) for (var j = lists[i].size (); --j >= 0; ) {
 var a = this.atoms[--n] = lists[i].get (j);
@@ -301,7 +301,8 @@ this.bonds[i].atomIndex2 = newIndex[this.bonds[i].atomIndex2];
 }
 for (var i = 0; i < this.atomSetCount; i++) {
 var conect = this.getAtomSetAuxiliaryInfoValue (i, "PDB_CONECT_firstAtom_count_max");
-if (conect == null) continue ;conect[0] = newIndex[conect[0]];
+if (conect == null) continue;
+conect[0] = newIndex[conect[0]];
 conect[1] = this.atomSetAtomCounts[i];
 }
 }, $fz.isPrivate = true, $fz));
@@ -312,7 +313,7 @@ for (var i = 0; i < this.atomSetCount; i++) lists[i] =  new java.util.ArrayList 
 
 for (var i = 0; i < n; i++) {
 var index = o[i].atomSetIndex;
-if (index < 0) return ;
+if (index < 0) return;
 lists[o[i].atomSetIndex].add (o[i]);
 }
 for (var i = this.atomSetCount; --i >= 0; ) for (var j = lists[i].size (); --j >= 0; ) o[--n] = lists[i].get (j);
@@ -322,33 +323,34 @@ for (var i = this.atomSetCount; --i >= 0; ) for (var j = lists[i].size (); --j >
 Clazz.defineMethod (c$, "reverseObject", 
 ($fz = function (o) {
 var n = this.atomSetCount;
-for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (o, i, n - 1 - i);
+for (var i = Clazz.doubleToInt (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swap (o, i, n - 1 - i);
 
 }, $fz.isPrivate = true, $fz), "~A");
 c$.reverseList = Clazz.defineMethod (c$, "reverseList", 
 ($fz = function (list) {
-if (list == null) return ;
+if (list == null) return;
 java.util.Collections.reverse (list);
 }, $fz.isPrivate = true, $fz), "java.util.List");
 Clazz.defineMethod (c$, "reverseArray", 
 ($fz = function (a) {
 var n = this.atomSetCount;
-for (var i = Math.floor (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swapInt (a, i, n - 1 - i);
+for (var i = Clazz.doubleToInt (n / 2); --i >= 0; ) org.jmol.util.ArrayUtil.swapInt (a, i, n - 1 - i);
 
 }, $fz.isPrivate = true, $fz), "~A");
 Clazz.defineMethod (c$, "getList", 
 ($fz = function (isAltLoc) {
 var i;
-for (i = this.atomCount; --i >= 0; ) if (this.atoms[i] != null && ((isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode)).charCodeAt (0) != 0) break;
+for (i = this.atomCount; --i >= 0; ) if (this.atoms[i] != null && (isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode) != '\0') break;
 
-if (i < 0) return ;
+if (i < 0) return;
 var lists =  new Array (this.atomSetCount);
 for (i = 0; i < this.atomSetCount; i++) lists[i] = "";
 
 var pt;
 for (i = 0; i < this.atomCount; i++) {
-if (this.atoms[i] == null) continue ;var id = (isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode);
-if (id.charCodeAt (0) != 0 && lists[pt = this.atoms[i].atomSetIndex].indexOf (id) < 0) lists[pt] += (id).charCodeAt (0);
+if (this.atoms[i] == null) continue;
+var id = (isAltLoc ? this.atoms[i].alternateLocationID : this.atoms[i].insertionCode);
+if (id != '\0' && lists[pt = this.atoms[i].atomSetIndex].indexOf (id) < 0) lists[pt] += id;
 }
 var type = (isAltLoc ? "altLocs" : "insertionCodes");
 for (i = 0; i < this.atomSetCount; i++) if (lists[i].length > 0) this.setAtomSetAuxiliaryInfoForSet (type, lists[i], i);
@@ -357,11 +359,11 @@ for (i = 0; i < this.atomSetCount; i++) if (lists[i].length > 0) this.setAtomSet
 Clazz.defineMethod (c$, "finish", 
 function () {
 this.atoms = null;
-this.atomSetAtomCounts =  Clazz.newArray (16, 0);
+this.atomSetAtomCounts =  Clazz.newIntArray (16, 0);
 this.atomSetAuxiliaryInfo =  new Array (16);
 this.atomSetCollectionAuxiliaryInfo =  new java.util.Hashtable ();
 this.atomSetCount = 0;
-this.atomSetNumbers =  Clazz.newArray (16, 0);
+this.atomSetNumbers =  Clazz.newIntArray (16, 0);
 this.atomSymbolicMap =  new java.util.Hashtable ();
 this.bonds = null;
 this.cartesians = null;
@@ -393,7 +395,7 @@ this.atomSetAuxiliaryInfo[i] = null;
 Clazz.defineMethod (c$, "removeAtomSet", 
 function (imodel) {
 if (this.bsAtoms == null) {
-this.bsAtoms =  new javax.util.BitSet ();
+this.bsAtoms =  new org.jmol.util.BitSet ();
 this.bsAtoms.setBits (0, this.atomCount);
 }var i0 = this.atomSetAtomIndexes[imodel];
 var nAtoms = this.atomSetAtomCounts[imodel];
@@ -409,7 +411,8 @@ this.atomSetAtomCounts[i - 1] = this.atomSetAtomCounts[i];
 this.atomSetNumbers[i - 1] = this.atomSetNumbers[i];
 }
 for (var i = 0; i < this.structureCount; i++) {
-if (this.structures[i] == null) continue ;if (this.structures[i].atomSetIndex > imodel) this.structures[i].atomSetIndex--;
+if (this.structures[i] == null) continue;
+if (this.structures[i].atomSetIndex > imodel) this.structures[i].atomSetIndex--;
  else if (this.structures[i].atomSetIndex == imodel) this.structures[i] = null;
 }
 for (var i = 0; i < this.bondCount; i++) this.bonds[i].atomSetIndex = this.atoms[this.bonds[i].atomIndex1].atomSetIndex;
@@ -418,19 +421,19 @@ this.atomSetAuxiliaryInfo[--this.atomSetCount] = null;
 }, "~N");
 Clazz.defineMethod (c$, "removeCurrentAtomSet", 
 function () {
-if (this.currentAtomSetIndex < 0) return ;
+if (this.currentAtomSetIndex < 0) return;
 this.currentAtomSetIndex--;
 this.atomSetCount--;
 });
 Clazz.defineMethod (c$, "newCloneAtom", 
 function (atom) {
-var clone = atom.cloneAtom ();
+var clone = atom.clone ();
 this.addAtom (clone);
 return clone;
 }, "org.jmol.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "cloneFirstAtomSet", 
 function (atomCount) {
-if (!this.allowMultiple) return ;
+if (!this.allowMultiple) return;
 this.newAtomSet ();
 if (atomCount == 0) atomCount = this.atomSetAtomCounts[0];
 for (var i = 0; i < atomCount; ++i) this.newCloneAtom (this.atoms[i]);
@@ -438,7 +441,7 @@ for (var i = 0; i < atomCount; ++i) this.newCloneAtom (this.atoms[i]);
 }, "~N");
 Clazz.defineMethod (c$, "cloneFirstAtomSetWithBonds", 
 function (nBonds) {
-if (!this.allowMultiple) return ;
+if (!this.allowMultiple) return;
 this.cloneFirstAtomSet (0);
 var firstCount = this.atomSetAtomCounts[0];
 for (var bondNum = 0; bondNum < nBonds; bondNum++) {
@@ -452,7 +455,7 @@ this.cloneLastAtomSetFromPoints (0, null);
 });
 Clazz.defineMethod (c$, "cloneLastAtomSetFromPoints", 
 function (atomCount, pts) {
-if (!this.allowMultiple) return ;
+if (!this.allowMultiple) return;
 var count = (atomCount > 0 ? atomCount : this.getLastAtomSetAtomCount ());
 var atomIndex = this.getLastAtomSetAtomIndex ();
 this.newAtomSet ();
@@ -531,7 +534,7 @@ this.vConnect =  new java.util.ArrayList ();
 }if (this.connectLast != null) {
 if (is[0] == this.connectLast[0] && is[1] == this.connectLast[1] && is[2] != 2048) {
 this.connectLast[2]++;
-return ;
+return;
 }}this.vConnect.add (this.connectLast = is);
 }, "~A");
 Clazz.defineMethod (c$, "connectAllBad", 
@@ -550,12 +553,12 @@ this.connectNextAtomIndex = firstAtom;
 }, $fz.isPrivate = true, $fz), "~N");
 Clazz.defineMethod (c$, "connectAll", 
 function (maxSerial, isConnectStateBug) {
-if (this.currentAtomSetIndex < 0) return ;
+if (this.currentAtomSetIndex < 0) return;
 if (isConnectStateBug) {
 this.connectAllBad (maxSerial);
-return ;
+return;
 }this.setAtomSetAuxiliaryInfo ("PDB_CONECT_firstAtom_count_max", [this.atomSetAtomIndexes[this.currentAtomSetIndex], this.atomSetAtomCounts[this.currentAtomSetIndex], maxSerial]);
-if (this.vConnect == null) return ;
+if (this.vConnect == null) return;
 var firstAtom = this.connectNextAtomIndex;
 for (var i = this.connectNextAtomSet; i < this.atomSetCount; i++) {
 this.setAtomSetAuxiliaryInfoForSet ("PDB_CONECT_bonds", this.vConnect, i);
@@ -568,18 +571,18 @@ this.connectNextAtomIndex = firstAtom;
 }, "~N,~B");
 Clazz.defineMethod (c$, "addBond", 
 function (bond) {
-if (this.trajectoryStepCount > 0) return ;
+if (this.trajectoryStepCount > 0) return;
 if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0 || bond.order < 0 || this.atoms[bond.atomIndex1].atomSetIndex != this.atoms[bond.atomIndex2].atomSetIndex) {
 if (org.jmol.util.Logger.debugging) {
 org.jmol.util.Logger.debug (">>>>>>BAD BOND:" + bond.atomIndex1 + "-" + bond.atomIndex2 + " order=" + bond.order);
-}return ;
-}if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount + 1024);
+}return;
+}if (this.bondCount == this.bonds.length) this.bonds = org.jmol.util.ArrayUtil.arrayCopyObject (this.bonds, this.bondCount + 1024);
 this.bonds[this.bondCount++] = bond;
 this.atomSetBondCounts[this.currentAtomSetIndex]++;
 }, "org.jmol.adapter.smarter.Bond");
 Clazz.defineMethod (c$, "addStructure", 
 function (structure) {
-if (this.structureCount == this.structures.length) this.structures = org.jmol.util.ArrayUtil.arrayCopyOpt (this.structures, this.structureCount + 32);
+if (this.structureCount == this.structures.length) this.structures = org.jmol.util.ArrayUtil.arrayCopyObject (this.structures, this.structureCount + 32);
 structure.atomSetIndex = this.currentAtomSetIndex;
 this.structures[this.structureCount++] = structure;
 if (structure.strandCount >= 1) {
@@ -595,7 +598,7 @@ Clazz.defineMethod (c$, "addVibrationVectorWithSymmetry",
 function (iatom, vx, vy, vz, withSymmetry) {
 if (!withSymmetry) {
 this.addVibrationVector (iatom, vx, vy, vz);
-return ;
+return;
 }var atomSite = this.atoms[iatom].atomSite;
 var atomSetIndex = this.atoms[iatom].atomSetIndex;
 for (var i = iatom; i < this.atomCount && this.atoms[i].atomSetIndex == atomSetIndex; i++) {
@@ -636,20 +639,20 @@ this.doCentroidUnitCell = doCentroidUnitCell;
 this.centroidPacked = centroidPacked;
 if (strSupercell != null) this.setSuperCell (strSupercell);
  else this.ptSupercell = ptSupercell;
-}, "~A,~B,~B,~B,~B,~S,javax.vecmath.Point3f");
+}, "~A,~B,~B,~B,~B,~S,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setSupercellFromPoint", 
 function (pt) {
 this.ptSupercell = pt;
 org.jmol.util.Logger.info ("Using supercell " + org.jmol.util.Escape.escapePt (pt));
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setSuperCell", 
 ($fz = function (supercell) {
-if (this.fmatSupercell != null) return ;
-this.fmatSupercell =  Clazz.newArray (16, 0);
+if (this.fmatSupercell != null) return;
+this.fmatSupercell =  Clazz.newFloatArray (16, 0);
 if (this.getSymmetry ().getMatrixFromString (supercell, this.fmatSupercell, true) == null) {
 this.fmatSupercell = null;
-return ;
-}org.jmol.util.Logger.info ("Using supercell \n" + javax.vecmath.Matrix4f.newA (this.fmatSupercell));
+return;
+}org.jmol.util.Logger.info ("Using supercell \n" + org.jmol.util.Matrix4f.newA (this.fmatSupercell));
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "getSymmetry", 
 function () {
@@ -658,7 +661,7 @@ return this.symmetry;
 });
 Clazz.defineMethod (c$, "setNotionalUnitCell", 
 function (info, matUnitCellOrientation, unitCellOffset) {
-this.notionalUnitCell =  Clazz.newArray (info.length, 0);
+this.notionalUnitCell =  Clazz.newFloatArray (info.length, 0);
 this.unitCellOffset = unitCellOffset;
 for (var i = 0; i < info.length; i++) this.notionalUnitCell[i] = info[i];
 
@@ -667,12 +670,12 @@ this.setAtomSetAuxiliaryInfo ("notionalUnitcell", this.notionalUnitCell);
 this.setGlobalBoolean (2);
 this.getSymmetry ().setUnitCell (this.notionalUnitCell);
 if (unitCellOffset != null) {
-this.symmetry.setUnitCellOffset (unitCellOffset);
+this.symmetry.setOffsetPt (unitCellOffset);
 this.setAtomSetAuxiliaryInfo ("unitCellOffset", unitCellOffset);
 }if (matUnitCellOrientation != null) {
 this.symmetry.setUnitCellOrientation (matUnitCellOrientation);
 this.setAtomSetAuxiliaryInfo ("matUnitCellOrientation", matUnitCellOrientation);
-}}, "~A,javax.vecmath.Matrix3f,javax.vecmath.Point3f");
+}}, "~A,org.jmol.util.Matrix3f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "addSpaceGroupOperation", 
 function (xyz) {
 this.getSymmetry ().setSpaceGroup (this.doNormalize);
@@ -689,12 +692,12 @@ this.applySymmetryLattice (this.latticeCells[0], this.latticeCells[1], Math.abs 
 });
 Clazz.defineMethod (c$, "applySymmetryUsing", 
 function (symmetry) {
-this.getSymmetry ().setSpaceGroup (symmetry);
+this.getSymmetry ().setSpaceGroupS (symmetry);
 this.applySymmetryLattice (this.latticeCells[0], this.latticeCells[1], Math.abs (this.latticeCells[2]));
 }, "org.jmol.api.SymmetryInterface");
 Clazz.defineMethod (c$, "applySymmetryLattice", 
 ($fz = function (maxX, maxY, maxZ) {
-if (!this.coordinatesAreFractional || !this.getSymmetry ().haveSpaceGroup ()) return ;
+if (!this.coordinatesAreFractional || !this.getSymmetry ().haveSpaceGroup ()) return;
 if (this.fmatSupercell != null) {
 this.rminx = 3.4028235E38;
 this.rminy = 3.4028235E38;
@@ -705,8 +708,8 @@ this.rmaxz = -3.4028235E38;
 var ptx = this.setSym (0, 1, 2);
 var pty = this.setSym (4, 5, 6);
 var ptz = this.setSym (8, 9, 10);
-this.minXYZ = javax.vecmath.Point3i.new3 (Math.round (this.rminx), Math.round (this.rminy), Math.round (this.rminz));
-this.maxXYZ = javax.vecmath.Point3i.new3 (Math.round (this.rmaxx), Math.round (this.rmaxy), Math.round (this.rmaxz));
+this.minXYZ = org.jmol.util.Point3i.new3 (Clazz.floatToInt (this.rminx), Clazz.floatToInt (this.rminy), Clazz.floatToInt (this.rminz));
+this.maxXYZ = org.jmol.util.Point3i.new3 (Clazz.floatToInt (this.rmaxx), Clazz.floatToInt (this.rmaxy), Clazz.floatToInt (this.rmaxz));
 this.applyAllSymmetry ();
 var iAtomFirst = this.getLastAtomSetAtomIndex ();
 for (var i = iAtomFirst; i < this.atomCount; i++) this.symmetry.toCartesian (this.atoms[i], true);
@@ -721,14 +724,14 @@ for (var i = iAtomFirst; i < this.atomCount; i++) this.symmetry.toFractional (th
 this.haveAnisou = false;
 this.atomSetAuxiliaryInfo[this.currentAtomSetIndex].remove ("matUnitCellOrientation");
 this.doPackUnitCell = false;
-}this.minXYZ =  new javax.vecmath.Point3i ();
-this.maxXYZ = javax.vecmath.Point3i.new3 (maxX, maxY, maxZ);
+}this.minXYZ =  new org.jmol.util.Point3i ();
+this.maxXYZ = org.jmol.util.Point3i.new3 (maxX, maxY, maxZ);
 this.applyAllSymmetry ();
 this.fmatSupercell = null;
 }, $fz.isPrivate = true, $fz), "~N,~N,~N");
 Clazz.defineMethod (c$, "setSym", 
 ($fz = function (i, j, k) {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 pt.set (this.fmatSupercell[i], this.fmatSupercell[j], this.fmatSupercell[k]);
 this.setSymmetryMinMax (pt);
 this.symmetry.toCartesian (pt, false);
@@ -742,16 +745,16 @@ if (this.rminz > c.z) this.rminz = c.z;
 if (this.rmaxx < c.x) this.rmaxx = c.x;
 if (this.rmaxy < c.y) this.rmaxy = c.y;
 if (this.rmaxz < c.z) this.rmaxz = c.z;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "isInSymmetryRange", 
 ($fz = function (c) {
 return (c.x >= this.rminx && c.y >= this.rminy && c.z >= this.rminz && c.x <= this.rmaxx && c.y <= this.rmaxy && c.z <= this.rmaxz);
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
 c$.isWithinCell = Clazz.defineMethod (c$, "isWithinCell", 
 ($fz = function (dtype, pt, minX, maxX, minY, maxY, minZ, maxZ) {
 var slop = 0.02;
 return (pt.x > minX - slop && pt.x < maxX + slop && (dtype < 2 || pt.y > minY - slop && pt.y < maxY + slop) && (dtype < 3 || pt.z > minZ - slop && pt.z < maxZ + slop));
-}, $fz.isPrivate = true, $fz), "~N,javax.vecmath.Point3f,~N,~N,~N,~N,~N,~N");
+}, $fz.isPrivate = true, $fz), "~N,org.jmol.util.Point3f,~N,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setAnisoBorU", 
 function (atom, data, type) {
 this.haveAnisou = true;
@@ -764,7 +767,7 @@ return atom.anisoBorU;
 }, "org.jmol.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "setEllipsoids", 
 function () {
-if (!this.haveAnisou) return ;
+if (!this.haveAnisou) return;
 var iAtomFirst = this.getLastAtomSetAtomIndex ();
 for (var i = iAtomFirst; i < this.atomCount; i++) this.atoms[i].setEllipsoid (this.symmetry.getEllipsoid (this.atoms[i].anisoBorU));
 
@@ -782,24 +785,24 @@ this.bondCount0 = this.bondCount;
 this.finalizeSymmetry (iAtomFirst, noSymmetryCount);
 var operationCount = this.symmetry.getSpaceGroupOperationCount ();
 this.getSymmetry ().setMinMaxLatticeParameters (this.minXYZ, this.maxXYZ);
-this.dtype = Math.round (this.getSymmetry ().getUnitCellInfo (6));
+this.dtype = Clazz.floatToInt (this.getSymmetry ().getUnitCellInfoType (6));
 if (this.doCentroidUnitCell) this.setAtomSetCollectionAuxiliaryInfo ("centroidMinMax", [this.minXYZ.x, this.minXYZ.y, this.minXYZ.z, this.maxXYZ.x, this.maxXYZ.y, this.maxXYZ.z, (this.centroidPacked ? 1 : 0)]);
 if (this.ptSupercell != null) {
 this.setAtomSetAuxiliaryInfo ("supercell", this.ptSupercell);
 switch (this.dtype) {
 case 3:
-this.minXYZ.z *= Math.round (Math.abs (this.ptSupercell.z));
-this.maxXYZ.z *= Math.round (Math.abs (this.ptSupercell.z));
+this.minXYZ.z *= Clazz.floatToInt (Math.abs (this.ptSupercell.z));
+this.maxXYZ.z *= Clazz.floatToInt (Math.abs (this.ptSupercell.z));
 case 2:
-this.minXYZ.y *= Math.round (Math.abs (this.ptSupercell.y));
-this.maxXYZ.y *= Math.round (Math.abs (this.ptSupercell.y));
+this.minXYZ.y *= Clazz.floatToInt (Math.abs (this.ptSupercell.y));
+this.maxXYZ.y *= Clazz.floatToInt (Math.abs (this.ptSupercell.y));
 case 1:
-this.minXYZ.x *= Math.round (Math.abs (this.ptSupercell.x));
-this.maxXYZ.x *= Math.round (Math.abs (this.ptSupercell.x));
+this.minXYZ.x *= Clazz.floatToInt (Math.abs (this.ptSupercell.x));
+this.maxXYZ.x *= Clazz.floatToInt (Math.abs (this.ptSupercell.x));
 }
 }if (this.doCentroidUnitCell || this.doPackUnitCell || this.symmetryRange != 0 && this.maxXYZ.x - this.minXYZ.x == 1 && this.maxXYZ.y - this.minXYZ.y == 1 && this.maxXYZ.z - this.minXYZ.z == 1) {
-this.minXYZ0 = javax.vecmath.Point3i.new3 (this.minXYZ.x, this.minXYZ.y, this.minXYZ.z);
-this.maxXYZ0 = javax.vecmath.Point3i.new3 (this.maxXYZ.x, this.maxXYZ.y, this.maxXYZ.z);
+this.minXYZ0 = org.jmol.util.Point3i.new3 (this.minXYZ.x, this.minXYZ.y, this.minXYZ.z);
+this.maxXYZ0 = org.jmol.util.Point3i.new3 (this.maxXYZ.x, this.maxXYZ.y, this.maxXYZ.z);
 switch (this.dtype) {
 case 3:
 this.minXYZ.z--;
@@ -817,7 +820,7 @@ this.cartesians =  new Array (cartesianCount);
 for (var i = 0; i < noSymmetryCount; i++) this.atoms[i + iAtomFirst].bsSymmetry = org.jmol.util.BitSetUtil.newBitSet (operationCount * (nCells + 1));
 
 var pt = 0;
-var unitCells =  Clazz.newArray (nCells, 0);
+var unitCells =  Clazz.newIntArray (nCells, 0);
 this.unitCellTranslations =  new Array (nCells);
 var iCell = 0;
 var cell555Count = 0;
@@ -835,11 +838,12 @@ this.rmaxz = -3.4028235E38;
 }var op = this.symmetry.getSpaceGroupOperation (0);
 if (this.doPackUnitCell) this.ptOffset.set (0, 0, 0);
 for (var tx = this.minXYZ.x; tx < this.maxXYZ.x; tx++) for (var ty = this.minXYZ.y; ty < this.maxXYZ.y; ty++) for (var tz = this.minXYZ.z; tz < this.maxXYZ.z; tz++) {
-this.unitCellTranslations[iCell] = javax.vecmath.Vector3f.new3 (tx, ty, tz);
+this.unitCellTranslations[iCell] = org.jmol.util.Vector3f.new3 (tx, ty, tz);
 unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
-if (tx != 0 || ty != 0 || tz != 0 || this.cartesians.length == 0) continue ;for (pt = 0; pt < noSymmetryCount; pt++) {
+if (tx != 0 || ty != 0 || tz != 0 || this.cartesians.length == 0) continue;
+for (pt = 0; pt < noSymmetryCount; pt++) {
 var atom = this.atoms[iAtomFirst + pt];
-var c = javax.vecmath.Point3f.newP (atom);
+var c = org.jmol.util.Point3f.newP (atom);
 op.transform (c);
 this.symmetry.toCartesian (c, false);
 if (this.doPackUnitCell) {
@@ -883,8 +887,8 @@ this.setAtomSetAuxiliaryInfo ("presymmetryAtomCount", Integer.$valueOf (noSymmet
 this.setAtomSetAuxiliaryInfo ("latticeDesignation", this.symmetry.getLatticeDesignation ());
 this.setAtomSetAuxiliaryInfo ("unitCellRange", unitCells);
 this.setAtomSetAuxiliaryInfo ("unitCellTranslations", this.unitCellTranslations);
-this.symmetry.setSpaceGroup (null);
-this.notionalUnitCell =  Clazz.newArray (6, 0);
+this.symmetry.setSpaceGroupS (null);
+this.notionalUnitCell =  Clazz.newFloatArray (6, 0);
 this.coordinatesAreFractional = false;
 this.setAtomSetAuxiliaryInfo ("hasSymmetry", Boolean.TRUE);
 this.setGlobalBoolean (1);
@@ -913,7 +917,7 @@ Clazz.defineMethod (c$, "symmetryAddAtoms",
 ($fz = function (iAtomFirst, noSymmetryCount, transX, transY, transZ, baseCount, pt, iCellOpPt) {
 var isBaseCell = (baseCount == 0);
 var addBonds = (this.bondCount0 > this.bondIndex0 && this.applySymmetryToBonds);
-var atomMap = (addBonds ?  Clazz.newArray (noSymmetryCount, 0) : null);
+var atomMap = (addBonds ?  Clazz.newIntArray (noSymmetryCount, 0) : null);
 if (this.doPackUnitCell) this.ptOffset.set (transX, transY, transZ);
 var range2 = this.symmetryRange * this.symmetryRange;
 var checkRangeNoSymmetry = (this.symmetryRange < 0);
@@ -927,29 +931,35 @@ var checkDistances = (this.checkSpecial || checkSymmetryRange);
 var addCartesian = (this.checkSpecial || checkSymmetryMinMax);
 if (checkRangeNoSymmetry) baseCount = noSymmetryCount;
 var atomMax = iAtomFirst + noSymmetryCount;
-var ptAtom =  new javax.vecmath.Point3f ();
+var ptAtom =  new org.jmol.util.Point3f ();
 for (var iSym = 0; iSym < nOperations; iSym++) {
-if (isBaseCell && this.symmetry.getSpaceGroupXyz (iSym, true).equals ("x,y,z")) continue ;var pt0 = (this.checkSpecial ? pt : checkRange111 ? baseCount : 0);
+if (isBaseCell && this.symmetry.getSpaceGroupXyz (iSym, true).equals ("x,y,z")) continue;
+var pt0 = (this.checkSpecial ? pt : checkRange111 ? baseCount : 0);
 for (var i = iAtomFirst; i < atomMax; i++) {
-if (this.atoms[i].ignoreSymmetry) continue ;if (this.bsAtoms != null && !this.bsAtoms.get (i)) continue ;this.symmetry.newSpaceGroupPoint (iSym, this.atoms[i], ptAtom, transX, transY, transZ);
+if (this.atoms[i].ignoreSymmetry) continue;
+if (this.bsAtoms != null && !this.bsAtoms.get (i)) continue;
+this.symmetry.newSpaceGroupPoint (iSym, this.atoms[i], ptAtom, transX, transY, transZ);
 var special = null;
-var cartesian = javax.vecmath.Point3f.newP (ptAtom);
+var cartesian = org.jmol.util.Point3f.newP (ptAtom);
 this.symmetry.toCartesian (cartesian, false);
 if (this.doPackUnitCell) {
 this.symmetry.toUnitCell (cartesian, this.ptOffset);
 ptAtom.setT (cartesian);
 this.symmetry.toFractional (ptAtom, false);
-if (!org.jmol.adapter.smarter.AtomSetCollection.isWithinCell (this.dtype, ptAtom, this.minXYZ0.x, this.maxXYZ0.x, this.minXYZ0.y, this.maxXYZ0.y, this.minXYZ0.z, this.maxXYZ0.z)) continue ;}if (checkSymmetryMinMax) this.setSymmetryMinMax (cartesian);
+if (!org.jmol.adapter.smarter.AtomSetCollection.isWithinCell (this.dtype, ptAtom, this.minXYZ0.x, this.maxXYZ0.x, this.minXYZ0.y, this.maxXYZ0.y, this.minXYZ0.z, this.maxXYZ0.z)) continue;
+}if (checkSymmetryMinMax) this.setSymmetryMinMax (cartesian);
 if (checkDistances) {
 var minDist2 = 3.4028235E38;
-if (checkSymmetryRange && !this.isInSymmetryRange (cartesian)) continue ;for (var j = pt0; --j >= 0; ) {
+if (checkSymmetryRange && !this.isInSymmetryRange (cartesian)) continue;
+for (var j = pt0; --j >= 0; ) {
 var d2 = cartesian.distanceSquared (this.cartesians[j]);
 if (this.checkSpecial && d2 < 0.0001) {
 special = this.atoms[iAtomFirst + j];
 break;
 }if (checkRange111 && j < baseCount && d2 < minDist2) minDist2 = d2;
 }
-if (checkRange111 && minDist2 > range2) continue ;}var atomSite = this.atoms[i].atomSite;
+if (checkRange111 && minDist2 > range2) continue;
+}var atomSite = this.atoms[i].atomSite;
 if (special != null) {
 if (addBonds) atomMap[atomSite] = special.atomIndex;
 special.bsSymmetry.set (iCellOpPt + iSym);
@@ -965,7 +975,8 @@ if (addCartesian) this.cartesians[pt++] = cartesian;
 if (this.atoms[i].ellipsoid != null) {
 for (var j = 0; j < this.atoms[i].ellipsoid.length; j++) {
 var e = this.atoms[i].ellipsoid[j];
-if (e == null) continue ;var axes = e.vectors;
+if (e == null) continue;
+var axes = e.vectors;
 var lengths = e.lengths;
 if (axes != null) {
 if (addCartesian) {
@@ -982,7 +993,8 @@ for (var bondNum = this.bondIndex0; bondNum < this.bondCount0; bondNum++) {
 var bond = this.bonds[bondNum];
 var atom1 = this.atoms[bond.atomIndex1];
 var atom2 = this.atoms[bond.atomIndex2];
-if (atom1 == null || atom2 == null) continue ;var iAtom1 = atomMap[atom1.atomSite];
+if (atom1 == null || atom2 == null) continue;
+var iAtom1 = atomMap[atom1.atomSite];
 var iAtom2 = atomMap[atom2.atomSite];
 if (iAtom1 >= atomMax || iAtom2 >= atomMax) this.addNewBondWithOrder (iAtom1, iAtom2, bond.order);
 }
@@ -993,7 +1005,7 @@ Clazz.defineMethod (c$, "applySymmetry",
 function (biomts, notionalUnitCell, applySymmetryToBonds, filter) {
 if (this.latticeCells != null && this.latticeCells[0] != 0) {
 org.jmol.util.Logger.error ("Cannot apply biomolecule when lattice cells are indicated");
-return ;
+return;
 }this.doNormalize = false;
 this.symmetry = null;
 this.getSymmetry ();
@@ -1005,7 +1017,7 @@ var len = biomts.size ();
 this.applySymmetryToBonds = applySymmetryToBonds;
 this.bondCount0 = this.bondCount;
 var addBonds = (this.bondCount0 > this.bondIndex0 && applySymmetryToBonds);
-var atomMap = (addBonds ?  Clazz.newArray (this.atomCount, 0) : null);
+var atomMap = (addBonds ?  Clazz.newIntArray (this.atomCount, 0) : null);
 var iAtomFirst = this.getLastAtomSetAtomIndex ();
 var atomMax = this.atomCount;
 if (filter.indexOf ("#<") >= 0) {
@@ -1015,10 +1027,13 @@ filter = org.jmol.util.TextFormat.simpleReplace (filter, "#<", "_<");
 
 for (var i = 1; i < len; i++) {
 if (filter.indexOf ("!#") >= 0) {
-if (filter.indexOf ("!#" + (i + 1) + ";") >= 0) continue ;} else if (filter.indexOf ("#") >= 0 && filter.indexOf ("#" + (i + 1) + ";") < 0) {
-continue ;}var mat = biomts.get (i);
+if (filter.indexOf ("!#" + (i + 1) + ";") >= 0) continue;
+} else if (filter.indexOf ("#") >= 0 && filter.indexOf ("#" + (i + 1) + ";") < 0) {
+continue;
+}var mat = biomts.get (i);
 for (var iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
-if (this.bsAtoms != null && !this.bsAtoms.get (iAtom)) continue ;try {
+if (this.bsAtoms != null && !this.bsAtoms.get (iAtom)) continue;
+try {
 var atomSite = this.atoms[iAtom].atomSite;
 var atom1;
 if (addBonds) atomMap[atomSite] = this.atomCount;
@@ -1045,7 +1060,7 @@ throw e;
 mat.m03 /= notionalUnitCell[0];
 mat.m13 /= notionalUnitCell[1];
 mat.m23 /= notionalUnitCell[2];
-if (this.symmetry != null && i > 0) this.symmetry.addSpaceGroupOperation (mat);
+if (this.symmetry != null && i > 0) this.symmetry.addSpaceGroupOperationM (mat);
 }
 var noSymmetryCount = atomMax - iAtomFirst;
 this.setAtomSetAuxiliaryInfo ("presymmetryAtomIndex", Integer.$valueOf (iAtomFirst));
@@ -1073,7 +1088,7 @@ this.haveMappedSerials = false;
 });
 Clazz.defineMethod (c$, "mapMostRecentAtomSerialNumber", 
 function () {
-if (this.atomCount == 0) return ;
+if (this.atomCount == 0) return;
 var index = this.atomCount - 1;
 var atomSerial = this.atoms[index].atomSerial;
 if (atomSerial != -2147483648) this.atomSymbolicMap.put (Integer.$valueOf (atomSerial), Integer.$valueOf (index));
@@ -1081,7 +1096,7 @@ this.haveMappedSerials = true;
 });
 Clazz.defineMethod (c$, "createAtomSerialMap", 
 function () {
-if (this.haveMappedSerials || this.currentAtomSetIndex < 0) return ;
+if (this.haveMappedSerials || this.currentAtomSetIndex < 0) return;
 for (var i = this.getLastAtomSetAtomCount (); i < this.atomCount; i++) {
 var atomSerial = this.atoms[i].atomSerial;
 if (atomSerial != -2147483648) this.atomSymbolicMap.put (Integer.$valueOf (atomSerial), Integer.$valueOf (i));
@@ -1135,10 +1150,10 @@ var haveVibrations = (this.atomCount > 0 && !Float.isNaN (this.atoms[0].vectorX)
 var vibrationStep = (haveVibrations ?  new Array (this.atomCount) : null);
 var prevSteps = (this.trajectoryStepCount == 0 ? null : this.trajectorySteps.get (this.trajectoryStepCount - 1));
 for (var i = 0; i < this.atomCount; i++) {
-var pt = javax.vecmath.Point3f.newP (this.atoms[i]);
+var pt = org.jmol.util.Point3f.newP (this.atoms[i]);
 if (this.doFixPeriodic && prevSteps != null) pt = org.jmol.adapter.smarter.AtomSetCollection.fixPeriodic (pt, prevSteps[i]);
 trajectoryStep[i] = pt;
-if (haveVibrations) vibrationStep[i] = javax.vecmath.Vector3f.new3 (this.atoms[i].vectorX, this.atoms[i].vectorY, this.atoms[i].vectorZ);
+if (haveVibrations) vibrationStep[i] = org.jmol.util.Vector3f.new3 (this.atoms[i].vectorX, this.atoms[i].vectorY, this.atoms[i].vectorZ);
 }
 if (haveVibrations) {
 if (this.vibrationSteps == null) {
@@ -1155,7 +1170,7 @@ pt.x = org.jmol.adapter.smarter.AtomSetCollection.fixPoint (pt.x, pt0.x);
 pt.y = org.jmol.adapter.smarter.AtomSetCollection.fixPoint (pt.y, pt0.y);
 pt.z = org.jmol.adapter.smarter.AtomSetCollection.fixPoint (pt.z, pt0.z);
 return pt;
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f,org.jmol.util.Point3f");
 c$.fixPoint = Clazz.defineMethod (c$, "fixPoint", 
 ($fz = function (x, x0) {
 while (x - x0 > 0.9) {
@@ -1175,13 +1190,13 @@ this.finalizeTrajectory ();
 }, "java.util.List,java.util.List");
 Clazz.defineMethod (c$, "finalizeTrajectory", 
 ($fz = function () {
-if (this.trajectoryStepCount == 0) return ;
+if (this.trajectoryStepCount == 0) return;
 var trajectory = this.trajectorySteps.get (0);
 var vibrations = (this.vibrationSteps == null ? null : this.vibrationSteps.get (0));
-var v =  new javax.vecmath.Vector3f ();
+var v =  new org.jmol.util.Vector3f ();
 if (this.vibrationSteps != null && vibrations != null && vibrations.length < this.atomCount || trajectory.length < this.atomCount) {
 this.errorMessage = "File cannot be loaded as a trajectory";
-return ;
+return;
 }for (var i = 0; i < this.atomCount; i++) {
 if (this.vibrationSteps != null) {
 if (vibrations != null) v = vibrations[i];
@@ -1231,13 +1246,13 @@ Clazz.defineMethod (c$, "setAtomSetName",
 function (atomSetName) {
 if (this.isTrajectory) {
 this.setTrajectoryName (atomSetName);
-return ;
+return;
 }this.setAtomSetAuxiliaryInfoForSet ("name", atomSetName, this.currentAtomSetIndex);
 if (!this.allowMultiple) this.setCollectionName (atomSetName);
 }, "~S");
 Clazz.defineMethod (c$, "setTrajectoryName", 
 ($fz = function (name) {
-if (this.trajectoryStepCount == 0) return ;
+if (this.trajectoryStepCount == 0) return;
 if (this.trajectoryNames == null) {
 this.trajectoryNames =  new java.util.ArrayList ();
 }for (var i = this.trajectoryNames.size (); i < this.trajectoryStepCount; i++) this.trajectoryNames.add (null);
@@ -1279,11 +1294,11 @@ Clazz.defineMethod (c$, "appendAtomProperties",
 ($fz = function (nTimes) {
 var p = this.getAtomSetAuxiliaryInfoValue (this.currentAtomSetIndex, "atomProperties");
 if (p == null) {
-return ;
+return;
 }for (var entry, $entry = p.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var key = entry.getKey ();
 var data = entry.getValue ();
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 for (var i = nTimes; --i >= 0; ) s.append (data);
 
 p.put (key, s.toString ());
@@ -1309,7 +1324,7 @@ this.setAtomSetAuxiliaryInfoForSet (key, value, this.currentAtomSetIndex);
 }, "~S,~O");
 Clazz.defineMethod (c$, "setAtomSetAuxiliaryInfoForSet", 
 function (key, value, atomSetIndex) {
-if (atomSetIndex < 0) return ;
+if (atomSetIndex < 0) return;
 if (this.atomSetAuxiliaryInfo[atomSetIndex] == null) this.atomSetAuxiliaryInfo[atomSetIndex] =  new java.util.Hashtable ();
 if (value == null) this.atomSetAuxiliaryInfo[atomSetIndex].remove (key);
  else this.atomSetAuxiliaryInfo[atomSetIndex].put (key, value);
@@ -1352,7 +1367,7 @@ return null;
 }, "java.util.Properties");
 Clazz.defineMethod (c$, "setAtomSetEnergy", 
 function (energyString, value) {
-if (this.currentAtomSetIndex < 0) return ;
+if (this.currentAtomSetIndex < 0) return;
 this.setAtomSetAuxiliaryInfo ("EnergyString", energyString);
 this.setAtomSetAuxiliaryInfo ("Energy",  new Float (value));
 this.setAtomSetModelProperty ("Energy", "" + value);
@@ -1380,7 +1395,7 @@ return info;
 });
 Clazz.defineMethod (c$, "centralize", 
 function () {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 for (var i = 0; i < this.atomSetCount; i++) {
 var n = this.atomSetAtomCounts[i];
 var atom0 = this.atomSetAtomIndexes[i];

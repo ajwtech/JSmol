@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 Clazz.load (null, "org.jmol.util.Quadric", ["org.jmol.util.Eigen"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lengths = null;
@@ -25,7 +25,7 @@ this.isThermalEllipsoid = isThermal;
 Clazz.makeConstructor (c$, 
 function (bcart) {
 this.isThermalEllipsoid = true;
-this.lengths =  Clazz.newArray (3, 0);
+this.lengths =  Clazz.newFloatArray (3, 0);
 this.vectors =  new Array (3);
 org.jmol.util.Quadric.getAxesForEllipsoid (bcart, this.vectors, this.lengths);
 for (var i = 0; i < 3; i++) this.lengths[i] *= org.jmol.util.Quadric.ONE_OVER_ROOT2_PI;
@@ -35,14 +35,14 @@ Clazz.defineMethod (c$, "rotate",
 function (mat) {
 if (this.vectors != null) for (var i = 0; i < 3; i++) mat.transformV (this.vectors[i]);
 
-}, "javax.vecmath.Matrix4f");
+}, "org.jmol.util.Matrix4f");
 Clazz.defineMethod (c$, "setSize", 
 function (size) {
 this.$scale = (this.isThermalEllipsoid ? org.jmol.util.Quadric.getRadius (size) : size < 1 ? 0 : size / 100.0);
 }, "~N");
 c$.getAxesForEllipsoid = Clazz.defineMethod (c$, "getAxesForEllipsoid", 
 function (coef, unitVectors, lengths) {
-var mat =  Clazz.newArray (3, 3, 0);
+var mat =  Clazz.newDoubleArray (3, 3, 0);
 mat[0][0] = coef[0];
 mat[1][1] = coef[1];
 mat[2][2] = coef[2];
@@ -60,7 +60,7 @@ mat.setColumnV (i, vTemp);
 }
 mat.invertM (mat);
 return mat;
-}, "~A,~A,javax.vecmath.Vector3f,javax.vecmath.Matrix3f");
+}, "~A,~A,org.jmol.util.Vector3f,org.jmol.util.Matrix3f");
 c$.getEquationForQuadricWithCenter = Clazz.defineMethod (c$, "getEquationForQuadricWithCenter", 
 function (x, y, z, mToElliptical, vTemp, mTemp, coef, mDeriv) {
 vTemp.set (x, y, z);
@@ -79,7 +79,7 @@ coef[6] = -2 * vTemp.x / f;
 coef[7] = -2 * vTemp.y / f;
 coef[8] = -2 * vTemp.z / f;
 coef[9] = -1;
-if (mDeriv == null) return ;
+if (mDeriv == null) return;
 mDeriv.setIdentity ();
 mDeriv.m00 = (2 * coef[0]);
 mDeriv.m11 = (2 * coef[1]);
@@ -90,7 +90,7 @@ mDeriv.m12 = mDeriv.m21 = coef[5];
 mDeriv.m03 = coef[6];
 mDeriv.m13 = coef[7];
 mDeriv.m23 = coef[8];
-}, "~N,~N,~N,javax.vecmath.Matrix3f,javax.vecmath.Vector3f,javax.vecmath.Matrix3f,~A,javax.vecmath.Matrix4f");
+}, "~N,~N,~N,org.jmol.util.Matrix3f,org.jmol.util.Vector3f,org.jmol.util.Matrix3f,~A,org.jmol.util.Matrix4f");
 c$.getQuardricZ = Clazz.defineMethod (c$, "getQuardricZ", 
 function (x, y, coef, zroot) {
 var b_2a = (coef[4] * x + coef[5] * y + coef[8]) / coef[2] / 2;
@@ -109,7 +109,7 @@ if (pt.x < 0) i += 1;
 if (pt.y < 0) i += 2;
 if (pt.z < 0) i += 4;
 return i;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 c$.getRadius = Clazz.defineMethod (c$, "getRadius", 
 function (prob) {
 return org.jmol.util.Quadric.crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];

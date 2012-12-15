@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
+Clazz.declarePackage ("org.jmol.adapter.readers.xtal");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.xtal.Wien2kReader", ["java.lang.Character", "$.Float", "org.jmol.util.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.isrhombohedral = false;
@@ -21,11 +21,11 @@ this.continuing = false;
 Clazz.defineMethod (c$, "readUnitCell", 
 ($fz = function () {
 this.readLine ();
-this.isrhombohedral = (((this.latticeCode = this.line.charAt (0))).charCodeAt (0) == 82);
+this.isrhombohedral = ((this.latticeCode = this.line.charAt (0)) == 'R');
 if (this.line.startsWith ("CYZ")) this.latticeCode = 'A';
  else if (this.line.startsWith ("CXZ")) this.latticeCode = 'B';
  else if (this.line.startsWith ("B")) this.latticeCode = 'I';
-if (this.latticeCode.charCodeAt (0) != 82 && this.latticeCode.charCodeAt (0) != 72) this.atomSetCollection.setLatticeParameter (this.latticeCode.charCodeAt (0));
+if (this.latticeCode != 'R' && this.latticeCode != 'H') this.atomSetCollection.setLatticeParameter (this.latticeCode.charCodeAt (0));
 if (this.line.length > 32) {
 var name = this.line.substring (32).trim ();
 if (name.indexOf (" ") >= 0) name = name.substring (name.indexOf (" ") + 1);
@@ -83,7 +83,7 @@ this.setAtomCoordXYZ (atom, a, b, c);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readSymmetry", 
 ($fz = function () {
-if (this.line.indexOf ("SYMMETRY") < 0) return ;
+if (this.line.indexOf ("SYMMETRY") < 0) return;
 var n = this.parseIntStr (this.line.substring (0, 4).trim ());
 for (var i = n; --i >= 0; ) {
 var xyz = this.getJones () + "," + this.getJones () + "," + this.getJones ();
@@ -97,9 +97,9 @@ this.readLine ();
 var xyz = "";
 var trans = this.parseFloatStr (this.line.substring (6));
 for (var i = 0; i < 6; i++) {
-if ((this.line.charAt (i)).charCodeAt (0) == 45) xyz += "-";
-if ((this.line.charAt (++i)).charCodeAt (0) == 49) {
-xyz += (" x y z".charAt (i)).charCodeAt (0);
+if (this.line.charAt (i) == '-') xyz += "-";
+if (this.line.charAt (++i) == '1') {
+xyz += " x y z".charAt (i);
 if (trans > 0) xyz += "+";
 if (trans != 0) xyz += trans;
 }}

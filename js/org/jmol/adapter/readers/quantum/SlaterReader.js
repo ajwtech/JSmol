@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.BasisFunctionReader", "java.util.ArrayList"], "org.jmol.adapter.readers.quantum.SlaterReader", ["java.util.Arrays", "org.jmol.quantum.SlaterData", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.slaters = null;
@@ -38,7 +38,7 @@ org.jmol.util.Logger.debug ("SlaterReader " + i + ": " + sd.iAtom + " " + sd.x +
 }}
 if (doSort) {
 java.util.Arrays.sort (this.slaterArray, Clazz.innerTypeInstance (org.jmol.adapter.readers.quantum.SlaterReader.SlaterSorter, this, null));
-var pointers =  Clazz.newArray (this.slaterArray.length, 0);
+var pointers =  Clazz.newIntArray (this.slaterArray.length, 0);
 for (var i = 0; i < this.slaterArray.length; i++) pointers[i] = this.slaterArray[i].index;
 
 this.sortOrbitalCoefficients (pointers);
@@ -56,7 +56,7 @@ function (pointers) {
 for (var i = this.orbitals.size (); --i >= 0; ) {
 var mo = this.orbitals.get (i);
 var coefs = mo.get ("coefficients");
-var sorted =  Clazz.newArray (pointers.length, 0);
+var sorted =  Clazz.newFloatArray (pointers.length, 0);
 for (var j = 0; j < pointers.length; j++) {
 var k = pointers[j];
 if (k < coefs.length) sorted[j] = coefs[k];
@@ -93,7 +93,7 @@ return org.jmol.adapter.readers.quantum.SlaterReader.fact (ez < 0 ? org.jmol.ada
 }, "~N,~N,~N,~N,~N,~N");
 c$.getSlaterConstDSpherical = Clazz.defineMethod (c$, "getSlaterConstDSpherical", 
 function (n, zeta, ex, ey) {
-return org.jmol.adapter.readers.quantum.SlaterReader.fact (Math.floor (15 / (ex < 0 ? 12 : ey < 0 ? 4 : 1)), zeta, n);
+return org.jmol.adapter.readers.quantum.SlaterReader.fact (Clazz.doubleToInt (15 / (ex < 0 ? 12 : ey < 0 ? 4 : 1)), zeta, n);
 }, "~N,~N,~N,~N");
 c$.$SlaterReader$SlaterSorter$ = function () {
 Clazz.pu$h ();

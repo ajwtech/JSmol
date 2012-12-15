@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
 Clazz.load (["org.jmol.adapter.readers.more.ForceFieldReader"], "org.jmol.adapter.readers.more.Mol2Reader", ["org.jmol.adapter.smarter.Bond", "org.jmol.api.JmolAdapter"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nAtoms = 0;
@@ -19,7 +19,7 @@ if (!this.processMolecule ()) {
 return true;
 }this.continuing = !this.isLastModel (this.modelNumber);
 return false;
-}if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == 35) {
+}if (this.line.length != 0 && this.line.charAt (0) == '#') {
 this.checkCurrentLineForScript ();
 }return true;
 });
@@ -30,7 +30,7 @@ var thisDataSetName = this.readLine ().trim ();
 if (!this.doGetModel (++this.modelNumber, thisDataSetName)) {
 return false;
 }this.lastSequenceNumber = 2147483647;
-this.chainID = String.fromCharCode ( (64));
+this.chainID = String.fromCharCode ( 64);
 this.readLine ();
 this.line += " 0 0 0 0 0 0";
 this.atomCount = this.parseIntStr (this.line);
@@ -38,8 +38,8 @@ var bondCount = this.parseInt ();
 var resCount = this.parseInt ();
 this.readLine ();
 this.readLine ();
-if (this.readLine () != null && (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) != 64)) {
-if (this.readLine () != null && this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) != 64) {
+if (this.readLine () != null && (this.line.length == 0 || this.line.charAt (0) != '@')) {
+if (this.readLine () != null && this.line.length != 0 && this.line.charAt (0) != '@') {
 if (this.line.indexOf ("jmolscript:") >= 0) {
 this.checkCurrentLineForScript ();
 if (this.line.equals ("#")) {
@@ -66,7 +66,7 @@ return true;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readAtoms", 
 ($fz = function (atomCount) {
-if (atomCount == 0) return ;
+if (atomCount == 0) return;
 var i0 = this.atomSetCollection.getAtomCount ();
 for (var i = 0; i < atomCount; ++i) {
 var atom = this.atomSetCollection.addNewAtom ();
@@ -77,18 +77,18 @@ atom.set (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.p
 if (tokens.length > 6) {
 atom.sequenceNumber = this.parseIntStr (tokens[6]);
 if (atom.sequenceNumber < this.lastSequenceNumber) {
-if (this.chainID.charCodeAt (0) == 90) this.chainID = String.fromCharCode ( (96));
+if (this.chainID == 'Z') this.chainID = String.fromCharCode ( 96);
 (this.chainID = String.fromCharCode (($c$ = this.chainID).charCodeAt (0) + 1), $c$);
 }this.lastSequenceNumber = atom.sequenceNumber;
 atom.chainID = this.chainID;
 }if (tokens.length > 7) atom.group3 = tokens[7];
 if (tokens.length > 8) {
 atom.partialCharge = this.parseFloatStr (tokens[8]);
-if (atom.partialCharge == Math.round (atom.partialCharge)) atom.formalCharge = Math.round (atom.partialCharge);
+if (atom.partialCharge == Clazz.floatToInt (atom.partialCharge)) atom.formalCharge = Clazz.floatToInt (atom.partialCharge);
 }}
 var atoms = this.atomSetCollection.getAtoms ();
 var g3 = atoms[i0].group3;
-if (g3 == null) return ;
+if (g3 == null) return;
 this.isPDB = false;
 for (var i = this.atomSetCollection.getAtomCount (); --i >= i0; ) if (!g3.equals (atoms[this.atomSetCollection.getAtomCount () - 1].group3)) {
 this.isPDB = true;
@@ -110,7 +110,7 @@ var atomType = atom.atomName.substring (atom.atomName.indexOf ('\0') + 1);
 var deduceSymbol = !this.getElementSymbol (atom, atomType);
 if (deduceSymbol) atom.elementSymbol = org.jmol.adapter.readers.more.ForceFieldReader.deducePdbElementSymbol (atom.isHetero, atomType, atom.group3);
 }
-return ;
+return;
 }}if (!this.isPDB) {
 for (var i = this.atomSetCollection.getAtomCount (); --i >= i0; ) atoms[i].group3 = null;
 
@@ -136,7 +136,7 @@ Clazz.defineMethod (c$, "readCrystalInfo",
 ($fz = function () {
 this.readLine ();
 var tokens = this.getTokens ();
-if (tokens.length < 6) return ;
+if (tokens.length < 6) return;
 var name = "";
 for (var i = 6; i < tokens.length; i++) name += " " + tokens[i];
 
@@ -144,7 +144,7 @@ if (name === "") name = " P1";
  else name += " *";
 name = name.substring (1);
 this.setSpaceGroupName (name);
-if (this.ignoreFileUnitCell) return ;
+if (this.ignoreFileUnitCell) return;
 for (var i = 0; i < 6; i++) this.setUnitCellItem (i, this.parseFloatStr (tokens[i]));
 
 var atoms = this.atomSetCollection.getAtoms ();

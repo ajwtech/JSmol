@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.FoldingXyzReader", ["java.lang.Character", "java.util.StringTokenizer", "org.jmol.adapter.smarter.Atom", "org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.declareType (org.jmol.adapter.readers.simple, "FoldingXyzReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "checkLine", 
@@ -13,7 +13,7 @@ this.readAtoms (modelAtomCount);
 });
 Clazz.defineMethod (c$, "readAtoms", 
 function (modelAtomCount) {
-var bonds =  Clazz.newArray (modelAtomCount + 1, 0);
+var bonds = org.jmol.util.ArrayUtil.newInt2 (modelAtomCount + 1);
 for (var i = 0; i <= modelAtomCount; ++i) {
 bonds[i] = null;
 }
@@ -32,12 +32,12 @@ var c1 = atom.atomName.charAt (0);
 var c2 = atom.atomName.charAt (1);
 if (Character.isUpperCase (c1) && Character.isLowerCase (c2) && org.jmol.adapter.smarter.Atom.isValidElementSymbol2 (c1, c2)) {
 carCount = 2;
-}if ((c1.charCodeAt (0) == 67) && (c2.charCodeAt (0) == 76)) {
+}if ((c1 == 'C') && (c2 == 'L')) {
 carCount = 2;
 }}atom.elementSymbol = atom.atomName.substring (0, carCount);
 }this.setAtomCoordXYZ (atom, this.parseFloat (), this.parseFloat (), this.parseFloat ());
 var bondCount = 0;
-bonds[i] =  Clazz.newArray (5, 0);
+bonds[i] =  Clazz.newIntArray (5, 0);
 var bondNum = -2147483648;
 while ((bondNum = this.parseInt ()) > 0) {
 if (bondCount == bonds[i].length) {

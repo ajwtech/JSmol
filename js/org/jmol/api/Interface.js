@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.api");
+Clazz.declarePackage ("org.jmol.api");
 Clazz.load (null, "org.jmol.api.Interface", ["org.jmol.util.Logger"], function () {
 c$ = Clazz.declareType (org.jmol.api, "Interface");
 c$.getOptionInterface = Clazz.defineMethod (c$, "getOptionInterface", 

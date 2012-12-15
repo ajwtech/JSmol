@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.data");
-Clazz.load (null, "org.jmol.jvxl.data.JvxlData", ["java.lang.Float", "javax.util.StringXBuilder", "org.jmol.jvxl.data.JvxlCoder"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.data");
+Clazz.load (null, "org.jmol.jvxl.data.JvxlData", ["java.lang.Float", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.wasJvxl = false;
 this.wasCubic = false;
@@ -118,17 +118,17 @@ if (this.jvxlSurfaceData.indexOf ("--") == 0) this.jvxlSurfaceData = this.jvxlSu
 this.jvxlPlane = thePlane;
 this.mapLattice = mapLattice;
 this.nSurfaceInts = nSurfaceInts;
-}, "javax.vecmath.Point4f,javax.vecmath.Point3f,~N,~S");
+}, "org.jmol.util.Point4f,org.jmol.util.Point3f,~N,~S");
 Clazz.defineMethod (c$, "setSurfaceInfoFromBitSet", 
 function (bs, thePlane) {
 this.setSurfaceInfoFromBitSetPts (bs, thePlane, null);
-}, "javax.util.BitSet,javax.vecmath.Point4f");
+}, "org.jmol.util.BitSet,org.jmol.util.Point4f");
 Clazz.defineMethod (c$, "setSurfaceInfoFromBitSetPts", 
 function (bs, thePlane, mapLattice) {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 var nSurfaceInts = (thePlane != null ? 0 : org.jmol.jvxl.data.JvxlCoder.jvxlEncodeBitSetBuffer (bs, this.nPointsX * this.nPointsY * this.nPointsZ, sb));
 this.setSurfaceInfo (thePlane, mapLattice, nSurfaceInts, sb.toString ());
-}, "javax.util.BitSet,javax.vecmath.Point4f,javax.vecmath.Point3f");
+}, "org.jmol.util.BitSet,org.jmol.util.Point4f,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "jvxlUpdateInfo", 
 function (title, nBytes) {
 this.title = title;

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Matrix4f"], "org.jmol.symmetry.HallRotation", null, function () {
+Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.load (["org.jmol.util.Matrix4f"], "org.jmol.symmetry.HallRotation", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.rotCode = null;
 this.seitzMatrix = null;
@@ -7,8 +7,8 @@ this.seitzMatrixInv = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.symmetry, "HallRotation");
 Clazz.prepareFields (c$, function () {
-this.seitzMatrix =  new javax.vecmath.Matrix4f ();
-this.seitzMatrixInv =  new javax.vecmath.Matrix4f ();
+this.seitzMatrix =  new org.jmol.util.Matrix4f ();
+this.seitzMatrixInv =  new org.jmol.util.Matrix4f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -16,15 +16,16 @@ function () {
 Clazz.makeConstructor (c$, 
 ($fz = function (code, matrixData) {
 this.rotCode = code;
-var data =  Clazz.newArray (16, 0);
-var dataInv =  Clazz.newArray (16, 0);
+var data =  Clazz.newFloatArray (16, 0);
+var dataInv =  Clazz.newFloatArray (16, 0);
 data[15] = dataInv[15] = 1;
 for (var i = 0, ipt = 0; ipt < 11; i++) {
 var value = 0;
 switch (matrixData.charAt (i)) {
 case ' ':
 ipt++;
-continue ;case '+':
+continue;
+case '+':
 case '1':
 value = 1;
 break;

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.XplorReader", ["javax.util.StringXBuilder", "org.jmol.util.Logger", "org.jmol.viewer.Viewer"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.MapFileReader"], "org.jmol.jvxl.readers.XplorReader", ["org.jmol.util.Logger", "$.StringXBuilder", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nBlock = 0;
 this.linePt = 2147483647;
@@ -18,7 +18,7 @@ this.nSurfaces = 1;
 }, "org.jmol.jvxl.readers.SurfaceGenerator,java.io.BufferedReader");
 Clazz.overrideMethod (c$, "readParameters", 
 function () {
-this.jvxlFileHeaderBuffer =  new javax.util.StringXBuilder ();
+this.jvxlFileHeaderBuffer =  new org.jmol.util.StringXBuilder ();
 var nLines = this.parseIntStr (this.getLine ());
 for (var i = nLines; --i >= 0; ) {
 this.line = this.br.readLine ().trim ();

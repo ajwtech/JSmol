@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.smiles");
-Clazz.load (["javax.vecmath.Point3f", "org.jmol.util.JmolNode"], "org.jmol.smiles.SmilesAtom", ["org.jmol.util.ArrayUtil", "$.Elements", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.smiles");
+Clazz.load (["org.jmol.util.JmolNode", "$.Point3f"], "org.jmol.smiles.SmilesAtom", ["org.jmol.util.ArrayUtil", "$.Elements", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomsOr = null;
 this.nAtomsOr = 0;
@@ -45,13 +45,13 @@ this.ringMembership = -2147483648;
 this.ringSize = -2147483648;
 this.ringConnectivity = -1;
 Clazz.instantialize (this, arguments);
-}, org.jmol.smiles, "SmilesAtom", javax.vecmath.Point3f, org.jmol.util.JmolNode);
+}, org.jmol.smiles, "SmilesAtom", org.jmol.util.Point3f, org.jmol.util.JmolNode);
 Clazz.prepareFields (c$, function () {
 this.bonds =  new Array (4);
 });
 c$.getChiralityClass = Clazz.defineMethod (c$, "getChiralityClass", 
 function (xx) {
-return Math.floor (("0;11;AL;33;TH;TP;OH;77;SP;".indexOf (xx) + 1) / 3);
+return Clazz.doubleToInt (("0;11;AL;33;TH;TP;OH;77;SP;".indexOf (xx) + 1) / 3);
 }, "~S");
 c$.allowSmilesUnbracketed = Clazz.defineMethod (c$, "allowSmilesUnbracketed", 
 function (xx) {
@@ -59,7 +59,7 @@ return ("B, C, N, O, P, S, F, Cl, Br, I,".indexOf (xx + ",") >= 0);
 }, "~S");
 Clazz.defineMethod (c$, "setBioAtom", 
 function (bioType) {
-this.isBioAtom = (bioType.charCodeAt (0) != 0);
+this.isBioAtom = (bioType != '\0');
 this.bioType = bioType;
 if (this.parent != null) {
 this.parent.bioType = bioType;
@@ -67,7 +67,7 @@ this.parent.isBioAtom = this.isBioAtom;
 }}, "~S");
 Clazz.defineMethod (c$, "setAtomName", 
 function (name) {
-if (name == null) return ;
+if (name == null) return;
 if (name.length > 0) this.atomName = name;
 if (name.equals ("0")) this.$isLeadAtom = true;
 if (this.parent != null) {
@@ -333,9 +333,9 @@ this.bondCount++;
 }, "org.jmol.smiles.SmilesBond");
 Clazz.defineMethod (c$, "setBondArray", 
 function () {
-if (this.bonds.length > this.bondCount) this.bonds = org.jmol.util.ArrayUtil.arrayCopyOpt (this.bonds, this.bondCount);
-if (this.atomsOr != null && this.atomsOr.length > this.nAtomsOr) this.atomsOr = org.jmol.util.ArrayUtil.arrayCopyOpt (this.atomsOr, this.atomsOr.length);
-if (this.primitives != null && this.primitives.length > this.nPrimitives) this.primitives = org.jmol.util.ArrayUtil.arrayCopyOpt (this.primitives, this.primitives.length);
+if (this.bonds.length > this.bondCount) this.bonds = org.jmol.util.ArrayUtil.arrayCopyObject (this.bonds, this.bondCount);
+if (this.atomsOr != null && this.atomsOr.length > this.nAtomsOr) this.atomsOr = org.jmol.util.ArrayUtil.arrayCopyObject (this.atomsOr, this.atomsOr.length);
+if (this.primitives != null && this.primitives.length > this.nPrimitives) this.primitives = org.jmol.util.ArrayUtil.arrayCopyObject (this.primitives, this.primitives.length);
 for (var i = 0; i < this.bonds.length; i++) {
 if (this.isBioAtom && this.bonds[i].order == 17) this.bonds[i].order = 112;
 if (this.bonds[i].getAtom1 ().index > this.bonds[i].getAtom2 ().index) {
@@ -392,7 +392,8 @@ function (atom) {
 if (this.parent != null) return this.parent.getBondTo (atom);
 var bond;
 for (var k = 0; k < this.bonds.length; k++) {
-if ((bond = this.bonds[k]) == null) continue ;if (atom == null ? bond.getAtom2 () === this : bond.getOtherAtom (this) === atom) return bond;
+if ((bond = this.bonds[k]) == null) continue;
+if (atom == null ? bond.getAtom2 () === this : bond.getOtherAtom (this) === atom) return bond;
 }
 return null;
 }, "org.jmol.smiles.SmilesAtom");
@@ -400,7 +401,8 @@ Clazz.defineMethod (c$, "getBondNotTo",
 function (atom, allowH) {
 var bond;
 for (var k = 0; k < this.bonds.length; k++) {
-if ((bond = this.bonds[k]) == null) continue ;var atom2 = bond.getOtherAtom (this);
+if ((bond = this.bonds[k]) == null) continue;
+var atom2 = bond.getOtherAtom (this);
 if (atom !== atom2 && (allowH || atom2.elementNumber != 1)) return bond;
 }
 return null;
@@ -418,8 +420,8 @@ return -1;
 Clazz.overrideMethod (c$, "getGroupBits", 
 function (bs) {
 bs.set (this.index);
-return ;
-}, "javax.util.BitSet");
+return;
+}, "org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "isCrossLinked", 
 function (node) {
 var bond = this.getBondTo (node);
@@ -454,19 +456,19 @@ return (count == valence ? sym : "[" + (isotopeNumber <= 0 ? "" : "" + isotopeNu
 }, "~N,~N,~N,~N,~N,~B,~S");
 Clazz.overrideMethod (c$, "isDna", 
 function () {
-return this.bioType.charCodeAt (0) == 100;
+return this.bioType == 'd';
 });
 Clazz.overrideMethod (c$, "isRna", 
 function () {
-return this.bioType.charCodeAt (0) == 114;
+return this.bioType == 'r';
 });
 Clazz.overrideMethod (c$, "isNucleic", 
 function () {
-return this.bioType.charCodeAt (0) == 110 || this.bioType.charCodeAt (0) == 114 || this.bioType.charCodeAt (0) == 100;
+return this.bioType == 'n' || this.bioType == 'r' || this.bioType == 'd';
 });
 Clazz.overrideMethod (c$, "isProtein", 
 function () {
-return this.bioType.charCodeAt (0) == 112;
+return this.bioType == 'p';
 });
 Clazz.overrideMethod (c$, "isPurine", 
 function () {

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "javax.util.StringXBuilder", "javax.vecmath.Matrix4f", "$.Point3f", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.Matrix4f", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lineLength = 0;
 this.pdbHeader = null;
@@ -54,20 +54,20 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.cifpdb, "PdbReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
 this.htFormul =  new java.util.Hashtable ();
-this.dataT =  Clazz.newArray (8, 0);
+this.dataT =  Clazz.newFloatArray (8, 0);
 });
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
 this.setIsPDB ();
-this.pdbHeader = (this.getHeader ?  new javax.util.StringXBuilder () : null);
+this.pdbHeader = (this.getHeader ?  new org.jmol.util.StringXBuilder () : null);
 this.applySymmetry = !this.checkFilterKey ("NOSYMMETRY");
 this.getTlsGroups = this.checkFilterKey ("TLS");
 if (this.htParams.containsKey ("vTlsModels")) {
 this.vTlsModels = this.htParams.remove ("vTlsModels");
 }if (this.checkFilterKey ("CONF ")) {
 this.configurationPtr = this.parseIntAt (this.filter, this.filter.indexOf ("CONF ") + 5);
-this.sbIgnored =  new javax.util.StringXBuilder ();
-this.sbSelected =  new javax.util.StringXBuilder ();
+this.sbIgnored =  new org.jmol.util.StringXBuilder ();
+this.sbSelected =  new org.jmol.util.StringXBuilder ();
 }this.isLegacyModelType = (this.stateScriptVersionInt < 120000);
 this.isConnectStateBug = (this.stateScriptVersionInt >= 120151 && this.stateScriptVersionInt <= 120220 || this.stateScriptVersionInt >= 120300 && this.stateScriptVersionInt <= 120320);
 });
@@ -204,7 +204,8 @@ var atoms = this.atomSetCollection.getAtoms ();
 var isResidual = false;
 for (var i = this.atomSetCollection.getAtomCount (); --i >= 0; ) {
 var anisou = this.tlsU.get (atoms[i]);
-if (anisou == null) continue ;var resid = anisou[7] - (anisou[0] + anisou[1] + anisou[2]) / 3;
+if (anisou == null) continue;
+var resid = anisou[7] - (anisou[0] + anisou[1] + anisou[2]) / 3;
 if (resid < 0 || Float.isNaN (resid)) {
 isResidual = true;
 break;
@@ -213,7 +214,8 @@ org.jmol.util.Logger.info ("TLS analysis suggests Bfactors are " + (isResidual ?
 for (var entry, $entry = this.tlsU.entrySet ().iterator (); $entry.hasNext () && ((entry = $entry.next ()) || true);) {
 var anisou = entry.getValue ();
 var resid = anisou[7];
-if (resid == 0) continue ;if (!isResidual) resid -= (anisou[0] + anisou[1] + anisou[2]) / 3;
+if (resid == 0) continue;
+if (!isResidual) resid -= (anisou[0] + anisou[1] + anisou[2]) / 3;
 anisou[0] += resid;
 anisou[1] += resid;
 anisou[2] += resid;
@@ -226,7 +228,7 @@ this.tlsU = null;
 }, $fz.isPrivate = true, $fz), "org.jmol.api.SymmetryInterface");
 Clazz.defineMethod (c$, "header", 
 ($fz = function () {
-if (this.lineLength < 8) return ;
+if (this.lineLength < 8) return;
 this.appendLoadNote (this.line.substring (7).trim ());
 if (this.lineLength >= 66) this.atomSetCollection.setCollectionName (this.line.substring (62, 66));
 if (this.lineLength > 50) this.line = this.line.substring (0, 50);
@@ -234,7 +236,7 @@ this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("CLASSIFICATION", this
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "title", 
 ($fz = function () {
-if (this.lineLength < 10) return ;
+if (this.lineLength < 10) return;
 this.appendLoadNote (this.line.substring (10).trim ());
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "compnd", 
@@ -247,7 +249,7 @@ if (this.lineLength > 62) s = s.substring (0, 62);
 this.$compnd += s.substring (10).trim ();
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("COMPND", this.$compnd);
 }if (this.vCompnds == null) {
-if (isSource) return ;
+if (isSource) return;
 this.vCompnds =  new java.util.ArrayList ();
 this.htMolIds =  new java.util.Hashtable ();
 this.currentCompnd =  new java.util.Hashtable ();
@@ -260,18 +262,18 @@ this.currentKey = "SOURCE";
 this.currentCompnd = this.htMolIds.get ("");
 }this.line = this.line.substring (10, Math.min (this.lineLength, 72)).trim ();
 var pt = this.line.indexOf (":");
-if (pt < 0 || pt > 0 && (this.line.charAt (pt - 1)).charCodeAt (0) == 92) pt = this.line.length;
+if (pt < 0 || pt > 0 && this.line.charAt (pt - 1) == '\\') pt = this.line.length;
 var key = this.line.substring (0, pt).trim ();
 var value = (pt < this.line.length ? this.line.substring (pt + 1) : null);
 if (key.equals ("MOL_ID")) {
-if (value == null) return ;
+if (value == null) return;
 if (isSource) {
 this.currentCompnd = this.htMolIds.remove (value);
-return ;
+return;
 }this.currentCompnd =  new java.util.Hashtable ();
 this.vCompnds.add (this.currentCompnd);
 this.htMolIds.put (value, this.currentCompnd);
-}if (this.currentCompnd == null) return ;
+}if (this.currentCompnd == null) return;
 if (value == null) {
 value = this.currentCompnd.get (this.currentKey);
 if (value == null) value = "";
@@ -290,7 +292,7 @@ var biomolecule = this.vBiomolecules.get (i);
 var chain = biomolecule.get ("chains");
 var nTransforms = (biomolecule.get ("biomts")).size ();
 var nAtoms = 0;
-for (var j = chain.length - 1; --j >= 0; ) if ((chain.charAt (j)).charCodeAt (0) == 58) nAtoms += this.chainAtomCounts[chain.charAt (j + 1).charCodeAt (0)];
+for (var j = chain.length - 1; --j >= 0; ) if (chain.charAt (j) == ':') nAtoms += this.chainAtomCounts[chain.charCodeAt (j + 1)];
 
 biomolecule.put ("atomCount", Integer.$valueOf (nAtoms * nTransforms));
 }
@@ -299,14 +301,14 @@ Clazz.defineMethod (c$, "remark350",
 ($fz = function () {
 var biomts = null;
 this.vBiomolecules =  new java.util.ArrayList ();
-this.chainAtomCounts =  Clazz.newArray (255, 0);
+this.chainAtomCounts =  Clazz.newIntArray (255, 0);
 var title = "";
 var chainlist = "";
 var iMolecule = 0;
 var needLine = true;
 var info = null;
 var nBiomt = 0;
-var mIdent =  new javax.vecmath.Matrix4f ();
+var mIdent =  new org.jmol.util.Matrix4f ();
 mIdent.setIdentity ();
 while (true) {
 if (needLine) this.readLine ();
@@ -329,18 +331,20 @@ nBiomt = 0;
 if (info == null) {
 needLine = false;
 this.line = "REMARK 350 BIOMOLECULE: 1  APPLY THE FOLLOWING TO CHAINS:";
-continue ;}chainlist = ":" + this.line.substring (41).trim ().$replace (' ', ':');
+continue;
+}chainlist = ":" + this.line.substring (41).trim ().$replace (' ', ':');
 needLine = false;
-while (this.readLine () != null && this.line.indexOf ("BIOMT") < 0) chainlist += ":" + this.line.substring (11).trim ().$replace (' ', ':');
+while (this.readLine () != null && this.line.indexOf ("BIOMT") < 0 && this.line.indexOf ("350") == 7) chainlist += ":" + this.line.substring (11).trim ().$replace (' ', ':');
 
 if (this.checkFilterKey ("BIOMOLECULE " + iMolecule + ";")) {
 this.setFilter (this.filter.$replace (':', '_') + chainlist);
 org.jmol.util.Logger.info ("filter set to \"" + this.filter + "\"");
 this.vBiomts = biomts;
 }info.put ("chains", chainlist);
-continue ;}if (this.line.startsWith ("REMARK 350   BIOMT1 ")) {
+continue;
+}if (this.line.startsWith ("REMARK 350   BIOMT1 ")) {
 nBiomt++;
-var mat =  Clazz.newArray (16, 0);
+var mat =  Clazz.newFloatArray (16, 0);
 for (var i = 0; i < 12; ) {
 var tokens = this.getTokens ();
 mat[i++] = this.parseFloatStr (tokens[4]);
@@ -350,15 +354,16 @@ mat[i++] = this.parseFloatStr (tokens[7]);
 if (i == 4 || i == 8) this.readLine ();
 }
 mat[15] = 1;
-var m4 =  new javax.vecmath.Matrix4f ();
+var m4 =  new org.jmol.util.Matrix4f ();
 m4.setA (mat);
 if (m4.equals (mIdent)) biomts.add (0, m4);
  else biomts.add (m4);
-continue ;}} catch (e) {
+continue;
+}} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 this.vBiomts = null;
 this.vBiomolecules = null;
-return ;
+return;
 } else {
 throw e;
 }
@@ -382,7 +387,7 @@ Clazz.defineMethod (c$, "atom",
 var atom =  new org.jmol.adapter.smarter.Atom ();
 atom.atomName = this.line.substring (12, 16).trim ();
 var ch = this.line.charAt (16);
-if (ch.charCodeAt (0) != 32) atom.alternateLocationID = ch;
+if (ch != ' ') atom.alternateLocationID = ch;
 atom.group3 = this.parseTokenRange (this.line, 17, 20);
 ch = this.line.charAt (21);
 if (this.chainAtomCounts != null) this.chainAtomCounts[ch.charCodeAt (0)]++;
@@ -391,7 +396,7 @@ atom.sequenceNumber = this.parseIntRange (this.line, 22, 26);
 atom.insertionCode = org.jmol.api.JmolAdapter.canonizeInsertionCode (this.line.charAt (26));
 atom.isHetero = this.line.startsWith ("HETATM");
 atom.elementSymbol = this.deduceElementSymbol (atom.isHetero);
-if (!this.filterPDBAtom (atom, this.fileAtomIndex++)) return ;
+if (!this.filterPDBAtom (atom, this.fileAtomIndex++)) return;
 atom.atomSerial = serial;
 if (serial > this.maxSerial) this.maxSerial = serial;
 if (atom.group3 == null) {
@@ -416,9 +421,9 @@ if (chSign >= '0' && chSign <= '7') {
 var chT = chSign;
 chSign = chMagnitude;
 chMagnitude = chT;
-}if ((chSign.charCodeAt (0) == 43 || chSign.charCodeAt (0) == 45 || chSign.charCodeAt (0) == 32) && chMagnitude >= '0' && chMagnitude <= '7') {
+}if ((chSign == '+' || chSign == '-' || chSign == ' ') && chMagnitude >= '0' && chMagnitude <= '7') {
 charge = chMagnitude.charCodeAt (0) - 48;
-if (chSign.charCodeAt (0) == 45) charge = -charge;
+if (chSign == '-') charge = -charge;
 }}atom.formalCharge = charge;
 this.setAtomCoordXYZ (atom, this.parseFloatRange (this.line, 30, 38), this.parseFloatRange (this.line, 38, 46), this.parseFloatRange (this.line, 46, 54));
 }this.setAdditionalAtomParameters (atom);
@@ -434,17 +439,17 @@ Clazz.defineMethod (c$, "filterPDBAtom",
 function (atom, iAtom) {
 if (!this.filterAtom (atom, iAtom)) return false;
 if (this.configurationPtr > 0) {
-if (atom.sequenceNumber != this.lastGroup || atom.insertionCode.charCodeAt (0) != this.lastInsertion.charCodeAt (0)) {
+if (atom.sequenceNumber != this.lastGroup || atom.insertionCode != this.lastInsertion) {
 this.conformationIndex = this.configurationPtr - 1;
 this.lastGroup = atom.sequenceNumber;
 this.lastInsertion = atom.insertionCode;
 this.lastAltLoc = '\0';
-}if (atom.alternateLocationID.charCodeAt (0) != 0) {
-var msg = " atom [" + atom.group3 + "]" + atom.sequenceNumber + (atom.insertionCode.charCodeAt (0) == 0 ? "" : "^" + atom.insertionCode) + (atom.chainID.charCodeAt (0) == 0 ? "" : ":" + atom.chainID) + "." + atom.atomName + "%" + atom.alternateLocationID + "\n";
-if (this.conformationIndex >= 0 && atom.alternateLocationID.charCodeAt (0) != this.lastAltLoc.charCodeAt (0)) {
+}if (atom.alternateLocationID != '\0') {
+var msg = " atom [" + atom.group3 + "]" + atom.sequenceNumber + (atom.insertionCode == '\0' ? "" : "^" + atom.insertionCode) + (atom.chainID == '\0' ? "" : ":" + atom.chainID) + "." + atom.atomName + "%" + atom.alternateLocationID + "\n";
+if (this.conformationIndex >= 0 && atom.alternateLocationID != this.lastAltLoc) {
 this.lastAltLoc = atom.alternateLocationID;
 this.conformationIndex--;
-}if (this.conformationIndex < 0 && atom.alternateLocationID.charCodeAt (0) != this.lastAltLoc.charCodeAt (0)) {
+}if (this.conformationIndex < 0 && atom.alternateLocationID != this.lastAltLoc) {
 this.sbIgnored.append ("ignoring").append (msg);
 return false;
 }this.sbSelected.append ("loading").append (msg);
@@ -461,7 +466,7 @@ var tokens = this.getTokens ();
 var pt = tokens.length - 2 - (this.line.length > 75 ? 1 : 0);
 atom.partialCharge = this.parseFloatStr (tokens[pt++]);
 atom.radius = org.jmol.adapter.readers.cifpdb.PdbReader.fixRadius (this.parseFloatStr (tokens[pt]));
-}return ;
+}return;
 }var floatOccupancy;
 if (this.gromacsWideFormat) {
 floatOccupancy = this.parseFloatStr (this.line.substring (60, 68));
@@ -469,40 +474,41 @@ atom.bfactor = org.jmol.adapter.readers.cifpdb.PdbReader.fixRadius (this.parseFl
 } else {
 floatOccupancy = this.parseFloatRange (this.line, 54, 60);
 atom.bfactor = this.parseFloatRange (this.line, 60, 66);
-}atom.occupancy = (Float.isNaN (floatOccupancy) ? 100 : Math.round ((floatOccupancy * 100)));
+}atom.occupancy = (Float.isNaN (floatOccupancy) ? 100 : Clazz.floatToInt (floatOccupancy * 100));
 }, "org.jmol.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "deduceElementSymbol", 
 function (isHetero) {
 if (this.lineLength >= 78) {
 var ch76 = this.line.charAt (76);
 var ch77 = this.line.charAt (77);
-if (ch76.charCodeAt (0) == 32 && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch77)) return "" + ch77;
+if (ch76 == ' ' && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch77)) return "" + ch77;
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch76, ch77)) return "" + ch76 + ch77;
 }var ch12 = this.line.charAt (12);
 var ch13 = this.line.charAt (13);
-if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (12, 14)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch12, ch13)) return (isHetero || ch12.charCodeAt (0) != 72 ? "" + ch12 + ch13 : "H");
-if (ch12.charCodeAt (0) == 72) return "H";
+if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (12, 14)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch12, ch13)) return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
+if (ch12 == 'H') return "H";
 if ((this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get ("" + ch13) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch13)) return "" + ch13;
-if (ch12.charCodeAt (0) != 32 && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get ("" + ch12) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch12)) return "" + ch12;
+if (ch12 != ' ' && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get ("" + ch12) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbol (ch12)) return "" + ch12;
 var ch14 = this.line.charAt (14);
-if (ch12.charCodeAt (0) == 32 && ch13.charCodeAt (0) != 88 && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (13, 15)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch13, ch14)) return "" + ch13 + ch14;
+if (ch12 == ' ' && ch13 != 'X' && (this.htElementsInCurrentGroup == null || this.htElementsInCurrentGroup.get (this.line.substring (13, 15)) != null) && org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (ch13, ch14)) return "" + ch13 + ch14;
 return "Xx";
 }, "~B");
 Clazz.defineMethod (c$, "conect", 
 ($fz = function () {
 if (this.sbConect == null) {
-this.sbConect =  new javax.util.StringXBuilder ();
-this.sb =  new javax.util.StringXBuilder ();
+this.sbConect =  new org.jmol.util.StringXBuilder ();
+this.sb =  new org.jmol.util.StringXBuilder ();
 } else {
 this.sb.setLength (0);
 }var sourceSerial = -1;
 sourceSerial = this.parseIntRange (this.line, 6, 11);
-if (sourceSerial < 0) return ;
+if (sourceSerial < 0) return;
 for (var i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
 var offset = i * 5 + 11;
 var offsetEnd = offset + 5;
 var targetSerial = (offsetEnd <= this.lineLength ? this.parseIntRange (this.line, offset, offsetEnd) : -1);
-if (targetSerial < 0) continue ;var isDoubleBond = (sourceSerial == this.lastSourceSerial && targetSerial == this.lastTargetSerial);
+if (targetSerial < 0) continue;
+var isDoubleBond = (sourceSerial == this.lastSourceSerial && targetSerial == this.lastTargetSerial);
 if (isDoubleBond) this.haveDoubleBonds = true;
 this.lastSourceSerial = sourceSerial;
 this.lastTargetSerial = targetSerial;
@@ -514,9 +520,11 @@ targetSerial = sourceSerial;
 } else {
 i1 = sourceSerial;
 }var st = ";" + i1 + " " + targetSerial + ";";
-if (this.sbConect.indexOf (st) >= 0 && !isDoubleBond) continue ;if (this.haveDoubleBonds) {
+if (this.sbConect.indexOf (st) >= 0 && !isDoubleBond) continue;
+if (this.haveDoubleBonds) {
 var st1 = "--" + st;
-if (this.sbConect.indexOf (st1) >= 0) continue ;this.sbConect.append (st);
+if (this.sbConect.indexOf (st1) >= 0) continue;
+this.sbConect.append (st);
 this.sb.append (st1);
 } else {
 this.sbConect.append (st);
@@ -553,8 +561,8 @@ startChainIDIndex = 19;
 startIndex = 20;
 endChainIDIndex = 30;
 endIndex = 31;
-} else return ;
-if (this.lineLength < endIndex + 4) return ;
+} else return;
+if (this.lineLength < endIndex + 4) return;
 var structureID = this.line.substring (11, 15).trim ();
 var serialID = this.parseIntStr (this.line.substring (7, 10));
 var startChainID = this.line.charAt (startChainIDIndex);
@@ -623,14 +631,15 @@ var formula = org.jmol.adapter.smarter.AtomSetCollectionReader.parseTrimmedRange
 var ichLeftParen = formula.indexOf ('(');
 if (ichLeftParen >= 0) {
 var ichRightParen = formula.indexOf (')');
-if (ichRightParen < 0 || ichLeftParen >= ichRightParen || ichLeftParen + 1 == ichRightParen) return ;
+if (ichRightParen < 0 || ichLeftParen >= ichRightParen || ichLeftParen + 1 == ichRightParen) return;
 formula = org.jmol.adapter.smarter.AtomSetCollectionReader.parseTrimmedRange (formula, ichLeftParen + 1, ichRightParen);
 }var htElementsInGroup = this.htFormul.get (groupName);
 if (htElementsInGroup == null) this.htFormul.put (groupName, htElementsInGroup =  new java.util.Hashtable ());
 this.next[0] = 0;
 var elementWithCount;
 while ((elementWithCount = this.parseTokenNext (formula)) != null) {
-if (elementWithCount.length < 2) continue ;var chFirst = elementWithCount.charAt (0);
+if (elementWithCount.length < 2) continue;
+var chFirst = elementWithCount.charAt (0);
 var chSecond = elementWithCount.charAt (1);
 if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFirst, chSecond)) htElementsInGroup.put ("" + chFirst + chSecond, Boolean.TRUE);
  else if (org.jmol.adapter.smarter.Atom.isValidElementSymbol (chFirst)) htElementsInGroup.put ("" + chFirst, Boolean.TRUE);
@@ -639,12 +648,12 @@ if (org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFirst
 Clazz.defineMethod (c$, "het", 
 ($fz = function () {
 if (this.line.length < 30) {
-return ;
+return;
 }if (this.htHetero == null) {
 this.htHetero =  new java.util.Hashtable ();
 }var groupName = this.parseTokenRange (this.line, 7, 10);
 if (this.htHetero.containsKey (groupName)) {
-return ;
+return;
 }var hetName = org.jmol.adapter.smarter.AtomSetCollectionReader.parseTrimmedRange (this.line, 30, 70);
 this.htHetero.put (groupName, hetName);
 }, $fz.isPrivate = true, $fz));
@@ -656,7 +665,7 @@ this.htHetero =  new java.util.Hashtable ();
 var hetName = org.jmol.adapter.smarter.AtomSetCollectionReader.parseTrimmedRange (this.line, 15, 70);
 if (groupName == null) {
 org.jmol.util.Logger.error ("ERROR: HETNAM record does not contain a group name: " + this.line);
-return ;
+return;
 }var htName = this.htHetero.get (groupName);
 if (htName != null) {
 hetName = htName + hetName;
@@ -664,7 +673,7 @@ hetName = htName + hetName;
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "anisou", 
 ($fz = function () {
-var data =  Clazz.newArray (8, 0);
+var data =  Clazz.newFloatArray (8, 0);
 data[6] = 1;
 var serial = this.parseIntRange (this.line, 6, 11);
 var index;
@@ -675,14 +684,14 @@ if (!this.haveMappedSerials) this.atomSetCollection.createAtomSerialMap ();
 index = this.atomSetCollection.getAtomIndexFromSerial (serial);
 this.haveMappedSerials = true;
 }if (index < 0) {
-return ;
+return;
 }var atom = this.atomSetCollection.getAtom (index);
 for (var i = 28, pt = 0; i < 70; i += 7, pt++) data[pt] = this.parseFloatRange (this.line, i, i + 7);
 
 for (var i = 0; i < 6; i++) {
 if (Float.isNaN (data[i])) {
 org.jmol.util.Logger.error ("Bad ANISOU record: " + this.line);
-return ;
+return;
 }data[i] /= 10000;
 }
 this.atomSetCollection.setAnisoBorU (atom, data, 12);
@@ -726,7 +735,8 @@ var remark = this.line.substring (0, 11);
 while (this.readLine () != null && this.line.startsWith (remark)) {
 try {
 var tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line.substring (10).$replace (':', ' '));
-if (tokens.length < 2) continue ;org.jmol.util.Logger.info (this.line);
+if (tokens.length < 2) continue;
+org.jmol.util.Logger.info (this.line);
 if (tokens[1].equalsIgnoreCase ("GROUP")) {
 tlsGroup =  new java.util.Hashtable ();
 ranges =  new java.util.ArrayList ();
@@ -762,7 +772,7 @@ chain1 = this.line.charAt (fromC);
 chain2 = this.line.charAt (toC);
 res1 = this.parseIntStr (this.line.substring (fromC + 1, toC));
 res2 = this.parseIntStr (this.line.substring (toC + 1));
-}if (chain1.charCodeAt (0) == chain2.charCodeAt (0)) {
+}if (chain1 == chain2) {
 range.put ("chains", "" + chain1 + chain2);
 if (res1 <= res2) {
 range.put ("residues", [res1, res2]);
@@ -772,18 +782,20 @@ this.tlsAddError (" TLS group residues are not in order (range ignored)");
 }} else {
 this.tlsAddError (" TLS group chains are different (range ignored)");
 }} else if (tokens[0].equalsIgnoreCase ("SELECTION")) {
-var chain = '\0';
+var chain = '\u0000';
 for (var i = 1; i < tokens.length; i++) {
 if (tokens[i].toUpperCase ().indexOf ("CHAIN") >= 0) {
 chain = tokens[++i].charAt (0);
-continue ;}var resno = this.parseIntStr (tokens[i]);
-if (resno == -2147483648) continue ;range =  new java.util.Hashtable ();
+continue;
+}var resno = this.parseIntStr (tokens[i]);
+if (resno == -2147483648) continue;
+range =  new java.util.Hashtable ();
 range.put ("residues", [resno, this.parseIntStr (tokens[++i])]);
-if (chain.charCodeAt (0) != 0) range.put ("chains", "" + chain + chain);
+if (chain != '\0') range.put ("chains", "" + chain + chain);
 ranges.add (range);
 }
 } else if (tokens[0].equalsIgnoreCase ("ORIGIN")) {
-var origin =  new javax.vecmath.Point3f ();
+var origin =  new org.jmol.util.Point3f ();
 tlsGroup.put ("origin", origin);
 if (tokens.length == 8) {
 origin.set (this.parseFloatStr (tokens[5]), this.parseFloatStr (tokens[6]), this.parseFloatStr (tokens[7]));
@@ -797,26 +809,26 @@ this.tlsAddError ("invalid origin: " + this.line);
 var tensorType = tokens[0].charAt (0);
 var s = (this.readLine ().substring (10) + this.readLine ().substring (10) + this.readLine ().substring (10)).$replace (tensorType, ' ').$replace (':', ' ');
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (s);
-var tensor =  Clazz.newArray (3, 3, 0);
+var tensor =  Clazz.newFloatArray (3, 3, 0);
 tlsGroup.put ("t" + tensorType, tensor);
 for (var i = 0; i < tokens.length; i++) {
-var ti = (tokens[i].charAt (0)).charCodeAt (0) - 49;
-var tj = (tokens[i].charAt (1)).charCodeAt (0) - 49;
+var ti = tokens[i].charCodeAt (0) - 49;
+var tj = tokens[i].charCodeAt (1) - 49;
 tensor[ti][tj] = this.parseFloatStr (tokens[++i]);
 if (ti < tj) tensor[tj][ti] = tensor[ti][tj];
 }
 for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) if (Float.isNaN (tensor[i][j])) {
-this.tlsAddError ("invalid tensor: " + org.jmol.util.Escape.escapeArray (tensor));
+this.tlsAddError ("invalid tensor: " + org.jmol.util.Escape.escapeFloatAA (tensor, false));
 }
 
-if (tensorType.charCodeAt (0) == 83 && ++iGroup == nGroups) {
+if (tensorType == 'S' && ++iGroup == nGroups) {
 org.jmol.util.Logger.info (nGroups + " TLS groups read");
 this.readLine ();
 break;
 }}} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 org.jmol.util.Logger.error (this.line + "\nError in TLS parser: ");
-e.printStackTrace ();
+System.out.println (e.getMessage ());
 tlsGroups = null;
 break;
 } else {
@@ -841,7 +853,7 @@ org.jmol.util.Logger.info ("TLS model " + (iModel + 1) + " set " + (iGroup + 1))
 var tlsGroupInfo = this.vTlsModels.get (iGroup);
 var groups = tlsGroupInfo.get ("groups");
 var index0 = this.atomSetCollection.getAtomSetAtomIndex (iModel);
-var data =  Clazz.newArray (this.atomSetCollection.getAtomSetAtomCount (iModel), 0);
+var data =  Clazz.newIntArray (this.atomSetCollection.getAtomSetAtomCount (iModel), 0);
 var indexMax = index0 + data.length;
 var atoms = this.atomSetCollection.getAtoms ();
 var nGroups = groups.size ();
@@ -860,18 +872,18 @@ var index1 = this.findAtomForRange (index0, indexMax, chain0, res0, false);
 var index2 = (index1 >= 0 ? this.findAtomForRange (index1, indexMax, chain1, res1, false) : -1);
 if (index2 < 0) {
 org.jmol.util.Logger.info ("TLS processing terminated");
-return ;
+return;
 }org.jmol.util.Logger.info ("TLS ID=" + this.tlsGroupID + " model atom index range " + index1 + "-" + index2);
-var isSameChain = (chain0.charCodeAt (0) == chain1.charCodeAt (0));
+var isSameChain = (chain0 == chain1);
 for (var iAtom = index0; iAtom < indexMax; iAtom++) {
 var atom = atoms[iAtom];
-if (isSameChain ? atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1 : atom.chainID.charCodeAt (0) > chain0.charCodeAt (0) && atom.chainID.charCodeAt (0) < chain1.charCodeAt (0) || atom.chainID.charCodeAt (0) == chain0.charCodeAt (0) && atom.sequenceNumber >= res0 || atom.chainID.charCodeAt (0) == chain1.charCodeAt (0) && atom.sequenceNumber <= res1) {
+if (isSameChain ? atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1 : atom.chainID > chain0 && atom.chainID < chain1 || atom.chainID == chain0 && atom.sequenceNumber >= res0 || atom.chainID == chain1 && atom.sequenceNumber <= res1) {
 data[iAtom - index0] = this.tlsGroupID;
 this.setTlsEllipsoid (atom, group, symmetry);
 }}
 }
 }
-var sdata =  new javax.util.StringXBuilder ();
+var sdata =  new org.jmol.util.StringXBuilder ();
 for (var i = 0; i < data.length; i++) sdata.appendI (data[i]).appendC ('\n');
 
 this.atomSetCollection.setAtomSetAtomProperty ("tlsGroup", sdata.toString (), iModel);
@@ -888,7 +900,7 @@ Clazz.defineMethod (c$, "findAtom",
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = atom1; i < atom2; i++) {
 var atom = atoms[i];
-if ((atom.chainID.charCodeAt (0) == chain.charCodeAt (0) && atom.sequenceNumber == resno) == isTrue) return i;
+if ((atom.chainID == chain && atom.sequenceNumber == resno) == isTrue) return i;
 }
 if (isTrue) {
 org.jmol.util.Logger.warn ("PdbReader findAtom chain=" + chain + " resno=" + resno + " not found");
@@ -898,11 +910,11 @@ this.tlsAddError ("atom not found: chain=" + chain + " resno=" + resno);
 Clazz.defineMethod (c$, "setTlsEllipsoid", 
 ($fz = function (atom, group, symmetry) {
 var origin = group.get ("origin");
-if (Float.isNaN (origin.x)) return ;
+if (Float.isNaN (origin.x)) return;
 var T = group.get ("tT");
 var L = group.get ("tL");
 var S = group.get ("tS");
-if (T == null || L == null || S == null) return ;
+if (T == null || L == null || S == null) return;
 var x = (atom.x - origin.x) * 0.017453292;
 var y = (atom.y - origin.y) * 0.017453292;
 var z = (atom.z - origin.z) * 0.017453292;
@@ -919,7 +931,7 @@ this.dataT[3] = T[0][1];
 this.dataT[4] = T[0][2];
 this.dataT[5] = T[1][2];
 this.dataT[6] = 12;
-var anisou =  Clazz.newArray (8, 0);
+var anisou =  Clazz.newFloatArray (8, 0);
 var bresidual = (Float.isNaN (atom.bfactor) ? 0 : atom.bfactor / 78.95683);
 anisou[0] = this.dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2] * yz + 2 * S[1][0] * z - 2 * S[2][0] * y;
 anisou[1] = this.dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0] * xz - 2 * S[0][1] * z + 2 * S[2][1] * x;
@@ -936,7 +948,7 @@ atom.ellipsoid = [null, null, symmetry.getEllipsoid (this.dataT)];
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,java.util.Map,org.jmol.api.SymmetryInterface");
 Clazz.defineMethod (c$, "tlsAddError", 
 ($fz = function (error) {
-if (this.sbTlsErrors == null) this.sbTlsErrors =  new javax.util.StringXBuilder ();
+if (this.sbTlsErrors == null) this.sbTlsErrors =  new org.jmol.util.StringXBuilder ();
 this.sbTlsErrors.append (this.fileName).appendC ('\t').append ("TLS group ").appendI (this.tlsGroupID).appendC ('\t').append (error).appendC ('\n');
 }, $fz.isPrivate = true, $fz), "~S");
 c$.fixRadius = Clazz.defineMethod (c$, "fixRadius", 

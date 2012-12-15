@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.awtjs");
+Clazz.declarePackage ("org.jmol.awtjs");
 c$ = Clazz.declareType (org.jmol.awtjs, "Font");
 c$.newFont = Clazz.defineMethod (c$, "newFont", 
 function (fontFace, isBold, isItalic, fontSize) {
@@ -17,6 +17,6 @@ function (fontMetrics) {
 return 0;
 }, "~O");
 c$.stringWidth = Clazz.defineMethod (c$, "stringWidth", 
-function (fontMetrics, text) {
+function (font, fontMetrics, text) {
 return 0;
-}, "~O,~S");
+}, "org.jmol.util.JmolFont,~O,~S");

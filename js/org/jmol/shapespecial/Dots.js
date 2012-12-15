@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shapespecial");
-Clazz.load (["org.jmol.shape.AtomShape", "javax.util.BitSet", "org.jmol.atomdata.RadiusData"], "org.jmol.shapespecial.Dots", ["java.util.Hashtable", "javax.util.StringXBuilder", "javax.vecmath.Matrix3f", "org.jmol.constant.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger"], function () {
+Clazz.declarePackage ("org.jmol.shapespecial");
+Clazz.load (["org.jmol.shape.AtomShape", "org.jmol.atomdata.RadiusData", "org.jmol.util.BitSet"], "org.jmol.shapespecial.Dots", ["java.util.Hashtable", "org.jmol.constant.EnumVdw", "org.jmol.geodesic.EnvelopeCalculation", "org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger", "$.Matrix3f", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ec = null;
 this.isSurface = false;
@@ -13,7 +13,7 @@ this.rdLast = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shapespecial, "Dots", org.jmol.shape.AtomShape);
 Clazz.prepareFields (c$, function () {
-this.bsOn =  new javax.util.BitSet ();
+this.bsOn =  new org.jmol.util.BitSet ();
 this.rdLast =  new org.jmol.atomdata.RadiusData (null, 0, null, null);
 });
 Clazz.defineMethod (c$, "initShape", 
@@ -24,44 +24,44 @@ this.ec =  new org.jmol.geodesic.EnvelopeCalculation (this.viewer, this.atomCoun
 });
 Clazz.defineMethod (c$, "getSize", 
 function (atomIndex) {
-return (this.mads == null ? Math.round ((this.ec.getRadius (atomIndex) * 2000)) : this.mads[atomIndex] * 2);
+return (this.mads == null ? Clazz.doubleToInt (Math.floor (this.ec.getRadius (atomIndex) * 2000)) : this.mads[atomIndex] * 2);
 }, "~N");
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
 if ("init" === propertyName) {
 this.initialize ();
-return ;
+return;
 }if ("translucency" === propertyName) {
-if (!this.translucentAllowed) return ;
+if (!this.translucentAllowed) return;
 }if ("ignore" === propertyName) {
 this.bsIgnore = value;
-return ;
+return;
 }if ("select" === propertyName) {
 this.bsSelected = value;
-return ;
+return;
 }if ("radius" === propertyName) {
 this.thisRadius = (value).floatValue ();
 if (this.thisRadius > 16) this.thisRadius = 16;
-return ;
+return;
 }if ("colorRGB" === propertyName) {
 this.thisArgb = (value).intValue ();
-return ;
+return;
 }if ("atom" === propertyName) {
 this.thisAtom = (value).intValue ();
-if (this.thisAtom >= this.atoms.length) return ;
+if (this.thisAtom >= this.atoms.length) return;
 this.atoms[this.thisAtom].setShapeVisibility (this.myVisibilityFlag, true);
 this.ec.allocDotsConvexMaps (this.atomCount);
-return ;
+return;
 }if ("dots" === propertyName) {
-if (this.thisAtom >= this.atoms.length) return ;
+if (this.thisAtom >= this.atoms.length) return;
 this.isActive = true;
 this.ec.setFromBits (this.thisAtom, value);
 this.atoms[this.thisAtom].setShapeVisibility (this.myVisibilityFlag, true);
 if (this.mads == null) {
 this.ec.setMads (null);
-this.mads =  Clazz.newArray (this.atomCount, 0);
+this.mads =  Clazz.newShortArray (this.atomCount, 0);
 for (var i = 0; i < this.atomCount; i++) if (this.atoms[i].isInFrame () && this.atoms[i].isShapeVisible (this.myVisibilityFlag)) try {
-this.mads[i] = Math.round ((this.ec.getAppropriateRadius (i) * 1000));
+this.mads[i] = Clazz.floatToShort (this.ec.getAppropriateRadius (i) * 1000);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -70,28 +70,28 @@ throw e;
 }
 
 this.ec.setMads (this.mads);
-}this.mads[this.thisAtom] = Math.round ((this.thisRadius * 1000));
+}this.mads[this.thisAtom] = Clazz.floatToShort (this.thisRadius * 1000);
 if (this.colixes == null) {
-this.colixes =  Clazz.newArray (this.atomCount, 0);
-this.paletteIDs =  Clazz.newArray (this.atomCount, 0);
+this.colixes =  Clazz.newShortArray (this.atomCount, 0);
+this.paletteIDs =  Clazz.newByteArray (this.atomCount, 0);
 }this.colixes[this.thisAtom] = org.jmol.util.Colix.getColix (this.thisArgb);
 this.bsOn.set (this.thisAtom);
-return ;
+return;
 }if ("refreshTrajectories" === propertyName) {
 bs = (value)[1];
 var m4 = (value)[2];
-if (m4 == null) return ;
-var m =  new javax.vecmath.Matrix3f ();
+if (m4 == null) return;
+var m =  new org.jmol.util.Matrix3f ();
 m4.getRotationScale (m);
 this.ec.reCalculate (bs, m);
-return ;
+return;
 }if (propertyName === "deleteModelAtoms") {
 var firstAtomDeleted = ((value)[2])[1];
 var nAtomsDeleted = ((value)[2])[2];
 org.jmol.util.BitSetUtil.deleteBits (this.bsOn, bs);
 this.ec.deleteAtoms (firstAtomDeleted, nAtomsDeleted);
 }Clazz.superCall (this, org.jmol.shapespecial.Dots, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "initialize", 
 function () {
 this.bsSelected = null;
@@ -145,7 +145,7 @@ for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit (i + 1))) th
 }for (var i = this.atomCount; --i >= 0; ) {
 this.atoms[i].setShapeVisibility (this.myVisibilityFlag, this.bsOn.get (i));
 }
-if (!isVisible) return ;
+if (!isVisible) return;
 if (newSet) {
 this.mads = null;
 this.ec.newSet ();
@@ -155,28 +155,30 @@ for (var i = this.atomCount; --i >= 0; ) if (this.bsOn.get (i)) {
 dotsConvexMaps[i] = null;
 }
 }if (dotsConvexMaps == null) {
-this.colixes =  Clazz.newArray (this.atomCount, 0);
-this.paletteIDs =  Clazz.newArray (this.atomCount, 0);
+this.colixes =  Clazz.newShortArray (this.atomCount, 0);
+this.paletteIDs =  Clazz.newByteArray (this.atomCount, 0);
 }this.ec.calculate (rd, maxRadius, this.bsOn, this.bsIgnore, !this.viewer.getDotSurfaceFlag (), this.viewer.getDotsSelectedOnlyFlag (), this.isSurface, true);
 this.rdLast = rd;
-}, "org.jmol.atomdata.RadiusData,javax.util.BitSet");
+}, "org.jmol.atomdata.RadiusData,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "setModelClickability", 
 function () {
 for (var i = this.atomCount; --i >= 0; ) {
 var atom = this.atoms[i];
-if ((atom.getShapeVisibilityFlags () & this.myVisibilityFlag) == 0 || this.modelSet.isAtomHidden (i)) continue ;atom.setClickable (this.myVisibilityFlag);
+if ((atom.getShapeVisibilityFlags () & this.myVisibilityFlag) == 0 || this.modelSet.isAtomHidden (i)) continue;
+atom.setClickable (this.myVisibilityFlag);
 }
 });
 Clazz.overrideMethod (c$, "getShapeState", 
 function () {
 var dotsConvexMaps = this.ec.getDotsConvexMaps ();
 if (dotsConvexMaps == null || this.ec.getDotsConvexMax () == 0) return "";
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 var temp =  new java.util.Hashtable ();
 var atomCount = this.viewer.getAtomCount ();
 var type = (this.isSurface ? "geoSurface " : "dots ");
 for (var i = 0; i < atomCount; i++) {
-if (!this.bsOn.get (i) || dotsConvexMaps[i] == null) continue ;if (this.bsColixSet != null && this.bsColixSet.get (i)) org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommand (type, this.paletteIDs[i], this.colixes[i]));
+if (!this.bsOn.get (i) || dotsConvexMaps[i] == null) continue;
+if (this.bsColixSet != null && this.bsColixSet.get (i)) org.jmol.shape.Shape.setStateInfo (temp, i, this.getColorCommand (type, this.paletteIDs[i], this.colixes[i]));
 var bs = dotsConvexMaps[i];
 if (!bs.isEmpty ()) {
 var r = this.ec.getAppropriateRadius (i);

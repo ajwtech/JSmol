@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.Measure", ["java.lang.Float", "java.util.ArrayList", "javax.vecmath.Point3f", "$.Point4f", "$.Vector3f", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Quaternion", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.Measure", ["java.lang.Float", "java.util.ArrayList", "org.jmol.util.Eigen", "$.Escape", "$.Logger", "$.Point3f", "$.Point4f", "$.Quaternion", "$.Vector3f", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.declareType (org.jmol.util, "Measure");
 c$.computeAngle = Clazz.defineMethod (c$, "computeAngle", 
 function (pointA, pointB, pointC, vectorBA, vectorBC, asDegrees) {
@@ -7,13 +7,13 @@ vectorBA.sub2 (pointA, pointB);
 vectorBC.sub2 (pointC, pointB);
 var angle = vectorBA.angle (vectorBC);
 return (asDegrees ? angle / 0.017453292 : angle);
-}, "javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~B");
+}, "org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,~B");
 c$.computeAngleABC = Clazz.defineMethod (c$, "computeAngleABC", 
 function (pointA, pointB, pointC, asDegrees) {
-var vectorBA =  new javax.vecmath.Vector3f ();
-var vectorBC =  new javax.vecmath.Vector3f ();
+var vectorBA =  new org.jmol.util.Vector3f ();
+var vectorBC =  new org.jmol.util.Vector3f ();
 return org.jmol.util.Measure.computeAngle (pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
-}, "javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,~B");
+}, "org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,~B");
 c$.computeTorsion = Clazz.defineMethod (c$, "computeTorsion", 
 function (p1, p2, p3, p4, asDegrees) {
 var ijx = p1.x - p2.x;
@@ -47,10 +47,10 @@ var dot = ijx * cx + ijy * cy + ijz * cz;
 var absDot = Math.abs (dot);
 torsion = (dot / absDot > 0) ? torsion : -torsion;
 return (asDegrees ? torsion / 0.017453292 : torsion);
-}, "javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,javax.vecmath.Tuple3f,~B");
+}, "org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,org.jmol.util.Tuple3f,~B");
 c$.computeHelicalAxis = Clazz.defineMethod (c$, "computeHelicalAxis", 
 function (id, tokType, a, b, dq) {
-var vab =  new javax.vecmath.Vector3f ();
+var vab =  new org.jmol.util.Vector3f ();
 vab.sub2 (b, a);
 var theta = dq.getTheta ();
 var n = dq.getNormal ();
@@ -59,25 +59,25 @@ if (Math.abs (v_dot_n) < 0.0001) v_dot_n = 0;
 if (tokType == 1073741854) {
 if (v_dot_n != 0) n.scale (v_dot_n);
 return n;
-}var va_prime_d =  new javax.vecmath.Vector3f ();
+}var va_prime_d =  new org.jmol.util.Vector3f ();
 va_prime_d.cross (vab, n);
 if (va_prime_d.dot (va_prime_d) != 0) va_prime_d.normalize ();
-var vda =  new javax.vecmath.Vector3f ();
-var vcb = javax.vecmath.Vector3f.newV (n);
+var vda =  new org.jmol.util.Vector3f ();
+var vcb = org.jmol.util.Vector3f.newV (n);
 if (v_dot_n == 0) v_dot_n = 1.4E-45;
 vcb.scale (v_dot_n);
 vda.sub2 (vcb, vab);
 vda.scale (0.5);
 va_prime_d.scale (theta == 0 ? 0 : (vda.length () / Math.tan (theta / 2 / 180 * 3.141592653589793)));
-var r = javax.vecmath.Vector3f.newV (va_prime_d);
+var r = org.jmol.util.Vector3f.newV (va_prime_d);
 if (theta != 0) r.add (vda);
 if (tokType == 1666189314) return r;
-var pt_a_prime = javax.vecmath.Point3f.newP (a);
+var pt_a_prime = org.jmol.util.Point3f.newP (a);
 pt_a_prime.sub (r);
 if (tokType == 135266320) {
 return pt_a_prime;
 }if (v_dot_n != 1.4E-45) n.scale (v_dot_n);
-var pt_b_prime = javax.vecmath.Point3f.newP (pt_a_prime);
+var pt_b_prime = org.jmol.util.Point3f.newP (pt_a_prime);
 pt_b_prime.add (n);
 theta = org.jmol.util.Measure.computeTorsion (a, pt_a_prime, pt_b_prime, b, true);
 if (Float.isNaN (theta) || r.length () < 0.0001) theta = dq.getThetaDirectedV (n);
@@ -88,46 +88,46 @@ var residuesPerTurn = Math.abs (theta == 0 ? 0 : 360 / theta);
 var pitch = Math.abs (v_dot_n == 1.4E-45 ? 0 : n.length () * (theta == 0 ? 1 : 360 / theta));
 switch (tokType) {
 case 135266306:
-return [pt_a_prime, n, r, javax.vecmath.Point3f.new3 (theta, pitch, residuesPerTurn)];
+return [pt_a_prime, n, r, org.jmol.util.Point3f.new3 (theta, pitch, residuesPerTurn)];
 case 1073742001:
-return [org.jmol.util.Escape.escapePt (pt_a_prime), org.jmol.util.Escape.escapePt (n), org.jmol.util.Escape.escapePt (r), org.jmol.util.Escape.escapePt (javax.vecmath.Point3f.new3 (theta, pitch, residuesPerTurn))];
+return [org.jmol.util.Escape.escapePt (pt_a_prime), org.jmol.util.Escape.escapePt (n), org.jmol.util.Escape.escapePt (r), org.jmol.util.Escape.escapePt (org.jmol.util.Point3f.new3 (theta, pitch, residuesPerTurn))];
 default:
 return null;
 }
-}, "~S,~N,javax.vecmath.Point3f,javax.vecmath.Point3f,org.jmol.util.Quaternion");
+}, "~S,~N,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Quaternion");
 c$.getPlaneThroughPoints = Clazz.defineMethod (c$, "getPlaneThroughPoints", 
 function (pointA, pointB, pointC, vNorm, vAB, vAC, plane) {
 var w = org.jmol.util.Measure.getNormalThroughPoints (pointA, pointB, pointC, vNorm, vAB, vAC);
 plane.set (vNorm.x, vNorm.y, vNorm.z, w);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Point4f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Point4f");
 c$.getPlaneThroughPoint = Clazz.defineMethod (c$, "getPlaneThroughPoint", 
 function (pt, normal, plane) {
-plane.set (normal.x, normal.y, normal.z, -normal.dot (javax.vecmath.Vector3f.newV (pt)));
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Point4f");
+plane.set (normal.x, normal.y, normal.z, -normal.dot (org.jmol.util.Vector3f.newV (pt)));
+}, "org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Point4f");
 c$.distanceToPlane = Clazz.defineMethod (c$, "distanceToPlane", 
 function (plane, pt) {
 return (plane == null ? NaN : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w) / Math.sqrt (plane.x * plane.x + plane.y * plane.y + plane.z * plane.z));
-}, "javax.vecmath.Point4f,javax.vecmath.Point3f");
+}, "org.jmol.util.Point4f,org.jmol.util.Point3f");
 c$.distanceToPlaneD = Clazz.defineMethod (c$, "distanceToPlaneD", 
 function (plane, d, pt) {
 return (plane == null ? NaN : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w) / d);
-}, "javax.vecmath.Point4f,~N,javax.vecmath.Point3f");
+}, "org.jmol.util.Point4f,~N,org.jmol.util.Point3f");
 c$.distanceToPlane = Clazz.defineMethod (c$, "distanceToPlane", 
 function (norm, w, pt) {
 return (norm == null ? NaN : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w) / Math.sqrt (norm.x * norm.x + norm.y * norm.y + norm.z * norm.z));
-}, "javax.vecmath.Vector3f,~N,javax.vecmath.Point3f");
+}, "org.jmol.util.Vector3f,~N,org.jmol.util.Point3f");
 c$.calcNormalizedNormal = Clazz.defineMethod (c$, "calcNormalizedNormal", 
 function (pointA, pointB, pointC, vNormNorm, vAB, vAC) {
 vAB.sub2 (pointB, pointA);
 vAC.sub2 (pointC, pointA);
 vNormNorm.cross (vAB, vAC);
 vNormNorm.normalize ();
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 c$.getDirectedNormalThroughPoints = Clazz.defineMethod (c$, "getDirectedNormalThroughPoints", 
 function (pointA, pointB, pointC, ptRef, vNorm, vAB, vAC) {
 var nd = org.jmol.util.Measure.getNormalThroughPoints (pointA, pointB, pointC, vNorm, vAB, vAC);
 if (ptRef != null) {
-var pt0 = javax.vecmath.Point3f.newP (pointA);
+var pt0 = org.jmol.util.Point3f.newP (pointA);
 pt0.add (vNorm);
 var d = pt0.distance (ptRef);
 pt0.setT (pointA);
@@ -136,13 +136,13 @@ if (d > pt0.distance (ptRef)) {
 vNorm.scale (-1);
 nd = -nd;
 }}return nd;
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 c$.getNormalThroughPoints = Clazz.defineMethod (c$, "getNormalThroughPoints", 
 function (pointA, pointB, pointC, vNorm, vAB, vAC) {
 org.jmol.util.Measure.calcNormalizedNormal (pointA, pointB, pointC, vNorm, vAB, vAC);
 vAB.setT (pointA);
 return -vAB.dot (vNorm);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 c$.getPlaneProjection = Clazz.defineMethod (c$, "getPlaneProjection", 
 function (pt, plane, ptProj, vNorm) {
 var dist = org.jmol.util.Measure.distanceToPlane (plane, pt);
@@ -151,30 +151,30 @@ vNorm.normalize ();
 vNorm.scale (-dist);
 ptProj.setT (pt);
 ptProj.add (vNorm);
-}, "javax.vecmath.Point3f,javax.vecmath.Point4f,javax.vecmath.Point3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point4f,org.jmol.util.Point3f,org.jmol.util.Vector3f");
 c$.getNormalFromCenter = Clazz.defineMethod (c$, "getNormalFromCenter", 
 function (ptCenter, ptA, ptB, ptC, isOutward, normal) {
-var vAB =  new javax.vecmath.Vector3f ();
-var vAC =  new javax.vecmath.Vector3f ();
+var vAB =  new org.jmol.util.Vector3f ();
+var vAC =  new org.jmol.util.Vector3f ();
 var d = org.jmol.util.Measure.getNormalThroughPoints (ptA, ptB, ptC, normal, vAB, vAC);
 var isReversed = (org.jmol.util.Measure.distanceToPlane (normal, d, ptCenter) > 0);
 if (isReversed == isOutward) normal.scale (-1.0);
 return !isReversed;
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,~B,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,~B,org.jmol.util.Vector3f");
 c$.getNormalToLine = Clazz.defineMethod (c$, "getNormalToLine", 
 function (pointA, pointB, vNormNorm) {
 vNormNorm.sub2 (pointA, pointB);
 vNormNorm.cross (vNormNorm, org.jmol.viewer.JmolConstants.axisY);
 vNormNorm.normalize ();
 if (Float.isNaN (vNormNorm.x)) vNormNorm.set (1, 0, 0);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f");
 c$.getBisectingPlane = Clazz.defineMethod (c$, "getBisectingPlane", 
 function (pointA, vAB, ptTemp, vTemp, plane) {
 ptTemp.scaleAdd2 (0.5, vAB, pointA);
 vTemp.setT (vAB);
 vTemp.normalize ();
 org.jmol.util.Measure.getPlaneThroughPoint (ptTemp, vTemp, plane);
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Point4f");
+}, "org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Point4f");
 c$.projectOntoAxis = Clazz.defineMethod (c$, "projectOntoAxis", 
 function (point, axisA, axisUnitVector, vectorProjection) {
 vectorProjection.sub2 (point, axisA);
@@ -182,7 +182,7 @@ var projectedLength = vectorProjection.dot (axisUnitVector);
 point.setT (axisUnitVector);
 point.scaleAdd (projectedLength, axisA);
 vectorProjection.sub2 (point, axisA);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 c$.calcBestAxisThroughPoints = Clazz.defineMethod (c$, "calcBestAxisThroughPoints", 
 function (points, axisA, axisUnitVector, vectorProjection, nTriesMax) {
 var nPoints = points.length;
@@ -193,17 +193,17 @@ org.jmol.util.Measure.calcAveragePointN (points, nPoints, axisA);
 var nTries = 0;
 while (nTries++ < nTriesMax && org.jmol.util.Measure.findAxis (points, nPoints, axisA, axisUnitVector, vectorProjection) > 0.001) {
 }
-var tempA = javax.vecmath.Point3f.newP (points[0]);
+var tempA = org.jmol.util.Point3f.newP (points[0]);
 org.jmol.util.Measure.projectOntoAxis (tempA, axisA, axisUnitVector, vectorProjection);
 axisA.setT (tempA);
-}, "~A,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~N");
+}, "~A,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,~N");
 c$.findAxis = Clazz.defineMethod (c$, "findAxis", 
 function (points, nPoints, axisA, axisUnitVector, vectorProjection) {
-var sumXiYi =  new javax.vecmath.Vector3f ();
-var vTemp =  new javax.vecmath.Vector3f ();
-var pt =  new javax.vecmath.Point3f ();
-var ptProj =  new javax.vecmath.Point3f ();
-var a = javax.vecmath.Vector3f.newV (axisUnitVector);
+var sumXiYi =  new org.jmol.util.Vector3f ();
+var vTemp =  new org.jmol.util.Vector3f ();
+var pt =  new org.jmol.util.Point3f ();
+var ptProj =  new org.jmol.util.Point3f ();
+var a = org.jmol.util.Vector3f.newV (axisUnitVector);
 var sum_Xi2 = 0;
 var sum_Yi2 = 0;
 for (var i = nPoints; --i >= 0; ) {
@@ -216,7 +216,7 @@ vTemp.cross (vectorProjection, vTemp);
 sumXiYi.add (vTemp);
 sum_Xi2 += vectorProjection.lengthSquared ();
 }
-var m = javax.vecmath.Vector3f.newV (sumXiYi);
+var m = org.jmol.util.Vector3f.newV (sumXiYi);
 m.scale (1 / sum_Xi2);
 vTemp.cross (m, axisUnitVector);
 axisUnitVector.add (vTemp);
@@ -224,23 +224,23 @@ axisUnitVector.normalize ();
 vTemp.setT (axisUnitVector);
 vTemp.sub (a);
 return vTemp.length ();
-}, "~A,~N,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "~A,~N,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 c$.calcAveragePoint = Clazz.defineMethod (c$, "calcAveragePoint", 
 function (pointA, pointB, pointC) {
 pointC.set ((pointA.x + pointB.x) / 2, (pointA.y + pointB.y) / 2, (pointA.z + pointB.z) / 2);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f");
 c$.calcAveragePointN = Clazz.defineMethod (c$, "calcAveragePointN", 
 function (points, nPoints, averagePoint) {
 averagePoint.setT (points[0]);
 for (var i = 1; i < nPoints; i++) averagePoint.add (points[i]);
 
 averagePoint.scale (1 / nPoints);
-}, "~A,~N,javax.vecmath.Point3f");
+}, "~A,~N,org.jmol.util.Point3f");
 c$.getCenterAndPoints = Clazz.defineMethod (c$, "getCenterAndPoints", 
 function (vPts) {
 var n = vPts.size ();
 var pts =  new Array (n + 1);
-pts[0] =  new javax.vecmath.Point3f ();
+pts[0] =  new org.jmol.util.Point3f ();
 if (n > 0) {
 for (var i = 0; i < n; i++) {
 pts[0].add (pts[i + 1] = vPts.get (i));
@@ -252,14 +252,14 @@ c$.getTransformMatrix4 = Clazz.defineMethod (c$, "getTransformMatrix4",
 function (ptsA, ptsB, m, centerA) {
 var cptsA = org.jmol.util.Measure.getCenterAndPoints (ptsA);
 var cptsB = org.jmol.util.Measure.getCenterAndPoints (ptsB);
-var retStddev =  Clazz.newArray (2, 0);
+var retStddev =  Clazz.newFloatArray (2, 0);
 var q = org.jmol.util.Measure.calculateQuaternionRotation ([cptsA, cptsB], retStddev, false);
-var v = javax.vecmath.Vector3f.newV (cptsB[0]);
+var v = org.jmol.util.Vector3f.newV (cptsB[0]);
 v.sub (cptsA[0]);
 m.setMV (q.getMatrix (), v);
 if (centerA != null) centerA.setT (cptsA[0]);
 return retStddev[1];
-}, "java.util.List,java.util.List,javax.vecmath.Matrix4f,javax.vecmath.Point3f");
+}, "java.util.List,java.util.List,org.jmol.util.Matrix4f,org.jmol.util.Point3f");
 c$.calculateQuaternionRotation = Clazz.defineMethod (c$, "calculateQuaternionRotation", 
 function (centerAndPoints, retStddev, doReport) {
 retStddev[1] = NaN;
@@ -285,9 +285,9 @@ var Szz = 0;
 for (var i = n + 1; --i >= 1; ) {
 var aij = centerAndPoints[0][i];
 var bij = centerAndPoints[1][i];
-var ptA = javax.vecmath.Point3f.newP (aij);
+var ptA = org.jmol.util.Point3f.newP (aij);
 ptA.sub (centerAndPoints[0][0]);
-var ptB = javax.vecmath.Point3f.newP (bij);
+var ptB = org.jmol.util.Point3f.newP (bij);
 ptB.sub (centerAndPoints[0][1]);
 Sxx += ptA.x * ptB.x;
 Sxy += ptA.x * ptB.y;
@@ -300,7 +300,7 @@ Szy += ptA.z * ptB.y;
 Szz += ptA.z * ptB.z;
 }
 retStddev[0] = org.jmol.util.Measure.getRmsd (centerAndPoints, q);
-var N =  Clazz.newArray (4, 4, 0);
+var N =  Clazz.newDoubleArray (4, 4, 0);
 N[0][0] = Sxx + Syy + Szz;
 N[0][1] = N[1][0] = Syz - Szy;
 N[0][2] = N[2][0] = Szx - Sxz;
@@ -313,7 +313,7 @@ N[2][3] = N[3][2] = Syz + Szy;
 N[3][3] = -Sxx - Syy + Szz;
 var eigen = org.jmol.util.Eigen.newM (N);
 var v = eigen.getEigenvectorsFloatTransposed ()[3];
-q = org.jmol.util.Quaternion.newP4 (javax.vecmath.Point4f.new4 (v[1], v[2], v[3], v[0]));
+q = org.jmol.util.Quaternion.newP4 (org.jmol.util.Point4f.new4 (v[1], v[2], v[3], v[0]));
 retStddev[1] = org.jmol.util.Measure.getRmsd (centerAndPoints, q);
 return q;
 }, "~A,~A,~B");
@@ -322,7 +322,7 @@ function (centerAndPoints, q) {
 var sum = 0;
 var sum2 = 0;
 var n = centerAndPoints[0].length - 1;
-var ptAnew =  new javax.vecmath.Point3f ();
+var ptAnew =  new org.jmol.util.Point3f ();
 for (var i = n + 1; --i >= 1; ) {
 ptAnew.setT (centerAndPoints[0][i]);
 ptAnew.sub (centerAndPoints[0][0]);
@@ -338,14 +338,14 @@ c$.transformPoints = Clazz.defineMethod (c$, "transformPoints",
 function (vPts, m4, center) {
 var v =  new java.util.ArrayList ();
 for (var i = 0; i < vPts.size (); i++) {
-var pt = javax.vecmath.Point3f.newP (vPts.get (i));
+var pt = org.jmol.util.Point3f.newP (vPts.get (i));
 pt.sub (center);
 m4.transform2 (pt, pt);
 pt.add (center);
 v.add (pt);
 }
 return v;
-}, "java.util.List,javax.vecmath.Matrix4f,javax.vecmath.Point3f");
+}, "java.util.List,org.jmol.util.Matrix4f,org.jmol.util.Point3f");
 c$.isInTetrahedron = Clazz.defineMethod (c$, "isInTetrahedron", 
 function (pt, ptA, ptB, ptC, ptD, plane, vTemp, vTemp2, vTemp3, fullyEnclosed) {
 org.jmol.util.Measure.getPlaneThroughPoints (ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
@@ -359,7 +359,7 @@ var d = org.jmol.util.Measure.distanceToPlane (plane, pt);
 if (fullyEnclosed) return (b == (d >= 0));
 var d1 = org.jmol.util.Measure.distanceToPlane (plane, ptD);
 return d1 * d <= 0 || Math.abs (d1) > Math.abs (d);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point4f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f,~B");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point4f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f,~B");
 c$.getIntersectionPP = Clazz.defineMethod (c$, "getIntersectionPP", 
 function (plane1, plane2) {
 var a1 = plane1.x;
@@ -370,9 +370,9 @@ var a2 = plane2.x;
 var b2 = plane2.y;
 var c2 = plane2.z;
 var d2 = plane2.w;
-var norm1 = javax.vecmath.Vector3f.new3 (a1, b1, c1);
-var norm2 = javax.vecmath.Vector3f.new3 (a2, b2, c2);
-var nxn =  new javax.vecmath.Vector3f ();
+var norm1 = org.jmol.util.Vector3f.new3 (a1, b1, c1);
+var norm2 = org.jmol.util.Vector3f.new3 (a2, b2, c2);
+var nxn =  new org.jmol.util.Vector3f ();
 nxn.cross (norm1, norm2);
 var ax = Math.abs (nxn.x);
 var ay = Math.abs (nxn.y);
@@ -406,24 +406,24 @@ y = (a2 * d1 - d2 * a1) / diff;
 z = 0;
 }
 var list =  new java.util.ArrayList ();
-list.add (javax.vecmath.Point3f.new3 (x, y, z));
+list.add (org.jmol.util.Point3f.new3 (x, y, z));
 nxn.normalize ();
 list.add (nxn);
 return list;
-}, "javax.vecmath.Point4f,javax.vecmath.Point4f");
+}, "org.jmol.util.Point4f,org.jmol.util.Point4f");
 c$.getIntersection = Clazz.defineMethod (c$, "getIntersection", 
 function (pt1, v, plane, ptRet, tempNorm, vTemp) {
 org.jmol.util.Measure.getPlaneProjection (pt1, plane, ptRet, tempNorm);
 tempNorm.set (plane.x, plane.y, plane.z);
 tempNorm.normalize ();
-if (v == null) v = javax.vecmath.Vector3f.newV (tempNorm);
+if (v == null) v = org.jmol.util.Vector3f.newV (tempNorm);
 var l_dot_n = v.dot (tempNorm);
 if (Math.abs (l_dot_n) < 0.01) return null;
 vTemp.setT (ptRet);
 vTemp.sub (pt1);
 ptRet.scaleAdd2 (vTemp.dot (tempNorm) / l_dot_n, v, pt1);
 return ptRet;
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Point4f,javax.vecmath.Point3f,javax.vecmath.Vector3f,javax.vecmath.Vector3f");
+}, "org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Point4f,org.jmol.util.Point3f,org.jmol.util.Vector3f,org.jmol.util.Vector3f");
 Clazz.defineStatics (c$,
 "radiansPerDegree", (0.017453292519943295));
 });

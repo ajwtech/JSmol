@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.declarePackage ("org.jmol.modelsetbio");
 Clazz.load (["org.jmol.modelsetbio.Monomer"], "org.jmol.modelsetbio.CarbohydrateMonomer", ["org.jmol.constant.EnumStructure"], function () {
 c$ = Clazz.declareType (org.jmol.modelsetbio, "CarbohydrateMonomer", org.jmol.modelsetbio.Monomer);
 c$.validateAndAllocate = Clazz.defineMethod (c$, "validateAndAllocate", 
@@ -28,9 +28,9 @@ Clazz.overrideMethod (c$, "findNearestAtomIndex",
 function (x, y, closest, madBegin, madEnd) {
 var competitor = closest[0];
 var anomericO = this.getLeadAtom ();
-var marBegin = (Math.floor (madBegin / 2));
+var marBegin = (Clazz.doubleToInt (madBegin / 2));
 if (marBegin < 1200) marBegin = 1200;
-if (anomericO.screenZ == 0) return ;
+if (anomericO.screenZ == 0) return;
 var radiusBegin = this.scaleToScreen (anomericO.screenZ, marBegin);
 if (radiusBegin < 4) radiusBegin = 4;
 if (this.isCursorOnTopOf (anomericO, x, y, radiusBegin, competitor)) closest[0] = anomericO;

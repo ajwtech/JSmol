@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.FontLineShape", "javax.vecmath.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "javax.util.StringXBuilder", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.FontLineShape", "org.jmol.util.Point3f", "$.Vector3f"], "org.jmol.shape.Axes", ["java.lang.Boolean", "org.jmol.constant.EnumAxesMode", "org.jmol.util.Escape", "$.StringXBuilder", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.axisXY = null;
 this.scale = 0;
@@ -12,14 +12,14 @@ this.corner = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.shape, "Axes", org.jmol.shape.FontLineShape);
 Clazz.prepareFields (c$, function () {
-this.axisXY =  new javax.vecmath.Point3f ();
-this.originPoint =  new javax.vecmath.Point3f ();
+this.axisXY =  new org.jmol.util.Point3f ();
+this.originPoint =  new org.jmol.util.Point3f ();
 this.axisPoints =  new Array (6);
 {
-for (var i = 6; --i >= 0; ) this.axisPoints[i] =  new javax.vecmath.Point3f ();
+for (var i = 6; --i >= 0; ) this.axisPoints[i] =  new org.jmol.util.Point3f ();
 
-}this.ptTemp =  new javax.vecmath.Point3f ();
-this.corner =  new javax.vecmath.Vector3f ();
+}this.ptTemp =  new org.jmol.util.Point3f ();
+this.corner =  new org.jmol.util.Vector3f ();
 });
 Clazz.defineMethod (c$, "getOriginPoint", 
 function (isDataFrame) {
@@ -37,26 +37,26 @@ Clazz.defineMethod (c$, "setProperty",
 function (propertyName, value, bs) {
 if ("position" === propertyName) {
 this.axisXY = value;
-return ;
+return;
 }if ("origin" === propertyName) {
 if (value == null) {
 this.fixedOrigin = null;
 } else {
-if (this.fixedOrigin == null) this.fixedOrigin =  new javax.vecmath.Point3f ();
+if (this.fixedOrigin == null) this.fixedOrigin =  new org.jmol.util.Point3f ();
 this.fixedOrigin.setT (value);
 }this.initShape ();
-return ;
+return;
 }if ("labels" === propertyName) {
 this.labels = value;
-return ;
+return;
 }if ("labelsOn" === propertyName) {
 this.labels = null;
-return ;
+return;
 }if ("labelsOff" === propertyName) {
 this.labels = ["", "", ""];
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shape.Axes, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "initShape", 
 function () {
 Clazz.superCall (this, org.jmol.shape.Axes, "initShape", []);
@@ -78,7 +78,7 @@ offset = this.fixedOrigin;
 this.axisPoints[0].scaleAdd2 (this.scale, vectors[4], offset);
 this.axisPoints[1].scaleAdd2 (this.scale, vectors[2], offset);
 this.axisPoints[2].scaleAdd2 (this.scale, vectors[1], offset);
-return ;
+return;
 }} else if (axesMode === org.jmol.constant.EnumAxesMode.BOUNDBOX) {
 if (this.fixedOrigin == null) this.originPoint.setT (this.viewer.getBoundBoxCenter ());
 }this.setScale (this.viewer.getAxesScale () / 2);
@@ -109,10 +109,10 @@ axisPoint.z *= this.corner.z * scale;
 }, "~N");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 sb.append ("  axes scale ").appendF (this.viewer.getAxesScale ()).append (";\n");
 if (this.fixedOrigin != null) sb.append ("  axes center ").append (org.jmol.util.Escape.escapePt (this.fixedOrigin)).append (";\n");
-if (this.axisXY.z != 0) sb.append ("  axes position [").appendI (Math.round (this.axisXY.x)).append (" ").appendI (Math.round (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
+if (this.axisXY.z != 0) sb.append ("  axes position [").appendI (Clazz.floatToInt (this.axisXY.x)).append (" ").appendI (Clazz.floatToInt (this.axisXY.y)).append (" ").append (this.axisXY.z < 0 ? " %" : "").append ("];\n");
 if (this.labels != null) {
 sb.append ("  axes labels ");
 for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.escapeStr (this.labels[i])).append (" ");
@@ -120,7 +120,7 @@ for (var i = 0; i < this.labels.length; i++) sb.append (org.jmol.util.Escape.esc
 sb.append (";\n");
 }return Clazz.superCall (this, org.jmol.shape.Axes, "getShapeState", []) + sb;
 });
-c$.pt0 = c$.prototype.pt0 =  new javax.vecmath.Point3f ();
+c$.pt0 = c$.prototype.pt0 =  new org.jmol.util.Point3f ();
 Clazz.defineStatics (c$,
 "MIN_AXIS_LEN", 1.5);
 });

@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
-Clazz.load (["javax.vecmath.Point3f"], "org.jmol.adapter.smarter.Atom", ["java.lang.Exception", "$.Float"], function () {
+Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.load (["org.jmol.util.Point3f"], "org.jmol.adapter.smarter.Atom", ["java.lang.Float"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomSetIndex = 0;
 this.atomIndex = 0;
@@ -27,32 +27,22 @@ this.anisoBorU = null;
 this.ellipsoid = null;
 this.ignoreSymmetry = false;
 Clazz.instantialize (this, arguments);
-}, org.jmol.adapter.smarter, "Atom", javax.vecmath.Point3f, Cloneable);
-Clazz.prepareFields (c$, function () {
-{
-this.set (NaN, NaN, NaN);
-}});
+}, org.jmol.adapter.smarter, "Atom", org.jmol.util.Point3f, Cloneable);
 Clazz.defineMethod (c$, "setEllipsoid", 
 function (e) {
-if (e == null) return ;
+if (e == null) return;
 if (this.ellipsoid != null && this.ellipsoid.length == 3) this.ellipsoid[0] = e;
  else this.ellipsoid = [e];
 }, "org.jmol.util.Quadric");
 Clazz.makeConstructor (c$, 
 function () {
 Clazz.superConstructor (this, org.jmol.adapter.smarter.Atom, []);
+this.set (NaN, NaN, NaN);
 });
-Clazz.defineMethod (c$, "cloneAtom", 
+Clazz.defineMethod (c$, "clone", 
 function () {
-try {
-return Clazz.superCall (this, org.jmol.adapter.smarter.Atom, "clone", []);
-} catch (cnse) {
-if (Clazz.exceptionOf (cnse, Exception)) {
-throw  new Exception ("cloneAtom error: " + cnse.getMessage (), cnse);
-} else {
-throw cnse;
-}
-}
+var a = Clazz.superCall (this, org.jmol.adapter.smarter.Atom, "clone", []);
+return a;
 });
 Clazz.defineMethod (c$, "getElementSymbol", 
 function () {
@@ -87,7 +77,7 @@ return ((org.jmol.adapter.smarter.Atom.elementCharMasks[chFirst.charCodeAt (0) -
 }, "~S,~S");
 c$.isValidElementSymbolNoCaseSecondChar2 = Clazz.defineMethod (c$, "isValidElementSymbolNoCaseSecondChar2", 
 function (chFirst, chSecond) {
-if (chSecond >= 'A' && chSecond <= 'Z') chSecond = String.fromCharCode ((chSecond).charCodeAt (0) + (32));
+if (chSecond >= 'A' && chSecond <= 'Z') chSecond = String.fromCharCode (chSecond.charCodeAt (0) + 32);
 if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z') return false;
 return ((org.jmol.adapter.smarter.Atom.elementCharMasks[chFirst.charCodeAt (0) - 65] >> (chSecond.charCodeAt (0) - 97)) & 1) != 0;
 }, "~S,~S");
@@ -108,7 +98,7 @@ return org.jmol.adapter.smarter.Atom.isValidElementSymbolNoCaseSecondChar2 (chFi
 }, "~S");
 Clazz.defineMethod (c$, "scaleVector", 
 function (vibScale) {
-if (Float.isNaN (this.vectorX)) return ;
+if (Float.isNaN (this.vectorX)) return;
 this.vectorX *= vibScale;
 this.vectorY *= vibScale;
 this.vectorZ *= vibScale;

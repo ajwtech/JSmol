@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.MopacSlaterReader"], "org.jmol.adapter.readers.quantum.MopacGraphfReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.adapter.smarter.AtomSetCollectionReader"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.MopacSlaterReader"], "org.jmol.adapter.readers.quantum.MopacGraphfReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.adapter.smarter.AtomSetCollectionReader", "org.jmol.util.ArrayUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomCount = 0;
 this.nCoefficients = 0;
@@ -16,7 +16,7 @@ this.alphaBeta = "alpha";
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
 this.readAtoms ();
-if (this.readMolecularOrbitals) {
+if (this.doReadMolecularOrbitals) {
 this.readSlaterBasis ();
 this.readMolecularOrbitals (false);
 if (this.readKeywords ()) this.readMolecularOrbitals (true);
@@ -27,7 +27,7 @@ Clazz.defineMethod (c$, "readAtoms",
 ($fz = function () {
 this.atomSetCollection.newAtomSet ();
 this.atomCount = this.parseIntStr (this.line);
-this.atomicNumbers =  Clazz.newArray (this.atomCount, 0);
+this.atomicNumbers =  Clazz.newIntArray (this.atomCount, 0);
 for (var i = 0; i < this.atomCount; i++) {
 this.readLine ();
 this.atomicNumbers[i] = this.parseIntStr (this.line.substring (0, 4));
@@ -40,7 +40,7 @@ atom.elementSymbol = org.jmol.adapter.smarter.AtomSetCollectionReader.getElement
 Clazz.defineMethod (c$, "readSlaterBasis", 
 ($fz = function () {
 this.nCoefficients = 0;
-var values =  Clazz.newArray (3, 0);
+var values =  Clazz.newFloatArray (3, 0);
 for (var iAtom = 0; iAtom < this.atomCount; iAtom++) {
 org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensFloat (this.readLine (), values, 3);
 var atomicNumber = this.atomicNumbers[iAtom];
@@ -65,19 +65,19 @@ Clazz.defineMethod (c$, "readMolecularOrbitals",
 ($fz = function (isBeta) {
 if (isBeta) this.alphaBeta = "beta";
 var list = null;
-if (this.readLine () == null) return ;
+if (this.readLine () == null) return;
 this.isNewFormat = (this.line.indexOf ("ORBITAL") >= 0);
 if (this.isNewFormat) {
 this.orbitalData =  new java.util.ArrayList ();
 if (this.line.length > 10) this.orbitalInfo =  new java.util.ArrayList ();
 } else {
-list =  Clazz.newArray (this.nCoefficients, this.nCoefficients, 0);
+list =  Clazz.newFloatArray (this.nCoefficients, this.nCoefficients, 0);
 }for (var iMo = 0; iMo < this.nCoefficients; iMo++) {
 if (iMo != 0) this.readLine ();
 var data;
 if (this.isNewFormat) {
 if (this.line == null || this.line.indexOf ("ORBITAL") < 0 || this.line.indexOf ("ORBITAL_LIST") >= 0) break;
-this.orbitalData.add (data =  Clazz.newArray (this.nCoefficients, 0));
+this.orbitalData.add (data =  Clazz.newFloatArray (this.nCoefficients, 0));
 if (this.orbitalInfo != null) this.orbitalInfo.add (this.line);
 this.readLine ();
 } else {
@@ -86,15 +86,15 @@ data = list[iMo];
 }
 if (this.invMatrix == null) {
 if (this.isNewFormat && this.line.indexOf ("MATRIX") < 0) this.readLine ();
-this.invMatrix =  Clazz.newArray (this.nCoefficients, 0);
-for (var iMo = 0; iMo < this.nCoefficients; iMo++) this.fillFloatArray (null, 15, this.invMatrix[iMo] =  Clazz.newArray (iMo + 1, 0));
+this.invMatrix = org.jmol.util.ArrayUtil.newFloat2 (this.nCoefficients);
+for (var iMo = 0; iMo < this.nCoefficients; iMo++) this.fillFloatArray (null, 15, this.invMatrix[iMo] =  Clazz.newFloatArray (iMo + 1, 0));
 
 }this.nOrbitals = (this.orbitalData == null ? this.nCoefficients : this.orbitalData.size ());
 if (this.orbitalData != null) {
-list =  Clazz.newArray (this.nOrbitals, 0);
+list = org.jmol.util.ArrayUtil.newFloat2 (this.nOrbitals);
 for (var i = this.nOrbitals; --i >= 0; ) list[i] = this.orbitalData.get (i);
 
-}var list2 =  Clazz.newArray (this.nOrbitals, this.nCoefficients, 0);
+}var list2 =  Clazz.newFloatArray (this.nOrbitals, this.nCoefficients, 0);
 for (var i = 0; i < this.nOrbitals; i++) for (var j = 0; j < this.nCoefficients; j++) {
 for (var k = 0; k < this.nCoefficients; k++) list2[i][j] += (list[i][k] * (k >= j ? this.invMatrix[k][j] : this.invMatrix[j][k]));
 
@@ -102,7 +102,7 @@ if (Math.abs (list2[i][j]) < 1.0E-4) list2[i][j] = 0;
 }
 
 if (this.isNewFormat && this.orbitalInfo == null && this.line != null && this.line.indexOf ("ORBITAL_LIST") < 0) this.readLine ();
-var values =  Clazz.newArray (2, 0);
+var values =  Clazz.newFloatArray (2, 0);
 for (var iMo = 0; iMo < this.nOrbitals; iMo++) {
 var mo =  new java.util.Hashtable ();
 if (this.orbitalInfo != null) {

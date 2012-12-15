@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["javax.util.BitSet", "org.jmol.util.JmolEdge", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Bond", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
+Clazz.declarePackage ("org.jmol.modelset");
+Clazz.load (["org.jmol.util.BitSet", "$.JmolEdge", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Bond", ["org.jmol.util.BitSetUtil", "$.Colix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atom1 = null;
 this.atom2 = null;
@@ -41,7 +41,7 @@ return this.shapeVisibilityFlags;
 Clazz.defineMethod (c$, "setShapeVisibility", 
 function (isVisible) {
 var wasVisible = ((this.shapeVisibilityFlags & org.jmol.modelset.Bond.myVisibilityFlag) != 0);
-if (wasVisible == isVisible) return ;
+if (wasVisible == isVisible) return;
 this.atom1.addDisplayedBond (org.jmol.modelset.Bond.myVisibilityFlag, isVisible);
 this.atom2.addDisplayedBond (org.jmol.modelset.Bond.myVisibilityFlag, isVisible);
 if (isVisible) this.shapeVisibilityFlags |= org.jmol.modelset.Bond.myVisibilityFlag;
@@ -98,7 +98,7 @@ this.colix = colix;
 }, "~N");
 Clazz.defineMethod (c$, "setTranslucent", 
 function (isTranslucent, translucentLevel) {
-this.colix = org.jmol.util.Colix.getColixTranslucent (this.colix, isTranslucent, translucentLevel);
+this.colix = org.jmol.util.Colix.getColixTranslucent3 (this.colix, isTranslucent, translucentLevel);
 }, "~B,~N");
 Clazz.defineMethod (c$, "isTranslucent", 
 function () {
@@ -174,7 +174,7 @@ Clazz.pu$h ();
 c$ = Clazz.decorateAsClass (function () {
 this.associatedAtoms = null;
 Clazz.instantialize (this, arguments);
-}, org.jmol.modelset.Bond, "BondSet", javax.util.BitSet);
+}, org.jmol.modelset.Bond, "BondSet", org.jmol.util.BitSet);
 Clazz.makeConstructor (c$, 
 function () {
 Clazz.superConstructor (this, org.jmol.modelset.Bond.BondSet, []);
@@ -187,12 +187,12 @@ Clazz.makeConstructor (c$,
 function (a) {
 Clazz.superConstructor (this, org.jmol.modelset.Bond.BondSet, []);
 org.jmol.util.BitSetUtil.copy2 (a, this);
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.makeConstructor (c$, 
 function (a, b) {
 this.construct (a);
 this.associatedAtoms = b;
-}, "javax.util.BitSet,~A");
+}, "org.jmol.util.BitSet,~A");
 c$ = Clazz.p0p ();
 c$.myVisibilityFlag = c$.prototype.myVisibilityFlag = org.jmol.viewer.JmolConstants.getShapeVisibilityFlag (1);
 });

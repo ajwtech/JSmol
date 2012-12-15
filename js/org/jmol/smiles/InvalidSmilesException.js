@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.smiles");
+Clazz.declarePackage ("org.jmol.smiles");
 Clazz.load (["java.lang.Exception"], "org.jmol.smiles.InvalidSmilesException", null, function () {
 c$ = Clazz.declareType (org.jmol.smiles, "InvalidSmilesException", Exception);
 c$.getLastError = Clazz.defineMethod (c$, "getLastError", 

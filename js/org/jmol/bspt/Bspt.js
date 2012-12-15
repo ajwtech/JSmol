@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.bspt");
-Clazz.load (null, "org.jmol.bspt.Bspt", ["javax.util.StringXBuilder", "org.jmol.bspt.CubeIterator", "$.Leaf", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.bspt");
+Clazz.load (null, "org.jmol.bspt.Bspt", ["org.jmol.bspt.CubeIterator", "$.Leaf", "org.jmol.util.Logger", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.treeDepth = 0;
 this.dimMax = 0;
@@ -21,13 +21,13 @@ this.treeDepth = 1;
 Clazz.defineMethod (c$, "addTuple", 
 function (tuple) {
 this.eleRoot = this.eleRoot.addTuple (0, tuple);
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "stats", 
 function () {
 });
 Clazz.defineMethod (c$, "dump", 
 function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 this.eleRoot.dump (0, sb);
 org.jmol.util.Logger.info (sb.toString ());
 });

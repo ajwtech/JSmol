@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.AtomShape"], "org.jmol.shape.Halos", ["org.jmol.util.BitSetUtil", "$.Colix", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.colixSelection = 2;
@@ -13,20 +13,20 @@ this.translucentAllowed = false;
 });
 Clazz.defineMethod (c$, "setProperty", 
 function (propertyName, value, bs) {
-if ("translucency" === propertyName) return ;
+if ("translucency" === propertyName) return;
 if ("argbSelection" === propertyName) {
 this.colixSelection = org.jmol.util.Colix.getColix ((value).intValue ());
-return ;
+return;
 }if ("argbHighlight" === propertyName) {
 this.colixHighlight = org.jmol.util.Colix.getColix ((value).intValue ());
-return ;
+return;
 }if ("highlight" === propertyName) {
 this.bsHighlight = value;
-return ;
+return;
 }if (propertyName === "deleteModelAtoms") {
 org.jmol.util.BitSetUtil.deleteBits (this.bsHighlight, bs);
 }Clazz.superCall (this, org.jmol.shape.Halos, "setProperty", [propertyName, value, bs]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 var bsSelected = (this.viewer.getSelectionHaloEnabled (false) ? this.viewer.getSelectionSet (false) : null);
@@ -34,11 +34,11 @@ for (var i = this.atomCount; --i >= 0; ) {
 var isVisible = bsSelected != null && bsSelected.get (i) || (this.mads != null && this.mads[i] != 0);
 this.atoms[i].setShapeVisibility (this.myVisibilityFlag, isVisible);
 }
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getShapeState", 
 function () {
-var state = Clazz.superCall (this, org.jmol.shape.Halos, "getShapeState", []) + (this.colixSelection == 2 ? "" : this.colixSelection == 0 ? "  color SelectionHalos NONE;\n" : this.getColorCommand ("selectionHalos", this.colixSelection) + ";\n");
-if (this.bsHighlight != null) state += "  set highlight " + org.jmol.util.Escape.escape (this.bsHighlight) + "; " + this.getColorCommand ("highlight", this.colixHighlight) + ";\n";
+var state = Clazz.superCall (this, org.jmol.shape.Halos, "getShapeState", []) + (this.colixSelection == 2 ? "" : this.colixSelection == 0 ? "  color SelectionHalos NONE;\n" : this.getColorCommandUnk ("selectionHalos", this.colixSelection) + ";\n");
+if (this.bsHighlight != null) state += "  set highlight " + org.jmol.util.Escape.escape (this.bsHighlight) + "; " + this.getColorCommandUnk ("highlight", this.colixHighlight) + ";\n";
 return state;
 });
 });

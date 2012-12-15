@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
 Clazz.load (["org.jmol.adapter.readers.more.ForceFieldReader"], "org.jmol.adapter.readers.more.MdTopReader", ["java.lang.Boolean", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nAtoms = 0;
@@ -78,7 +78,7 @@ Clazz.defineMethod (c$, "getPointers",
 ($fz = function () {
 var tokens = this.getDataBlock ();
 this.atomCount = this.parseIntStr (tokens[0]);
-var isPeriodic = ((tokens[27].charAt (0)).charCodeAt (0) != 48);
+var isPeriodic = (tokens[27].charAt (0) != '0');
 if (isPeriodic) {
 org.jmol.util.Logger.info ("Periodic type: " + tokens[27]);
 this.htParams.put ("isPeriodic", Boolean.TRUE);
@@ -94,7 +94,7 @@ this.$atomTypes = this.getDataBlock ();
 Clazz.defineMethod (c$, "getCharges", 
 ($fz = function () {
 var data = this.getDataBlock ();
-if (data.length != this.atomCount) return ;
+if (data.length != this.atomCount) return;
 var atoms = this.atomSetCollection.getAtoms ();
 for (var i = this.atomCount; --i >= 0; ) atoms[i].partialCharge = this.parseFloatStr (data[i]);
 

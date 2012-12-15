@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
+Clazz.declarePackage ("org.jmol.shape");
 Clazz.load (["org.jmol.shape.FontShape"], "org.jmol.shape.Frank", ["org.jmol.i18n.GT"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.frankString = "Jmol";
@@ -17,7 +17,7 @@ Clazz.defineMethod (c$, "initShape",
 function () {
 Clazz.superCall (this, org.jmol.shape.Frank, "initShape", []);
 this.myType = "frank";
-this.baseFont3d = this.font3d = this.gdata.getFont3DFSS ("SansSerif", "Bold", 16);
+this.baseFont3d = this.font3d = this.gdata.getFont3DFSS ("SansSerif", "Plain", 16);
 this.calcMetrics ();
 });
 Clazz.overrideMethod (c$, "wasClicked", 
@@ -29,16 +29,17 @@ return (width > 0 && height > 0 && x > width - this.frankWidth - 4 && y > height
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (!this.viewer.getShowFrank () || !this.wasClicked (x, y) || !this.viewer.menuEnabled ()) return false;
-if (this.gdata.isDisplayAntialiased ()) {
+if (this.gdata.isDisplayAntialiased () && !this.viewer.isSingleThreaded) {
 x <<= 1;
 y <<= 1;
 }this.viewer.hoverOnPt (x, y, org.jmol.i18n.GT._ ("Click for menu..."), null, null);
 return true;
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "calcMetrics", 
 function () {
-if (this.viewer.isSignedApplet ()) this.frankString = "Jmol_S";
-if (this.font3d === this.currentMetricsFont3d) return ;
+if (this.viewer.isJS2D || this.viewer.isJS3D) this.frankString = "JSmol";
+ else if (this.viewer.isSignedApplet ()) this.frankString = "Jmol_S";
+if (this.font3d === this.currentMetricsFont3d) return;
 this.currentMetricsFont3d = this.font3d;
 this.frankWidth = this.font3d.stringWidth (this.frankString);
 this.frankDescent = this.font3d.getDescent ();
@@ -51,7 +52,7 @@ this.calcMetrics ();
 }, "~N");
 Clazz.defineStatics (c$,
 "defaultFontName", "SansSerif",
-"defaultFontStyle", "Bold",
+"defaultFontStyle", "Plain",
 "defaultFontSize", 16,
 "frankMargin", 4);
 });

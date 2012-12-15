@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
+Clazz.declarePackage ("org.jmol.modelset");
 c$ = Clazz.decorateAsClass (function () {
 this.id = "";
 this.type = " ";
@@ -13,4 +13,4 @@ Clazz.instantialize (this, arguments);
 Clazz.makeConstructor (c$, 
 function (ticks) {
 this.ticks = ticks;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");

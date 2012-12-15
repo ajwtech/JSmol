@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.BasisFunctionReader"], "org.jmol.adapter.readers.quantum.SpartanInputReader", ["org.jmol.adapter.smarter.Bond", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.modelName = null;
@@ -16,7 +16,7 @@ while (this.readLine () != null) {
 var tokens = this.getTokens ();
 if (tokens.length == 2 && this.parseIntStr (tokens[0]) != -2147483648 && this.parseIntStr (tokens[1]) >= 0) break;
 }
-if (this.line == null) return ;
+if (this.line == null) return;
 this.readInputAtoms ();
 this.discardLinesUntilContains ("ATOMLABELS");
 if (this.line != null) this.readAtomNames ();
@@ -35,7 +35,7 @@ this.constraints = "";
 while (this.readLine () != null && this.line.indexOf ("END") < 0) this.constraints += (this.constraints === "" ? "" : "\n") + this.line;
 
 this.readLine ();
-if (this.constraints.length == 0) return ;
+if (this.constraints.length == 0) return;
 this.atomSetCollection.setAtomSetAuxiliaryInfo ("constraints", this.constraints);
 this.atomSetCollection.setAtomSetModelProperty (".PATH", "EnergyProfile");
 this.atomSetCollection.setAtomSetModelProperty ("Constraint", this.constraints);

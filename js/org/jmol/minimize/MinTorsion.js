@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
+Clazz.declarePackage ("org.jmol.minimize");
 Clazz.load (["org.jmol.minimize.MinObject"], "org.jmol.minimize.MinTorsion", null, function () {
 c$ = Clazz.declareType (org.jmol.minimize, "MinTorsion", org.jmol.minimize.MinObject);
 Clazz.makeConstructor (c$, 

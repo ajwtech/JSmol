@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.exportjs");
+Clazz.declarePackage ("org.jmol.exportjs");
 Clazz.load (["java.util.Hashtable"], "org.jmol.exportjs.UseTable", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.iObj = 0;

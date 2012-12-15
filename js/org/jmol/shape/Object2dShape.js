@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.shape");
-Clazz.load (["org.jmol.shape.Shape", "java.util.Hashtable"], "org.jmol.shape.Object2dShape", ["javax.vecmath.Point3f", "org.jmol.util.Logger", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.shape");
+Clazz.load (["org.jmol.shape.Shape", "java.util.Hashtable"], "org.jmol.shape.Object2dShape", ["org.jmol.util.Logger", "$.Point3f", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.objects = null;
 this.currentObject = null;
@@ -22,7 +22,7 @@ if ("allOff" === propertyName) {
 this.currentObject = null;
 this.isAll = true;
 this.objects =  new java.util.Hashtable ();
-return ;
+return;
 }if ("delete" === propertyName) {
 if (this.currentObject == null) {
 if (this.isAll || this.thisID != null) {
@@ -32,20 +32,20 @@ var text = e.next ();
 if (this.isAll || org.jmol.util.TextFormat.isMatch (text.target.toUpperCase (), this.thisID, true, true)) {
 e.remove ();
 }}
-}return ;
+}return;
 }this.objects.remove (this.currentObject.target);
 this.currentObject = null;
-return ;
+return;
 }if ("off" === propertyName) {
 if (this.isAll) {
 this.objects =  new java.util.Hashtable ();
 this.isAll = false;
 this.currentObject = null;
 }if (this.currentObject == null) {
-return ;
+return;
 }this.objects.remove (this.currentObject.target);
 this.currentObject = null;
-return ;
+return;
 }if ("model" === propertyName) {
 var modelIndex = (value).intValue ();
 if (this.currentObject == null) {
@@ -54,31 +54,31 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 e.next ().setModel (modelIndex);
 }
-}return ;
+}return;
 }this.currentObject.setModel (modelIndex);
-return ;
+return;
 }if ("align" === propertyName) {
 var align = value;
 if (this.currentObject == null) {
 if (this.isAll) {
 var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
-e.next ().setAlignment (align);
+e.next ().setAlignmentLCR (align);
 }
-}return ;
-}if (!this.currentObject.setAlignment (align)) org.jmol.util.Logger.error ("unrecognized align:" + align);
-return ;
+}return;
+}if (!this.currentObject.setAlignmentLCR (align)) org.jmol.util.Logger.error ("unrecognized align:" + align);
+return;
 }if ("bgcolor" === propertyName) {
 this.currentBgColor = value;
 if (this.currentObject == null) {
 if (this.isAll) {
 var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
-e.next ().setBgColix (value);
+e.next ().setBgColixO (value);
 }
-}return ;
-}this.currentObject.setBgColix (value);
-return ;
+}return;
+}this.currentObject.setBgColixO (value);
+return;
 }if ("color" === propertyName) {
 this.currentColor = value;
 if (this.currentObject == null) {
@@ -87,17 +87,17 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 var text = e.next ();
 if (this.isAll || org.jmol.util.TextFormat.isMatch (text.target.toUpperCase (), this.thisID, true, true)) {
-text.setColix (value);
+text.setColixO (value);
 }}
-}return ;
-}this.currentObject.setColix (value);
-return ;
+}return;
+}this.currentObject.setColixO (value);
+return;
 }if ("target" === propertyName) {
 var target = value;
 this.isAll = target.equals ("all");
 if (this.isAll || target.equals ("none")) {
 this.currentObject = null;
-}return ;
+}return;
 }var isBackground;
 if ((isBackground = ("bgtranslucency" === propertyName)) || "translucency" === propertyName) {
 var isTranslucent = ("translucent" === value);
@@ -109,9 +109,9 @@ var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 e.next ().setTranslucent (this.translucentLevel, isBackground);
 }
-}return ;
+}return;
 }this.currentObject.setTranslucent (this.translucentLevel, isBackground);
-return ;
+return;
 }if (propertyName === "deleteModelAtoms") {
 var modelIndex = ((value)[2])[0];
 var e = this.objects.values ().iterator ();
@@ -122,9 +122,9 @@ e.remove ();
 } else if (text.modelIndex > modelIndex) {
 text.modelIndex--;
 }}
-return ;
+return;
 }Clazz.superCall (this, org.jmol.shape.Object2dShape, "setProperty", [propertyName, value, bsSelected]);
-}, "~S,~O,javax.util.BitSet");
+}, "~S,~O,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "initModelSet", 
 function () {
 this.currentObject = null;
@@ -133,13 +133,13 @@ this.isAll = false;
 Clazz.overrideMethod (c$, "setVisibilityFlags", 
 function (bs) {
 if (this.isHover) {
-return ;
+return;
 }var e = this.objects.values ().iterator ();
 while (e.hasNext ()) {
 var t = e.next ();
 t.setVisibility (t.modelIndex < 0 || bs.get (t.modelIndex));
 }
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
 function (x, y, modifiers, bsVisible) {
 if (this.isHover || modifiers == 0) return null;
@@ -151,7 +151,7 @@ var s = obj.getScript ();
 if (s != null) {
 this.viewer.evalStringQuiet (s);
 }var map =  new java.util.Hashtable ();
-map.put ("pt", (obj.xyz == null ?  new javax.vecmath.Point3f () : obj.xyz));
+map.put ("pt", (obj.xyz == null ?  new org.jmol.util.Point3f () : obj.xyz));
 var modelIndex = obj.modelIndex;
 if (modelIndex < 0) modelIndex = 0;
 map.put ("modelIndex", Integer.$valueOf (modelIndex));
@@ -161,7 +161,7 @@ map.put ("type", "echo");
 return map;
 }}
 return null;
-}, "~N,~N,~N,javax.util.BitSet");
+}, "~N,~N,~N,org.jmol.util.BitSet");
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (this.isHover) return false;
@@ -178,5 +178,5 @@ return true;
 }}}
 if (haveScripts) this.viewer.setCursor (0);
 return false;
-}, "~N,~N,javax.util.BitSet");
+}, "~N,~N,org.jmol.util.BitSet");
 });

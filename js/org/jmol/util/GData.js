@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (["org.jmol.api.JmolGraphicsInterface"], "org.jmol.util.GData", ["javax.vecmath.Point3f", "org.jmol.util.ArrayUtil", "$.Colix", "$.JmolFont", "$.Shader"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (["org.jmol.api.JmolGraphicsInterface"], "org.jmol.util.GData", ["org.jmol.util.ArrayUtil", "$.Colix", "$.JmolFont", "$.Point3f", "$.Shader"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.apiPlatform = null;
 this.windowWidth = 0;
@@ -25,6 +25,7 @@ this.width = 0;
 this.height = 0;
 this.zSlab = 0;
 this.zDepth = 0;
+this.zShadePower = 3;
 this.colixCurrent = 0;
 this.argbCurrent = 0;
 this.bufferSize = 0;
@@ -36,7 +37,7 @@ this.$isPass2 = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.util, "GData", null, org.jmol.api.JmolGraphicsInterface);
 Clazz.prepareFields (c$, function () {
-this.changeableColixMap =  Clazz.newArray (16, 0);
+this.changeableColixMap =  Clazz.newShortArray (16, 0);
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -54,14 +55,15 @@ function (slabValue) {
 this.slab = slabValue < 0 ? 0 : slabValue;
 }, "~N");
 Clazz.defineMethod (c$, "setZShade", 
-function (zShade, zSlab, zDepth) {
+function (zShade, zSlab, zDepth, zPower) {
 if (zShade) {
 this.zShadeR = this.bgcolor & 0xFF;
 this.zShadeG = (this.bgcolor & 0xFF00) >> 8;
 this.zShadeB = (this.bgcolor & 0xFF0000) >> 16;
 this.zSlab = zSlab < 0 ? 0 : zSlab;
 this.zDepth = zDepth < 0 ? 0 : zDepth;
-}}, "~B,~N,~N");
+this.zShadePower = zPower;
+}}, "~B,~N,~N,~N");
 Clazz.overrideMethod (c$, "getRenderWidth", 
 function () {
 return this.width;
@@ -122,8 +124,8 @@ c$.setSpecularPower = Clazz.defineMethod (c$, "setSpecularPower",
 function (val) {
 if (val < 0) {
 org.jmol.util.GData.setSpecularExponent (-val);
-return ;
-}if (org.jmol.util.Shader.specularPower == val) return ;
+return;
+}if (org.jmol.util.Shader.specularPower == val) return;
 ($t$ = org.jmol.util.Shader.specularPower = val, org.jmol.util.Shader.prototype.specularPower = org.jmol.util.Shader.specularPower, $t$);
 ($t$ = org.jmol.util.Shader.intenseFraction = val / 100, org.jmol.util.Shader.prototype.intenseFraction = org.jmol.util.Shader.intenseFraction, $t$);
 org.jmol.util.GData.flushCaches ();
@@ -134,7 +136,7 @@ return org.jmol.util.Shader.specularPercent;
 });
 c$.setSpecularPercent = Clazz.defineMethod (c$, "setSpecularPercent", 
 function (val) {
-if (org.jmol.util.Shader.specularPercent == val) return ;
+if (org.jmol.util.Shader.specularPercent == val) return;
 ($t$ = org.jmol.util.Shader.specularPercent = val, org.jmol.util.Shader.prototype.specularPercent = org.jmol.util.Shader.specularPercent, $t$);
 ($t$ = org.jmol.util.Shader.specularFactor = val / 100, org.jmol.util.Shader.prototype.specularFactor = org.jmol.util.Shader.specularFactor, $t$);
 org.jmol.util.GData.flushCaches ();
@@ -145,9 +147,9 @@ return org.jmol.util.Shader.specularExponent;
 });
 c$.setSpecularExponent = Clazz.defineMethod (c$, "setSpecularExponent", 
 function (val) {
-if (org.jmol.util.Shader.specularExponent == val) return ;
+if (org.jmol.util.Shader.specularExponent == val) return;
 ($t$ = org.jmol.util.Shader.specularExponent = val, org.jmol.util.Shader.prototype.specularExponent = org.jmol.util.Shader.specularExponent, $t$);
-($t$ = org.jmol.util.Shader.phongExponent = Math.round (Math.pow (2, val)), org.jmol.util.Shader.prototype.phongExponent = org.jmol.util.Shader.phongExponent, $t$);
+($t$ = org.jmol.util.Shader.phongExponent = Clazz.doubleToInt (Math.pow (2, val)), org.jmol.util.Shader.prototype.phongExponent = org.jmol.util.Shader.phongExponent, $t$);
 ($t$ = org.jmol.util.Shader.usePhongExponent = false, org.jmol.util.Shader.prototype.usePhongExponent = org.jmol.util.Shader.usePhongExponent, $t$);
 org.jmol.util.GData.flushCaches ();
 }, "~N");
@@ -157,11 +159,11 @@ return org.jmol.util.Shader.phongExponent;
 });
 c$.setPhongExponent = Clazz.defineMethod (c$, "setPhongExponent", 
 function (val) {
-if (org.jmol.util.Shader.phongExponent == val && org.jmol.util.Shader.usePhongExponent) return ;
+if (org.jmol.util.Shader.phongExponent == val && org.jmol.util.Shader.usePhongExponent) return;
 ($t$ = org.jmol.util.Shader.phongExponent = val, org.jmol.util.Shader.prototype.phongExponent = org.jmol.util.Shader.phongExponent, $t$);
 var x = (Math.log (val) / Math.log (2));
-($t$ = org.jmol.util.Shader.usePhongExponent = (x != Math.round (x)), org.jmol.util.Shader.prototype.usePhongExponent = org.jmol.util.Shader.usePhongExponent, $t$);
-if (!org.jmol.util.Shader.usePhongExponent) ($t$ = org.jmol.util.Shader.specularExponent = Math.round (x), org.jmol.util.Shader.prototype.specularExponent = org.jmol.util.Shader.specularExponent, $t$);
+($t$ = org.jmol.util.Shader.usePhongExponent = (x != Clazz.floatToInt (x)), org.jmol.util.Shader.prototype.usePhongExponent = org.jmol.util.Shader.usePhongExponent, $t$);
+if (!org.jmol.util.Shader.usePhongExponent) ($t$ = org.jmol.util.Shader.specularExponent = Clazz.floatToInt (x), org.jmol.util.Shader.prototype.specularExponent = org.jmol.util.Shader.specularExponent, $t$);
 org.jmol.util.GData.flushCaches ();
 }, "~N");
 c$.getDiffusePercent = Clazz.defineMethod (c$, "getDiffusePercent", 
@@ -170,7 +172,7 @@ return org.jmol.util.Shader.diffusePercent;
 });
 c$.setDiffusePercent = Clazz.defineMethod (c$, "setDiffusePercent", 
 function (val) {
-if (org.jmol.util.Shader.diffusePercent == val) return ;
+if (org.jmol.util.Shader.diffusePercent == val) return;
 ($t$ = org.jmol.util.Shader.diffusePercent = val, org.jmol.util.Shader.prototype.diffusePercent = org.jmol.util.Shader.diffusePercent, $t$);
 ($t$ = org.jmol.util.Shader.diffuseFactor = val / 100, org.jmol.util.Shader.prototype.diffuseFactor = org.jmol.util.Shader.diffuseFactor, $t$);
 org.jmol.util.GData.flushCaches ();
@@ -181,18 +183,10 @@ return org.jmol.util.Shader.ambientPercent;
 });
 c$.setAmbientPercent = Clazz.defineMethod (c$, "setAmbientPercent", 
 function (val) {
-if (org.jmol.util.Shader.ambientPercent == val) return ;
+if (org.jmol.util.Shader.ambientPercent == val) return;
 ($t$ = org.jmol.util.Shader.ambientPercent = val, org.jmol.util.Shader.prototype.ambientPercent = org.jmol.util.Shader.ambientPercent, $t$);
 ($t$ = org.jmol.util.Shader.ambientFraction = val / 100, org.jmol.util.Shader.prototype.ambientFraction = org.jmol.util.Shader.ambientFraction, $t$);
 org.jmol.util.GData.flushCaches ();
-}, "~N");
-c$.getZShadePower = Clazz.defineMethod (c$, "getZShadePower", 
-function () {
-return org.jmol.util.Shader.zPower;
-});
-c$.setZShadePower = Clazz.defineMethod (c$, "setZShadePower", 
-function (val) {
-($t$ = org.jmol.util.Shader.zPower = val, org.jmol.util.Shader.prototype.zPower = org.jmol.util.Shader.zPower, $t$);
 }, "~N");
 c$.getSpecular = Clazz.defineMethod (c$, "getSpecular", 
 function () {
@@ -200,7 +194,7 @@ return org.jmol.util.Shader.specularOn;
 });
 c$.setSpecular = Clazz.defineMethod (c$, "setSpecular", 
 function (val) {
-if (org.jmol.util.Shader.specularOn == val) return ;
+if (org.jmol.util.Shader.specularOn == val) return;
 ($t$ = org.jmol.util.Shader.specularOn = val, org.jmol.util.Shader.prototype.specularOn = org.jmol.util.Shader.specularOn, $t$);
 org.jmol.util.GData.flushCaches ();
 }, "~B");
@@ -211,7 +205,7 @@ org.jmol.util.Shader.flushSphereCache ();
 }, $fz.isPrivate = true, $fz));
 c$.getLightSource = Clazz.defineMethod (c$, "getLightSource", 
 function () {
-return javax.vecmath.Point3f.new3 (org.jmol.util.Shader.xLight, org.jmol.util.Shader.yLight, org.jmol.util.Shader.zLight);
+return org.jmol.util.Point3f.new3 (org.jmol.util.Shader.xLight, org.jmol.util.Shader.yLight, org.jmol.util.Shader.zLight);
 });
 Clazz.defineMethod (c$, "isClipped3", 
 function (x, y, z) {
@@ -260,6 +254,10 @@ Clazz.defineMethod (c$, "getFont3DFS",
 function (fontFace, fontSize) {
 return org.jmol.util.JmolFont.createFont3D (org.jmol.util.JmolFont.getFontFaceID (fontFace), 0, fontSize, fontSize, this.apiPlatform, this.graphicsForMetrics);
 }, "~S,~N");
+Clazz.defineMethod (c$, "getFontFidFS", 
+function (fontFace, fontSize) {
+return this.getFont3DFSS (fontFace, "Bold", fontSize).fid;
+}, "~S,~N");
 Clazz.defineMethod (c$, "getFont3DFSS", 
 function (fontFace, fontStyle, fontSize) {
 var iStyle = org.jmol.util.JmolFont.getFontStyleID (fontStyle);
@@ -269,16 +267,12 @@ return org.jmol.util.JmolFont.createFont3D (org.jmol.util.JmolFont.getFontFaceID
 Clazz.overrideMethod (c$, "getFont3DScaled", 
 function (font, scale) {
 var newScale = font.fontSizeNominal * scale;
-return (newScale == font.fontSize ? font : org.jmol.util.JmolFont.createFont3D (font.idFontFace, (this.antialiasThisFrame ? font.idFontStyle | 1 : font.idFontStyle), newScale, font.fontSizeNominal, this.apiPlatform, this.graphicsForMetrics));
+return (newScale == font.fontSize ? font : org.jmol.util.JmolFont.createFont3D (font.idFontFace, font.idFontStyle, newScale, font.fontSizeNominal, this.apiPlatform, this.graphicsForMetrics));
 }, "org.jmol.util.JmolFont,~N");
 Clazz.overrideMethod (c$, "getFontFid", 
 function (fontSize) {
 return this.getFont3D (fontSize).fid;
 }, "~N");
-Clazz.defineMethod (c$, "getFontFidFS", 
-function (fontFace, fontSize) {
-return this.getFont3DFS (fontFace, fontSize).fid;
-}, "~S,~N");
 c$.getFontStyleID = Clazz.defineMethod (c$, "getFontStyleID", 
 function (fontStyle) {
 return org.jmol.util.JmolFont.getFontStyleID (fontStyle);
@@ -323,7 +317,7 @@ this.bufferSize = this.width * this.height;
 }, "~B");
 Clazz.defineMethod (c$, "beginRendering", 
 function (stereoRotationMatrix) {
-}, "javax.vecmath.Matrix3f");
+}, "org.jmol.util.Matrix3f");
 Clazz.defineMethod (c$, "endRendering", 
 function () {
 });
@@ -354,8 +348,8 @@ Clazz.defineMethod (c$, "plotImage",
 function (x, y, z, image, jmolRenderer, bgcolix, width, height) {
 }, "~N,~N,~N,java.awt.Image,org.jmol.api.JmolRendererInterface,~N,~N,~N");
 Clazz.defineMethod (c$, "plotText", 
-function (x, y, z, colorArgbOrGray, text, font3d, jmolRenderer) {
-}, "~N,~N,~N,~N,~S,org.jmol.util.JmolFont,org.jmol.api.JmolRendererInterface");
+function (x, y, z, colorArgbOrGray, bgColor, text, font3d, jmolRenderer) {
+}, "~N,~N,~N,~N,~N,~S,org.jmol.util.JmolFont,org.jmol.api.JmolRendererInterface");
 Clazz.defineMethod (c$, "renderBackground", 
 function (jmolRenderer) {
 }, "org.jmol.api.JmolRendererInterface");
@@ -366,7 +360,7 @@ return null;
 Clazz.defineMethod (c$, "setFont", 
 function (font3d) {
 }, "org.jmol.util.JmolFont");
-Clazz.defineMethod (c$, "setFont", 
+Clazz.defineMethod (c$, "setFontFid", 
 function (fid) {
 }, "~N");
 Clazz.defineMethod (c$, "setColor", 
@@ -391,7 +385,18 @@ return null;
 });
 Clazz.defineMethod (c$, "setNoisySurfaceShade", 
 function (pointA, pointB, pointC) {
-}, "javax.vecmath.Point3i,javax.vecmath.Point3i,javax.vecmath.Point3i");
+}, "org.jmol.util.Point3i,org.jmol.util.Point3i,org.jmol.util.Point3i");
+c$.roundInt = Clazz.defineMethod (c$, "roundInt", 
+function (a) {
+{
+return a;
+}}, "~N");
+Clazz.defineMethod (c$, "clear", 
+function () {
+});
+Clazz.overrideMethod (c$, "renderAllStrings", 
+function (jmolRenderer) {
+}, "~O");
 Clazz.defineStatics (c$,
 "ENDCAPS_NONE", 0,
 "ENDCAPS_OPEN", 1,

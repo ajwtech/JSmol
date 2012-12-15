@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.symmetry");
-Clazz.load (["javax.vecmath.Matrix4f"], "org.jmol.symmetry.HallInfo", ["javax.util.StringXBuilder", "javax.vecmath.Point3i", "org.jmol.symmetry.HallRotation", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.symmetry");
+Clazz.load (["org.jmol.util.Matrix4f"], "org.jmol.symmetry.HallInfo", ["org.jmol.symmetry.HallRotation", "$.HallTranslation", "$.SymmetryOperation", "org.jmol.util.Logger", "$.Point3i", "$.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.hallSymbol = null;
 this.primitiveHallSymbol = null;
@@ -23,12 +23,12 @@ function (hallSymbol) {
 try {
 var str = this.hallSymbol = hallSymbol.trim ();
 str = this.extractLatticeInfo (str);
-if (org.jmol.symmetry.HallTranslation.getLatticeIndex (this.latticeCode) == 0) return ;
+if (org.jmol.symmetry.HallTranslation.getLatticeIndex (this.latticeCode) == 0) return;
 this.latticeExtension = org.jmol.symmetry.HallTranslation.getLatticeExtension (this.latticeCode, this.isCentrosymmetric);
 str = this.extractVectorInfo (str) + this.latticeExtension;
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("Hallinfo: " + hallSymbol + " " + str);
 var prevOrder = 0;
-var prevAxisType = '\0';
+var prevAxisType = '\u0000';
 this.primitiveHallSymbol = "P";
 while (str.length > 0 && this.nRotations < 16) {
 str = this.extractRotationInfo (str, prevOrder, prevAxisType);
@@ -49,7 +49,7 @@ throw e;
 }, "~S");
 Clazz.defineMethod (c$, "dumpInfo", 
 function () {
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 sb.append ("\nHall symbol: ").append (this.hallSymbol).append ("\nprimitive Hall symbol: ").append (this.primitiveHallSymbol).append ("\nlattice type: ").append (this.getLatticeDesignation ());
 for (var i = 0; i < this.nRotations; i++) {
 sb.append ("\n\nrotation term ").appendI (i + 1).append (this.rotationTerms[i].dumpInfo ());
@@ -66,14 +66,14 @@ var i = name.indexOf (" ");
 if (i < 0) return "";
 var term = name.substring (0, i).toUpperCase ();
 this.latticeCode = term.charAt (0);
-if (this.latticeCode.charCodeAt (0) == 45) {
+if (this.latticeCode == '-') {
 this.isCentrosymmetric = true;
 this.latticeCode = term.charAt (1);
 }return name.substring (i + 1).trim ();
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "extractVectorInfo", 
 ($fz = function (name) {
-this.vector12ths =  new javax.vecmath.Point3i ();
+this.vector12ths =  new org.jmol.util.Point3i ();
 this.vectorCode = "";
 var i = name.indexOf ("(");
 var j = name.indexOf (")", i);
@@ -125,7 +125,7 @@ this.allPositive = true;
 Clazz.instantialize (this, arguments);
 }, org.jmol.symmetry.HallInfo, "RotationTerm");
 Clazz.prepareFields (c$, function () {
-this.seitzMatrix12ths =  new javax.vecmath.Matrix4f ();
+this.seitzMatrix12ths =  new org.jmol.util.Matrix4f ();
 });
 Clazz.makeConstructor (c$, 
 function () {
@@ -136,11 +136,11 @@ this.getRotationInfo (a, b, c);
 }, "~S,~N,~S");
 Clazz.defineMethod (c$, "dumpInfo", 
 function () {
-var a =  new javax.util.StringXBuilder ();
+var a =  new org.jmol.util.StringXBuilder ();
 a.append ("\ninput code: ").append (this.inputCode).append ("; primitive code: ").append (this.primitiveCode).append ("\norder: ").appendI (this.order).append (this.isImproper ? " (improper axis)" : "");
-if (this.axisType.charCodeAt (0) != 95) {
+if (this.axisType != '_') {
 a.append ("; axisType: ").appendC (this.axisType);
-if (this.diagonalReferenceAxis.charCodeAt (0) != 0) a.appendC (this.diagonalReferenceAxis);
+if (this.diagonalReferenceAxis != '\0') a.appendC (this.diagonalReferenceAxis);
 }if (this.translationString.length > 0) a.append ("; translation: ").append (this.translationString);
 if (this.b$["org.jmol.symmetry.HallInfo"].vectorCode.length > 0) a.append ("; vector offset:").append (this.b$["org.jmol.symmetry.HallInfo"].vectorCode);
 if (this.rotation != null) a.append ("\noperator: ").append (this.getXYZ (this.allPositive)).append ("\nSeitz matrix:\n").append (org.jmol.symmetry.SymmetryOperation.dumpSeitz (this.seitzMatrix12ths));
@@ -154,11 +154,11 @@ Clazz.defineMethod (c$, "getRotationInfo",
 ($fz = function (a, b, c) {
 this.inputCode = a;
 a += "   ";
-if ((a.charAt (0)).charCodeAt (0) == 45) {
+if (a.charAt (0) == '-') {
 this.isImproper = true;
 a = a.substring (1);
 }this.primitiveCode = "";
-this.order = (a.charAt (0)).charCodeAt (0) - 48;
+this.order = a.charCodeAt (0) - 48;
 this.diagonalReferenceAxis = '\0';
 this.axisType = '\0';
 var d = 2;
@@ -195,23 +195,23 @@ default:
 this.axisType = (this.order == 1 ? '_' : this.b$["org.jmol.symmetry.HallInfo"].nRotations == 0 ? 'z' : this.b$["org.jmol.symmetry.HallInfo"].nRotations == 2 ? '*' : b == 2 || b == 4 ? 'x' : '\'');
 a = a.substring (0, 1) + this.axisType + a.substring (1);
 }
-this.primitiveCode += (this.axisType.charCodeAt (0) == 95 ? "1" : a.substring (0, 2));
-if (this.diagonalReferenceAxis.charCodeAt (0) != 0) {
+this.primitiveCode += (this.axisType == '_' ? "1" : a.substring (0, 2));
+if (this.diagonalReferenceAxis != '\0') {
 a = a.substring (0, 1) + this.diagonalReferenceAxis + this.axisType + a.substring (d);
-this.primitiveCode += (this.diagonalReferenceAxis).charCodeAt (0);
+this.primitiveCode += this.diagonalReferenceAxis;
 d = 3;
 }this.lookupCode = a.substring (0, d);
 this.rotation = org.jmol.symmetry.HallRotation.lookup (this.lookupCode);
 if (this.rotation == null) {
 org.jmol.util.Logger.error ("Rotation lookup could not find " + this.inputCode + " ? " + this.lookupCode);
-return ;
+return;
 }this.translation =  new org.jmol.symmetry.HallTranslation ();
 this.translationString = "";
 var f = a.length;
 for (var g = d; g < f; g++) {
 var h = a.charAt (g);
 var i =  new org.jmol.symmetry.HallTranslation (h, this.order);
-if (i.translationCode.charCodeAt (0) != 0) {
+if (i.translationCode != '\0') {
 this.translationString += "" + i.translationCode;
 this.translation.rotationShift12ths += i.rotationShift12ths;
 this.translation.vectorShift12ths.add (i.vectorShift12ths);
@@ -236,8 +236,8 @@ this.seitzMatrix12ths.m23 += this.translation.rotationShift12ths;
 break;
 }
 if (this.b$["org.jmol.symmetry.HallInfo"].vectorCode.length > 0) {
-var h =  new javax.vecmath.Matrix4f ();
-var i =  new javax.vecmath.Matrix4f ();
+var h =  new org.jmol.util.Matrix4f ();
+var i =  new org.jmol.util.Matrix4f ();
 h.setIdentity ();
 i.setIdentity ();
 h.m03 = this.b$["org.jmol.symmetry.HallInfo"].vector12ths.x;

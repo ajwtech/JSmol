@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.util");
+Clazz.declarePackage ("org.jmol.util");
 c$ = Clazz.decorateAsClass (function () {
 this.entryCount = 0;
 this.entries = null;
@@ -22,7 +22,7 @@ var entries = this.entries;
 var hash = (key & 0x7FFFFFFF) % entries.length;
 for (var e = entries[hash]; e != null; e = e.next) if (e.key == key) {
 e.value = value;
-return ;
+return;
 }
 if (this.entryCount > entries.length) this.rehash ();
 entries = this.entries;

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.simple");
+Clazz.declarePackage ("org.jmol.adapter.readers.simple");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.simple.HyperChemReader", ["java.lang.Exception"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.atomIndex = 0;
@@ -7,7 +7,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.simple, "HyperChemReader", org.jmol.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
-if (this.line.length == 0 || (this.line.charAt (0)).charCodeAt (0) == 59) return true;
+if (this.line.length == 0 || this.line.charAt (0) == ';') return true;
 if (this.line.startsWith ("mol ")) {
 if (!this.doGetModel (++this.modelNumber, null)) return this.checkLastModel ();
 this.processMol ();
@@ -51,7 +51,8 @@ var bondCount = this.parseInt ();
 for (var i = 0; i < bondCount; ++i) {
 var otherAtomNumber = this.parseInt ();
 var bondTypeToken = this.parseToken ();
-if (otherAtomNumber > this.atomIndex) continue ;var bondOrder;
+if (otherAtomNumber > this.atomIndex) continue;
+var bondOrder;
 switch (bondTypeToken.charAt (0)) {
 case 's':
 bondOrder = 1;

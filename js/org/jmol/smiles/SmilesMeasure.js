@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.smiles");
+Clazz.declarePackage ("org.jmol.smiles");
 c$ = Clazz.decorateAsClass (function () {
 this.search = null;
 this.nPoints = 0;
@@ -12,7 +12,7 @@ this.points = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.smiles, "SmilesMeasure");
 Clazz.prepareFields (c$, function () {
-this.indices =  Clazz.newArray (4, 0);
+this.indices =  Clazz.newIntArray (4, 0);
 this.points =  new Array (4);
 });
 Clazz.makeConstructor (c$, 
@@ -68,7 +68,7 @@ v.vTemp1.setT (pt1a);
 v.vTemp1.sub (pt1);
 v.vTemp2.setT (pt2a);
 v.vTemp2.sub (pt2);
-if (!isAll) return ;
+if (!isAll) return;
 v.vNorm1.setT (pt1);
 v.vNorm1.sub (pt2);
 v.vNorm1.normalize ();
@@ -77,7 +77,7 @@ v.vTemp1.normalize ();
 v.vTemp2.cross (v.vTemp2, v.vNorm1);
 v.vTemp2.normalize ();
 v.vNorm2.cross (v.vTemp1, v.vTemp2);
-}, "javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,javax.vecmath.Point3f,org.jmol.smiles.SmilesSearch.VTemp,~B");
+}, "org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.util.Point3f,org.jmol.smiles.SmilesSearch.VTemp,~B");
 Clazz.defineStatics (c$,
 "TYPES", "__dat",
 "radiansPerDegree", (0.017453292519943295));

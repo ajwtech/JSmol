@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.constant");
-Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumCallback", ["javax.util.StringXBuilder"], function () {
+Clazz.declarePackage ("org.jmol.constant");
+Clazz.load (["java.lang.Enum"], "org.jmol.constant.EnumCallback", ["org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.declareType (org.jmol.constant, "EnumCallback", Enum);
 c$.getCallback = Clazz.defineMethod (c$, "getCallback", 
 function (name) {
@@ -12,7 +12,7 @@ return null;
 c$.getNameList = Clazz.defineMethod (c$, "getNameList", 
 function () {
 if (org.jmol.constant.EnumCallback.nameList == null) {
-var names =  new javax.util.StringXBuilder ();
+var names =  new org.jmol.util.StringXBuilder ();
 for (var item, $item = 0, $$item = org.jmol.constant.EnumCallback.values (); $item < $$item.length && ((item = $$item[$item]) || true); $item++) names.append (item.name ().toLowerCase ()).append ("Callback;");
 
 ($t$ = org.jmol.constant.EnumCallback.nameList = names.toString (), org.jmol.constant.EnumCallback.prototype.nameList = org.jmol.constant.EnumCallback.nameList, $t$);

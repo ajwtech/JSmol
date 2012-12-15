@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.smarter");
+Clazz.declarePackage ("org.jmol.adapter.smarter");
 Clazz.load (["org.jmol.api.JmolAdapterStructureIterator"], "org.jmol.adapter.smarter.StructureIterator", ["org.jmol.api.JmolAdapter"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.structureCount = 0;

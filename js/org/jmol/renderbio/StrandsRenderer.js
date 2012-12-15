@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.renderbio");
+Clazz.declarePackage ("org.jmol.renderbio");
 Clazz.load (["org.jmol.renderbio.BioShapeRenderer"], "org.jmol.renderbio.StrandsRenderer", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.strandCount = 0;
@@ -8,7 +8,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.renderbio, "StrandsRenderer", org.jmol.renderbio.BioShapeRenderer);
 Clazz.overrideMethod (c$, "renderBioShape", 
 function (bioShape) {
-if (!this.setStrandCount ()) return ;
+if (!this.setStrandCount ()) return;
 this.render1 ();
 }, "org.jmol.shapebio.BioShape");
 Clazz.defineMethod (c$, "setStrandCount", 

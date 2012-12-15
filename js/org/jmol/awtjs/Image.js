@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.awtjs");
+Clazz.declarePackage ("org.jmol.awtjs");
 c$ = Clazz.declareType (org.jmol.awtjs, "Image");
 c$.createImage = Clazz.defineMethod (c$, "createImage", 
 function (data) {
@@ -9,12 +9,14 @@ function (display, image) {
 }, "~O,~O");
 c$.getWidth = Clazz.defineMethod (c$, "getWidth", 
 function (image) {
-return 0;
-}, "~O");
+{
+return canvas.width;
+}}, "~O");
 c$.getHeight = Clazz.defineMethod (c$, "getHeight", 
 function (image) {
-return 0;
-}, "~O");
+{
+return canvas.height;
+}}, "~O");
 c$.getJpgImage = Clazz.defineMethod (c$, "getJpgImage", 
 function (apiPlatform, viewer, quality, comment) {
 return null;

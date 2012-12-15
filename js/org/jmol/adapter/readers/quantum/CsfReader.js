@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
-Clazz.load (["org.jmol.adapter.readers.quantum.MopacSlaterReader", "java.util.Hashtable"], "org.jmol.adapter.readers.quantum.CsfReader", ["java.lang.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.load (["org.jmol.adapter.readers.quantum.MopacSlaterReader", "java.util.Hashtable"], "org.jmol.adapter.readers.quantum.CsfReader", ["java.lang.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "$.Bond", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nAtoms = 0;
 this.strAtomicNumbers = "";
@@ -16,7 +16,7 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.adapter.readers.quantum, "CsfReader", org.jmol.adapter.readers.quantum.MopacSlaterReader);
 Clazz.prepareFields (c$, function () {
 this.propertyItemCounts =  new java.util.Hashtable ();
-this.fieldTypes =  Clazz.newArray (100, 0);
+this.fieldTypes =  Clazz.newIntArray (100, 0);
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -83,10 +83,9 @@ fpt += this.getPropertyCount (field);
 return this.fieldCount;
 }, $fz.isPrivate = true, $fz), "~A,~A");
 Clazz.defineMethod (c$, "fillCsfArray", 
-($fz = function (property, tokens, i0, f) {
+($fz = function (property, tokens, i0, f, isInteger) {
 var n = this.getPropertyCount (property);
 var ioffset = i0;
-var isInteger = (Clazz.instanceOf (f, Array));
 for (var i = 0; i < n; i++) {
 var ipt = ioffset + i;
 if (ipt == tokens.length) {
@@ -96,7 +95,7 @@ ipt = i0;
 }if (isInteger) (f)[i] = this.parseIntStr (tokens[ipt]);
  else (f)[i] = this.parseFloatStr (tokens[ipt]);
 }
-}, $fz.isPrivate = true, $fz), "~S,~A,~N,~O");
+}, $fz.isPrivate = true, $fz), "~S,~A,~N,~O,~B");
 Clazz.defineMethod (c$, "processConnectorObject", 
 ($fz = function () {
 this.connectors =  new java.util.Hashtable ();
@@ -113,13 +112,15 @@ for (var i = 0; i < this.fieldCount; ++i) {
 var field = tokens[i];
 switch (this.fieldTypes[i]) {
 case 1:
-if (!field.equals ("atom")) continue out;break;
+if (!field.equals ("atom")) continue out;
+break;
 case 3:
 field2 = field;
 if (field.equals ("sto_basis_fxn")) this.nSlaters++;
  else if (field.equals ("gto_basis_fxn")) this.nGaussians++;
  else if (field.equals ("vibrational_level")) isVibration = true;
- else if (!field.equals ("bond")) continue out;break;
+ else if (!field.equals ("bond")) continue out;
+break;
 case 2:
 thisAtomID = org.jmol.util.Parser.parseInt (field);
 break;
@@ -138,7 +139,7 @@ if (this.htBonds != null) {
 var bond = this.htBonds.get (thisBondID);
 this.setBond (bond, connect);
 }} else {
-var connect =  Clazz.newArray (2, 0);
+var connect =  Clazz.newIntArray (2, 0);
 connect[0] = thisAtomID;
 this.connectors.put (thisBondID, connect);
 }}}
@@ -226,7 +227,7 @@ this.setBond (bond, connect);
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processVibrationObject", 
 ($fz = function () {
-var vibData =  Clazz.newArray (this.nVibrations, this.nAtoms * 3, 0);
+var vibData =  Clazz.newFloatArray (this.nVibrations, this.nAtoms * 3, 0);
 var energies =  new Array (this.nVibrations);
 this.readLine ();
 while (this.line != null && this.parseLineParameters (org.jmol.adapter.readers.quantum.CsfReader.vibFields, org.jmol.adapter.readers.quantum.CsfReader.vibFieldMap) > 0) {
@@ -240,7 +241,7 @@ case -1:
 thisvib = this.parseIntStr (field) - 1;
 break;
 case 1:
-this.fillCsfArray ("normalMode", tokens, i, vibData[thisvib]);
+this.fillCsfArray ("normalMode", tokens, i, vibData[thisvib], false);
 break;
 case 2:
 energies[thisvib] = field;
@@ -250,7 +251,8 @@ break;
 }
 }
 for (var i = 0; i < this.nVibrations; i++) {
-if (!this.doGetVibration (i + 1)) continue ;this.atomSetCollection.cloneFirstAtomSetWithBonds (this.nBonds);
+if (!this.doGetVibration (i + 1)) continue;
+this.atomSetCollection.cloneFirstAtomSetWithBonds (this.nBonds);
 this.atomSetCollection.setAtomSetFrequency (null, null, energies[i], null);
 var ipt = 0;
 var baseAtom = this.nAtoms * (i + 1);
@@ -260,14 +262,14 @@ for (var iAtom = 0; iAtom < this.nAtoms; iAtom++) this.atomSetCollection.addVibr
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "processMolecularOrbitalObject", 
 ($fz = function () {
-if (this.nSlaters == 0 && this.nGaussians == 0 || !this.readMolecularOrbitals) {
+if (this.nSlaters == 0 && this.nGaussians == 0 || !this.doReadMolecularOrbitals) {
 this.readLine ();
-return ;
+return;
 }this.nOrbitals = (this.nSlaters + this.nGaussians);
 org.jmol.util.Logger.info ("Reading CSF data for " + this.nOrbitals + " molecular orbitals");
-var energy =  Clazz.newArray (this.nOrbitals, 0);
-var occupancy =  Clazz.newArray (this.nOrbitals, 0);
-var list =  Clazz.newArray (this.nOrbitals, this.nOrbitals, 0);
+var energy =  Clazz.newFloatArray (this.nOrbitals, 0);
+var occupancy =  Clazz.newFloatArray (this.nOrbitals, 0);
+var list =  Clazz.newFloatArray (this.nOrbitals, this.nOrbitals, 0);
 var listCompressed = null;
 var coefIndices = null;
 var ipt = 0;
@@ -287,16 +289,16 @@ case 2:
 occupancy[ipt] = this.parseFloatStr (tokens[i]);
 break;
 case 3:
-this.fillCsfArray ("eig_vec", tokens, i, list[ipt]);
+this.fillCsfArray ("eig_vec", tokens, i, list[ipt], false);
 break;
 case 4:
 isCompressed = true;
-if (listCompressed == null) listCompressed =  Clazz.newArray (this.nOrbitals, this.nOrbitals, 0);
-this.fillCsfArray ("eig_vec_compressed", tokens, i, listCompressed[ipt]);
+if (listCompressed == null) listCompressed =  Clazz.newFloatArray (this.nOrbitals, this.nOrbitals, 0);
+this.fillCsfArray ("eig_vec_compressed", tokens, i, listCompressed[ipt], false);
 break;
 case 5:
-if (coefIndices == null) coefIndices =  Clazz.newArray (this.nOrbitals, this.nOrbitals, 0);
-this.fillCsfArray ("coef_indices", tokens, i, coefIndices[ipt]);
+if (coefIndices == null) coefIndices =  Clazz.newIntArray (this.nOrbitals, this.nOrbitals, 0);
+this.fillCsfArray ("coef_indices", tokens, i, coefIndices[ipt], true);
 break;
 }
 }
@@ -322,15 +324,15 @@ this.setMOs ("eV");
 Clazz.defineMethod (c$, "processBasisObject", 
 ($fz = function (sto_gto) {
 var atomNos = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.strAtomicNumbers);
-this.atomicNumbers =  Clazz.newArray (atomNos.length, 0);
+this.atomicNumbers =  Clazz.newIntArray (atomNos.length, 0);
 for (var i = 0; i < this.atomicNumbers.length; i++) this.atomicNumbers[i] = this.parseIntStr (atomNos[i]);
 
 this.nOrbitals = (this.nSlaters + this.nGaussians);
 var isGaussian = (sto_gto.equals ("gto"));
-var zetas =  Clazz.newArray (this.nOrbitals, 0);
+var zetas = org.jmol.util.ArrayUtil.newFloat2 (this.nOrbitals);
 var contractionCoefs = null;
 var types =  new Array (this.nOrbitals);
-var shells =  Clazz.newArray (this.nOrbitals, 0);
+var shells =  Clazz.newIntArray (this.nOrbitals, 0);
 var nZetas = 0;
 this.readLine ();
 while (this.line != null && this.parseLineParameters (org.jmol.adapter.readers.quantum.CsfReader.moFields, org.jmol.adapter.readers.quantum.CsfReader.moFieldMap) > 0) {
@@ -349,15 +351,15 @@ types[ipt] = field;
 break;
 case 7:
 case 9:
-zetas[ipt] =  Clazz.newArray (nZetas, 0);
-this.fillCsfArray (sto_gto + "_exp", tokens, i, zetas[ipt]);
+zetas[ipt] =  Clazz.newFloatArray (nZetas, 0);
+this.fillCsfArray (sto_gto + "_exp", tokens, i, zetas[ipt], false);
 break;
 case 10:
 shells[ipt] = this.parseIntStr (field);
 break;
 case 8:
-if (contractionCoefs == null) contractionCoefs =  Clazz.newArray (this.nOrbitals, nZetas, 0);
-this.fillCsfArray ("contractions", tokens, i, contractionCoefs[ipt]);
+if (contractionCoefs == null) contractionCoefs =  Clazz.newFloatArray (this.nOrbitals, nZetas, 0);
+this.fillCsfArray ("contractions", tokens, i, contractionCoefs[ipt], false);
 }
 }
 }
@@ -370,7 +372,7 @@ var gaussianCount = 0;
 for (var ipt = 0; ipt < this.nGaussians; ipt++) {
 if (shells[ipt] != iShell) {
 iShell = shells[ipt];
-var slater =  Clazz.newArray (4, 0);
+var slater =  Clazz.newIntArray (4, 0);
 var iAtom = this.atomSetCollection.getAtomIndexFromSerial ((this.connectors.get (sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
 slater[0] = iAtom;
 slater[1] = org.jmol.api.JmolAdapter.getQuantumShellTagID (types[ipt].substring (0, 1));
@@ -384,7 +386,7 @@ gaussianCount += nZ;
 for (var i = 0; i < nZ; i++) gdata.add ([zetas[ipt][i], contractionCoefs[ipt][i]]);
 
 }}
-var garray =  Clazz.newArray (gaussianCount, 0);
+var garray = org.jmol.util.ArrayUtil.newFloat2 (gaussianCount);
 for (var i = 0; i < gaussianCount; i++) garray[i] = gdata.get (i);
 
 this.moData.put ("shells", sdata);

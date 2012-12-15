@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.modelset");
-Clazz.load (["java.lang.Short", "java.util.Hashtable", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Group", ["java.lang.Float", "javax.util.BitSet", "javax.vecmath.Point3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.ArrayUtil", "$.BitSetUtil", "$.Logger", "$.Quaternion"], function () {
+Clazz.declarePackage ("org.jmol.modelset");
+Clazz.load (["java.lang.Short", "java.util.Hashtable", "org.jmol.viewer.JmolConstants"], "org.jmol.modelset.Group", ["java.lang.Float", "org.jmol.constant.EnumStructure", "org.jmol.util.ArrayUtil", "$.BitSet", "$.BitSetUtil", "$.Logger", "$.Point3f", "$.Quaternion", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.groupIndex = 0;
 this.chain = null;
@@ -236,25 +236,25 @@ return org.jmol.modelset.Group.getSeqcode2 (sequenceNumber, insertionCode);
 c$.getSeqcode2 = Clazz.defineMethod (c$, "getSeqcode2", 
 function (sequenceNumber, insertionCode) {
 if (sequenceNumber == -2147483648) return sequenceNumber;
-if (!((insertionCode >= 'A' && insertionCode <= 'Z') || (insertionCode >= 'a' && insertionCode <= 'z') || (insertionCode >= '0' && insertionCode <= '9') || insertionCode.charCodeAt (0) == 63 || insertionCode.charCodeAt (0) == 42)) {
-if (insertionCode.charCodeAt (0) != 32 && insertionCode.charCodeAt (0) != 0) org.jmol.util.Logger.warn ("unrecognized insertionCode:" + insertionCode);
+if (!((insertionCode >= 'A' && insertionCode <= 'Z') || (insertionCode >= 'a' && insertionCode <= 'z') || (insertionCode >= '0' && insertionCode <= '9') || insertionCode == '?' || insertionCode == '*')) {
+if (insertionCode != ' ' && insertionCode != '\0') org.jmol.util.Logger.warn ("unrecognized insertionCode:" + insertionCode);
 insertionCode = '\0';
 }return ((sequenceNumber == 2147483647 ? 0 : (sequenceNumber << 8) | 128)) + insertionCode.charCodeAt (0);
 }, "~N,~S");
 c$.getSeqcodeString = Clazz.defineMethod (c$, "getSeqcodeString", 
 function (seqcode) {
 if (seqcode == -2147483648) return null;
-return (seqcode & 127) == 0 ? "" + (seqcode >> 8) : "" + (seqcode >> 8) + '^' + String.fromCharCode ((seqcode & 127));
+return (seqcode & 127) == 0 ? "" + (seqcode >> 8) : "" + (seqcode >> 8) + '^' + String.fromCharCode (seqcode & 127);
 }, "~N");
 Clazz.defineMethod (c$, "getInsertionCode", 
 function () {
 if (this.seqcode == -2147483648) return '\0';
-return String.fromCharCode ((this.seqcode & 127));
+return String.fromCharCode (this.seqcode & 127);
 });
 c$.getInsertionCode = Clazz.defineMethod (c$, "getInsertionCode", 
 function (seqcode) {
 if (seqcode == -2147483648) return '\0';
-return String.fromCharCode ((seqcode & 127));
+return String.fromCharCode (seqcode & 127);
 }, "~N");
 Clazz.defineMethod (c$, "isAdded", 
 function (atomIndex) {
@@ -262,7 +262,7 @@ return this.bsAdded != null && this.bsAdded.get (atomIndex);
 }, "~N");
 Clazz.defineMethod (c$, "addAtoms", 
 function (atomIndex) {
-if (this.bsAdded == null) this.bsAdded =  new javax.util.BitSet ();
+if (this.bsAdded == null) this.bsAdded =  new org.jmol.util.BitSet ();
 this.bsAdded.set (atomIndex);
 }, "~N");
 Clazz.defineMethod (c$, "selectAtoms", 
@@ -270,12 +270,12 @@ function (bs) {
 bs.setBits (this.firstAtomIndex, this.lastAtomIndex + 1);
 if (this.bsAdded != null) bs.or (this.bsAdded);
 return this.lastAtomIndex;
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "isSelected", 
 function (bs) {
 var pt = bs.nextSetBit (this.firstAtomIndex);
 return (pt >= 0 && pt <= this.lastAtomIndex || this.bsAdded != null && this.bsAdded.intersects (bs));
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "isHetero", 
 function () {
 return this.chain.getAtom (this.firstAtomIndex).isHetero ();
@@ -339,17 +339,17 @@ if (this.lastAtomIndex - this.firstAtomIndex < 3) return null;
 var pt = this.firstAtomIndex;
 return org.jmol.util.Quaternion.getQuaternionFrame (atoms[pt], atoms[++pt], atoms[++pt]);
 }, "~A");
-Clazz.defineMethod (c$, "setProteinStructureId", 
+Clazz.defineMethod (c$, "setStrucNo", 
 function (i) {
 }, "~N");
 Clazz.defineMethod (c$, "getHelixData", 
 function (tokType, qType, mStep) {
 switch (tokType) {
 case 135266320:
-return  new javax.vecmath.Point3f ();
+return  new org.jmol.util.Point3f ();
 case 1073741854:
 case 1666189314:
-return  new javax.vecmath.Vector3f ();
+return  new org.jmol.util.Vector3f ();
 case 135266305:
 return  new Float (NaN);
 case 135266306:
@@ -378,7 +378,7 @@ Clazz.defineMethod (c$, "isCrossLinked",
 function (g) {
 return false;
 }, "org.jmol.modelset.Group");
-Clazz.defineMethod (c$, "getCrossLinkLeadAtomIndexes", 
+Clazz.defineMethod (c$, "getCrossLinkLead", 
 function (vReturn) {
 return false;
 }, "java.util.List");
@@ -400,7 +400,7 @@ this.firstAtomIndex -= atomsDeleted;
 this.leadAtomIndex -= atomsDeleted;
 this.lastAtomIndex -= atomsDeleted;
 if (this.bsAdded != null) org.jmol.util.BitSetUtil.deleteBits (this.bsAdded, bsDeleted);
-}, "~N,javax.util.BitSet");
+}, "~N,org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "getGroupInfo", 
 function (igroup) {
 var infoGroup =  new java.util.Hashtable ();
@@ -426,7 +426,7 @@ if (this.bsAdded != null) for (var i = this.bsAdded.nextSetBit (0); i >= 0; i = 
 }, "~A,~A");
 Clazz.defineMethod (c$, "checkMinZ", 
 ($fz = function (atom, minZ) {
-var z = atom.screenZ - Math.floor (atom.screenDiameter / 2) - 2;
+var z = atom.screenZ - Clazz.doubleToInt (atom.screenDiameter / 2) - 2;
 if (z < minZ[0]) minZ[0] = Math.max (1, z);
 }, $fz.isPrivate = true, $fz), "org.jmol.modelset.Atom,~A");
 Clazz.defineStatics (c$,

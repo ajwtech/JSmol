@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PolygonFileReader"], "org.jmol.jvxl.readers.EfvetReader", ["javax.vecmath.Point3f", "org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.PolygonFileReader"], "org.jmol.jvxl.readers.EfvetReader", ["org.jmol.jvxl.data.JvxlCoder", "org.jmol.util.Logger", "$.Point3f"], function () {
 c$ = Clazz.declareType (org.jmol.jvxl.readers, "EfvetReader", org.jmol.jvxl.readers.PolygonFileReader);
 Clazz.makeConstructor (c$, 
 function () {
@@ -28,7 +28,7 @@ org.jmol.util.Logger.info (this.jvxlFileHeaderBuffer.toString ());
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getVertices", 
 ($fz = function () {
-var pt =  new javax.vecmath.Point3f ();
+var pt =  new org.jmol.util.Point3f ();
 var value = 0;
 this.skipTo ("<vertices", "count");
 this.jvxlData.vertexCount = this.nVertices = this.parseInt ();

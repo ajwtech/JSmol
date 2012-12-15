@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.molxyz");
+Clazz.declarePackage ("org.jmol.adapter.readers.molxyz");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.molxyz.MolReader", ["java.lang.Exception", "$.Float", "org.jmol.adapter.smarter.Bond", "org.jmol.api.JmolAdapter", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.is2D = false;
@@ -33,7 +33,7 @@ return true;
 });
 Clazz.defineMethod (c$, "readUserData", 
 ($fz = function (atom0) {
-if (this.isV3000) return ;
+if (this.isV3000) return;
 while (this.readLine () != null && this.line.indexOf ("$$$$") != 0) {
 if (this.line.toUpperCase ().contains ("_PARTIAL_CHARGES")) {
 try {
@@ -46,7 +46,7 @@ if (!Float.isNaN (partialCharge)) atoms[atomIndex].partialCharge = partialCharge
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-return ;
+return;
 } else {
 throw e;
 }
@@ -66,13 +66,13 @@ var thisDataSetName = this.line;
 header += this.line + "\n";
 this.atomSetCollection.setCollectionName (this.line);
 this.readLine ();
-if (this.line == null) return ;
+if (this.line == null) return;
 header += this.line + "\n";
 this.dimension = (this.line.length < 22 ? "3D" : this.line.substring (20, 22));
 if (!this.allow2D && this.dimension.equals ("2D")) throw  new Exception ("File is 2D, not 3D");
 this.atomSetCollection.setAtomSetCollectionAuxiliaryInfo ("dimension", this.dimension);
 this.readLine ();
-if (this.line == null) return ;
+if (this.line == null) return;
 header += this.line + "\n";
 org.jmol.util.Logger.info (header);
 this.checkCurrentLineForScript ();
@@ -88,7 +88,7 @@ if (this.isV3000) {
 this.is2D = (this.dimension.equals ("2D"));
 this.discardLinesUntilContains ("COUNTS");
 tokens = this.getTokens ();
-}if (this.line == null) return ;
+}if (this.line == null) return;
 var atomCount = (this.isV3000 ? this.parseIntStr (tokens[3]) : this.parseIntRange (this.line, 0, 3));
 var bondCount = (this.isV3000 ? this.parseIntStr (tokens[4]) : this.parseIntRange (this.line, 3, 6));
 var atom0 = this.atomSetCollection.getAtomCount ();

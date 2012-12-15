@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
+Clazz.declarePackage ("org.jmol.adapter.readers.quantum");
 Clazz.load (["org.jmol.adapter.readers.quantum.MOReader", "$.BasisFunctionReader"], "org.jmol.adapter.readers.quantum.QchemReader", ["java.lang.Float", "java.util.ArrayList", "$.Hashtable", "org.jmol.api.JmolAdapter", "org.jmol.util.ArrayUtil", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.calculationNumber = 1;
@@ -67,11 +67,14 @@ this.readLines (2);
 var tokens;
 while (this.readLine () != null && !this.line.startsWith (" --")) {
 tokens = this.getTokens ();
-if (tokens.length < 5) continue ;var symbol = tokens[1];
-if (org.jmol.api.JmolAdapter.getElementNumber (symbol) < 1) continue ;var x = this.parseFloatStr (tokens[2]);
+if (tokens.length < 5) continue;
+var symbol = tokens[1];
+if (org.jmol.api.JmolAdapter.getElementNumber (symbol) < 1) continue;
+var x = this.parseFloatStr (tokens[2]);
 var y = this.parseFloatStr (tokens[3]);
 var z = this.parseFloatStr (tokens[4]);
-if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) continue ;var atom = this.atomSetCollection.addNewAtom ();
+if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) continue;
+var atom = this.atomSetCollection.addNewAtom ();
 atom.elementSymbol = symbol;
 this.setAtomCoordXYZ (atom, x, y, z);
 this.atomSetCollection.setAtomSetModelProperty (".PATH", "Calculation " + this.calculationNumber);
@@ -83,12 +86,13 @@ while (this.readLine () != null && this.line.indexOf ("STANDARD") < 0) {
 if (!this.line.startsWith (" Frequency:")) this.discardLinesUntilStartsWith (" Frequency:");
 var frequencies = this.getTokens ();
 var frequencyCount = frequencies.length - 1;
-var ignore =  Clazz.newArray (frequencyCount, false);
+var ignore =  Clazz.newBooleanArray (frequencyCount, false);
 var atomCount = this.atomSetCollection.getLastAtomSetAtomCount ();
 var iAtom0 = this.atomSetCollection.getAtomCount ();
 for (var i = 0; i < frequencyCount; ++i) {
 ignore[i] = !this.doGetVibration (++this.vibrationNumber);
-if (ignore[i]) continue ;this.atomSetCollection.cloneLastAtomSet ();
+if (ignore[i]) continue;
+this.atomSetCollection.cloneLastAtomSet ();
 this.atomSetCollection.setAtomSetFrequency ("Calculation " + this.calculationNumber, null, frequencies[i + 1], null);
 }
 this.discardLinesUntilStartsWith ("               X");
@@ -119,8 +123,9 @@ while (this.readLine () != null) {
 if (this.line.startsWith ("****")) {
 atomCount++;
 if (this.readLine () != null && this.line.startsWith ("$end")) break;
-continue ;}shellCount++;
-var slater =  Clazz.newArray (4, 0);
+continue;
+}shellCount++;
+var slater =  Clazz.newIntArray (4, 0);
 tokens = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.line);
 slater[0] = atomCount;
 slater[1] = org.jmol.api.JmolAdapter.getQuantumShellTagID (tokens[0]);
@@ -133,10 +138,10 @@ for (var i = 0; i < nGaussians; i++) {
 gdata.add (org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ()));
 }
 }
-this.gaussians =  Clazz.newArray (gaussianCount, 0);
+this.gaussians = org.jmol.util.ArrayUtil.newFloat2 (gaussianCount);
 for (var i = 0; i < gaussianCount; i++) {
 tokens = gdata.get (i);
-this.gaussians[i] =  Clazz.newArray (tokens.length, 0);
+this.gaussians[i] =  Clazz.newFloatArray (tokens.length, 0);
 for (var j = 0; j < tokens.length; j++) this.gaussians[i][j] = this.parseFloatStr (tokens[j]);
 
 }
@@ -215,8 +220,8 @@ this.shells = null;
 Clazz.defineMethod (c$, "readMOs", 
 ($fz = function (restricted, moInfos) {
 var mos = org.jmol.util.ArrayUtil.createArrayOfHashtable (6);
-var mocoef =  Clazz.newArray (6, 0);
-var moid =  Clazz.newArray (6, 0);
+var mocoef = org.jmol.util.ArrayUtil.newFloat2 (6);
+var moid =  Clazz.newIntArray (6, 0);
 var tokens;
 var energy;
 var nMOs = 0;
@@ -226,7 +231,7 @@ var nMO = tokens.length;
 energy = org.jmol.adapter.smarter.AtomSetCollectionReader.getTokensStr (this.readLine ().substring (13));
 for (var i = 0; i < nMO; i++) {
 moid[i] = this.parseIntStr (tokens[i]) - 1;
-mocoef[i] =  Clazz.newArray (this.nBasis, 0);
+mocoef[i] =  Clazz.newFloatArray (this.nBasis, 0);
 mos[i] =  new java.util.Hashtable ();
 }
 for (var i = 0, pt = 0; i < this.nBasis; i++) {
@@ -253,7 +258,8 @@ this.fSpherical = true;
 this.fFixed = true;
 break;
 default:
-if (!this.isQuantumBasisSupported (ch)) continue ;break;
+if (!this.isQuantumBasisSupported (ch)) continue;
+break;
 }
 for (var j = tokens.length - nMO, k = 0; k < nMO; j++, k++) mocoef[k][pt] = this.parseFloatStr (tokens[j]);
 

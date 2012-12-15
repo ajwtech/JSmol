@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
-Clazz.load (["java.io.BufferedInputStream", "java.util.Properties", "javax.util.StringXBuilder", "javax.vecmath.Vector3f", "org.jmol.util.Elements"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.viewer");
+Clazz.load (["java.io.BufferedInputStream", "java.util.Properties", "org.jmol.util.Elements", "$.StringXBuilder", "$.Vector3f"], "org.jmol.viewer.JmolConstants", ["java.lang.NullPointerException", "java.util.Hashtable", "org.jmol.util.Logger", "$.Parser"], function () {
 c$ = Clazz.declareType (org.jmol.viewer, "JmolConstants");
 c$.embedScript = Clazz.defineMethod (c$, "embedScript", 
 function (s) {
@@ -50,15 +50,15 @@ var id = res + ch0;
 isSp2 = ("ARGN;ASNN;ASNO;ASPO;GLNN;GLNO;GLUO;HISN;HISC;PHECTRPC;TRPN;TYRC".indexOf (id) >= 0);
 if ("LYSN".indexOf (id) >= 0) {
 ret[1] = 1;
-} else if (ch0.charCodeAt (0) == 79 && ch1.charCodeAt (0) == 88) {
+} else if (ch0 == 'O' && ch1 == 'X') {
 ret[1] = -1;
 }}break;
 case 1:
 case 2:
-if (name.length > 2 && (name.charAt (2)).charCodeAt (0) == 39) return false;
+if (name.length > 2 && name.charAt (2) == '\'') return false;
 switch (ch0) {
 case 'C':
-if (ch1.charCodeAt (0) == 55) return false;
+if (ch1 == '7') return false;
 break;
 case 'N':
 switch (ch1) {
@@ -98,7 +98,7 @@ function (pt) {
 if (pt < 0 || pt > org.jmol.viewer.JmolConstants.pdbBondInfo.length) return null;
 var s = org.jmol.viewer.JmolConstants.pdbBondInfo[pt];
 var temp = org.jmol.util.Parser.getTokens (s);
-var info =  new Array (Math.floor (temp.length / 2));
+var info =  new Array (Clazz.doubleToInt (temp.length / 2));
 for (var i = 0, p = 0; i < info.length; i++) {
 var source = temp[p++];
 var target = temp[p++];
@@ -122,7 +122,7 @@ case '5':
 target = "H5''@H5'";
 break;
 }
-if ((target.charAt (0)).charCodeAt (0) != 72 && source.compareTo (target) > 0) {
+if (target.charAt (0) != 'H' && source.compareTo (target) > 0) {
 s = target;
 target = source;
 source = s;
@@ -137,11 +137,11 @@ return (group3 != null && ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA
 c$.getGroup3List = Clazz.defineMethod (c$, "getGroup3List", 
 function () {
 if (org.jmol.viewer.JmolConstants.group3List != null) return org.jmol.viewer.JmolConstants.group3List;
-var s =  new javax.util.StringXBuilder ();
+var s =  new org.jmol.util.StringXBuilder ();
 for (var i = 1; i < 42; i++) s.append (",[").append ((org.jmol.viewer.JmolConstants.predefinedGroup3Names[i] + "   ").substring (0, 3) + "]");
 
 s.append (",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA],[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS],[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT],[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE],[XYL],[A2G],[LBT],[NGA],[SIA],[SLB],[AFL],[AGC],[GLB],[NAN],[RAA]");
-($t$ = org.jmol.viewer.JmolConstants.group3Count = Math.floor (s.length () / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
+($t$ = org.jmol.viewer.JmolConstants.group3Count = Clazz.doubleToInt (s.length () / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
 return ($t$ = org.jmol.viewer.JmolConstants.group3List = s.toString (), org.jmol.viewer.JmolConstants.prototype.group3List = org.jmol.viewer.JmolConstants.group3List, $t$);
 });
 c$.isHetero = Clazz.defineMethod (c$, "isHetero", 
@@ -151,7 +151,7 @@ return org.jmol.viewer.JmolConstants.getGroup3Pt (group3) >= 42;
 c$.getGroup3Pt = Clazz.defineMethod (c$, "getGroup3Pt", 
 ($fz = function (group3) {
 org.jmol.viewer.JmolConstants.getGroup3List ();
-var sb =  new javax.util.StringXBuilder ().append ("[");
+var sb =  new org.jmol.util.StringXBuilder ().append ("[");
 sb.append (group3);
 switch (group3.length) {
 case 1:
@@ -162,13 +162,13 @@ sb.append (" ");
 break;
 }
 var pt = org.jmol.viewer.JmolConstants.group3List.indexOf (sb.toString ());
-return (pt < 0 ? 2147483647 : Math.floor (pt / 6) + 1);
+return (pt < 0 ? 2147483647 : Clazz.doubleToInt (pt / 6) + 1);
 }, $fz.isPrivate = true, $fz), "~S");
 c$.getGroup3Count = Clazz.defineMethod (c$, "getGroup3Count", 
 function () {
 if (org.jmol.viewer.JmolConstants.group3Count > 0) return org.jmol.viewer.JmolConstants.group3Count;
 org.jmol.viewer.JmolConstants.getGroup3List ();
-return ($t$ = org.jmol.viewer.JmolConstants.group3Count = Math.floor (org.jmol.viewer.JmolConstants.group3List.length / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
+return ($t$ = org.jmol.viewer.JmolConstants.group3Count = Clazz.doubleToInt (org.jmol.viewer.JmolConstants.group3List.length / 6), org.jmol.viewer.JmolConstants.prototype.group3Count = org.jmol.viewer.JmolConstants.group3Count, $t$);
 });
 c$.isShapeSecondary = Clazz.defineMethod (c$, "isShapeSecondary", 
 function (i) {
@@ -268,42 +268,22 @@ Clazz.defineStatics (c$,
 {
 var tmpVersion = null;
 var tmpDate = null;
-var props =  new java.util.Properties ();
 var bis = null;
 var is = null;
 try {
-is = org.jmol.viewer.JmolConstants.getClassLoader ().getResourceAsStream ("org/jmol/viewer/Jmol.properties");
-bis =  new java.io.BufferedInputStream (is);
-props.load (bis);
-tmpVersion = props.getProperty ("___version", tmpVersion);
-tmpDate = props.getProperty ("___date", tmpDate);
-if (tmpDate != null) {
-tmpDate = tmpDate.substring (7, 23);
+{
+tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
+}if (tmpDate != null) {
+tmpDate = tmpDate.substring (8, 24);
+tmpVersion = tmpVersion.substring (1, tmpVersion.length - 1);
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
 throw e;
 }
 } finally {
-if (bis != null) {
-try {
-bis.close ();
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
+tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
 }
-}
-}if (is != null) {
-try {
-is.close ();
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
-}}
 ($t$ = org.jmol.viewer.JmolConstants.version = (tmpVersion != null ? tmpVersion : "(Unknown version)"), org.jmol.viewer.JmolConstants.prototype.version = org.jmol.viewer.JmolConstants.version, $t$);
 ($t$ = org.jmol.viewer.JmolConstants.date = (tmpDate != null ? tmpDate : "(Unknown date)"), org.jmol.viewer.JmolConstants.prototype.date = org.jmol.viewer.JmolConstants.date, $t$);
 }Clazz.defineStatics (c$,
@@ -317,19 +297,19 @@ throw e;
 "radiansPerDegree", (0.017453292519943295),
 "allowedQuaternionFrames", "RC;RP;a;b;c;n;p;q;x;",
 "EXPORT_DRIVER_LIST", "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj");
-c$.center = c$.prototype.center = javax.vecmath.Vector3f.new3 (0, 0, 0);
-c$.axisX = c$.prototype.axisX = javax.vecmath.Vector3f.new3 (1, 0, 0);
-c$.axisY = c$.prototype.axisY = javax.vecmath.Vector3f.new3 (0, 1, 0);
-c$.axisZ = c$.prototype.axisZ = javax.vecmath.Vector3f.new3 (0, 0, 1);
-c$.axisNX = c$.prototype.axisNX = javax.vecmath.Vector3f.new3 (-1, 0, 0);
-c$.axisNY = c$.prototype.axisNY = javax.vecmath.Vector3f.new3 (0, -1, 0);
-c$.axisNZ = c$.prototype.axisNZ = javax.vecmath.Vector3f.new3 (0, 0, -1);
+c$.center = c$.prototype.center = org.jmol.util.Vector3f.new3 (0, 0, 0);
+c$.axisX = c$.prototype.axisX = org.jmol.util.Vector3f.new3 (1, 0, 0);
+c$.axisY = c$.prototype.axisY = org.jmol.util.Vector3f.new3 (0, 1, 0);
+c$.axisZ = c$.prototype.axisZ = org.jmol.util.Vector3f.new3 (0, 0, 1);
+c$.axisNX = c$.prototype.axisNX = org.jmol.util.Vector3f.new3 (-1, 0, 0);
+c$.axisNY = c$.prototype.axisNY = org.jmol.util.Vector3f.new3 (0, -1, 0);
+c$.axisNZ = c$.prototype.axisNZ = org.jmol.util.Vector3f.new3 (0, 0, -1);
 c$.unitAxisVectors = c$.prototype.unitAxisVectors = [org.jmol.viewer.JmolConstants.axisX, org.jmol.viewer.JmolConstants.axisY, org.jmol.viewer.JmolConstants.axisZ, org.jmol.viewer.JmolConstants.axisNX, org.jmol.viewer.JmolConstants.axisNY, org.jmol.viewer.JmolConstants.axisNZ];
 Clazz.defineStatics (c$,
 "XY_ZTOP", 100,
 "DEFAULT_PERCENT_VDW_ATOM", 23,
 "DEFAULT_BOND_RADIUS", 0.15,
-"DEFAULT_BOND_MILLIANGSTROM_RADIUS", Math.round ((150.0)),
+"DEFAULT_BOND_MILLIANGSTROM_RADIUS", Clazz.floatToShort (150.0),
 "DEFAULT_STRUT_RADIUS", 0.3,
 "DEFAULT_BOND_TOLERANCE", 0.45,
 "DEFAULT_MIN_BOND_DISTANCE", 0.4,

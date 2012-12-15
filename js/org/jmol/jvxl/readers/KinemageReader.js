@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.jvxl.readers");
-Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.KinemageReader", ["java.lang.Float", "javax.vecmath.Point3f", "org.jmol.util.ColorUtil", "$.Logger", "$.Parser"], function () {
+Clazz.declarePackage ("org.jmol.jvxl.readers");
+Clazz.load (["org.jmol.jvxl.readers.PmeshReader"], "org.jmol.jvxl.readers.KinemageReader", ["java.lang.Float", "org.jmol.util.ColorUtil", "$.Logger", "$.Parser", "$.Point3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nDots = 0;
 this.vMin = -3.4028235E38;
@@ -29,7 +29,7 @@ Clazz.defineMethod (c$, "setup",
 if (this.params.parameters != null && this.params.parameters.length >= 2) {
 this.vMin = this.params.parameters[1];
 this.vMax = (this.params.parameters.length >= 3 ? this.params.parameters[2] : this.vMin);
-this.pointType = (this.params.parameters.length >= 4 ? Math.round (this.params.parameters[3]) : 0);
+this.pointType = (this.params.parameters.length >= 4 ? Clazz.floatToInt (this.params.parameters[3]) : 0);
 this.findString = this.params.calculationType;
 }}, $fz.isPrivate = true, $fz), "~B");
 Clazz.overrideMethod (c$, "readVertices", 
@@ -37,37 +37,41 @@ function () {
 this.readLine ();
 var n0;
 while (this.line != null) {
-if (this.line.length != 0 && (this.line.charAt (0)).charCodeAt (0) == 64) {
+if (this.line.length != 0 && this.line.charAt (0) == '@') {
 org.jmol.util.Logger.info (this.line);
 if (this.line.indexOf ("contact}") >= 0 || this.line.indexOf ("overlap}") >= 0 || this.line.indexOf ("H-bonds}") >= 0) {
 if (this.line.indexOf ("@dotlist") == 0) {
 n0 = this.nDots;
 this.readDots ();
 if (this.nDots > n0) org.jmol.util.Logger.info ("dots: " + (this.nDots - n0) + "/" + this.nDots);
-continue ;} else if (this.line.indexOf ("@vectorlist") == 0) {
+continue;
+} else if (this.line.indexOf ("@vectorlist") == 0) {
 n0 = this.nPolygons;
 this.readVectors ();
 if (this.nPolygons > n0) org.jmol.util.Logger.info ("lines: " + (this.nPolygons - n0) + "/" + this.nPolygons);
-continue ;}}}this.readLine ();
+continue;
+}}}this.readLine ();
 }
 return true;
 });
 Clazz.defineMethod (c$, "readDots", 
 ($fz = function () {
-var color =  Clazz.newArray (1, 0);
+var color =  Clazz.newIntArray (1, 0);
 while (this.readLine () != null && this.line.indexOf ('@') < 0) {
 var i = this.getPoint (this.line, 2, color, true);
-if (i < 0) continue ;this.nDots++;
+if (i < 0) continue;
+this.nDots++;
 this.nTriangles = this.addTriangleCheck (i, i, i, 7, 0, false, color[0]);
 }
 }, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "readVectors", 
 ($fz = function () {
-var color =  Clazz.newArray (1, 0);
+var color =  Clazz.newIntArray (1, 0);
 while (this.readLine () != null && this.line.indexOf ('@') < 0) {
 var ia = this.getPoint (this.line, 3, color, true);
 var ib = this.getPoint (this.line.substring (this.line.lastIndexOf ('{')), 2, color, false);
-if (ia < 0 || ib < 0) continue ;this.nPolygons++;
+if (ia < 0 || ib < 0) continue;
+this.nPolygons++;
 this.nTriangles = this.addTriangleCheck (ia, ib, ib, 7, 0, false, color[0]);
 }
 }, $fz.isPrivate = true, $fz));
@@ -100,7 +104,7 @@ return -1;
 }
 }retColor[0] = this.getColor (tokens[0]);
 tokens = org.jmol.util.Parser.getTokens (tokens[i].$replace (',', ' '));
-var pt = javax.vecmath.Point3f.new3 (org.jmol.util.Parser.parseFloatStr (tokens[0]), org.jmol.util.Parser.parseFloatStr (tokens[1]), org.jmol.util.Parser.parseFloatStr (tokens[2]));
+var pt = org.jmol.util.Point3f.new3 (org.jmol.util.Parser.parseFloatStr (tokens[0]), org.jmol.util.Parser.parseFloatStr (tokens[1]), org.jmol.util.Parser.parseFloatStr (tokens[2]));
 if (this.isAnisotropic) this.setVertexAnisotropy (pt);
 return this.addVertexCopy (pt, value, this.nVertices++);
 }, $fz.isPrivate = true, $fz), "~S,~N,~A,~B");

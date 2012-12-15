@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.viewer");
+Clazz.declarePackage ("org.jmol.viewer");
 Clazz.load (["java.util.Hashtable"], "org.jmol.viewer.StatusManager", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "$.Collections", "org.jmol.api.Interface", "org.jmol.constant.EnumCallback", "org.jmol.util.Logger", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
@@ -47,7 +47,7 @@ return (this.allowStatusReporting && this.statusList.length > 0 && (this.statusL
 }, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "setStatusChanged", 
 ($fz = function (statusName, intInfo, statusInfo, isReplace) {
-if (!this.recordStatus (statusName)) return ;
+if (!this.recordStatus (statusName)) return;
 var msgRecord =  new java.util.ArrayList ();
 msgRecord.add (Integer.$valueOf (++this.statusPtr));
 msgRecord.add (statusName);
@@ -60,8 +60,8 @@ statusRecordSet.add (msgRecord);
 }, $fz.isPrivate = true, $fz), "~S,~N,~O,~B");
 Clazz.defineMethod (c$, "getStatusChanged", 
 function (newStatusList) {
-var isRemove = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == 45);
-var isAdd = (newStatusList.length > 0 && (newStatusList.charAt (0)).charCodeAt (0) == 43);
+var isRemove = (newStatusList.length > 0 && newStatusList.charAt (0) == '-');
+var isAdd = (newStatusList.length > 0 && newStatusList.charAt (0) == '+');
 var getList = false;
 if (isRemove) {
 this.statusList = org.jmol.util.TextFormat.simpleReplace (this.statusList, newStatusList.substring (1, newStatusList.length), "");
@@ -116,7 +116,7 @@ function (bsMoved) {
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.ATOMMOVED);
 this.setStatusChanged ("atomMoved", -1, bsMoved, false);
 if (this.notifyEnabled (org.jmol.constant.EnumCallback.ATOMMOVED)) this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.ATOMMOVED, [sJmol, bsMoved]);
-}, "javax.util.BitSet");
+}, "org.jmol.util.BitSet");
 Clazz.defineMethod (c$, "setStatusAtomPicked", 
 function (atomIndex, strInfo) {
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.PICK);
@@ -146,7 +146,7 @@ Clazz.defineMethod (c$, "setStatusObjectHovered",
 function (id, strInfo, pt) {
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.HOVER);
 if (this.notifyEnabled (org.jmol.constant.EnumCallback.HOVER)) this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.HOVER, [sJmol, strInfo, Integer.$valueOf (-1), id, Float.$valueOf (pt.x), Float.$valueOf (pt.y), Float.$valueOf (pt.z)]);
-}, "~S,~S,javax.vecmath.Point3f");
+}, "~S,~S,org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "setFileLoadStatus", 
 function (fullPathName, fileName, modelName, errorMsg, ptLoad, doCallback) {
 if (fullPathName == null && "resetUndo".equals (fileName)) {
@@ -163,7 +163,7 @@ this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.LOADSTR
 }}, "~S,~S,~S,~S,~N,~B");
 Clazz.defineMethod (c$, "setStatusFrameChanged", 
 function (frameNo, fileNo, modelNo, firstNo, lastNo) {
-if (this.viewer.getModelSet () == null) return ;
+if (this.viewer.getModelSet () == null) return;
 var isAnimationRunning = (frameNo <= -2);
 var f = frameNo;
 if (isAnimationRunning) f = -2 - f;
@@ -176,7 +176,7 @@ this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.ANIMFRA
 }, "~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setScriptEcho", 
 function (strEcho, isScriptQueued) {
-if (strEcho == null) return ;
+if (strEcho == null) return;
 this.setStatusChanged ("scriptEcho", 0, strEcho, false);
 var sJmol = this.jmolScriptCallback (org.jmol.constant.EnumCallback.ECHO);
 if (this.notifyEnabled (org.jmol.constant.EnumCallback.ECHO)) this.jmolCallbackListener.notifyCallback (org.jmol.constant.EnumCallback.ECHO, [sJmol, strEcho, Integer.$valueOf (isScriptQueued ? 1 : 0)]);
@@ -210,7 +210,7 @@ var iscript = -2 - msWalltime;
 this.setStatusChanged ("scriptStarted", iscript, statusMessage, false);
 strStatus = "script " + iscript + " started";
 } else if (strStatus == null) {
-return ;
+return;
 }var sJmol = (msWalltime == 0 ? this.jmolScriptCallback (org.jmol.constant.EnumCallback.SCRIPT) : null);
 var isScriptCompletion = (strStatus === "Script completed");
 if (this.recordStatus ("script")) {
@@ -259,7 +259,7 @@ this.syncSend ("SET_GRAPHICS_OFF", "*", 0);
 this.stereoSync = false;
 }switch (syncMode) {
 case 4:
-if (!this.syncDisabled) return ;
+if (!this.syncDisabled) return;
 this.syncDisabled = false;
 break;
 case 3:
@@ -305,11 +305,11 @@ this.viewer.appConsole.sendConsoleMessage (null);
 });
 Clazz.defineMethod (c$, "functionXY", 
 function (functionName, nX, nY) {
-return (this.jmolStatusListener == null ?  Clazz.newArray (Math.abs (nX), Math.abs (nY), 0) : this.jmolStatusListener.functionXY (functionName, nX, nY));
+return (this.jmolStatusListener == null ?  Clazz.newFloatArray (Math.abs (nX), Math.abs (nY), 0) : this.jmolStatusListener.functionXY (functionName, nX, nY));
 }, "~S,~N,~N");
 Clazz.defineMethod (c$, "functionXYZ", 
 function (functionName, nX, nY, nZ) {
-return (this.jmolStatusListener == null ?  Clazz.newArray (Math.abs (nX), Math.abs (nY), Math.abs (nY), 0) : this.jmolStatusListener.functionXYZ (functionName, nX, nY, nZ));
+return (this.jmolStatusListener == null ?  Clazz.newFloatArray (Math.abs (nX), Math.abs (nY), Math.abs (nY), 0) : this.jmolStatusListener.functionXYZ (functionName, nX, nY, nZ));
 }, "~S,~N,~N,~N");
 Clazz.defineMethod (c$, "jsEval", 
 function (strEval) {

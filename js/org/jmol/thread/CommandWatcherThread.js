@@ -1,24 +1,22 @@
-﻿Clazz.declarePackage ("org.jmol.thread");
+Clazz.declarePackage ("org.jmol.thread");
 Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.CommandWatcherThread", ["java.lang.Thread", "org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.scriptManager = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.thread, "CommandWatcherThread", org.jmol.thread.JmolThread);
 Clazz.makeConstructor (c$, 
-function (scriptManager) {
-Clazz.superConstructor (this, org.jmol.thread.CommandWatcherThread, []);
+function (viewer, scriptManager) {
+Clazz.superConstructor (this, org.jmol.thread.CommandWatcherThread);
+this.setViewer (viewer, "CommmandWatcherThread");
 this.scriptManager = scriptManager;
-this.setMyName ("CommmandWatcherThread");
-this.start ();
-}, "org.jmol.viewer.ScriptManager");
+}, "org.jmol.viewer.Viewer,org.jmol.viewer.ScriptManager");
 Clazz.overrideMethod (c$, "run", 
 function () {
 Thread.currentThread ().setPriority (1);
-var commandDelay = 50;
-while (!this.$interrupted) {
+while (!this.stopped) {
 try {
-Thread.sleep (commandDelay);
-if (!this.$interrupted) {
+Thread.sleep (50);
+if (!this.stopped) {
 this.scriptManager.runScriptNow ();
 }} catch (e$$) {
 if (Clazz.exceptionOf (e$$, InterruptedException)) {
@@ -42,6 +40,10 @@ throw e$$;
 }
 }
 }
-this.scriptManager.clearCommandWatcherThread ();
 });
+Clazz.overrideMethod (c$, "run1", 
+function (mode) {
+}, "~N");
+Clazz.defineStatics (c$,
+"commandDelay", 50);
 });

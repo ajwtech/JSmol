@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.atomdata");
-Clazz.load (["java.lang.Enum", "org.jmol.constant.EnumVdw"], "org.jmol.atomdata.RadiusData", ["java.lang.Float", "javax.util.StringXBuilder"], function () {
+Clazz.declarePackage ("org.jmol.atomdata");
+Clazz.load (["java.lang.Enum", "org.jmol.constant.EnumVdw"], "org.jmol.atomdata.RadiusData", ["java.lang.Float", "org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.info = null;
 this.factorType = null;
@@ -18,8 +18,8 @@ function (values, value, factorType, vdwType) {
 if (values != null) {
 this.values = values;
 this.value = 2147483647;
-return ;
-}if (factorType == null) return ;
+return;
+}if (factorType == null) return;
 this.factorType = factorType;
 this.value = value;
 if (vdwType != null) this.vdwType = vdwType;
@@ -27,7 +27,7 @@ if (vdwType != null) this.vdwType = vdwType;
 Clazz.overrideMethod (c$, "toString", 
 function () {
 if (Float.isNaN (this.value)) return "";
-var sb =  new javax.util.StringXBuilder ();
+var sb =  new org.jmol.util.StringXBuilder ();
 switch (this.factorType) {
 case org.jmol.atomdata.RadiusData.EnumType.ABSOLUTE:
 sb.appendF (this.value);
@@ -36,11 +36,11 @@ case org.jmol.atomdata.RadiusData.EnumType.OFFSET:
 sb.append (this.value > 0 ? "+" : "").appendF (this.value);
 break;
 case org.jmol.atomdata.RadiusData.EnumType.FACTOR:
-sb.appendI (Math.round ((this.value * 100))).append ("%");
+sb.appendI (Clazz.floatToInt (this.value * 100)).append ("%");
 if (this.vdwType !== org.jmol.constant.EnumVdw.AUTO) sb.append (this.vdwType.getVdwLabel ());
 break;
 case org.jmol.atomdata.RadiusData.EnumType.SCREEN:
-sb.appendI (Math.round (this.value));
+sb.appendI (Clazz.floatToInt (this.value));
 }
 return sb.toString ();
 });

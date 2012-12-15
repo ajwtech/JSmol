@@ -1,5 +1,5 @@
-﻿Clazz.declarePackage ("org.jmol.util");
-Clazz.load (null, "org.jmol.util.SimpleUnitCell", ["java.lang.Float", "javax.vecmath.Matrix4f", "$.Point3f", "$.Vector3f", "org.jmol.util.ArrayUtil"], function () {
+Clazz.declarePackage ("org.jmol.util");
+Clazz.load (null, "org.jmol.util.SimpleUnitCell", ["java.lang.Float", "org.jmol.util.ArrayUtil", "$.Matrix4f", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.notionalUnitcell = null;
 this.matrixCartesianToFractional = null;
@@ -49,7 +49,7 @@ return c;
 }, "~A");
 Clazz.defineMethod (c$, "set", 
 function (parameters) {
-if (!org.jmol.util.SimpleUnitCell.isValid (parameters)) return ;
+if (!org.jmol.util.SimpleUnitCell.isValid (parameters)) return;
 this.notionalUnitcell = org.jmol.util.ArrayUtil.arrayCopyF (parameters, parameters.length);
 this.a = parameters[0];
 this.b = parameters[1];
@@ -57,24 +57,24 @@ this.c = parameters[2];
 this.alpha = parameters[3];
 this.beta = parameters[4];
 this.gamma = parameters[5];
-this.na = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[22]) ? Math.round (parameters[22]) : 1);
-this.nb = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[23]) ? Math.round (parameters[23]) : 1);
-this.nc = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[24]) ? Math.round (parameters[24]) : 1);
+this.na = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[22]) ? Clazz.floatToInt (parameters[22]) : 1);
+this.nb = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[23]) ? Clazz.floatToInt (parameters[23]) : 1);
+this.nc = Math.max (1, parameters.length >= 25 && !Float.isNaN (parameters[24]) ? Clazz.floatToInt (parameters[24]) : 1);
 if (this.a <= 0) {
-var va = javax.vecmath.Vector3f.new3 (parameters[6], parameters[7], parameters[8]);
-var vb = javax.vecmath.Vector3f.new3 (parameters[9], parameters[10], parameters[11]);
-var vc = javax.vecmath.Vector3f.new3 (parameters[12], parameters[13], parameters[14]);
+var va = org.jmol.util.Vector3f.new3 (parameters[6], parameters[7], parameters[8]);
+var vb = org.jmol.util.Vector3f.new3 (parameters[9], parameters[10], parameters[11]);
+var vc = org.jmol.util.Vector3f.new3 (parameters[12], parameters[13], parameters[14]);
 this.a = va.length ();
 this.b = vb.length ();
 this.c = vc.length ();
-if (this.a == 0) return ;
+if (this.a == 0) return;
 if (this.b == 0) this.b = this.c = -1;
  else if (this.c == 0) this.c = -1;
 this.alpha = (this.b < 0 || this.c < 0 ? 90 : vb.angle (vc) / 0.017453292);
 this.beta = (this.c < 0 ? 90 : va.angle (vc) / 0.017453292);
 this.gamma = (this.b < 0 ? 90 : va.angle (vb) / 0.017453292);
 if (this.c < 0) {
-var n = parameters.clone ();
+var n = org.jmol.util.ArrayUtil.arrayCopyF (parameters, -1);
 if (this.b < 0) {
 vb.set (0, 0, 1);
 vb.cross (vb, va);
@@ -116,7 +116,7 @@ this.a_ = this.b * this.c * this.sinAlpha / this.volume;
 this.b_ = this.a * this.c * this.sinBeta / this.volume;
 this.c_ = this.a * this.b * this.sinGamma / this.volume;
 if (parameters.length > 21 && !Float.isNaN (parameters[21])) {
-var scaleMatrix =  Clazz.newArray (16, 0);
+var scaleMatrix =  Clazz.newFloatArray (16, 0);
 for (var i = 0; i < 16; i++) {
 var f;
 switch (i % 4) {
@@ -135,24 +135,24 @@ break;
 }
 scaleMatrix[i] = parameters[6 + i] * f;
 }
-this.matrixCartesianToFractional = javax.vecmath.Matrix4f.newA (scaleMatrix);
-this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
+this.matrixCartesianToFractional = org.jmol.util.Matrix4f.newA (scaleMatrix);
+this.matrixFractionalToCartesian =  new org.jmol.util.Matrix4f ();
 this.matrixFractionalToCartesian.invertM (this.matrixCartesianToFractional);
 } else if (parameters.length > 14 && !Float.isNaN (parameters[14])) {
-var m = this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
+var m = this.matrixFractionalToCartesian =  new org.jmol.util.Matrix4f ();
 m.setColumn4 (0, parameters[6] * this.na, parameters[7] * this.na, parameters[8] * this.na, 0);
 m.setColumn4 (1, parameters[9] * this.nb, parameters[10] * this.nb, parameters[11] * this.nb, 0);
 m.setColumn4 (2, parameters[12] * this.nc, parameters[13] * this.nc, parameters[14] * this.nc, 0);
 m.setColumn4 (3, 0, 0, 0, 1);
-this.matrixCartesianToFractional =  new javax.vecmath.Matrix4f ();
+this.matrixCartesianToFractional =  new org.jmol.util.Matrix4f ();
 this.matrixCartesianToFractional.invertM (this.matrixFractionalToCartesian);
 } else {
-var m = this.matrixFractionalToCartesian =  new javax.vecmath.Matrix4f ();
+var m = this.matrixFractionalToCartesian =  new org.jmol.util.Matrix4f ();
 m.setColumn4 (0, this.a, 0, 0, 0);
 m.setColumn4 (1, (this.b * this.cosGamma), (this.b * this.sinGamma), 0, 0);
 m.setColumn4 (2, (this.c * this.cosBeta), (this.c * (this.cosAlpha - this.cosBeta * this.cosGamma) / this.sinGamma), (this.volume / (this.a * this.b * this.sinGamma)), 0);
 m.setColumn4 (3, 0, 0, 0, 1);
-this.matrixCartesianToFractional =  new javax.vecmath.Matrix4f ();
+this.matrixCartesianToFractional =  new org.jmol.util.Matrix4f ();
 this.matrixCartesianToFractional.invertM (this.matrixFractionalToCartesian);
 }this.matrixCtoFAbsolute = this.matrixCartesianToFractional;
 this.matrixFtoCAbsolute = this.matrixFractionalToCartesian;
@@ -163,16 +163,16 @@ fpt.x /= this.na;
 fpt.y /= this.nb;
 fpt.z /= this.nc;
 return fpt;
-}, "javax.vecmath.Point3f");
+}, "org.jmol.util.Point3f");
 Clazz.defineMethod (c$, "toCartesian", 
 function (pt, isAbsolute) {
 if (this.matrixFractionalToCartesian != null) (isAbsolute ? this.matrixFtoCAbsolute : this.matrixFractionalToCartesian).transform (pt);
-}, "javax.vecmath.Point3f,~B");
+}, "org.jmol.util.Point3f,~B");
 Clazz.defineMethod (c$, "toFractional", 
 function (pt, isAbsolute) {
-if (this.matrixCartesianToFractional == null) return ;
+if (this.matrixCartesianToFractional == null) return;
 (isAbsolute ? this.matrixCtoFAbsolute : this.matrixCartesianToFractional).transform (pt);
-}, "javax.vecmath.Point3f,~B");
+}, "org.jmol.util.Point3f,~B");
 Clazz.defineMethod (c$, "isPolymer", 
 function () {
 return (this.dimension == 1);
@@ -211,18 +211,12 @@ return this.dimension;
 return NaN;
 }, "~N");
 c$.ijkToPoint3f = Clazz.defineMethod (c$, "ijkToPoint3f", 
-function (nnn) {
-var cell =  new javax.vecmath.Point3f ();
-org.jmol.util.SimpleUnitCell.ijkToPoint3f (nnn, cell, 0);
-return cell;
-}, "~N");
-c$.ijkToPoint3f = Clazz.defineMethod (c$, "ijkToPoint3f", 
 function (nnn, cell, c) {
 c -= 5;
-cell.x = Math.floor (nnn / 100) + c;
-cell.y = Math.floor ((nnn % 100) / 10) + c;
+cell.x = Clazz.doubleToInt (nnn / 100) + c;
+cell.y = Clazz.doubleToInt ((nnn % 100) / 10) + c;
 cell.z = (nnn % 10) + c;
-}, "~N,javax.vecmath.Point3f,~N");
+}, "~N,org.jmol.util.Point3f,~N");
 Clazz.defineStatics (c$,
 "toRadians", 0.017453292,
 "INFO_DIMENSIONS", 6,

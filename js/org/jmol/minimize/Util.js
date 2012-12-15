@@ -1,16 +1,16 @@
-﻿Clazz.declarePackage ("org.jmol.minimize");
+Clazz.declarePackage ("org.jmol.minimize");
 Clazz.load (null, "org.jmol.minimize.Util", ["java.lang.Double", "java.util.Random"], function () {
 c$ = Clazz.declareType (org.jmol.minimize, "Util");
 c$.sub = Clazz.defineMethod (c$, "sub", 
 function (a, b, result) {
 result.set (a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-}, "~A,~A,javax.vecmath.Vector3d");
+}, "~A,~A,org.jmol.util.Vector3d");
 c$.putCoord = Clazz.defineMethod (c$, "putCoord", 
 function (v, c) {
 c[0] = v.x;
 c[1] = v.y;
 c[2] = v.z;
-}, "javax.vecmath.Vector3d,~A");
+}, "org.jmol.util.Vector3d,~A");
 c$.distance2 = Clazz.defineMethod (c$, "distance2", 
 function (a, b) {
 var dx = a[0] - b[0];
@@ -24,7 +24,7 @@ var dx = a.x - b.x;
 var dy = a.y - b.y;
 var dz = a.z - b.z;
 return (dx * dx + dy * dy + dz * dz);
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.getAngleRadiansABC = Clazz.defineMethod (c$, "getAngleRadiansABC", 
 function (a, b, c) {
 var ab2 = org.jmol.minimize.Util.distance2 (a, b);
@@ -35,7 +35,7 @@ return (org.jmol.minimize.Util.isNearZero (ab2, 1e-3) || org.jmol.minimize.Util.
 c$.isApprox = Clazz.defineMethod (c$, "isApprox", 
 function (a, b, precision) {
 return (org.jmol.minimize.Util.distance2 (a, b) <= precision * precision * Math.min (a.lengthSquared (), b.lengthSquared ()));
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,~N");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,~N");
 c$.canBeSquared = Clazz.defineMethod (c$, "canBeSquared", 
 function (x) {
 if (x == 0) return true;
@@ -73,7 +73,7 @@ c$.canBeNormalized = Clazz.defineMethod (c$, "canBeNormalized",
 function (a) {
 if (a.x == 0.0 && a.y == 0.0 && a.z == 0.0) return false;
 return (org.jmol.minimize.Util.canBeSquared (a.x) && org.jmol.minimize.Util.canBeSquared (a.y) && org.jmol.minimize.Util.canBeSquared (a.z));
-}, "javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d");
 c$.pointPlaneAngleRadians = Clazz.defineMethod (c$, "pointPlaneAngleRadians", 
 function (a, b, c, d, v1, v2, norm, fixTheta) {
 v1.sub2 (b, c);
@@ -86,13 +86,13 @@ var angleNorm = org.jmol.minimize.Util.vectorAngleRadians (norm, v1);
 if (angleNorm > 1.5707963267948966) angleNorm = 3.141592653589793 - angleNorm;
 var val = 1.5707963267948966 + (angleA_CD > 1.5707963267948966 ? -angleNorm : angleNorm);
 return val;
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,~B");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,~B");
 c$.vectorAngleRadians = Clazz.defineMethod (c$, "vectorAngleRadians", 
 ($fz = function (v1, v2) {
 var l1 = v1.length ();
 var l2 = v2.length ();
 return (org.jmol.minimize.Util.isNearZero (l1) || org.jmol.minimize.Util.isNearZero (l2) ? 0 : Math.acos (v1.dot (v2) / (l1 * l2)));
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.getTorsionAngleRadians = Clazz.defineMethod (c$, "getTorsionAngleRadians", 
 function (a, b, c, d, r1, r2, r3) {
 org.jmol.minimize.Util.sub (b, a, r1);
@@ -105,7 +105,7 @@ var p1dotp2 = r1.dot (r3);
 r1.cross (r3, r1);
 var theta = Math.atan2 (-r2.dot (r1), p1dotp2);
 return theta;
-}, "~A,~A,~A,~A,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "~A,~A,~A,~A,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.restorativeForceAndDistance = Clazz.defineMethod (c$, "restorativeForceAndDistance", 
 function (a, b, vab) {
 vab.sub2 (a, b);
@@ -118,7 +118,7 @@ a.setT (vab);
 a.scale (-1);
 b.setT (vab);
 return rab;
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.randomizeUnitVector = Clazz.defineMethod (c$, "randomizeUnitVector", 
 ($fz = function (v) {
 var ptr =  new java.util.Random ();
@@ -128,7 +128,7 @@ v.set (ptr.nextFloat () - 0.5, ptr.nextFloat () - 0.5, ptr.nextFloat () - 0.5);
 l = v.lengthSquared ();
 } while ((l > 1.0) || (l < 1e-4));
 v.normalize ();
-}, $fz.isPrivate = true, $fz), "javax.vecmath.Vector3d");
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Vector3d");
 c$.restorativeForceAndAngleRadians = Clazz.defineMethod (c$, "restorativeForceAndAngleRadians", 
 function (i, j, k) {
 i.sub (j);
@@ -172,7 +172,7 @@ k.setT (j);
 j.add (i);
 j.scale (-1);
 return theta;
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.restorativeForceAndOutOfPlaneAngleRadians = Clazz.defineMethod (c$, "restorativeForceAndOutOfPlaneAngleRadians", 
 function (i, j, k, l, an, bn, cn) {
 i.sub2 (i, j);
@@ -225,7 +225,7 @@ j.add (k);
 j.add (l);
 j.scale (-1);
 return dl;
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 c$.restorativeForceAndTorsionAngleRadians = Clazz.defineMethod (c$, "restorativeForceAndTorsionAngleRadians", 
 function (i, j, k, l) {
 i.sub2 (j, i);
@@ -265,7 +265,7 @@ k.add (j);
 k.add (l);
 k.scale (-1);
 return theta;
-}, "javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d,javax.vecmath.Vector3d");
+}, "org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d,org.jmol.util.Vector3d");
 Clazz.defineStatics (c$,
 "RAD_TO_DEG", (57.29577951308232),
 "DEG_TO_RAD", (0.017453292519943295),

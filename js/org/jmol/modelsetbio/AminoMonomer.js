@@ -1,12 +1,12 @@
-﻿Clazz.declarePackage ("org.jmol.modelsetbio");
-Clazz.load (["org.jmol.modelsetbio.AlphaMonomer", "javax.vecmath.Point3f"], "org.jmol.modelsetbio.AminoMonomer", ["javax.vecmath.AxisAngle4f", "$.Matrix3f", "$.Vector3f", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.Quaternion", "$.TextFormat"], function () {
+Clazz.declarePackage ("org.jmol.modelsetbio");
+Clazz.load (["org.jmol.modelsetbio.AlphaMonomer", "org.jmol.util.Point3f"], "org.jmol.modelsetbio.AminoMonomer", ["org.jmol.constant.EnumStructure", "org.jmol.util.AxisAngle4f", "$.Escape", "$.Logger", "$.Matrix3f", "$.Quaternion", "$.TextFormat", "$.Vector3f"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nhChecked = false;
 this.ptTemp = null;
 Clazz.instantialize (this, arguments);
 }, org.jmol.modelsetbio, "AminoMonomer", org.jmol.modelsetbio.AlphaMonomer);
 Clazz.prepareFields (c$, function () {
-this.ptTemp =  new javax.vecmath.Point3f ();
+this.ptTemp =  new org.jmol.util.Point3f ();
 });
 c$.validateAndAllocate = Clazz.defineMethod (c$, "validateAndAllocate", 
 function (chain, group3, seqcode, firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms) {
@@ -17,7 +17,7 @@ if (atoms[firstAtomIndex].isHetero () && !org.jmol.modelsetbio.AminoMonomer.isBo
 var aminoMonomer =  new org.jmol.modelsetbio.AminoMonomer (chain, group3, seqcode, firstAtomIndex, lastAtomIndex, offsets);
 return aminoMonomer;
 }, "org.jmol.modelset.Chain,~S,~N,~N,~N,~A,~A");
-c$.isBondedCorrectly = Clazz.defineMethod (c$, "isBondedCorrectly", 
+c$.isBondedCorrectlyRange = Clazz.defineMethod (c$, "isBondedCorrectlyRange", 
 ($fz = function (offset1, offset2, firstAtomIndex, offsets, atoms) {
 var atomIndex1 = firstAtomIndex + (offsets[offset1] & 0xFF);
 var atomIndex2 = firstAtomIndex + (offsets[offset2] & 0xFF);
@@ -25,7 +25,7 @@ return (atomIndex1 != atomIndex2 && atoms[atomIndex1].isBonded (atoms[atomIndex2
 }, $fz.isPrivate = true, $fz), "~N,~N,~N,~A,~A");
 c$.isBondedCorrectly = Clazz.defineMethod (c$, "isBondedCorrectly", 
 ($fz = function (firstAtomIndex, offsets, atoms) {
-return (org.jmol.modelsetbio.AminoMonomer.isBondedCorrectly (2, 0, firstAtomIndex, offsets, atoms) && org.jmol.modelsetbio.AminoMonomer.isBondedCorrectly (0, 3, firstAtomIndex, offsets, atoms) && (offsets[1] == -1 || org.jmol.modelsetbio.AminoMonomer.isBondedCorrectly (3, 1, firstAtomIndex, offsets, atoms)));
+return (org.jmol.modelsetbio.AminoMonomer.isBondedCorrectlyRange (2, 0, firstAtomIndex, offsets, atoms) && org.jmol.modelsetbio.AminoMonomer.isBondedCorrectlyRange (0, 3, firstAtomIndex, offsets, atoms) && (!org.jmol.modelsetbio.Monomer.have (offsets, 1) || org.jmol.modelsetbio.AminoMonomer.isBondedCorrectlyRange (3, 1, firstAtomIndex, offsets, atoms)));
 }, $fz.isPrivate = true, $fz), "~N,~A,~A");
 Clazz.defineMethod (c$, "isAminoMonomer", 
 function () {
@@ -49,11 +49,11 @@ return this.getNitrogenAtom ();
 });
 Clazz.overrideMethod (c$, "getTerminatorAtom", 
 function () {
-return this.getAtomFromOffsetIndex (this.offsets[4] != -1 ? 4 : 3);
+return this.getAtomFromOffsetIndex (org.jmol.modelsetbio.Monomer.have (this.offsets, 4) ? 4 : 3);
 });
 Clazz.defineMethod (c$, "hasOAtom", 
 function () {
-return this.offsets[1] != -1;
+return org.jmol.modelsetbio.Monomer.have (this.offsets, 1);
 });
 Clazz.overrideMethod (c$, "isConnectedAfter", 
 function (possiblyPreviousMonomer) {
@@ -65,18 +65,18 @@ Clazz.overrideMethod (c$, "findNearestAtomIndex",
 function (x, y, closest, madBegin, madEnd) {
 var competitor = closest[0];
 var nitrogen = this.getNitrogenAtom ();
-var marBegin = (Math.floor (madBegin / 2));
+var marBegin = (Clazz.doubleToInt (madBegin / 2));
 if (marBegin < 1200) marBegin = 1200;
-if (nitrogen.screenZ == 0) return ;
+if (nitrogen.screenZ == 0) return;
 var radiusBegin = this.scaleToScreen (nitrogen.screenZ, marBegin);
 if (radiusBegin < 4) radiusBegin = 4;
 var ccarbon = this.getCarbonylCarbonAtom ();
-var marEnd = (Math.floor (madEnd / 2));
+var marEnd = (Clazz.doubleToInt (madEnd / 2));
 if (marEnd < 1200) marEnd = 1200;
 var radiusEnd = this.scaleToScreen (nitrogen.screenZ, marEnd);
 if (radiusEnd < 4) radiusEnd = 4;
 var alpha = this.getLeadAtom ();
-if (this.isCursorOnTopOf (alpha, x, y, Math.floor ((radiusBegin + radiusEnd) / 2), competitor) || this.isCursorOnTopOf (nitrogen, x, y, radiusBegin, competitor) || this.isCursorOnTopOf (ccarbon, x, y, radiusEnd, competitor)) closest[0] = alpha;
+if (this.isCursorOnTopOf (alpha, x, y, Clazz.doubleToInt ((radiusBegin + radiusEnd) / 2), competitor) || this.isCursorOnTopOf (nitrogen, x, y, radiusBegin, competitor) || this.isCursorOnTopOf (ccarbon, x, y, radiusEnd, competitor)) closest[0] = alpha;
 }, "~N,~N,~A,~N,~N");
 Clazz.defineMethod (c$, "resetHydrogenPoint", 
 function () {
@@ -113,7 +113,7 @@ return true;
 if (jmolHPoint) {
 vNH.sub2 (nitrogenPoint, this.getLeadAtom ());
 vNH.normalize ();
-var v =  new javax.vecmath.Vector3f ();
+var v =  new org.jmol.util.Vector3f ();
 v.sub2 (nitrogenPoint, prev.getCarbonylCarbonAtom ());
 v.normalize ();
 vNH.add (v);
@@ -123,10 +123,10 @@ if (oxygen == null) return false;
 vNH.sub2 (prev.getCarbonylCarbonAtom (), oxygen);
 }vNH.normalize ();
 aminoHydrogenPoint.add2 (nitrogenPoint, vNH);
-this.nitrogenHydrogenPoint = javax.vecmath.Point3f.newP (aminoHydrogenPoint);
+this.nitrogenHydrogenPoint = org.jmol.util.Point3f.newP (aminoHydrogenPoint);
 if (org.jmol.util.Logger.debugging) org.jmol.util.Logger.info ("draw ID \"pta" + this.monomerIndex + "_" + nitrogenPoint.index + "\" " + org.jmol.util.Escape.escapePt (nitrogenPoint) + org.jmol.util.Escape.escapePt (aminoHydrogenPoint) + " # " + nitrogenPoint);
 return true;
-}, "javax.vecmath.Point3f,javax.vecmath.Vector3f,~B,~B");
+}, "org.jmol.util.Point3f,org.jmol.util.Vector3f,~B,~B");
 Clazz.defineMethod (c$, "getQuaternionFrameCenter", 
 function (qType) {
 switch (qType) {
@@ -144,7 +144,7 @@ return this.getCarbonylCarbonAtom ();
 case 'q':
 if (this.monomerIndex == this.bioPolymer.monomerCount - 1) return null;
 var mNext = (this.bioPolymer.getGroups ()[this.monomerIndex + 1]);
-var pt = javax.vecmath.Point3f.newP (this.getCarbonylCarbonAtom ());
+var pt = org.jmol.util.Point3f.newP (this.getCarbonylCarbonAtom ());
 pt.add (mNext.getNitrogenAtom ());
 pt.scale (0.5);
 return pt;
@@ -154,19 +154,19 @@ Clazz.defineMethod (c$, "getQuaternion",
 function (qType) {
 var ptC = this.getCarbonylCarbonAtom ();
 var ptCa = this.getLeadAtom ();
-var vA =  new javax.vecmath.Vector3f ();
-var vB =  new javax.vecmath.Vector3f ();
+var vA =  new org.jmol.util.Vector3f ();
+var vB =  new org.jmol.util.Vector3f ();
 var vC = null;
 switch (qType) {
 case 'a':
 case 'n':
 if (this.monomerIndex == 0 || this.groupID == 15) return null;
-vC =  new javax.vecmath.Vector3f ();
+vC =  new org.jmol.util.Vector3f ();
 this.getNHPoint (this.ptTemp, vC, true, false);
 vB.sub2 (ptCa, this.getNitrogenAtom ());
 vB.cross (vC, vB);
-var mat =  new javax.vecmath.Matrix3f ();
-mat.setAA (javax.vecmath.AxisAngle4f.newVA (vB, -0.29670596));
+var mat =  new org.jmol.util.Matrix3f ();
+mat.setAA (org.jmol.util.AxisAngle4f.newVA (vB, -0.29670596));
 mat.transform (vC);
 vA.cross (vB, vC);
 break;

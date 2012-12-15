@@ -1,38 +1,38 @@
-﻿Clazz.declarePackage ("org.jmol.thread");
-Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.ScriptQueueThread", ["java.lang.Thread", "org.jmol.util.Logger"], function () {
+Clazz.declarePackage ("org.jmol.thread");
+Clazz.load (["org.jmol.thread.JmolThread"], "org.jmol.thread.ScriptQueueThread", ["org.jmol.util.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.scriptManager = null;
-this.viewer = null;
 this.startedByCommandThread = false;
 this.pt = 0;
 Clazz.instantialize (this, arguments);
 }, org.jmol.thread, "ScriptQueueThread", org.jmol.thread.JmolThread);
 Clazz.makeConstructor (c$, 
 function (scriptManager, viewer, startedByCommandThread, pt) {
-Clazz.superConstructor (this, org.jmol.thread.ScriptQueueThread, []);
+Clazz.superConstructor (this, org.jmol.thread.ScriptQueueThread);
+this.setViewer (viewer, "QueueThread" + pt);
 this.scriptManager = scriptManager;
 this.viewer = viewer;
 this.startedByCommandThread = startedByCommandThread;
 this.pt = pt;
-this.setMyName ("QueueThread" + pt);
-this.start ();
 }, "org.jmol.viewer.ScriptManager,org.jmol.viewer.Viewer,~B,~N");
-Clazz.overrideMethod (c$, "run", 
-function () {
-while (this.scriptManager.scriptQueue.size () != 0) {
-if (!this.runNextScript ()) try {
-Thread.sleep (100);
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-org.jmol.util.Logger.error (this + " Exception " + e.getMessage ());
+Clazz.overrideMethod (c$, "run1", 
+function (mode) {
+while (true) switch (mode) {
+case -1:
+mode = 0;
 break;
-} else {
-throw e;
-}
-}
-}
+case 0:
+if (this.stopped || this.scriptManager.scriptQueue.size () == 0) {
+mode = -2;
+break;
+}if (!this.runNextScript () && !this.runSleep (100, 0)) return;
+break;
+case -2:
 this.scriptManager.queueThreadFinished (this.pt);
-});
+return;
+}
+
+}, "~N");
 Clazz.defineMethod (c$, "runNextScript", 
 ($fz = function () {
 if (this.scriptManager.scriptQueue.size () == 0) return false;

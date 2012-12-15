@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("org.jmol.adapter.readers.more");
+Clazz.declarePackage ("org.jmol.adapter.readers.more");
 Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader"], "org.jmol.adapter.readers.more.BinaryReader", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.binaryDoc = null;
@@ -13,5 +13,5 @@ Clazz.overrideMethod (c$, "processBinaryDocument",
 function (doc) {
 this.binaryDoc = doc;
 this.readDocument ();
-}, "org.jmol.util.BinaryDocument");
+}, "org.jmol.api.JmolDocument");
 });

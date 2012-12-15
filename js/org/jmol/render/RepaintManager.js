@@ -1,13 +1,17 @@
-﻿Clazz.declarePackage ("org.jmol.render");
-Clazz.load (["org.jmol.api.JmolRepaintInterface"], "org.jmol.render.RepaintManager", ["org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
+Clazz.declarePackage ("org.jmol.render");
+Clazz.load (["org.jmol.api.JmolRepaintInterface", "org.jmol.util.BitSet"], "org.jmol.render.RepaintManager", ["org.jmol.util.Logger", "org.jmol.viewer.JmolConstants"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.shapeManager = null;
 this.renderers = null;
+this.bsTranslucent = null;
 this.holdRepaint = 0;
 this.repaintPending = false;
 Clazz.instantialize (this, arguments);
 }, org.jmol.render, "RepaintManager", null, org.jmol.api.JmolRepaintInterface);
+Clazz.prepareFields (c$, function () {
+this.bsTranslucent = org.jmol.util.BitSet.newN (35);
+});
 Clazz.makeConstructor (c$, 
 function () {
 });
@@ -37,7 +41,7 @@ Clazz.overrideMethod (c$, "requestRepaintAndWait",
 function () {
 {
 if (typeof Jmol != "undefined" && Jmol._repaint)
-Jmol._repaint(this.viewer.htmlName, false);
+Jmol._repaint(this.viewer.applet, false);
 this.repaintDone();
 }});
 Clazz.overrideMethod (c$, "repaintIfReady", 
@@ -50,10 +54,10 @@ this.repaintNow ();
 });
 Clazz.defineMethod (c$, "repaintNow", 
 ($fz = function () {
-if (!this.viewer.haveDisplay) return ;
+if (!this.viewer.haveDisplay) return;
 {
 if (typeof Jmol != "undefined" && Jmol._repaint)
-Jmol._repaint(this.viewer.htmlName,true);
+Jmol._repaint(this.viewer.applet,true);
 }}, $fz.isPrivate = true, $fz));
 Clazz.overrideMethod (c$, "repaintDone", 
 function () {
@@ -62,7 +66,7 @@ this.repaintPending = false;
 }});
 Clazz.overrideMethod (c$, "clear", 
 function (iShape) {
-if (this.renderers == null) return ;
+if (this.renderers == null) return;
 if (iShape >= 0) this.renderers[iShape] = null;
  else for (var i = 0; i < 35; ++i) this.renderers[i] = null;
 
@@ -92,6 +96,7 @@ try {
 var g3d = gdata;
 g3d.renderBackground (null);
 if (isFirstPass) {
+this.bsTranslucent.clearAll ();
 if (minMax != null) g3d.renderCrossHairs (minMax, this.viewer.getScreenWidth (), this.viewer.getScreenHeight (), this.viewer.getNavigationOffset (), this.viewer.getNavigationDepthPercent ());
 var band = this.viewer.getRubberBandSelection ();
 if (band != null && g3d.setColix (this.viewer.getColixRubberband ())) g3d.drawRect (band.x, band.y, 0, 0, band.width, band.height);
@@ -99,12 +104,14 @@ if (band != null && g3d.setColix (this.viewer.getColixRubberband ())) g3d.drawRe
 var msg = null;
 for (var i = 0; i < 35 && g3d.currentlyRendering (); ++i) {
 var shape = this.shapeManager.getShape (i);
-if (shape == null) continue ;if (logTime) {
+if (shape == null) continue;
+if (logTime) {
 msg = "rendering " + org.jmol.viewer.JmolConstants.getShapeClassName (i, false);
 org.jmol.util.Logger.startTimer (msg);
-}this.getRenderer (i).render (g3d, modelSet, shape);
+}if ((isFirstPass || this.bsTranslucent.get (i)) && this.getRenderer (i).render (g3d, modelSet, shape)) this.bsTranslucent.set (i);
 if (logTime) org.jmol.util.Logger.checkTimer (msg, false);
 }
+g3d.renderAllStrings (null);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 e.printStackTrace ();
@@ -131,12 +138,14 @@ if (this.renderers == null) this.renderers =  new Array (35);
 var msg = null;
 for (var i = 0; i < 35; ++i) {
 var shape = this.shapeManager.getShape (i);
-if (shape == null) continue ;if (logTime) {
+if (shape == null) continue;
+if (logTime) {
 msg = "rendering " + org.jmol.viewer.JmolConstants.getShapeClassName (i, false);
 org.jmol.util.Logger.startTimer (msg);
 }this.getRenderer (i).render (g3dExport, modelSet, shape);
 if (logTime) org.jmol.util.Logger.checkTimer (msg, false);
 }
+g3dExport.renderAllStrings (g3dExport);
 return g3dExport.finalizeOutput ();
 }, "~S,org.jmol.util.GData,org.jmol.modelset.ModelSet,~S");
 });
