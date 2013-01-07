@@ -122,7 +122,7 @@ class GZIPInputStream extends InflaterInputStream {
             else
                 return this.read(buf, off, len);
         } else {
-            crc.updateRange(buf, off, n);
+            crc.update(buf, off, n);
         }
         return n;
     }
@@ -161,7 +161,7 @@ class GZIPInputStream extends InflaterInputStream {
      */
     private int readHeader(InputStream this_in) throws IOException {
         CheckedInputStream in = new CheckedInputStream(this_in, crc);
-        crc.resetAll();
+        crc.reset();
         // Check header magic
         if (readUShort(in) != GZIP_MAGIC) {
             throw new ZipException("Not in GZIP format");
@@ -201,7 +201,7 @@ class GZIPInputStream extends InflaterInputStream {
             }
             n += 2;
         }
-        crc.resetAll();
+        crc.reset();
         return n;
     }
 

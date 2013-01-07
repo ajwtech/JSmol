@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-13 13:01:55 -0600 (Tue, 13 Nov 2012) $
- * $Revision: 17719 $
+ * $Date: 2013-01-05 12:02:52 -0600 (Sat, 05 Jan 2013) $
+ * $Revision: 17844 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -650,9 +650,9 @@ public class FileManager {
         bis.close();
         return JmolBinary.getBufferedReaderForString(s);
       }
-      return (asInputStream ? bis : JmolBinary.getInputStreamReader(bis));
+      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis));
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      return ioe.toString();
     }
   }
 
@@ -746,8 +746,8 @@ public class FileManager {
           sb.append("\nEND Directory Entry " + name0 + "\n");
         fileData.put(name0, sb.toString());
       } else {
-        BufferedReader br = JmolBinary.getInputStreamReader(
-            JmolBinary.isGzipS(bis) ? JmolBinary.newGZIPInputStream(bis) : bis);
+        BufferedReader br = JmolBinary.getBufferedReader(
+            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis);
         String line;
         sb = new StringXBuilder();
         if (header != null)
@@ -762,7 +762,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       }
     } catch (Exception ioe) {
-      fileData.put(name0, ioe.getMessage());
+      fileData.put(name0, ioe.toString());
     }
     if (bis != null)
       try {
@@ -813,7 +813,7 @@ public class FileManager {
       bis.close();
       return bytes;
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      return ioe.toString();
     }
   }
 
@@ -867,7 +867,7 @@ public class FileManager {
       data[1] = sb.toString();
       return true;
     } catch (Exception ioe) {
-      data[1] = ioe.getMessage();
+      data[1] = ioe.toString();
       return false;
     }
   }
@@ -921,8 +921,8 @@ public class FileManager {
        at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
+      System.out.println(e.toString());
+      retFileNameOrError[0] = e.toString() + " opening " + fullPathName;
       return null;
     }
     if (apiPlatform.getImageWidth(image) < 1) {
@@ -982,7 +982,7 @@ public class FileManager {
         //        name = "file:" + name;
         url = new URL(appletDocumentBaseURL, name, null);
       } catch (MalformedURLException e) {
-        return new String[] { isFullLoad ? e.getMessage() : null };
+        return new String[] { isFullLoad ? e.toString() : null };
       }
     } else {
       // This code is for the app -- no local file reading for headless
@@ -993,7 +993,7 @@ public class FileManager {
         try {
           url = new URL((URL) null, name, null);
         } catch (MalformedURLException e) {
-          return new String[] { isFullLoad ? e.getMessage() : null };
+          return new String[] { isFullLoad ? e.toString() : null };
         }
       } else {
         file = viewer.apiPlatform.newFile(name);

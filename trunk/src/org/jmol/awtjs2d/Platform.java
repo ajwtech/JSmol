@@ -4,6 +4,7 @@ import java.net.URL;
 
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.Interface;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
@@ -101,10 +102,21 @@ public class Platform implements ApiPlatform {
 		Display.getFullScreenDimensions(canvas, widthHeight);
 	}
 
-	public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
-			char type) {
-		return null;
-	}
+  public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
+                                         char type) {
+    String c = (type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
+    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface
+        .getOptionInterface(c);
+    try {
+      if (jmolpopup != null)
+        jmolpopup.jpiInitialize(viewer, menuStructure);
+    } catch (Exception e) {
+      c = "Exception creating " + c + ":" + e;
+      System.out.println(c);
+      return null;
+    }
+    return jmolpopup;
+  }
 
 	public boolean hasFocus(Object canvas) {
 		return Display.hasFocus(canvas);
@@ -168,8 +180,9 @@ public class Platform implements ApiPlatform {
 		Image.disposeGraphics(gOffscreen);
 	}
 
-	public int[] grabPixels(Object imageobj, int width, int height) {
-	  // only for JpegInfo
+	public int[] grabPixels(Object imageobj, int width, int height, 
+                          int[] pixels, int startRow, int nRows) {
+	  // j2s will only pull in the entire pixels set, not a subset
 		return Image.grabPixels(imageobj, width, height);
 	}
 
@@ -259,5 +272,4 @@ public class Platform implements ApiPlatform {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
-	
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2012-12-08 12:06:13 -0600 (Sat, 08 Dec 2012) $
- * $Revision: 17798 $
+ * $Author: hansonr $
+ * $Date: 2012-12-18 04:35:10 -0600 (Tue, 18 Dec 2012) $
+ * $Revision: 17816 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -483,6 +483,7 @@ public class PropertyManager {
     return info.toString();
   }
 
+  @SuppressWarnings("unchecked")
   static Object getFileInfo(Object objHeader, String type) {
     Map<String, String> ht = new Hashtable<String, String>();
     if (objHeader == null)

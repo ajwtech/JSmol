@@ -218,7 +218,7 @@ public class ZStream{
     avail_in-=len;
 
     if(dstate.wrap!=0) {
-      adler.updateRange(next_in, next_in_index, len);
+      adler.update(next_in, next_in_index, len);
     }
     System.arraycopy(next_in, next_in_index, buf, start, len);
     next_in_index  += len;

@@ -34,6 +34,8 @@ import java.text.MessageFormat;
 public class GT {
 
 
+  private boolean doTranslate = true;
+
   /**
    * @param la  
    */
@@ -44,6 +46,30 @@ public class GT {
   	return "en_US";
   }
   
+  private static GT getTextWrapper;
+  private static Language[] languageList;
+
+  private static GT getTextWrapper() {
+    return (getTextWrapper == null ? getTextWrapper = new GT(null)
+        : getTextWrapper);
+  }
+
+  public static Language[] getLanguageList(GT gt) {
+    if (languageList == null) {
+      if (gt == null)
+        gt = getTextWrapper();
+      gt.createLanguageList();
+    }
+    return languageList;
+  }
+
+  synchronized private void createLanguageList() {
+    boolean wasTranslating = doTranslate ;
+    doTranslate = false;
+    languageList = new Language[] { };//Language.getLanguageList();
+    doTranslate = wasTranslating;
+  }
+
   public static void ignoreApplicationBundle() {
   }
 

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2012-12-22 19:22:41 -0600 (Sat, 22 Dec 2012) $
+ * $Revision: 17827 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -95,7 +95,7 @@ public class DotsRenderer extends ShapeRenderer {
               atom.getColix()), map, nPoints);
       } catch (Exception e) {
         System.out.println("Dots rendering error");
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
         // ignore -- some sort of fluke
       }
     }

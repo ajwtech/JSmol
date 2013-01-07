@@ -72,12 +72,13 @@ final public class JZlib{
   static final public byte Z_BINARY = 0;
   static final public byte Z_ASCII = 1;
   static final public byte Z_UNKNOWN = 2;
+//
+//  public static long adler32_combine(long adler1, long adler2, long len2){
+//    return Adler32.combine(adler1, adler2, len2);
+//  }
+//
+//  public static long crc32_combine(long crc1, long crc2, long len2){
+//    return CRC32.combine(crc1, crc2, len2);
+//  }
 
-  public static long adler32_combine(long adler1, long adler2, long len2){
-    return Adler32.combine(adler1, adler2, len2);
-  }
-
-  public static long crc32_combine(long crc1, long crc2, long len2){
-    return CRC32.combine(crc1, crc2, len2);
-  }
 }

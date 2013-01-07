@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2010-05-11 17:14:03 -0500 (Tue, 11 May 2010) $
- * $Revision: 13069 $
+ * $Date: 2012-12-22 19:22:41 -0600 (Sat, 22 Dec 2012) $
+ * $Revision: 17827 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -66,7 +66,7 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(Throwable cause) {
     super(cause);
-    lastError = cause.getMessage();
+    lastError = cause.toString();
   }
 
   /**

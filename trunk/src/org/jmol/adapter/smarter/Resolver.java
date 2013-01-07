@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-10 03:51:32 -0600 (Sat, 10 Nov 2012) $
- * $Revision: 17707 $
+ * $Date: 2012-12-18 15:46:42 -0600 (Tue, 18 Dec 2012) $
+ * $Revision: 17819 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -794,9 +794,9 @@ public class Resolver {
   { "Ampac", "AMPAC Version" };
   
   private final static String[] mopacContainsRecords =
-  { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
+  { "Mopac", "MOPAC 93 (c) Fujitsu", 
     "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)",
-    "MOPAC:  VERSION  6", "MOPAC   7", "MOPAC2009", "MOPAC (PUBLIC" };
+    "MOPAC:  VERSION  6", "MOPAC   7", "MOPAC2", "MOPAC (PUBLIC" };
 
   private final static String[] qchemContainsRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };

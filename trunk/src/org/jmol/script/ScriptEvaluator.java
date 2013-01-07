@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-13 06:21:47 -0600 (Thu, 13 Dec 2012) $
- * $Revision: 17807 $
+ * $Date: 2012-12-31 16:50:00 -0600 (Mon, 31 Dec 2012) $
+ * $Revision: 17837 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -6909,9 +6909,15 @@ public class ScriptEvaluator {
         viewer.showConsole(false);
       break;
     case Token.on:
-      if (isSyntaxCheck)
-        break;
-      viewer.showConsole(true);
+      if (!isSyntaxCheck)
+        viewer.showConsole(true);
+      break;
+    case Token.clear:
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
+      break;
+    case Token.write:
+      showString(stringParameter(2));
       break;
     default:
       error(ERROR_invalidArgument);
@@ -7310,7 +7316,7 @@ public class ScriptEvaluator {
       return lowestStdDev;
     } catch (Exception e) {
       //System.out.println(e.getMessage());
-      evalError(e.getMessage(), null);
+      evalError(e.toString(), null);
       return 0; // unattainable
     }
   }
@@ -8359,10 +8365,10 @@ public class ScriptEvaluator {
           runScript(sb.toString());
         } catch (Exception e) {
           viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + e.getMessage());
+          errorStr(-1, "Error: " + e.toString());
         } catch (Error er) {
           viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + er.getMessage());
+          errorStr(-1, "Error: " + er.toString());
         }
         viewer.setSelectionSubset(bsSubset);
       }
@@ -8763,6 +8769,7 @@ public class ScriptEvaluator {
       // LOAD [[APPEND]] SMILES
       // LOAD [[APPEND]] TRAJECTORY
       // LOAD [[APPEND]] MODEL
+      // LOAD SYNC  (asynchronous -- flag for RecentFileDialog)
       // LOAD [[APPEND]] "fileNameInQuotes"
 
       switch (tok) {
@@ -8774,6 +8781,10 @@ public class ScriptEvaluator {
         break;
       case Token.smiles:
         isSmiles = true;
+        i++;
+        break;
+      case Token.sync:
+        htParams.put("async", Boolean.TRUE);
         i++;
         break;
       case Token.trajectory:
@@ -9288,7 +9299,7 @@ public class ScriptEvaluator {
         showString(viewer.getFilePath(localName, false) + " created");
         os.close();
       } catch (IOException e) {
-        Logger.error("error closing file " + e.getMessage());
+        Logger.error("error closing file " + e.toString());
       }
     if (tokType > 0) {
       // we are just loading an atom property
@@ -14588,7 +14599,7 @@ public class ScriptEvaluator {
               && fullPath[0] != null) {
             String ext = (type.equals("Idtf") ? ".tex" : ".ini");
             fileName = fullPath[0] + ext;
-            msg = viewer.createImageSet(fileName, ext, data, null,
+            msg = viewer.createImageSet(fileName, ext, data, null, null,
                 Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
@@ -14717,7 +14728,10 @@ public class ScriptEvaluator {
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImageSet(fileName, type, bytes, scripts, quality,
+        msg = viewer.createImageSet(fileName, type, 
+            (bytes instanceof String ? (String) bytes : null), 
+            (bytes instanceof byte[] ? (byte[]) bytes : null), 
+            scripts, quality,
             width, height, bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
@@ -14999,6 +15013,8 @@ public class ScriptEvaluator {
         msg = viewer.getSavedCoordinates(nameC);
       break;
     case Token.state:
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getStateInfo();
@@ -15077,6 +15093,8 @@ public class ScriptEvaluator {
       break;
     case Token.file:
       // as a string
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
       if (statementLength == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getCurrentFileAsString();
@@ -15101,6 +15119,7 @@ public class ScriptEvaluator {
       if (n < 1)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck) {
+        viewer.clearConsole();
         viewer.removeCommand();
         msg = viewer.getSetHistory(n);
       }

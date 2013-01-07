@@ -249,7 +249,7 @@ public class ZipUtil implements JmolZipUtility {
       s = getZipDirectoryOrErrorAndClose(bis, false);
       bis.close();
     } catch (Exception e) {
-      Logger.error(e.getMessage());
+      Logger.error(e.toString());
     }
     for (int i = 0; i < s.length; i++)
       sb.append(s[i]).appendC('\n');
@@ -263,7 +263,7 @@ public class ZipUtil implements JmolZipUtility {
       s = getZipDirectoryOrErrorAndClose(bis, addManifest);
       bis.close();
     } catch (Exception e) {
-      Logger.error(e.getMessage());
+      Logger.error(e.toString());
     }
     return s;
   }
@@ -372,7 +372,7 @@ public class ZipUtil implements JmolZipUtility {
                                 boolean isSparDir, String newName, int ptSlash,
                                 List<Object> v) {
     CRC32 crc = new CRC32();
-    crc.update(ret);
+    crc.update(ret, 0, ret.length);
     Long crcValue = Long.valueOf(crc.getValue());
     // only add to the data list v when the data in the file is new
     if (crcMap.containsKey(crcValue)) {
@@ -476,8 +476,8 @@ public class ZipUtil implements JmolZipUtility {
         nBytes = f.length();
       }
     } catch (IOException e) {
-      Logger.info(e.getMessage());
-      return e.getMessage();
+      Logger.info(e.toString());
+      return e.toString();
     }
     return msg + " " + nBytes + " " + fullFilePath;
   }

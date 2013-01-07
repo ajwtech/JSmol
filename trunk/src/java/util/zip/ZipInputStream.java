@@ -129,7 +129,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
         if (entry != null) {
             closeEntry();
         }
-        crc.resetAll();
+        crc.reset();
         inflater = inf = new Inflater(true);
         if ((entry = readLOC()) == null) {
             return null;
@@ -210,7 +210,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
                 entryEOF = true;
                 entry = null;
             } else {
-                crc.updateRange(b, off, len);
+                crc.update(b, off, len);
             }
             return len;
         case STORED:
@@ -226,7 +226,7 @@ class ZipInputStream extends InflaterInputStream implements ZipConstants {
             if (len == -1) {
                 throw new ZipException("unexpected EOF");
             }
-            crc.updateRange(b, off, len);
+            crc.update(b, off, len);
             remaining -= len;
             if (remaining == 0 && entry.crc != crc.getValue()) {
                 throw new ZipException(
