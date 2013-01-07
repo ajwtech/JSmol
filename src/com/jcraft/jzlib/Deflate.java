@@ -1405,7 +1405,7 @@ final class Deflate /*implements Cloneable*/ {
       wrap = -wrap;
     }
     status = (wrap==0) ? BUSY_STATE : INIT_STATE;
-    strm.adler.resetAll();
+    strm.adler.reset();
 
     last_flush = Z_NO_FLUSH;
 
@@ -1463,7 +1463,7 @@ final class Deflate /*implements Cloneable*/ {
     if(dictionary == null || status != INIT_STATE)
       return Z_STREAM_ERROR;
 
-    strm.adler.updateRange(dictionary, 0, dictLength);
+    strm.adler.update(dictionary, 0, dictLength);
 
     if(length < MIN_MATCH) return Z_OK;
     if(length > w_size-MIN_LOOKAHEAD){
@@ -1515,7 +1515,7 @@ final class Deflate /*implements Cloneable*/ {
       if(wrap == 2){
         getGZIPHeader().put(this);
         status=BUSY_STATE;
-        strm.adler.resetAll();
+        strm.adler.reset();
       }
       else{
       int header = (Z_DEFLATED+((w_bits-8)<<4))<<8;
@@ -1536,7 +1536,7 @@ final class Deflate /*implements Cloneable*/ {
         putShortMSB((int)(adler>>>16));
         putShortMSB((int)(adler&0xffff));
       }
-      strm.adler.resetAll();
+      strm.adler.reset();
       }
     }
 

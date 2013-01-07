@@ -60,7 +60,7 @@ class CheckedInputStream extends FilterInputStream {
     public int readByteAsInt() throws IOException {
         int b = in.readByteAsInt();
         if (b != -1) {
-            cksum.update(b);
+            cksum.updateByteAsInt(b);
         }
         return b;
     }
@@ -84,7 +84,7 @@ class CheckedInputStream extends FilterInputStream {
     public int read(byte[] buf, int off, int len) throws IOException {
         len = in.read(buf, off, len);
         if (len != -1) {
-            cksum.updateRange(buf, off, len);
+            cksum.update(buf, off, len);
         }
         return len;
     }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2012-12-31 16:50:00 -0600 (Mon, 31 Dec 2012) $
+ * $Revision: 17837 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -352,10 +352,12 @@ class StatusManager {
   }
   
   synchronized void setFileLoadStatus(String fullPathName, String fileName,
-                                        String modelName, String errorMsg,
-                                        int ptLoad, boolean doCallback) {
+                                      String modelName, String errorMsg,
+                                      int ptLoad, boolean doCallback,
+                                      Boolean isAsync) {
     if (fullPathName == null && "resetUndo".equals(fileName)) {
-      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
+          .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.zap();
       fileName = viewer.getZapName();
@@ -368,10 +370,13 @@ class StatusManager {
       String name = (String) viewer.getParameter("_smilesString");
       if (name.length() != 0)
         fileName = name;
-      jmolCallbackListener.notifyCallback(EnumCallback.LOADSTRUCT,
-          new Object[] { sJmol, 
-              fullPathName, fileName, modelName, errorMsg, Integer.valueOf(ptLoad)
-          , viewer.getParameter("_modelNumber"), viewer.getModelNumberDotted(viewer.getModelCount() - 1) });
+      jmolCallbackListener
+          .notifyCallback(EnumCallback.LOADSTRUCT,
+              new Object[] { sJmol, fullPathName, fileName, modelName,
+                  errorMsg, Integer.valueOf(ptLoad),
+                  viewer.getParameter("_modelNumber"),
+                  viewer.getModelNumberDotted(viewer.getModelCount() - 1),
+                  isAsync });
     }
   }
 
@@ -395,7 +400,7 @@ class StatusManager {
     }
     
     if (viewer.jmolpopup != null && !isAnimationRunning)
-      viewer.jmolpopup.updateComputedMenus();
+      viewer.jmolpopup.jpiUpdateComputedMenus();
 
   }
 
@@ -635,14 +640,15 @@ class StatusManager {
    * 
    * @param fileNameOrError 
    * @param type
-   * @param text_or_bytes
+   * @param text
+   * @param bytes
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  String createImage(String fileNameOrError, String type, Object text_or_bytes,
+  String createImage(String fileNameOrError, String type, String text, byte[] bytes,
                      int quality) {
     return (jmolStatusListener == null  ? null :
-      jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
+      jmolStatusListener.createImage(fileNameOrError, type, text == null ? bytes : text, quality));
   }
 
   Map<String, Object> getRegistryInfo() {

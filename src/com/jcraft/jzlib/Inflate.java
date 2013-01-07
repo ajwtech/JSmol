@@ -300,7 +300,7 @@ final class Inflate {
         z.avail_in--;
         z.total_in++;
         this.need += (z.next_in[z.next_in_index++] & 0xffL);
-        z.adler.reset(this.need);
+        z.adler.resetLong(this.need);
         this.mode = DICT0;
         return Z_NEED_DICT;
       case DICT0:
@@ -595,14 +595,14 @@ final class Inflate {
 
     if (this.mode == DICT0) {
       long adler_need = z.adler.getValue();
-      z.adler.resetAll();
-      z.adler.updateRange(dictionary, 0, dictLength);
+      z.adler.reset();
+      z.adler.update(dictionary, 0, dictLength);
       if (z.adler.getValue() != adler_need) {
         return Z_DATA_ERROR;
       }
     }
 
-    z.adler.resetAll();
+    z.adler.reset();
 
     if (length >= (1 << this.wbits)) {
       length = (1 << this.wbits) - 1;
@@ -728,7 +728,7 @@ final class Inflate {
       b = z.next_in[z.next_in_index];
       if (b != 0)
         tmp_string.write(z.next_in, z.next_in_index, 1);
-      z.adler.updateRange(z.next_in, z.next_in_index, 1);
+      z.adler.update(z.next_in, z.next_in_index, 1);
       z.next_in_index++;
     } while (b != 0);
     return r;
@@ -748,7 +748,7 @@ final class Inflate {
       z.total_in++;
       //b = z.next_in[z.next_in_index];
       tmp_string.write(z.next_in, z.next_in_index, 1);
-      z.adler.updateRange(z.next_in, z.next_in_index, 1);
+      z.adler.update(z.next_in, z.next_in_index, 1);
       z.next_in_index++;
       this.need--;
     }
@@ -760,7 +760,7 @@ final class Inflate {
       crcbuf[i] = (byte) (v & 0xff);
       v >>= 8;
     }
-    z.adler.updateRange(crcbuf, 0, n);
+    z.adler.update(crcbuf, 0, n);
   }
 
   public GZIPHeader getGZIPHeader() {

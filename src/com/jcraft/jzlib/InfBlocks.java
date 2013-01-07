@@ -138,7 +138,7 @@ final class InfBlocks{
     bitb=0;
     read=write=0;
     if(check){
-      z.adler.resetAll();
+      z.adler.reset();
     }
   }
 
@@ -583,7 +583,7 @@ final class InfBlocks{
 
     // update check information
     if(check && n>0){
-      z.adler.updateRange(window, q, n);
+      z.adler.update(window, q, n);
     }
 
     // copy as far as end of window
@@ -609,7 +609,7 @@ final class InfBlocks{
 
       // update check information
       if(check && n>0){
-	z.adler.updateRange(window, q, n);
+	z.adler.update(window, q, n);
       }
 
       // copy

@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2012-12-06 10:56:07 -0600 (Thu, 06 Dec 2012) $
- * $Revision: 17789 $
+ * $Date: 2012-12-31 16:50:00 -0600 (Mon, 31 Dec 2012) $
+ * $Revision: 17837 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -39,7 +39,6 @@ import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.parallel.ScriptParallelProcessor;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -1008,6 +1007,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           case Token.model:
           case Token.smiles:
           case Token.trajectory:
+          case Token.sync:
             addTokenToPrefix(token);
             break;
           default:

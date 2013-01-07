@@ -64,7 +64,7 @@ class MsmsReader extends PmeshReader {
     fileName = TextFormat.simpleReplace(fileName, ".vert", ".face");
     Logger.info("reading from file " + fileName);
     try {
-    br = JmolBinary.getInputStreamReader(sg.getAtomDataServer().getBufferedInputStream(
+    br = JmolBinary.getBufferedReader(sg.getAtomDataServer().getBufferedInputStream(
         fileName));
     } catch (Exception e) {
       Logger.info("Note: file " + fileName + " was not found");

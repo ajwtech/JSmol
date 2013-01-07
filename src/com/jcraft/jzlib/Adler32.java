@@ -44,12 +44,12 @@ final public class Adler32 implements Checksum {
   private long s1=1L;
   private long s2=0L;
 
-  public void reset(long init){
+  public void resetLong(long init){
     s1=init&0xffff;
     s2=(init>>16)&0xffff;
   }
 
-  public void resetAll(){
+  public void reset(){
     s1=1L;
     s2=0L;
   }
@@ -58,7 +58,7 @@ final public class Adler32 implements Checksum {
     return ((s2<<16)|s1);
   }
 
-  public void updateRange(byte[] buf, int index, int len){
+  public void update(byte[] buf, int index, int len){
 
     if(len==1){
       s1+=buf[index++]&0xff; s2+=s1;
@@ -88,37 +88,37 @@ final public class Adler32 implements Checksum {
     s2%=BASE;
   }
 
-  public Adler32 copy(){
-    Adler32 foo = new Adler32();
-    foo.s1 = this.s1;
-    foo.s2 = this.s2;
-    return foo;
-  }
+//  public Adler32 copy(){
+//    Adler32 foo = new Adler32();
+//    foo.s1 = this.s1;
+//    foo.s2 = this.s2;
+//    return foo;
+//  }
 
   // The following logic has come from zlib.1.2.
-  static long combine(long adler1, long adler2, long len2){
-    long BASEL = BASE;
-    long sum1;
-    long sum2;
-    long rem;  // unsigned int
-
-    rem = len2 % BASEL;
-    sum1 = adler1 & 0xffffL;
-    sum2 = rem * sum1;
-    sum2 %= BASEL; // MOD(sum2);
-    sum1 += (adler2 & 0xffffL) + BASEL - 1;
-    sum2 += ((adler1 >> 16) & 0xffffL) + ((adler2 >> 16) & 0xffffL) + BASEL - rem;
-    if (sum1 >= BASEL) sum1 -= BASEL;
-    if (sum1 >= BASEL) sum1 -= BASEL;
-    if (sum2 >= (BASEL << 1)) sum2 -= (BASEL << 1);
-    if (sum2 >= BASEL) sum2 -= BASEL;
-    return sum1 | (sum2 << 16);
-  }
+//  static long combine(long adler1, long adler2, long len2){
+//    long BASEL = BASE;
+//    long sum1;
+//    long sum2;
+//    long rem;  // unsigned int
+//
+//    rem = len2 % BASEL;
+//    sum1 = adler1 & 0xffffL;
+//    sum2 = rem * sum1;
+//    sum2 %= BASEL; // MOD(sum2);
+//    sum1 += (adler2 & 0xffffL) + BASEL - 1;
+//    sum2 += ((adler1 >> 16) & 0xffffL) + ((adler2 >> 16) & 0xffffL) + BASEL - rem;
+//    if (sum1 >= BASEL) sum1 -= BASEL;
+//    if (sum1 >= BASEL) sum1 -= BASEL;
+//    if (sum2 >= (BASEL << 1)) sum2 -= (BASEL << 1);
+//    if (sum2 >= BASEL) sum2 -= BASEL;
+//    return sum1 | (sum2 << 16);
+//  }
 
   private byte[] b1 = new byte[1];
-  public void update(int b) {
+  public void updateByteAsInt(int b) {
     b1[0] = (byte) b;
-    updateRange(b1, 0, 1);
+    update(b1, 0, 1);
   }
 
 /*

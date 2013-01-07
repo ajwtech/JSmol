@@ -27,7 +27,4 @@ package java.util.zip;
 
 public class CRC32 extends com.jcraft.jzlib.CRC32 {
 
-  public void update(byte[] ret) {
-    updateRange(ret, 0, ret.length);
-  }
 }
