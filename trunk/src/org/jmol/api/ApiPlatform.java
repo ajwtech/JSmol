@@ -133,4 +133,6 @@ public interface ApiPlatform {
 
   void notifyEndOfRendering();
 
+  public String getDateFormat();
+
 }

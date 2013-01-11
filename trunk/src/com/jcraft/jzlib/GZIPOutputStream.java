@@ -32,17 +32,17 @@ import java.io.*;
 
 public class GZIPOutputStream extends DeflaterOutputStream {
 
-  public GZIPOutputStream(OutputStream out) throws IOException {
+  public GZIPOutputStream(OutputStream out) {
     this(out, DEFAULT_BUFSIZE);
   }
 
-  public GZIPOutputStream(OutputStream out, int size) throws IOException {
+  public GZIPOutputStream(OutputStream out, int size) {
     this(out, size, true);
   }
 
   public GZIPOutputStream(OutputStream out, 
                           int size,
-                          boolean close_out) throws IOException {
+                          boolean close_out) {
     this(out,
          new Deflater(JZlib.Z_DEFAULT_COMPRESSION, 15+16),
          size, close_out);
@@ -52,7 +52,7 @@ public class GZIPOutputStream extends DeflaterOutputStream {
   public GZIPOutputStream(OutputStream out, 
                           Deflater deflater,
                           int size,
-                          boolean close_out) throws IOException{
+                          boolean close_out) {
     super(out, deflater, size, close_out);
   }
 

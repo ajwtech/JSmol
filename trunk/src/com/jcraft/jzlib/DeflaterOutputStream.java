@@ -48,20 +48,20 @@ public class DeflaterOutputStream extends FilterOutputStream {
 
   protected static final int DEFAULT_BUFSIZE = 512;
 
-  public DeflaterOutputStream(OutputStream out) throws IOException {
+  public DeflaterOutputStream(OutputStream out) {
     this(out, 
          new Deflater(JZlib.Z_DEFAULT_COMPRESSION),
          DEFAULT_BUFSIZE, true);
     mydeflater = true;
   }
 
-  public DeflaterOutputStream(OutputStream out, Deflater def) throws IOException {
+  public DeflaterOutputStream(OutputStream out, Deflater def) {
     this(out, def, DEFAULT_BUFSIZE, true);
   }
 
   public DeflaterOutputStream(OutputStream out,
                               Deflater deflater,
-                              int size) throws IOException {
+                              int size) {
     this(out, deflater, size, true);
   }
   /**
@@ -69,19 +69,19 @@ public class DeflaterOutputStream extends FilterOutputStream {
    * @param deflater 
    * @param size 
    * @param close_out 
-   * @throws IOException  
+   * throws IOException  
    */
   public DeflaterOutputStream(OutputStream out,
                               Deflater deflater,
                               int size,
-                              boolean close_out)  throws IOException {
+                              boolean close_out) {
     super(out);
-    if (out == null || deflater == null) {
-      throw new NullPointerException();
-    }
-    else if (size <= 0) {
-      throw new IllegalArgumentException("buffer size must be greater than 0");
-    }
+//    if (out == null || deflater == null) {
+//      throw new NullPointerException();
+//    }
+//    else if (size <= 0) {
+//      throw new IllegalArgumentException("buffer size must be greater than 0");
+//    }
     this.deflater = deflater;
     buffer = new byte[size];
     this.close_out = close_out;
@@ -95,23 +95,20 @@ public class DeflaterOutputStream extends FilterOutputStream {
 
   @Override
   public void write(byte[] b, int off, int len) throws IOException {
-    if (deflater.finished()) {
+    if (deflater.finished())
       throw new IOException("finished");
-    }
-    else if (off<0 | len<0 | off+len>b.length) {
+
+    if (off < 0 | len < 0 | off + len > b.length)
       throw new IndexOutOfBoundsException();
-    }
-    else if (len == 0) {
+    if (len == 0)
       return;
-    }
-    else {
-      int flush = syncFlush ? JZlib.Z_SYNC_FLUSH : JZlib.Z_NO_FLUSH;
-      deflater.setInput(b, off, len, true);
-      while (deflater.avail_in>0) {
-        int err = deflate(flush);
-        if (err == JZlib.Z_STREAM_END)
-          break;
-      }
+
+    int flush = syncFlush ? JZlib.Z_SYNC_FLUSH : JZlib.Z_NO_FLUSH;
+    deflater.setInput(b, off, len, true);
+    while (deflater.avail_in > 0) {
+      int err = deflate(flush);
+      if (err == JZlib.Z_STREAM_END)
+        break;
     }
   }
 

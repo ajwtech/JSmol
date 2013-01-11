@@ -79,14 +79,14 @@ public class ZStream{
 
   int data_type; // best guess about the data type: ascii or binary
 
-  Checksum adler;
+  Checksum checksum;
 
   public ZStream(){
     this(new Adler32());
   }
 
   public ZStream(Checksum adler){
-    this.adler=adler;
+    this.checksum=adler;
   }
 
   public int inflateInit(){
@@ -218,7 +218,7 @@ public class ZStream{
     avail_in-=len;
 
     if(dstate.wrap!=0) {
-      adler.update(next_in, next_in_index, len);
+      checksum.update(next_in, next_in_index, len);
     }
     System.arraycopy(next_in, next_in_index, buf, start, len);
     next_in_index  += len;
@@ -227,7 +227,7 @@ public class ZStream{
   }
 
   public long getAdler(){
-    return adler.getValue();
+    return checksum.getValue();
   }
 
   public void free(){

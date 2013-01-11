@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-02 08:28:55 -0600 (Wed, 02 Jan 2013) $
- * $Revision: 17838 $
+ * $Date: 2013-01-07 18:44:19 -0600 (Mon, 07 Jan 2013) $
+ * $Revision: 17848 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -4264,7 +4264,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     String fName = null;
     if (fileName != null) {
-      fileName[0] = getFileNameFromDialog(fileName[0], Integer.MIN_VALUE);
+      fileName[0] = getOutputFileNameFromDialog(fileName[0], Integer.MIN_VALUE);
       if (fileName[0] == null)
         return null;
       fName = fileName[0];
@@ -4521,8 +4521,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     type = type.toLowerCase();
     if (!Parser.isOneOf(type, "jpg;jpeg;jpg64;jpeg64"))
       try {
-        c = (JmolImageCreatorInterface) Interface
-            .getOptionInterface("export.image.ImageCreator");
+        c = getImageCreator();
       } catch (Error er) {
         // unsigned applet will not have this interface
         // and thus will not use os or filename
@@ -5884,8 +5883,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return (isKiosk || !isRestricted(ACCESS.ALL) ? null : statusManager.dialogAsk(
-        type, fileName));
+    /**
+     * @j2sNative
+     * 
+     * return prompt(type, fileName);
+     * 
+     */
+    {
+      return (isKiosk || !isRestricted(ACCESS.ALL) ? null : statusManager.dialogAsk(
+          type, fileName));
+    }
   }
 
   public int getScriptDelay() {
@@ -8966,8 +8973,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "no";
     JmolImageCreatorInterface c;
     try {
-      c = (JmolImageCreatorInterface) Interface
-          .getOptionInterface("export.image.ImageCreator");
+      c = getImageCreator();
       c.setViewer(this, privateKey);
       return c.clipImage(text);
     } catch (Error er) {
@@ -9001,7 +9007,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           width, height, fullPath, true);
     String info = "";
     int n = 0;
-    fileName = getFileNameFromDialog(fileName, quality);
+    fileName = getOutputFileNameFromDialog(fileName, quality);
     if (fullPath != null)
       fullPath[0] = fileName;
     if (fileName == null)
@@ -9146,7 +9152,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         err = clipImage(text);
       } else {
         if (doCheck)
-          fileName = getFileNameFromDialog(fileName, quality);
+          fileName = getOutputFileNameFromDialog(fileName, quality);
         if (fullPath != null)
           fullPath[0] = fileName;
         if (fileName == null) {
@@ -9166,13 +9172,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                 quality);
           if (err == null) {
             // application can do it itself or allow Jmol to do it here
-            JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-                .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator");
+            JmolImageCreatorInterface c = getImageCreator();
             c.setViewer(this, privateKey);
-            err = c.createImage(fileName, type, text, bytes, scripts, null, quality);
+            err = c.createImage((FileManager.urlTypeIndex(fileName) == FileManager.URL_LOCAL ? fileName : null), 
+                type, text, bytes, scripts, null, quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)
               statusManager.createImage((String) err, type, null, null, quality);
+            else if (err instanceof byte[]){
+              err = JmolBinary.postByteArray(fileManager, fileName, (byte[]) err);
+              err = "OK " + err;
+            }
+            
           }
         }
       }
@@ -9188,13 +9199,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return ("CANCELED".equals(err) ? null : err);
   }
 
-  private String getFileNameFromDialog(String fileName, int quality) {
+  private JmolImageCreatorInterface getImageCreator() {
+    return (JmolImageCreatorInterface) Interface
+    .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator");
+  }
+
+  private String getOutputFileNameFromDialog(String fileName, int quality) {
     if (fileName == null || isKiosk)
       return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
       fileName = fileName.substring(1);
-    useDialog |= isApplet;
+    useDialog |= isApplet && (fileName.indexOf("http:") < 0);
     fileName = FileManager.getLocalPathForWritingFile(this, fileName);
     if (useDialog)
       fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
@@ -10850,26 +10866,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean queueOnHold = false;
 
-  
-  private static byte[] b;
-  
-  static {
-    b = new byte[] {1, 2, 3, 4};
-    java.util.zip.CRC32 c0 = new java.util.zip.CRC32();
-    com.jcraft.jzlib.CRC32 c1 = new com.jcraft.jzlib.CRC32();
-    for (int i = 0; i < 10; i++) {
-      for (int k = 0; k < 4; k++) 
-        b[k] = (byte)(Math.random()*256);
-    c0.reset();
-    c0.update(b, 0, b.length);
-    c1.reset();
-    c1.update(b, 0, b.length);
-    System.out.println(c0.getValue() + " " + Integer.toHexString((int)c1.getValue()) + " " + (int)c1.getValue());
-    }
-    System.out.println("OK");
-    
-  }
-
-
-  
 }
