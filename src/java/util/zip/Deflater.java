@@ -25,21 +25,14 @@
 
 package java.util.zip;
 
-public class Inflater extends com.jcraft.jzlib.Inflater {
+public class Deflater extends com.jcraft.jzlib.Deflater {
 
-  public Inflater(boolean nowrap) {
-    super(15, nowrap);
+  public Deflater(int compressionLevel) {
+    super(compressionLevel);
   }
 
-  public int getRemaining() {
-    return avail_in;
+  public void finish() {
+    // N/A
   }
 
-  public long getBytesWritten() {
-    return total_out;
-  }
-
-  public long getBytesRead() {
-    return total_in;
-  }
 }

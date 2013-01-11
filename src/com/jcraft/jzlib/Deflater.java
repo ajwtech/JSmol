@@ -34,7 +34,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.jcraft.jzlib;
 
-final public class Deflater extends ZStream {
+public class Deflater extends ZStream {
 
   static final private int MAX_WBITS = 15; // 32K LZ77 window
   //static final private int DEF_WBITS=MAX_WBITS;
@@ -47,7 +47,7 @@ final public class Deflater extends ZStream {
   //
   //  static final private int MAX_MEM_LEVEL=9;
 
-  static final private int Z_OK = 0;
+  //static final private int Z_OK = 0;
   static final private int Z_STREAM_END = 1;
   //  static final private int Z_NEED_DICT=2;
   //  static final private int Z_ERRNO=-1;
@@ -63,30 +63,30 @@ final public class Deflater extends ZStream {
     super();
   }
 
-  public Deflater(int level) throws GZIPException {
+  public Deflater(int level) {
     this(level, MAX_WBITS);
   }
 
-  public Deflater(int level, boolean nowrap) throws GZIPException {
+  public Deflater(int level, boolean nowrap) {
     this(level, MAX_WBITS, nowrap);
   }
 
-  public Deflater(int level, int bits) throws GZIPException {
+  public Deflater(int level, int bits) {
     this(level, bits, false);
   }
 
-  public Deflater(int level, int bits, boolean nowrap) throws GZIPException {
+  public Deflater(int level, int bits, boolean nowrap){
     super();
-    int ret = init3b(level, bits, nowrap);
-    if (ret != Z_OK)
-      throw new GZIPException(ret + ": " + msg);
+    init3b(level, bits, nowrap);
+    //if (ret != Z_OK)
+      //throw new GZIPException(ret + ": " + msg);
   }
 
-  public Deflater(int level, int bits, int memlevel) throws GZIPException {
+  public Deflater(int level, int bits, int memlevel) {
     super();
-    int ret = init3(level, bits, memlevel);
-    if (ret != Z_OK)
-      throw new GZIPException(ret + ": " + msg);
+    init3(level, bits, memlevel);
+    //if (ret != Z_OK)
+      //throw new GZIPException(ret + ": " + msg);
   }
 
   public int init(int level) {

@@ -466,7 +466,7 @@ public class ZipUtil implements JmolZipUtility {
           return bytes;
         fullFilePath = outFileName;
         nBytes = bytes.length;
-        String ret = postByteArray(fm, outFileName, bytes);
+        String ret = JmolBinary.postByteArray(fm, outFileName, bytes);
         if (ret.indexOf("Exception") >= 0)
           return ret;
         msg += " " + ret;
@@ -480,24 +480,6 @@ public class ZipUtil implements JmolZipUtility {
       return e.toString();
     }
     return msg + " " + nBytes + " " + fullFilePath;
-  }
-
-  private static String postByteArray(FileManager fm, String outFileName,
-                                      byte[] bytes) {
-    Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
-        null, false, false, bytes, false);
-    if (ret instanceof String)
-      return (String) ret;
-    try {
-      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
-    } catch (IOException e) {
-      try {
-        ((BufferedInputStream) ret).close();
-      } catch (IOException e1) {
-        // ignore
-      }
-    }
-    return JmolBinary.fixUTF((byte[]) ret);
   }
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,

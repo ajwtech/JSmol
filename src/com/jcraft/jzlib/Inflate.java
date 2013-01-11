@@ -204,7 +204,7 @@ final class Inflate {
         }
 
         if ((wrap & 2) != 0 && this.need == 0x8b1fL) { // gzip header
-          z.adler = new CRC32();
+          z.checksum = new CRC32();
           checksum(2, this.need);
 
           if (gheader == null)
@@ -250,7 +250,7 @@ final class Inflate {
           break;
         }
 
-        z.adler = new Adler32();
+        z.checksum = new Adler32();
 
         if ((b & PRESET_DICT) == 0) {
           this.mode = BLOCKS;
@@ -300,7 +300,7 @@ final class Inflate {
         z.avail_in--;
         z.total_in++;
         this.need += (z.next_in[z.next_in_index++] & 0xffL);
-        z.adler.resetLong(this.need);
+        z.checksum.resetLong(this.need);
         this.mode = DICT0;
         return Z_NEED_DICT;
       case DICT0:
@@ -322,7 +322,7 @@ final class Inflate {
           return r;
         }
         r = f;
-        this.was = z.adler.getValue();
+        this.was = z.checksum.getValue();
         this.blocks.reset();
         if (this.wrap == 0) {
           this.mode = DONE;
@@ -568,14 +568,14 @@ final class Inflate {
           if (gheader != null) {
             gheader.hcrc = (int) (this.need & 0xffff);
           }
-          if (this.need != (z.adler.getValue() & 0xffffL)) {
+          if (this.need != (z.checksum.getValue() & 0xffffL)) {
             this.mode = BAD;
             z.msg = "header crc mismatch";
             this.marker = 5; // can't try inflateSync
             break;
           }
         }
-        z.adler = new CRC32();
+        z.checksum = new CRC32();
 
         this.mode = BLOCKS;
         break;
@@ -594,15 +594,15 @@ final class Inflate {
     int length = dictLength;
 
     if (this.mode == DICT0) {
-      long adler_need = z.adler.getValue();
-      z.adler.reset();
-      z.adler.update(dictionary, 0, dictLength);
-      if (z.adler.getValue() != adler_need) {
+      long adler_need = z.checksum.getValue();
+      z.checksum.reset();
+      z.checksum.update(dictionary, 0, dictLength);
+      if (z.checksum.getValue() != adler_need) {
         return Z_DATA_ERROR;
       }
     }
 
-    z.adler.reset();
+    z.checksum.reset();
 
     if (length >= (1 << this.wbits)) {
       length = (1 << this.wbits) - 1;
@@ -728,7 +728,7 @@ final class Inflate {
       b = z.next_in[z.next_in_index];
       if (b != 0)
         tmp_string.write(z.next_in, z.next_in_index, 1);
-      z.adler.update(z.next_in, z.next_in_index, 1);
+      z.checksum.update(z.next_in, z.next_in_index, 1);
       z.next_in_index++;
     } while (b != 0);
     return r;
@@ -748,7 +748,7 @@ final class Inflate {
       z.total_in++;
       //b = z.next_in[z.next_in_index];
       tmp_string.write(z.next_in, z.next_in_index, 1);
-      z.adler.update(z.next_in, z.next_in_index, 1);
+      z.checksum.update(z.next_in, z.next_in_index, 1);
       z.next_in_index++;
       this.need--;
     }
@@ -760,7 +760,7 @@ final class Inflate {
       crcbuf[i] = (byte) (v & 0xff);
       v >>= 8;
     }
-    z.adler.update(crcbuf, 0, n);
+    z.checksum.update(crcbuf, 0, n);
   }
 
   public GZIPHeader getGZIPHeader() {

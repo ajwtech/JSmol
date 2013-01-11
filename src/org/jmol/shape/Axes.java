@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-01-09 13:14:27 -0600 (Wed, 09 Jan 2013) $
+ * $Revision: 17851 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -191,7 +191,8 @@ public String getShapeState() {
     if (labels != null) {
       sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
-        sb.append(Escape.escapeStr(labels[i])).append(" ");
+        if (labels[i] != null)
+          sb.append(Escape.escapeStr(labels[i])).append(" ");
       sb.append(";\n");
     }
     return super.getShapeState() + sb;

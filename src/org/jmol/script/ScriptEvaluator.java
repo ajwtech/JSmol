@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-31 16:50:00 -0600 (Mon, 31 Dec 2012) $
- * $Revision: 17837 $
+ * $Date: 2013-01-09 13:14:27 -0600 (Wed, 09 Jan 2013) $
+ * $Revision: 17851 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -13950,17 +13950,26 @@ public class ScriptEvaluator {
             + (tok == Token.on ? "On" : "Off"), null);
         return;
       }
-      if (statementLength == index + 7) {
+      String sOrigin = null;
+      switch (statementLength - index) {
+      case 7:
         // axes labels "X" "Y" "Z" "-X" "-Y" "-Z"
         setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
             parameterAsString(++index), parameterAsString(++index),
             parameterAsString(++index), parameterAsString(++index),
             parameterAsString(++index), parameterAsString(++index) });
-      } else {
-        checkLength(index + 4);
+        break;
+      case 5:
+        sOrigin = parameterAsString(index + 4);
+        //$FALL-THROUGH$
+      case 4:
+        // axes labels "X" "Y" "Z" [origin]
         setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
             parameterAsString(++index), parameterAsString(++index),
-            parameterAsString(++index) });
+            parameterAsString(++index), sOrigin });
+        break;
+      default:
+        error(ERROR_badArgumentCount);
       }
       return;
     }
