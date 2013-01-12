@@ -345,7 +345,7 @@ public class ZStream{
   public boolean finished(){ return false; }
   
   /**
-   * added by Bob Hanson -- JavaScript only
+   * added by Bob Hanson
    * 
    * @param s  
    * @return UTF-8 byte array (or, for code points < 256, ISO-8859-1)
