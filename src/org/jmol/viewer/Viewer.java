@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-07 18:44:19 -0600 (Mon, 07 Jan 2013) $
- * $Revision: 17848 $
+ * $Date: 2013-01-11 07:09:23 -0600 (Fri, 11 Jan 2013) $
+ * $Revision: 17857 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -9151,8 +9151,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage(text);
       } else {
-        if (doCheck)
+        if (doCheck) {
           fileName = getOutputFileNameFromDialog(fileName, quality);
+        }
         if (fullPath != null)
           fullPath[0] = fileName;
         if (fileName == null) {
@@ -9174,7 +9175,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = getImageCreator();
             c.setViewer(this, privateKey);
-            err = c.createImage((FileManager.urlTypeIndex(fileName) == FileManager.URL_LOCAL ? fileName : null), 
+            err = c.createImage((!isJS && FileManager.isLocal(fileName) ? fileName : null), 
                 type, text, bytes, scripts, null, quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)
@@ -9188,7 +9189,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
       }
     } catch (Throwable er) {
-      er.printStackTrace();
+      //er.printStackTrace();
       Logger.error(setErrorMessage((String) (err = "ERROR creating image??: "
           + er), null));
     }

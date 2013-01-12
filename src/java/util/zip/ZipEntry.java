@@ -34,6 +34,10 @@ import java.util.Date;
  */
 public
 class ZipEntry implements ZipConstants, Cloneable {
+  
+
+  long offset; // from XEntry
+  
     String name;        // entry name
     long time = -1;     // modification time (in DOS time)
     long crc = -1;      // crc-32 of entry data

@@ -34,7 +34,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.jcraft.jzlib;
 
+import java.io.UnsupportedEncodingException;
+
 /**
+ * Bob Hanson -- using this for Jmol; added ZStream.getBytes(s)
+ * 
  * ZStream
  *
  * deprecated?  Not for public use in the future.
@@ -80,7 +84,7 @@ public class ZStream{
   int data_type; // best guess about the data type: ascii or binary
 
   Checksum checksum;
-
+  
   public ZStream(){
     this(new Adler32());
   }
@@ -256,7 +260,6 @@ public class ZStream{
 
   public void setInput(byte[] buf, int off, int len, boolean append){
     if(len<=0 && append && next_in!=null) return;
-
     if(avail_in>0 && append){  
       byte[] tmp = new byte[avail_in+len];
       System.arraycopy(next_in, next_in_index, tmp, 0, avail_in);
@@ -340,4 +343,45 @@ public class ZStream{
    */ 
   public int end(){ return Z_OK; }
   public boolean finished(){ return false; }
+  
+  /**
+   * added by Bob Hanson -- JavaScript only
+   * 
+   * @param s  
+   * @return UTF-8 byte array (or, for code points < 256, ISO-8859-1)
+   */
+  public static byte[] getBytes(String s) {
+    /**
+     * 
+     * JavaScript only encodes to 16 bits.
+     * 
+     * @j2sNative
+     * 
+     *      var x = [];
+     *      for (var i = 0; i < s.length;i++) {
+     *        var pt = s.charCodeAt(i);
+     *        if (pt <= 0x7F) {
+     *          x.push(pt);
+     *        } else if (pt <= 0x7FF) {
+     *          x.push(0xC0|((pt>>6)&0x1F));
+     *          x.push(0x80|(pt&0x3F));
+     *        } else if (pt <= 0xFFFF) { 
+     *          x.push(0xE0|((pt>>12)&0xF));
+     *          x.push(0x80|((pt>>6)&0x3F));
+     *          x.push(0x80|(pt&0x3F));
+     *        } else {
+     *          x.push(0x3F); // '?'
+     *        }
+     *      }
+     *      return (Int32Array != Array ? new Int32Array(x) : x);
+     */
+    {
+      try {
+        return s.getBytes("UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        return null;
+      }
+    }
+  }
+  
 }

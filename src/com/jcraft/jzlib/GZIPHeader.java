@@ -90,12 +90,12 @@ public class GZIPHeader implements Cloneable {
   }
 
   public void setName(String name) {
-    try{
-      this.name=name.getBytes("ISO-8859-1");
-    }
-    catch(UnsupportedEncodingException e){
-      throw new IllegalArgumentException("name must be in ISO-8859-1 "+name);
-    }
+    //try{
+      this.name = ZStream.getBytes(name);
+    //}
+    //catch(UnsupportedEncodingException e){
+    //  throw new IllegalArgumentException("name must be in ISO-8859-1 "+name);
+    //}
   }
 
   public String getName(){
@@ -109,12 +109,12 @@ public class GZIPHeader implements Cloneable {
   }
 
   public void setComment(String comment) {
-    try{
-      this.comment=comment.getBytes("ISO-8859-1");
-    }
-    catch(UnsupportedEncodingException e){
-      throw new IllegalArgumentException("comment must be in ISO-8859-1 "+name);
-    }
+ //   try{
+      this.comment=ZStream.getBytes(comment);
+ //   }
+ //   catch(UnsupportedEncodingException e){
+ //     throw new IllegalArgumentException("comment must be in ISO-8859-1 "+name);
+ //   }
   }
 
   public String getComment(){
