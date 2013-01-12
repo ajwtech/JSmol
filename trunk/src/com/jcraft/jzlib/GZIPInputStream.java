@@ -78,7 +78,7 @@ public class GZIPInputStream extends InflaterInputStream {
   @Override
   public void readHeader() throws IOException {
 
-    byte[] empty = "".getBytes();
+    byte[] empty = new byte[0];
     inflater.setOutput(empty, 0, 0);
     inflater.setInput(empty, 0, 0, false);
 

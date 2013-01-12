@@ -573,7 +573,7 @@ public final class Deflate /*implements Cloneable*/{
     /**
      * @j2sNative
      * 
-     *     pending_buf[pending++] = c&0xff;
+     *     this.pending_buf[this.pending++] = c&0xff;
      */
     {
     pending_buf[pending++] = c;
@@ -1783,5 +1783,13 @@ public final class Deflate /*implements Cloneable*/{
       gheader = new GZIPHeader();
     }
     return gheader;
+  }
+
+  public long getBytesRead() {
+    return strm.total_in;
+  }
+
+  public long getBytesWritten() {
+    return strm.total_out;
   }
 }

@@ -36,7 +36,8 @@ package com.jcraft.jzlib;
 
 public class Deflater extends ZStream {
 
-  static final private int MAX_WBITS = 15; // 32K LZ77 window
+  static final protected int MAX_WBITS = 15; // 32K LZ77 window
+
   //static final private int DEF_WBITS=MAX_WBITS;
 
   //  static final private int Z_NO_FLUSH=0;
@@ -150,6 +151,19 @@ public class Deflater extends ZStream {
   @Override
   public boolean finished() {
     return finished;
+  }
+
+  public void finish() {
+    // native use only?
+    
+  }
+
+  public long getBytesRead() {
+    return dstate.getBytesRead();
+  }
+
+  public long getBytesWritten() {
+    return dstate.getBytesWritten();
   }
 
   //  public int copy(Deflater src){

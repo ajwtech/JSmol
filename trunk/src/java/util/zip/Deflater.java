@@ -26,13 +26,15 @@
 package java.util.zip;
 
 public class Deflater extends com.jcraft.jzlib.Deflater {
-
+  
+  public static final int DEFAULT_COMPRESSION = -1;
+  
   public Deflater(int compressionLevel) {
     super(compressionLevel);
   }
 
-  public void finish() {
-    // N/A
+  public Deflater(int compressionLevel, boolean noWrap) {
+    super(compressionLevel, noWrap);
   }
 
 }
