@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.util.zip");
+Clazz.declarePackage ("java.util.zip");
 c$ = Clazz.declareInterface (java.util.zip, "ZipConstants");
 Clazz.defineStatics (c$,
 "LOCSIG", 0x04034b50,

@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.Closeable"], "java.io.Reader", ["java.io.IOException", "java.lang.IllegalArgumentException", "$.NullPointerException"], function () {
+Clazz.load (["java.io.Closeable"], "java.io.Reader", ["java.io.IOException", "java.lang.IllegalArgumentException", "$.NullPointerException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lock = null;
 this.skipBuffer = null;

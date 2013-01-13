@@ -1,4 +1,5 @@
 // BH 12/15/2012 1:56:28 PM  adds corezip.z.js and corebio.z.js
+// later additions include coresym.z.js, coresurface.z.js, coremenu.z.js
 
 if (!window["java.registered"])
  window["java.registered"] = false;
@@ -22,7 +23,8 @@ window["java.packaged"] = true;
 			
 	window["reflect"] = java.lang.reflect;
 
-	base = ClazzLoader.getClasspathFor ("java.*");
+	base = ClazzLoader.getClasspathFor ("core.*");
+	base += "core/"
 	basefile = base + "core.z.js";
 	
 	ClazzLoader.ignore([
@@ -33,16 +35,17 @@ window["java.packaged"] = true;
 		"java.security.AccessController",
 		"java.security.PrivilegedExceptionAction",
 		"java.io.File",
+		"java.io.FileInputStream",
 		"java.io.FileWriter",
 		"java.io.OutputStreamWriter",
-		"java.util.Calendar",
+		"java.util.Calendar", // bypassed in ModelCollection
+		"java.text.SimpleDateFormat", // not used
 		"java.text.DateFormat", // not used
-		"java.util.zip.ZipOutputStream",
+		//"java.util.zip.ZipOutputStream",
 		"java.util.concurrent.Executors"
 	])
 	
 	ClazzLoader.loadZJar (basefile, ClazzLoader.runtimeKeyClass);
-
 
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
 		"com.jcraft.jzlib.Checksum", // required by $.CRC32
@@ -59,25 +62,46 @@ window["java.packaged"] = true;
 		"$.InfTree", // required by $.InfBlocks
 		"$.InfBlocks",
 		"$.InfCodes",
-		"java.io.ByteArrayOutputStream",
-		"$.FileInputStream",
-		"$.PushbackInputStream",
-		"java.util.zip.CRC32",
+		"$.Inflater",
 		"$.InflaterInputStream", // required by $.GZIPInputStream
 		"$.GZIPInputStream",
+		"$.Deflater",
+		"$.DeflaterOutputStream",
+
+		"org.jmol.api.JmolZipUtility", // required by org.jmol.io2.ZipUtil
+		"$.ZInputStream", // required by org.jmol.io2.JmolZipInputStream
+		"$.JmolImageCreatorInterface", // required by org.jmol.export.image.GenericImageCreator
+
+		"org.jmol.export.image.GenericCRCEncoder", // required by org.jmol.export.image.GenericPngEncoder
+		"$.GenericPngEncoder",
+		"$.GenericImageCreator", // required by org.jmol.exportjs.JSImageCreator
+
+		"org.jmol.exportjs.JSImageCreator",
+		
+		"org.jmol.io2.ZipUtil",
+		"$.JpegEncoder",
+		"$.JmolZipInputStream",
+		
+
+		"java.io.ByteArrayOutputStream",
+		"$.PushbackInputStream",
+		
+		"java.util.zip.CRC32",
 		"$.CheckedInputStream",
+		"$.GZIPInputStream",
 		"$.Inflater",
+		"$.InflaterInputStream", // required by $.GZIPInputStream
 		"$.ZipException",
 		"$.ZipConstants", // required by $.ZipEntry
 		"$.ZipEntry",
 		"$.ZipConstants64", // required by $.ZipInputStream
 		"$.ZipInputStream",
-		"org.jmol.api.JmolZipUtility", // required by org.jmol.io2.ZipUtil
-		"$.ZInputStream", // required by org.jmol.io2.JmolZipInputStream
-		"org.jmol.io2.ZipUtil",
-		"$.JmolZipInputStream"
+		"$.Deflater",
+		"$.DeflaterOutputStream",
+		"$.ZipOutputStream"
+		
 	]);
-
+	
 	ClazzLoader.jarClasspath (base + "coresym.z.js",	[
 		"org.jmol.api.SymmetryInterface", // required by org.jmol.symmetry.Symmetry
 		"org.jmol.symmetry.Symmetry",
@@ -143,6 +167,24 @@ window["java.packaged"] = true;
 		"org.jmol.renderbio.BioShapeRenderer", // required by org.jmol.renderbio.RocketsRenderer
 		"$.RocketsRenderer", // required by org.jmol.renderbio.CartoonRenderer
 		"$.CartoonRenderer"
+	]);
+
+	ClazzLoader.jarClasspath (base + "coremenu.z.js",	[
+		"org.jmol.awtjs2d.JSmolPopup",		
+		"org.jmol.api.JmolPopupInterface", // -- required by org.jmol.awtjs2d.JSmolPopup
+		"org.jmol.popup.JmolAbstractMenu", //  -- required by org.jmol.popup.GenericPopup
+		"org.jmol.popup.GenericPopup",
+		"org.jmol.awtjs2d.JSPopup", //  -- required by org.jmol.awtjs2d.JSmolPopup
+		"org.jmol.awtjs2d.JSmolPopup",
+		"org.jmol.popup.PopupResource", //  -- required by org.jmol.popup.MainPopupResourceBundle
+		"org.jmol.popup.MainPopupResourceBundle"
+	]);
+
+	ClazzLoader.jarClasspath (base + "coreconsole.z.js",	[
+		"org.jmol.api.JmolAppConsoleInterface",
+		"org.jmol.console.GenericTextArea",
+		"$.GenericConsole",
+		"org.jmol.consolejs.AppletConsole"
 	]);
 
 }) ();

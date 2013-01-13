@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.awt.event");
+Clazz.declarePackage ("java.awt.event");
 Clazz.load (["java.awt.event.MouseEvent"], "java.awt.event.MouseWheelEvent", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.scrollType = 0;

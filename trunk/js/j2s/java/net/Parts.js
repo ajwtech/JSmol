@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.net");
+Clazz.declarePackage ("java.net");
 c$ = Clazz.decorateAsClass (function () {
 this.path = null;
 this.query = null;

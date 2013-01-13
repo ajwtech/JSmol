@@ -1,4 +1,4 @@
-$_L(null,"java.lang.reflect.Proxy",["java.lang.IllegalArgumentException","$.NullPointerException"],function(){
+$_L(null,"java.lang.reflect.Proxy",["java.lang.IllegalArgumentException","$.NullPointerException",null],function(){
 c$=$_C(function(){
 this.h=null;
 $_Z(this,arguments);

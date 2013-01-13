@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.awt.event");
+Clazz.declarePackage ("java.awt.event");
 Clazz.load (["java.awt.event.InputEvent"], "java.awt.event.KeyEvent", ["java.lang.IllegalArgumentException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.keyCode = 0;

@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.net");
+Clazz.declarePackage ("java.net");
 Clazz.load (null, "java.net.URLConnection", ["java.lang.IllegalStateException", "$.NullPointerException", "java.net.UnknownServiceException", "java.util.ArrayList"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.url = null;

@@ -1,4 +1,4 @@
-$_L(["java.io.InputStream"],"java.io.StringBufferInputStream",["java.lang.ArrayIndexOutOfBoundsException","$.NullPointerException"],function(){
+$_L(["java.io.InputStream"],"java.io.StringBufferInputStream",["java.lang.ArrayIndexOutOfBoundsException","$.NullPointerException",null],function(){
 c$=$_C(function(){
 this.buffer=null;
 this.count=0;

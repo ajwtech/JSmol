@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.util.zip");
+Clazz.declarePackage ("java.util.zip");
 c$ = Clazz.declareType (java.util.zip, "ZipConstants64");
 Clazz.defineStatics (c$,
 "ZIP64_ENDSIG", 0x06064b50,

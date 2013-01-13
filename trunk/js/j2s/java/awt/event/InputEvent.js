@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.awt.event");
+Clazz.declarePackage ("java.awt.event");
 c$ = Clazz.decorateAsClass (function () {
 this.when = 0;
 this.modifiers = 0;

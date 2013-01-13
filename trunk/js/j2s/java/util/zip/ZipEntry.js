@@ -1,6 +1,7 @@
-﻿Clazz.declarePackage ("java.util.zip");
+Clazz.declarePackage ("java.util.zip");
 Clazz.load (["java.util.zip.ZipConstants"], "java.util.zip.ZipEntry", ["java.lang.IllegalArgumentException", "$.InternalError", "$.NullPointerException", "java.util.Date"], function () {
 c$ = Clazz.decorateAsClass (function () {
+this.offset = 0;
 this.name = null;
 this.time = -1;
 this.crc = -1;

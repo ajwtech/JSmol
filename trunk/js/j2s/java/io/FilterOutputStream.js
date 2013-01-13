@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.OutputStream"], "java.io.FilterOutputStream", ["java.lang.IndexOutOfBoundsException"], function () {
+Clazz.load (["java.io.OutputStream"], "java.io.FilterOutputStream", ["java.lang.IndexOutOfBoundsException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.out = null;
 Clazz.instantialize (this, arguments);

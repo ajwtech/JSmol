@@ -1,4 +1,4 @@
-﻿Clazz.load (null, "java.io.InputStream", ["java.io.IOException", "java.lang.IndexOutOfBoundsException", "$.NullPointerException"], function () {
+Clazz.load (null, "java.io.InputStream", ["java.io.IOException", "java.lang.IndexOutOfBoundsException", "$.NullPointerException"], function () {
 c$ = Clazz.declareType (java.io, "InputStream");
 Clazz.defineMethod (c$, "read", 
 function (b, off, len) {

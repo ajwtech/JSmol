@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.Reader"], "java.io.InputStreamReader", ["java.io.UTFDataFormatException", "java.lang.NullPointerException"], function () {
+Clazz.load (["java.io.Reader"], "java.io.InputStreamReader", ["java.lang.NullPointerException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$in = null;
 this.isOpen = true;
@@ -29,43 +29,30 @@ if (len < 0) return -1;
 this.pos = 0;
 while (count < len) {
 c = this.bytearr[count] & 0xff;
-if (c > 127) break;
-count++;
-cbuf[chararr_count++] = String.fromCharCode (c);
-}
-while (count < len) {
-c = this.bytearr[count] & 0xff;
 switch (c >> 4) {
-case 0:
-case 1:
-case 2:
-case 3:
-case 4:
-case 5:
-case 6:
-case 7:
-count++;
-cbuf[chararr_count++] = String.fromCharCode (c);
-break;
-case 12:
-case 13:
-if (count > len - 2) break;
+case 0xC:
+case 0xD:
+if (count > len - 2) continue;
 count += 2;
 char2 = this.bytearr[count - 1];
-if ((char2 & 0xC0) != 0x80) throw  new java.io.UTFDataFormatException ("malformed input around byte " + count);
-cbuf[chararr_count++] = String.fromCharCode (((c & 0x1F) << 6) | (char2 & 0x3F));
+if ((char2 & 0xC0) != 0x80) {
+count -= 2;
 break;
-case 14:
-if (count > len - 3) break;
+}cbuf[chararr_count++] = String.fromCharCode (((c & 0x1F) << 6) | (char2 & 0x3F));
+continue;
+case 0xE:
+if (count > len - 3) continue;
 count += 3;
 char2 = this.bytearr[count - 2];
 char3 = this.bytearr[count - 1];
-if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80)) throw  new java.io.UTFDataFormatException ("malformed input around byte " + (count - 1));
-cbuf[chararr_count++] = String.fromCharCode (((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
+if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80)) {
+count -= 3;
 break;
-default:
-throw  new java.io.UTFDataFormatException ("malformed input around byte " + count);
+}cbuf[chararr_count++] = String.fromCharCode (((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
+continue;
 }
+count++;
+cbuf[chararr_count++] = String.fromCharCode (c);
 }
 this.pos = len - count;
 for (var i = 0; i < this.pos; i++) {

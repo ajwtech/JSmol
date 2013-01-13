@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.awt.event");
+Clazz.declarePackage ("java.awt.event");
 Clazz.load (["java.awt.event.InputEvent"], "java.awt.event.MouseEvent", ["java.lang.IllegalArgumentException", "$.StringBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.x = 0;
