@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.InputStream"], "java.io.ByteArrayInputStream", ["java.lang.IndexOutOfBoundsException", "$.NullPointerException"], function () {
+Clazz.load (["java.io.InputStream"], "java.io.ByteArrayInputStream", ["java.lang.IndexOutOfBoundsException", "$.NullPointerException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.buf = null;
 this.pos = 0;

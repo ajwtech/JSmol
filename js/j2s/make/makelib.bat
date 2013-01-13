@@ -1,4 +1,28 @@
 del core.z.js
+echo coreconsole.z.js
+type coreconsoletop.js >> core.z.js
+call loadScript org\jmol\api\JmolAppConsoleInterface.js -- required by org.jmol.console.GenericConsole
+call loadScript org\jmol\console\GenericTextArea.js -- required by org.jmol.consolejs.GenericConsole
+call loadScript org\jmol\console\GenericConsole.js -- required by org.jmol.consolejs.AppletConsole
+call loadScript org\jmol\consolejs\AppletConsole.js
+copy core.z.js ..\core\coreconsole.z.js
+
+
+del core.z.js
+echo coremenu.z.js
+type coremenutop.js >> core.z.js
+
+call loadScript org\jmol\api\JmolPopupInterface.js -- required by org.jmol.awtjs2d.JSmolPopup
+call loadScript org\jmol\popup\JmolAbstractMenu.js -- required by org.jmol.popup.GenericPopup
+call loadScript org\jmol\popup\GenericPopup.js
+call loadScript org\jmol\awtjs2d\JSPopup.js -- required by org.jmol.awtjs2d.JSmolPopup
+call loadScript org\jmol\awtjs2d\JSmolPopup.js
+call loadScript org\jmol\popup\PopupResource.js -- required by org.jmol.popup.MainPopupResourceBundle
+call loadScript org\jmol\popup\MainPopupResourceBundle.js
+copy core.z.js ..\core\coremenu.z.js
+
+
+del core.z.js
 echo coresurface.z.js
 call loadScript org\jmol\jvxl\api\VertexDataServer.js -- required by org.jmol.jvxl.api.MeshDataServer
 call loadScript org\jmol\jvxl\api\MeshDataServer.js -- required by org.jmol.shapesurface.Isosurface
@@ -18,7 +42,7 @@ call loadScript org\jmol\jvxl\readers\VolumeDataReader.js -- required by org.jmo
 call loadScript org\jmol\jvxl\readers\AtomDataReader.js -- required by org.jmol.jvxl.readers.IsoSolventReader
 call loadScript org\jmol\jvxl\readers\IsoSolventReader.js
 call loadScript org\jmol\rendersurface\IsosurfaceRenderer.js
-copy core.z.js ..\java\coresurface.z.js
+copy core.z.js ..\core\coresurface.z.js
 
 echo corezip.z.js
 del core.z.js
@@ -36,9 +60,10 @@ call loadScript com\jcraft\jzlib\ZStream.js -- required by com.jcraft.jzlib.Infl
 call loadScript com\jcraft\jzlib\Inflater.js
 call loadScript com\jcraft\jzlib\Adler32.js
 call loadScript com\jcraft\jzlib\Tree.js -- required by com.jcraft.jzlib.Deflate
-call loadScript com\jcraft\jzlib\Deflate.js
-call loadScript com\jcraft\jzlib\GZIPHeader.js
 call loadScript com\jcraft\jzlib\StaticTree.js
+call loadScript com\jcraft\jzlib\Deflate.js
+call loadScript com\jcraft\jzlib\Deflater.js
+call loadScript com\jcraft\jzlib\GZIPHeader.js
 call loadScript com\jcraft\jzlib\Inflate.js
 call loadScript com\jcraft\jzlib\InfTree.js -- required by com.jcraft.jzlib.InfBlocks
 call loadScript com\jcraft\jzlib\InfBlocks.js
@@ -53,7 +78,20 @@ call loadScript java\util\zip\ZipInputStream.js
 call loadScript java\io\PushbackInputStream.js
 call loadScript org\jmol\api\ZInputStream.js -- required by org.jmol.io2.JmolZipInputStream
 call loadScript org\jmol\io2\JmolZipInputStream.js
-copy core.z.js ..\java\corezip.z.js
+
+call loadScript com\jcraft\jzlib\DeflaterOutputStream.js -- required by java.util.zip.DeflaterOutputStream
+call loadScript java\util\zip\Deflater.js
+call loadScript java\util\zip\DeflaterOutputStream.js
+call loadScript java\util\zip\ZipOutputStream.js
+call loadScript org\jmol\io2\JpegEncoder.js
+call loadScript org\jmol\export\image\GenericCRCEncoder.js -- required by org.jmol.export.image.GenericPngEncoder
+call loadScript org\jmol\export\image\GenericPngEncoder.js
+call loadScript org\jmol\api\JmolImageCreatorInterface.js -- required by org.jmol.export.image.GenericImageCreator
+call loadScript org\jmol\export\image\GenericImageCreator.js -- required by org.jmol.exportjs.JSImageCreator
+call loadScript org\jmol\exportjs\JSImageCreator.js
+
+
+copy core.z.js ..\core\corezip.z.js
 
 echo coresym.z.js
 del core.z.js
@@ -67,7 +105,7 @@ call loadScript org\jmol\symmetry\HallTranslation.js
 call loadScript org\jmol\symmetry\SymmetryOperation.js
 call loadScript org\jmol\symmetry\SymmetryInfo.js
 call loadScript org\jmol\symmetry\UnitCell.js
-copy core.z.js ..\java\coresym.z.js
+copy core.z.js ..\core\coresym.z.js
 
 echo corebio.z.js
 del core.z.js
@@ -100,10 +138,10 @@ call loadScript org\jmol\shapebio\Cartoon.js
 call loadScript org\jmol\renderbio\BioShapeRenderer.js -- required by org.jmol.renderbio.RocketsRenderer
 call loadScript org\jmol\renderbio\RocketsRenderer.js -- required by org.jmol.renderbio.CartoonRenderer
 call loadScript org\jmol\renderbio\CartoonRenderer.js
-copy core.z.js ..\java\corebio.z.js
+copy core.z.js ..\core\corebio.z.js
 
 type ..\org\jmol\Jmol.properties > core.z.js
-type libtop.js >> core.z.js
+type coretop.js >> core.z.js
 
 call loadScript java\util\MapEntry.js ------- java.util.Hashtable
 call loadScript java\util\Dictionary.js ------- java.util.Hashtable
@@ -177,7 +215,6 @@ call loadScript org\jmol\constant\EnumVdw.js ------- org.jmol.atomdata.RadiusDat
 call loadScript org\jmol\atomdata\RadiusData.js ------- org.jmol.viewer.Viewer
 call loadScript org\jmol\util\CommandHistory.js ------- org.jmol.viewer.Viewer
 call loadScript org\jmol\util\Dimension.js ------- org.jmol.viewer.Viewer
-
 call loadScript org\jmol\viewer\Viewer.js
 call loadScript java\io\InputStream.js ------- java.io.FilterInputStream
 call loadScript java\io\OutputStream.js ------- java.io.FilterOutputStream
@@ -398,9 +435,8 @@ call loadScript org\jmol\awtjs\Platform.js
 call loadScript org\jmol\awtjs\Font.js
 call loadScript org\jmol\awtjs\Image.js
 
-type libbottom.js >> core.z.js
-copy ..\java\core.z.js c:\temp\core.z.js
-copy core.z.js ..\java\core.z.js
+type corebottom.js >> core.z.js
+copy core.z.js ..\core\core.z.js
 
 del core.z.js
 del t

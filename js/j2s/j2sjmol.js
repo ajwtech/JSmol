@@ -1,5 +1,4 @@
 
-
 LoadClazz = function() {
 
 if (!window["j2s.clazzloaded"])
@@ -82,11 +81,17 @@ if (window["Clazz"] == null) {
 Class = Clazz = function () {
 };
 
+//Clazz.dateToString = Date.prototype.toString
+
+
+
  Clazz.debuggingBH = false;
 
 
 NullObject = function () {
 };
+
+Clazz.dateToString = Date.prototype.toString
 
 JavaObject = Object;
 
@@ -1869,16 +1874,15 @@ try {
  * @author: sgurin
  */
 Clazz.exceptionOf=function(e, clazz) {
-	if(e.__CLASS_NAME__)
-		return Clazz.instanceOf(e, clazz);
-	else if(Clazz._isNPEExceptionPredicate(e)) {
-		//wrap to a java npe
-		var jnpe=new java.lang.NullPointerException();
-		for(var i in jnpe){e[i]=jnpe[i];}
+	if(e.__CLASS_NAME__) {
 		return Clazz.instanceOf(e, clazz);
 	}
-	else
-		return false;
+  if(clazz == Error) {
+    return false;
+    // everything here is a Java Exception, not a Java Error
+  }
+  return (clazz == Exception || clazz == Throwable
+    || clazz == NullPointerException && Clazz._isNPEExceptionPredicate(e));
 };
 
 /* sgurin: preserve Number.prototype.toString */
@@ -6035,6 +6039,8 @@ com.example.Notepad.main([]);
  */
 
 ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = new Object ();
+
+
 var clpm = ClassLoaderProgressMonitor;
 clpm.fadeOutTimer = null;
 clpm.fadeAlpha = 0;
@@ -6645,7 +6651,5 @@ Clazz.setConsoleDiv = function(d) {
 	window["j2s.lib"].console = d;
 };
 
-
 };
 
- 

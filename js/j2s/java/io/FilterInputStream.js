@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.InputStream"], "java.io.FilterInputStream", null, function () {
+Clazz.load (["java.io.InputStream"], "java.io.FilterInputStream", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$in = null;
 Clazz.instantialize (this, arguments);

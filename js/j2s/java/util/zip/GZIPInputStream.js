@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.util.zip");
+Clazz.declarePackage ("java.util.zip");
 Clazz.load (["java.util.zip.InflaterInputStream", "$.CRC32"], "java.util.zip.GZIPInputStream", ["java.io.EOFException", "$.IOException", "java.util.zip.CheckedInputStream", "$.Inflater", "$.ZipException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.crc = null;
@@ -31,7 +31,7 @@ if (n == -1) {
 if (this.readTrailer ()) this.eos = true;
  else return this.read (buf, off, len);
 } else {
-this.crc.updateRange (buf, off, n);
+this.crc.update (buf, off, n);
 }return n;
 }, "~A,~N,~N");
 Clazz.defineMethod (c$, "close", 
@@ -44,7 +44,7 @@ this.$closed = true;
 Clazz.defineMethod (c$, "readHeader", 
 ($fz = function (this_in) {
 var $in =  new java.util.zip.CheckedInputStream (this_in, this.crc);
-this.crc.resetAll ();
+this.crc.reset ();
 if (this.readUShort ($in) != 35615) {
 throw  new java.util.zip.ZipException ("Not in GZIP format");
 }if (this.readUByte ($in) != 8) {
@@ -69,7 +69,7 @@ var v = this.crc.getValue () & 0xffff;
 if (this.readUShort ($in) != v) {
 throw  new java.util.zip.ZipException ("Corrupt GZIP header");
 }n += 2;
-}this.crc.resetAll ();
+}this.crc.reset ();
 return n;
 }, $fz.isPrivate = true, $fz), "java.io.InputStream");
 Clazz.defineMethod (c$, "readTrailer", 

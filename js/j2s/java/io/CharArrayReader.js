@@ -1,4 +1,4 @@
-$_L(["java.io.Reader"],"java.io.CharArrayReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException"],function(){
+$_L(["java.io.Reader"],"java.io.CharArrayReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException",null],function(){
 c$=$_C(function(){
 this.buf=null;
 this.pos=0;

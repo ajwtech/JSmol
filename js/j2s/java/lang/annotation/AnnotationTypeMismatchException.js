@@ -6,7 +6,7 @@ $_Z(this,arguments);
 },java.lang.annotation,"AnnotationTypeMismatchException",RuntimeException);
 $_K(c$,
 function(element,foundType){
-$_R(this,java.lang.annotation.AnnotationTypeMismatchException,[("annotation.1",element,foundType)]);
+$_R(this,java.lang.annotation.AnnotationTypeMismatchException,[("annotation.1")]);
 this.$element=element;
 this.$foundType=foundType;
 },"java.lang.reflect.Method,~S");

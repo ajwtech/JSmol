@@ -1,5 +1,5 @@
 Clazz.declarePackage ("java.util.zip");
-Clazz.load (["java.util.zip.InflaterInputStream", "$.ZipConstants", "$.ZipConstants64", "$.CRC32"], "java.util.zip.ZipInputStream", ["java.io.EOFException", "$.IOException", "$.PushbackInputStream", "java.lang.IllegalArgumentException", "$.IndexOutOfBoundsException", "$.Long", "$.NullPointerException", "java.util.zip.Inflater", "$.ZipEntry", "$.ZipException"], function () {
+Clazz.load (["java.util.zip.InflaterInputStream", "$.ZipConstants", "$.CRC32"], "java.util.zip.ZipInputStream", ["java.io.EOFException", "$.IOException", "$.PushbackInputStream", "java.lang.IllegalArgumentException", "$.IndexOutOfBoundsException", "$.Long", "$.NullPointerException", "java.util.zip.Inflater", "$.ZipEntry", "$.ZipException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.entry = null;
 this.flag = 0;
@@ -26,7 +26,7 @@ throw  new java.io.IOException ("Stream closed");
 }}, $fz.isPrivate = true, $fz));
 Clazz.makeConstructor (c$, 
 function ($in) {
-Clazz.superConstructor (this, java.util.zip.ZipInputStream, [ new java.io.PushbackInputStream ($in, 1024),  new java.util.zip.Inflater (true), 512]);
+Clazz.superConstructor (this, java.util.zip.ZipInputStream, [ new java.io.PushbackInputStream ($in, 1024), java.util.zip.ZipInputStream.newInflater (), 512]);
 var charset = "UTF-8";
 try {
  String.instantialize (this.byteTest, charset);
@@ -39,13 +39,17 @@ throw e;
 }
 this.zc = charset;
 }, "java.io.InputStream");
+c$.newInflater = Clazz.defineMethod (c$, "newInflater", 
+($fz = function () {
+return  new java.util.zip.Inflater (true);
+}, $fz.isPrivate = true, $fz));
 Clazz.defineMethod (c$, "getNextEntry", 
 function () {
 this.ensureOpen ();
 if (this.entry != null) {
 this.closeEntry ();
-}this.crc.resetAll ();
-this.inflater = this.inf =  new java.util.zip.Inflater (true);
+}this.crc.reset ();
+this.inflater = this.inf = java.util.zip.ZipInputStream.newInflater ();
 if ((this.entry = this.readLOC ()) == null) {
 return null;
 }if (this.entry.method == 0) {
@@ -82,7 +86,7 @@ this.readEnd (this.entry);
 this.entryEOF = true;
 this.entry = null;
 } else {
-this.crc.updateRange (b, off, len);
+this.crc.update (b, off, len);
 }return len;
 case 0:
 if (this.remaining <= 0) {
@@ -94,7 +98,7 @@ len = this.remaining;
 }len = this.$in.read (b, off, len);
 if (len == -1) {
 throw  new java.util.zip.ZipException ("unexpected EOF");
-}this.crc.updateRange (b, off, len);
+}this.crc.update (b, off, len);
 this.remaining -= len;
 if (this.remaining == 0 && this.entry.crc != this.crc.getValue ()) {
 throw  new java.util.zip.ZipException ("invalid entry CRC (expected 0x" + Long.toHexString (this.entry.crc) + " but got 0x" + Long.toHexString (this.crc.getValue ()) + ")");

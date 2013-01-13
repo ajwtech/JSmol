@@ -1,4 +1,4 @@
-﻿Clazz.load (["java.io.Reader"], "java.io.BufferedReader", ["java.io.IOException", "java.lang.IllegalArgumentException", "$.IndexOutOfBoundsException", "org.jmol.util.StringXBuilder"], function () {
+Clazz.load (["java.io.Reader"], "java.io.BufferedReader", ["java.io.IOException", "java.lang.IllegalArgumentException", "$.IndexOutOfBoundsException", "org.jmol.util.StringXBuilder"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.$in = null;
 this.cb = null;
@@ -93,7 +93,7 @@ n += n1;
 return n;
 }}, "~A,~N,~N");
 Clazz.defineMethod (c$, "readLine1", 
-function (ignoreLF) {
+($fz = function (ignoreLF) {
 var s = null;
 var startChar;
 {
@@ -132,7 +132,7 @@ this.skipLF = true;
 }if (s == null) s = org.jmol.util.StringXBuilder.newN (java.io.BufferedReader.defaultExpectedLineLength);
 s.appendCB (this.cb, startChar, i - startChar);
 }
-}}, "~B");
+}}, $fz.isPrivate = true, $fz), "~B");
 Clazz.defineMethod (c$, "readLine", 
 function () {
 return this.readLine1 (false);

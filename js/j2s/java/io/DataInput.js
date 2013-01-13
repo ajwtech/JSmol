@@ -1,1 +1,1 @@
-﻿Clazz.declareInterface (java.io, "DataInput");
+Clazz.declareInterface (java.io, "DataInput");

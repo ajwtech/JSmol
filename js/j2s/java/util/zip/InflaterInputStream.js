@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.util.zip");
+Clazz.declarePackage ("java.util.zip");
 Clazz.load (["com.jcraft.jzlib.InflaterInputStream"], "java.util.zip.InflaterInputStream", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.inf = null;

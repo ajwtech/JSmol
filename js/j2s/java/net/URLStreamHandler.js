@@ -1,4 +1,4 @@
-﻿Clazz.declarePackage ("java.net");
+Clazz.declarePackage ("java.net");
 Clazz.load (null, "java.net.URLStreamHandler", ["java.lang.IllegalArgumentException", "$.SecurityException", "$.StringBuilder", "$.UnsupportedOperationException"], function () {
 c$ = Clazz.declareType (java.net, "URLStreamHandler");
 Clazz.defineMethod (c$, "openConnectionProxy", 

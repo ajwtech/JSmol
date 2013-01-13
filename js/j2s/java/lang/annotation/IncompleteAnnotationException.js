@@ -6,7 +6,7 @@ $_Z(this,arguments);
 },java.lang.annotation,"IncompleteAnnotationException",RuntimeException);
 $_K(c$,
 function(annotationType,elementName){
-$_R(this,java.lang.annotation.IncompleteAnnotationException,[("annotation.0",elementName,annotationType)]);
+$_R(this,java.lang.annotation.IncompleteAnnotationException,[("annotation.0")]);
 this.$annotationType=annotationType;
 this.$elementName=elementName;
 },"Class,~S");

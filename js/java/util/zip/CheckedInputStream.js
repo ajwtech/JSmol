@@ -13,14 +13,14 @@ Clazz.overrideMethod (c$, "readByteAsInt",
 function () {
 var b = this.$in.readByteAsInt ();
 if (b != -1) {
-this.cksum.update (b);
+this.cksum.updateByteAsInt (b);
 }return b;
 });
 Clazz.overrideMethod (c$, "read", 
 function (buf, off, len) {
 len = this.$in.read (buf, off, len);
 if (len != -1) {
-this.cksum.updateRange (buf, off, len);
+this.cksum.update (buf, off, len);
 }return len;
 }, "~A,~N,~N");
 Clazz.overrideMethod (c$, "skip", 
