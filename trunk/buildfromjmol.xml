@@ -11,23 +11,57 @@
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="../Jmol/src/org/jmol">
         <include name="**/*.java" />
-        <exclude name="**/util/*"/>
+      	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
+      	<!-- see next block -->
+        <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
-      	<exclude name="**/export/**/*"/>
       	<exclude name="**/i18n/*"/>
       	<exclude name="**/modelkit/*"/>
-        <exclude name="**/multitouch/**/*"/>
         <exclude name="**/popup/*"/>
+        <exclude name="**/util/*"/>
+      	<!-- unused -->
+        <exclude name="**/multitouch/**/*"/>
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/console" >
+      <fileset dir="../Jmol/src/org/jmol/console">
+        <include name="Generic*.java" />
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/export/image" >
+      <fileset dir="../Jmol/src/org/jmol/export/image">
+        <include name="Generic*.java" />
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/i18n" >
+      <fileset dir="../Jmol/src/org/jmol/i18n">
+        <include name="Language.java" />
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/modelkit" >
+      <fileset dir="../Jmol/src/org/jmol/modelkit">
+        <include name="**/*" />
+        <exclude name="ModelKitPopup.java"/>
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/popup" >
+      <fileset dir="../Jmol/src/org/jmol/popup">
+        <include name="**/*.java" />
+        <exclude name="JmolPopup.java"/>
+        <exclude name="SwingPopup.java"/>
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/util" >
       <fileset dir="../Jmol/src/org/jmol/util">
+      	<!-- note that JSmol's BitSet.java is derived from Jmol's BitSet32.java, 
+      	     not BitSet.java, which is a 64-bit version. The Jmol version is just
+      	     there for reference; it is only used in JSmol.  -->
         <include name="**/*.java" />
         <exclude name="BitSet.java"/>
         <exclude name="BitSet32.java"/>
-      	<!-- note that JSmol's BitSet.java is derived from Jmol's BitSet32.java, not BitSet.java, which is a 64-bit version -->
+        <exclude name="FastBitSet.java"/>
       </fileset>
     </copy>
 
