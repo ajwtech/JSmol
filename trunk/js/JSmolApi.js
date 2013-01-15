@@ -1,5 +1,7 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
+// BH 1/15/2013 10:55:06 AM updated to default to HTML5 not JAVA
+ 
 // along with this file you need at least JmolCore.js and JmolApplet.js. Also, if you want buttons, JmolControls.js
 // in that order. Then include JmolApi.js. 
 
@@ -35,12 +37,12 @@
 			width: 300,
 			height: 300,
 			addSelectionOptions: false,
-			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
+			serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
 			defaultModel: "",
 			script: null,
 			src: null,
 			readyFunction: null,
-			use: "Java noWebGL noHTML5 noImage",//remove "no" to enables other options (order important)
+			use: "HTML5",//other options include JAVA, WEBGL, and IMAGE
 			jarPath: ".",
 			jarFile: "JmolApplet0.jar",
 			j2sPath: "j2s",
