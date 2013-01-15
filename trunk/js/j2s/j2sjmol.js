@@ -12,6 +12,11 @@ window["j2s.clazzloaded"] = true;
 
 window["j2s.object.native"] = true;
 
+ // BH 1/14/2013 11:28:58 PM  Going to all doubles in JavaScript (Float64Array, not Float32Array)
+ //   so that (new float[] {13.48f})[0] == 13.48f, effectively
+ // BH 1/14/2013 12:53:41 AM  Fix for Opera 10 not loading any files
+ // BH 1/13/2013 11:50:11 PM  Fix for MSIE not loading (nonbinary) files locally
+ 
  // BH 12/1/2012 9:52:26 AM Compiler note: Thread.start() cannot be executed within the constructor;
  
  // BH 11/24/2012 11:08:39 AM removed unneeded sections
@@ -37,6 +42,7 @@ window["j2s.object.native"] = true;
  // BH added System.gc() at end
  // BH added Clazz.exceptionOf = updated
  // BH added String.getBytes() at end
+ 
  /* http://j2s.sf.net/ *//******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
  * All rights reserved. This program and the accompanying materials
@@ -169,7 +175,7 @@ InternalFunction = Object;
 Clazz.extractClassName = function(clazzStr) {
   // [object Int32Array]
 	var clazzName = clazzStr.substring (1, clazzStr.length - 1);
-	return (clazzName.indexOf("Array") >= 0 ? "Array" // BH -- for Float32Array and Int32Array
+	return (clazzName.indexOf("Array") >= 0 ? "Array" // BH -- for Float64Array and Int32Array
     : clazzName.indexOf ("object ") >= 0 ? clazzName.substring (7) // IE
     : clazzName);
 }
@@ -215,7 +221,7 @@ Clazz.getClassName = function (obj) {
 			return "Object";
 		s = s.substring (idx1, idx2);
     if (s.indexOf("Array") >= 0)
-      return "Array";  // BH -- for Float32Array and Int32Array
+      return "Array";  // BH -- for Float64Array and Int32Array
 		s = s.replace (/^\s+/, "").replace (/\s+$/, ""); // .trim ()
 		return (s == "anonymous" || s == "" ? "Function" : s);
      // BH -- for general functions, clazzName may be ""
@@ -2231,8 +2237,10 @@ Clazz.doubleToChar = Clazz.floatToChar;
 
 if ( ! self.Int32Array ) {
 	self.Int32Array = Array;
-	self.Float32Array = Array;
+// Darn! Mozilla makes this a double, not a float. It's 64-bit. 
+	self.Float64Array = Array;
 }
+
 
 Clazz._hasArrays32 = (self.Int32Array != Array)
 
@@ -2342,10 +2350,11 @@ Clazz.newInt32Array  = function () {
  * @return the created Array object
  */
 /* public */
-Clazz.newFloat32Array  = function () {
-  return Clazz.newArray32(Float32Array, arguments);
+Clazz.newFloat64Array  = function () {
+  return Clazz.newArray32(Float64Array, arguments);
 }
-Clazz.newFloatArray = Clazz.newDoubleArray = Clazz.newFloat32Array;
+
+Clazz.newFloatArray = Clazz.newDoubleArray = Clazz.newFloat64Array;
 Clazz.newIntArray = Clazz.newLongArray = Clazz.newShortArray = Clazz.newByteArray = Clazz.newInt32Array;
 Clazz.newCharArray = Clazz.newBooleanArray = Clazz.newArray;
 
@@ -2380,7 +2389,7 @@ Clazz.isAII = function(a) { // assumes non-null a[0]
 }
 
 Clazz.isAF = function(a) {
-  return (typeof a == "object" && a.constructor && a.constructor.toString().indexOf("Float32Array") >= 0);
+  return (typeof a == "object" && a.constructor && a.constructor.toString().indexOf("Float64Array") >= 0);
 }
 
 Clazz.isAFF = function(a) { // assumes non-null a[0]
@@ -3805,7 +3814,7 @@ ClazzLoader.multipleSites = function (path) {
  */
 /* public */
 ClazzLoader.getClasspathFor = function (clazz, forRoot, ext) {
-	//error ("check js path : " + clazz);
+	//System.out.println("check js path : " + arguments.callee.caller);
 	//System.out.println("gcf " + clazz + " "  + forRoot + " " + ext);
 	var path = ClazzLoader.classpathMap["#" + clazz];
 	//System.out.println(path);
@@ -3893,6 +3902,7 @@ ClazzLoader.getClasspathFor = function (clazz, forRoot, ext) {
 /* private */
 /*-# assureBase -> aB #-*/
 ClazzLoader.assureBase = function (base) {
+
 	if (base == null) {
 		// Try to be compatiable with Clazz system.
 		var bins = "binaryFolders";
@@ -3987,9 +3997,10 @@ ClazzLoader.mapPath2ClassNode = new Object ();
 
 /* private */
 ClazzLoader.xhrOnload = function (transport, file) {
+
 	if (transport.status >= 400 || transport.responseText == null
 			|| transport.responseText.length == 0) { // error
-			//Clazz.alert("xhronload error");
+			Clazz.alert("xhronload error" + transport.responseText);
 		var fs = ClazzLoader.failedScripts;
 		if (fs[file] == null) {
 			// Silently take another try for bad network
@@ -4002,27 +4013,21 @@ ClazzLoader.xhrOnload = function (transport, file) {
 		}
 		ClazzLoader.tryToLoadNext (file);
 	} else {
-		try {
-			/*
-			if (transport.responseText.length >= 2048) {
-				//fileCount++;
-			}
-				if (file.indexOf ("examples") != -1) {
-				} else {
-				log (transport.responseText.length + "::" + file);
-				}				
-			*/
-			//	fileCount += transport.responseText.length;
-			eval (transport.responseText);
+    ClazzLoader.evaluate(file, transport.responseText);
+	}
+};
+
+ClazzLoader.evaluate = function(file, js) {
+ 		try {
+			eval(js);
 		} catch (e) {
+    alert(e)
 			Clazz.alert ("[Java2Script] Script error: " + e.message);
 			throw e;
 		}
 		ClazzLoader.scriptLoaded (file);
 		ClazzLoader.tryToLoadNext (file);
-	}
-};
-
+}
 /**
  * Empty onreadystatechange for fixing IE's memeory leak on XMLHttpRequest
  */
@@ -4180,12 +4185,13 @@ ClazzLoader.generatingW3CScriptOnCallback = function (path, forError) {
 		}
 		this.onload = null;
 		this.onerror = null;
-		if (!forError && ClazzLoader.isOpera // Opera only
+    var checkOpera = false;   // BH - disabled this for Opera 10
+		if (!forError && checkOpera && ClazzLoader.isOpera // Opera only
 				&& !ClazzLoader.innerLoadedScripts[this.src]) {
 			ClazzLoader.checkInteractive();
 		}
-		if (forError || (!ClazzLoader.innerLoadedScripts[this.src]
-					&& ClazzLoader.isOpera)) {
+		if (forError || (checkOpera && !ClazzLoader.innerLoadedScripts[this.src]
+					&& ClazzLoader.isOpera)) { 
 			// Opera will not take another try.
 			var fss = ClazzLoader.failedScripts;
 			if (fss[path] == null && ClazzLoader.takeAnotherTry) {
@@ -4223,6 +4229,7 @@ ClazzLoader.generatingIEScriptOnCallback = function (path) {
 		var fss = ClazzLoader.failedScripts;
 		var state = "" + this.readyState;
 		
+    
 		var local = state == "loading" 
 				&& (this.src.indexOf ("file:") == 0 
 				|| (window.location.protocol == "file:"
@@ -4305,6 +4312,7 @@ ClazzLoader.generatingIEScriptOnCallback = function (path) {
  #-*/
 ClazzLoader.loadScript = function (file, why) {
 	  Clazz.currentPath = file;
+    //alert("loadScript" + file)
   	//System.out.println(("call loadScript " + file.replace(/\//g,"\\") + " Z").replace(/j2s[\\\.]/g,""))
 	// maybe some scripts are to be loaded without needs to know onload event.
 	var ignoreOnload = (arguments[2] == true);
@@ -4329,10 +4337,20 @@ ClazzLoader.loadScript = function (file, why) {
     + file.replace(/\//g,"\\")
       .replace(/j2s[\\\.]/g,"") + (why ? " -- required by " + why : "") )
 
+
 	if (ClazzLoader.isUsingXMLHttpRequest) {
 		ClazzLoader.scriptLoading (file);
-
 		//var transport = null;
+
+    if (!ClazzLoader.isAsynchronousLoading) {
+      // works in MSIE locally :)
+    	var info = {dataType:"text",async:false,url:file};
+		  var xhr = jQuery.ajax(info);
+      var data = xhr.responseText;
+      ClazzLoader.evaluate(file, data); 
+      return;
+    }
+    
 		var isActiveX = false;
 		if (!Clazz.transport) {
 		if (window.XMLHttpRequest) {
@@ -4345,16 +4363,27 @@ ClazzLoader.loadScript = function (file, why) {
 				Clazz.transport = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 		}
+    
 		if (Clazz.transport == null) { // should never happen in modern browsers.
 			Clazz.alert ("[Java2Script] XMLHttpRequest not supported!");
 			return;
 		}
 		}
 		var transport = Clazz.transport
+  
+  //alert("transport=" + transport + " " + file)
+  
+  
+  try{
+  
 		transport.open ("GET", file, ClazzLoader.isAsynchronousLoading);
+
+  } catch (e) { alert(e + " " + file)}
+
+
 		// transport.setRequestHeader ("User-Agent",
 		// 		"Java2Script-Pacemaker/1.0 (+http://j2s.sourceforge.net)");
-		if (ClazzLoader.isAsynchronousLoading) {
+//		if (ClazzLoader.isAsynchronousLoading) {
 			transport.onreadystatechange = ClazzLoader.generatingXHRCallback (
 					transport, file);
 			ClazzLoader.inLoadingThreads++;
@@ -4365,28 +4394,29 @@ ClazzLoader.loadScript = function (file, why) {
 				ClazzLoader.xhrOnload (transport, file);
 				//throw e;
 			}
-		} else {
-			try {
-				transport.send (null);
-			} catch (e) {
-				Clazz.alert ("[Java2Script] Loading file error: " + e.message);
-				//throw e;
-			}
-			ClazzLoader.xhrOnload (transport, file);
-		}
+//		} else {
+//			try {
+//				transport.send (null);
+//			} catch (e) {
+//				Clazz.alert ("[Java2Script] Loading file error: " + e.message);
+//				//throw e;
+//			}
+//			ClazzLoader.xhrOnload (transport, file);
+//		}
 		return;
 	}
 	// Create script DOM element
 	var script = document.createElement ("SCRIPT");
 	script.type = "text/javascript";
-	//alert(file)
+
+  
 	if (ClazzLoader.isChrome && ClazzLoader.reloadingClasses[file]) {
 		script.src = file + "?" + Math.floor (100000 * Math.random ());
 	} else {
 		script.src = file;
 	}
+  
 	var head = document.getElementsByTagName ("HEAD")[0];
-
 	if (ignoreOnload) {
 		head.appendChild (script);
 		// ignore onload event and no call of ClazzLoader.scriptLoading
@@ -4407,11 +4437,12 @@ ClazzLoader.loadScript = function (file, why) {
 		 * Opera will trigger onload event even there are no *.js existed
 		 */
 		script.onload = ClazzLoader.generatingW3CScriptOnCallback (file, false);
-		/*
+    
+    /*
 		 * For Firefox/Mozilla, unexisted *.js will result in errors.
 		 */
 		script.onerror = ClazzLoader.generatingW3CScriptOnCallback (file, true);
-		if (ClazzLoader.isOpera) {
+    if (ClazzLoader.isOpera) {
 			ClazzLoader.needOnloadCheck = true;
 		}
 	} else { // IE
@@ -4582,7 +4613,6 @@ ClazzLoader.tryToLoadNext = function (file) {
 	 */
 	 
 	if (!ClazzLoader.keepOnLoading) {
-	alert("classloader note keeponloading")
 		return;
 	}
 
@@ -5539,7 +5569,7 @@ ClazzLoader.assurePackageClasspath = function (pkg) {
 		window[pkg + ".registered"] = false;
 		var base = ClazzLoader.fastGetJ2SLibBase ();
 		if (base == null) {
-			base = "http://archive.java2script.org/1.0.0/"; // only after 1.0.0
+			base = "j2s"; 
 		}
 		ClazzLoader.packageClasspath (pkg, base, true);
 	}

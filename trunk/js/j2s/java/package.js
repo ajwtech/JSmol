@@ -1,6 +1,5 @@
 // BH 12/15/2012 1:56:28 PM  adds corezip.z.js and corebio.z.js
 // later additions include coresym.z.js, coresurface.z.js, coremenu.z.js
-
 if (!window["java.registered"])
  window["java.registered"] = false;
 
@@ -23,10 +22,10 @@ window["java.packaged"] = true;
 			
 	window["reflect"] = java.lang.reflect;
 
-	base = ClazzLoader.getClasspathFor ("core.*");
+var	base = ClazzLoader.fastGetJ2SLibBase ();//ClazzLoader.getClasspathFor ("core.*");
 	base += "core/"
-	basefile = base + "core.z.js";
-	
+var	basefile = base + "core.z.js";
+
 	ClazzLoader.ignore([
 		"net.sf.j2s.ajax.HttpRequest",
 		"java.util.MapEntry.Type",

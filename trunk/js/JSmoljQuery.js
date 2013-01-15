@@ -8208,7 +8208,7 @@ if ( jQuery.support.ajax ) {
 					if ( s.username ) {
 						xhr.open( s.type, s.url, s.async, s.username, s.password );
 					} else {
-						xhr.open( s.type, s.url, s.async );
+          	xhr.open( s.type, s.url, s.async );
 					}
 
 					// Apply custom fields if provided
@@ -8240,10 +8240,13 @@ if (s.dataType == "binary") {
   }
 }
 
+//xxxss= s
 
 					// Need an extra try/catch for cross domain requests in Firefox 3
 					try {
 						for ( i in headers ) {
+            //alert("setting header " + headers[i])
+            //xxxss += headers[i] 
 							xhr.setRequestHeader( i, headers[ i ] );
 						}
 					} catch( _ ) {}
@@ -8308,7 +8311,7 @@ if (s.dataType == "binary") {
 									// on any attempt to access responseText (#11426)
 									try {
 										responses.text = xhr.responseText;
-									} catch( _ ) {
+              		} catch( _ ) {
 									}
 									// When requesting binary data, IE6-9 will throw an exception
 									// on any attempt to access responseText (#11426)
@@ -8354,7 +8357,7 @@ if (s.dataType == "binary") {
 					// and has been retrieved directly (IE6 & IE7)
 					// we need to manually fire the callback
 					if ( !s.async || xhr.readyState === 4 ) {
-						callback();
+          	callback();
 					} else {
 						handle = ++xhrId;
 						if ( xhrOnUnloadAbort ) {

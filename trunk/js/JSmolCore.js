@@ -2,6 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// 1/13/2013 BH: Fixed MSIE not-reading-local-files problem.
 // 11/28/2012 BH: Fixed MacOS Safari binary ArrayBuffer problem
 // 11/21/2012 BH: restructuring of files as JS... instead of J...
 // 11/20/2012 BH: MSIE9 cannot do a synchronous file load cross-domain. See Jmol._getFileData
@@ -112,7 +113,10 @@ Jmol = (function(document) {
 
 
 	Jmol._ajax = function(info) {
+
+
 	  if (!info.async) {
+    
 	  	return jQuery.ajax(info).responseText;
 	  }
 		Jmol._ajaxQueue.push(info)
@@ -760,13 +764,16 @@ Jmol = (function(document) {
     var type = (Jmol._isBinaryUrl(fileName) ? "binary" : "text");
     var asBase64 = ((type == "binary") && !Jmol._canSyncBinary());
     var isPost = (fileName.indexOf("?POST?") >= 0);
-    var isMyHost = (fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
+    if (fileName.indexOf("file:/") == 0 && fileName.indexOf("file:///") != 0)
+      fileName = "file://" + fileName.substring(5);      /// fixes IE problem
+    var isMyHost = (fileName.indexOf("://") < 0 || fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
     var isDirectCall = Jmol._isDirectCall(fileName);
     var cantDoSynchronousLoad = (!isMyHost && jQuery.support.iecors);
   	if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall) {
-		var s = Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
-		return s
+		  var s = Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
+		  return s
 		}
+    
 		var info = {dataType:type,async:false};
 		if (isPost) {
 			info.type = "POST";

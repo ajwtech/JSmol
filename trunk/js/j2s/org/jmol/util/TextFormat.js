@@ -362,7 +362,7 @@ s.append (s2);
 }, "org.jmol.util.StringXBuilder,~S,~S");
 c$.safeTruncate = Clazz.defineMethod (c$, "safeTruncate", 
 function (f, n) {
-if (f > -0.0010 && f < 0.001) f = 0;
+if (f > -0.001 && f < 0.001) f = 0;
 return (f + "         ").substring (0, n);
 }, "~N,~N");
 c$.isWild = Clazz.defineMethod (c$, "isWild", 
@@ -429,27 +429,6 @@ if (!newName.equals (name)) s = org.jmol.util.TextFormat.simpleReplace (s, name,
 }
 return s;
 }, "~S,java.util.List,java.util.List");
-c$.getBytesUTF = Clazz.defineMethod (c$, "getBytesUTF", 
-function (s) {
-{
-var x = [];
-for (var i = 0; i < s.length;i++) {
-var pt = s.charCodeAt(i);
-if (pt <= 0x7F) {
-x.push(pt);
-} else if (pt <= 0x7FF) {
-x.push(0xC0|((pt>>6)&0x1F));
-x.push(0x80|(pt&0x3F));
-} else if (pt <= 0xFFFF) {
-x.push(0xE0|((pt>>12)&0xF));
-x.push(0x80|((pt>>6)&0x3F));
-x.push(0x80|(pt&0x3F));
-} else {
-x.push(0x3F); // '?'
-}
-}
-return (Int32Array != Array ? new Int32Array(x) : x);
-}}, "~S");
 Clazz.defineStatics (c$,
 "formattingStrings", ["0", "0.0", "0.00", "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000"],
 "zeros", "0000000000000000000000000000000000000000",

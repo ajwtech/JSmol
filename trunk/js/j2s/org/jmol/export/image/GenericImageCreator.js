@@ -1,5 +1,5 @@
 Clazz.declarePackage ("org.jmol.export.image");
-Clazz.load (["org.jmol.api.JmolImageCreatorInterface"], "org.jmol.export.image.GenericImageCreator", ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.IOException", "$.OutputStreamWriter", "java.lang.Error", "org.jmol.export.image.GenericPngEncoder", "org.jmol.io.Base64", "org.jmol.io2.JpegEncoder", "org.jmol.util.Escape", "$.Logger", "$.TextFormat", "org.jmol.viewer.Viewer"], function () {
+Clazz.load (["org.jmol.api.JmolImageCreatorInterface"], "org.jmol.export.image.GenericImageCreator", ["java.io.BufferedWriter", "$.File", "$.FileOutputStream", "$.IOException", "$.OutputStreamWriter", "java.lang.Error", "org.jmol.export.image.GenericPngEncoder", "org.jmol.io.Base64", "org.jmol.io2.JpegEncoder", "org.jmol.util.Escape", "$.Logger", "org.jmol.viewer.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.viewer = null;
 this.privateKey = 0;
@@ -35,9 +35,7 @@ this.getImageBytes (type, quality, fileName, scripts, bytes_or_image, null, null
 return fileName;
 }} else if (isText) {
 if (text == null) return "NO DATA";
-if (fileName == null) {
-return org.jmol.util.TextFormat.getBytesUTF (text);
-}os =  new java.io.FileOutputStream (fileName);
+os =  new java.io.FileOutputStream (fileName);
 var osw =  new java.io.OutputStreamWriter (os);
 var bw =  new java.io.BufferedWriter (osw, 8192);
 len = text.length;
