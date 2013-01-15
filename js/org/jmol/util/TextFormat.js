@@ -362,7 +362,7 @@ s.append (s2);
 }, "org.jmol.util.StringXBuilder,~S,~S");
 c$.safeTruncate = Clazz.defineMethod (c$, "safeTruncate", 
 function (f, n) {
-if (f > -0.0010 && f < 0.001) f = 0;
+if (f > -0.001 && f < 0.001) f = 0;
 return (f + "         ").substring (0, n);
 }, "~N,~N");
 c$.isWild = Clazz.defineMethod (c$, "isWild", 

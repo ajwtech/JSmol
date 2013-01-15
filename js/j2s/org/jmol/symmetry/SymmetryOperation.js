@@ -308,15 +308,15 @@ x += this.atomTest.x;
 y += this.atomTest.y;
 z += this.atomTest.z;
 }
-while (x < -0.0010 || x >= count + 0.001) {
+while (x < -0.001 || x >= count + 0.001) {
 this.m03 += (x < 0 ? 1 : -1);
 x += (x < 0 ? count : -count);
 }
-while (y < -0.0010 || y >= count + 0.001) {
+while (y < -0.001 || y >= count + 0.001) {
 this.m13 += (y < 0 ? 1 : -1);
 y += (y < 0 ? count : -count);
 }
-while (z < -0.0010 || z >= count + 0.001) {
+while (z < -0.001 || z >= count + 0.001) {
 this.m23 += (z < 0 ? 1 : -1);
 z += (z < 0 ? count : -count);
 }

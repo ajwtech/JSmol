@@ -1740,6 +1740,7 @@ var atomIndexNear = atomNear.index;
 var isNearInSetA = (isAll || bsA.get (atomIndexNear));
 var isNearInSetB = (isAll || bsB.get (atomIndexNear));
 if (!isNearInSetA && !isNearInSetB || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA) || isFirstExcluded && bsExclude.get (atomIndexNear)) continue;
+System.out.println (i + " " + atomIndexNear);
 var order = org.jmol.modelset.BondCollection.getBondOrder (myBondingRadius, atomNear.getBondingRadiusFloat (), iter.foundDistance2 (), minBondDistance2, bondTolerance);
 if (order > 0 && this.checkValencesAndBond (atom, atomNear, order, mad, bsBonds)) nNew++;
 }

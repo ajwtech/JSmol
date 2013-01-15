@@ -381,7 +381,7 @@ org.jmol.util.Logger.info (str);
 Clazz.defineMethod (c$, "checkKey", 
 ($fz = function (key) {
 {
-return (key.indexOf("JAVA") < 0);
+return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") && this.viewer.isJS3D));
 }}, $fz.isPrivate = true, $fz), "~S");
 Clazz.defineMethod (c$, "rememberCheckbox", 
 ($fz = function (key, checkboxMenuItem) {

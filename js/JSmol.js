@@ -561,6 +561,7 @@
 
 	Jmol._doAjax = function(url, postOut, bytesOut) {
     url = url.toString();
+    
     if (bytesOut != null) {
     	bytesOut = org.jmol.io.Base64.getBase64(bytesOut).toString();
     	var filename = url.substring(url.lastIndexOf("/") + 1);

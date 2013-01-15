@@ -1,4 +1,4 @@
-___JmolDate="$Date: 2013-01-07 01:54:42 -0600 (Mon, 07 Jan 2013) $"
+___JmolDate="$Date: 2013-01-12 22:49:23 -0600 (Sat, 12 Jan 2013) $"
 ___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
 ___JmolVersion="13.1.12_dev"
 // core.z.js
@@ -11299,7 +11299,7 @@ s.append (s2);
 }, "org.jmol.util.StringXBuilder,~S,~S");
 c$.safeTruncate = Clazz.defineMethod (c$, "safeTruncate", 
 function (f, n) {
-if (f > -0.0010 && f < 0.001) f = 0;
+if (f > -0.001 && f < 0.001) f = 0;
 return (f + "         ").substring (0, n);
 }, "~N,~N");
 c$.isWild = Clazz.defineMethod (c$, "isWild", 
@@ -11366,27 +11366,6 @@ if (!newName.equals (name)) s = org.jmol.util.TextFormat.simpleReplace (s, name,
 }
 return s;
 }, "~S,java.util.List,java.util.List");
-c$.getBytesUTF = Clazz.defineMethod (c$, "getBytesUTF", 
-function (s) {
-{
-var x = [];
-for (var i = 0; i < s.length;i++) {
-var pt = s.charCodeAt(i);
-if (pt <= 0x7F) {
-x.push(pt);
-} else if (pt <= 0x7FF) {
-x.push(0xC0|((pt>>6)&0x1F));
-x.push(0x80|(pt&0x3F));
-} else if (pt <= 0xFFFF) {
-x.push(0xE0|((pt>>12)&0xF));
-x.push(0x80|((pt>>6)&0x3F));
-x.push(0x80|(pt&0x3F));
-} else {
-x.push(0x3F); // '?'
-}
-}
-return (Int32Array != Array ? new Int32Array(x) : x);
-}}, "~S");
 Clazz.defineStatics (c$,
 "formattingStrings", ["0", "0.0", "0.00", "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000"],
 "zeros", "0000000000000000000000000000000000000000",
@@ -58300,6 +58279,7 @@ var atomIndexNear = atomNear.index;
 var isNearInSetA = (isAll || bsA.get (atomIndexNear));
 var isNearInSetB = (isAll || bsB.get (atomIndexNear));
 if (!isNearInSetA && !isNearInSetB || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA) || isFirstExcluded && bsExclude.get (atomIndexNear)) continue;
+System.out.println (i + " " + atomIndexNear);
 var order = org.jmol.modelset.BondCollection.getBondOrder (myBondingRadius, atomNear.getBondingRadiusFloat (), iter.foundDistance2 (), minBondDistance2, bondTolerance);
 if (order > 0 && this.checkValencesAndBond (atom, atomNear, order, mad, bsBonds)) nNew++;
 }
@@ -61038,6 +61018,7 @@ Clazz.overrideMethod (c$, "hasNext",
 function () {
 if (this.atomIndex >= 0) while (this.cubeIterator.hasMoreElements ()) {
 var a = this.cubeIterator.nextElement ();
+System.out.println (a.index + " " + a);
 if ((this.iNext = a.index) != this.atomIndex && (!this.checkGreater || this.iNext > this.atomIndex) && (this.bsSelected == null || this.bsSelected.get (this.iNext))) {
 return true;
 }}
@@ -61401,7 +61382,6 @@ this.sp = 0;
 this.leafIndex = 0;
 this.leaf = null;
 this.radius = 0;
-this.centerValues = null;
 this.cx = 0;
 this.cy = 0;
 this.cz = 0;
@@ -61413,7 +61393,6 @@ Clazz.instantialize (this, arguments);
 }, org.jmol.bspt, "CubeIterator");
 Clazz.makeConstructor (c$, 
 function (bspt) {
-this.centerValues =  Clazz.newFloatArray (bspt.dimMax, 0);
 this.set (bspt);
 }, "org.jmol.bspt.Bspt");
 Clazz.defineMethod (c$, "set", 
@@ -61425,9 +61404,9 @@ Clazz.defineMethod (c$, "initialize",
 function (center, radius, hemisphereOnly) {
 this.radius = radius;
 this.tHemisphere = false;
-this.cx = this.centerValues[0] = center.x;
-this.cy = this.centerValues[1] = center.y;
-this.cz = this.centerValues[2] = center.z;
+this.cx = center.x;
+this.cy = center.y;
+this.cz = center.z;
 this.leaf = null;
 this.stack[0] = this.bspt.eleRoot;
 this.sp = 1;
@@ -61462,13 +61441,25 @@ if (this.sp == 0) return;
 var ele = this.stack[--this.sp];
 while (Clazz.instanceOf (ele, org.jmol.bspt.Node)) {
 var node = ele;
-var centerValue = this.centerValues[node.dim];
-var maxValue = centerValue + this.radius;
-var minValue = centerValue;
+var minValue;
+switch (node.dim) {
+case 0:
+minValue = this.cx;
+break;
+case 1:
+minValue = this.cy;
+break;
+case 2:
+default:
+minValue = this.cz;
+break;
+}
+var maxValue = minValue + this.radius;
 if (!this.tHemisphere || node.dim != 0) minValue -= this.radius;
 if (minValue <= node.maxLeft && maxValue >= node.minLeft) {
-if (maxValue >= node.minRight && minValue <= node.maxRight) this.stack[this.sp++] = node.eleRight;
-ele = node.eleLeft;
+if (maxValue >= node.minRight && minValue <= node.maxRight) {
+this.stack[this.sp++] = node.eleRight;
+}ele = node.eleLeft;
 } else if (maxValue >= node.minRight && minValue <= node.maxRight) {
 ele = node.eleRight;
 } else {
@@ -61481,7 +61472,7 @@ this.leafIndex = 0;
 Clazz.defineMethod (c$, "isWithinRadius", 
 ($fz = function (t) {
 this.dx = t.x - this.cx;
-return (!this.tHemisphere || this.dx >= 0) && (this.dx = Math.abs (this.dx)) <= this.radius && (this.dy = Math.abs (t.y - this.cy)) <= this.radius && (this.dz = Math.abs (t.z - this.cz)) <= this.radius;
+return ((!this.tHemisphere || this.dx >= 0) && (this.dx = Math.abs (this.dx)) <= this.radius && (this.dy = Math.abs (t.y - this.cy)) <= this.radius && (this.dz = Math.abs (t.z - this.cz)) <= this.radius);
 }, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
 // 
 //// org\jmol\bspt\Element.js 
