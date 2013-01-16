@@ -61018,7 +61018,6 @@ Clazz.overrideMethod (c$, "hasNext",
 function () {
 if (this.atomIndex >= 0) while (this.cubeIterator.hasMoreElements ()) {
 var a = this.cubeIterator.nextElement ();
-System.out.println (a.index + " " + a);
 if ((this.iNext = a.index) != this.atomIndex && (!this.checkGreater || this.iNext > this.atomIndex) && (this.bsSelected == null || this.bsSelected.get (this.iNext))) {
 return true;
 }}
@@ -67679,7 +67678,7 @@ this.measurementPending.traceY = y;
 this.viewer.refresh (3, "assignNew");
 return;
 }if (!this.drawMode && !this.labelMode) {
-if (this.isBound (action, 1)) {
+if (this.isBound (action, 1)) {   
 this.viewer.translateXYBy (deltaX, deltaY);
 return;
 }if (this.isBound (action, 0)) {
