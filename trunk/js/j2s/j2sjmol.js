@@ -1,4 +1,3 @@
-
 LoadClazz = function() {
 
 if (!window["j2s.clazzloaded"])
@@ -12,6 +11,9 @@ window["j2s.clazzloaded"] = true;
 
 window["j2s.object.native"] = true;
 
+ // BH 1/17/2013 4:52:22 PM Int32Array and Float64Array may not have .prototype.sort method
+ // BH 1/17/2013 4:37:17 PM String.compareTo() added
+ // BH 1/16/2013 6:20:34 PM Float64Array not available in Safari 5.1
  // BH 1/14/2013 11:28:58 PM  Going to all doubles in JavaScript (Float64Array, not Float32Array)
  //   so that (new float[] {13.48f})[0] == 13.48f, effectively
  // BH 1/14/2013 12:53:41 AM  Fix for Opera 10 not loading any files
@@ -2235,14 +2237,32 @@ Clazz.doubleToChar = Clazz.floatToChar;
 
 //////// Array additions ////////////
 
-if ( ! self.Int32Array ) {
-	self.Int32Array = Array;
-// Darn! Mozilla makes this a double, not a float. It's 64-bit. 
-	self.Float64Array = Array;
+if (self.Int32Array ) {
+  Clazz.haveInt32 = true;
+  if (!Int32Array.prototype.sort)
+    Int32Array.prototype.sort = Array.prototype.sort
+} else {
+  Clazz.haveInt32 = false;
+	Int32Array = function() {};
+  Int32Array.prototype = Array.prototype;
+  Int32Array.prototype.int32Fake = function(){};
+  Int32Array.prototype.toString = function() {return "[object Int32Array]"};
 }
 
+if (self.Float64Array ) {
+  Clazz.haveFloat64 = true;
+  if (!Float64Array.prototype.sort)
+    Float64Array.prototype.sort = Array.prototype.sort
+} else {
+  Clazz.haveFloat64 = false;
+	Float64Array = function() {};
+  Float64Array.prototype = Array.prototype;
+  Float64Array.prototype.float64Fake = function() {}; // "present"
+  Float64Array.prototype.toString = function() {return "[object Float64Array]"};
+// Darn! Mozilla makes this a double, not a float. It's 64-bit.
+// and Safari 5.1 doesn't have Float64Array 
+}
 
-Clazz._hasArrays32 = (self.Int32Array != Array)
 
 /**
  * Make arrays.
@@ -2251,17 +2271,16 @@ Clazz._hasArrays32 = (self.Int32Array != Array)
  */
 /* public */
 Clazz.newArray  = function () {
-	var args = arguments;
-	var f = Array;
 	if (arguments[0] instanceof Array) {
     // recursive, from newArray(n,m,value)
     // as newArray([m, value], newInt32Array)
-		args = arguments[0];
-		f = arguments[1];
-	}
-	if (args.length <= 1) {
-		return new Array(); // maybe never?
-	}
+		var args = arguments[0];
+		var f = arguments[1];
+	} else {
+    var args = arguments;
+    var f = Array;
+  }
+	if (args.length <= 1) return new Array(); // maybe never?
 	var dim = args[0];
 	if (typeof dim == "string") {
 		dim = dim.charCodeAt (0); // char
@@ -2271,12 +2290,12 @@ Clazz.newArray  = function () {
   if (args.length == 2) {
     if (val == null)
       return new Array(dim);
-  	var arr = new f(dim);
-		if (f == Array && val != null) {
-  		for (var i = 0; i < dim; i++) {
-  	  		arr[i] = val;
-		  }
-    }
+    if (f === true && Clazz.haveInt32) return new Int32Array(dim);
+    if (f === false && Clazz.haveFloat64) return new Float64Array(dim);
+		if (f == Array && val == null) return new Array(dim);
+    var arr = (f === true ? new Int32Array() : f === false ? new Float64Array() : new Array(dim));
+  	for (var i = dim; --i >= 0;)
+  	  arr[i] = val;
 		return arr;
 	}
 	var xargs = new Array (len);
@@ -2291,8 +2310,8 @@ Clazz.newArray  = function () {
   	}
 	return arr;
 };
-
-Clazz.newArray32 = function(f, args) {
+                                
+Clazz.newArray32 = function(args, isInt32) {
 	var dim = args[0];
 	if (typeof dim == "string") {
 		dim = dim.charCodeAt (0); // char
@@ -2302,23 +2321,23 @@ Clazz.newArray32 = function(f, args) {
 	switch (args.length) {
 	case 0:
 	case 1:
-    alert("ERROR IN newArray32 -- args length < 2")
-    return new f(0);
+    alert("ERROR IN newArray32 -- args length < 2");
+    return new Array(0);
   case 2:
     if (val < 0)
       return new Array(dim);
-    if (f == Array) {
-      // no support for Int32Array (MSIE)
+    if (isInt32 ? !Clazz.haveInt32 : !Clazz.haveFloat64 ) {
+      // no support for Int32Array in MSIE or Float64Array in Safari 5.1
       // so we must initialize ourselves
-      f = new f(dim)
+      var f = (isInt32 ? new Int32Array() : new Float64Array());
       for (var i = dim; --i >= 0;)
         f[i] = 0;
       return f;
     }
     try {
-  	return new f (dim);
+    	return (isInt32 ? new Int32Array(dim) : new Float64Array(dim));
   	}catch (e) {
-  	alert(dim + " " + arguments.callee.caller.arguments.callee.caller)
+    	alert(dim + " " + arguments.callee.caller.arguments.callee.caller + e)
     }
   }
 	var xargs = new Array(len);
@@ -2329,10 +2348,11 @@ Clazz.newArray32 = function(f, args) {
 	for (var i = 0; i < dim; i++) {
 		// Call newArray referencing this array type
 		// only for the final iteration, and only if val === 0
-		arr[i] = Clazz.newArray (xargs, f);
+		arr[i] = Clazz.newArray (xargs, isInt32);
 	}
 	return arr;
 };
+
 
 /**
  * Make arrays.
@@ -2341,7 +2361,7 @@ Clazz.newArray32 = function(f, args) {
  */
 /* public */
 Clazz.newInt32Array  = function () {
-  return Clazz.newArray32(Int32Array, arguments);
+  return Clazz.newArray32(arguments, true);
 }
 
 /**
@@ -2351,7 +2371,7 @@ Clazz.newInt32Array  = function () {
  */
 /* public */
 Clazz.newFloat64Array  = function () {
-  return Clazz.newArray32(Float64Array, arguments);
+  return Clazz.newArray32(arguments, false);
 }
 
 Clazz.newFloatArray = Clazz.newDoubleArray = Clazz.newFloat64Array;
@@ -2381,7 +2401,7 @@ Clazz.isAP = function(a) {
 }
 
 Clazz.isAI = function(a) {
-  return (typeof a == "object" && a.constructor && a.constructor.toString().indexOf("Int32Array") >= 0);
+  return (typeof a == "object" && (Clazz.haveInt32 ? a.constructor && a.constructor.toString().indexOf("Int32Array") >= 0 : a.int32Fake ? true : false));
 }
 
 Clazz.isAII = function(a) { // assumes non-null a[0]
@@ -2389,7 +2409,7 @@ Clazz.isAII = function(a) { // assumes non-null a[0]
 }
 
 Clazz.isAF = function(a) {
-  return (typeof a == "object" && a.constructor && a.constructor.toString().indexOf("Float64Array") >= 0);
+  return (typeof a == "object" && (Clazz.haveFloat64 ? a.constructor && a.constructor.toString().indexOf("Float64Array") >= 0 : a.float64Fake ? true : false));
 }
 
 Clazz.isAFF = function(a) { // assumes non-null a[0]
@@ -6673,7 +6693,7 @@ Clazz.alert = function (s) {
   System.gc = function() {};
   System.getSecurityManager = function() { return null };
   String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
-
+  String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
 
 })(Clazz.Console);
 
@@ -6682,4 +6702,3 @@ Clazz.setConsoleDiv = function(d) {
 };
 
 };
-

@@ -1,0 +1,148 @@
+Comparing files core.z.js and C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+***** core.z.js
+___JmolDate="$Date: 2013-01-12 22:49:23 -0600 (Sat, 12 Jan 2013) $"
+___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+___JmolDate="$Date: 2013-01-07 01:54:42 -0600 (Mon, 07 Jan 2013) $"
+___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
+*****
+
+***** core.z.js
+function (f, n) {
+if (f > -0.001 && f < 0.001) f = 0;
+return (f + "         ").substring (0, n);
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+function (f, n) {
+if (f > -0.0010 && f < 0.001) f = 0;
+return (f + "         ").substring (0, n);
+*****
+
+***** core.z.js
+}, "~S,java.util.List,java.util.List");
+Clazz.defineStatics (c$,
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+}, "~S,java.util.List,java.util.List");
+c$.getBytesUTF = Clazz.defineMethod (c$, "getBytesUTF", 
+function (s) {
+{
+var x = [];
+for (var i = 0; i < s.length;i++) {
+var pt = s.charCodeAt(i);
+if (pt <= 0x7F) {
+x.push(pt);
+} else if (pt <= 0x7FF) {
+x.push(0xC0|((pt>>6)&0x1F));
+x.push(0x80|(pt&0x3F));
+} else if (pt <= 0xFFFF) {
+x.push(0xE0|((pt>>12)&0xF));
+x.push(0x80|((pt>>6)&0x3F));
+x.push(0x80|(pt&0x3F));
+} else {
+x.push(0x3F); // '?'
+}
+}
+return (Int32Array != Array ? new Int32Array(x) : x);
+}}, "~S");
+Clazz.defineStatics (c$,
+*****
+
+***** core.z.js
+xclude.get (atomIndexNear)) continue;
+System.out.println (i + " " + atomIndexNear);
+var order = org.jmol.modelset.BondCollection.getBondOrder (myBondingRadius, atomNear.getBondingRadiusFloat (), iter.foundDistan
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+xclude.get (atomIndexNear)) continue;
+var order = org.jmol.modelset.BondCollection.getBondOrder (myBondingRadius, atomNear.getBondingRadiusFloat (), iter.foundDistan
+*****
+
+***** core.z.js
+var a = this.cubeIterator.nextElement ();
+System.out.println (a.index + " " + a);
+if ((this.iNext = a.index) != this.atomIndex && (!this.checkGreater || this.iNext > this.atomIndex) && (this.bsSelected == null
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+var a = this.cubeIterator.nextElement ();
+if ((this.iNext = a.index) != this.atomIndex && (!this.checkGreater || this.iNext > this.atomIndex) && (this.bsSelected == null
+*****
+
+***** core.z.js
+this.radius = 0;
+this.cx = 0;
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+this.radius = 0;
+this.centerValues = null;
+this.cx = 0;
+*****
+
+***** core.z.js
+function (bspt) {
+this.set (bspt);
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+function (bspt) {
+this.centerValues =  Clazz.newFloatArray (bspt.dimMax, 0);
+this.set (bspt);
+*****
+
+***** core.z.js
+this.tHemisphere = false;
+this.cx = center.x;
+this.cy = center.y;
+this.cz = center.z;
+this.leaf = null;
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+this.tHemisphere = false;
+this.cx = this.centerValues[0] = center.x;
+this.cy = this.centerValues[1] = center.y;
+this.cz = this.centerValues[2] = center.z;
+this.leaf = null;
+*****
+
+***** core.z.js
+var node = ele;
+var minValue;
+switch (node.dim) {
+case 0:
+minValue = this.cx;
+break;
+case 1:
+minValue = this.cy;
+break;
+case 2:
+default:
+minValue = this.cz;
+break;
+}
+var maxValue = minValue + this.radius;
+if (!this.tHemisphere || node.dim != 0) minValue -= this.radius;
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+var node = ele;
+var centerValue = this.centerValues[node.dim];
+var maxValue = centerValue + this.radius;
+var minValue = centerValue;
+if (!this.tHemisphere || node.dim != 0) minValue -= this.radius;
+*****
+
+***** core.z.js
+if (minValue <= node.maxLeft && maxValue >= node.minLeft) {
+if (maxValue >= node.minRight && minValue <= node.maxRight) {
+this.stack[this.sp++] = node.eleRight;
+}ele = node.eleLeft;
+} else if (maxValue >= node.minRight && minValue <= node.maxRight) {
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+if (minValue <= node.maxLeft && maxValue >= node.minLeft) {
+if (maxValue >= node.minRight && minValue <= node.maxRight) this.stack[this.sp++] = node.eleRight;
+ele = node.eleLeft;
+} else if (maxValue >= node.minRight && minValue <= node.maxRight) {
+*****
+
+***** core.z.js
+this.dx = t.x - this.cx;
+return ((!this.tHemisphere || this.dx >= 0) && (this.dx = Math.abs (this.dx)) <= this.radius && (this.dy = Math.abs (t.y - this
+.cy)) <= this.radius && (this.dz = Math.abs (t.z - this.cz)) <= this.radius);
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
+***** C:\TMP\TEST\JSMOL\J2S\CORE\CORE.Z.JS
+this.dx = t.x - this.cx;
+return (!this.tHemisphere || this.dx >= 0) && (this.dx = Math.abs (this.dx)) <= this.radius && (this.dy = Math.abs (t.y - this.
+cy)) <= this.radius && (this.dz = Math.abs (t.z - this.cz)) <= this.radius;
+}, $fz.isPrivate = true, $fz), "org.jmol.util.Point3f");
+*****
+

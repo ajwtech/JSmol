@@ -1,5 +1,5 @@
 Clazz.declarePackage ("org.jmol.adapter.readers.cifpdb");
-Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.Matrix4f", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
+Clazz.load (["org.jmol.adapter.smarter.AtomSetCollectionReader", "java.util.Hashtable"], "org.jmol.adapter.readers.cifpdb.PdbReader", ["java.lang.Boolean", "$.Float", "java.util.ArrayList", "org.jmol.adapter.smarter.Atom", "$.Structure", "org.jmol.api.Interface", "$.JmolAdapter", "org.jmol.constant.EnumStructure", "org.jmol.util.Escape", "$.Logger", "$.Matrix4f", "$.Parser", "$.Point3f", "$.StringXBuilder", "$.TextFormat"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.lineLength = 0;
 this.pdbHeader = null;
@@ -47,6 +47,8 @@ this.lastInsertion = '\0';
 this.lastSourceSerial = -2147483648;
 this.lastTargetSerial = -2147483648;
 this.tlsGroupID = 0;
+this.atomTypePt0 = 0;
+this.atomTypeLen = 0;
 this.haveDoubleBonds = false;
 this.dataT = null;
 this.tlsU = null;
@@ -64,6 +66,16 @@ this.applySymmetry = !this.checkFilterKey ("NOSYMMETRY");
 this.getTlsGroups = this.checkFilterKey ("TLS");
 if (this.htParams.containsKey ("vTlsModels")) {
 this.vTlsModels = this.htParams.remove ("vTlsModels");
+}if (this.checkFilterKey ("TYPE ")) {
+var s = this.filter.substring (this.filter.indexOf ("TYPE ") + 5).$replace (',', ' ').$replace (';', ' ');
+var tokens = org.jmol.util.Parser.getTokens (s);
+this.atomTypePt0 = Integer.parseInt (tokens[0]) - 1;
+var pt = tokens[1].indexOf ("=");
+if (pt >= 0) {
+this.filterAtomTypeStr = tokens[1].substring (pt + 1).toUpperCase ();
+} else {
+pt = tokens[1].length;
+}this.atomTypeLen = Integer.parseInt (tokens[1].substring (0, pt));
 }if (this.checkFilterKey ("CONF ")) {
 this.configurationPtr = this.parseIntAt (this.filter, this.filter.indexOf ("CONF ") + 5);
 this.sbIgnored =  new org.jmol.util.StringXBuilder ();
@@ -396,7 +408,10 @@ atom.sequenceNumber = this.parseIntRange (this.line, 22, 26);
 atom.insertionCode = org.jmol.api.JmolAdapter.canonizeInsertionCode (this.line.charAt (26));
 atom.isHetero = this.line.startsWith ("HETATM");
 atom.elementSymbol = this.deduceElementSymbol (atom.isHetero);
-if (!this.filterPDBAtom (atom, this.fileAtomIndex++)) return;
+if (this.atomTypeLen > 0) {
+var s = this.line.substring (this.atomTypePt0, this.atomTypePt0 + this.atomTypeLen).trim ();
+if (s.length > 0) atom.atomName += "\0" + s;
+}if (!this.filterPDBAtom (atom, this.fileAtomIndex++)) return;
 atom.atomSerial = serial;
 if (serial > this.maxSerial) this.maxSerial = serial;
 if (atom.group3 == null) {
