@@ -63,7 +63,6 @@ Clazz.overrideMethod (c$, "hasNext",
 function () {
 if (this.atomIndex >= 0) while (this.cubeIterator.hasMoreElements ()) {
 var a = this.cubeIterator.nextElement ();
-System.out.println (a.index + " " + a);
 if ((this.iNext = a.index) != this.atomIndex && (!this.checkGreater || this.iNext > this.atomIndex) && (this.bsSelected == null || this.bsSelected.get (this.iNext))) {
 return true;
 }}

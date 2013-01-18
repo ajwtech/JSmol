@@ -70,7 +70,9 @@ this.haveAtomFilter = false;
 this.filterAltLoc = false;
 this.filterGroup3 = false;
 this.filterChain = false;
+this.filterAtomName = false;
 this.filterAtomType = false;
+this.filterAtomTypeStr = null;
 this.filterElement = false;
 this.filterHetero = false;
 this.filterEveryNth = false;
@@ -452,7 +454,7 @@ if (this.nameRequired.startsWith ("'")) this.nameRequired = org.jmol.util.TextFo
 filter0 = this.filter = org.jmol.util.TextFormat.simpleReplace (this.filter, this.nameRequired, "");
 filter0 = this.filter = org.jmol.util.TextFormat.simpleReplace (this.filter, "NAME=", "");
 }if (this.filter == null) return;
-this.filterAtomType = this.checkFilterKey ("*.") || this.checkFilterKey ("!.");
+this.filterAtomName = this.checkFilterKey ("*.") || this.checkFilterKey ("!.");
 this.filterElement = this.checkFilterKey ("_");
 this.filterHetero = this.checkFilterKey ("HETATM");
 this.filterGroup3 = this.checkFilterKey ("[");
@@ -460,8 +462,9 @@ this.filterChain = this.checkFilterKey (":");
 this.filterAltLoc = this.checkFilterKey ("%");
 this.filterEveryNth = this.checkFilterKey ("/=");
 if (this.filterEveryNth) this.filterN = this.parseIntStr (this.filter.substring (this.filter.indexOf ("/=") + 2));
+ else this.filterAtomType = this.checkFilterKey ("=");
 if (this.filterN == -2147483648) this.filterEveryNth = false;
-this.haveAtomFilter = this.filterAtomType || this.filterElement || this.filterGroup3 || this.filterChain || this.filterAltLoc || this.filterHetero || this.filterEveryNth || this.checkFilterKey ("/=");
+this.haveAtomFilter = this.filterAtomName || this.filterAtomType || this.filterElement || this.filterGroup3 || this.filterChain || this.filterAltLoc || this.filterHetero || this.filterEveryNth || this.checkFilterKey ("/=");
 if (this.bsFilter == null) {
 this.bsFilter =  new org.jmol.util.BitSet ();
 this.htParams.put ("bsFilter", this.bsFilter);
@@ -489,7 +492,7 @@ return isOK;
 }, "org.jmol.adapter.smarter.Atom,~N");
 Clazz.defineMethod (c$, "checkFilter", 
 ($fz = function (atom, f) {
-return (!this.filterGroup3 || atom.group3 == null || !this.filterReject (f, "[", atom.group3.toUpperCase () + "]")) && (!this.filterAtomType || atom.atomName == null || !this.filterReject (f, ".", atom.atomName.toUpperCase () + ";")) && (!this.filterElement || atom.elementSymbol == null || !this.filterReject (f, "_", atom.elementSymbol.toUpperCase () + ";")) && (!this.filterChain || atom.chainID == '\0' || !this.filterReject (f, ":", "" + atom.chainID)) && (!this.filterAltLoc || atom.alternateLocationID == '\0' || !this.filterReject (f, "%", "" + atom.alternateLocationID)) && (!this.filterHetero || !this.filterReject (f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
+return (!this.filterGroup3 || atom.group3 == null || !this.filterReject (f, "[", atom.group3.toUpperCase () + "]")) && (!this.filterAtomName || atom.atomName == null || !this.filterReject (f, ".", atom.atomName.toUpperCase () + (this.filterAtomTypeStr == null ? ";" : "\0"))) && (this.filterAtomTypeStr == null || atom.atomName == null || atom.atomName.toUpperCase ().indexOf ("\0" + this.filterAtomTypeStr) >= 0) && (!this.filterElement || atom.elementSymbol == null || !this.filterReject (f, "_", atom.elementSymbol.toUpperCase () + ";")) && (!this.filterChain || atom.chainID == '\0' || !this.filterReject (f, ":", "" + atom.chainID)) && (!this.filterAltLoc || atom.alternateLocationID == '\0' || !this.filterReject (f, "%", "" + atom.alternateLocationID)) && (!this.filterHetero || !this.filterReject (f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
 }, $fz.isPrivate = true, $fz), "org.jmol.adapter.smarter.Atom,~S");
 Clazz.defineMethod (c$, "filterReject", 
 function (f, code, atomCode) {

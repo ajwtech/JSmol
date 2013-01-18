@@ -183,7 +183,7 @@ return vb.toArray ( new Array (vb.size ()));
 case 3:
 search.getMaps = true;
 var vl = search.search (false);
-return vl.toArray ( Clazz.newIntArray (vl.size (), 0));
+return vl.toArray ( org.jmol.util.ArrayUtil.newInt2(vl.size())) ;
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {

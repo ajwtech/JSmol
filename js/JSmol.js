@@ -101,6 +101,7 @@
    	ev.stopPropagation();
   	ev.preventDefault();
     var oe = ev.originalEvent;
+    
     if (!oe.touches || oe.touches.length != 2) return false;
     switch (ev.type) {
     case "touchstart":
@@ -139,10 +140,15 @@
 		d.bind('mousemove touchmove', function(ev) { // touchmove
      	ev.stopPropagation();
 	  	ev.preventDefault();
-	    if ((ev.type == "touchmove") && Jmol._gestureUpdate(canvas, ev))
+      var isTouch = (ev.type == "touchmove");
+	    if (isTouch && Jmol._gestureUpdate(canvas, ev))
         return false;
 			var xym = Jmol._jsGetXY(canvas, ev);
 			if(!xym) return false;
+      //if (isTouch)
+        //xym[2] = org.jmol.api.Event.MOUSE_LEFT;
+      //System.out.println(canvas.isDragging + " " + ev.type + xym[0] + " " + xym[1] + " " + xym[2] + " " + System.currentTimeMillis())
+
 			canvas.applet._applet.viewer.handleOldJvm10Event(
 				(canvas.isDragging ? org.jmol.api.Event.MOUSE_DRAG : org.jmol.api.Event.MOUSE_MOVE),
 				xym[0], xym[1], (canvas.isDragging ? xym[2] : 0), System.currentTimeMillis()

@@ -1,4 +1,18 @@
 del core.z.js
+echo coresmiles.z.js
+call loadScript org\jmol\api\SmilesMatcherInterface.js -- required by org.jmol.smiles.SmilesMatcher
+call loadScript org\jmol\smiles\SmilesMatcher.js
+call loadScript org\jmol\smiles\InvalidSmilesException.js
+call loadScript org\jmol\smiles\SmilesSearch.js -- required by org.jmol.smiles.SmilesGenerator
+call loadScript org\jmol\smiles\SmilesGenerator.js
+call loadScript org\jmol\smiles\SmilesAromatic.js
+call loadScript org\jmol\smiles\SmilesAtom.js
+call loadScript org\jmol\smiles\SmilesBond.js
+call loadScript org\jmol\smiles\SmilesMeasure.js
+call loadScript org\jmol\smiles\SmilesParser.js
+copy core.z.js ..\core\coresmiles.z.js
+
+del core.z.js
 echo coreconsole.z.js
 type coreconsoletop.js >> core.z.js
 call loadScript org\jmol\api\JmolAppConsoleInterface.js -- required by org.jmol.console.GenericConsole

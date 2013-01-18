@@ -2,6 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// BH 1/17/2013 5:20:44 PM: Fixed problem with console not getting initial position if no first click
 // 1/13/2013 BH: Fixed MSIE not-reading-local-files problem.
 // 11/28/2012 BH: Fixed MacOS Safari binary ArrayBuffer problem
 // 11/21/2012 BH: restructuring of files as JS... instead of J...
@@ -68,6 +69,7 @@ Jmol = (function(document) {
 		_ajaxQueue: [],
 		_execStack: [],
 		_execLog: "",
+    _mousePageX: null,
 		db: {
 			_databasePrefixes: "$=:",
 			_fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
@@ -746,6 +748,7 @@ Jmol = (function(document) {
 		    xhr.overrideMimeType('text/plain; charset=x-user-defined');
 		  }
 		} catch( e ) {
+      System.out.println("JmolCore.js: synchronous binary file transfer is not available");
 			return Jmol._syncBinaryOK = false;
 		}
 		return true;	
@@ -837,6 +840,12 @@ Jmol._setDraggable = function(Obj) {
 	}
 	
 	proto.setPosition = function() {
+    if (Jmol._mousePageX === null) {
+      var id = this.applet._id + "_" + (this.applet._is2D ? "canvas2d" : "canvas");
+      var offsets = $("#" + id).offset();
+      Jmol._mousePageX = offsets.left;
+      Jmol._mousePageY = offsets.top;
+    }
 		this.pageX0 = Jmol._mousePageX;
 		this.pageY0 = Jmol._mousePageY;
 		var pos = { top: Jmol._mousePageY + 'px', left: Jmol._mousePageX + 'px' };

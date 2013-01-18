@@ -46,6 +46,7 @@ var	basefile = base + "core.z.js";
 	
 	ClazzLoader.loadZJar (basefile, ClazzLoader.runtimeKeyClass);
 
+
 	ClazzLoader.jarClasspath (base + "corezip.z.js",	[
 		"com.jcraft.jzlib.Checksum", // required by $.CRC32
 		"$.CRC32", // required by java.util.zip.CRC32
@@ -112,6 +113,19 @@ var	basefile = base + "core.z.js";
 		"$.SymmetryOperation",
 		"$.SymmetryInfo",
 		"$.UnitCell"
+	]);
+
+	ClazzLoader.jarClasspath (base + "coresmiles.z.js",	[
+    "org.jmol.api.SmilesMatcherInterface", // required by org.jmol.smiles.SmilesMatcher
+    "org.jmol.smiles.SmilesMatcher",
+    "$.InvalidSmilesException",
+    "$.SmilesSearch", // required by $.SmilesGenerator
+    "$.SmilesGenerator",
+    "$.SmilesAromatic",
+    "$.SmilesAtom",
+    "$.SmilesBond",
+    "$.SmilesMeasure",
+    "$.SmilesParser"
 	]);
 
 	ClazzLoader.jarClasspath (base + "coresurface.z.js",	[
