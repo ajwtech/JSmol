@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-12 17:52:14 -0600 (Sat, 12 Jan 2013) $
- * $Revision: 17859 $
+ * $Date: 2013-01-27 23:08:07 +0200 (Sun, 27 Jan 2013) $
+ * $Revision: 17885 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -546,8 +546,7 @@ public class MainPopupResourceBundle extends PopupResource {
   @Override
   protected String[] getWordContents() {
     
-    boolean wasTranslating = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean wasTranslating = GT.setDoTranslate(true);
     String[] words = new String[] {
         "modelSetMenu", GT._("No atoms loaded"),
         

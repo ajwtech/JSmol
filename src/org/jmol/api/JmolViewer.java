@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-09 22:10:56 -0600 (Sun, 09 Dec 2012) $
- * $Revision: 17802 $
+ * $Date: 2013-01-23 14:58:01 -0600 (Wed, 23 Jan 2013) $
+ * $Revision: 17876 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -186,7 +186,7 @@ abstract public class JmolViewer {
 
   // for POV-Ray -- returns the INI file
   
-  abstract public String generateOutput(String type, String[] fileName, int width, int height); 
+  abstract public String generateOutputForExport(String type, String[] fileName, int width, int height); 
 
   abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
 

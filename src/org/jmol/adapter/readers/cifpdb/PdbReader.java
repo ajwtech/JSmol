@@ -74,6 +74,30 @@ import java.util.Map;
 
 public class PdbReader extends AtomSetCollectionReader {
 
+
+  // serial number and sequence number extensions added Jan 2012 by BH, Jmol 13.1.12
+  // Schroedinger HEX solution: 
+  // https://www.schrodinger.com/AcrobatFile.php?type=supportdocs&type2=&ident=530
+  // allows for about 1,000,000 atoms
+  // assumes sequential numbering with no surprises
+  // incompatible with CONECT
+  // because there can be two atoms with atom number "10000", one base 10 and one base 16 
+  
+  // hybrid-36 solution:
+  // cci.lbl.gov/cctbx_sources/iotbx/pdb/hybrid_36.py
+  // allows for about 87,000,000 atoms
+  // no problem with sequential numbering or CONECT
+  
+  private final static int MODE_PDB = 0;
+  private final static int MODE_HEX = 1;
+  private final static int MODE_HYBRID36 = 2;
+
+  private int serMode = MODE_PDB;
+  private int seqMode = MODE_PDB;
+  
+  private int serial;
+
+  
   private int lineLength;
 
   private StringXBuilder pdbHeader;
@@ -195,7 +219,7 @@ public class PdbReader extends AtomSetCollectionReader {
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
-    int serial = (isAtom ? parseIntRange(line, 6, 11) : 0);
+    serial = (isAtom ? getSerial(6, 11) : 0);
     boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
         && isAtom && serial == 1);
     if (getHeader) {
@@ -233,7 +257,7 @@ public class PdbReader extends AtomSetCollectionReader {
       return true;
     if (isAtom) {
       getHeader = false;
-      atom(serial);
+      atom();
       return true;
     }
     switch (ptOption) {
@@ -404,8 +428,11 @@ public class PdbReader extends AtomSetCollectionReader {
     if (lineLength < 8)
       return;
     appendLoadNote(line.substring(7).trim());
-    if (lineLength >= 66)
-      atomSetCollection.setCollectionName(line.substring(62, 66));
+    String pdbID = (lineLength >= 66 ? line.substring(62, 66).trim() : "");
+    if (pdbID.length() == 4) {
+      atomSetCollection.setCollectionName(pdbID);
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("havePDBHeaderName", Boolean.TRUE);
+    }
     if (lineLength > 50)
       line = line.substring(0, 50);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
@@ -664,7 +691,66 @@ REMARK 290 REMARK: NULL
     }
   } 
   
-  // Note that segID (columns 73-76) is not generally read, 
+  private int getSerial(int i, int j) {
+    char c = line.charAt(i);
+    boolean isBase10 = (c == ' ' || line.charAt(j - 1) == ' ');
+    switch (serMode) {
+    default:
+    case MODE_PDB:
+      if (isBase10)
+        return parseIntRange(line, i, j);
+      try {
+        return serial = Integer.parseInt(line.substring(i, j));
+      } catch (Exception e) {
+        serMode = (Character.isDigit(c) ? MODE_HEX : MODE_HYBRID36);
+        return getSerial(i, j);
+      }
+    case MODE_HYBRID36:
+      // -16696160 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36)
+      //  26973856 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36) 
+      //           + (Integer.parseInt("100000",36) - Integer.parseInt("A0000",36))
+      return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
+          : Parser.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
+    case MODE_HEX:
+      if (!isBase10)
+        return serial = Parser.parseIntRadix(line.substring(i, j), 16);
+      // reset from MODEL or new chain
+      serMode = MODE_PDB;
+      return getSerial(i, j);
+    }
+  }
+
+  private int getSeqNo(int i, int j) {
+    char c = line.charAt(i);
+    boolean isBase10 = (c == ' ' || line.charAt(j - 1) == ' ');
+    switch (seqMode) {
+    default:
+    case MODE_PDB:
+      if (isBase10)
+        return parseIntRange(line, i, j);
+      try {
+        return Integer.parseInt(line.substring(i, j));
+      } catch (Exception e) {
+        seqMode = (Character.isDigit(c) ? MODE_HEX : MODE_HYBRID36);
+        return getSeqNo(i, j);
+      }
+    case MODE_HYBRID36:
+      // -456560 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36)
+      //  756496 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36) 
+      //         + (Integer.parseInt("10000",36) - Integer.parseInt("A000",36)) 
+      return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
+          : Parser.parseIntRadix(line.substring(i, j), 36)
+              + (Character.isUpperCase(c) ? -456560 : 756496));
+    case MODE_HEX:
+      if (!isBase10)
+        return Parser.parseIntRadix(line.substring(i, j), 16);
+      // reset from MODEL or new chain
+      seqMode = MODE_PDB;
+      return getSeqNo(i, j);
+    }
+  }
+
+// Note that segID (columns 73-76) is not generally read, 
   // but can be read into the atomType atom property 
   // starting in Jmol 13.1.12 using FILTER "type 73,4"
   
@@ -674,7 +760,7 @@ REMARK 290 REMARK: NULL
   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
   //aaaaaauuuuu ssss sss cnnnnc   xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzccccccccrrrrrrrr
  
-  private void atom(int serial) {
+  private void atom() {
     Atom atom = new Atom();
     atom.atomName = line.substring(12, 16).trim();
     char ch = line.charAt(16);
@@ -685,7 +771,7 @@ REMARK 290 REMARK: NULL
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
-    atom.sequenceNumber = parseIntRange(line, 22, 26);
+    atom.sequenceNumber = getSeqNo(22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
@@ -800,8 +886,8 @@ REMARK 290 REMARK: NULL
   protected void setAdditionalAtomParameters(Atom atom) {
     if (isPQR) {
       if (gromacsWideFormat) {
-        atom.partialCharge = parseFloatStr(line.substring(60, 68));
-        atom.radius = fixRadius(parseFloatStr(line.substring(68, 76)));
+        atom.partialCharge = parseFloatRange(line, 60, 68);
+        atom.radius = fixRadius(parseFloatRange(line, 68, 76));
       } else {
         String[] tokens = getTokens();
         int pt = tokens.length - 2 - (line.length() > 75 ? 1 : 0);
@@ -814,8 +900,8 @@ REMARK 290 REMARK: NULL
     float floatOccupancy;
     
     if (gromacsWideFormat) {
-      floatOccupancy = parseFloatStr(line.substring(60, 68));
-      atom.bfactor = fixRadius(parseFloatStr(line.substring(68, 76)));
+      floatOccupancy = parseFloatRange(line, 60, 68);
+      atom.bfactor = fixRadius(parseFloatRange(line, 68, 76));
     } else {
       /****************************************************************
        * read the occupancy from cols 55-60 (1-based) 
@@ -910,14 +996,13 @@ REMARK 290 REMARK: NULL
       sb.setLength(0);
     }
     int sourceSerial = -1;
-    sourceSerial = parseIntRange(line, 6, 11);
+    sourceSerial = getSerial(6, 11);
     if (sourceSerial < 0)
       return;
     for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       int offset = i * 5 + 11;
       int offsetEnd = offset + 5;
-      int targetSerial = (offsetEnd <= lineLength ? parseIntRange(line, offset,
-          offsetEnd) : -1);
+      int targetSerial = (offsetEnd <= lineLength ? getSerial(offset, offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
       boolean isDoubleBond = (sourceSerial == lastSourceSerial && targetSerial == lastTargetSerial);
@@ -1005,14 +1090,14 @@ Polyproline 10
       endChainIDIndex = 31;
       endIndex = 33;
       if (line.length() >= 40)
-      substructureType = Structure.getHelixType(parseIntStr(line.substring(38, 40)));
+      substructureType = Structure.getHelixType(parseIntRange(line, 38, 40));
     } else if (line.startsWith("SHEET ")) {
       structureType = EnumStructure.SHEET;
       startChainIDIndex = 21;
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
-      strandCount = parseIntStr(line.substring(14, 16));
+      strandCount = parseIntRange(line, 14, 16);
     } else if (line.startsWith("TURN  ")) {
       structureType = EnumStructure.TURN;
       startChainIDIndex = 19;
@@ -1026,7 +1111,7 @@ Polyproline 10
       return;
 
     String structureID = line.substring(11, 15).trim();
-    int serialID = parseIntStr(line.substring(7, 10));
+    int serialID = parseIntRange(line, 7, 10);
     char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseIntRange(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
@@ -1412,7 +1497,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             int fromC = components.indexOf(" C ", toC + 4);
             chain1 = line.charAt(fromC);
             chain2 = line.charAt(toC);
-            res1 = parseIntStr(line.substring(fromC + 1, toC));
+            res1 = parseIntRange(line, fromC + 1, toC);
             res2 = parseIntStr(line.substring(toC + 1));
           }
           if (chain1 == chain2) {
@@ -1462,9 +1547,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
                 parseFloatStr(tokens[7]));
           } else {
             int n = line.length();
-            origin.set(parseFloatStr(line.substring(n - 27, n - 18)),
-                parseFloatStr(line.substring(n - 18, n - 9)), parseFloatStr(line
-                    .substring(n - 9, n)));
+            origin.set(parseFloatRange(line, n - 27, n - 18),
+                parseFloatRange(line, n - 18, n - 9), parseFloatRange(line, n - 9, n));
           }
           if (Float.isNaN(origin.x) || Float.isNaN(origin.y) || Float.isNaN(origin.z)) {
             origin.set(Float.NaN, Float.NaN, Float.NaN);

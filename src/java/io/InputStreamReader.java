@@ -73,6 +73,8 @@ public class InputStreamReader extends Reader {
 
     private InputStream in;
     private boolean isOpen = true;
+    private String charsetName;
+    private boolean isUTF8;
 
     /**
      * Creates an InputStreamReader that uses the named charset.
@@ -92,7 +94,8 @@ public class InputStreamReader extends Reader {
     {
         super(in);
         this.in = in;
-        if (!"UTF-8".equals(charsetName))
+        this.charsetName = charsetName;
+        if (!(isUTF8 = "UTF-8".equals(charsetName)) && !"ISO-8859-1".equals(charsetName))
             throw new NullPointerException("charsetName");
         //sd = StreamDecoder.forInputStreamReader(in, this, charsetName);
     }
@@ -150,7 +153,7 @@ public class InputStreamReader extends Reader {
      * @spec JSR-51
      */
     public String getEncoding() {
-        return "UTF-8";
+        return this.charsetName;
         //return sd.getEncoding();
     }
 
@@ -169,35 +172,39 @@ public class InputStreamReader extends Reader {
     private byte[] bytearr = null;
     private int pos;
     
-    /**
-     * Reads characters into a portion of an array.
-     * Adapted by Bob Hanson to be more flexible, allowing char codes 128-255
-     * as simple characters. 
-     *
-     * @param      cbuf     Destination buffer
-     * @param      offset   Offset at which to start storing characters
-     * @param      length   Maximum number of characters to read
-     *
-     * @return     The number of characters read, or -1 if the end of the
-     *             stream has been reached
-     *
-     * @exception  IOException  If an I/O error occurs
-     */
-    @Override
-    public int read(char cbuf[], int offset, int length) throws IOException {
+  /**
+   * Reads characters into a portion of an array. Adapted by Bob Hanson to be
+   * more flexible, allowing char codes 128-255 as simple characters.
+   * 
+   * @param cbuf
+   *        Destination buffer
+   * @param offset
+   *        Offset at which to start storing characters
+   * @param length
+   *        Maximum number of characters to read
+   * 
+   * @return The number of characters read, or -1 if the end of the stream has
+   *         been reached
+   * 
+   * @exception IOException
+   *            If an I/O error occurs
+   */
+  @Override
+  public int read(char cbuf[], int offset, int length) throws IOException {
     // borrowed from DataInputStream:
-    
-      if (bytearr == null || bytearr.length < length)
-        bytearr = new byte[length];
-      int c, char2, char3;
-      int count = 0;
-      int chararr_count = 0;
-      int len = in.read(bytearr, pos, length - pos);
-      if (len < 0)
-        return -1;
-      pos = 0;
-      while (count < len) {
-        c = bytearr[count] & 0xff;
+
+    if (bytearr == null || bytearr.length < length)
+      bytearr = new byte[length];
+    int c, char2, char3;
+    int count = 0;
+    int chararr_count = 0;
+    int len = in.read(bytearr, pos, length - pos);
+    if (len < 0)
+      return -1;
+    pos = 0;
+    while (count < len) {
+      c = bytearr[count] & 0xff;
+      if (isUTF8)
         switch (c >> 4) {
         case 0xC:
         case 0xD:
@@ -227,17 +234,17 @@ public class InputStreamReader extends Reader {
               | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
           continue;
         }
-        /* 0xxxxxxx or otherwise unreadable -- just take it to be a character and don't worry about it.*/
-        count++;
-        cbuf[chararr_count++] = (char) c;
-      }
-      // The number of chars produced may be less than utflen
-      pos = len - count;
-      for (int i = 0; i < pos; i++) {
-        bytearr[i] = bytearr[count++];        
-      }
-      return len - pos;
+      /* 0xxxxxxx or otherwise unreadable -- just take it to be a character and don't worry about it.*/
+      count++;
+      cbuf[chararr_count++] = (char) c;
     }
+    // The number of chars produced may be less than utflen
+    pos = len - count;
+    for (int i = 0; i < pos; i++) {
+      bytearr[i] = bytearr[count++];
+    }
+    return len - pos;
+  }
 
     /**
      * Tells whether this stream is ready to be read.  An InputStreamReader is

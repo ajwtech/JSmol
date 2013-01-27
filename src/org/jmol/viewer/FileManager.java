@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-12 17:52:14 -0600 (Sat, 12 Jan 2013) $
- * $Revision: 17859 $
+ * $Date: 2013-01-27 23:08:07 +0200 (Sun, 27 Jan 2013) $
+ * $Revision: 17885 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -647,7 +647,7 @@ public class FileManager {
         bis.close();
         return JmolBinary.getBufferedReaderForString(s);
       }
-      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis));
+      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis, null));
     } catch (Exception ioe) {
       return ioe.toString();
     }
@@ -744,7 +744,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       } else {
         BufferedReader br = JmolBinary.getBufferedReader(
-            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis);
+            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis, null);
         String line;
         sb = new StringXBuilder();
         if (header != null)
@@ -869,65 +869,79 @@ public class FileManager {
     }
   }
 
-  Object getFileAsImage(String name, String[] retFileNameOrError) {
-    if (name == null) {
-      retFileNameOrError[0] = "";
-      return null;
-    }
-    String[] names = classifyName(name, true);
-    if (names == null) {
-      retFileNameOrError[0] = "cannot read file name: " + name;
-      return null;
-    }
+  void loadImage(String name, String echoName) {
     Object image = null;
-    ApiPlatform apiPlatform = viewer.apiPlatform;
-    String fullPathName = names[0].replace('\\', '/');
-    if (fullPathName.indexOf("|") > 0) {
-      Object ret = getFileAsBytes(fullPathName, null, true);
-      if (!Escape.isAB(ret)) {
-        retFileNameOrError[0] = "" + ret;
-        return null;
+    Object info = null;
+    String fullPathName = "";
+    while (true) {
+      if (name == null)
+        break;
+      String[] names = classifyName(name, true);
+      if (names == null) {
+        fullPathName = "cannot read file name: " + name;
+        break;
       }
-      image = apiPlatform.createImage(ret);
-    } else if (urlTypeIndex(fullPathName) >= 0) {
-      try {
-        image = apiPlatform.createImage(new URL((URL) null, fullPathName, null));
-      } catch (Exception e) {
-        retFileNameOrError[0] = "bad URL: " + fullPathName;
-        return null;
+      ApiPlatform apiPlatform = viewer.apiPlatform;
+      fullPathName = names[0].replace('\\', '/');
+      if (fullPathName.indexOf("|") > 0) {
+        Object ret = getFileAsBytes(fullPathName, null, true);
+        if (!Escape.isAB(ret)) {
+          fullPathName = "" + ret;
+          break;
+        }
+        image = (viewer.isJS ? ret : apiPlatform.createImage(ret));
+      } else if (viewer.isJS) {
+      } else if (urlTypeIndex(fullPathName) >= 0) {
+        try {
+          image = apiPlatform.createImage(new URL((URL) null, fullPathName,
+              null));
+        } catch (Exception e) {
+          fullPathName = "bad URL: " + fullPathName;
+          break;
+        }
+      } else {
+        image = apiPlatform.createImage(fullPathName);
       }
-    } else {
-      image = apiPlatform.createImage(fullPathName);
-    }
-    if (image == null)
-      return null;
-    try {
-      if (!apiPlatform.waitForDisplay(viewer.getDisplay(), image)) {
-        return null;
-      }
-      /* SUN but here for malformed URL - can't trap
-       Uncaught error fetching image:
-       java.lang.NullPointerException
-       at sun.net.www.ParseUtil.toURI(Unknown Source)
-       at sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source)
-       at sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source)
-       at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source)
-       at sun.awt.image.URLImageSource.getDecoder(Unknown Source)
-       at sun.awt.image.InputStreamImageSource.doFetch(Unknown Source)
-       at sun.awt.image.ImageFetcher.fetchloop(Unknown Source)
-       at sun.awt.image.ImageFetcher.run(Unknown Source)
+      /**
+       * @j2sNative
+       * 
+       *            info = [echoName, fullPathName];
+       * 
        */
-    } catch (Exception e) {
-      System.out.println(e.toString());
-      retFileNameOrError[0] = e.toString() + " opening " + fullPathName;
-      return null;
+      {
+        if (image == null)
+          break;
+      }
+      try {
+        if (!apiPlatform.waitForDisplay(info, image)) {
+          image = null;
+          break;
+        }
+        /**
+         * 
+         * note -- JavaScript just returns immediately, because we must wait
+         * for the image to load, and it is single-threaded
+         * 
+         * @j2sNative
+         * 
+         *            return;
+         */
+        {}
+
+      } catch (Exception e) {
+        System.out.println(e.toString());
+        fullPathName = e.toString() + " opening " + fullPathName;
+        image = null;
+        break;
+      }
+      if (apiPlatform.getImageWidth(image) < 1) {
+        fullPathName = "invalid or missing image " + fullPathName;
+        image = null;
+        break;
+      }
+      break;
     }
-    if (apiPlatform.getImageWidth(image) < 1) {
-      retFileNameOrError[0] = "invalid or missing image " + fullPathName;
-      return null;
-    }
-    retFileNameOrError[0] = fullPathName;
-    return image;
+    viewer.loadImageData(image, fullPathName, echoName, null);
   }
 
   public final static int URL_LOCAL = 3;
