@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-22 07:15:56 -0600 (Thu, 22 Nov 2012) $
- * $Revision: 17744 $
+ * $Date: 2013-01-23 14:58:01 -0600 (Wed, 23 Jan 2013) $
+ * $Revision: 17876 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -173,6 +173,9 @@ public class Echo extends TextShape {
 
   @Override
   public boolean getPropertyData(String property, Object[] data) {
+    if ("currentTarget" == property) {
+      return (currentObject != null && (data[0] = currentObject.target) != null);
+    }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);

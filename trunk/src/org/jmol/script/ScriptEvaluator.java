@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-09 13:14:27 -0600 (Wed, 09 Jan 2013) $
- * $Revision: 17851 $
+ * $Date: 2013-01-27 23:08:07 +0200 (Sun, 27 Jan 2013) $
+ * $Revision: 17885 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -6015,7 +6015,7 @@ public class ScriptEvaluator {
       draw();
       return;
     case Token.echo:
-      echo(1, false);
+      echo(1, null, false);
       return;
     case Token.frank:
       frank(1);
@@ -7713,16 +7713,8 @@ public class ScriptEvaluator {
     if (theTok == Token.image) {
       // background IMAGE "xxxx.jpg"
       String file = parameterAsString(checkLast(++i));
-      if (isSyntaxCheck)
-        return;
-      String[] retFileName = new String[1];
-      Object image = null;
-      if (!file.equalsIgnoreCase("none") && file.length() > 0) {
-        image = viewer.getFileAsImage(file, retFileName);
-        if (image == null)
-          evalError(retFileName[0], null);
-      }
-      viewer.setBackgroundImage(retFileName[0], image);
+      if (!isSyntaxCheck && !file.equalsIgnoreCase("none") && file.length() > 0)
+        viewer.loadImage(file, null);
       return;
     }
     if (isColorParam(i) || theTok == Token.none) {
@@ -8571,21 +8563,14 @@ public class ScriptEvaluator {
     }
   }
 
-  private void echo(int index, boolean isImage) throws ScriptException {
+  private void echo(int index, String id, boolean isImage) throws ScriptException {
     if (isSyntaxCheck)
       return;
     String text = optParameterAsString(index);
     if (viewer.getEchoStateActive()) {
       if (isImage) {
-        String[] retFileName = new String[1];
-        Object image = viewer.getFileAsImage(text, retFileName);
-        if (image == null) {
-          text = retFileName[0];
-        } else {
-          setShapeProperty(JmolConstants.SHAPE_ECHO, "text", retFileName[0]);
-          setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
-          text = null;
-        }
+        viewer.loadImage(text, id);
+        return;
       } else if (text.startsWith("\1")) {
         // no reporting, just screen echo, from mouseManager key press
         text = text.substring(1);
@@ -11170,12 +11155,12 @@ public class ScriptEvaluator {
     //Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     // zoomTo time-sec
-    float time = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
+    float floatSecondsTotal = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
         : 0f);
-    if (time < 0) {
+    if (floatSecondsTotal < 0) {
       // zoom -10
       i--;
-      time = 0;
+      floatSecondsTotal = 0;
     }
     // zoom {x y z} or (atomno=3)
     int ptCenter = 0;
@@ -11240,9 +11225,12 @@ public class ScriptEvaluator {
     if (Float.isNaN(yTrans))
       yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
-      time = 0;
-    viewer.moveTo(this, time, center, JmolConstants.center, Float.NaN, null,
+      floatSecondsTotal = 0;
+    viewer.moveTo(this, floatSecondsTotal, center, JmolConstants.center, Float.NaN, null,
         newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+    if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+      throw new ScriptInterruption(this, "zoomTo", 1);
+
   }
 
   private float getZoom(int ptCenter, int i, BitSet bs, float currentZoom)
@@ -13354,10 +13342,16 @@ public class ScriptEvaluator {
         break;
       case Token.string:
       case Token.image:
-        if (theTok == Token.image)
+        boolean isImage = (theTok == Token.image);
+        if (isImage)
           pt++;
         checkLength(pt);
-        echo(pt - 1, theTok == Token.image);
+        if (id == null && isImage) {
+          String[] data = new String[1];
+          getShapePropertyData(JmolConstants.SHAPE_ECHO, "currentTarget", data);
+          id = data[0];          
+        }
+        echo(pt - 1, id, isImage);
         return;
       default:
         if (isCenterParameter(pt - 1)) {
@@ -14226,21 +14220,27 @@ public class ScriptEvaluator {
       String saveName = optParameterAsString(2);
       if (getToken(1).tok != Token.orientation)
         checkLength23();
-      float timeSeconds;
+      float floatSecondsTotal;
       switch (getToken(1).tok) {
       case Token.rotation:
-        timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
-        if (timeSeconds < 0)
+        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+        if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck)
-          viewer.restoreRotation(saveName, timeSeconds);
+        if (!isSyntaxCheck) {
+          viewer.restoreRotation(saveName, floatSecondsTotal);
+          if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+            throw new ScriptInterruption(this, "restoreRotation", 1);
+        }
         return;
       case Token.orientation:
-        timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
-        if (timeSeconds < 0)
+        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+        if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck)
-          viewer.restoreOrientation(saveName, timeSeconds);
+        if (!isSyntaxCheck) {
+          viewer.restoreOrientation(saveName, floatSecondsTotal);
+          if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+            throw new ScriptInterruption(this, "restoreOrientation", 1);
+        }
         return;
       case Token.bonds:
         if (!isSyntaxCheck)
@@ -14598,7 +14598,7 @@ public class ScriptEvaluator {
           // todo -- there's no reason this data has to be done this way. 
           // we could send all of them out to file directly
           fullPath[0] = fileName;
-          data = viewer.generateOutput(data,
+          data = viewer.generateOutputForExport(data,
               isCommand || fileName != null ? fullPath : null, width, height);
           if (data == null || data.length() == 0)
             return "";
@@ -15129,7 +15129,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck) {
         viewer.clearConsole();
-        viewer.removeCommand();
+        if (scriptLevel == 0)
+          viewer.removeCommand();
         msg = viewer.getSetHistory(n);
       }
       break;
