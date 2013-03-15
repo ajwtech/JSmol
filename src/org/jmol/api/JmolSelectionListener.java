@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2005 Jmol Development
  *
@@ -27,7 +27,7 @@
  */
 package org.jmol.api;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 /**
  * listen to atom selections in a Jmol Viewer
@@ -38,5 +38,5 @@ public interface JmolSelectionListener {
    * Called when the selected atoms change
    * @param selection bit set giving selection of atom indexes
    */
-  public void selectionChanged(BitSet selection);
+  public void selectionChanged(BS selection);
 }

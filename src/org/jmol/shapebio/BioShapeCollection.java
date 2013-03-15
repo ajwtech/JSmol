@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-13 06:21:47 -0600 (Thu, 13 Dec 2012) $
- * $Revision: 17807 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -25,9 +25,6 @@
 
 package org.jmol.shapebio;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
@@ -38,10 +35,9 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 /****************************************************************
  * Mps stands for Model-Polymer-Shape
  * 
@@ -76,7 +72,7 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   @Override
-  public int getSize(Group group) {
+  public int getSizeG(Group group) {
     Monomer m = (Monomer) group;
     int groupIndex = m.getGroupIndex();
     int leadAtomIndex = m.getLeadAtom().getIndex();
@@ -92,7 +88,7 @@ public abstract class BioShapeCollection extends Shape {
   }
   
   @Override
-  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BS bsSelected) {
     short mad = (short) size;
     initialize();
     for (int i = bioShapes.length; --i >= 0;) {
@@ -103,8 +99,12 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
+    setPropBSC(propertyName, value, bsSelected);
+  }
 
+  protected void setPropBSC(String propertyName, Object value, BS bsSelected) {
+    
     if (propertyName == "refreshTrajectories") {
       int modelIndex = ((Integer)((Object[]) value)[0]).intValue();
       for (int i = bioShapes.length; --i >= 0; ){
@@ -133,7 +133,7 @@ public abstract class BioShapeCollection extends Shape {
     initialize();
     if ("color" == propertyName) {
       byte pid = EnumPalette.pidOf(value);
-      short colix = Colix.getColixO(value);
+      short colix = C.getColixO(value);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0)
@@ -141,11 +141,26 @@ public abstract class BioShapeCollection extends Shape {
       }
       return;
     }
+    if ("colors" == propertyName) {
+      Object[] data = (Object[]) value;
+      short[] colixes = (short[]) data[0];
+      float translucency  = ((Float) data[1]).floatValue();
+      boolean isTranslucent = (translucency > 0);
+      for (int i = bioShapes.length; --i >= 0;) {
+        BioShape bioShape = bioShapes[i];
+        if (bioShape.monomerCount > 0) {
+          bioShape.setColixes(colixes, bsSelected);
+          if (isTranslucent)
+            bioShape.setTranslucent(isTranslucent, bsSelected, translucency);
+        }
+      }
+      return;
+    }
     if ("colorPhase" == propertyName) {
       // cartoons and ribbons only
       Object[] twoColors = (Object[]) value; 
-      short colixBack = Colix.getColixO(twoColors[0]);
-      short colix = Colix.getColixO(twoColors[1]);
+      short colixBack = C.getColixO(twoColors[0]);
+      short colix = C.getColixO(twoColors[1]);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0) {
@@ -165,25 +180,17 @@ public abstract class BioShapeCollection extends Shape {
       return;
     }
     
-    super.setProperty(propertyName, value, bsSelected);
+    setPropS(propertyName, value, bsSelected);
   }
 
   @Override
   public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();    
-    for (int i = bioShapes.length; --i >= 0; ) {
-      BioShape bioShape = bioShapes[i];
-      if (bioShape.monomerCount > 0)
-        bioShape.setShapeState(temp, temp2);
-    }
-    return "\n" + getShapeCommandsSel(temp, temp2,
-        shapeID == JmolConstants.SHAPE_BACKBONE ? "Backbone" : "select");
+    return viewer.getAtomShapeSetState(this, bioShapes);
   }
 
   void initialize() {
-    int modelCount = modelSet.getModelCount();
-    Model[] models = modelSet.getModels();
+    int modelCount = modelSet.modelCount;
+    Model[] models = modelSet.models;
     int n = modelSet.getBioPolymerCount();
     BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
@@ -198,17 +205,17 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   @Override
-  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BS bsNot) {
     for (int i = bioShapes.length; --i >= 0; )
       bioShapes[i].findNearestAtomIndex(xMouse, yMouse, closest, bsNot);
   }
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     if (bioShapes == null)
       return;
-    bs = BitSetUtil.copy(bs);
-    for (int i = modelSet.getModelCount(); --i >= 0; )
+    bs = BSUtil.copy(bs);
+    for (int i = modelSet.modelCount; --i >= 0; )
       if (bs.get(i) && modelSet.isTrajectory(i))
         bs.set(modelSet.getTrajectoryIndex(i));
     

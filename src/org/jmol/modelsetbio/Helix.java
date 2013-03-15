@@ -26,13 +26,13 @@ package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 public class Helix extends ProteinStructure {
 
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
-    super(apolymer, EnumStructure.HELIX, monomerIndex,
+    setupPS(apolymer, EnumStructure.HELIX, monomerIndex,
         monomerCount);
     this.subtype = subtype;
   }
@@ -41,16 +41,16 @@ public class Helix extends ProteinStructure {
   public void calcAxis() {
     if (axisA != null)
       return;
-    Point3f[] points = new Point3f[monomerCount + 1];
+    P3[] points = new P3[monomerCount + 1];
     for (int i = 0; i <= monomerCount; i++) {
-      points[i] = new Point3f();
+      points[i] = new P3();
       apolymer.getLeadMidPoint(monomerIndexFirst + i, points[i]);
     }
-    axisA = new Point3f();
-    axisUnitVector = new Vector3f();
+    axisA = new P3();
+    axisUnitVector = new V3();
     Measure.calcBestAxisThroughPoints(points, axisA, axisUnitVector,
         vectorProjection, 4);
-    axisB = Point3f.newP(points[monomerCount]);
+    axisB = P3.newP(points[monomerCount]);
     Measure.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
   }
 

@@ -45,7 +45,7 @@ import java.io.IOException;
  * @since   JDK1.0
  */
 public
-class FilterInputStream extends java.io.InputStream {
+class FilterInputStream extends InputStream {
     /**
      * The input stream to be filtered.
      */

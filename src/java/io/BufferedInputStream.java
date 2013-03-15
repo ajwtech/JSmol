@@ -170,6 +170,7 @@ class BufferedInputStream extends FilterInputStream {
     }
 
     /**
+     * 
      * Creates a <code>BufferedInputStream</code>
      * with the specified buffer size,
      * and saves its  argument, the input stream

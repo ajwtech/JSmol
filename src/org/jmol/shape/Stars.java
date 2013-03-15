@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2007-05-22 07:48:05 -0500 (Tue, 22 May 2007) $
- * $Revision: 7806 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -25,7 +25,15 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BS;
+
 
 public class Stars extends AtomShape {
   // differences are in renderer
+  
+  @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropAS(propertyName, value, bs);
+  }
+  
 }

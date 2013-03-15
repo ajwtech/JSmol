@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-08-09 10:59:33 -0500 (Thu, 09 Aug 2012) $
- * $Revision: 17437 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -23,8 +23,8 @@
  */
 package org.jmol.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 /**
  * Implements a queue for a bash-like command history.
@@ -40,7 +40,7 @@ final public class CommandHistory {
   /**
    * Array of commands.
    */
-  private List<String> commandList = null;
+  private JmolList<String> commandList = null;
   private int maxSize = DEFAULT_MAX_SIZE;
 
   /**
@@ -86,9 +86,9 @@ final public class CommandHistory {
    */
   public void reset(int maxSize) {
     this.maxSize = maxSize; 
-    commandList = new ArrayList<String>();
+    commandList = new  JmolList<String>();
     nextCommand = 0;
-    commandList.add("");
+    commandList.addLast("");
     cursorPos = 0;
   }
 

@@ -32,11 +32,11 @@ import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 public class AminoMonomer extends AlphaMonomer {
 
@@ -50,30 +50,36 @@ public class AminoMonomer extends AlphaMonomer {
   
   // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
-    JmolConstants.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
-    ~JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
-    JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
-    JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C  point man
-    ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
+    JC.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
+    ~JC.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
+    JC.ATOMID_AMINO_NITROGEN,    // 2 N
+    JC.ATOMID_CARBONYL_CARBON,   // 3 C  point man
+    ~JC.ATOMID_TERMINATING_OXT,  // 4 OXT
 //    ~JmolConstants.ATOMID_O1,               // 5 O1
 //    ~JmolConstants.ATOMID_SG,               // 6 CYS SG
   };
 
-  static Monomer
-    validateAndAllocate(Chain chain, String group3, int seqcode,
-                        int firstAtomIndex, int lastAtomIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sOverride
+   * 
+   */
+  protected AminoMonomer() {
+  }
+
+  static Monomer validateAndAllocate(Chain chain, String group3, int seqcode,
+                                     int firstAtomIndex, int lastAtomIndex,
+                                     int[] specialAtomIndexes, Atom[] atoms) {
     byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
-                                    interestingAminoAtomIDs);
+        interestingAminoAtomIDs);
     if (offsets == null)
       return null;
-    checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JmolConstants.ATOMID_O1]);
-    if (atoms[firstAtomIndex].isHetero() && !isBondedCorrectly(firstAtomIndex, offsets, atoms)) 
+    checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JC.ATOMID_O1]);
+    if (atoms[firstAtomIndex].isHetero()
+        && !isBondedCorrectly(firstAtomIndex, offsets, atoms))
       return null;
-    AminoMonomer aminoMonomer =
-      new AminoMonomer(chain, group3, seqcode,
-                       firstAtomIndex, lastAtomIndex, offsets);
-    return aminoMonomer;
+    return new AminoMonomer().set2(chain, group3, seqcode, firstAtomIndex,
+        lastAtomIndex, offsets);
   }
 
   private static boolean isBondedCorrectlyRange(int offset1, int offset2,
@@ -98,13 +104,6 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   ////////////////////////////////////////////////////////////////
-
-  private AminoMonomer(Chain chain, String group3, int seqcode,
-               int firstAtomIndex, int lastAtomIndex,
-               byte[] offsets) {
-    super(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, offsets);
-  }
 
   boolean isAminoMonomer() { return true; }
 
@@ -185,7 +184,7 @@ public class AminoMonomer extends AlphaMonomer {
     nitrogenHydrogenPoint = null;
   }
 
-  Point3f getNitrogenHydrogenPoint() {
+  P3 getNitrogenHydrogenPoint() {
     if (nitrogenHydrogenPoint == null && !nhChecked) {
       nhChecked = true;
       nitrogenHydrogenPoint = getExplicitNH();
@@ -193,7 +192,7 @@ public class AminoMonomer extends AlphaMonomer {
     return nitrogenHydrogenPoint;
   }
   
-  Point3f getExplicitNH() {
+  P3 getExplicitNH() {
     Atom nitrogen = getNitrogenAtom();
     Atom h = null;
     Bond[] bonds = nitrogen.getBonds();
@@ -205,12 +204,12 @@ public class AminoMonomer extends AlphaMonomer {
     return null;
   }
 
-  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH,
+  public boolean getNHPoint(P3 aminoHydrogenPoint, V3 vNH,
                             boolean jmolHPoint, boolean dsspIgnoreHydrogens) {
-    if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
+    if (monomerIndex == 0 || groupID == JC.GROUPID_PROLINE)
       return false;
     Atom nitrogenPoint = getNitrogenAtom();
-    Point3f nhPoint = getNitrogenHydrogenPoint();
+    P3 nhPoint = getNitrogenHydrogenPoint();
     if (nhPoint != null && !dsspIgnoreHydrogens) {
       vNH.sub2(nhPoint, nitrogenPoint);
       aminoHydrogenPoint.setT(nhPoint);
@@ -226,40 +225,40 @@ public class AminoMonomer extends AlphaMonomer {
       */
       vNH.sub2(nitrogenPoint, getLeadAtom());
       vNH.normalize();
-      Vector3f v = new Vector3f();
+      V3 v = new V3();
       v.sub2(nitrogenPoint, prev.getCarbonylCarbonAtom());
       v.normalize();
       vNH.add(v);
     } else {
       // Rasmol def -- just use C=O vector, so this does not account for cis-amino acids
       // but I guess if those are just proline...
-      Point3f oxygen = prev.getCarbonylOxygenAtom();
+      P3 oxygen = prev.getCarbonylOxygenAtom();
       if (oxygen == null) // an optional atom for Jmol
         return false;
       vNH.sub2(prev.getCarbonylCarbonAtom(), oxygen);
     }
     vNH.normalize();
     aminoHydrogenPoint.add2(nitrogenPoint, vNH);
-    nitrogenHydrogenPoint = Point3f.newP(aminoHydrogenPoint);
+    nitrogenHydrogenPoint = P3.newP(aminoHydrogenPoint);
     if (Logger.debugging)
       Logger.info("draw ID \"pta" + monomerIndex + "_" + nitrogenPoint.index + "\" "
-          + Escape.escapePt(nitrogenPoint) + Escape.escapePt(aminoHydrogenPoint)
+          + Escape.eP(nitrogenPoint) + Escape.eP(aminoHydrogenPoint)
           + " # " + nitrogenPoint);
     return true;
   }
 
-  final private Point3f ptTemp = new Point3f();
+  final private P3 ptTemp = new P3();
   final private static float beta = (float) (17 * Math.PI/180);
   
   @Override
-  Point3f getQuaternionFrameCenter(char qType) {
+  P3 getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
     case 'a':
     case 'b':
     case 'c':
     case 'C':
-      return super.getQuaternionFrameCenter(qType);
+      return getQuaternionFrameCenterAlpha(qType);
     case 'n':
       return getNitrogenAtom();
     case 'p':
@@ -269,7 +268,7 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
       AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
-      Point3f pt = Point3f.newP(getCarbonylCarbonAtom());
+      P3 pt = P3.newP(getCarbonylCarbonAtom());
       pt.add(mNext.getNitrogenAtom());
       pt.scale(0.5f);
       return pt;
@@ -321,11 +320,11 @@ public class AminoMonomer extends AlphaMonomer {
      *  
      */
     
-    Point3f ptC = getCarbonylCarbonAtom();
-    Point3f ptCa = getLeadAtom();
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
-    Vector3f vC = null;
+    P3 ptC = getCarbonylCarbonAtom();
+    P3 ptCa = getLeadAtom();
+    V3 vA = new V3();
+    V3 vB = new V3();
+    V3 vC = null;
     
     switch (qType) {
     case 'a':
@@ -333,9 +332,9 @@ public class AminoMonomer extends AlphaMonomer {
       // amino nitrogen chemical shift tensor frame      
       // vA = ptH - ptN rotated beta (17 degrees) clockwise (-) around Y (perp to plane)
       // vB = ptCa - ptN
-      if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
+      if (monomerIndex == 0 || groupID == JC.GROUPID_PROLINE)
         return null;
-      vC = new Vector3f();
+      vC = new V3();
       getNHPoint(ptTemp, vC, true, false);
       vB.sub2(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
@@ -345,7 +344,7 @@ public class AminoMonomer extends AlphaMonomer {
       vA.cross(vB, vC);
       break;
     case 'b': // backbone
-      return super.getQuaternion('b');
+      return getQuaternionAlpha('b');
     case 'c':
       //vA = ptC - ptCa
       //vB = ptN - ptCa

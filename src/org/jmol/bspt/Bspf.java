@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -25,9 +25,9 @@ package org.jmol.bspt;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /**
  * A Binary Space Partitioning Forest
@@ -75,7 +75,7 @@ public final class Bspf {
     return bspts.length;
   }
   
-  public void addTuple(int bsptIndex, Point3f tuple) {
+  public void addTuple(int bsptIndex, P3 tuple) {
     if (bsptIndex >= bspts.length) {
       bspts = (Bspt[]) ArrayUtil.arrayCopyObject(bspts, bsptIndex + 1);
       bsptsValid = ArrayUtil.arrayCopyBool(bsptsValid, bsptIndex + 1);
@@ -124,7 +124,7 @@ public final class Bspf {
       return bspts[bsptIndex].allocateCubeIterator();
   }
 
-  public synchronized void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
+  public synchronized void initialize(int modelIndex, P3[] atoms, BS modelAtomBitSet) {
     if (bspts[modelIndex] != null)
       bspts[modelIndex].reset();
     for (int i = modelAtomBitSet.nextSetBit(0); i >= 0; i = modelAtomBitSet.nextSetBit(i + 1))

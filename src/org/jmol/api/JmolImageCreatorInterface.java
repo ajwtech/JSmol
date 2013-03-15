@@ -5,9 +5,7 @@ import java.io.OutputStream;
 
 public interface JmolImageCreatorInterface {
 
-  abstract public void setViewer(JmolViewer viewer, double privateKey);
-
-  abstract public String clipImage(String text);
+  abstract public JmolImageCreatorInterface setViewer(JmolViewer viewer, double privateKey);
 
   abstract public String getClipboardText();
 
@@ -30,5 +28,7 @@ public interface JmolImageCreatorInterface {
                                        String fileName, String[] scripts,
                                        Object objImage, Object appendix,
                                        OutputStream os) throws IOException;
+
+  abstract String clipImage(JmolViewer viewer, String text);
 
 }

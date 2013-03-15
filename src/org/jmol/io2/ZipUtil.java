@@ -36,10 +36,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader; //import java.net.URL;
 //import java.net.URLConnection;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
@@ -53,17 +53,16 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public class ZipUtil implements JmolZipUtility {
@@ -109,7 +108,7 @@ public class ZipUtil implements JmolZipUtility {
                             String binaryFileList, Map<String, String> fileData) {
     ZipInputStream zis = (ZipInputStream) newZIS(is);
     ZipEntry ze;
-    StringXBuilder listing = new StringXBuilder();
+    SB listing = new SB();
     binaryFileList = "|" + binaryFileList + "|";
     String prefix = TextFormat.join(subfileList, '/', 1);
     String prefixd = null;
@@ -146,7 +145,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   private static String getBinaryStringForBytes(byte[] bytes) {
-    StringXBuilder ret = new StringXBuilder();
+    SB ret = new SB();
     for (int i = 0; i < bytes.length; i++)
       ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
     return ret.toString();
@@ -167,7 +166,7 @@ public class ZipUtil implements JmolZipUtility {
    */
   public Object getZipFileContents(BufferedInputStream bis, String[] list,
                                    int listPtr, boolean asBufferedInputStream) {
-    StringXBuilder ret;
+    SB ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(bis);
     String fileName = list[listPtr];
@@ -177,7 +176,7 @@ public class ZipUtil implements JmolZipUtility {
     try {
       boolean isAll = (fileName.equals("."));
       if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
-        ret = new StringXBuilder();
+        ret = new SB();
         while ((ze = zis.getNextEntry()) != null) {
           String name = ze.getName();
           if (isAll || name.startsWith(fileName))
@@ -206,7 +205,7 @@ public class ZipUtil implements JmolZipUtility {
         if (asBufferedInputStream)
           return new BufferedInputStream(new ByteArrayInputStream(bytes));
         if (asBinaryString) {
-          ret = new StringXBuilder();
+          ret = new SB();
           for (int i = 0; i < bytes.length; i++)
             ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
           return ret.toString();
@@ -243,7 +242,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String[] s = new String[0];
     try {
       s = getZipDirectoryOrErrorAndClose(bis, false);
@@ -272,7 +271,7 @@ public class ZipUtil implements JmolZipUtility {
                                                   boolean addManifest)
       throws IOException {
     bis = JmolBinary.checkPngZipStream(bis);
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;
@@ -281,7 +280,7 @@ public class ZipUtil implements JmolZipUtility {
       if (addManifest && isJmolManifest(fileName))
         manifest = getZipEntryAsString(zis);
       else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
-        v.add(fileName);
+        v.addLast(fileName);
     }
     zis.close();
     if (addManifest)
@@ -309,7 +308,7 @@ public class ZipUtil implements JmolZipUtility {
                                  Map<String, byte[]> cache) {
     ZipInputStream zis = (ZipInputStream) newZipInputStream(bis);
     ZipEntry ze;
-    StringXBuilder listing = new StringXBuilder();
+    SB listing = new SB();
     long n = 0;
     try {
       while ((ze = zis.getNextEntry()) != null) {
@@ -367,10 +366,10 @@ public class ZipUtil implements JmolZipUtility {
     return new GZIPInputStream(bis, 512);
   }
 
-  public String addPngFileBytes(String name, byte[] ret, int iFile,
+  private String addPngFileBytes(String name, byte[] ret, int iFile,
                                 Hashtable<Object, String> crcMap,
                                 boolean isSparDir, String newName, int ptSlash,
-                                List<Object> v) {
+                                JmolList<Object> v) {
     CRC32 crc = new CRC32();
     crc.update(ret, 0, ret.length);
     Long crcValue = Long.valueOf(crc.getValue());
@@ -391,16 +390,16 @@ public class ZipUtil implements JmolZipUtility {
         else
           newName = newName + "[" + iFile + "]";
       }
-      v.add(name);
-      v.add(newName);
-      v.add(ret);
+      v.addLast(name);
+      v.addLast(newName);
+      v.addLast(ret);
       crcMap.put(crcValue, newName);
     }
     return newName;
   }
 
   public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
-                             List<Object> fileNamesAndByteArrays, String msg) {
+                             JmolList<Object> fileNamesAndByteArrays, String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
     long nBytes = 0;
@@ -483,14 +482,14 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                               List<Integer> list) {
+                               JmolList<Integer> list) {
     // no ".spt.png" -- that's for the sceneScript-only version
     // that we will create here.
     // extract scenes based on "pause scene ..." commands
     int iSceneLast = 0;
     int iScene = 0;
-    StringXBuilder sceneScript = new StringXBuilder().append(SCENE_TAG).append(
-        " Jmol ").append(JmolViewer.getJmolVersion()).append(
+    SB sceneScript = new SB().append(SCENE_TAG).append(
+        " Jmol ").append(Viewer.getJmolVersion()).append(
         "\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
@@ -499,13 +498,13 @@ public class ZipUtil implements JmolZipUtility {
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);
-      list.add(Integer.valueOf(iScene));
+      list.addLast(Integer.valueOf(iScene));
       String key = iSceneLast + "-" + iScene;
       htScenes.put(key, scenes[i - 1]);
       if (i > 1)
         sceneScript.append(",");
-      sceneScript.appendC('\n').append(Escape.escapeStr(key)).append(": ")
-          .append(Escape.escapeStr(scenes[i - 1]));
+      sceneScript.appendC('\n').append(Escape.eS(key)).append(": ")
+          .append(Escape.eS(scenes[i - 1]));
       iSceneLast = iScene;
     }
     sceneScript.append("\n}\n");
@@ -559,8 +558,8 @@ public class ZipUtil implements JmolZipUtility {
   public Object createZipSet(FileManager fm, Viewer viewer, String fileName,
                              String script, String[] scripts,
                              boolean includeRemoteFiles) {
-    List<Object> v = new ArrayList<Object>();
-    List<String> fileNames = new ArrayList<String>();
+    JmolList<Object> v = new  JmolList<Object>();
+    JmolList<String> fileNames = new  JmolList<String>();
     Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
         .startsWith(SCENE_TAG));
@@ -572,9 +571,9 @@ public class ZipUtil implements JmolZipUtility {
     }
     boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
     if (haveScripts) {
-      script = wrapPathForAllFiles("script " + Escape.escapeStr(scripts[0]), "");
+      script = wrapPathForAllFiles("script " + Escape.eS(scripts[0]), "");
       for (int i = 0; i < scripts.length; i++)
-        fileNames.add(scripts[i]);
+        fileNames.addLast(scripts[i]);
     }
     int nFiles = fileNames.size();
     if (fileName != null)
@@ -585,7 +584,7 @@ public class ZipUtil implements JmolZipUtility {
       if (fileRoot.indexOf(".") >= 0)
         fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
     }
-    List<String> newFileNames = new ArrayList<String>();
+    JmolList<String> newFileNames = new  JmolList<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
       boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
@@ -601,9 +600,9 @@ public class ZipUtil implements JmolZipUtility {
         boolean isSparDir = (fm.spardirCache != null && fm.spardirCache
             .containsKey(name));
         if (isLocal && name.indexOf("|") < 0 && !isSparDir) {
-          v.add(name);
-          v.add(newName);
-          v.add(null); // data will be gotten from disk
+          v.addLast(name);
+          v.addLast(newName);
+          v.addLast(null); // data will be gotten from disk
         } else {
           // all remote files, and any file that was opened from a ZIP collection
           Object ret = (isSparDir ? fm.spardirCache.get(name) : fm
@@ -616,44 +615,44 @@ public class ZipUtil implements JmolZipUtility {
         name = "$SCRIPT_PATH$" + newName;
       }
       crcMap.put(newName, newName);
-      newFileNames.add(name);
+      newFileNames.addLast(name);
     }
     if (!sceneScriptOnly) {
       script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
-      v.add("state.spt");
-      v.add(null);
-      v.add(script.getBytes());
+      v.addLast("state.spt");
+      v.addLast(null);
+      v.addLast(script.getBytes());
     }
     if (haveSceneScript) {
       if (scripts[0] != null) {
-        v.add("animate.spt");
-        v.add(null);
-        v.add(scripts[0].getBytes());
+        v.addLast("animate.spt");
+        v.addLast(null);
+        v.addLast(scripts[0].getBytes());
       }
-      v.add("scene.spt");
-      v.add(null);
+      v.addLast("scene.spt");
+      v.addLast(null);
       script = TextFormat.replaceQuotedStrings(scripts[1], fileNames,
           newFileNames);
-      v.add(script.getBytes());
+      v.addLast(script.getBytes());
     }
     String sname = (haveSceneScript ? "scene.spt" : "state.spt");
-    v.add("JmolManifest.txt");
-    v.add(null);
+    v.addLast("JmolManifest.txt");
+    v.addLast(null);
     String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
         + (new Date()) + "\n" + "# JmolVersion " + Viewer.getJmolVersion()
         + "\n" + sname;
-    v.add(sinfo.getBytes());
-    v.add("Jmol_version_"
+    v.addLast(sinfo.getBytes());
+    v.addLast("Jmol_version_"
         + Viewer.getJmolVersion().replace(' ', '_').replace(':', '.'));
-    v.add(null);
-    v.add(new byte[0]);
+    v.addLast(null);
+    v.addLast(new byte[0]);
     if (fileRoot != null) {
       Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null,
-          null, null, JmolConstants.embedScript(script));
+          null, null, JC.embedScript(script));
       if (Escape.isAB(bytes)) {
-        v.add("preview.png");
-        v.add(null);
-        v.add(bytes);
+        v.addLast("preview.png");
+        v.addLast(null);
+        v.addLast(bytes);
       }
     }
     return JmolBinary.writeZipFile(fm, viewer, fileName, v, "OK JMOL");
@@ -709,7 +708,7 @@ public class ZipUtil implements JmolZipUtility {
       if (path != null)
         return JmolAdapter.NOTE_SCRIPT_FILE + fileName + path + "\n";
     }
-    List<Object> vCollections = new ArrayList<Object>();
+    JmolList<Object> vCollections = new  JmolList<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()
         : null);
     int nFiles = 0;
@@ -723,7 +722,7 @@ public class ZipUtil implements JmolZipUtility {
     Object ret = checkSpecialData(is, zipDirectory);
     if (ret instanceof String)
       return ret;
-    StringXBuilder data = (StringXBuilder) ret;
+    SB data = (SB) ret;
     try {
       if (data != null) {
         BufferedReader reader = new BufferedReader(new StringReader(data
@@ -766,6 +765,8 @@ public class ZipUtil implements JmolZipUtility {
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
+//        String s = new String(bytes);
+//        System.out.println("ziputil " + s.substring(0, 100));
         if (JmolBinary.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));
@@ -779,11 +780,11 @@ public class ZipUtil implements JmolZipUtility {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof List<?>) {
+              || atomSetCollections instanceof JmolList<?>) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else
-              vCollections.add(atomSetCollections);
+              vCollections.addLast(atomSetCollections);
           } else if (atomSetCollections instanceof BufferedReader) {
             if (doCombine)
               zis.close();
@@ -835,7 +836,7 @@ public class ZipUtil implements JmolZipUtility {
           if (haveManifest && !exceptFiles)
             htCollections.put(thisEntry, ret);
           else
-            vCollections.add(ret);
+            vCollections.addLast(ret);
           AtomSetCollection a = (AtomSetCollection) ret;
           if (a.errorMessage != null) {
             if (ignoreErrors)
@@ -858,7 +859,7 @@ public class ZipUtil implements JmolZipUtility {
           if (file.length() == 0 || file.indexOf("#") == 0)
             continue;
           if (htCollections.containsKey(file))
-            vCollections.add(htCollections.get(file));
+            vCollections.addLast(htCollections.get(file));
           else if (Logger.debugging)
             Logger.info("manifested file " + file + " was not found in "
                 + fileName);
@@ -898,7 +899,7 @@ public class ZipUtil implements JmolZipUtility {
    * @param zipDirectory
    * @return String data for processing
    */  
-  private static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
+  private static SB checkSpecialData(InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -910,7 +911,7 @@ public class ZipUtil implements JmolZipUtility {
     }
     if (!isSpartan)
       return null;
-    StringXBuilder data = new StringXBuilder();
+    SB data = new SB();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escapeStrA(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();
@@ -985,7 +986,7 @@ public class ZipUtil implements JmolZipUtility {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     String token;
     String lasttoken = "";
     try {
@@ -1013,9 +1014,9 @@ public class ZipUtil implements JmolZipUtility {
          * Mechanics Wall Time: 12:31.54
          */
         if ((token = tokens.nextToken()).equals(")"))
-          v.add(lasttoken);
+          v.addLast(lasttoken);
         else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.add(TextFormat.split(tokens.nextToken(), '"')[1]);
+          v.addLast(TextFormat.split(tokens.nextToken(), '"')[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

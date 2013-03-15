@@ -23,16 +23,16 @@
  */
 package org.jmol.viewer;
 
+
+import java.util.Map;
+
 import org.jmol.thread.AnimationThread;
-import org.jmol.util.BitSet;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
-
-import java.util.Hashtable;
-import java.util.Map;
 
 public class AnimationManager {
 
@@ -52,32 +52,130 @@ public class AnimationManager {
   int animationDirection = 1;
   int currentDirection = 1;
   public int currentModelIndex;
-  int firstModelIndex;
+  int firstFrameIndex;
+  int lastFrameIndex;
   int frameStep;
-  int lastModelIndex;
+  public int morphCount;
    
   public int firstFrameDelayMs;
   public int lastFrameDelayMs;
-  public int lastModelPainted;
+  
+  private int lastFramePainted;
   
   private AnimationThread animationThread;
-  private int backgroundModelIndex = -1;
-  private final BitSet bsVisibleFrames = new BitSet();
-  
-  BitSet getVisibleFramesBitSet() {
-    return bsVisibleFrames;
-  }
-  
-  private float firstFrameDelay;
+  int backgroundModelIndex = -1;
+  final BS bsVisibleFrames = new BS();
+  BS bsDisplay;
+  float firstFrameDelay;
   private int intAnimThread;
   float lastFrameDelay = 1;
 
+  private Map<String, Object> movie;
+
+  private int currentFrameIndex;
+  float currentMorphFrame;
+
+  void clear() {
+    setMovie(null);
+    initializePointers(0);
+    setAnimationOn(false);
+    setCurrentModelIndex(0, true);
+    currentDirection = 1;
+    setAnimationDirection(1);
+    setAnimationFps(10);
+    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
+    initializePointers(0);
+  }
+  
+  private void setFrame(int frameIndex) {
+    setCurrentFrame(frameIndex, true);
+ }
+  
+  /**
+   * @param frameIndex 
+   * @param isAll  
+   */
+  @SuppressWarnings("unchecked")
+  private void setCurrentFrame(int frameIndex, boolean isAll) {
+    //System.out.println("currentframe " + frameIndex);
+    if (movie == null) {
+      setCurrentModelIndex(frameIndex, true);
+      return;
+    }
+    if (frameIndex == -1)
+      frameIndex = ((Integer) movie.get("currentFrame")).intValue();
+    currentFrameIndex = frameIndex;
+    int iState = getMovieState(frameIndex);
+    if (iState < 0)
+      return;
+    setModelIndex(iState, true);
+    JmolList<BS> states = (JmolList<BS>) movie.get("states");
+    if (states == null || iState < 0 || iState >= states.size())
+      return;
+    BS bs = states.get(iState);
+    if (bsDisplay != null) {
+      bs = BSUtil.copy(bs);
+      bs.and(bsDisplay);
+    }
+    viewer.displayAtoms(bs, true, false, null, true);
+    //setViewer(true);
+  }
+
+  @SuppressWarnings("unchecked")
+  private int getMovieState(int frameIndex) {
+    JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
+    //System.out.println(frames);
+    return (frames == null || frameIndex >= frames.size() ? -1
+        : ((Integer) frames.get(frameIndex)).intValue());
+  }
+
+  public void morph(float frame) {
+    System.out.println("morph " + frame);
+    int m = (int) frame;
+    if (Math.abs(m - frame) < 0.001f)
+      frame = m;
+    else if (Math.abs(m - frame) > 0.999f)
+      frame = m = m + 1;
+    float f = frame - m;
+    m -= 1;
+    if (f == 0) {
+      currentMorphFrame = m;
+      setFrame(m);
+      return;
+    }
+    int m1;
+    if (movie == null) {
+      setCurrentModelIndex(m, true);
+      m1 = m + 1;
+      currentMorphFrame = m + f;
+    } else {
+      setCurrentFrame(m, false);
+      currentMorphFrame = m + f;
+      m = getMovieState(m);
+      m1 = getMovieState(getFrameStep(animationDirection) + getCurrentFrame());
+    }
+    if (m1 == m || m1 < 0 || m < 0)
+      return;
+    viewer.modelSet.morphTrajectories(m, m1, f);
+  }
+  
+
+
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
+    if (movie != null) {
+      setFrame(modelIndex);
+      return;
+    }
+    currentFrameIndex = 0;
+    setModelIndex(modelIndex, clearBackgroundModel);
+  }
+
+  private void setModelIndex(int modelIndex, boolean clearBackgroundModel) {
     if (modelIndex < 0)
-      setAnimationOff(false);
+      stopThread(false);
     int formerModelIndex = currentModelIndex;
     ModelSet modelSet = viewer.getModelSet();
-    int modelCount = (modelSet == null ? 0 : modelSet.getModelCount());
+    int modelCount = (modelSet == null ? 0 : modelSet.modelCount);
     if (modelCount == 1)
       currentModelIndex = modelIndex = 0;
     else if (modelIndex < 0 || modelIndex >= modelCount)
@@ -86,8 +184,8 @@ public class AnimationManager {
     boolean isSameSource = false;
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
-        boolean toDataFrame = viewer.isJmolDataFrameForModel(modelIndex);
-        boolean fromDataFrame = viewer.isJmolDataFrameForModel(currentModelIndex);
+        boolean toDataFrame = isJmolDataFrameForModel(modelIndex);
+        boolean fromDataFrame = isJmolDataFrameForModel(currentModelIndex);
         if (fromDataFrame)
           viewer.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
@@ -114,23 +212,28 @@ public class AnimationManager {
         }
       }
     }
+    setViewer(clearBackgroundModel);
+  }
+
+  private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
     viewer.setFrameOffset(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
-    setStatusFrameChanged();
-    if (modelSet != null) {
-      if (!viewer.getSelectAllModels())
+    viewer.setStatusFrameChanged(false);
+    if (viewer.modelSet != null && !viewer.getSelectAllModels())
         viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
-    }
-  
+  }
+
+  private boolean isJmolDataFrameForModel(int i) {
+    return movie == null && viewer.isJmolDataFrameForModel(i);
   }
 
   void setBackgroundModelIndex(int modelIndex) {
     ModelSet modelSet = viewer.getModelSet();
-    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.modelCount)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     if (modelIndex >= 0)
@@ -139,14 +242,12 @@ public class AnimationManager {
     setFrameRangeVisible(); 
   }
   
-  private void setStatusFrameChanged() {
-    if (viewer.getModelSet() != null)
-      viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
-          : currentModelIndex);
-  }
-  
   private void setFrameRangeVisible() {
     bsVisibleFrames.clearAll();
+    if (movie != null) {
+      bsVisibleFrames.setBits(0, viewer.getModelCount());
+      return;
+    }
     if (backgroundModelIndex >= 0)
       bsVisibleFrames.set(backgroundModelIndex);
     if (currentModelIndex >= 0) {
@@ -157,100 +258,36 @@ public class AnimationManager {
       return;
     int nDisplayed = 0;
     int frameDisplayed = 0;
-    for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      if (!viewer.isJmolDataFrameForModel(i)) {
+    for (int i = firstFrameIndex; i != lastFrameIndex; i += frameStep)
+      if (!isJmolDataFrameForModel(i)) {
         bsVisibleFrames.set(i);
         nDisplayed++;
         frameDisplayed = i;
       }
-    if (firstModelIndex == lastModelIndex || !viewer.isJmolDataFrameForModel(lastModelIndex)
+    if (firstFrameIndex == lastFrameIndex || !isJmolDataFrameForModel(lastFrameIndex)
         || nDisplayed == 0) {
-      bsVisibleFrames.set(lastModelIndex);
+      bsVisibleFrames.set(lastFrameIndex);
       if (nDisplayed == 0)
-        firstModelIndex = lastModelIndex;
+        firstFrameIndex = lastFrameIndex;
       nDisplayed = 0;
     }
     if (nDisplayed == 1 && currentModelIndex < 0)
-      setCurrentModelIndex(frameDisplayed, true);
+      setFrame(frameDisplayed);
+    //System.out.println(bsVisibleFrames + "  " + frameDisplayed + " " + currentModelIndex);
+   
   }
 
   void initializePointers(int frameStep) {
-    firstModelIndex = 0;
-    int modelCount = viewer.getModelCount();
-    lastModelIndex = (frameStep == 0 ? 0 
-        : modelCount) - 1;
+    firstFrameIndex = 0;
+    lastFrameIndex = (frameStep == 0 ? 0 : getFrameCount()) - 1;
     this.frameStep = frameStep;
     viewer.setFrameVariables();
   }
 
-  void clear() {
-    setAnimationOn(false);
-    setCurrentModelIndex(0, true);
-    currentDirection = 1;
-    setAnimationDirection(1);
-    setAnimationFps(10);
-    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
-    initializePointers(0);
+  int getFrameCount() {
+    return (movie == null ? viewer.getModelCount() : ((Integer) movie.get("frameCount")).intValue());
   }
-  
-  Map<String, Object> getAnimationInfo(){
-    Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("firstModelIndex", Integer.valueOf(firstModelIndex));
-    info.put("lastModelIndex", Integer.valueOf(lastModelIndex));
-    info.put("animationDirection", Integer.valueOf(animationDirection));
-    info.put("currentDirection", Integer.valueOf(currentDirection));
-    info.put("displayModelIndex", Integer.valueOf(currentModelIndex));
-    info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
-    info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
-    info.put("animationFps", Integer.valueOf(animationFps));
-    info.put("animationReplayMode", animationReplayMode.name());
-    info.put("firstFrameDelay", new Float(firstFrameDelay));
-    info.put("lastFrameDelay", new Float(lastFrameDelay));
-    info.put("animationOn", Boolean.valueOf(animationOn));
-    info.put("animationPaused", Boolean.valueOf(animationPaused));
-    return info;
-  }
- 
-  String getState(StringXBuilder sfunc) {
-    int modelCount = viewer.getModelCount();
-    if (modelCount < 2)
-      return "";
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setFrameState;\n");
-      commands.append("function _setFrameState() {\n");
-    }
-    commands.append("# frame state;\n");
-    
-    commands.append("# modelCount ").appendI(modelCount)
-        .append(";\n# first ").append(
-             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
-             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
-    if (backgroundModelIndex >= 0)
-      StateManager.appendCmd(commands, "set backgroundModel " + 
-          viewer.getModelNumberDotted(backgroundModelIndex));
-    BitSet bs = viewer.getFrameOffsets();
-    if (bs != null)
-      StateManager.appendCmd(commands, "frame align " + Escape.escape(bs));
-    StateManager.appendCmd(commands, 
-        "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
-            + viewer.getModelNumberDotted(lastModelIndex));
-    StateManager.appendCmd(commands, 
-        "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"));
-    StateManager.appendCmd(commands, "animation FPS " + animationFps);
-    StateManager.appendCmd(commands, "animation MODE " + animationReplayMode.name()
-        + " " + firstFrameDelay + " " + lastFrameDelay);
-    StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
-    StateManager.appendCmd(commands, "animation "
-            + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
-                : "PLAYREV"));
-    if (animationOn && animationPaused)
-      StateManager.appendCmd(commands, "animation PAUSE");
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
-  }
-  
+
   void setAnimationDirection(int animationDirection) {
     this.animationDirection = animationDirection;
     //if (animationReplayMode != ANIMATION_LOOP)
@@ -277,25 +314,25 @@ public class AnimationManager {
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
-    int modelCount = viewer.getModelCount();
+    int frameCount = getFrameCount();
     if (framePointer < 0) framePointer = 0;
-    if (framePointer2 < 0) framePointer2 = modelCount;
-    if (framePointer >= modelCount) framePointer = modelCount - 1;
-    if (framePointer2 >= modelCount) framePointer2 = modelCount - 1;
-    firstModelIndex = framePointer;
-    lastModelIndex = framePointer2;
+    if (framePointer2 < 0) framePointer2 = frameCount;
+    if (framePointer >= frameCount) framePointer = frameCount - 1;
+    if (framePointer2 >= frameCount) framePointer2 = frameCount - 1;
+    firstFrameIndex = framePointer;
+    lastFrameIndex = framePointer2;
     frameStep = (framePointer2 < framePointer ? -1 : 1);
     rewindAnimation();
   }
 
-  private void animationOn(boolean TF) {
+  private void animation(boolean TF) {
     animationOn = TF; 
     viewer.setBooleanProperty("_animating", TF);
   }
   
   public void setAnimationOn(boolean animationOn) {
     if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
-      setAnimationOff(false);
+      stopThread(false);
       return;
     }
     if (!viewer.getSpinOn())
@@ -304,7 +341,7 @@ public class AnimationManager {
     resumeAnimation();
   }
 
-  public void setAnimationOff(boolean isPaused) {
+  public void stopThread(boolean isPaused) {
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
@@ -312,12 +349,12 @@ public class AnimationManager {
     animationPaused = isPaused;
     if (!viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
-    animationOn(false);
-    setStatusFrameChanged();
+    animation(false);
+    viewer.setStatusFrameChanged(false);
   }
 
   void pauseAnimation() {
-    setAnimationOff(true);
+    stopThread(true);
   }
   
   void reverseAnimation() {
@@ -327,21 +364,21 @@ public class AnimationManager {
   }
   
   void repaintDone() {
-    lastModelPainted = currentModelIndex;
+    lastFramePainted = getCurrentFrame();
   }
   
   void resumeAnimation() {
     if(currentModelIndex < 0)
-      setAnimationRange(firstModelIndex, lastModelIndex);
-    if (viewer.getModelCount() <= 1) {
-      animationOn(false);
+      setAnimationRange(firstFrameIndex, lastFrameIndex);
+    if (getFrameCount() <= 1) {
+      animation(false);
       return;
     }
-    animationOn(true);
+    animation(true);
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = new AnimationThread(this, viewer, firstModelIndex, lastModelIndex, intAnimThread);
+      animationThread = new AnimationThread(this, viewer, firstFrameIndex, lastFrameIndex, intAnimThread);
       animationThread.start();
     }
   }
@@ -351,11 +388,11 @@ public class AnimationManager {
   }
 
   void setAnimationLast() {
-    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex, true);
+    setFrame(animationDirection > 0 ? lastFrameIndex : firstFrameIndex);
   }
 
   void rewindAnimation() {
-    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex, true);
+    setFrame(animationDirection > 0 ? firstFrameIndex : lastFrameIndex);
     currentDirection = 1;
     viewer.setFrameVariables();
   }
@@ -364,46 +401,120 @@ public class AnimationManager {
     return setAnimationRelative(-animationDirection);
   }
 
-  boolean setAnimationRelative(int direction) {
-    int frameStep = this.frameStep * direction * currentDirection;
-    int modelIndexNext = currentModelIndex + frameStep;
-    boolean isDone = (modelIndexNext > firstModelIndex
-        && modelIndexNext > lastModelIndex || modelIndexNext < firstModelIndex
-        && modelIndexNext < lastModelIndex);    
+  private boolean setAnimationRelative(int direction) {
+    int frameStep = getFrameStep(direction);
+    int thisFrame = getCurrentFrame();
+    int frameNext = thisFrame + frameStep;
+    float morphStep = 0f, nextMorphFrame = 0f;
+    boolean isDone;
+    if (morphCount > 0) {
+      morphStep = 1f / (morphCount + 1);
+      nextMorphFrame = currentMorphFrame + frameStep * morphStep;
+      isDone = isNotInRange(nextMorphFrame);
+    } else {
+      isDone = isNotInRange(frameNext);
+    }
     if (isDone) {
       switch (animationReplayMode) {
       case ONCE:
         return false;
       case LOOP:
-        modelIndexNext = (animationDirection == currentDirection ? firstModelIndex
-            : lastModelIndex);
+        nextMorphFrame = frameNext = (animationDirection == currentDirection ? firstFrameIndex
+            : lastFrameIndex);
         break;
       case PALINDROME:
         currentDirection = -currentDirection;
-        modelIndexNext -= 2 * frameStep;
+        frameNext -= 2 * frameStep;
+        nextMorphFrame -= 2 * frameStep * morphStep;
       }
     }
     //Logger.debug("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
-    int nModels = viewer.getModelCount();
-    if (modelIndexNext < 0 || modelIndexNext >= nModels)
-      return false;
-    setCurrentModelIndex(modelIndexNext, true);
+    if (morphCount < 1) {
+      if (frameNext < 0 || frameNext >= getFrameCount())
+        return false;
+      setFrame(frameNext);
+      return true;
+    }
+    morph(nextMorphFrame + 1);
     return true;
   }
 
+  private boolean isNotInRange(float frameNext) {
+    float f = frameNext - 0.001f;
+    return (f > firstFrameIndex && f > lastFrameIndex 
+        || (f = frameNext + 0.001f) < firstFrameIndex
+        && f < lastFrameIndex);
+  }
+
+  private int getFrameStep(int direction) {
+    return frameStep * direction * currentDirection;
+  }
+
   float getAnimRunTimeSeconds() {
-    if (firstModelIndex == lastModelIndex
-        || lastModelIndex < 0 || firstModelIndex < 0
-        || lastModelIndex >= viewer.getModelCount()
-        || firstModelIndex >= viewer.getModelCount())
+    int frameCount = getFrameCount();
+    if (firstFrameIndex == lastFrameIndex
+        || lastFrameIndex < 0 || firstFrameIndex < 0
+        || lastFrameIndex >= frameCount
+        || firstFrameIndex >= frameCount)
       return  0;
-    int i0 = Math.min(firstModelIndex, lastModelIndex);
-    int i1 = Math.max(firstModelIndex, lastModelIndex);
+    int i0 = Math.min(firstFrameIndex, lastFrameIndex);
+    int i1 = Math.max(firstFrameIndex, lastFrameIndex);
     float nsec = 1f * (i1 - i0) / animationFps + firstFrameDelay
         + lastFrameDelay;
     for (int i = i0; i <= i1; i++)
       nsec += viewer.getFrameDelayMs(i) / 1000f;
     return nsec;
   }
- 
+
+  public void setMovie(Map<String, Object> info) {
+    movie = info;
+    if (movie == null) {
+      bsDisplay = null;
+      currentMorphFrame = morphCount = 0;
+    } else {
+      // this next is important. Without it, not all the atoms get 
+      // assigned coordinates, and the zoom ends up wrong, and the
+      // movie start frame is not shown
+      setFrame(-1);
+    }
+  }
+
+  public int getCurrentFrame() {
+    return (movie == null ? currentModelIndex : currentFrameIndex);
+  }
+
+  public boolean isMovie() {
+    return (movie != null);
+  }
+
+  public boolean currentIsLast() {
+    return lastFramePainted == getCurrentFrame();
+  }
+
+  public String getModelNumber(int i) {
+    switch (i) {
+    case -1:
+      i = firstFrameIndex;
+      break;
+    case 0:
+      if (morphCount > 0)
+        return "-" + (1 + currentMorphFrame);
+      i = currentFrameIndex;
+      break;
+    case 1:
+      i = lastFrameIndex;
+      break;
+    }
+    return (movie == null ? viewer.getModelNumberDotted(i) : "" + (i + 1));
+  }
+
+  public void setDisplay(BS bs) {
+    bsDisplay = (bs == null || bs.cardinality() == 0? null : BSUtil.copy(bs));
+  }
+
+  public boolean currentFrameIs(int f) {
+    int i = getCurrentFrame();
+    return (morphCount == 0 ? i == f : Math.abs(currentMorphFrame - f) < 0.001f);
+  }
+
 }

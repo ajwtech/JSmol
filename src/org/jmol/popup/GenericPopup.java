@@ -26,17 +26,17 @@ package org.jmol.popup;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -83,19 +83,19 @@ abstract public class GenericPopup implements JmolPopupInterface,
   private Map<String, Object> modelInfo;
 
   private Map<String, Object> htMenus = new Hashtable<String, Object>();
-  private List<Object> NotPDB = new ArrayList<Object>();
-  private List<Object> PDBOnly = new ArrayList<Object>();
-  private List<Object> FileUnitOnly = new ArrayList<Object>();
-  private List<Object> FileMolOnly = new ArrayList<Object>();
-  private List<Object> UnitcellOnly = new ArrayList<Object>();
-  private List<Object> SingleModelOnly = new ArrayList<Object>();
-  private List<Object> FramesOnly = new ArrayList<Object>();
-  private List<Object> VibrationOnly = new ArrayList<Object>();
-  private List<Object> SymmetryOnly = new ArrayList<Object>();
-  private List<Object> SignedOnly = new ArrayList<Object>();
-  private List<Object> AppletOnly = new ArrayList<Object>();
-  private List<Object> ChargesOnly = new ArrayList<Object>();
-  private List<Object> TemperatureOnly = new ArrayList<Object>();
+  private JmolList<Object> NotPDB = new  JmolList<Object>();
+  private JmolList<Object> PDBOnly = new  JmolList<Object>();
+  private JmolList<Object> FileUnitOnly = new  JmolList<Object>();
+  private JmolList<Object> FileMolOnly = new  JmolList<Object>();
+  private JmolList<Object> UnitcellOnly = new  JmolList<Object>();
+  private JmolList<Object> SingleModelOnly = new  JmolList<Object>();
+  private JmolList<Object> FramesOnly = new  JmolList<Object>();
+  private JmolList<Object> VibrationOnly = new  JmolList<Object>();
+  private JmolList<Object> SymmetryOnly = new  JmolList<Object>();
+  private JmolList<Object> SignedOnly = new  JmolList<Object>();
+  private JmolList<Object> AppletOnly = new  JmolList<Object>();
+  private JmolList<Object> ChargesOnly = new  JmolList<Object>();
+  private JmolList<Object> TemperatureOnly = new  JmolList<Object>();
 
   private boolean allowSignedFeatures;
   private boolean fileHasUnitCell;
@@ -117,8 +117,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
 
   private String group3List;
   private int[] group3Counts;
-  private List<String> cnmrPeaks;
-  private List<String> hnmrPeaks;
+  private JmolList<String> cnmrPeaks;
+  private JmolList<String> hnmrPeaks;
 
   public GenericPopup() {
     // required by reflection
@@ -144,7 +144,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       String type = title.substring(pt);
       title = title.substring(0, pt);
       if (type.indexOf("current") >= 0) {
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         Object menu = htMenus.get(menuName);
         menuGetAsText(sb, 0, menu, "PopupMenu");
         return sb.toString();
@@ -206,9 +206,25 @@ abstract public class GenericPopup implements JmolPopupInterface,
    * @return Object
    */
   protected Object getEntryIcon(String[] ret) {
+    String entry = ret[0];
+    if (!entry.startsWith("<"))
+      return null;
+    int pt = entry.indexOf(">");
+    ret[0] = entry.substring(pt + 1);
+    String fileName = entry.substring(1, pt);
+    return getImageIcon(fileName);
+  }
+
+  /**
+   * modelkit menu only
+   * 
+   * @param fileName  
+   * @return ImageIcon or null
+   */
+  protected Object getImageIcon(String fileName) {
     return null;
   }
-    
+
   protected void checkMenuFocus(String name, String cmd, boolean isFocus) {
     if (name.indexOf("Focus") < 0)
       return;
@@ -228,7 +244,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     }
   }
 
-  static protected void addItemText(StringXBuilder sb, char type, int level,
+  static protected void addItemText(SB sb, char type, int level,
                                     String name, String label, String script,
                                     String flags) {
     sb.appendC(type).appendI(level).appendC('\t').append(name);
@@ -371,8 +387,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
     haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
-    cnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_13CNMR");
-    hnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_1HNMR");
+    cnmrPeaks = (JmolList<String>) modelInfo.get("jdxAtomSelect_13CNMR");
+    hnmrPeaks = (JmolList<String>) modelInfo.get("jdxAtomSelect_1HNMR");
   }
 
   private void updateFileTypeDependentMenus() {
@@ -475,37 +491,37 @@ abstract public class GenericPopup implements JmolPopupInterface,
         htMenus.put(item, newMenu);
       // menus or menu items:
       if (item.indexOf("!PDB") >= 0) {
-        NotPDB.add(newMenu);
+        NotPDB.addLast(newMenu);
       } else if (item.indexOf("PDB") >= 0) {
-        PDBOnly.add(newMenu);
+        PDBOnly.addLast(newMenu);
       }
       if (item.indexOf("URL") >= 0) {
-        AppletOnly.add(newMenu);
+        AppletOnly.addLast(newMenu);
       } else if (item.indexOf("CHARGE") >= 0) {
-        ChargesOnly.add(newMenu);
+        ChargesOnly.addLast(newMenu);
       } else if (item.indexOf("BFACTORS") >= 0) {
-        TemperatureOnly.add(newMenu);
+        TemperatureOnly.addLast(newMenu);
       } else if (item.indexOf("UNITCELL") >= 0) {
-        UnitcellOnly.add(newMenu);
+        UnitcellOnly.addLast(newMenu);
       } else if (item.indexOf("FILEUNIT") >= 0) {
-        FileUnitOnly.add(newMenu);
+        FileUnitOnly.addLast(newMenu);
       } else if (item.indexOf("FILEMOL") >= 0) {
-        FileMolOnly.add(newMenu);
+        FileMolOnly.addLast(newMenu);
       }
 
       if (item.indexOf("!FRAMES") >= 0) {
-        SingleModelOnly.add(newMenu);
+        SingleModelOnly.addLast(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {
-        FramesOnly.add(newMenu);
+        FramesOnly.addLast(newMenu);
       }
 
       if (item.indexOf("VIBRATION") >= 0) {
-        VibrationOnly.add(newMenu);
+        VibrationOnly.addLast(newMenu);
       } else if (item.indexOf("SYMMETRY") >= 0) {
-        SymmetryOnly.add(newMenu);
+        SymmetryOnly.addLast(newMenu);
       }
       if (item.startsWith("SIGNED"))
-        SignedOnly.add(newMenu);
+        SignedOnly.addLast(newMenu);
 
       if (dumpList) {
         String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
@@ -624,7 +640,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         .getSelectionCount()));
   }
 
-  private void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
+  private void updateElementsComputedMenu(BS elementsPresentBitSet) {
     Object menu = htMenus.get("elementsComputedMenu");
     if (menu == null)
       return;
@@ -675,7 +691,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     menuEnable(menu, isOK);
   }
 
-  private boolean setSpectraMenu(Object menu, List<String> peaks) {
+  private boolean setSpectraMenu(Object menu, JmolList<String> peaks) {
     if (menu == null)
       return false;
     menuEnable(menu, false);
@@ -721,8 +737,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (menu == null)
       return;
     menuRemoveAll(menu, 0);
-    List<Map<String, Object>> mos = (moData == null ? null
-        : (List<Map<String, Object>>) (moData.get("mos")));
+    JmolList<Map<String, Object>> mos = (moData == null ? null
+        : (JmolList<Map<String, Object>>) (moData.get("mos")));
     int nOrb = (mos == null ? 0 : mos.size());
     String text = getMenuText("surfMoComputedMenuText");
     if (nOrb == 0) {
@@ -791,8 +807,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return;
     //next is correct as "<=" because it includes "UNK"
     int nItems = 0;
-    for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i)
-      nItems += updateGroup3List(menu, JmolConstants.predefinedGroup3Names[i]);
+    for (int i = 1; i < JC.GROUPID_AMINO_MAX; ++i)
+      nItems += updateGroup3List(menu, JC.predefinedGroup3Names[i]);
     nItems += augmentGroup3List(menu, "p>", true);
     menuEnable(menu, (nItems > 0));
     menuEnable(htMenus.get("PDBproteinMenu"), (nItems > 0));
@@ -823,7 +839,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   private int augmentGroup3List(Object menu, String type, boolean addSeparator) {
-    int pt = JmolConstants.GROUPID_AMINO_MAX * 6 - 6;
+    int pt = JC.GROUPID_AMINO_MAX * 6 - 6;
     // ...... p>AFN]o>ODH]n>+T ]
     int nItems = 0;
     while (true) {
@@ -1043,9 +1059,9 @@ abstract public class GenericPopup implements JmolPopupInterface,
       }
       menuRemoveAll(submenu, 0);
       menuEnable(submenu, false);
-      List<Map<String, Object>> biomolecules;
+      JmolList<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (List<Map<String, Object>>) viewer
+          && (biomolecules = (JmolList<Map<String, Object>>) viewer
               .getModelAuxiliaryInfoValue(modelIndex, "biomolecules")) != null) {
         menuEnable(submenu, true);
         int nBiomolecules = biomolecules.size();
@@ -1086,11 +1102,11 @@ abstract public class GenericPopup implements JmolPopupInterface,
     htMenus.put("modelSetMenu", subMenu);
     updateModelSetComputedMenu();
 
-    subMenu = menuNewSubMenu("Jmol " + JmolConstants.version
+    subMenu = menuNewSubMenu("Jmol " + JC.version
         + (isSigned ? " (signed)" : ""), "aboutJmolMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("aboutJmolMenu", subMenu);
-    addMenuItem(subMenu, JmolConstants.date);
+    addMenuItem(subMenu, JC.date);
     menuCreateItem(subMenu, "http://www.jmol.org",
         "show url \"http://www.jmol.org\"", null);
     menuCreateItem(subMenu, GT._("Mouse Manual"),

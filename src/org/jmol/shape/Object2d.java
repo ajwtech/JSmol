@@ -2,14 +2,16 @@ package org.jmol.shape;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.P3;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public abstract class Object2d {
+  
+  // Echo, Label
 
   public final static int POINTER_NONE = 0;
   public final static int POINTER_ON = 1;
@@ -34,8 +36,8 @@ public abstract class Object2d {
   public boolean isLabelOrHover;
   protected Viewer viewer;
   protected GData gdata;
-  public Point3f xyz;
-  String target;
+  public P3 xyz;
+  public String target;
   protected String script;
   public short colix;
   public short bgcolix;
@@ -69,7 +71,7 @@ public abstract class Object2d {
   
   protected float scalePixelsPerMicron;
 
-  float getScalePixelsPerMicron() {
+  public float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
   }
 
@@ -87,7 +89,7 @@ public abstract class Object2d {
     visible = TF;
   }
 
-  public void setXYZ(Point3f xyz) {
+  public void setXYZ(P3 xyz) {
     valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
     this.xyz = xyz;
     setAdjustForWindow(xyz == null);
@@ -102,16 +104,16 @@ public abstract class Object2d {
   }
 
   void setColixO(Object value) {
-    colix = Colix.getColixO(value);
+    colix = C.getColixO(value);
   }
 
   void setTranslucent(float level, boolean isBackground) {
     if (isBackground) {
       if (bgcolix != 0)
-        bgcolix = Colix.getColixTranslucent3(bgcolix, !Float.isNaN(level),
+        bgcolix = C.getColixTranslucent3(bgcolix, !Float.isNaN(level),
             level);
     } else {
-      colix = Colix.getColixTranslucent3(colix, !Float.isNaN(level), level);
+      colix = C.getColixTranslucent3(colix, !Float.isNaN(level), level);
     }
   }
 
@@ -120,7 +122,7 @@ public abstract class Object2d {
   }
 
   void setBgColixO(Object value) {
-    bgcolix = (value == null ? (short) 0 : Colix.getColixO(value));
+    bgcolix = (value == null ? (short) 0 : C.getColixO(value));
   }
 
   public void setMovableX(int x) {
@@ -191,7 +193,7 @@ public abstract class Object2d {
     // ----48------FF--
     switch (offset) {
     case 0:
-      return JmolConstants.LABEL_DEFAULT_X_OFFSET;
+      return JC.LABEL_DEFAULT_X_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
@@ -203,7 +205,7 @@ public abstract class Object2d {
     // ----56--------FF
     switch (offset) {
     case 0:
-      return -JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+      return -JC.LABEL_DEFAULT_Y_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
@@ -229,7 +231,7 @@ public abstract class Object2d {
     return true;
   }
 
-  static String getAlignmentName(int align) {
+  public static String getAlignmentName(int align) {
     return hAlignNames[align & 3];
   }
 
@@ -237,7 +239,7 @@ public abstract class Object2d {
     this.pointer = pointer;
   }
 
-  static String getPointer(int pointer) {
+  public static String getPointer(int pointer) {
     return ((pointer & POINTER_ON) == 0 ? ""
         : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
   }
@@ -271,7 +273,7 @@ public abstract class Object2d {
       this.scalePixelsPerMicron = scalePixelsPerMicron;
   }
 
-  public boolean checkObjectClicked(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectClicked(int x, int y, BS bsVisible) {
     if (modelIndex >= 0 && !bsVisible.get(modelIndex) || hidden)
       return false;
     if (gdata.isAntialiased()) {
@@ -323,7 +325,7 @@ public abstract class Object2d {
     if ("xypos" == propertyName) {
       if (currentObject == null)
         return true;
-      Point3f pt = (Point3f) value;
+      P3 pt = (P3) value;
       currentObject.setXYZ(null);
       if (pt.z == Float.MAX_VALUE) {
         currentObject.setMovableX((int) pt.x);        
@@ -337,7 +339,7 @@ public abstract class Object2d {
     
     if ("xyz" == propertyName) {
       if (currentObject != null) {
-        currentObject.setXYZ((Point3f) value);
+        currentObject.setXYZ((P3) value);
       }
       return true;
     }

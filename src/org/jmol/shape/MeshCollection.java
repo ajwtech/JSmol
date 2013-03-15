@@ -25,22 +25,23 @@
 package org.jmol.shape;
 
 import org.jmol.viewer.StateManager;
-import org.jmol.script.ScriptVariable;
-import org.jmol.script.Token;
+import org.jmol.script.SV;
+import org.jmol.script.T;
 
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 public abstract class MeshCollection extends Shape {
@@ -61,15 +62,15 @@ public abstract class MeshCollection extends Shape {
 
   protected float displayWithinDistance2;
   protected boolean isDisplayWithinNot;
-  protected List<Point3f> displayWithinPoints;
-  protected BitSet bsDisplay;
+  protected JmolList<P3> displayWithinPoints;
+  protected BS bsDisplay;
 
   public String[] title;
   
   protected Mesh pickedMesh;
   protected int pickedModel;
   protected int pickedVertex;
-  protected Point3f pickedPt;
+  protected P3 pickedPt;
   
   protected int[] connections;
 
@@ -143,18 +144,17 @@ public abstract class MeshCollection extends Shape {
   @Override
   public void initShape() {
     super.initShape();
-    colix = Colix.ORANGE;
+    colix = C.ORANGE;
     color = 0xFFFFFFFF;
   }
   
  @SuppressWarnings("unchecked")
- @Override
- public void setProperty(String propertyName, Object value, BitSet bs) {
+ protected void setPropMC(String propertyName, Object value, BS bs) {
 
-   if (propertyName == "setXml") {
-     if (currentMesh != null)
-       currentMesh.xmlProperties = xmlProperties;
-   }
+//   if (propertyName == "setXml") {
+//     if (currentMesh != null)
+//       currentMesh.xmlProperties = xmlProperties;
+//   }
    
     if ("init" == propertyName) {
       title = null;
@@ -169,14 +169,14 @@ public abstract class MeshCollection extends Shape {
 
     if ("lattice" == propertyName) {
       if (currentMesh != null)
-        currentMesh.lattice = (Point3f) value;
+        currentMesh.lattice = (P3) value;
       return;
     }
 
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
-          + StateManager.getVariableList((Map<String, ScriptVariable>) value, 0, false, false) + "\n" + currentMesh.scriptCommand;
+          + StateManager.getVariableList((Map<String, SV>) value, 0, false, false) + "\n" + currentMesh.scriptCommand;
       return;
     }
 
@@ -228,21 +228,21 @@ public abstract class MeshCollection extends Shape {
     if ("color" == propertyName) {
       if (value == null)
         return;
-      colix = Colix.getColixO(value);
+      colix = C.getColixO(value);
       color = ((Integer) value).intValue();
       if (currentMesh != null)
         currentMesh.color = color;
-      setTokenProperty(Token.color, false, false);
+      setTokenProperty(T.color, false, false);
       return;
     }
 
     if ("translucency" == propertyName) {
-      setTokenProperty(Token.translucent, (((String) value).equals("translucent")), false);
+      setTokenProperty(T.translucent, (((String) value).equals("translucent")), false);
       return;
     }
 
     if ("hidden" == propertyName) {
-      value = Integer.valueOf(((Boolean)value).booleanValue() ? Token.off: Token.on);
+      value = Integer.valueOf(((Boolean)value).booleanValue() ? T.off: T.on);
       propertyName = "token";
       //continue
     }
@@ -252,62 +252,62 @@ public abstract class MeshCollection extends Shape {
       int tok2 = 0;
       boolean test = true;
       switch (tok) {
-      case Token.display:
-      case Token.on:
-      case Token.frontlit:
-      case Token.backlit:
-      case Token.fullylit:
-      case Token.dots:
-      case Token.fill:
-      case Token.triangles:
-      case Token.frontonly:
+      case T.display:
+      case T.on:
+      case T.frontlit:
+      case T.backlit:
+      case T.fullylit:
+      case T.dots:
+      case T.fill:
+      case T.triangles:
+      case T.frontonly:
         break;
-      case Token.off:
+      case T.off:
         test = false;
-        tok = Token.on;
+        tok = T.on;
         break;
-      case Token.contourlines:
-        tok2 = Token.mesh;
+      case T.contourlines:
+        tok2 = T.mesh;
         break;
-      case Token.nocontourlines:
+      case T.nocontourlines:
         test = false;
         // TODO leave this as is for now; probably correct...
-        tok = Token.contourlines;//(allowContourLines ? Token.contourlines : Token.mesh);
-        tok2 = Token.mesh;
+        tok = T.contourlines;//(allowContourLines ? Token.contourlines : Token.mesh);
+        tok2 = T.mesh;
         break;
-      case Token.mesh:
-        tok2 = Token.contourlines;
+      case T.mesh:
+        tok2 = T.contourlines;
         break;
-      case Token.nomesh:
+      case T.nomesh:
         test = false;
-        tok = Token.mesh;
-        tok2 = Token.contourlines;
+        tok = T.mesh;
+        tok2 = T.contourlines;
         break;
-      case Token.nodots:
+      case T.nodots:
         test = false;
-        tok = Token.dots;
+        tok = T.dots;
         break;
-      case Token.nofill:
+      case T.nofill:
         test = false;
-        tok = Token.fill;
+        tok = T.fill;
         break;
-      case Token.notriangles:
+      case T.notriangles:
         test = false;
-        tok = Token.triangles;
+        tok = T.triangles;
         break;
-      case Token.notfrontonly:
+      case T.notfrontonly:
         test = false;
-        tok = Token.frontonly;
+        tok = T.frontonly;
         break;
       default:
-        Logger.error("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
+        Logger.error("PROBLEM IN MESHCOLLECTION: token? " + T.nameOf(tok));
       }
       setTokenProperty(tok, test, false);
       if (tok2 != 0)
           setTokenProperty(tok2, test, true);
       return;
     }
-    super.setProperty(propertyName, value, bs);
+    setPropS(propertyName, value, bs);
   }
 
   protected void checkExplicit(String id) {
@@ -340,18 +340,18 @@ public abstract class MeshCollection extends Shape {
     if (testD && (!m.havePlanarContours || m.drawTriangles == m.showContourLines))
       return;
     switch (tokProp) {
-    case Token.display:
+    case T.display:
       m.bsDisplay = bsDisplay;
       if (bsDisplay == null && displayWithinPoints != null) 
         m.setShowWithin(displayWithinPoints, displayWithinDistance2, isDisplayWithinNot);
       return;
-    case Token.on:
+    case T.on:
       m.visible = bProp;
       return;
-    case Token.color:
+    case T.color:
       m.colix = colix;
       return;
-    case Token.translucent:
+    case T.translucent:
       m.setTranslucent(bProp, translucentLevel);
       if (m.bsSlabGhost != null)
         m.resetSlab();
@@ -362,14 +362,13 @@ public abstract class MeshCollection extends Shape {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public boolean getPropertyData(String property, Object[] data) {
+  protected boolean getPropDataMC(String property, Object[] data) {
     if (property == "getNames") {
-      Map<String, Token> map = (Map<String, Token>) data[0];
+      Map<String, T> map = (Map<String, T>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();
       for (int i = meshCount; --i >= 0;)
         if (meshes[i] != null && meshes[i].vertexCount != 0)
-          map.put((withDollar ? "$" : "") + meshes[i].thisID, Token.tokenOr); // just a placeholder
+          map.put((withDollar ? "$" : "") + meshes[i].thisID, T.tokenOr); // just a placeholder
       return true;
     }
     if (property == "getVertices") {
@@ -401,7 +400,7 @@ public abstract class MeshCollection extends Shape {
       if ((m = getMesh(id)) == null || m.vertices == null)
         return false;
       if (index == Integer.MAX_VALUE)
-        data[2] = Point3f.new3(m.index + 1, meshCount, m.vertexCount);
+        data[2] = P3.new3(m.index + 1, meshCount, m.vertexCount);
       else
         data[2] = m.vertices[m.getVertexIndexFromNumber(index)];
       return true;
@@ -409,8 +408,7 @@ public abstract class MeshCollection extends Shape {
     return false;
   }
 
-  @Override
-  public Object getProperty(String property, int index) {
+  protected Object getPropMC(String property) {
     Mesh m;
     if (property == "count") {
       int n = 0;
@@ -423,7 +421,7 @@ public abstract class MeshCollection extends Shape {
       return (currentMesh == null ? null : currentMesh.thisID);
     if (property.startsWith("list")) {
       clean();
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       int k = 0;
       String id = (property.equals("list") ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
@@ -437,7 +435,7 @@ public abstract class MeshCollection extends Shape {
             .append("; visible:" + m.visible);
         Object range = getProperty("dataRange", 0);
         if (range != null)
-            sb.append("; dataRange:").append(Escape.escape(range));
+            sb.append("; dataRange:").append(Escape.e(range));
         if (m.title != null) {
           String s = "";
           for (int j = 0; j < m.title.length; j++)
@@ -543,12 +541,12 @@ public abstract class MeshCollection extends Shape {
   }
   
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
      */
-    BitSet bsDeleted = viewer.getDeletedAtoms();
+    BS bsDeleted = viewer.getDeletedAtoms();
     for (int i = meshCount; --i >= 0;) {
       Mesh mesh = meshes[i];
       mesh.visibilityFlags = (mesh.visible
@@ -560,15 +558,15 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
-  protected void setStatusPicked(int flag, Point3f v) {
+  protected void setStatusPicked(int flag, P3 v) {
     // for draw and isosurface
-    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + Escape.escapeStr(pickedMesh.thisID) + "," +
+    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + Escape.eS(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
         + (pickedMesh.title == null ? "\"\"" 
-               : Escape.escapeStr(pickedMesh.title[0]))+"]");
+               : Escape.eS(pickedMesh.title[0]))+"]");
   }
 
-  protected Map<String, Object> getPickedPoint(Point3f v, int modelIndex) {
+  protected Map<String, Object> getPickedPoint(P3 v, int modelIndex) {
     Map<String, Object> map = new Hashtable<String, Object>();
     if (v != null) {
       map.put("pt", v);

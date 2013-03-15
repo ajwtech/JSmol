@@ -3,10 +3,10 @@ package org.jmol.api;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
+import org.jmol.util.JmolList;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -37,16 +37,11 @@ public interface JmolZipUtility {
                                         String shortName,
                                         Map<String, byte[]> pngjCache);
 
-  public String addPngFileBytes(String name, byte[] ret, int iFile,
-                                Hashtable<Object, String> crcMap,
-                                boolean isSparDir, String newName, int ptSlash,
-                                List<Object> v);
-
   public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
-                             List<Object> fileNamesAndByteArrays, String msg);
+                             JmolList<Object> fileNamesAndByteArrays, String msg);
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                             List<Integer> list);
+                             JmolList<Integer> list);
 
   public Object createZipSet(FileManager fm, Viewer viewer, String fileName,
                              String script, String[] scripts,

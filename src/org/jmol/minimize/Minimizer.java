@@ -24,9 +24,9 @@
 
 package org.jmol.minimize;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.MinimizerInterface;
@@ -39,13 +39,13 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.thread.MinimizationThread;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 public class Minimizer implements MinimizerInterface {
@@ -59,7 +59,7 @@ public class Minimizer implements MinimizerInterface {
   public MinBond[] minBonds;
   public MinAngle[] minAngles;
   public MinTorsion[] minTorsions;
-  public BitSet bsMinFixed;
+  public BS bsMinFixed;
   private int atomCount;
   private int bondCount;
   private int[] atomMap; 
@@ -73,12 +73,12 @@ public class Minimizer implements MinimizerInterface {
   
   private ForceField pFF;
   private String ff = "UFF";
-  private BitSet bsTaint, bsSelected;
-  public BitSet bsAtoms;
-  private BitSet bsFixedDefault;
-  private BitSet bsFixed;
+  private BS bsTaint, bsSelected;
+  public BS bsAtoms;
+  private BS bsFixedDefault;
+  private BS bsFixed;
   
-  public List<Object[]> constraints;
+  public JmolList<Object[]> constraints;
   
   private boolean isSilent;
   
@@ -110,7 +110,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (propertyName.equals("fixed")) {
-      bsFixedDefault = (BitSet) value;
+      bsFixedDefault = (BS) value;
       return;
     }
     if (propertyName.equals("stop")) {
@@ -142,7 +142,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (constraints == null) {
-      constraints = new ArrayList<Object[]>();
+      constraints = new  JmolList<Object[]>();
       constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
@@ -150,14 +150,14 @@ public class Minimizer implements MinimizerInterface {
         if (nAtoms == 4)
           ArrayUtil.swapInt(atoms, 2, 3);
     }
-    String id = Escape.escape(atoms);
+    String id = Escape.e(atoms);
     Object[] c1 = constraintMap.get(id);
     if (c1 != null) {
       c1[2] = c[2]; // just set target value
       return;
     }
     constraintMap.put(id, c);
-    constraints.add(c);
+    constraints.addLast(c);
   }
     
   private void clear() {
@@ -185,8 +185,8 @@ public class Minimizer implements MinimizerInterface {
     pFF = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected,
-                          BitSet bsFixed, boolean haveFixed, boolean forceSilent, 
+  public boolean minimize(int steps, double crit, BS bsSelected,
+                          BS bsFixed, boolean haveFixed, boolean forceSilent, 
                           String ff) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
@@ -225,23 +225,23 @@ public class Minimizer implements MinimizerInterface {
       return false;
     }
     atoms = viewer.getModelSet().atoms;
-    bsAtoms = BitSetUtil.copy(bsSelected);
+    bsAtoms = BSUtil.copy(bsSelected);
     if (bsFixed != null)
       bsAtoms.or(bsFixed);
     atomCount = bsAtoms.cardinality();
 
-    boolean sameAtoms = BitSetUtil.areEqual(bsSelected, this.bsSelected);
+    boolean sameAtoms = BSUtil.areEqual(bsSelected, this.bsSelected);
     this.bsSelected = bsSelected;
     if (!sameAtoms)
       pFF.clear();
-    if ((!sameAtoms || !BitSetUtil.areEqual(bsFixed, this.bsFixed))
+    if ((!sameAtoms || !BSUtil.areEqual(bsFixed, this.bsFixed))
         && !setupMinimization()) {
       clear();
       return false;
     }
     if (steps > 0) {
-      bsTaint = BitSetUtil.copy(bsAtoms);
-      BitSetUtil.andNot(bsTaint, bsFixed);
+      bsTaint = BSUtil.copy(bsAtoms);
+      BSUtil.andNot(bsTaint, bsFixed);
       viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
     if (bsFixed != null)
@@ -288,7 +288,7 @@ public class Minimizer implements MinimizerInterface {
     atomMap = new int[atoms.length];
     minAtoms = new MinAtom[atomCount];
     elemnoMax = 0;
-    BitSet bsElements = new BitSet();
+    BS bsElements = new BS();
     for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1), pt++) {
       Atom atom = atoms[i];
@@ -303,8 +303,8 @@ public class Minimizer implements MinimizerInterface {
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
     Logger.info("minimize: getting bonds...");
-    bonds = viewer.getModelSet().getBonds();
-    rawBondCount = viewer.getModelSet().getBondCount();
+    bonds = viewer.modelSet.bonds;
+    rawBondCount = viewer.modelSet.bondCount;
     getBonds();
     Logger.info("minimize: getting angles...");
     getAngles();
@@ -313,7 +313,7 @@ public class Minimizer implements MinimizerInterface {
     return setModel(bsElements);
   }
   
-  private boolean setModel(BitSet bsElements) {
+  private boolean setModel(BS bsElements) {
     if (!pFF.setModel(bsElements, elemnoMax)) {
       //pFF.log("could not setup force field " + ff);
       Logger.error(GT._("could not setup force field {0}", ff));
@@ -332,7 +332,7 @@ public class Minimizer implements MinimizerInterface {
       minAtoms[i].set();
     bsMinFixed = null;
     if (bsFixed != null) {
-      bsMinFixed = new BitSet();
+      bsMinFixed = new BS();
       for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
           .nextSetBit(i + 1), pt++)
         if (bsFixed.get(i))
@@ -341,7 +341,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void getBonds() {
-    List<MinBond> bondInfo = new ArrayList<MinBond>();
+    JmolList<MinBond> bondInfo = new  JmolList<MinBond>();
     bondCount = 0;
     int i1, i2;
     for (int i = 0; i < rawBondCount; i++) {
@@ -366,7 +366,7 @@ public class Minimizer implements MinimizerInterface {
       default:
         bondOrder = 1;
       }
-      bondInfo.add(new MinBond(i, bondCount++, atomMap[i1], atomMap[i2], bondOrder, 0, null));
+      bondInfo.addLast(new MinBond(i, bondCount++, atomMap[i1], atomMap[i2], bondOrder, 0, null));
     }
     minBonds = new MinBond[bondCount];
     for (int i = 0; i < bondCount; i++) {
@@ -381,7 +381,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getAngles() {
-    List<MinAngle> vAngles = new ArrayList<MinAngle>();
+    JmolList<MinAngle> vAngles = new  JmolList<MinAngle>();
     int[] atomList;
     int ic;
     for (int i = 0; i < bondCount; i++) {
@@ -392,7 +392,7 @@ public class Minimizer implements MinimizerInterface {
         atomList = minAtoms[ib].getBondedAtomIndexes();
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) > ia) {
-            vAngles.add(new MinAngle(new int[] { ia, ib, ic, i,
+            vAngles.addLast(new MinAngle(new int[] { ia, ib, ic, i,
                 minAtoms[ib].getBondIndex(j)}));
             minAtoms[ia].bsVdw.clear(ic);
 /*            System.out.println (" " 
@@ -407,7 +407,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) < ib && ic > ia) {
             vAngles
-                .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
+                .addLast(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
                     i}));
             minAtoms[ic].bsVdw.clear(ib);
 /*
@@ -424,7 +424,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getTorsions() {
-    List<MinTorsion> vTorsions = new ArrayList<MinTorsion>();
+    JmolList<MinTorsion> vTorsions = new  JmolList<MinTorsion>();
     int id;
     // extend all angles a-b-c by one, but only
     // when when c > b or a > b
@@ -439,7 +439,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = 0; j < atomList.length; j++) {
           id = atomList[j];
           if (id != ia && id != ib) {
-            vTorsions.add(new MinTorsion(new int[] { ia, ib, ic, id, 
+            vTorsions.addLast(new MinTorsion(new int[] { ia, ib, ic, id, 
                 angle[ForceField.ABI_IJ], angle[ForceField.ABI_JK],
                 minAtoms[ic].getBondIndex(j) }));
               minAtoms[Math.min(ia, id)].bs14.set(Math.max(ia, id));
@@ -456,7 +456,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = 0; j < atomList.length; j++) {
           id = atomList[j];
           if (id != ic && id != ib) {
-            vTorsions.add(new MinTorsion(new int[] { ic, ib, ia, id, 
+            vTorsions.addLast(new MinTorsion(new int[] { ic, ib, ia, id, 
                 angle[ForceField.ABI_JK], angle[ForceField.ABI_IJ],
                 minAtoms[ia].getBondIndex(j) }));
             minAtoms[Math.min(ic, id)].bs14.set(Math.max(ic, id));
@@ -648,13 +648,13 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void calculatePartialCharges(Bond[] bonds, int bondCount,
-                                      Atom[] atoms, BitSet bsAtoms) {
+                                      Atom[] atoms, BS bsAtoms) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
     ff.setArrays(atoms, bsAtoms, bonds, bondCount, true, true);
-    viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null,
+    viewer.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
-    viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null,
+    viewer.setAtomProperty(bsAtoms, T.partialcharge, 0, 0, null,
         ff.getPartialCharges(), null);
   }
 

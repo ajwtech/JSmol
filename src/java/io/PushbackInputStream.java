@@ -141,7 +141,7 @@ class PushbackInputStream extends FilterInputStream {
         if (pos < buf.length) {
             return buf[pos++] & 0xff;
         }
-        return super.readByteAsInt();
+        return in.readByteAsInt();
     }
 
     /**
@@ -189,7 +189,7 @@ class PushbackInputStream extends FilterInputStream {
             len -= avail;
         }
         if (len > 0) {
-            len = super.read(b, off, len);
+            len = in.read(b, off, len);
             if (len == -1) {
                 return avail == 0 ? -1 : avail;
             }
@@ -281,7 +281,7 @@ class PushbackInputStream extends FilterInputStream {
     public int available() throws IOException {
         ensureOpen();
         int n = buf.length - pos;
-        int avail = super.available();
+        int avail = in.available();
         return n > (Integer.MAX_VALUE - avail)
                     ? Integer.MAX_VALUE
                     : n + avail;
@@ -325,7 +325,7 @@ class PushbackInputStream extends FilterInputStream {
             n -= pskip;
         }
         if (n > 0) {
-            pskip += super.skip(n);
+            pskip += in.skip(n);
         }
         return pskip;
     }

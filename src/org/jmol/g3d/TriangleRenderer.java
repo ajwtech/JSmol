@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-16 13:29:29 -0600 (Sun, 16 Dec 2012) $
- * $Revision: 17813 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -27,8 +27,8 @@ package org.jmol.g3d;
 
 //import org.jmol.util.Logger;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Rgb16;
 
 /**
@@ -141,7 +141,7 @@ class TriangleRenderer {
     fillTriangleB(useGouraud);
   }
 
-  void fillTriangleP3i(Point3i screenA, Point3i screenB, Point3i screenC,
+  void fillTriangleP3i(P3i screenA, P3i screenB, P3i screenC,
                     boolean useGouraud) {
     ax[0] = screenA.x;
     ax[1] = screenB.x;
@@ -155,7 +155,7 @@ class TriangleRenderer {
     fillTriangleB(useGouraud);
   }
 
-  void fillTriangleP3f(Point3f screenA, Point3f screenB, Point3f screenC,
+  void fillTriangleP3f(P3 screenA, P3 screenB, P3 screenC,
                     boolean useGouraud) {
     //if (screenA.y > 260)return;
     ax[0] = Math.round(screenA.x);
@@ -170,7 +170,7 @@ class TriangleRenderer {
     fillTriangleB(useGouraud);
   }
 
-  void fillTriangleP3if(Point3i screenA, Point3i screenB, Point3i screenC,
+  void fillTriangleP3if(P3i screenA, P3i screenB, P3i screenC,
                     float factor, boolean useGouraud) {
     ax[0] = screenA.x;
     ax[1] = screenB.x;

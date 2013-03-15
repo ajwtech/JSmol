@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-24 00:54:59 -0500 (Wed, 24 Oct 2012) $
- * $Revision: 17678 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -25,15 +25,10 @@
 package org.jmol.shape;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
-import org.jmol.util.Escape;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3i;
-
-import java.util.Hashtable;
-import java.util.Map;
-
+import org.jmol.util.P3i;
 
 public class Hover extends TextShape {
 
@@ -43,7 +38,7 @@ public class Hover extends TextShape {
 
   public Text hoverText;
   public int atomIndex = -1;
-  public Point3i xy;
+  public P3i xy;
   public String text;
   public String labelFormat = "%U";
   public String[] atomFormats;
@@ -54,15 +49,15 @@ public class Hover extends TextShape {
     super.initShape();
     isHover = true;
     JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
-    short bgcolix = Colix.getColixS("#FFFFC3"); // 255, 255, 195
-    short colix = Colix.BLACK;
+    short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
+    short colix = C.BLACK;
     currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, 0, 0,
         1, Integer.MIN_VALUE, Object2d.ALIGN_LEFT, 0);
     hoverText.setAdjustForWindow(true);
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
 
     //if (Logger.debugging) {
       //Logger.debug("Hover.setProperty(" + propertyName + "," + value + ")");
@@ -102,7 +97,7 @@ public class Hover extends TextShape {
     }
 
     if ("xy" == propertyName) {
-      xy = (Point3i) value;
+      xy = (P3i) value;
       return;
     }
 
@@ -123,18 +118,12 @@ public class Hover extends TextShape {
       return;
     }
     
-    super.setProperty(propertyName, value, null);
+    setPropTS(propertyName, value, null);
 
   }
 
   @Override
   public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    if (atomFormats != null)
-      for (int i = viewer.getAtomCount(); --i >= 0;)
-        if (atomFormats[i] != null)
-          setStateInfo(temp, i, "set hoverLabel " + Escape.escapeStr(atomFormats[i]));
-    return "\n  hover " + Escape.escapeStr((labelFormat == null ? "" : labelFormat)) 
-    + ";\n" + getShapeCommands(temp, null);
+    return viewer.getShapeState(this);
   }
 }

@@ -27,19 +27,8 @@ package java.util.zip;
 
 public class Inflater extends com.jcraft.jzlib.Inflater {
 
-  public Inflater(boolean nowrap) {
-    super(15, nowrap);
+  public Inflater initialize(boolean nowrap) {
+    return (Inflater) init(0, nowrap);
   }
 
-  public int getRemaining() {
-    return avail_in;
-  }
-
-  public long getBytesWritten() {
-    return total_out;
-  }
-
-  public long getBytesRead() {
-    return total_in;
-  }
 }

@@ -856,9 +856,8 @@ public final class URL implements java.io.Serializable {
     public boolean equals(Object obj) {
         if (!(obj instanceof URL))
             return false;
-        URL u2 = (URL)obj;
-
-        return handler.equals(this, u2);
+        URL u2 = (URL)obj;     
+        return handler.equals2(this, u2);
     }
 
     /**

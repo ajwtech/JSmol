@@ -25,12 +25,15 @@
 
 package org.jmol.io;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 
+import org.jmol.api.Interface;
+import org.jmol.api.JmolDocument;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -49,7 +52,7 @@ public class FileReader {
   private String nameAsGivenIn;
   private String fileTypeIn;
   private Object atomSetCollection;
-  private BufferedReader reader;
+  private Object reader;
   private Map<String, Object> htParams;
   private boolean isAppend;
   private byte[] bytes;
@@ -63,7 +66,7 @@ public class FileReader {
     fullPathNameIn = fullPathName;
     nameAsGivenIn = nameAsGiven;
     fileTypeIn = type;
-    this.reader = (reader instanceof BufferedReader ? (BufferedReader) reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
+    this.reader = (reader instanceof BufferedReader ? reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
     this.bytes = (Escape.isAB(reader) ? (byte[]) reader : null);
     this.htParams = htParams;
     this.isAppend = isAppend;
@@ -77,8 +80,11 @@ public class FileReader {
     String errorMessage = null;
     Object t = null;
     if (reader == null) {
+      if (fileTypeIn == null)
+        fileTypeIn = JmolBinary.getBinaryType(fullPathNameIn);
+      boolean isBinary = JmolBinary.checkBinaryType(fileTypeIn);
       t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
-          bytes, true, false, false, true);
+          bytes, true, isBinary, false, true);
       if (t == null || t instanceof String) {
         errorMessage = (t == null ? "error opening:" + nameAsGivenIn
             : (String) t);
@@ -87,13 +93,11 @@ public class FileReader {
         atomSetCollection = errorMessage;
         return;
       }
-    }
-
-    if (reader == null) {
       if (t instanceof BufferedReader) {
-        reader = (BufferedReader) t;
+        reader = t;
       } else if (t instanceof ZInputStream) {
         String name = fullPathNameIn;
+        isBinary = (JmolBinary.getBinaryType(name) != null);
         String[] subFileList = null;
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
           subFileList = TextFormat.splitChars(name, "|");
@@ -103,10 +107,10 @@ public class FileReader {
           htParams.put("subFileList", subFileList);
         InputStream zis = (InputStream) t;
         String[] zipDirectory = fm.getZipDirectory(name, true);
-        atomSetCollection = JmolBinary
+        atomSetCollection = t = JmolBinary
             .getAtomSetCollectionOrBufferedReaderFromZip(viewer
                 .getModelAdapter(), zis, name, zipDirectory, htParams, false,
-                false);
+                isBinary);
         try {
           zis.close();
         } catch (Exception e) {
@@ -114,21 +118,27 @@ public class FileReader {
         }
       }
     }
-
+    if (t instanceof BufferedInputStream) {
+      JmolDocument bd = (JmolDocument) Interface
+          .getOptionInterface("io2.BinaryDocument");
+      bd.setStream((BufferedInputStream) t, true);
+      reader = bd;
+    }
     if (reader != null) {
       atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReader(
           fullPathNameIn, fileTypeIn, reader, htParams);
       if (!(atomSetCollection instanceof String))
         atomSetCollection = viewer.getModelAdapter().getAtomSetCollection(
             atomSetCollection);
-    }
-
-    if (reader != null)
       try {
-        reader.close();
+        if (reader instanceof BufferedReader)
+          ((BufferedReader) reader).close();
+        else if (reader instanceof JmolDocument)
+          ((JmolDocument) reader).close();
       } catch (IOException e) {
         // ignore
       }
+    }
 
     if (atomSetCollection instanceof String)
       return;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-10 03:51:32 -0600 (Sat, 10 Nov 2012) $
- * $Revision: 17707 $
+ * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
+ * $Revision: 17976 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -25,15 +25,15 @@
 package org.jmol.adapter.smarter;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 
 
-public class Atom extends Point3f implements Cloneable {
+public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
   public int atomIndex;
-  public BitSet bsSymmetry;
+  public BS bsSymmetry;
   public int atomSite;
   public String elementSymbol;
   public short elementNumber = -1;
@@ -67,16 +67,19 @@ public class Atom extends Point3f implements Cloneable {
   
   public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sOverride
+   * 
+   */
   public Atom() {
    set(Float.NaN, Float.NaN, Float.NaN);
   }
 
-  @Override
-  public Atom clone() throws CloneNotSupportedException {
-    Atom a = (Atom)super.clone();
+  public Atom getClone() throws CloneNotSupportedException {
     // note that anisoBorU and ellipsoid are not copied
     // we consider them "final" in a sense
-    return a;
+    return (Atom)clone();
   }
 
   public String getElementSymbol() {

@@ -26,8 +26,8 @@ package org.jmol.jvxl.readers;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 class IsoIntersectReader extends AtomDataReader {
 
@@ -46,9 +46,9 @@ class IsoIntersectReader extends AtomDataReader {
 
   ///// VDW intersection reader -- not mappable //////
 
-  private final BitSet myBsA = new BitSet();
-  private final BitSet myBsB = new BitSet();
-  private BitSet[][] bsAtomMinMax = new BitSet[2][];
+  private final BS myBsA = new BS();
+  private final BS myBsB = new BS();
+  private BS[][] bsAtomMinMax = new BS[2][];
   private Object[] func;
   private int funcType = TYPE_FUNCTION;
   
@@ -61,15 +61,15 @@ class IsoIntersectReader extends AtomDataReader {
     volumeData.setUnitVectors();
     thisPlaneB = new float[volumeData.getYzCount()];
     voxelSource = new int[volumeData.nPoints];
-    getAtomMinMax(myBsA, bsAtomMinMax[0] = new BitSet[nPointsX]);
-    getAtomMinMax(myBsB, bsAtomMinMax[1] = new BitSet[nPointsX]);
+    getAtomMinMax(myBsA, bsAtomMinMax[0] = new BS[nPointsX]);
+    getAtomMinMax(myBsB, bsAtomMinMax[1] = new BS[nPointsX]);
     return true;
   }
   
   
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2();
     params.fullyLit = true;
     point = params.point;
     if (params.func instanceof String) {
@@ -81,9 +81,9 @@ class IsoIntersectReader extends AtomDataReader {
       func = (Object[]) params.func;
     }
     if (contactPair == null) {
-      BitSet bsA = params.intersection[0];
-      BitSet bsB = params.intersection[1];
-      BitSet bsSelected = new BitSet();
+      BS bsA = params.intersection[0];
+      BS bsB = params.intersection[1];
+      BS bsSelected = new BS();
       bsSelected.or(bsA);
       bsSelected.or(bsB);
       doUseIterator = true; // just means we want a map
@@ -139,7 +139,7 @@ class IsoIntersectReader extends AtomDataReader {
     for (int i = 0; i < yzCount; i++) {
       float va = thisPlane[i];
       float vb = thisPlaneB[i];
-      float v = getValue(va, vb);
+      float v = getValueAB(va, vb);
       if (Float.isNaN(v))
         return false;
       thisPlane[i] = v;
@@ -149,7 +149,7 @@ class IsoIntersectReader extends AtomDataReader {
 
   private final float[] values = new float[2];
   
-  private float getValue(float va, float vb) {
+  private float getValueAB(float va, float vb) {
     if (va == Float.MAX_VALUE || vb == Float.MAX_VALUE
         || Float.isNaN(va) || Float.isNaN(vb))
       return Float.MAX_VALUE;
@@ -169,12 +169,12 @@ class IsoIntersectReader extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     // mapping sasurface/vdw 
-    return getValue(getValueAtPoint(pt, myBsA), getValueAtPoint(pt, myBsB));
+    return getValueAB(getValueAtPoint2(pt, myBsA), getValueAtPoint2(pt, myBsB));
   }
   
-  private float getValueAtPoint(Point3f pt, BitSet bs) {
+  private float getValueAtPoint2(P3 pt, BS bs) {
     float value = Float.MAX_VALUE;
     for (int iAtom = bs.nextSetBit(0); iAtom >= 0; iAtom = bs.nextSetBit(iAtom + 1)) {
       float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom];

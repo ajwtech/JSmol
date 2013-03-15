@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -40,12 +41,13 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
@@ -53,8 +55,10 @@ public class JmolBinary {
 
   public static final String JPEG_CONTINUE_STRING = " #Jmol...\0";
   
-  public final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
-  
+  public final static String PMESH_BINARY_MAGIC_NUMBER = "PM\1\0";
+
+  private final static String DELPHI_BINARY_MAGIC_NUMBER = "\24\0\0\0";
+
   public static String determineSurfaceTypeIs(InputStream is) {
     BufferedReader br;
     try {
@@ -69,7 +73,7 @@ public class JmolBinary {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing.
 
-    // Apbs, Jvxl, or Cube, also efvet
+    // Apbs, Jvxl, or Cube, also efvet and DHBD
 
     String line = null;
     LimitedLineReader br = null;
@@ -86,6 +90,7 @@ public class JmolBinary {
     //for (int i = 0; i < 220; i++)
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
+    
     switch (line.charAt(0)) {
     case '@':
       if (line.indexOf("@text") == 0)
@@ -112,7 +117,7 @@ public class JmolBinary {
     if (line.indexOf("! nspins") >= 0)
       return "CastepDensity";
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
-      return "JvxlXML";
+      return "JvxlXml";
     if (line.indexOf("#JVXL+") >= 0)
       return "Jvxl+";
     if (line.indexOf("#JVXL") >= 0)
@@ -132,14 +137,20 @@ public class JmolBinary {
     if (pt0 >= 0) {
       if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
         return "Pmesh";
+      if (line.indexOf(DELPHI_BINARY_MAGIC_NUMBER) == 0)
+        return "DelPhi";
       if (line.indexOf("MAP ") == 208)
-        return "MRC";
+        return "Mrc";
       if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
           || line.charAt(36) == 0 && line.charAt(37) == 100)) { 
            // header19 (short)100
-          return "DSN6";
+          return "Dsn6";
       }
     }
+    
+    if (line.indexOf(" 0.00000e+00 0.00000e+00      0      0\n") >= 0)
+      return "Uhbd"; // older APBS http://sourceforge.net/p/apbs/code/ci/9527462a39126fb6cd880924b3cc4880ec4b78a9/tree/src/mg/vgrid.c
+    
     // Apbs, Jvxl, Obj, or Cube, maybe formatted Plt
 
     line = br.readLineWithNewline();
@@ -330,7 +341,7 @@ public class JmolBinary {
   public static String getEmbeddedScript(String script) {
     if (script == null)
       return script;
-    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
+    int pt = script.indexOf(JC.EMBEDDED_SCRIPT_TAG);
     if (pt < 0)
       return script;
     int pt1 = script.lastIndexOf("/*", pt);
@@ -338,7 +349,7 @@ public class JmolBinary {
         pt);
     if (pt1 >= 0 && pt2 >= pt)
       script = script.substring(
-          pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)
+          pt + JC.EMBEDDED_SCRIPT_TAG.length(), pt2)
           + "\n";
     while ((pt1 = script.indexOf(JPEG_CONTINUE_STRING)) >= 0)
       script = script.substring(0, pt1)
@@ -432,7 +443,7 @@ public class JmolBinary {
    * @return msg bytes filename or errorMessage or byte[]
    */
   public static Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
-                              List<Object> fileNamesAndByteArrays,
+                              JmolList<Object> fileNamesAndByteArrays,
                               String msg) {
     return getJzu().writeZipFile(fm, viewer, outFileName, fileNamesAndByteArrays, msg);
   }
@@ -456,11 +467,11 @@ public class JmolBinary {
     return fixUTF((byte[]) ret);
   }
 
-  public static boolean isBase64(StringXBuilder sb) {
+  public static boolean isBase64(SB sb) {
     return (sb.indexOf(";base64,") == 0);
   }
 
-  public static BufferedInputStream getBISForStringXBuilder(StringXBuilder sb) {
+  public static BufferedInputStream getBISForStringXBuilder(SB sb) {
     byte[] bytes;
     if (isBase64(sb)) {
       bytes = Base64.decodeBase64(sb.substring(8));
@@ -474,7 +485,7 @@ public class JmolBinary {
     return new BufferedReader(new StringReader(string));
   }
 
-  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, List<Integer> list) {
+  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, JmolList<Integer> list) {
     return getJzu().getSceneScript(scenes, htScenes, list);
   }
 
@@ -590,6 +601,21 @@ public class JmolBinary {
           return "|" + TextFormat.trim(s[i], "\r\n \t");
     }
     return null;
+  }
+
+  public static String getBinaryType(String name) {
+    if (name == null)
+      return null;
+    int i = name.lastIndexOf(".");
+    if (i < 0 || (i = JC.binaryExtensions.indexOf(";" + name.substring(i + 1) + "=")) < 0)
+        return null;
+    i = JC.binaryExtensions.indexOf("=", i);
+    name = JC.binaryExtensions.substring(i + 1);
+    return name.substring(0, name.indexOf(";"));
+  }
+
+  public static boolean checkBinaryType(String fileTypeIn) {
+    return (JC.binaryExtensions.indexOf("=" + fileTypeIn + ";") >= 0);
   }
 
 }

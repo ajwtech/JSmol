@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-03 16:27:33 -0500 (Mon, 03 Sep 2012) $
- * $Revision: 17501 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,19 +23,25 @@
  */
 package org.jmol.shape;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.BS;
+import org.jmol.viewer.JC;
 
 public class Uccage extends FontLineShape {
 
   @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFLS(propertyName, value);
+  }
+  
+  @Override
   public String getShapeState() {
-    return (modelSet.haveUnitCells() ? super.getShapeState() : "");
+    return (modelSet.haveUnitCells ? super.getShapeState() : "");
   }
 
   @Override
   public void initShape() {
     super.initShape();
-    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JC.AXES_DEFAULT_FONTSIZE);
     myType = "unitcell";
   }
 }

@@ -29,12 +29,14 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.jcraft.jzlib;
 
+/*
 import java.io.IOException;
 
 import java.io.InputStream;
+*/
+public class GZIPInputStream {// extends InflaterInputStream {
 
-public class GZIPInputStream extends InflaterInputStream {
-
+/*  
   public GZIPInputStream(InputStream in) {
     this(in, DEFAULT_BUFSIZE, true);
   }
@@ -45,15 +47,15 @@ public class GZIPInputStream extends InflaterInputStream {
     this(in, new Inflater(15+16), size, close_in);
     myinflater = true;
   }
-
   public GZIPInputStream(InputStream in, 
                          Inflater inflater,
                          int size,
                          boolean close_in) {
     super(in, inflater, size, close_in);
   }
+*/
 
-  public long getModifiedtime() {
+/*  public long getModifiedtime() {
     return inflater.istate.getGZIPHeader().getModifiedTime();
   }
 
@@ -70,7 +72,7 @@ public class GZIPInputStream extends InflaterInputStream {
   }
 
   public long getCRC() throws GZIPException {
-    if(inflater.istate.mode != 12 /*DONE*/)
+    if(inflater.istate.mode != 12 DONE)
       throw new GZIPException("checksum is not calculated yet.");
     return inflater.istate.getGZIPHeader().getCRC();
   }
@@ -108,7 +110,7 @@ public class GZIPInputStream extends InflaterInputStream {
 
       int err = inflater.inflate(JZlib.Z_NO_FLUSH);
 
-      if(err!=0/*Z_OK*/){
+      if(err!=0Z_OK){
         int len = 2048-inflater.next_in.length;
         if(len>0){
           byte[] tmp = new byte[len];
@@ -146,4 +148,5 @@ public class GZIPInputStream extends InflaterInputStream {
     while(n<len);
     return n;
   }
+  */
 }

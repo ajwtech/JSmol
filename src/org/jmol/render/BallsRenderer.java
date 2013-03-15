@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -27,7 +27,7 @@ package org.jmol.render;
 
 
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class BallsRenderer extends ShapeRenderer {
 
@@ -36,7 +36,7 @@ public class BallsRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     if (!viewer.getWireframeRotation() || !viewer.getInMotion()) {
       Atom[] atoms = modelSet.atoms;
-      BitSet bsOK = viewer.getRenderableBitSet();
+      BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0

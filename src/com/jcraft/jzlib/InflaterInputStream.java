@@ -49,7 +49,7 @@ public class InflaterInputStream extends FilterInputStream {
   private boolean close_in = true;
 
   protected static final int DEFAULT_BUFSIZE = 512;
-
+/*
   public InflaterInputStream(InputStream in) {
     this(in, new Inflater());
     myinflater = true;
@@ -58,11 +58,12 @@ public class InflaterInputStream extends FilterInputStream {
   public InflaterInputStream(InputStream in, Inflater inflater) {
     this(in, inflater, DEFAULT_BUFSIZE);
   }
-
   public InflaterInputStream(InputStream in, Inflater inflater, int size) {
     this(in, inflater, size, true);
   }
 
+
+*/
   public InflaterInputStream(InputStream in, Inflater inflater, int size,
       boolean close_in) {
     super(in);
@@ -85,6 +86,10 @@ public class InflaterInputStream extends FilterInputStream {
 
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
+    return readInf(b, off, len);
+  }
+
+  protected int readInf(byte[] b, int off, int len) throws IOException {
     if (closed) {
       throw new IOException("Stream closed");
     }
@@ -236,7 +241,7 @@ public class InflaterInputStream extends FilterInputStream {
       int i = in.read(b1, 0, 1);
       if (i <= 0)
         throw new IOException("no input");
-      inflater.setInput(b1);
+      inflater.setInput(b1, 0, b1.length, false);
       err = inflater.inflate(JZlib.Z_NO_FLUSH);
       if (err != 0/*Z_OK*/)
         throw new IOException(inflater.msg);

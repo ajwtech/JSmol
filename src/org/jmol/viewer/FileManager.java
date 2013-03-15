@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-27 23:08:07 +0200 (Sun, 27 Jan 2013) $
- * $Revision: 17885 $
+ * $Date: 2013-03-03 04:28:51 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17961 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -48,9 +48,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Interface;
@@ -138,21 +139,6 @@ public class FileManager {
   void setAppletProxy(String appletProxy) {
     this.appletProxy = (appletProxy == null || appletProxy.length() == 0 ? null
         : appletProxy);
-  }
-
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setFileState;\n");
-      commands.append("function _setFileState() {\n\n");
-    }
-    if (commands.indexOf("append") < 0
-        && viewer.getModelSetFileName().equals("zapped"))
-      commands.append("  zap;\n");
-    viewer.appendLoadStates(commands);
-    if (sfunc != null)
-      commands.append("\n}\n\n");
-    return commands.toString();
   }
 
   String getFileTypeName(String fileName) {
@@ -265,7 +251,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromString(String strModel,
-                                           StringXBuilder loadScript,
+                                           SB loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
@@ -273,7 +259,7 @@ public class FileManager {
       DataManager.getInlineData(loadScript, strModel, isAppend, viewer
           .getDefaultLoadFilter());
     setLoadState(htParams);
-    boolean isAddH = (strModel.indexOf(JmolConstants.ADD_HYDROGEN_TITLE) >= 0);
+    boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader(this, viewer, "string", "string", "string", null,
         JmolBinary.getBufferedReaderForString(strModel), htParams, isAppend);
@@ -282,20 +268,20 @@ public class FileManager {
       setFileInfo(fnames);
     if (!isAppend && !(fileReader.getAtomSetCollection() instanceof String)) {
       viewer.zap(false, true, false);
-      fullPathName = fileName = (strModel == JmolConstants.MODELKIT_ZAP_STRING ? JmolConstants.MODELKIT_ZAP_TITLE
+      fullPathName = fileName = (strModel == JC.MODELKIT_ZAP_STRING ? JC.MODELKIT_ZAP_TITLE
           : "string");
     }
     return fileReader.getAtomSetCollection();
   }
 
   Object createAtomSeCollectionFromStrings(String[] arrayModels,
-                                           StringXBuilder loadScript,
+                                           SB loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend) {
     if (!htParams.containsKey("isData")) {
       String oldSep = "\"" + viewer.getDataSeparator() + "\"";
       String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       sb.append("set dataSeparator \"~~~next file~~~\";\ndata ").append(tag);
       for (int i = 0; i < arrayModels.length; i++) {
         if (i > 0)
@@ -354,7 +340,7 @@ public class FileManager {
   private DataReader newDataReader(Object data) {
     String reader = (data instanceof String ? "String"
         : Escape.isAS(data) ? "Array" 
-        : data instanceof List<?> ? "List" : null);
+        : data instanceof JmolList<?> ? "List" : null);
     if (reader == null)
       return null;
     DataReader dr = (DataReader) Interface.getOptionInterface("io2." + reader + "DataReader");
@@ -423,7 +409,7 @@ public class FileManager {
             outputBytes = (byte[]) o;
             name = TextFormat.simpleReplace(name, "?_", "=_");
           } else {
-            name = new StringXBuilder().append(name).append("=").appendSB(
+            name = new SB().append(name).append("=").appendSB(
                 Base64.getBase64((byte[]) o)).toString();
           }
         }
@@ -448,8 +434,8 @@ public class FileManager {
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening " + name);
           ret = fai.getBufferedURLInputStream(url, outputBytes, post);
-          if (ret instanceof StringXBuilder) {
-            StringXBuilder sb = (StringXBuilder) ret;
+          if (ret instanceof SB) {
+            SB sb = (SB) ret;
             if (allowReader && !JmolBinary.isBase64(sb))
               return JmolBinary.getBufferedReaderForString(sb.toString());
             ret = JmolBinary.getBISForStringXBuilder(sb);
@@ -540,8 +526,8 @@ public class FileManager {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsStringBin(fileName, Integer.MAX_VALUE, false, true);
-      return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
+      String state = viewer.getFileAsString4(fileName, Integer.MAX_VALUE, false, true);
+      return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : JmolBinary.getEmbeddedScript(state));
     }
     for (int i = 0; i < dir.length; i++)
@@ -582,7 +568,7 @@ public class FileManager {
           }
         }
         // load each file individually, but return files IN ORDER
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         if (fileData.get("OUTPUT") != null)
           sb.append(fileData.get(fileData.get("OUTPUT")));
         String s;
@@ -695,7 +681,7 @@ public class FileManager {
       asBinaryString = true;
       name = name.substring(0, name.indexOf(":asBinaryString"));
     }
-    StringXBuilder sb = null;
+    SB sb = null;
     if (fileData.containsKey(name0))
       return name0;
     if (name.indexOf("#JMOL_MODEL ") >= 0) {
@@ -729,7 +715,7 @@ public class FileManager {
         JmolDocument bd = (JmolDocument) Interface
             .getOptionInterface("io2.BinaryDocument");
         bd.setStream(bis, false);
-        sb = new StringXBuilder();
+        sb = new SB();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
@@ -746,7 +732,7 @@ public class FileManager {
         BufferedReader br = JmolBinary.getBufferedReader(
             JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis, null);
         String line;
-        sb = new StringXBuilder();
+        sb = new SB();
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
         while ((line = br.readLine()) != null) {
@@ -839,7 +825,7 @@ public class FileManager {
     }
     try {
       BufferedReader br = (BufferedReader) t;
-      StringXBuilder sb = StringXBuilder.newN(8192);
+      SB sb = SB.newN(8192);
       String line;
       if (nBytesMax == Integer.MAX_VALUE) {
         line = br.readLine();
@@ -1179,9 +1165,9 @@ public class FileManager {
                                                String remotePath,
                                                String scriptPath) {
     if (localPath != null)
-      script = setScriptFileReferences(script, localPath, true);
+      script = setScriptFileRefs(script, localPath, true);
     if (remotePath != null)
-      script = setScriptFileReferences(script, remotePath, false);
+      script = setScriptFileRefs(script, remotePath, false);
     script = TextFormat.simpleReplace(script, "\1\"", "\"");
     if (scriptPath != null) {
       while (scriptPath.endsWith("/"))
@@ -1207,15 +1193,15 @@ public class FileManager {
    * @param isLocal 
    * @return revised script
    */
-  private static String setScriptFileReferences(String script, String dataPath,
+  private static String setScriptFileRefs(String script, String dataPath,
                                                 boolean isLocal) {
     if (dataPath == null)
       return script;
     boolean noPath = (dataPath.length() == 0);
-    List<String> fileNames = new ArrayList<String>();
+    JmolList<String> fileNames = new  JmolList<String>();
     JmolBinary.getFileReferences(script, fileNames);
-    List<String> oldFileNames = new ArrayList<String>();
-    List<String> newFileNames = new ArrayList<String>();
+    JmolList<String> oldFileNames = new  JmolList<String>();
+    JmolList<String> newFileNames = new  JmolList<String>();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name0 = fileNames.get(iFile);
@@ -1234,8 +1220,8 @@ public class FileManager {
         }
       }
       Logger.info("FileManager substituting " + name0 + " --> " + name);
-      oldFileNames.add("\"" + name0 + "\"");
-      newFileNames.add("\1\"" + name + "\"");
+      oldFileNames.addLast("\"" + name0 + "\"");
+      newFileNames.addLast("\1\"" + name + "\"");
     }
     return TextFormat.replaceStrings(script, oldFileNames, newFileNames);
   }
@@ -1262,7 +1248,7 @@ public class FileManager {
   public Map<String, byte[]> pngjCache;
   public Map<String, byte[]> spardirCache;
   
-  void clearPngjCache(String fileName) {
+  public void clearPngjCache(String fileName) {
     if (fileName == null || pngjCache != null && pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName))))
       pngjCache = null;
   }

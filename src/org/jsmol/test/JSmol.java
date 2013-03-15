@@ -23,8 +23,8 @@
  */
 package org.jsmol.test;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 public class JSmol {
 
@@ -35,13 +35,13 @@ public class JSmol {
 	}
 
   protected int testing = 22;
-	protected static BitSet bs = new BitSet();
+	protected static BS bs = new BS();
 	static {
 		bs.set(5);
 		bs.set(6);
 	}
 
-	protected static Point3f pt = Point3f.new3(2,3,4);
+	protected static P3 pt = P3.new3(2,3,4);
   
 	protected void testStatic() {
 		sayHello("testing = " + testing + " pt = " + pt + " bs = " + bs);
@@ -52,7 +52,7 @@ public class JSmol {
 
 	//private String test = EnumTest.LOOP.toString();
   // THIS DOES NOT WORK:  
-	private enum TT {A, B, C, D}; // -- bug in Java2JavaScript compiler
+	private enum TT {A, B, C, D} // -- bug in Java2JavaScript compiler
   private void testEnum() {  	
 		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE + "; TT.A = " + TT.A);
 	}

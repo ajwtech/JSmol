@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-07 12:31:47 -0600 (Mon, 07 Jan 2013) $
- * $Revision: 17847 $
+ * $Date: 2013-03-07 07:56:59 -0600 (Thu, 07 Mar 2013) $
+ * $Revision: 17964 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -23,17 +23,20 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.ScriptContext;
-import org.jmol.script.ScriptEvaluator;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
+
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+//import java.util.List;
+
 import java.util.Map;
 
 
@@ -182,8 +185,8 @@ class StatusManager {
    * 
    */
   
-  private Map<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
-  Map<String, List<List<Object>>> getMessageQueue() {
+  private Map<String, JmolList<JmolList<Object>>> messageQueue = new Hashtable<String, JmolList<JmolList<Object>>>();
+  Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -201,20 +204,21 @@ class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (!recordStatus(statusName))
       return;
-    List<Object> msgRecord = new ArrayList<Object>();
-    msgRecord.add(Integer.valueOf(++statusPtr));
-    msgRecord.add(statusName);
-    msgRecord.add(Integer.valueOf(intInfo));
-    msgRecord.add(statusInfo);
-    List<List<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
+    JmolList<Object> msgRecord = new JmolList<Object>();
+    msgRecord.addLast(Integer.valueOf(++statusPtr));
+    msgRecord.addLast(statusName);
+    msgRecord.addLast(Integer.valueOf(intInfo));
+    msgRecord.addLast(statusInfo);
+    JmolList<JmolList<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
     if (statusRecordSet == null)
-      messageQueue.put(statusName, statusRecordSet = new ArrayList<List<Object>>());
+      messageQueue.put(statusName, statusRecordSet = new  JmolList<JmolList<Object>>());
     else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
       statusRecordSet.remove(0);    
-    statusRecordSet.add(msgRecord);
+    statusRecordSet.addLast(msgRecord);
   }
   
-  synchronized List<List<List<Object>>> getStatusChanged(String newStatusList) {
+  synchronized List<JmolList<JmolList<Object>>> getStatusChanged(
+                                                                 String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
      * where each statusRecordSet is itself a vector of vectors:
@@ -244,9 +248,10 @@ class StatusManager {
           Logger.debug("StatusManager messageQueue = " + statusList);
       }
     }
-    List<List<List<Object>>> msgList = (getList ? Collections.list(Collections
-        .enumeration(messageQueue.values()))
-        : new ArrayList<List<List<Object>>>());
+    Collection<JmolList<JmolList<Object>>> m = messageQueue.values();
+    Enumeration<JmolList<JmolList<Object>>> e = Collections.enumeration(m);
+    List<JmolList<JmolList<Object>>> msgList = (getList ? Collections.list(e)
+        : new JmolList<JmolList<JmolList<Object>>>());
     messageQueue.clear();
     statusPtr = 0;
     return msgList;
@@ -302,7 +307,7 @@ class StatusManager {
           new Object[] { sJmol, htmlName, Boolean.valueOf(isReady), null });
   }
 
-  synchronized void setStatusAtomMoved(BitSet bsMoved) {
+  synchronized void setStatusAtomMoved(BS bsMoved) {
     String sJmol = jmolScriptCallback(EnumCallback.ATOMMOVED);
     setStatusChanged("atomMoved", -1, bsMoved, false);
     if (notifyEnabled(EnumCallback.ATOMMOVED))
@@ -344,7 +349,7 @@ class StatusManager {
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
   }
   
-  synchronized void setStatusObjectHovered(String id, String strInfo, Point3f pt) {
+  synchronized void setStatusObjectHovered(String id, String strInfo, P3 pt) {
     String sJmol = jmolScriptCallback(EnumCallback.HOVER);
     if (notifyEnabled(EnumCallback.HOVER))
       jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
@@ -381,25 +386,23 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,
-                                          int firstNo, int lastNo) {
+                                          int firstNo, int lastNo, int currentFrame, String entryName) {
     //System.out.println("setStatusFrameChanged modelSet=" + viewer.getModelSet());
     if (viewer.getModelSet() == null)
       return;
-    boolean isAnimationRunning = (frameNo <= -2);
-    int f = frameNo;
-    if (isAnimationRunning)
-      f = -2 - f;
-    setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
-        .getModelNumberDotted(f) : ""), false);
-    String entryName = viewer.getMenuName(f);
+    boolean animating = viewer.isAnimationOn();
+    setStatusChanged("frameChanged", frameNo, (frameNo >= 0 ? viewer
+        .getModelNumberDotted(frameNo) : ""), false);
     String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
+    if (animating)
+      frameNo = -2 - frameNo;
     if (notifyEnabled(EnumCallback.ANIMFRAME)) {
       jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
           new Object[] { sJmol,
-              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo }, entryName });
+              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo, currentFrame }, entryName });
     }
     
-    if (viewer.jmolpopup != null && !isAnimationRunning)
+    if (viewer.jmolpopup != null && !animating)
       viewer.jmolpopup.jpiUpdateComputedMenus();
 
   }
@@ -462,7 +465,7 @@ class StatusManager {
     }
     String sJmol = (msWalltime == 0 ? jmolScriptCallback(EnumCallback.SCRIPT)
         : null);
-    boolean isScriptCompletion = (strStatus == ScriptEvaluator.SCRIPT_COMPLETED);
+    boolean isScriptCompletion = (strStatus == JC.SCRIPT_COMPLETED);
 
     if (recordStatus("script")) {
       boolean isError = (strErrorMessageUntranslated != null);
@@ -510,8 +513,7 @@ class StatusManager {
           viewer.scriptEditor.notifyScriptStart();
       } else if (viewer.scriptEditor.isVisible()
           && ((String) data[2]).length() > 0) {
-        viewer.scriptEditor.notifyContext((ScriptContext) viewer.getProperty(
-            "DATA_API", "scriptContext", null), data);
+        viewer.scriptEditor.notifyContext(viewer.getScriptContext(), data);
       }
     }
 
@@ -698,6 +700,11 @@ class StatusManager {
     return (jmolStatusListener == null ? null : jmolStatusListener
         .getProperty("JSpecView"
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
+  }
+
+  public void resizeInnerPanel(int width, int height) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";");    
   }
 
 }

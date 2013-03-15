@@ -57,50 +57,15 @@ public class Inflater extends ZStream{
 //  static final private int Z_BUF_ERROR=-5;
 //  static final private int Z_VERSION_ERROR=-6;
 
-  public Inflater() {
-    super();
-    init();
-  }
-
-  public Inflater(int w) {
-    this(w, false);
-  }
-
-  public Inflater(boolean nowrap) {
-    // bh added
-    super();
-    /*int ret =*/ 
-    init(nowrap);
-    //if(ret!=Z_OK)
-      //throw new GZIPException(ret+": "+msg);
-  }
-
-  public Inflater(int w, boolean nowrap) {
-    super();
-    /*int ret = */ init(w, nowrap);
-    //if(ret!=Z_OK)
-      //throw new GZIPException(ret+": "+msg);
-  }
-
-  //private boolean finished = false;
-
-  public int init(){
-    return init(DEF_WBITS);
-  }
-
-  public int init(boolean nowrap){
-    return init(DEF_WBITS, nowrap);
-  }
-
-  public int init(int w){
-    return init(w, false);
-  }
-
-  public int init(int w, boolean nowrap){
+  public Inflater init(int w, boolean nowrap) {
+    setAdler32();
     //finished = false;
+    if (w == 0)
+      w = DEF_WBITS;
     istate=new Inflate(this);
-    return istate.inflateInit(nowrap?-w:w);
-  }
+    istate.inflateInit(nowrap?-w:w);
+    return this;
+}
 
   @Override
   public int inflate(int f){

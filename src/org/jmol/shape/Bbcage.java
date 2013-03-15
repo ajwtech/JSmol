@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,16 +24,21 @@
 package org.jmol.shape;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.BS;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.StateManager;
 
 public class Bbcage extends FontLineShape {
 
   @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFLS(propertyName, value);
+  }
+  
+  @Override
   public void initShape() {
     super.initShape();
-    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JC.AXES_DEFAULT_FONTSIZE);
     myType = "boundBox";
   }
 
@@ -41,11 +46,11 @@ public class Bbcage extends FontLineShape {
   public int mad;
   
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     isVisible = ((mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
     if (!isVisible)
       return;
-    BitSet bboxModels = viewer.getBoundBoxModels();
+    BS bboxModels = viewer.getBoundBoxModels();
     if (bboxModels == null)
       return;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))

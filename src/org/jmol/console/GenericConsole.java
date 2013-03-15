@@ -36,17 +36,22 @@ import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
-import org.jmol.script.ScriptCompiler;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
+import org.jmol.viewer.Viewer;
 
 public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCallbackListener {
   
   protected GenericTextArea input;
   protected GenericTextArea output;
 
-  public JmolViewer viewer;
+  public Viewer viewer;
+  
+  protected void setViewer(JmolViewer viewer) {
+    this.viewer = (Viewer) viewer;
+  }
+
   protected Map<String, String> labels;
   protected Map<String, Object> menuMap = new Hashtable<String, Object>();
   protected JmolAbstractButton editButton, runButton, historyButton, stateButton;
@@ -121,7 +126,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   protected String getLabel(String key) {
     if (labels == null) {
       labels = new Hashtable<String, String>();
-      labels.put("title", GT._("Jmol Script Console") + " " + JmolViewer.getJmolVersion());
+      labels.put("title", GT._("Jmol Script Console") + " " + Viewer.getJmolVersion());
       setupLabels();
     }
     return labels.get(key);
@@ -130,6 +135,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   protected void displayConsole() {
     layoutWindow(null);
     outputMsg(defaultMessage);
+    System.out.println("AppConsole displayConsole");
   }
 
   protected String defaultMessage;
@@ -149,7 +155,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String strCommand = (nTab <= 0 || incompleteCmd == null ? thisCmd
         : incompleteCmd);
     incompleteCmd = strCommand;
-    String[] splitCmd = ScriptCompiler.splitCommandLine(thisCmd);
+    String[] splitCmd = TextFormat.splitCommandLine(thisCmd);
     if (splitCmd == null)
       return null;
     boolean asCommand = splitCmd[2] == null;
@@ -157,7 +163,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String s = splitCmd[1];
     if (notThis.length() == 0)
       return null;
-    splitCmd = ScriptCompiler.splitCommandLine(strCommand);
+    splitCmd = TextFormat.splitCommandLine(strCommand);
     String cmd = null;
     if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
       char q = notThis.charAt(0);
@@ -167,7 +173,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;
     } else {
-      Map<String, Token> map = null;
+      Map<String, T> map = null;
       if (!asCommand) {
         //System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
         notThis = s;
@@ -176,11 +182,11 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
             || s.equalsIgnoreCase("contact ")
             || s.equalsIgnoreCase("draw ")
          ) {
-          map = new Hashtable<String, Token>();
+          map = new Hashtable<String, T>();
           viewer.getObjectMap(map, splitCmd[2].startsWith("$"));
         }
       }
-      cmd = Token.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
+      cmd = T.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
           : splitCmd[2], nTab);
       cmd = splitCmd[0]
           + (cmd == null ? notThis : asCommand ? cmd : splitCmd[1] + cmd);
@@ -223,7 +229,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String cmd = (strCommand == null ? input.getText() : strCommand);
     if (strCommand == null)
       input.setText(null);
-    String strErrorMessage = viewer.script(cmd + JmolConstants.SCRIPT_EDITOR_IGNORE);
+    String strErrorMessage = viewer.script(cmd + JC.SCRIPT_EDITOR_IGNORE);
     if (strErrorMessage != null && !strErrorMessage.equals("pending"))
       outputMsg(strErrorMessage);
   }

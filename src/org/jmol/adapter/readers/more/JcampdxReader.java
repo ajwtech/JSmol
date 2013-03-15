@@ -26,9 +26,9 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
-import java.util.List;
+
 
 import org.jmol.util.TextFormat;
 
@@ -39,11 +39,11 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records
@@ -99,7 +99,7 @@ public class JcampdxReader extends MolReader {
   private String modelID;
   private AtomSetCollection models;
   private String modelIdList = "";
-  private List<String> peakData = new ArrayList<String>();
+  private  JmolList<String> peakData = new  JmolList<String>();
   private String lastModel = "";
   private int selectedModel;
   private int[] peakIndex;
@@ -109,6 +109,10 @@ public class JcampdxReader extends MolReader {
   @Override
   public void initializeReader() throws Exception {
     // trajectories would be OK for IR, but just too complicated for others.
+    
+    // tells Jmol to start talking with JSpecView
+    
+    viewer.setBooleanProperty("_jspecview", true);
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");
       isTrajectory = false;
@@ -120,7 +124,7 @@ public class JcampdxReader extends MolReader {
     }
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
-    peakFilePath = Escape.escapeStr(filePath);
+    peakFilePath = Escape.eS(filePath);
     htParams.remove("modelNumber");
     // peakIndex will be passed on to additional files in a ZIP file load
     // the peak file path is stripped of the "|xxxx.jdx" part 
@@ -131,7 +135,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.escapeStr(TextFormat.split(filePath, '|')[0]);
+        peakFilePath = Escape.eS(TextFormat.split(filePath, '|')[0]);
     } else {
       peakIndex = new int[1];
     }
@@ -235,7 +239,7 @@ public class JcampdxReader extends MolReader {
       modelType = "xyz";
     else if (modelType.length() == 0)
       modelType = null; // let Jmol set the type
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).appendC('\n');
     String data = sb.toString();
@@ -320,7 +324,7 @@ public class JcampdxReader extends MolReader {
       type = "13CNMR";
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
-        peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
+        peakData.addLast("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
     return true;
   }
 
@@ -331,7 +335,7 @@ public class JcampdxReader extends MolReader {
   private void processPeakData() {
     if (peakData.size() == 0)
       return;
-    BitSet bsModels = new BitSet();
+    BS bsModels = new BS();
     int n = peakData.size();
     boolean havePeaks = (n > 0);
     for (int p = 0; p < n; p++) {
@@ -349,12 +353,12 @@ public class JcampdxReader extends MolReader {
       bsModels.set(i);      
       String s;
       if (getAttribute(line, "atoms").length() != 0) {
-        List<String> peaks = (List<String>) atomSetCollection
+        JmolList<String> peaks = (JmolList<String>) atomSetCollection
             .getAtomSetAuxiliaryInfoValue(i, key);
         if (peaks == null)
           atomSetCollection.setAtomSetAuxiliaryInfoForSet(key,
-              peaks = new ArrayList<String>(), i);
-        peaks.add(line);
+              peaks = new  JmolList<String>(), i);
+        peaks.addLast(line);
         s = type + ": ";
       } else if (atomSetCollection.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") == null) {
         // assign name and jdxModelSelect ONLY if first found.

@@ -23,7 +23,7 @@
  */
 package org.jmol.rendersurface;
 
-import java.util.List;
+
 
 
 import org.jmol.jvxl.data.JvxlCoder;
@@ -31,12 +31,13 @@ import org.jmol.jvxl.readers.Parameters;
 import org.jmol.render.MeshRenderer;
 import org.jmol.shapesurface.Isosurface;
 import org.jmol.shapesurface.IsosurfaceMesh;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.JmolList;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 
@@ -78,13 +79,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
         continue;
       hasColorRange = false;
-      if (renderMesh(mySlabValue, slabValue)) {
+      if (renderMeshSlab(mySlabValue, slabValue)) {
         //System.out.println("render isossurface " + i + " " + isosurface.meshCount);
         if (!isExport)
           renderInfo();
         if (isExport && haveBsSlabGhost) {
           exportPass = 1;
-          renderMesh(mySlabValue, slabValue);
+          renderMeshSlab(mySlabValue, slabValue);
           exportPass = 2;
         }
       }
@@ -101,7 +102,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     showKey = Boolean.FALSE; // once only
     int[] colors = null;
     short[] colixes = null;
-    List<Object>[] vContours = null;
+    JmolList<Object>[] vContours = null;
     int n = 0;
     int type = 0;
     if (imesh.showContourLines) {
@@ -149,13 +150,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy[1] = (y + dy) / factor;
   }
   
-  private boolean renderMesh(int mySlabValue, int slabValue) {
+  private boolean renderMeshSlab(int mySlabValue, int slabValue) {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     if (!isNavigationMode) {
       int meshSlabValue = imesh.jvxlData.slabValue;
       if (meshSlabValue != Integer.MIN_VALUE  
           && imesh.jvxlData.isSlabbable) {
-        Point3f[] points = imesh.jvxlData.boundingBox;
+        P3[] points = imesh.jvxlData.boundingBox;
         pt2f.setT(points[0]);
         pt2f.add(points[1]);
         pt2f.scale(0.5f); // center
@@ -194,8 +195,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     }
     isBicolorMap = imesh.jvxlData.isBicolorMap;
-    super.render2(isExport);
-    if (!g3d.setColix(Colix.BLACK)) // must be 1st pass
+    render2b(isExport);
+    if (!g3d.setColix(C.BLACK)) // must be 1st pass
       return;
     if (imesh.showContourLines)
       renderContourLines();
@@ -208,8 +209,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (r < 1)
       r = 1;
     if (!isRadical) {
-      Vector3f v1 = new Vector3f();
-      Vector3f v2 = new Vector3f();
+      V3 v1 = new V3();
+      V3 v2 = new V3();
       pt1f.setT(vertices[0]);
       viewer.transformPt3f(pt1f, pt1f);
       v1.sub2(pt2f, pt1f);
@@ -230,7 +231,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderContourLines() {
     // no check here for within distance
-    List<Object>[] vContours = imesh.getContours();
+    JmolList<Object>[] vContours = imesh.getContours();
     if (vContours == null) {
       if (imesh.jvxlData.contourValues != null)
         hasColorRange = true;
@@ -241,7 +242,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     hasColorRange = (imesh.meshColix == 0);
     for (int i = vContours.length; --i >= 0;) {
-      List<Object> v = vContours[i];
+      JmolList<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
         continue;
       colix = (imesh.meshColix == 0 ? ((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]
@@ -250,8 +251,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         return;
       int n = v.size() - 1;
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
-        Point3f pt1 = (Point3f) v.get(j);
-        Point3f pt2 = (Point3f) v.get(++j);
+        P3 pt1 = (P3) v.get(j);
+        P3 pt2 = (P3) v.get(++j);
         viewer.transformPtScr(pt1, pt1i);
         viewer.transformPtScr(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
@@ -263,8 +264,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
   
-  private final Point3f ptTemp = new Point3f();
-  private final Point3i ptTempi = new Point3i();
+  private final P3 ptTemp = new P3();
+  private final P3i ptTempi = new P3i();
 
   @Override
   protected void renderPoints() {
@@ -302,7 +303,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && Math.abs(screens[i].y - cY) < 150) {
           String s = i
               + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
-          g3d.setColix(Colix.BLACK);
+          g3d.setColix(C.BLACK);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
               screens[i].z - 30, (short) 0);
         }
@@ -314,18 +315,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
         }
       }
       if (incr == 3) {
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
-            Colix.GRAY, true, 0.5f) : Colix.GRAY);
+        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+            C.GRAY, true, 0.5f) : C.GRAY);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam / 4, screens[i],
               screens[i + 1]);
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
-            Colix.YELLOW, true, 0.5f) : Colix.YELLOW);
+        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+            C.YELLOW, true, 0.5f) : C.YELLOW);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillSphereI(diam, screens[i]);
 
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
-            Colix.BLUE, true, 0.5f) : Colix.BLUE);
+        g3d.setColix(isTranslucent ? C.getColixTranslucent3(
+            C.BLUE, true, 0.5f) : C.BLUE);
         for (int i = 2; i < vertexCount; i += 3) {
           g3d.fillSphereI(diam, screens[i]);
         }
@@ -366,7 +367,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     short colix = this.colix;
     if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {
       colorSolid = true;
-      colix = Colix.BLACK;
+      colix = C.BLACK;
     }
     /*  only an idea -- causes flickering
         if (isPlane && colorSolid) {
@@ -388,6 +389,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = polygon[0];
       int iB = polygon[1];
       int iC = polygon[2];
+      
+     //373  386  395
+     //if (iC != 394 )//|| iB != 385)
+     //continue;
 /*
       int iTest = 6596;
       if (iA == iTest|| iB == iTest || iC == iTest)
@@ -423,7 +428,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           if (colixA != colixB || colixB != colixC)
             continue;
           if (haveBsSlabGhost)
-            colixA = colixB = colixC = Colix.copyColixTranslucency(
+            colixA = colixB = colixC = C.copyColixTranslucency(
                 imesh.slabColix, colixA);
         }
       }
@@ -473,7 +478,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt3i.z -= 2;
         if (noColor) {
         } else if (colorArrayed) {
-          g3d.setColix(mesh.fillTriangles ? Colix.BLACK
+          g3d.setColix(mesh.fillTriangles ? C.BLACK
               : contourColixes[polygon[4] % contourColixes.length]);
         } else {
           drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check, diam);
@@ -488,10 +493,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   private void renderNormals() {
     // Logger.debug("mesh renderPoints: " + vertexCount);
-    if (!g3d.setColix(Colix.WHITE))
+    if (!g3d.setColix(C.WHITE))
       return;
     g3d.setFontFid(g3d.getFontFidFS("Monospaced", 24));
-    Vector3f[] vertexVectors = Normix.getVertexVectors();
+    V3[] vertexVectors = Normix.getVertexVectors();
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]))
         continue;
@@ -502,6 +507,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // -n is an intensity2sided and does not correspond to a true normal
       // index
       if (n >= 0) {
+        ptTemp.add(vertexVectors[n]);
+        ptTemp.add(vertexVectors[n]);
         ptTemp.add(vertexVectors[n]);
         viewer.transformPtScr(ptTemp, ptTempi);
         g3d.drawLineAB(screens[i], ptTempi);

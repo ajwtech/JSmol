@@ -24,9 +24,9 @@
 
 package org.jmol.adapter.readers.more;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -34,8 +34,8 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 /*
  * TLS output reader -- data only; no atoms
@@ -44,8 +44,8 @@ import org.jmol.util.StringXBuilder;
 
 public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
-  private List<Map<String, Object>> vTlsModels;
-  private StringXBuilder sbTlsErrors;
+  private JmolList<Map<String, Object>> vTlsModels;
+  private SB sbTlsErrors;
   private int tlsGroupID;
 
   @Override
@@ -62,21 +62,21 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
   private final static String[] Snn = new String[] { "22", "11", "12", "13", "23", "21", "31", "32" };
 
   private void readTlsData() throws Exception {
-    vTlsModels = new ArrayList<Map<String, Object>>();
-    List<Map<String, Object>> tlsGroups;
+    vTlsModels = new  JmolList<Map<String, Object>>();
+    JmolList<Map<String, Object>> tlsGroups;
     Map<String, Object> tlsGroup = null;
-    List<Map<String, Object>> ranges = null;
+    JmolList<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
-    tlsGroups = new ArrayList<Map<String, Object>>();
+    tlsGroups = new  JmolList<Map<String, Object>>();
     while (readLine() != null) {
       String[] tokens = getTokensStr(line.replace('\'', ' '));
       if (tokens.length == 0)
         continue;
       if (tokens[0].equals("TLS")) {
         tlsGroup = new Hashtable<String, Object>();
-        ranges = new ArrayList<Map<String, Object>>();
+        ranges = new  JmolList<Map<String, Object>>();
         tlsGroup.put("ranges", ranges);
-        tlsGroups.add(tlsGroup);
+        tlsGroups.addLast(tlsGroup);
         tlsGroup.put("id", Integer.valueOf(++tlsGroupID));
       } else if (tokens[0].equals("RANGE")) {
         /*
@@ -92,7 +92,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
           range.put("chains", "" + chain1 + chain2);
           if (res1 <= res2) {
             range.put("residues", new int[] { res1, res2 });
-            ranges.add(range);
+            ranges.addLast(range);
           } else {
             tlsAddError(" TLS group residues are not in order (range ignored)");
           }
@@ -103,7 +103,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
         /*
         ORIGIN    11.6283   8.2746  10.6813
         */
-        Point3f origin = new Point3f();
+        P3 origin = new P3();
         tlsGroup.put("origin", origin);
         origin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
             parseFloatStr(tokens[3]));
@@ -144,13 +144,13 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
     Hashtable<String, Object> groups = new Hashtable<String, Object>();
     groups.put("groupCount", Integer.valueOf(tlsGroupID));
     groups.put("groups", tlsGroups);
-    vTlsModels.add(groups);
+    vTlsModels.addLast(groups);
     htParams.put("vTlsModels", vTlsModels);
   }
 
   private void tlsAddError(String error) {
     if (sbTlsErrors == null)
-      sbTlsErrors = new StringXBuilder();
+      sbTlsErrors = new SB();
     sbTlsErrors.append(fileName).appendC('\t').append("TLS group ").appendI(
         tlsGroupID).appendC('\t').append(error).appendC('\n');
   }

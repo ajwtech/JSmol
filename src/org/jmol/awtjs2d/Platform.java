@@ -11,7 +11,7 @@ import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -93,7 +93,7 @@ public class Platform implements ApiPlatform {
 
   // /// Display
 
-	public void convertPointFromScreen(Object canvas, Point3f ptTemp) {
+	public void convertPointFromScreen(Object canvas, P3 ptTemp) {
 	  // from JmolMultiTouchClientAdapter.fixXY
 		Display.convertPointFromScreen(canvas, ptTemp);
 	}
@@ -189,15 +189,16 @@ public class Platform implements ApiPlatform {
 
 	public int[] grabPixels(Object canvas, int width, int height, 
                           int[] pixels, int startRow, int nRows) {
-	  // from PNG and JPG image creators, also JSmol._loadImage()
+	  // from PNG and JPG image creators, also g3d.ImageRenderer.plotImage via drawImageToBuffer
 	  
 	  /**
 	   * @j2sNative
 	   * 
-	   *     if (canvas.image && (width != canvas.width || height != canvas.height)
+	   *     if (canvas.image && (width != canvas.width || height != canvas.height))
      *       Jmol._setCanvasImage(canvas, width, height);
 	   *     if (canvas.buf32) return canvas.buf32;
 	   */
+	  {}
     int[] buf = Image.grabPixels(Image.getGraphics(canvas), width, height); 
     /**
      * @j2sNative
@@ -205,9 +206,8 @@ public class Platform implements ApiPlatform {
      *  canvas.buf32 = buf;
      * 
      */
-    {
-      return buf;
-    }
+    {}
+    return buf;
 	}
 
 	public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,

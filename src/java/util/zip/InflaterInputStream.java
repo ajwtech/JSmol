@@ -27,32 +27,32 @@ package java.util.zip;
 
 import java.io.InputStream;
 
-public class InflaterInputStream extends com.jcraft.jzlib.InflaterInputStream {
+class InflaterInputStream extends com.jcraft.jzlib.InflaterInputStream {
 
   protected Inflater inf;
-  public InflaterInputStream(InputStream in, Inflater inflater, int size) {
-    super(in, inflater, size);
-    this.inf = inflater;
-  }
-  
-  /**
-   * Returns the total number of bytes remaining in the input buffer.
-   * This can be used to find out what bytes still remain in the input
-   * buffer after decompression has finished.
-   * @return the total number of bytes remaining in the input buffer
-   */
-  public int getRemaining() {
-          return inf.getRemaining();
-  }
-
-  /**
-   * Returns true if no data remains in the input buffer. This can
-   * be used to determine if #setInput should be called in order
-   * to provide more input.
-   * @return true if no data remains in the input buffer
-   */
-  public boolean needsInput() {
-          return len <= 0;
-  }
+  InflaterInputStream(InputStream in, Inflater inflater, int size) {
+    super(in, inflater, size, true);
+      this.inf = inflater;
+    }
+//  
+//  /**
+//   * Returns the total number of bytes remaining in the input buffer.
+//   * This can be used to find out what bytes still remain in the input
+//   * buffer after decompression has finished.
+//   * @return the total number of bytes remaining in the input buffer
+//   */
+//  public int getRemaining() {
+//          return inf.getRemaining();
+//  }
+//
+//  /**
+//   * Returns true if no data remains in the input buffer. This can
+//   * be used to determine if #setInput should be called in order
+//   * to provide more input.
+//   * @return true if no data remains in the input buffer
+//   */
+//  public boolean needsInput() {
+//          return len <= 0;
+//  }
 
 }

@@ -25,7 +25,7 @@
 package org.jmol.util;
 
 
-import java.util.List;
+
 
 
 public interface JmolNode {
@@ -56,8 +56,8 @@ public interface JmolNode {
   public int getResno();
   public char getChainID();
   public int getOffsetResidueAtom(String name, int offset);
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn);
-  public void getGroupBits(BitSet bs);
+  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vReturn);
+  public void getGroupBits(BS bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);
   public boolean isProtein();
@@ -68,5 +68,5 @@ public interface JmolNode {
   public boolean isPyrimidine();
   public boolean isDeleted();
   public String getAtomType();
-  public BitSet findAtomsLike(String substring);
+  public BS findAtomsLike(String substring);
 }

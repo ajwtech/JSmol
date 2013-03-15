@@ -39,6 +39,8 @@ public class GData implements JmolGraphicsInterface {
 
   public int bufferSize;
 
+  public Shader shader;
+
   public final static byte ENDCAPS_NONE = 0;
   public final static byte ENDCAPS_OPEN = 1;
   public final static byte ENDCAPS_FLAT = 2;
@@ -46,7 +48,7 @@ public class GData implements JmolGraphicsInterface {
   public final static byte ENDCAPS_OPENEND = 4;
   
   public GData() {
-    
+    shader = new Shader();
   }
   
   public void initialize(ApiPlatform apiPlatform) {
@@ -117,14 +119,17 @@ public class GData implements JmolGraphicsInterface {
    * @param zPower 
    */
   public void setZShade(boolean zShade, int zSlab, int zDepth, int zPower) {
-    if (zShade) {
-      zShadeR = bgcolor & 0xFF;
-      zShadeG = (bgcolor & 0xFF00) >> 8;
-      zShadeB = (bgcolor & 0xFF0000) >> 16;
-      this.zSlab = zSlab < 0 ? 0 : zSlab;
-      this.zDepth = zDepth < 0 ? 0 : zDepth;
-      this.zShadePower = zPower;
-    }
+    if (zShade)
+      setZShade2(zSlab, zDepth, zPower);
+  }
+
+  protected void setZShade2(int zSlab, int zDepth, int zPower) {
+    zShadeR = bgcolor & 0xFF;
+    zShadeG = (bgcolor & 0xFF00) >> 8;
+    zShadeB = (bgcolor & 0xFF0000) >> 16;
+    this.zSlab = zSlab < 0 ? 0 : zSlab;
+    this.zDepth = zDepth < 0 ? 0 : zDepth;
+    this.zShadePower = zPower;
   }
 
   /**
@@ -186,13 +191,13 @@ public class GData implements JmolGraphicsInterface {
     if (id >= changeableColixMap.length)
       changeableColixMap = ArrayUtil.arrayCopyShort(changeableColixMap, id + 16);
     if (changeableColixMap[id] == 0)
-      changeableColixMap[id] = Colix.getColix(argb);
-    return (short) (id | Colix.CHANGEABLE_MASK);
+      changeableColixMap[id] = C.getColix(argb);
+    return (short) (id | C.CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
     if (id < changeableColixMap.length && changeableColixMap[id] != 0)
-      changeableColixMap[id] = Colix.getColix(argb);
+      changeableColixMap[id] = C.getColix(argb);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {
@@ -201,14 +206,14 @@ public class GData implements JmolGraphicsInterface {
 
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
-      colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix.getArgbGreyscale(colix) : Colix.getArgb(colix));
+      colix = changeableColixMap[colix & C.UNMASK_CHANGEABLE_TRANSLUCENT];
+    return (inGreyscaleMode ? C.getArgbGreyscale(colix) : C.getArgb(colix));
   }
 
   public int[] getShades(short colix) {
     if (colix < 0)
-      colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix.getShadesGreyscale(colix) : Colix
+      colix = changeableColixMap[colix & C.UNMASK_CHANGEABLE_TRANSLUCENT];
+    return (inGreyscaleMode ? shader.getShadesG(colix) : shader
         .getShades(colix));
   }
 
@@ -222,8 +227,8 @@ public class GData implements JmolGraphicsInterface {
     this.inGreyscaleMode = greyscaleMode;
   }
 
-  public static int getSpecularPower() {
-    return Shader.specularPower;
+  public int getSpecularPower() {
+    return shader.specularPower;
   }
 
   /**
@@ -231,20 +236,20 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularPower(int val) {
+  public synchronized void setSpecularPower(int val) {
     if (val < 0) {
       setSpecularExponent(-val);
       return;
     }
-    if (Shader.specularPower == val)
+    if (shader.specularPower == val)
       return;
-    Shader.specularPower = val;
-    Shader.intenseFraction = val / 100f;
-    flushCaches();
+    shader.specularPower = val;
+    shader.intenseFraction = val / 100f;
+    shader.flushCaches();
   }
 
-  public static int getSpecularPercent() {
-    return Shader.specularPercent;
+  public int getSpecularPercent() {
+    return shader.specularPercent;
   }
 
   /**
@@ -253,16 +258,16 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularPercent(int val) {
-    if (Shader.specularPercent == val)
+  public synchronized void setSpecularPercent(int val) {
+    if (shader.specularPercent == val)
       return;
-    Shader.specularPercent = val;
-    Shader.specularFactor = val / 100f;
-    flushCaches();
+    shader.specularPercent = val;
+    shader.specularFactor = val / 100f;
+    shader.flushCaches();
   }
 
-  public static int getSpecularExponent() {
-    return Shader.specularExponent;
+  public int getSpecularExponent() {
+    return shader.specularExponent;
   }
 
   /**
@@ -271,17 +276,17 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularExponent(int val) {
-    if (Shader.specularExponent == val)
+  public synchronized void setSpecularExponent(int val) {
+    if (shader.specularExponent == val)
       return;
-    Shader.specularExponent = val;
-    Shader.phongExponent = (int) Math.pow(2, val);
-    Shader.usePhongExponent = false;
-    flushCaches();
+    shader.specularExponent = val;
+    shader.phongExponent = (int) Math.pow(2, val);
+    shader.usePhongExponent = false;
+    shader.flushCaches();
   }
 
-  public static int getPhongExponent() {
-    return Shader.phongExponent;
+  public int getPhongExponent() {
+    return shader.phongExponent;
   }
 
   /**
@@ -289,19 +294,19 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setPhongExponent(int val) {
-    if (Shader.phongExponent == val && Shader.usePhongExponent)
+  public synchronized void setPhongExponent(int val) {
+    if (shader.phongExponent == val && shader.usePhongExponent)
       return;
-    Shader.phongExponent = val;
+    shader.phongExponent = val;
     float x = (float) (Math.log(val) / Math.log(2));
-    Shader.usePhongExponent = (x != (int) x);
-    if (!Shader.usePhongExponent)
-      Shader.specularExponent = (int) x;
-    flushCaches();
+    shader.usePhongExponent = (x != (int) x);
+    if (!shader.usePhongExponent)
+      shader.specularExponent = (int) x;
+    shader.flushCaches();
   }
 
-  public static int getDiffusePercent() {
-    return Shader.diffusePercent;
+  public int getDiffusePercent() {
+    return shader.diffusePercent;
   }
 
   /**
@@ -309,16 +314,16 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setDiffusePercent(int val) {
-    if (Shader.diffusePercent == val)
+  public synchronized void setDiffusePercent(int val) {
+    if (shader.diffusePercent == val)
       return;
-    Shader.diffusePercent = val;
-    Shader.diffuseFactor = val / 100f;
-    flushCaches();
+    shader.diffusePercent = val;
+    shader.diffuseFactor = val / 100f;
+    shader.flushCaches();
   }
 
-  public static int getAmbientPercent() {
-    return Shader.ambientPercent;
+  public int getAmbientPercent() {
+    return shader.ambientPercent;
   }
 
   /**
@@ -326,32 +331,35 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setAmbientPercent(int val) {
-    if (Shader.ambientPercent == val)
+  public synchronized void setAmbientPercent(int val) {
+    if (shader.ambientPercent == val)
       return;
-    Shader.ambientPercent = val;
-    Shader.ambientFraction = val / 100f;
-    flushCaches();
+    shader.ambientPercent = val;
+    shader.ambientFraction = val / 100f;
+    shader.flushCaches();
   }
 
-  public static boolean getSpecular() {
-    return Shader.specularOn;
+  public boolean getSpecular() {
+    return shader.specularOn;
   }
 
-  public synchronized static void setSpecular(boolean val) {
-    if (Shader.specularOn == val)
+  public synchronized void setSpecular(boolean val) {
+    if (shader.specularOn == val)
       return;
-    Shader.specularOn = val;
-    flushCaches();
+    shader.specularOn = val;
+    shader.flushCaches();
   }
 
-  private static void flushCaches() {
-    Colix.flushShades();
-    Shader.flushSphereCache();
+  public void setCel(boolean val) {
+    shader.setCel(val, bgcolor);
   }
 
-  public static Point3f getLightSource() {
-    return Point3f.new3(Shader.xLight, Shader.yLight, Shader.zLight);
+  public boolean getCel() {
+    return shader.getCelOn();
+  }
+
+  public V3 getLightSource() {
+    return shader.lightSource;
   }
 
   public boolean isClipped3(int x, int y, int z) {
@@ -466,6 +474,7 @@ public class GData implements JmolGraphicsInterface {
    */
   public void setBackgroundArgb(int argb) {
     bgcolor = argb;
+    setCel(getCel());
     // background of Jmol transparent in front of certain applications (VLC Player)
     // when background [0,0,1]. 
   }
@@ -475,6 +484,10 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public void setWindowParameters(int width, int height, boolean antialias) {
+    setWinParams(width, height, antialias);
+  }
+
+  protected void setWinParams(int width, int height, boolean antialias) {
     newWindowWidth = width;
     newWindowHeight = height;
     newAntialiasing = antialias;    
@@ -624,7 +637,7 @@ public class GData implements JmolGraphicsInterface {
     return true;
   }
 
-  public Vector3f[] getTransformedVertexVectors() {
+  public V3[] getTransformedVertexVectors() {
     return null;
   }
 
@@ -633,8 +646,8 @@ public class GData implements JmolGraphicsInterface {
    * @param pointB  
    * @param pointC  
    */
-  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB,
-                                   Point3i pointC) {
+  public void setNoisySurfaceShade(P3i pointA, P3i pointB,
+                                   P3i pointC) {
   }
 
   /**

@@ -307,7 +307,7 @@ public abstract class URLStreamHandler {
      * fragment in the same file.
      * @since 1.3
      */
-    protected boolean equals(URL u1, URL u2) {
+    protected boolean equals2(URL u1, URL u2) {
         String ref1 = u1.getRef();
         String ref2 = u2.getRef();
         return (ref1 == ref2 || (ref1 != null && ref1.equals(ref2))) &&

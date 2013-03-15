@@ -24,8 +24,8 @@
 
 package org.jmol.minimize.forcefield;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 import org.jmol.minimize.MinAngle;
@@ -76,7 +76,7 @@ class CalculationsUFF extends Calculations {
   CalculationsUFF(ForceField ff, Map<Object, FFParam> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions, 
-      List<Object[]> constraints) {
+      JmolList<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, constraints);    
     this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
@@ -95,10 +95,10 @@ class CalculationsUFF extends Calculations {
   @Override
   boolean setupCalculations() {
 
-    List<Object[]> calc;
+    JmolList<Object[]> calc;
 
     DistanceCalc distanceCalc = new DistanceCalc();
-    calc = calculations[CALC_DISTANCE] = new ArrayList<Object[]>();
+    calc = calculations[CALC_DISTANCE] = new  JmolList<Object[]>();
     for (int i = 0; i < bondCount; i++) {
       MinBond bond = minBonds[i];
       double bondOrder = bond.order;
@@ -109,17 +109,17 @@ class CalculationsUFF extends Calculations {
       distanceCalc.setData(calc, bond.data[0], bond.data[1], bondOrder);
     }
 
-    calc = calculations[CALC_ANGLE] = new ArrayList<Object[]>();
+    calc = calculations[CALC_ANGLE] = new  JmolList<Object[]>();
     AngleCalc angleCalc = new AngleCalc();
     for (int i = minAngles.length; --i >= 0;)
       angleCalc.setData(calc, minAngles[i].data);
 
-    calc = calculations[CALC_TORSION] = new ArrayList<Object[]>();
+    calc = calculations[CALC_TORSION] = new  JmolList<Object[]>();
     TorsionCalc torsionCalc = new TorsionCalc();
     for (int i = minTorsions.length; --i >= 0;)
       torsionCalc.setData(calc, minTorsions[i].data);
 
-    calc = calculations[CALC_OOP] = new ArrayList<Object[]>();
+    calc = calculations[CALC_OOP] = new  JmolList<Object[]>();
     // set up the special atom arrays
     OOPCalc oopCalc = new OOPCalc();
     int elemNo;
@@ -133,7 +133,7 @@ class CalculationsUFF extends Calculations {
     // it does not actually use it. Both Towhee and the UFF FAQ
     // discourage the use of electrostatics with UFF.
 
-    pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(), null, null);
+    pairSearch(calculations[CALC_VDW] = new  JmolList<Object[]>(), new VDWCalc(), null, null);
     return true;
   }
 
@@ -197,7 +197,7 @@ class CalculationsUFF extends Calculations {
 
     double r0, kb;
 
-    void setData(List<Object[]> calc, int ia, int ib, double bondOrder) {
+    void setData(JmolList<Object[]> calc, int ia, int ib, double bondOrder) {
       parA = getParameter(minAtoms[ia].sType);
       parB = getParameter(minAtoms[ib].sType);
       r0 = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], parA.dVal[PAR_XI],
@@ -207,7 +207,7 @@ class CalculationsUFF extends Calculations {
       // Otherwise, this is equation 6 from the UFF paper.
 
       kb = KCAL332 * parA.dVal[PAR_Z] * parB.dVal[PAR_Z] / (r0 * r0 * r0);
-      calc.add(new Object[] { new int[] { ia, ib },
+      calc.addLast(new Object[] { new int[] { ia, ib },
           new double[] { r0, kb, bondOrder } });
     }
 
@@ -240,7 +240,7 @@ class CalculationsUFF extends Calculations {
   
   class AngleCalc extends Calculation {
   
-    void setData(List<Object[]> calc, int[] angle) {
+    void setData(JmolList<Object[]> calc, int[] angle) {
       a = minAtoms[ia = angle[0]];
       b = minAtoms[ib = angle[1]];
       c = minAtoms[ic = angle[2]];
@@ -293,7 +293,7 @@ class CalculationsUFF extends Calculations {
       // Note that 1/(rij * rjk) cancels with rij*rjk in eqn. 13
       double ka = (KCAL644) * (zi * zk / (Math.pow(rac, 5.0)))
           * (3.0 * rab * rbc * (1.0 - cosT0 * cosT0) - rac * rac * cosT0);
-      calc.add(new Object[] {
+      calc.addLast(new Object[] {
           new int[] { ia, ib, ic, coordination },
           new double[] { ka, theta0 * RAD_TO_DEG, c0 - c2, c1, 2 * c2, preliminaryMagnification * ka } });
     }
@@ -362,7 +362,7 @@ class CalculationsUFF extends Calculations {
 
   class TorsionCalc extends Calculation {
 
-   void setData(List<Object[]> calc, int[] t) {
+   void setData(JmolList<Object[]> calc, int[] t) {
       double cosNPhi0 = -1; // n * phi0 = 180; max at 0 
       int n = 0;
       double V = 0;
@@ -458,7 +458,7 @@ class CalculationsUFF extends Calculations {
       if (Util.isNearZero(V)) // don't bother calcuating this torsion
         return;
 
-      calc.add(new Object[] { new int[] { ia, ib, ic, id, n },
+      calc.addLast(new Object[] { new int[] { ia, ib, ic, id, n },
           new double[] { V, cosNPhi0 } });
     }
 
@@ -492,7 +492,7 @@ class CalculationsUFF extends Calculations {
   
   class OOPCalc extends Calculation {
 
-    void setData(List<Object[]> calc, int ib, int elemNo) {
+    void setData(JmolList<Object[]> calc, int ib, int elemNo) {
 
       // The original Rappe paper in JACS isn't very clear about the parameters
       // The following was adapted from Towhee
@@ -664,15 +664,15 @@ class CalculationsUFF extends Calculations {
       koop /= 3.0;
 
       // A-BCD 
-      calc.add(new Object[] { new int[] { ia, ib, ic, id },
+      calc.addLast(new Object[] { new int[] { ia, ib, ic, id },
           new double[] { koop, a0, a1, a2, koop * 10 } });
 
       // C-BDA
-      calc.add(new Object[] { new int[] { ic, ib, id, ia },
+      calc.addLast(new Object[] { new int[] { ic, ib, id, ia },
           new double[] { koop, a0, a1, a2, koop * 10 } });
 
       // D-BAC
-      calc.add(new Object[] { new int[] { id, ib, ia, ic },
+      calc.addLast(new Object[] { new int[] { id, ib, ia, ic },
           new double[] { koop, a0, a1, a2, koop * 10 } });
     }
 
@@ -713,7 +713,7 @@ class CalculationsUFF extends Calculations {
   class VDWCalc extends PairCalc {
     
     @Override
-    void setData(List<Object[]> calc, int ia, int ib) {
+    void setData(JmolList<Object[]> calc, int ia, int ib) {
       a = minAtoms[ia];
       b = minAtoms[ib];
       
@@ -736,7 +736,7 @@ class CalculationsUFF extends Calculations {
 
       // Xab is xij in equation 20 -- the expected vdw distance
       double Xab = Math.sqrt(Xa * Xb);
-      calc.add(new Object[] {
+      calc.addLast(new Object[] {
           new int[] { ia, ib },
           new double[] { Xab, Dab } });
     }
@@ -774,7 +774,7 @@ class CalculationsUFF extends Calculations {
   class ESCalc extends PairCalc {
 
     @Override
-    void setData(List<Object[]> calc, int ia, int ib) {
+    void setData(JmolList<Object[]> calc, int ia, int ib) {
       a = minAtoms[ia];
       b = minAtoms[ib];
       double qq = KCAL332 * partialCharges[ia]

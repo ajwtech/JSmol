@@ -25,30 +25,31 @@ package org.jmol.viewer;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.script.ScriptEvaluator;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.thread.MoveThread;
 import org.jmol.thread.MoveToThread;
 import org.jmol.thread.SpinThread;
 import org.jmol.thread.VibrationThread;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.P4;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 import org.jmol.util.Quaternion;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 public class TransformManager {
@@ -69,13 +70,13 @@ public class TransformManager {
   public float modelRadius;
   public float modelRadiusPixels;
 
-  public final Point3f navigationCenter = new Point3f();
-  public final Point3f navigationOffset = new Point3f();
-  public final Point3f navigationShiftXY = new Point3f();
+  public final P3 navigationCenter = new P3();
+  public final P3 navigationOffset = new P3();
+  public final P3 navigationShiftXY = new P3();
   public float navigationDepth;
 
   protected final Matrix4f matrixTemp = new Matrix4f();
-  protected final Vector3f vectorTemp = new Vector3f();
+  protected final V3 vectorTemp = new V3();
 
   TransformManager(Viewer viewer, int width, int height) {
     setViewer(viewer, width, height);
@@ -141,103 +142,6 @@ public class TransformManager {
     resetNavigationPoint(true);
   }
 
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setPerspectiveState;\n");
-      commands.append("function _setPerspectiveState() {\n");
-    }
-    StateManager
-        .appendCmd(commands, "set perspectiveModel " + perspectiveModel);
-    StateManager.appendCmd(commands, "set scaleAngstromsPerInch "
-        + scale3DAngstromsPerInch);
-    StateManager
-        .appendCmd(commands, "set perspectiveDepth " + perspectiveDepth);
-    StateManager.appendCmd(commands, "set visualRange " + visualRange);
-    if (!isWindowCentered())
-      StateManager.appendCmd(commands, "set windowCentered false");
-    StateManager.appendCmd(commands, "set cameraDepth " + cameraDepth);
-    if (mode == MODE_NAVIGATION)
-      StateManager.appendCmd(commands, "set navigationMode true");
-    StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
-    StateManager.appendCmd(commands, "center "
-        + Escape.escapePt(fixedRotationCenter));
-    commands.append(viewer.getSavedOrienationText(null));
-
-    StateManager.appendCmd(commands, getMoveToText(0, false));
-    if (stereoMode != EnumStereoMode.NONE)
-      StateManager.appendCmd(commands, "stereo "
-          + (stereoColors == null ? stereoMode.getName() : Escape
-              .escapeColor(stereoColors[0])
-              + " " + Escape.escapeColor(stereoColors[1])) + " "
-          + stereoDegrees);
-    if (mode != MODE_NAVIGATION && !zoomEnabled)
-      StateManager.appendCmd(commands, "zoom off");
-    commands.append("  slab ").appendI(slabPercentSetting).append(";depth ")
-        .appendI(depthPercentSetting).append(
-            slabEnabled && mode != MODE_NAVIGATION ? ";slab on" : "").append(
-            ";\n");
-    commands.append("  set slabRange ").appendF(slabRange).append(";\n");
-    if (zShadeEnabled)
-      commands.append("  set zShade;\n");
-    try {
-      if (zSlabPoint != null)
-        commands.append("  set zSlab ").append(Escape.escapePt(zSlabPoint))
-            .append(";\n");
-    } catch (Exception e) {
-      // don't care
-    }
-    if (slabPlane != null)
-      commands.append("  slab plane ").append(Escape.escape(slabPlane)).append(
-          ";\n");
-    if (depthPlane != null)
-      commands.append("  depth plane ").append(Escape.escape(depthPlane))
-          .append(";\n");
-    commands.append(getSpinState(true)).append("\n");
-    if (viewer.modelSetHasVibrationVectors() && vibrationOn)
-      StateManager.appendCmd(commands, "set vibrationPeriod " + vibrationPeriod
-          + ";vibration on");
-    if (mode == MODE_NAVIGATION) {
-      commands.append(getNavigationState());
-      if (depthPlane != null || slabPlane != null)
-        commands.append("  slab on;\n");
-    }
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
-  }
-
-  /**
-   * @param isAll
-   * @return spin state
-   */
-  String getSpinState(boolean isAll) {
-    String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
-        + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
-    if (!Float.isNaN(navFps))
-      s += "  set navX " + (int) navX + "; set navY " + (int) navY
-          + "; set navZ " + (int) navZ + "; set navFps " + (int) navFps + ";";
-    if (navOn)
-      s += " navigation on;";
-    if (!spinOn)
-      return s;
-    String prefix = (isSpinSelected ? "\n  select "
-        + Escape.escape(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
-        : "\n ");
-    if (isSpinInternal) {
-      Point3f pt = Point3f.newP(internalRotationCenter);
-      pt.sub(rotationAxis);
-      s += prefix + " spin " + rotationRate + " "
-          + Escape.escapePt(internalRotationCenter) + " " + Escape.escapePt(pt);
-    } else if (isSpinFixed) {
-      s += prefix + " spin axisangle " + Escape.escapePt(rotationAxis) + " "
-          + rotationRate;
-    } else {
-      s += " spin on";
-    }
-    return s + ";";
-  }
-
   protected boolean haveNotifiedNaN = false;
 
   final static int DEFAULT_SPIN_Y = 30;
@@ -258,18 +162,18 @@ public class TransformManager {
   public boolean isSpinFixed = false;
   boolean isSpinSelected = false;
 
-  public final Point3f fixedRotationOffset = new Point3f();
-  public final Point3f fixedRotationCenter = new Point3f();
-  protected final Point3f perspectiveOffset = new Point3f();
-  protected final Point3f perspectiveShiftXY = new Point3f();
+  public final P3 fixedRotationOffset = new P3();
+  public final P3 fixedRotationCenter = new P3();
+  protected final P3 perspectiveOffset = new P3();
+  protected final P3 perspectiveShiftXY = new P3();
 
-  private final Point3f rotationCenterDefault = new Point3f();
+  private final P3 rotationCenterDefault = new P3();
   private float rotationRadiusDefault;
 
   public final AxisAngle4f fixedRotationAxis = new AxisAngle4f();
   public final AxisAngle4f internalRotationAxis = new AxisAngle4f();
-  protected Vector3f internalTranslation;
-  private final Point3f internalRotationCenter = Point3f.new3(0, 0, 0);
+  protected V3 internalTranslation;
+  final P3 internalRotationCenter = P3.new3(0, 0, 0);
   private float internalRotationAngle = 0;
 
   /* ***************************************************************
@@ -282,25 +186,25 @@ public class TransformManager {
   private final Matrix3f matrixTemp3 = new Matrix3f();
   private final Matrix4f matrixTemp4 = new Matrix4f();
   private final AxisAngle4f axisangleT = new AxisAngle4f();
-  private final Vector3f vectorT = new Vector3f();
-  private final Vector3f vectorT2 = new Vector3f();
-  private final Point3f pointT2 = new Point3f();
+  private final V3 vectorT = new V3();
+  private final V3 vectorT2 = new V3();
+  private final P3 pointT2 = new P3();
 
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
 
-  private void setFixedRotationCenter(Point3f center) {
+  private void setFixedRotationCenter(P3 center) {
     if (center == null)
       return;
     fixedRotationCenter.setT(center);
   }
 
-  void setRotationPointXY(Point3f center) {
-    Point3i newCenterScreen = transformPoint(center);
+  void setRotationPointXY(P3 center) {
+    P3i newCenterScreen = transformPoint(center);
     fixedTranslation.set(newCenterScreen.x, newCenterScreen.y, 0);
   }
 
-  Vector3f rotationAxis = new Vector3f();
+  V3 rotationAxis = new V3();
   float rotationRate = 0;
 
   void spinXYBy(int xDelta, int yDelta, float speed) {
@@ -311,10 +215,10 @@ public class TransformManager {
       return;
     }
     clearSpin();
-    Point3f pt1 = Point3f.newP(fixedRotationCenter);
-    Point3f ptScreen = new Point3f();
+    P3 pt1 = P3.newP(fixedRotationCenter);
+    P3 ptScreen = new P3();
     transformPoint2(pt1, ptScreen);
-    Point3f pt2 = Point3f.new3(-yDelta, xDelta, 0);
+    P3 pt2 = P3.new3(-yDelta, xDelta, 0);
     pt2.add(ptScreen);
     unTransformPoint(pt2, pt2);
     viewer.setInMotion(false);
@@ -322,9 +226,9 @@ public class TransformManager {
         true, null, true, null, null);
   }
 
-  final Vector3f arcBall0 = new Vector3f();
-  final Vector3f arcBall1 = new Vector3f();
-  final Vector3f arcBallAxis = new Vector3f();
+  final V3 arcBall0 = new V3();
+  final V3 arcBall1 = new V3();
+  final V3 arcBallAxis = new V3();
   final Matrix3f arcBall0Rotation = new Matrix3f();
 
   void rotateArcBall(float x, float y, float factor) {
@@ -353,10 +257,10 @@ public class TransformManager {
     rotateAxisAngle2(axisangleT, null);
   }
 
-  void rotateXYBy(float xDelta, float yDelta, BitSet bsAtoms) {
+  void rotateXYBy(float xDelta, float yDelta, BS bsAtoms) {
     // from mouse action
-    rotateXRadians(yDelta * JmolConstants.radiansPerDegree, bsAtoms);
-    rotateYRadians(xDelta * JmolConstants.radiansPerDegree, bsAtoms);
+    rotateXRadians(yDelta * JC.radiansPerDegree, bsAtoms);
+    rotateYRadians(xDelta * JC.radiansPerDegree, bsAtoms);
   }
 
   void rotateZBy(int zDelta, int x, int y) {
@@ -381,8 +285,8 @@ public class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  private void applyRotation(Matrix3f mNew, boolean isInternal, BitSet bsAtoms,
-                             Vector3f translation) {
+  private void applyRotation(Matrix3f mNew, boolean isInternal, BS bsAtoms,
+                             V3 translation) {
     if (bsAtoms == null) {
       matrixRotate.mul2(mNew, matrixRotate);
       return;
@@ -394,12 +298,12 @@ public class TransformManager {
     }
   }
 
-  public synchronized void rotateXRadians(float angleRadians, BitSet bsAtoms) {
+  public synchronized void rotateXRadians(float angleRadians, BS bsAtoms) {
     matrixTemp3.rotX(angleRadians);
     applyRotation(matrixTemp3, false, bsAtoms, null);
   }
 
-  public synchronized void rotateYRadians(float angleRadians, BitSet bsAtoms) {
+  public synchronized void rotateYRadians(float angleRadians, BS bsAtoms) {
     matrixTemp3.rotY(angleRadians);
     applyRotation(matrixTemp3, false, bsAtoms, null);
   }
@@ -409,13 +313,13 @@ public class TransformManager {
     applyRotation(matrixTemp3, false, null, null);
   }
 
-  public void rotateAxisAngle(Vector3f rotAxis, float radians) {
+  public void rotateAxisAngle(V3 rotAxis, float radians) {
     axisangleT.setVA(rotAxis, radians);
     rotateAxisAngle2(axisangleT, null);
   }
 
   private synchronized void rotateAxisAngle2(AxisAngle4f axisAngle,
-                                             BitSet bsAtoms) {
+                                             BS bsAtoms) {
     //matrixTemp3.setIdentity();
     matrixTemp3.setAA(axisAngle);
     applyRotation(matrixTemp3, false, bsAtoms, null);
@@ -427,10 +331,10 @@ public class TransformManager {
    * **************************************************************
    */
 
-  boolean rotateAxisAngleAtCenter(ScriptEvaluator eval, Point3f rotCenter,
-                                  Vector3f rotAxis, float degreesPerSecond,
+  boolean rotateAxisAngleAtCenter(JmolScriptEvaluator eval, P3 rotCenter,
+                                  V3 rotAxis, float degreesPerSecond,
                                   float endDegrees, boolean isSpin,
-                                  BitSet bsAtoms) {
+                                  BS bsAtoms) {
 
     // *THE* Viewer FIXED frame rotation/spinning entry point
     if (rotCenter != null)
@@ -456,21 +360,21 @@ public class TransformManager {
     rotationRate = degreesPerSecond;
     if (isSpin) {
       fixedRotationAxis.setVA(rotAxis, degreesPerSecond
-          * JmolConstants.radiansPerDegree);
+          * JC.radiansPerDegree);
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
       setSpin(eval, true, endDegrees, null, bsAtoms, false);
       return false;
     }
-    float radians = endDegrees * JmolConstants.radiansPerDegree;
+    float radians = endDegrees * JC.radiansPerDegree;
     fixedRotationAxis.setVA(rotAxis, endDegrees);
     rotateAxisAngleRadiansFixed(radians, bsAtoms);
     return true;
   }
 
   public synchronized void rotateAxisAngleRadiansFixed(float angleRadians,
-                                                       BitSet bsAtoms) {
+                                                       BS bsAtoms) {
     // for spinning -- reduced number of radians
     axisangleT.setAA(fixedRotationAxis);
     axisangleT.angle = angleRadians;
@@ -482,12 +386,12 @@ public class TransformManager {
    * ROTATIONS**************************************************************
    */
 
-  boolean rotateAboutPointsInternal(ScriptEvaluator eval, Point3f point1,
-                                    Point3f point2, float degreesPerSecond,
+  boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, P3 point1,
+                                    P3 point2, float degreesPerSecond,
                                     float endDegrees, boolean isClockwise,
-                                    boolean isSpin, BitSet bsAtoms,
-                                    boolean isGesture, Vector3f translation,
-                                    List<Point3f> finalPoints) {
+                                    boolean isSpin, BS bsAtoms,
+                                    boolean isGesture, V3 translation,
+                                    JmolList<P3> finalPoints) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -505,7 +409,7 @@ public class TransformManager {
         && (isSpin || endDegrees == 0))
       return false;
 
-    Vector3f axis = Vector3f.newV(point2);
+    V3 axis = V3.newV(point2);
     axis.sub(point1);
     if (isClockwise)
       axis.scale(-1f);
@@ -514,7 +418,7 @@ public class TransformManager {
     if (translation == null) {
       internalTranslation = null;
     } else {
-      internalTranslation = Vector3f.newV(translation);
+      internalTranslation = V3.newV(translation);
       //System.out.println("TM TRANSLATE " + internalTranslation);
     }
     boolean isSelected = (bsAtoms != null);
@@ -532,21 +436,21 @@ public class TransformManager {
           internalTranslation.scale(1f / (nFrames));
       }
       internalRotationAxis.setVA(axis, rotationRate
-          * JmolConstants.radiansPerDegree);
+          * JC.radiansPerDegree);
       isSpinInternal = true;
       isSpinFixed = false;
       isSpinSelected = isSelected;
       setSpin(eval, true, endDegrees, finalPoints, bsAtoms, isGesture);
       return false;
     }
-    float radians = endDegrees * JmolConstants.radiansPerDegree;
+    float radians = endDegrees * JC.radiansPerDegree;
     internalRotationAxis.setVA(axis, radians);
     rotateAxisAngleRadiansInternal(radians, bsAtoms);
     return true;
   }
 
   public synchronized void rotateAxisAngleRadiansInternal(float radians,
-                                                          BitSet bsAtoms) {
+                                                          BS bsAtoms) {
 
     // final matrix rotation when spinning or just rotating
 
@@ -592,7 +496,7 @@ public class TransformManager {
     vectorT.setT(internalRotationCenter);
     pointT2.setT(fixedRotationCenter);
     pointT2.sub(vectorT);
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     matrixTemp4.transform2(pointT2, pt);
 
     // return this point to the fixed frame
@@ -607,7 +511,7 @@ public class TransformManager {
   /* ***************************************************************
    * TRANSLATIONS
    ****************************************************************/
-  public final Point3f fixedTranslation = new Point3f();
+  public final P3 fixedTranslation = new P3();
 
   float xTranslationFraction = 0.5f;
   float yTranslationFraction = 0.5f;
@@ -622,7 +526,7 @@ public class TransformManager {
     yTranslationFraction = fixedTranslation.y / height;
   }
 
-  public void centerAt(int x, int y, Point3f pt) {
+  public void centerAt(int x, int y, P3 pt) {
     if (pt == null) {
       translateXYBy(x, y);
       return;
@@ -704,12 +608,12 @@ public class TransformManager {
 
   String getOrientationText(int type) {
     switch (type) {
-    case Token.moveto:
+    case T.moveto:
       return getMoveToText(1, false);
-    case Token.rotation:
+    case T.rotation:
       return getRotationQuaternion().toString();
-    case Token.translation:
-      StringXBuilder sb = new StringXBuilder();
+    case T.translation:
+      SB sb = new SB();
       truncate2(sb, getTranslationXPercent());
       truncate2(sb, getTranslationYPercent());
       return sb.toString();
@@ -731,19 +635,19 @@ public class TransformManager {
     info.put("rotationMatrix", matrixRotate);
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
-    info.put("transXPercent", new Float(getTranslationXPercent()));
-    info.put("transYPercent", new Float(getTranslationYPercent()));
-    info.put("zoom", new Float(zoomPercent));
-    info.put("modelRadius", new Float(modelRadius));
+    info.put("transXPercent", Float.valueOf(getTranslationXPercent()));
+    info.put("transYPercent", Float.valueOf(getTranslationYPercent()));
+    info.put("zoom", Float.valueOf(zoomPercent));
+    info.put("modelRadius", Float.valueOf(modelRadius));
     if (mode == MODE_NAVIGATION) {
       info.put("navigationCenter", "navigate center "
-          + Escape.escapePt(navigationCenter));
-      info.put("navigationOffsetXPercent", new Float(
+          + Escape.eP(navigationCenter));
+      info.put("navigationOffsetXPercent", Float.valueOf(
           getNavigationOffsetPercent('X')));
-      info.put("navigationOffsetYPercent", new Float(
+      info.put("navigationOffsetYPercent", Float.valueOf(
           getNavigationOffsetPercent('Y')));
       info
-          .put("navigationDepthPercent", new Float(getNavigationDepthPercent()));
+          .put("navigationDepthPercent", Float.valueOf(getNavigationDepthPercent()));
     }
     return info;
   }
@@ -834,7 +738,7 @@ public class TransformManager {
       return;
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     transformPoint2(fixedRotationCenter, pt);
     pt.set(x, y, pt.z);
     unTransformPoint(pt, pt);
@@ -884,16 +788,20 @@ public class TransformManager {
   int depthPercentSetting;
   public int zSlabPercentSetting = 50; // new default for 12.3.6 and 12.2.6
   public int zDepthPercentSetting = 0;
-  Point3f zSlabPoint;
+  P3 zSlabPoint;
 
-  void setZslabPoint(Point3f pt) {
-    zSlabPoint = (pt == null ? null : Point3f.newP(pt));
+  void setZslabPoint(P3 pt) {
+    zSlabPoint = (pt == null ? null : P3.newP(pt));
   }
 
   public int slabValue;
   public int depthValue;
   public int zSlabValue;
   int zDepthValue;
+
+  int getZShadeStart() {
+    return (zShadeEnabled ? zSlabValue : 0);
+  }
 
   float slabRange = 0f;
 
@@ -903,21 +811,21 @@ public class TransformManager {
 
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
-    viewer.getGlobalSettings().setParamB("slabEnabled", slabEnabled);
+    viewer.getGlobalSettings().setB("slabEnabled", slabEnabled);
   }
 
   void setZShadeEnabled(boolean zShadeEnabled) {
     this.zShadeEnabled = zShadeEnabled;
-    viewer.getGlobalSettings().setParamB("zShade", zShadeEnabled);
+    viewer.getGlobalSettings().setB("zShade", zShadeEnabled);
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
     this.zoomEnabled = zoomEnabled;
-    viewer.getGlobalSettings().setParamB("zoomEnabled", zoomEnabled);
+    viewer.getGlobalSettings().setB("zoomEnabled", zoomEnabled);
   }
 
-  Point4f slabPlane = null;
-  Point4f depthPlane = null;
+  P4 slabPlane = null;
+  P4 depthPlane = null;
 
   void slabReset() {
     slabToPercent(100);
@@ -942,8 +850,8 @@ public class TransformManager {
   }
 
   private void slabDepthChanged() {
-    viewer.getGlobalSettings().setParamI("slab", slabPercentSetting);
-    viewer.getGlobalSettings().setParamI("depth", depthPercentSetting);
+    viewer.getGlobalSettings().setI("slab", slabPercentSetting);
+    viewer.getGlobalSettings().setI("depth", depthPercentSetting);
   }
 
   void depthByPercentagePoints(int percentage) {
@@ -974,7 +882,7 @@ public class TransformManager {
   }
 
   void depthToPercent(int percentDepth) {
-    viewer.getGlobalSettings().setParamI("depth", percentDepth);
+    viewer.getGlobalSettings().setI("depth", percentDepth);
     depthPercentSetting = percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
@@ -993,7 +901,7 @@ public class TransformManager {
       zSlabPercentSetting = percentDepth;
   }
 
-  void slabInternal(Point4f plane, boolean isDepth) {
+  void slabInternal(P4 plane, boolean isDepth) {
     //also from viewer
     if (isDepth) {
       depthPlane = plane;
@@ -1018,7 +926,7 @@ public class TransformManager {
     slabInternal(getSlabDepthPlane(isDepth), isDepth);
   }
 
-  Point4f getSlabDepthPlane(boolean isDepth) {
+  P4 getSlabDepthPlane(boolean isDepth) {
     // the third row of the matrix defines the Z coordinate, which is all we need
     // and, in fact, it defines the plane. How convenient!
     // eval "slab set"
@@ -1030,11 +938,11 @@ public class TransformManager {
         return slabPlane;
     }
     Matrix4f m = matrixTransform;
-    return Point4f.new4(-m.m20, -m.m21, -m.m22, -m.m23
+    return P4.new4(-m.m20, -m.m21, -m.m22, -m.m23
         + (isDepth ? depthValue : slabValue));
   }
 
-  boolean checkInternalSlab(Point3f pt) {
+  boolean checkInternalSlab(P3 pt) {
     return (slabPlane != null
         && pt.x * slabPlane.x + pt.y * slabPlane.y + pt.z * slabPlane.z
             + slabPlane.w > 0 || depthPlane != null
@@ -1211,12 +1119,12 @@ public class TransformManager {
    * 
    * @return a set of camera data
    */
-  Point3f[] getCameraFactors() {
+  P3[] getCameraFactors() {
     aperatureAngle = (float) (Math.atan2(screenPixelCount / 2f,
         referencePlaneOffset) * 2 * 180 / Math.PI);
     cameraDistanceFromCenter = referencePlaneOffset / scalePixelsPerAngstrom;
 
-    Point3f ptRef = Point3f.new3(screenWidth / 2, screenHeight / 2,
+    P3 ptRef = P3.new3(screenWidth / 2, screenHeight / 2,
         referencePlaneOffset);
     unTransformPoint(ptRef, ptRef);
 
@@ -1234,10 +1142,10 @@ public class TransformManager {
     // note that navigation mode should be EXACTLY reproduced
     // in these renderers. 
 
-    Point3f ptCamera = Point3f.new3(screenWidth / 2, screenHeight / 2, 0);
+    P3 ptCamera = P3.new3(screenWidth / 2, screenHeight / 2, 0);
     viewer.unTransformPoint(ptCamera, ptCamera);
     ptCamera.sub(fixedRotationCenter);
-    Point3f pt = Point3f.new3(screenWidth / 2, screenHeight / 2,
+    P3 pt = P3.new3(screenWidth / 2, screenHeight / 2,
         cameraDistanceFromCenter * scalePixelsPerAngstrom);
     viewer.unTransformPoint(pt, pt);
     pt.sub(fixedRotationCenter);
@@ -1248,11 +1156,11 @@ public class TransformManager {
             + scalePixelsPerAngstrom + " vr " + visualRange + " sw/vr "
             + screenWidth / visualRange + " " + ptRef + " " + fixedRotationCenter);
     */
-    return new Point3f[] {
+    return new P3[] {
         ptRef,
         ptCamera,
         fixedRotationCenter,
-        Point3f.new3(cameraDistanceFromCenter, aperatureAngle,
+        P3.new3(cameraDistanceFromCenter, aperatureAngle,
             scalePixelsPerAngstrom) };
   }
 
@@ -1423,10 +1331,10 @@ public class TransformManager {
     return matrixTransform;
   }
 
-  protected final Point3f point3fScreenTemp = new Point3f();
-  protected final Point3i point3iScreenTemp = new Point3i();
+  protected final P3 point3fScreenTemp = new P3();
+  protected final P3i point3iScreenTemp = new P3i();
 
-  private final Point3f point3fVibrationTemp = new Point3f();
+  private final P3 point3fVibrationTemp = new P3();
 
   public boolean navigating = false;
   protected final static int MODE_STANDARD = 0;
@@ -1507,10 +1415,10 @@ public class TransformManager {
       }
     }
 
-    viewer.getGlobalSettings().setParamS("_slabPlane",
-        Escape.escape(getSlabDepthPlane(false)));
-    viewer.getGlobalSettings().setParamS("_depthPlane",
-        Escape.escape(getSlabDepthPlane(true)));
+    viewer.getGlobalSettings().setS("_slabPlane",
+        Escape.e(getSlabDepthPlane(false)));
+    viewer.getGlobalSettings().setS("_depthPlane",
+        Escape.e(getSlabDepthPlane(true)));
     if (slabEnabled)
       return;
     slabValue = 0;
@@ -1557,21 +1465,21 @@ public class TransformManager {
 
   }
 
-  void rotatePoint(Point3f pt, Point3f ptRot) {
+  void rotatePoint(P3 pt, P3 ptRot) {
     matrixRotate.transform2(pt, ptRot);
     ptRot.y = -ptRot.y;
   }
 
-  void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
+  void transformPoints(int count, P3[] angstroms, P3i[] screens) {
     for (int i = count; --i >= 0;)
       screens[i].setT(transformPoint(angstroms[i]));
   }
 
-  void transformPointScr(Point3f pointAngstroms, Point3i pointScreen) {
+  void transformPointScr(P3 pointAngstroms, P3i pointScreen) {
     pointScreen.setT(transformPoint(pointAngstroms));
   }
 
-  void transformPointNoClip2(Point3f pointAngstroms, Point3f pointScreen) {
+  void transformPointNoClip2(P3 pointAngstroms, P3 pointScreen) {
     pointScreen.setT(transformPointNoClip(pointAngstroms));
   }
 
@@ -1581,7 +1489,7 @@ public class TransformManager {
    * @param pointAngstroms
    * @return POINTER TO point3iScreenTemp
    */
-  synchronized Point3i transformPoint(Point3f pointAngstroms) {
+  synchronized P3i transformPoint(P3 pointAngstroms) {
     if (pointAngstroms.z == Float.MAX_VALUE
         || pointAngstroms.z == -Float.MAX_VALUE)
       return transformScreenPoint(pointAngstroms);
@@ -1592,9 +1500,9 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
-  private final Point3f pointTsp = new Point3f();
+  private final P3 pointTsp = new P3();
 
-  private Point3i transformScreenPoint(Point3f ptXyp) {
+  private P3i transformScreenPoint(P3 ptXyp) {
     // just does the processing for [x y] and [x y %]
     if (ptXyp.z == -Float.MAX_VALUE) {
       point3iScreenTemp.x = (int) Math.floor(ptXyp.x / 100 * screenWidth);
@@ -1619,7 +1527,7 @@ public class TransformManager {
    * @param pointAngstroms
    * @return POINTER TO point3iScreenTemp
    */
-  synchronized Point3f transformPointNoClip(Point3f pointAngstroms) {
+  synchronized P3 transformPointNoClip(P3 pointAngstroms) {
     matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     return point3fScreenTemp;
@@ -1630,7 +1538,7 @@ public class TransformManager {
    * @param vibrationVector
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  Point3i transformPointVib(Point3f pointAngstroms, Vector3f vibrationVector) {
+  P3i transformPointVib(P3 pointAngstroms, V3 vibrationVector) {
     point3fVibrationTemp.setT(pointAngstroms);
     if (vibrationOn && vibrationVector != null)
       point3fVibrationTemp.scaleAdd2(vibrationAmplitude, vibrationVector,
@@ -1642,7 +1550,7 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
-  public void transformPoint2(Point3f pointAngstroms, Point3f screen) {
+  public void transformPoint2(P3 pointAngstroms, P3 screen) {
     matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
@@ -1650,14 +1558,14 @@ public class TransformManager {
     screen.setT(point3fScreenTemp);
   }
 
-  void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
+  void transformVector(V3 vectorAngstroms, V3 vectorTransformed) {
     //dots renderer, geodesic only
     matrixTransform.transformV2(vectorAngstroms, vectorTransformed);
   }
 
-  final protected Point3f untransformedPoint = new Point3f();
+  final protected P3 untransformedPoint = new P3();
 
-  public void unTransformPoint(Point3f screenPt, Point3f coordPt) {
+  public void unTransformPoint(P3 screenPt, P3 coordPt) {
     //draw move2D
     untransformedPoint.setT(screenPt);
     switch (mode) {
@@ -1695,7 +1603,7 @@ public class TransformManager {
    * move/moveTo support
    ****************************************************************/
 
-  void move(ScriptEvaluator eval, Vector3f dRot, float dZoom, Vector3f dTrans,
+  void move(JmolScriptEvaluator eval, V3 dRot, float dZoom, V3 dTrans,
             float dSlab, float floatSecondsTotal, int fps) {
 
     MoveThread motion = new MoveThread(this, viewer);
@@ -1705,13 +1613,13 @@ public class TransformManager {
     motion.run();
   }
 
-  protected final Point3f ptTest1 = new Point3f();
-  protected final Point3f ptTest2 = new Point3f();
-  protected final Point3f ptTest3 = new Point3f();
+  protected final P3 ptTest1 = new P3();
+  protected final P3 ptTest2 = new P3();
+  protected final P3 ptTest3 = new P3();
   protected final AxisAngle4f aaTest1 = new AxisAngle4f();
   protected final Matrix3f matrixTest = new Matrix3f();
 
-  boolean isInPosition(Vector3f axis, float degrees) {
+  boolean isInPosition(V3 axis, float degrees) {
     if (Float.isNaN(degrees))
       return true;
     aaTest1.setVA(axis, (float) (degrees / degreesPerRadian));
@@ -1726,13 +1634,13 @@ public class TransformManager {
   public MoveToThread motion;
 
   // from Viewer
-  void moveTo(ScriptEvaluator eval, float floatSecondsTotal, Point3f center,
+  void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal, P3 center,
               Tuple3f rotAxis, float degrees, Matrix3f matrixEnd, float zoom,
               float xTrans, float yTrans, float newRotationRadius,
-              Point3f navCenter, float xNav, float yNav, float navDepth) {
+              P3 navCenter, float xNav, float yNav, float navDepth) {
     if (matrixEnd == null) {
       matrixEnd = new Matrix3f();
-      Vector3f axis = Vector3f.newV(rotAxis);
+      V3 axis = V3.newV(rotAxis);
       if (Float.isNaN(degrees)) {
         matrixEnd.m00 = Float.NaN;
       } else if (degrees < 0.01f && degrees > -0.01f) {
@@ -1790,7 +1698,7 @@ public class TransformManager {
   String getRotationText() {
     axisangleT.setM(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     if (degrees < 0.01f)
       return "{0 0 1 0}";
@@ -1806,7 +1714,7 @@ public class TransformManager {
   }
 
   String getMoveToText(float timespan, boolean addComments) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("moveto ");
     if (addComments)
       sb.append("/* time, axisAngle */ ");
@@ -1828,11 +1736,11 @@ public class TransformManager {
   }
 
   private String getCenterText() {
-    return Escape.escapePt(fixedRotationCenter);
+    return Escape.eP(fixedRotationCenter);
   }
 
   private String getRotateXyzText() {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     float m20 = matrixRotate.m20;
     float rY = -(float) (Math.asin(m20) * degreesPerRadian);
     float rX, rZ;
@@ -1862,7 +1770,7 @@ public class TransformManager {
     return sb.toString();
   }
 
-  private void addZoomTranslationNavigationText(StringXBuilder sb) {
+  private void addZoomTranslationNavigationText(SB sb) {
     if (zoomPercent != 100) {
       sb.append(" zoom");
       truncate2(sb, zoomPercent);
@@ -1887,7 +1795,7 @@ public class TransformManager {
       sb.append(";");
     }
     if (mode == MODE_NAVIGATION) {
-      sb.append("navigate 0 center ").append(Escape.escapePt(navigationCenter));
+      sb.append("navigate 0 center ").append(Escape.eP(navigationCenter));
       sb.append(";navigate 0 translate");
       truncate2(sb, getNavigationOffsetPercent('X'));
       truncate2(sb, getNavigationOffsetPercent('Y'));
@@ -1898,7 +1806,7 @@ public class TransformManager {
   }
 
   private String getRotateZyzText(boolean iAddComment) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     Matrix3f m = (Matrix3f) viewer
         .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m == null) {
@@ -1939,12 +1847,12 @@ public class TransformManager {
     return sb.toString();
   }
 
-  static private void truncate0(StringXBuilder sb, float val) {
+  static private void truncate0(SB sb, float val) {
     sb.appendC(' ');
     sb.appendI(Math.round(val));
   }
 
-  static private void truncate2(StringXBuilder sb, float val) {
+  static private void truncate2(SB sb, float val) {
     sb.appendC(' ');
     sb.appendF(Math.round(val * 100) / 100f);
   }
@@ -2011,13 +1919,13 @@ public class TransformManager {
     setSpin(null, false, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpin(ScriptEvaluator eval, boolean spinOn, float endDegrees,
-                       List<Point3f> endPositions, BitSet bsAtoms,
+  private void setSpin(JmolScriptEvaluator eval, boolean spinOn, float endDegrees,
+                       JmolList<P3> endPositions, BS bsAtoms,
                        boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
-    viewer.getGlobalSettings().setParamB("_spinning", spinOn);
+    viewer.getGlobalSettings().setB("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread(this, viewer, endDegrees, endPositions,
@@ -2042,7 +1950,7 @@ public class TransformManager {
     if (navOn && spinOn)
       setSpin(null, false, 0, null, null, false);
     this.navOn = navOn;
-    viewer.getGlobalSettings().setParamB("_navigating", navOn);
+    viewer.getGlobalSettings().setB("_navigating", navOn);
     if (!navOn)
       navInterrupt();
     if (navOn) {
@@ -2063,7 +1971,7 @@ public class TransformManager {
   }
 
   boolean vibrationOn;
-  private float vibrationPeriod;
+  float vibrationPeriod;
   public int vibrationPeriodMs;
   private float vibrationAmplitude;
   private float vibrationRadians;
@@ -2155,7 +2063,7 @@ public class TransformManager {
 
   void setStereoDegrees(float stereoDegrees) {
     this.stereoDegrees = stereoDegrees;
-    stereoRadians = stereoDegrees * JmolConstants.radiansPerDegree;
+    stereoRadians = stereoDegrees * JC.radiansPerDegree;
   }
 
   boolean stereoFrame;
@@ -2186,7 +2094,7 @@ public class TransformManager {
     resetNavigationPoint(true);
   }
 
-  Point3f getRotationCenter() {
+  P3 getRotationCenter() {
     return fixedRotationCenter;
   }
 
@@ -2202,7 +2110,7 @@ public class TransformManager {
     return angstroms;
   }
 
-  private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
+  private void setRotationCenterAndRadiusXYZ(P3 newCenterOfRotation,
                                              boolean andRadius) {
     resetNavigationPoint(false);
     if (newCenterOfRotation == null) {
@@ -2215,8 +2123,8 @@ public class TransformManager {
       modelRadius = viewer.calcRotationRadius(fixedRotationCenter);
   }
 
-  private void setRotCenterRel(String relativeTo, Point3f pt) {
-    Point3f pt1 = Point3f.newP(pt);
+  private void setRotCenterRel(String relativeTo, P3 pt) {
+    P3 pt1 = P3.newP(pt);
     if (relativeTo == "average")
       pt1.add(viewer.getAverageAtomPoint());
     else if (relativeTo == "boundbox")
@@ -2226,7 +2134,7 @@ public class TransformManager {
     setRotationCenterAndRadiusXYZ(pt1, true);
   }
 
-  void setNewRotationCenter(Point3f center, boolean doScale) {
+  void setNewRotationCenter(P3 center, boolean doScale) {
     // once we have the center, we need to optionally move it to 
     // the proper XY position and possibly scale
     if (center == null)
@@ -2244,7 +2152,7 @@ public class TransformManager {
 
   // from Viewer:
 
-  public void moveRotationCenter(Point3f center, boolean toXY) {
+  public void moveRotationCenter(P3 center, boolean toXY) {
     setRotationCenterAndRadiusXYZ(center, false);
     if (toXY)
       setRotationPointXY(fixedRotationCenter);
@@ -2254,7 +2162,7 @@ public class TransformManager {
     setRotationCenterAndRadiusXYZ(fixedRotationCenter, true);
   }
 
-  void setCenterAt(String relativeTo, Point3f pt) {
+  void setCenterAt(String relativeTo, P3 pt) {
     setRotCenterRel(relativeTo, pt);
     resetFitToScreen(true);
   }
@@ -2263,8 +2171,8 @@ public class TransformManager {
    * Navigation support
    ****************************************************************/
 
-  Point3f[] frameOffsets;
-  final Point3f frameOffset = new Point3f();
+  P3[] frameOffsets;
+  final P3 frameOffset = new P3();
 
   void setFrameOffset(int modelIndex) {
     if (frameOffsets == null || modelIndex < 0
@@ -2274,16 +2182,16 @@ public class TransformManager {
       frameOffset.setT(frameOffsets[modelIndex]);
   }
 
-  void setFrameOffsets(Point3f[] offsets) {
+  void setFrameOffsets(P3[] offsets) {
     frameOffsets = offsets;
   }
 
   /////////// Allow during-rendering mouse operations ///////////
 
-  BitSet bsSelectedAtoms;
-  Point3f ptOffset = new Point3f();
+  BS bsSelectedAtoms;
+  P3 ptOffset = new P3();
 
-  void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
+  void setSelectedTranslation(BS bsAtoms, char xyz, int xy) {
     this.bsSelectedAtoms = bsAtoms;
     switch (xyz) {
     case 'X':
@@ -2526,7 +2434,7 @@ public class TransformManager {
    * 
    * @param pt
    */
-  public void setNavigatePt(Point3f pt) {
+  public void setNavigatePt(P3 pt) {
     // from MoveToThread
     navigationCenter.setT(pt);
     navMode = NAV_MODE_NEWXYZ;
@@ -2535,7 +2443,7 @@ public class TransformManager {
     navigating = false;
   }
 
-  public Point3f getNavigationCenter() {
+  public P3 getNavigationCenter() {
     return navigationCenter;
   }
 
@@ -2544,12 +2452,12 @@ public class TransformManager {
   }
 
   void setNavigationSlabOffsetPercent(float percent) {
-    viewer.getGlobalSettings().setParamF("navigationSlab", percent);
+    viewer.getGlobalSettings().setF("navigationSlab", percent);
     calcCameraFactors(); // current
     navigationSlabOffset = percent / 50 * modelRadiusPixels;
   }
 
-  Point3f getNavigationOffset() {
+  P3 getNavigationOffset() {
     transformPoint2(navigationCenter, navigationOffset);
     return navigationOffset;
   }
@@ -2570,7 +2478,7 @@ public class TransformManager {
   protected String getNavigationText(boolean addComments) {
     getNavigationOffset();
     return (addComments ? " /* navigation center, translation, depth */ " : " ")
-        + Escape.escapePt(navigationCenter)
+        + Escape.eP(navigationCenter)
         + " "
         + getNavigationOffsetPercent('X')
         + " "
@@ -2580,9 +2488,9 @@ public class TransformManager {
   void setScreenParameters(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
-    Point3f pt = (mode == MODE_NAVIGATION ? Point3f.newP(navigationCenter)
+    P3 pt = (mode == MODE_NAVIGATION ? P3.newP(navigationCenter)
         : null);
-    Point3f ptoff = Point3f.newP(navigationOffset);
+    P3 ptoff = P3.newP(navigationOffset);
     ptoff.x = ptoff.x / width;
     ptoff.y = ptoff.y / height;
     setScreenParameters0(screenWidth, screenHeight, useZoomLarge, antialias,
@@ -2614,7 +2522,7 @@ public class TransformManager {
     return true;
   }
 
-  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list) {
     if (getNav())
       nav.navigateList(eval, list);
   }
@@ -2625,7 +2533,7 @@ public class TransformManager {
    * @param rotAxis
    * @param degrees
    */
-  public void navigateAxis(Vector3f rotAxis, float degrees) {
+  public void navigateAxis(V3 rotAxis, float degrees) {
     if (getNav())
       nav.navigateAxis(rotAxis, degrees);
   }

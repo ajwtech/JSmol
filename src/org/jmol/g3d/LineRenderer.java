@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-03 07:51:51 -0600 (Mon, 03 Dec 2012) $
- * $Revision: 17786 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -45,21 +45,23 @@ package org.jmol.g3d;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Shader;
 
 final class LineRenderer {
 
-  private Graphics3D g3d;
+  private final Graphics3D g3d;
+  private final Shader shader;
 
   LineRenderer(Graphics3D g3d) {
     this.g3d = g3d;
+    shader = g3d.shader;
   }
 
-  private BitSet lineBits;
+  private BS lineBits;
   private float slope;
   private boolean lineTypeX;
   //int lineDirection;
@@ -67,7 +69,7 @@ final class LineRenderer {
   private int nCached = 0;
   private int nFound = 0;
   //int test = 5;
-  private Map<Float, BitSet> lineCache = new Hashtable<Float, BitSet>();
+  private Map<Float, BS> lineCache = new Hashtable<Float, BS>();
   private Float slopeKey;
   
   void setLineBits(float dx, float dy) { 
@@ -78,7 +80,7 @@ final class LineRenderer {
     if (getCachedLine())
       return;
     nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
-    lineBits = BitSetUtil.newBitSet(nBits);
+    lineBits = BSUtil.newBitSet(nBits);
     dy = Math.abs(dy);
     dx = Math.abs(dx);
     if (dy > dx) {
@@ -208,7 +210,7 @@ final class LineRenderer {
   }
 
   private boolean getCachedLine() {
-    slopeKey = new Float(slope);
+    slopeKey = Float.valueOf(slope);
     if (!lineCache.containsKey(slopeKey))
       return false;
     lineBits = lineCache.get(slopeKey);
@@ -533,7 +535,7 @@ final class LineRenderer {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shader.nextRandom8Bit();
+            int rand8 = shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -576,7 +578,7 @@ final class LineRenderer {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shader.nextRandom8Bit();
+            int rand8 = g3d.shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -671,7 +673,7 @@ final class LineRenderer {
       if (argb != 0 && isInWindow && offset >= 0 && offset < offsetMax 
           && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
         if (zFloat < zbuf[offset]) {
-          int rand8 = Shader.nextRandom8Bit();
+          int rand8 = shader.nextRandom8Bit();
           g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
         }
       }

@@ -25,13 +25,13 @@
 
 package org.jmol.util;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 
-import org.jmol.script.ScriptVariable;
+import org.jmol.script.SV;
 
 
 
@@ -59,7 +59,7 @@ public class Escape {
    * @param xyz
    * @return  {x y z}
    */
-  public static String escapePt(Tuple3f xyz) {
+  public static String eP(Tuple3f xyz) {
     if (xyz == null)
       return "null";
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
@@ -70,21 +70,21 @@ public class Escape {
   }
   
   @SuppressWarnings("unchecked")
-  public static String escape(Object x) {
+  public static String e(Object x) {
     if (x instanceof String)
-      return escapeStr((String) x);
-    if (x instanceof List<?>)
-      return escapeVar((ArrayList<ScriptVariable>) x);
-    if (x instanceof BitSet) 
-      return escapeBs((BitSet) x, true);
+      return eS((String) x);
+    if (x instanceof JmolList<?>)
+      return eV((JmolList<SV>) x);
+    if (x instanceof BS) 
+      return eB((BS) x, true);
     if (x instanceof Matrix3f) 
       return TextFormat.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
     if (x instanceof Matrix4f) 
       return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
     if (x instanceof Tuple3f)
-      return escapePt((Tuple3f) x);
-    if (x instanceof Point4f) {
-      Point4f xyzw = (Point4f) x;
+      return eP((Tuple3f) x);
+    if (x instanceof P4) {
+      P4 xyzw = (P4) x;
       return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
     }
     if (x instanceof AxisAngle4f) {
@@ -135,7 +135,7 @@ public class Escape {
      *  return Clazz.isAP(x);
      */
     {
-    return x instanceof Point3f[];
+    return x instanceof P3[];
     }
   }
 
@@ -158,9 +158,9 @@ public class Escape {
   public static boolean isAV(Object x) {
     /**
      * @j2sNative
-     *  return Clazz.instanceOf(x[0], org.jmol.script.ScriptVariable);
+     *  return Clazz.instanceOf(x[0], org.jmol.script.SV);
      */
-    return x instanceof ScriptVariable[];
+    return x instanceof SV[];
   }
 
   public static boolean isAD(Object x) {
@@ -231,7 +231,7 @@ public class Escape {
 
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
-  public static String escapeStr(String str) {
+  public static String eS(String str) {
     if (str == null)
       return "\"\"";
     boolean haveEscape = false;
@@ -246,7 +246,7 @@ public class Escape {
         int pt = -1;
         char ch = escapable.charAt(i++);
         char ch2 = escapable.charAt(i++);
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         int pt0 = 0;
         while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
           sb.append(str.substring(pt0, pt)).appendC('\\').appendC(ch2);
@@ -267,10 +267,10 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static String escapeVar(ArrayList<ScriptVariable> list) {
+  public static String eV(JmolList<SV> list) {
     if (list == null)
-      return escapeStr("");
-    StringXBuilder s = new StringXBuilder();
+      return eS("");
+    SB s = new SB();
     s.append("[");
     for (int i = 0; i < list.size(); i++) {
       if (i > 0)
@@ -282,16 +282,16 @@ public class Escape {
   }
 
   public static String escapeMap(Map<String, Object> ht) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("{ ");
     String sep = "";
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getKey();
-      sb.append(sep).append(escapeStr(key)).appendC(':');
+      sb.append(sep).append(eS(key)).appendC(':');
       Object val = entry.getValue();
-      if (!(val instanceof ScriptVariable))
-        val = ScriptVariable.getVariable(val);
-      sb.append(((ScriptVariable)val).escape());
+      if (!(val instanceof SV))
+        val = SV.getVariable(val);
+      sb.append(((SV)val).escape());
       sep = ","; 
     }
     sb.append(" }");
@@ -307,7 +307,7 @@ public class Escape {
   public static String escapeFloatA(float[] f, boolean asArray) {
     if (asArray)
       return toJSON(null, f); // or just use escape(f)
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
         sb.appendC('\n');
@@ -317,7 +317,7 @@ public class Escape {
   }
 
   public static String escapeFloatAA(float[][] f, boolean addSemi) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String eol = (addSemi ? ";\n" : "\n");
     for (int i = 0; i < f.length; i++)
       if (f[i] != null) {
@@ -330,7 +330,7 @@ public class Escape {
   }
 
   public static String escapeFloatAAA(float[][][] f, boolean addSemi) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String eol = (addSemi ? ";\n" : "\n");
     if (f[0] == null || f[0][0] == null)
       return "0 0 0" + eol;
@@ -359,13 +359,13 @@ public class Escape {
    */
   public static String escapeStrA(String[] list, boolean nicely) {
     if (list == null)
-      return escapeStr("");
-    StringXBuilder s = new StringXBuilder();
+      return eS("");
+    SB s = new SB();
     s.append("[");
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
         s.append(", ");
-      s.append(nicely ? escapeNice(list[i]) : escapeStr(list[i]));
+      s.append(nicely ? escapeNice(list[i]) : eS(list[i]));
     }
     s.append("]");
     return s.toString();
@@ -374,8 +374,8 @@ public class Escape {
   public static String escapeAI(Object x) {
     // from isosurface area or volume calc
     if (x == null)
-      return escapeStr("");
-    StringXBuilder s = new StringXBuilder();
+      return eS("");
+    SB s = new SB();
     s.append("[");
       int[] ilist = (int[]) x;
       for (int i = 0; i < ilist.length; i++) {
@@ -389,8 +389,8 @@ public class Escape {
   public static String escapeAF(Object x) {
     // from isosurface area or volume calc
     if (x == null)
-      return escapeStr("");
-    StringXBuilder s = new StringXBuilder();
+      return eS("");
+    SB s = new SB();
     s.append("[");
       float[] flist = (float[]) x;
       for (int i = 0; i < flist.length; i++) {
@@ -404,14 +404,14 @@ public class Escape {
   public static String escapeAP(Object x) {
     // from isosurface area or volume calc
     if (x == null)
-      return escapeStr("");
-    StringXBuilder s = new StringXBuilder();
+      return eS("");
+    SB s = new SB();
     s.append("[");
-      Point3f[] plist = (Point3f[]) x;
+      P3[] plist = (P3[]) x;
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
-        s.append(escapePt(plist[i]));
+        s.append(eP(plist[i]));
       }
     return s.append("]").toString();
   }
@@ -420,16 +420,16 @@ public class Escape {
     if (s == null)
       return "null";
     float f = Parser.parseFloatStrict(s);
-    return (Float.isNaN(f) ? escapeStr(s) : s);
+    return (Float.isNaN(f) ? eS(s) : s);
   }
 
   public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
     if (s.charAt(0) == '{')
-      return unescapePoint(s);
+      return uP(s);
     if ((isStringArray(s)
         || s.startsWith("[{") && s.indexOf("[{") == s.lastIndexOf("[{"))
         && s.indexOf(',') < 0 && s.indexOf('.') < 0 && s.indexOf('-') < 0)
-      return unescapeBitset(s);
+      return uB(s);
     if (s.startsWith("[["))
       return unescapeMatrix(s);
     return s;
@@ -439,7 +439,7 @@ public class Escape {
     return s.startsWith("({") && s.lastIndexOf("({") == 0
         && s.indexOf("})") == s.length() - 2;
   }
-  public static Object unescapePoint(String strPoint) {
+  public static Object uP(String strPoint) {
     if (strPoint == null || strPoint.length() == 0)
       return strPoint;
     String str = strPoint.replace('\n', ' ').trim();
@@ -459,13 +459,13 @@ public class Escape {
       }
     }
     if (nPoints == 3)
-      return Point3f.new3(points[0], points[1], points[2]);
+      return P3.new3(points[0], points[1], points[2]);
     if (nPoints == 4)
-      return Point4f.new4(points[0], points[1], points[2], points[3]);
+      return P4.new4(points[0], points[1], points[2], points[3]);
     return strPoint;
   }
 
-  public static BitSet unescapeBitset(String str) {
+  public static BS uB(String str) {
       char ch;
       int len;
       if (str == null || (len = (str = str.trim()).length()) < 4
@@ -491,7 +491,7 @@ public class Escape {
         } catch (NumberFormatException e) {
           return null;
         }
-      BitSet bs = BitSetUtil.newBitSet(lastN);
+      BS bs = BSUtil.newBitSet(lastN);
       lastN = -1;
       int iPrev = -1;
       int iThis = -2;
@@ -564,12 +564,12 @@ public class Escape {
     return points;
   }
 */
-  public static String escapeBs(BitSet bs, boolean isAtoms) {
+  public static String eB(BS bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');
     if (bs == null)
       return chOpen + "{}" + chClose;
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     s.append(chOpen + "{");
     int imax = bs.length();
     int iLast = -1;
@@ -596,7 +596,7 @@ public class Escape {
     return s.toString();
   }
 
-  private static String packageJSONSb(String infoType, StringXBuilder sb) {
+  private static String packageJSONSb(String infoType, SB sb) {
     return packageJSON(infoType, sb.toString());
   }
 
@@ -619,7 +619,7 @@ public class Escape {
 
     //Logger.debug(infoType+" -- "+info);
 
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
@@ -669,10 +669,10 @@ public class Escape {
     }
     if (isAP(info)) {
       sb.append("[");
-      int imax = ((Point3f[]) info).length;
+      int imax = ((P3[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep);
-        addJsonTuple(sb, ((Point3f[]) info)[i]);
+        addJsonTuple(sb, ((P3[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -718,11 +718,11 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof List) {
+    if (info instanceof JmolList) {
       sb.append("[ ");
-      int imax = ((List<?>) info).size();
+      int imax = ((JmolList<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
+        sb.append(sep).append(toJSON(null, ((JmolList<?>) info).get(i)));
         sep = ",";
       }
       sb.append(" ]");
@@ -766,12 +766,12 @@ public class Escape {
       .appendF((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
     return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Point4f) {
+    if (info instanceof P4) {
       sb.append("[")
-        .appendF(((Point4f) info).x).append(",")
-        .appendF(((Point4f) info).y).append(",")
-        .appendF(((Point4f) info).z).append(",")
-        .appendF(((Point4f) info).w).append("]");
+        .appendF(((P4) info).x).append(",")
+        .appendF(((P4) info).y).append(",")
+        .appendF(((P4) info).z).append(",")
+        .appendF(((P4) info).w).append("]");
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
@@ -789,7 +789,7 @@ public class Escape {
     return packageJSON(infoType, fixString(info.toString()));
   }
 
-  private static void addJsonTuple(StringXBuilder sb, Tuple3f pt) {
+  private static void addJsonTuple(SB sb, Tuple3f pt) {
     sb.append("[")
     .appendF(pt.x).append(",")
     .appendF(pt.y).append(",")
@@ -797,17 +797,17 @@ public class Escape {
   }
 
   public static String toReadable(String name, Object info) {
-    StringXBuilder sb =new StringXBuilder();
+    SB sb =new SB();
     String sep = "";
     if (info == null)
       return "null";
     if (info instanceof String)
-      return packageReadable(name, null, escapeStr((String) info));
+      return packageReadable(name, null, eS((String) info));
     if (isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(escapeStr(((String[]) info)[i]));
+        sb.append(sep).append(eS(((String[]) info)[i]));
         sep = ",";
       }
       sb.append("]");
@@ -835,9 +835,9 @@ public class Escape {
     }
     if (isAP(info)) {
       sb.append("[");
-      int imax = ((Point3f[]) info).length;
+      int imax = ((P3[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(escapePt(((Point3f[])info)[i]));
+        sb.append(sep).append(eP(((P3[])info)[i]));
         sep = ",";
       }
       sb.append("]");
@@ -873,18 +873,18 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[][]", sb);
     }
-    if (info instanceof List<?>) {
-      int imax = ((List<?>) info).size();
+    if (info instanceof JmolList<?>) {
+      int imax = ((JmolList<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((JmolList<?>) info).get(i)));
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f
         || info instanceof Tuple3f
-        || info instanceof Point4f
+        || info instanceof P4
         || info instanceof AxisAngle4f) {
-      sb.append(escape(info));
+      sb.append(e(info));
       return packageReadableSb(name, null, sb);
     }
     if (info instanceof Map<?, ?>) {
@@ -900,7 +900,7 @@ public class Escape {
   }
 
   private static String packageReadableSb(String infoName, String infoType,
-                                        StringXBuilder sb) {
+                                        SB sb) {
     return packageReadable(infoName, infoType, sb.toString());
   }
   
@@ -936,7 +936,7 @@ public class Escape {
 
   public static String unescapeUnicode(String s) {
     int ichMax = s.length();
-    StringXBuilder sb = StringXBuilder.newN(ichMax);
+    SB sb = SB.newN(ichMax);
     int ich = 0;
     while (ich < ichMax) {
       char ch = s.charAt(ich++);
@@ -979,14 +979,14 @@ public class Escape {
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
       return null;
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {
       String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.add(s);
+      v.addLast(s);
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    
@@ -1001,5 +1001,6 @@ public class Escape {
     url = TextFormat.simpleReplace(url, " ", "%20");
     return url;
   }
+
 
 }

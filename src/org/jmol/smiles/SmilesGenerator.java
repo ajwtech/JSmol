@@ -24,23 +24,23 @@
 
 package org.jmol.smiles;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.smiles.SmilesSearch.VTemp;
 
 /**
@@ -59,18 +59,18 @@ public class SmilesGenerator {
   // inputs:
   private JmolNode[] atoms;
   private int atomCount;
-  private BitSet bsSelected;
-  private BitSet bsAromatic;
+  private BS bsSelected;
+  private BS bsAromatic;
   
-  private StringXBuilder ringSets;
+  private SB ringSets;
 
   // data
 
   private VTemp vTemp = new VTemp();
   private int nPairs;
-  private BitSet bsBondsUp = new BitSet();
-  private BitSet bsBondsDn = new BitSet();
-  private BitSet bsToDo;
+  private BS bsBondsUp = new BS();
+  private BS bsBondsDn = new BS();
+  private BS bsToDo;
   private JmolNode prevAtom;
   private JmolNode[] prevSp2Atoms;
   
@@ -78,36 +78,36 @@ public class SmilesGenerator {
 
   private Map<String, Object[]> htRingsSequence = new Hashtable<String, Object[]>();
   private Map<String, Object[]> htRings = new Hashtable<String, Object[]>();
-  private BitSet bsIncludingH;
+  private BS bsIncludingH;
 
   // generation of SMILES strings
 
-  String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected)
+  String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected)
       throws InvalidSmilesException {
     int i = bsSelected.nextSetBit(0);
     if (i < 0)
       return "";
     this.atoms = atoms;
     this.atomCount = atomCount;
-    this.bsSelected = bsSelected = BitSetUtil.copy(bsSelected);
+    this.bsSelected = bsSelected = BSUtil.copy(bsSelected);
     return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
-  String getBioSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
+  String getBioSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
                       boolean allowUnmatchedRings, boolean addCrossLinks, String comment)
       throws InvalidSmilesException {
     this.atoms = atoms;
     this.atomCount = atomCount;
-    StringXBuilder sb = new StringXBuilder();
-    BitSet bs = BitSetUtil.copy(bsSelected);
+    SB sb = new SB();
+    BS bs = BSUtil.copy(bsSelected);
     if (comment != null)
       sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
         " *//");
     String end = "\n";
-    BitSet bsIgnore = new BitSet();
+    BS bsIgnore = new BS();
     String lastComponent = null;
     String s;
-    List<Integer> vLinks = new ArrayList<Integer>();
+    JmolList<Integer> vLinks = new  JmolList<Integer>();
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -192,7 +192,7 @@ public class SmilesGenerator {
     return s;
   }
 
-  private void addBracketedBioName(StringXBuilder sb, JmolNode a, String atomName) {
+  private void addBracketedBioName(SB sb, JmolNode a, String atomName) {
     sb.append("[");
     if (atomName != null) {
       char chChain = a.getChainID();
@@ -221,16 +221,16 @@ public class SmilesGenerator {
    * @return SMILES
    * @throws InvalidSmilesException
    */
-  private String getSmilesComponent(JmolNode atom, BitSet bs,
+  private String getSmilesComponent(JmolNode atom, BS bs,
                                     boolean allowConnectionsToOutsideWorld)
       throws InvalidSmilesException {
 
     if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
     bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
-        BitSetUtil.copy(bs), null, -1, true, false);
+        BSUtil.copy(bs), null, -1, true, false);
     bs.andNot(bsSelected);
-    bsIncludingH = BitSetUtil.copy(bsSelected);
+    bsIncludingH = BSUtil.copy(bsSelected);
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
         .nextSetBit(j + 1)) {
       JmolNode a = atoms[j];
@@ -249,10 +249,10 @@ public class SmilesGenerator {
       ringSets = search.ringSets;
       setBondDirections();
     } else {
-      bsAromatic = new BitSet();
+      bsAromatic = new BS();
     }
-    bsToDo = BitSetUtil.copy(bsSelected);
-    StringXBuilder sb = new StringXBuilder();
+    bsToDo = BSUtil.copy(bsSelected);
+    SB sb = new SB();
 
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
       if (atoms[i].getCovalentBondCount() > 4) {
@@ -307,7 +307,7 @@ public class SmilesGenerator {
    *
    */
   private void setBondDirections() {
-    BitSet bsDone = new BitSet();
+    BS bsDone = new BS();
     JmolEdge[][] edges = new JmolEdge[2][3];
     
     // We don't assume a bond list, just an atom list, so we
@@ -425,7 +425,7 @@ public class SmilesGenerator {
     }
   }
 
-  private JmolNode getSmiles(StringXBuilder sb, JmolNode atom,
+  private JmolNode getSmiles(SB sb, JmolNode atom,
                              boolean allowConnectionsToOutsideWorld, boolean allowBranches) {
     int atomIndex = atom.getIndex();
 
@@ -441,7 +441,7 @@ public class SmilesGenerator {
     int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
-    List<JmolEdge> v = new ArrayList<JmolEdge>();
+    JmolList<JmolEdge> v = new  JmolList<JmolEdge>();
     JmolEdge bond0 = null;
     JmolEdge bondPrev = null;
     JmolEdge[] bonds = atom.getEdges();
@@ -481,7 +481,7 @@ public class SmilesGenerator {
           if (nH > 1)
             stereoFlag = 10;
         } else {
-          v.add(bonds[i]);
+          v.addLast(bonds[i]);
         }
       }
 
@@ -512,7 +512,7 @@ public class SmilesGenerator {
 
     // get bond0 
     int nMax = 0;
-    BitSet bsBranches = new BitSet();
+    BS bsBranches = new BS();
     if (allowBranches)
       for (int i = 0; i < v.size(); i++) {
         JmolEdge bond = v.get(i);
@@ -549,13 +549,13 @@ public class SmilesGenerator {
 
     // now construct the branches part
 
-    StringXBuilder sMore = new StringXBuilder();
+    SB sMore = new SB();
     for (int i = 0; i < v.size(); i++) {
       JmolEdge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
       JmolNode a = bond.getOtherAtomNode(atom);
-      StringXBuilder s2 = new StringXBuilder();
+      SB s2 = new SB();
       s2.append("(");
       prevAtom = atom;
       prevSp2Atoms = null;
@@ -689,14 +689,14 @@ public class SmilesGenerator {
    * @param v
    * @return  "@" or "@@" or ""
    */
-  private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
+  private String sortInorganic(JmolNode atom, JmolList<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
-    List<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
-    List<JmolEdge> bonds = new ArrayList<JmolEdge>();
+    JmolList<JmolEdge[]> axialPairs = new  JmolList<JmolEdge[]>();
+    JmolList<JmolEdge> bonds = new  JmolList<JmolEdge>();
     JmolNode a1, a2;
     JmolEdge bond1, bond2;
-    BitSet bsDone = new BitSet();
+    BS bsDone = new BS();
     JmolEdge[] pair0 = null;
     JmolNode[] stereo = new JmolNode[6];
     boolean isOK = true; // AX6 or AX5
@@ -718,14 +718,14 @@ public class SmilesGenerator {
         bond2 = v.get(j);
         a2 = bond2.getOtherAtomNode(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
-          axialPairs.add(new JmolEdge[] { bond1, bond2 });
+          axialPairs.addLast(new JmolEdge[] { bond1, bond2 });
           isAxial = true;
           bsDone.set(j);
           break;
         }
       }
       if (!isAxial)
-        bonds.add(bond1);
+        bonds.addLast(bond1);
     }
     int nPairs = axialPairs.size();
 
@@ -742,21 +742,21 @@ public class SmilesGenerator {
     // now sort them into the ligand vector in the proper order
     
     v.clear();
-    v.add(bond1);
+    v.addLast(bond1);
     if (nPairs > 1)
-      bonds.add(axialPairs.get(1)[0]);
+      bonds.addLast(axialPairs.get(1)[0]);
     if (nPairs == 3)
-      bonds.add(axialPairs.get(2)[0]);
+      bonds.addLast(axialPairs.get(2)[0]);
     if (nPairs > 1)
-      bonds.add(axialPairs.get(1)[1]);
+      bonds.addLast(axialPairs.get(1)[1]);
     if (nPairs == 3)
-      bonds.add(axialPairs.get(2)[1]);
+      bonds.addLast(axialPairs.get(2)[1]);
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
-      v.add(bond1);
+      v.addLast(bond1);
       stereo[i + 1] = bond1.getOtherAtomNode(atom);
     }
-    v.add(pair0[1]);
+    v.addLast(pair0[1]);
     
     // now deterimine the stereochemistry
     
@@ -801,22 +801,22 @@ public class SmilesGenerator {
     case 5:
     case 6:
       // like tetrahedral
-      return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+      return (SmilesSearch.checkStereochemistryAll(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
     case 2: // allene
     case 4: // tetrahedral, square planar
       if (atom3 == null || atom4 == null)
         return "";
       float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
-      if (Math.abs(SmilesSearch.distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
+      if (Math.abs(SmilesSearch.distanceToPlane(v.vTemp, d, (P3) atom4)) < 0.2f) {
         chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryAll(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP1";
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryAll(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP2";
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryAll(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP3";       
       } else {
-        return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+        return (SmilesSearch.checkStereochemistryAll(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
       }       
     }
     return "";
@@ -877,7 +877,7 @@ public class SmilesGenerator {
     return s;//  + " _" + key + "_ \n";
   }
 
-  private void dumpRingKeys(StringXBuilder sb, Map<String, Object[]> ht) {
+  private void dumpRingKeys(SB sb, Map<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
     Iterator<String> e = ht.keySet().iterator();
     while (e.hasNext()) {

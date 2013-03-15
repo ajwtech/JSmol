@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-03 07:51:51 -0600 (Mon, 03 Dec 2012) $
- * $Revision: 17786 $
+ * $Date: 2013-03-12 07:10:55 -0500 (Tue, 12 Mar 2013) $
+ * $Revision: 17970 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -24,18 +24,18 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.api.JmolRepaintInterface;
+import org.jmol.api.JmolRepaintManager;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-public class RepaintManager implements JmolRepaintInterface {
+public class RepaintManager implements JmolRepaintManager {
 
   private Viewer viewer;
   private ShapeManager shapeManager;
@@ -45,7 +45,7 @@ public class RepaintManager implements JmolRepaintInterface {
     // required for reflection
   }
   
-  private final BitSet bsTranslucent = BitSet.newN(JmolConstants.SHAPE_MAX);
+  private final BS bsTranslucent = BS.newN(JC.SHAPE_MAX);
   
   public void set(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
@@ -161,14 +161,14 @@ public class RepaintManager implements JmolRepaintInterface {
     if (iShape >= 0)
       renderers[iShape] = null;
     else
-      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
+      for (int i = 0; i < JC.SHAPE_MAX; ++i)
         renderers[i] = null;
   }
 
   private ShapeRenderer getRenderer(int shapeID) {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
-    String className = JmolConstants.getShapeClassName(shapeID, true) + "Renderer";
+    String className = JC.getShapeClassName(shapeID, true) + "Renderer";
     try {
       Class<?> shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
@@ -197,18 +197,18 @@ public class RepaintManager implements JmolRepaintInterface {
             g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
       }
       if (renderers == null)
-        renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
+        renderers = new ShapeRenderer[JC.SHAPE_MAX];
       String msg = null;
-      for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
+      for (int i = 0; i < JC.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
         Shape shape = shapeManager.getShape(i);
         if (shape == null)
           continue;
         
         if (logTime) {
-          msg = "rendering " + JmolConstants.getShapeClassName(i, false);
+          msg = "rendering " + JC.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        if((isFirstPass || bsTranslucent.get(i)) && getRenderer(i).render(g3d, modelSet, shape))
+        if((isFirstPass || bsTranslucent.get(i)) && getRenderer(i).renderShape(g3d, modelSet, shape))
           bsTranslucent.set(i);
         if (logTime)
           Logger.checkTimer(msg, false);
@@ -235,17 +235,17 @@ public class RepaintManager implements JmolRepaintInterface {
     }
     g3dExport.renderBackground(g3dExport);
     if (renderers == null)
-      renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
+      renderers = new ShapeRenderer[JC.SHAPE_MAX];
     String msg = null;
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+    for (int i = 0; i < JC.SHAPE_MAX; ++i) {
       Shape shape = shapeManager.getShape(i);
       if (shape == null)
         continue;
         if (logTime) {
-          msg = "rendering " + JmolConstants.getShapeClassName(i, false);
+          msg = "rendering " + JC.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        getRenderer(i).render(g3dExport, modelSet, shape);
+        getRenderer(i).renderShape(g3dExport, modelSet, shape);
         if (logTime)
           Logger.checkTimer(msg, false);
     }

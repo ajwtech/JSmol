@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-07 18:01:26 -0500 (Sun, 07 Oct 2012) $
- * $Revision: 17634 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -25,23 +25,24 @@ package org.jmol.modelset;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.J2SRequireImport;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
-@J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JmolConstants.class})
+@J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JC.class})
 public class Group {
 
   protected int groupIndex;
@@ -78,6 +79,23 @@ public class Group {
   private float mu = Float.NaN;
   private float theta = Float.NaN;
   
+  public Group() {}
+  
+  public Group setGroup(Chain chain, String group3, int seqcode,
+        int firstAtomIndex, int lastAtomIndex) {
+    this.chain = chain;
+    this.seqcode = seqcode;
+    
+    if (group3 == null)
+      group3 = "";
+    groupID = getGroupIdFor(group3);
+    isProtein = (groupID >= 1 && groupID < JC.GROUPID_AMINO_MAX); 
+
+    this.firstAtomIndex = firstAtomIndex;
+    this.lastAtomIndex = lastAtomIndex;
+    return this;
+  }
+
   protected boolean calcBioParameters() {
     return false;
   }
@@ -88,22 +106,22 @@ public class Group {
   
   public void setGroupParameter(int tok, float f) {
     switch (tok) {
-    case Token.phi:
+    case T.phi:
       phi = f;
       break;
-    case Token.psi:
+    case T.psi:
       psi = f;
       break;
-    case Token.omega:
+    case T.omega:
       omega = f;
       break;
-    case Token.eta:
+    case T.eta:
       mu = f;
       break;
-    case Token.theta:
+    case T.theta:
       theta = f;
       break;
-    case Token.straightness:
+    case T.straightness:
       straightness = f;
       break;
     }
@@ -113,34 +131,20 @@ public class Group {
     if (!haveParameters())
       calcBioParameters();
     switch (tok) {
-    case Token.omega:
+    case T.omega:
       return omega;
-    case Token.phi:
+    case T.phi:
       return phi;
-    case Token.psi:
+    case T.psi:
       return psi;
-    case Token.eta:
+    case T.eta:
       return mu;
-    case Token.theta:
+    case T.theta:
       return theta;
-    case Token.straightness:
+    case T.straightness:
       return straightness;
     }
     return Float.NaN;
-  }
-
-  public Group(Chain chain, String group3, int seqcode,
-        int firstAtomIndex, int lastAtomIndex) {
-    this.chain = chain;
-    this.seqcode = seqcode;
-    
-    if (group3 == null)
-      group3 = "";
-    groupID = getGroupID(group3);
-    isProtein = (groupID >= 1 && groupID < JmolConstants.GROUPID_AMINO_MAX); 
-
-    this.firstAtomIndex = firstAtomIndex;
-    this.lastAtomIndex = lastAtomIndex;
   }
 
   public void setModelSet(ModelSet modelSet) {
@@ -159,14 +163,14 @@ public class Group {
     return group3Names[groupID];
   }
 
-  public static String getGroup3(short groupID) {
+  public static String getGroup3For(short groupID) {
     return group3Names[groupID];
   }
 
   public final char getGroup1() {
-    if (groupID >= JmolConstants.predefinedGroup1Names.length)
+    if (groupID >= JC.predefinedGroup1Names.length)
       return '?';
-    return JmolConstants.predefinedGroup1Names[groupID];
+    return JC.predefinedGroup1Names[groupID];
   }
 
   public final short getGroupID() {
@@ -221,8 +225,8 @@ public class Group {
   }
   
   public boolean isNucleic() { 
-    return (groupID >= JmolConstants.GROUPID_AMINO_MAX 
-        && groupID < JmolConstants.GROUPID_NUCLEIC_MAX); 
+    return (groupID >= JC.GROUPID_AMINO_MAX 
+        && groupID < JC.GROUPID_NUCLEIC_MAX); 
   }
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
@@ -240,8 +244,8 @@ public class Group {
   static short group3NameCount = 0;
   
   static {
-    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i) {
-      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
+    for (int i = 0; i < JC.predefinedGroup3Names.length; ++i) {
+      addGroup3Name(JC.predefinedGroup3Names[i]);
     }
   }
   
@@ -254,7 +258,7 @@ public class Group {
     return groupID;
   }
 
-  public static short getGroupID(String group3) {
+  public static short getGroupIdFor(String group3) {
     if (group3 == null)
       return -1;
     short groupID = lookupGroupID(group3);
@@ -286,13 +290,9 @@ public class Group {
     return seqcode >> SEQUENCE_NUMBER_SHIFT;
   }
 
-  public final static int getSequenceNumber(int seqcode) {
+  public final static int getSeqNumberFor(int seqcode) {
     return (haveSequenceNumber(seqcode)? seqcode >> SEQUENCE_NUMBER_SHIFT 
         : Integer.MAX_VALUE);
-  }
-  
-  public final static int getInsertionCodeValue(int seqcode) {
-    return (seqcode & INSERTION_CODE_MASK);
   }
   
   public final static boolean haveSequenceNumber(int seqcode) {
@@ -300,39 +300,26 @@ public class Group {
   }
 
   public final String getSeqcodeString() {
-    return getSeqcodeString(seqcode);
+    return getSeqcodeStringFor(seqcode);
   }
 
-//  /**
-//   * necessary for JavaScript due to problem with char
-//   * @param sequenceNumber
-//   * @param insertionCode
-//   * @return seqcode << 8 + insertionCode 
-//   */
-//  public static int getSeqcode(int sequenceNumber, String insertionCode) {
-//    return getSeqcode2(sequenceNumber, insertionCode.charAt(0));
-//  }
-  
-  public static int getSeqcode(int sequenceNumber, char insertionCode) {
-    return getSeqcode2(sequenceNumber, insertionCode);
-  }
-  public static int getSeqcode2(int sequenceNumber, char insertionCode) {
-    if (sequenceNumber == Integer.MIN_VALUE)
-      return sequenceNumber;
-    if (! ((insertionCode >= 'A' && insertionCode <= 'Z') ||
-           (insertionCode >= 'a' && insertionCode <= 'z') ||
-           (insertionCode >= '0' && insertionCode <= '9') ||
-           insertionCode == '?' || insertionCode == '*')) {
-      if (insertionCode != ' ' && insertionCode != '\0')
-        Logger.warn("unrecognized insertionCode:" + insertionCode);
-      insertionCode = '\0';
+  public static int getSeqcodeFor(int seqNo, char insCode) {
+    if (seqNo == Integer.MIN_VALUE)
+      return seqNo;
+    if (! ((insCode >= 'A' && insCode <= 'Z') ||
+           (insCode >= 'a' && insCode <= 'z') ||
+           (insCode >= '0' && insCode <= '9') ||
+           insCode == '?' || insCode == '*')) {
+      if (insCode != ' ' && insCode != '\0')
+        Logger.warn("unrecognized insertionCode:" + insCode);
+      insCode = '\0';
     }
-    return ((sequenceNumber == Integer.MAX_VALUE ? 0 
-        : (sequenceNumber << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG))
-        + insertionCode;
+    return ((seqNo == Integer.MAX_VALUE ? 0 
+        : (seqNo << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG))
+        + insCode;
   }
 
-  public static String getSeqcodeString(int seqcode) {
+  public static String getSeqcodeStringFor(int seqcode) {
     if (seqcode == Integer.MIN_VALUE)
       return null;
     return (seqcode & INSERTION_CODE_MASK) == 0
@@ -347,13 +334,15 @@ public class Group {
     return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
-  public static char getInsertionCode(int seqcode) {
-    if (seqcode == Integer.MIN_VALUE)
-      return '\0';
-    return (char)(seqcode & INSERTION_CODE_MASK);
+  public static int getInsertionCodeFor(int seqcode) {
+    return (seqcode & INSERTION_CODE_MASK);
   }
   
-  private BitSet bsAdded;
+  public static char getInsertionCodeChar(int seqcode) {
+    return (seqcode == Integer.MIN_VALUE ? '\0' : (char)(seqcode & INSERTION_CODE_MASK));
+  }
+  
+  private BS bsAdded;
   
   public boolean isAdded(int atomIndex) {
     return bsAdded != null && bsAdded.get(atomIndex);
@@ -361,18 +350,18 @@ public class Group {
   
   public void addAtoms(int atomIndex) {
     if (bsAdded == null)
-      bsAdded = new BitSet();
+      bsAdded = new BS();
     bsAdded.set(atomIndex);
   }
   
-  public int selectAtoms(BitSet bs) {
+  public int selectAtoms(BS bs) {
     bs.setBits(firstAtomIndex, lastAtomIndex + 1);
     if (bsAdded != null)
       bs.or(bsAdded);
     return lastAtomIndex;
   }
 
-  public boolean isSelected(BitSet bs) {
+  public boolean isSelected(BS bs) {
     int pt = bs.nextSetBit(firstAtomIndex);
     return (pt >= 0 && pt <= lastAtomIndex 
         || bsAdded != null &&  bsAdded.intersects(bs));
@@ -476,15 +465,15 @@ public class Group {
    */
   public Object getHelixData(int tokType, char qType, int mStep) {
         switch (tokType) {
-        case Token.point:
-          return new Point3f();
-        case Token.axis:
-        case Token.radius:
-          return new Vector3f();
-        case Token.angle:
-          return new Float(Float.NaN);
-        case Token.array:
-        case Token.list:
+        case T.point:
+          return new P3();
+        case T.axis:
+        case T.radius:
+          return new V3();
+        case T.angle:
+          return Float.valueOf(Float.NaN);
+        case T.array:
+        case T.list:
           return new String[] {};
         }
     return "";
@@ -525,7 +514,7 @@ public class Group {
    * @param vReturn
    * @return T/F
    */
-  public boolean getCrossLinkLead(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {
     return false;
   }
 
@@ -541,15 +530,15 @@ public class Group {
     return null;
   }
 
-  public void fixIndices(int atomsDeleted, BitSet bsDeleted) {
+  public void fixIndices(int atomsDeleted, BS bsDeleted) {
     firstAtomIndex -= atomsDeleted;
     leadAtomIndex -= atomsDeleted;
     lastAtomIndex -= atomsDeleted;
     if (bsAdded != null)
-      BitSetUtil.deleteBits(bsAdded, bsDeleted);
+      BSUtil.deleteBits(bsAdded, bsDeleted);
   }
 
-  protected Map<String, Object> getGroupInfo(int igroup) {
+  public Map<String, Object> getGroupInfo(int igroup) {
     Map<String, Object> infoGroup = new Hashtable<String, Object>();
     infoGroup.put("groupIndex", Integer.valueOf(igroup));
     infoGroup.put("groupID", Short.valueOf(groupID));

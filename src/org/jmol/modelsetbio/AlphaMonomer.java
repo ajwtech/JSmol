@@ -27,10 +27,10 @@ package org.jmol.modelsetbio;
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 public class AlphaMonomer extends Monomer {
 
@@ -45,26 +45,25 @@ public class AlphaMonomer extends Monomer {
     validateAndAllocateA(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
                         int[] specialAtomIndexes) {
-    if (firstIndex != lastIndex ||
-        specialAtomIndexes[JmolConstants.ATOMID_ALPHA_CARBON] != firstIndex)
-      return null;
-    return new AlphaMonomer(chain, group3, seqcode,
-                            firstIndex, lastIndex, alphaOffsets);
+    return (firstIndex != lastIndex ||
+        specialAtomIndexes[JC.ATOMID_ALPHA_CARBON] != firstIndex ? null : 
+          new AlphaMonomer().set2(chain, group3, seqcode,
+                            firstIndex, lastIndex, alphaOffsets));
   }
   
   ////////////////////////////////////////////////////////////////
 
-  AlphaMonomer(Chain chain, String group3, int seqcode,
-               int firstAtomIndex, int lastAtomIndex,
-               byte[] offsets) {
-    super(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, offsets);
-  }
-
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sOverride
+   * 
+   */
+  protected AlphaMonomer () {}
+  
   boolean isAlphaMonomer() { return true; }
 
   protected ProteinStructure proteinStructure;
-  protected Point3f nitrogenHydrogenPoint;
+  protected P3 nitrogenHydrogenPoint;
   
   @Override
   public ProteinStructure getProteinStructure() { return proteinStructure; }
@@ -155,13 +154,13 @@ public class AlphaMonomer extends Monomer {
   }
   
   final public Atom getAtom(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+    return (specialAtomID == JC.ATOMID_ALPHA_CARBON
             ? getLeadAtom()
             : null);
   }
 
-  final public Point3f getAtomPoint(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+  final public P3 getAtomPoint(byte specialAtomID) {
+    return (specialAtomID == JC.ATOMID_ALPHA_CARBON
             ? getLeadAtom()
             : null);
   }
@@ -177,7 +176,11 @@ public class AlphaMonomer extends Monomer {
   }
   
   @Override
-  Point3f getQuaternionFrameCenter(char qType) {
+  P3 getQuaternionFrameCenter(char qType) {
+    return getQuaternionFrameCenterAlpha(qType);
+  }
+
+  protected P3 getQuaternionFrameCenterAlpha(char qType) {
     switch (qType) {
     case 'b':
     case 'c':
@@ -201,6 +204,10 @@ public class AlphaMonomer extends Monomer {
   
   @Override
   public Quaternion getQuaternion(char qType) {
+    return getQuaternionAlpha(qType);
+  }
+
+  protected Quaternion getQuaternionAlpha(char qType) {
     /*
      * also NucleicMonomer, AminoMonomer
      * 
@@ -208,9 +215,9 @@ public class AlphaMonomer extends Monomer {
      *   
      */
     
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
-    Vector3f vC = null;
+    V3 vA = new V3();
+    V3 vB = new V3();
+    V3 vC = null;
 
     switch (qType) {
     default:
@@ -227,9 +234,9 @@ public class AlphaMonomer extends Monomer {
       if (monomerIndex == 0 
           || monomerIndex == bioPolymer.monomerCount - 1)
         return null;
-      Point3f ptCa = getLeadAtom();
-      Point3f ptCaNext = bioPolymer.getLeadPoint(monomerIndex + 1);
-      Point3f ptCaPrev = bioPolymer.getLeadPoint(monomerIndex - 1);
+      P3 ptCa = getLeadAtom();
+      P3 ptCaNext = bioPolymer.getLeadPoint(monomerIndex + 1);
+      P3 ptCaPrev = bioPolymer.getLeadPoint(monomerIndex - 1);
       vA.sub2(ptCaNext, ptCa);
       vB.sub2(ptCaPrev, ptCa);
       break;

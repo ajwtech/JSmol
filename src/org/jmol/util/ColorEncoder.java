@@ -23,13 +23,13 @@
  */
 package org.jmol.util;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.constant.EnumPalette;
 
 
@@ -52,11 +52,11 @@ import org.jmol.constant.EnumPalette;
     if (propertyColorEncoder == null) {
       schemes = new Hashtable<String, int[]>();
       argbsCpk = EnumPalette.argbsCpk;
-      argbsRoygb = JmolConstants.argbsRoygbScale;
-      argbsRwb = JmolConstants.argbsRwbScale;
-      argbsShapely = JmolConstants.argbsShapely;
-      argbsAmino = JmolConstants.argbsAmino;
-      ihalf = JmolConstants.argbsRoygbScale.length / 3;
+      argbsRoygb = JC.argbsRoygbScale;
+      argbsRwb = JC.argbsRwbScale;
+      argbsShapely = JC.argbsShapely;
+      argbsAmino = JC.argbsAmino;
+      ihalf = JC.argbsRoygbScale.length / 3;
       this.propertyColorEncoder = this;
     } else {
       this.propertyColorEncoder = propertyColorEncoder;
@@ -89,7 +89,8 @@ import org.jmol.constant.EnumPalette;
   public final static int WB  = 11;
   public final static int USER = -12;
   public final static int RESU = -13;
-  public final static int ALT = 14; // == 0
+  public final static int INHERIT = 14;
+  public final static int ALT = 15; // == 0
 
   private final static String[] colorSchemes = {
     "roygb", "bgyor", 
@@ -97,7 +98,7 @@ import org.jmol.constant.EnumPalette;
     BYRESIDUE_AMINO, 
     "rwb", "bwr", "low", "high", "bw", "wb",
     // custom
-    "user", "resu", 
+    "user", "resu", "inherit",
     // ALT_NAMES:
     "rgb", "bgr", 
     "jmol", "rasmol", BYRESIDUE_PREFIX 
@@ -172,11 +173,11 @@ import org.jmol.constant.EnumPalette;
           break;
         case ROYGB:
         case BGYOR:
-          argbsRoygb = JmolConstants.argbsRoygbScale;
+          argbsRoygb = JC.argbsRoygbScale;
           break;
         case RWB:
         case BWR:
-          argbsRwb = JmolConstants.argbsRwbScale;
+          argbsRwb = JC.argbsRwbScale;
           break;
         case JMOL:
           argbsCpk = EnumPalette.argbsCpk;
@@ -185,10 +186,10 @@ import org.jmol.constant.EnumPalette;
           getRasmolScale();
           break;
         case AMINO:
-          argbsAmino = JmolConstants.argbsAmino;
+          argbsAmino = JC.argbsAmino;
           break;
         case SHAPELY:
-          argbsShapely = JmolConstants.argbsShapely;
+          argbsShapely = JC.argbsShapely;
           break;
         }
       return (iScheme == Integer.MAX_VALUE ? ROYGB : iScheme);
@@ -247,7 +248,8 @@ import org.jmol.constant.EnumPalette;
     // ColorManager.setCurrentColorRange
     
     colorScheme = colorScheme.toLowerCase();
-    
+    if (colorScheme.equals("inherit"))
+      return INHERIT;
     
     // check for "name = [x...] [x...] ..." 
     // or "[x...] [x...] ..."
@@ -378,14 +380,14 @@ import org.jmol.constant.EnumPalette;
   public short getColorIndexFromPalette(float val, float lo,
                                                      float hi, int palette,
                                                      boolean isTranslucent) {
-    short colix = Colix.getColix(getArgbFromPalette(val, lo, hi, palette));
+    short colix = C.getColix(getArgbFromPalette(val, lo, hi, palette));
     if (isTranslucent) {
       float f = (hi - val) / (hi - lo); 
       if (f > 1)
         f = 1; // transparent
       else if (f < 0.125f) // never fully opaque
         f = 0.125f;
-      colix = Colix.getColixTranslucent3(colix, true, f);
+      colix = C.getColixTranslucent3(colix, true, f);
     }
     return colix;
   }
@@ -492,7 +494,7 @@ import org.jmol.constant.EnumPalette;
   public Map<String, Object> getColorKey() {
     Map<String, Object> info = new Hashtable<String, Object>();
     int segmentCount = getPaletteColorCount(currentPalette);
-    List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
+    JmolList<P3> colors = new  JmolList<P3>();//segmentCount);
 /*    
     boolean isReverse = isReversed;
     
@@ -510,7 +512,7 @@ import org.jmol.constant.EnumPalette;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.add(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
+      colors.addLast(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);
@@ -580,7 +582,7 @@ import org.jmol.constant.EnumPalette;
   private int[] getPaletteWB() {
     if (propertyColorEncoder.paletteWB != null) 
       return propertyColorEncoder.paletteWB;
-    int[] b = new int[JmolConstants.argbsRoygbScale.length];
+    int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * (b.length - i));        
       b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
@@ -590,7 +592,7 @@ import org.jmol.constant.EnumPalette;
 
   public static int[] getPaletteAtoB(int color1, int color2, int n) {
     if (n < 2)
-      n = JmolConstants.argbsRoygbScale.length;
+      n = JC.argbsRoygbScale.length;
     int[] b = new int[n];
     float red1 = (((color1 & 0xFF0000) >> 16) & 0xFF) / 255f;
     float green1 = (((color1 & 0xFF00) >> 8) & 0xFF) / 255f;
@@ -609,7 +611,7 @@ import org.jmol.constant.EnumPalette;
   private int[] getPaletteBW() {
     if (propertyColorEncoder.paletteBW != null) 
       return propertyColorEncoder.paletteBW;
-    int[] b = new int[JmolConstants.argbsRoygbScale.length];
+    int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * i); 
       b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
@@ -697,17 +699,6 @@ import org.jmol.constant.EnumPalette;
     System.out.println("ColorEncoder test");
   }
 */
-
-  public int getState(StringXBuilder s) {
-    int n = 0;
-    for (Map.Entry<String, int[]> entry : schemes.entrySet()) {
-      String name = entry.getKey();
-      if (name.length() > 0 & n++ >= 0)
-        s.append("color \"" + name + "="
-            + getColorSchemeList(entry.getValue()) + "\";\n");
-    }
-    return n;
-  }
 
   public String getColorScheme() {
     return (isTranslucent ? "translucent " : "")

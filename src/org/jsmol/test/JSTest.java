@@ -23,10 +23,10 @@
  */
 package org.jsmol.test;
 
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class JSTest extends JSmol {
 
@@ -38,7 +38,7 @@ public class JSTest extends JSmol {
     jmolApp = new JSTest(args);
   }
 	
-	private static Point3f pt2 = Point3f.new3(2,3,4);
+	private static P3 pt2 = P3.new3(2,3,4);
   
 	private JSTest(String[] args) {
   	super();
@@ -55,7 +55,7 @@ public class JSTest extends JSmol {
 		Logger.debug("test log debug");
 		Logger.error("test log error");
 		Logger.info(testArray[3]);
-		Logger.info(JmolConstants.getShapeClassName(JmolConstants.SHAPE_HOVER, false));
+		Logger.info(JC.getShapeClassName(JC.SHAPE_HOVER, false));
 	}
 	
 	static String[] testArray = {"a", "b", "c", "d"};

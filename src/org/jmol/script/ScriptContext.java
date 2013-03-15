@@ -28,7 +28,7 @@ package org.jmol.script;
 import java.util.Map;
 
 import org.jmol.api.JmolParallelProcessor;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 public class ScriptContext {
   /**
@@ -41,15 +41,15 @@ public class ScriptContext {
   public String script;
   public short[] lineNumbers;
   public int[][] lineIndices;
-  public Token[][] aatoken;
-  public Token[] statement;
+  public T[][] aatoken;
+  public T[] statement;
   public int statementLength;
   public int pc;
   public int pcEnd = Integer.MAX_VALUE;
   public int lineEnd = Integer.MAX_VALUE;
   public int iToken;
-  public StringXBuilder outputBuffer;
-  public Map<String, ScriptVariable> contextVariables;
+  public SB outputBuffer;
+  public Map<String, SV> contextVariables;
   public boolean isFunction;
   public boolean isStateScript;
   public boolean isTryCatch;
@@ -58,7 +58,7 @@ public class ScriptContext {
   public int iCommandError = -1;
   public String errorType;
   public int scriptLevel;
-  public boolean isSyntaxCheck;
+  public boolean chk;
   public boolean executionStepping;
   public boolean executionPaused;
   public String scriptExtensions;
@@ -70,18 +70,5 @@ public class ScriptContext {
   public boolean allowJSThreads;
   public boolean displayLoadErrorsSave;
   public int tryPt;
-
-  ScriptContext() {
-  }
-
-  StringXBuilder getContextTrace(StringXBuilder sb, boolean isTop) {
-    if (sb == null)
-      sb = new StringXBuilder();
-    sb.append(ScriptEvaluator.setErrorLineMessage(functionName, scriptFileName,
-        lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, (isTop ? iToken : 9999), false)));
-    if (parentContext != null)
-      parentContext.getContextTrace(sb, false);
-    return sb;
-  }
 
 }

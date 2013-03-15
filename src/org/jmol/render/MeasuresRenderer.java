@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -28,12 +28,12 @@ import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.shape.Measures;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
@@ -59,11 +59,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
       Measurement m = measures.measurements.get(i);
-      if (dynamicMeasurements || m.isDynamic())
+      if (dynamicMeasurements || m.isDynamic)
         m.refresh();
-      if (!m.isVisible())
+      if (!m.isVisible)
         continue;
-      colix = m.getColix();
+      colix = m.colix;
       if (colix == 0)
         colix = measures.colix;
       if (colix == 0)
@@ -133,6 +133,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         atomB.screenY, zB, mad);
     if (!renderLabel)
       return;
+    String s = measurement.getString();
+    if (s == null || s.length() == 0)
+      return;
     if (mad > 0)
       radius <<= 1;
     int z = (zA + zB) / 2;
@@ -142,7 +145,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int y = (atomA.screenY + atomB.screenY) / 2;
     drawString(x, y, z, radius, doJustify
         && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
-        (doJustify ? 0 : Integer.MAX_VALUE), measurement.getString());
+        (doJustify ? 0 : Integer.MAX_VALUE), s);
   }
                            
 
@@ -175,7 +178,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     float stepAngle = aa.angle / dotCount;
     aaT.setAA(aa);
     int iMid = dotCount / 2;
-    Point3f ptArc = measurement.getPointArc();
+    P3 ptArc = measurement.getPointArc();
     for (int i = dotCount; --i >= 0; ) {
       aaT.angle = i * stepAngle;
       matrixT.setAA(aaT);
@@ -184,7 +187,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       pointT.add(atomB);
       // NOTE! Point3i screen is just a pointer 
       //  to viewer.transformManager.point3iScreenTemp
-      Point3i point3iScreenTemp = viewer.transformPt(pointT);
+      P3i point3iScreenTemp = viewer.transformPt(pointT);
       int zArc = point3iScreenTemp.z - zOffset;
       if (zArc < 0) zArc = 0;
       g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
@@ -231,7 +234,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     if (count == 0)
       return;
     g3d.setColix(measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
-        : count == 2 ? Colix.MAGENTA : Colix.GOLD);
+        : count == 2 ? C.MAGENTA : C.GOLD);
     measurementPending.refresh();
     if (measurementPending.haveTarget())
       renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);
@@ -261,6 +264,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     // small numbers refer to pixels already? 
     int diameter = (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
-    return super.drawLine(x1, y1, z1, x2, y2, z2, diameter);
+    return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
   }
 }

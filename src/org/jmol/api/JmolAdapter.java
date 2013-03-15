@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-11 19:59:41 -0600 (Tue, 11 Dec 2012) $
- * $Revision: 17804 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -33,7 +33,7 @@ import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -83,7 +83,7 @@ public abstract class JmolAdapter {
   public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
   public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
   public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
-  public static final String NOTE_SCRIPT_FILE = JmolConstants.NOTE_SCRIPT_FILE;
+  public static final String NOTE_SCRIPT_FILE = JC.NOTE_SCRIPT_FILE;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);
@@ -98,7 +98,7 @@ public abstract class JmolAdapter {
   }
 
   public static boolean isHetero(String group3) {
-    return JmolConstants.isHetero(group3);
+    return JC.isHetero(group3);
   }
   
   public static int getQuantumShellTagID(String tag) {
@@ -163,7 +163,7 @@ public abstract class JmolAdapter {
  * @return The atomSetCollection or String with an error message
  */
 abstract public Object getAtomSetCollectionReader(String name, String type,
-                                 BufferedReader bufferedReader, Map<String, Object> htParams);
+                                 Object bufferedReader, Map<String, Object> htParams);
 
 abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
@@ -206,7 +206,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return           AtomSetCollection or error string
    */
   public Object getAtomSetCollectionFromReader(String name, String type,
-                                               BufferedReader bufferedReader,
+                                               Object bufferedReader,
                                                Map<String, Object> htParams) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
@@ -436,7 +436,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   }
 
   abstract public Object getAtomSetCollectionFromReader(String fname,
-                                            BufferedReader reader,
+                                            Object reader,
                                             Map<String, Object> htParams) throws Exception;
 
 }

@@ -31,12 +31,12 @@
 package org.jmol.adapter.readers.quantum;
 
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public class GamessUSReader extends GamessReader {
 
@@ -107,7 +107,7 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
-      atomNames = new ArrayList<String>();
+      atomNames = new  JmolList<String>();
       if (isBohr)
         readAtomsInBohrCoordinates();
       else
@@ -235,7 +235,7 @@ public class GamessUSReader extends GamessReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName + (++atomCountInFirstModel);
       setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
-      atomNames.add(atomName);
+      atomNames.addLast(atomName);
     }
   }
   
@@ -267,7 +267,7 @@ public class GamessUSReader extends GamessReader {
       atom.elementSymbol = getElementSymbol(parseIntRange(line, 11, 14));
       atom.atomName = atom.elementSymbol + (++n);
       setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
-      atomNames.add(atomName);
+      atomNames.addLast(atomName);
     }
   }
   
@@ -298,7 +298,7 @@ public class GamessUSReader extends GamessReader {
       setAtomCoordXYZ(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(parseIntRange(line, 11, 14));
       atom.atomName = atom.elementSymbol + (++n);
-      atomNames.add(atomName);
+      atomNames.addLast(atomName);
     }
     
     /*
@@ -348,7 +348,7 @@ public class GamessUSReader extends GamessReader {
               Atom atom = atomSetCollection.addNewAtom();
               atom.atomName = atomName + (++n);
               setAtomCoordXYZ(atom, x, y, z);
-              atomNames.add(atomName);
+              atomNames.addLast(atomName);
         } 
           
     }
@@ -447,7 +447,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     if ("DX".equals(tokens[0]) && "DY".equals(tokens[1])
         && "DZ".equals(tokens[2])) {
       tokens = getTokensStr(readLine());
-      Vector3f dipole = Vector3f.new3(parseFloatStr(tokens[0]),
+      V3 dipole = V3.new3(parseFloatStr(tokens[0]),
           parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       Logger.info("Molecular dipole for model "
           + atomSetCollection.getAtomSetCount() + " = " + dipole);

@@ -28,12 +28,12 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
@@ -43,16 +43,16 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected Point3fi atomA, atomB, atomC, atomD;
   protected JmolFont font3d;
 
-  final protected Point3i pt0 = new Point3i();
-  final protected Point3i pt1 = new Point3i();
-  final protected Point3i pt2 = new Point3i();
+  final protected P3i pt0 = new P3i();
+  final protected P3i pt1 = new P3i();
+  final protected P3i pt2 = new P3i();
 
-  final protected Point3f pointT = new Point3f();
-  final protected Point3f pointT2 = new Point3f();
-  final protected Point3f pointT3 = new Point3f();
-  final protected Vector3f vectorT = new Vector3f();
-  final protected Vector3f vectorT2 = new Vector3f();
-  final protected Vector3f vectorT3 = new Vector3f();
+  final protected P3 pointT = new P3();
+  final protected P3 pointT2 = new P3();
+  final protected P3 pointT3 = new P3();
+  final protected V3 vectorT = new V3();
+  final protected V3 vectorT2 = new V3();
+  final protected V3 vectorT3 = new V3();
 
   //final Rectangle box = new Rectangle();
 
@@ -88,8 +88,8 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     return diameter;
   }  
 
-  protected void renderLine(Point3f p0, Point3f p1, int diameter,
-                            Point3i pt0, Point3i pt1, boolean drawTicks) {
+  protected void renderLine(P3 p0, P3 p1, int diameter,
+                            P3i pt0, P3i pt1, boolean drawTicks) {
     // used by Bbcage, Uccage, and axes
     pt0.set((int) Math.floor(p0.x), (int) Math.floor(p0.y), (int) Math.floor(p0.z));
     pt1.set((int) Math.floor(p1.x), (int) Math.floor(p1.y), (int) Math.floor(p1.z));
@@ -112,13 +112,13 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected void drawTicks(Point3fi pt1, Point3fi pt2, int diameter, boolean withLabels) {
     if (Float.isNaN(tickInfo.first))
       tickInfo.first = 0;
-    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, diameter, (!withLabels ? null : tickInfo.tickLabelFormats == null ? 
+    drawTicks2(pt1, pt2, tickInfo.ticks.x, 8, diameter, (!withLabels ? null : tickInfo.tickLabelFormats == null ? 
             new String[] { "%0.2f" } : tickInfo.tickLabelFormats));
-    drawTicks(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
-    drawTicks(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
+    drawTicks2(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
+    drawTicks2(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
   }
 
-  private void drawTicks(Point3fi ptA, Point3fi ptB, float dx, int length,
+  private void drawTicks2(Point3fi ptA, Point3fi ptB, float dx, int length,
                          int diameter, String[] formats) {
 
     if (dx == 0)
@@ -173,7 +173,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       diameter = 1;
     vectorT2.set(-vectorT2.y, vectorT2.x, 0);
     vectorT2.scale(length / vectorT2.length());
-    Point3f ptRef = tickInfo.reference; // not implemented
+    P3 ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
       pointT3.setT(viewer.getBoundBoxCenter());
       if (viewer.getAxesMode() == EnumAxesMode.BOUNDBOX) {
@@ -207,7 +207,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
             (x = (int) Math.floor(pointT2.x + vectorT2.x)),
             (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
-          val[0] = new Float((p == 0 ? 0 : p * signFactor));
+          val[0] = Float.valueOf((p == 0 ? 0 : p * signFactor));
           String s = TextFormat.sprintf(formats[i % formats.length], "f", val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,
               (int) Math.floor(pointT2.y), s);
@@ -222,6 +222,10 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
                          int diameter) {
+    return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
+  }
+
+  protected int drawLine2(int x1, int y1, int z1, int x2, int y2, int z2, int diameter) {
     pt0.set(x1, y1, z1);
     pt1.set(x2, y2, z2);
     if (diameter < 0) {

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-18 15:46:42 -0600 (Tue, 18 Dec 2012) $
- * $Revision: 17819 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -45,6 +45,7 @@ public class Resolver {
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
+    "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
     "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;Wien2k;"
   };
@@ -88,7 +89,7 @@ public class Resolver {
    * @throws Exception
    */
   static Object getAtomCollectionReader(String fullName, String type,
-                                        BufferedReader bufferedReader,
+                                        Object bufferedReader,
                                         Map<String, Object> htParams, int ptFile)
       throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
@@ -102,7 +103,7 @@ public class Resolver {
       else
         Logger.info("The Resolver assumes " + readerName);
     } else {
-      readerName = determineAtomSetCollectionReader(bufferedReader, true);
+      readerName = determineAtomSetCollectionReader((BufferedReader) bufferedReader, true);
       if (readerName.charAt(0) == '\n') {
         type = (String) htParams.get("defaultType");
         if (type != null) {
@@ -121,7 +122,7 @@ public class Resolver {
         Logger.info("The Resolver thinks " + readerName);
     }
     if (errMsg != null) {
-      bufferedReader.close();
+      SmarterJmolAdapter.close(bufferedReader);
       return errMsg;
     }
     htParams.put("ptFile", Integer.valueOf(ptFile));
@@ -533,13 +534,13 @@ public class Resolver {
         return false;
       Integer.parseInt(tokens2.nextToken());
       for (int i = 3; --i >= 0; )
-        new Float(tokens2.nextToken());
+        Parser.fVal(tokens2.nextToken());
       StringTokenizer tokens3 = new StringTokenizer(lines[3]);
       if (tokens3.countTokens() != 4)
         return false;
       Integer.parseInt(tokens3.nextToken());
       for (int i = 3; --i >= 0; )
-        if ((new Float(tokens3.nextToken())).floatValue() < 0)
+        if (Parser.fVal(tokens3.nextToken()) < 0)
           return false;
       return true;
     } catch (NumberFormatException nfe) {
@@ -709,10 +710,13 @@ public class Resolver {
   private final static String[] magResFileStartRecords =
   {"MagRes", "# magres"};
 
+  private final static String[] pymolStartRecords =
+  {"PyMOL", "}q" };
+
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magResFileStartRecords };
+    zMatrixFileStartRecords, magResFileStartRecords, pymolStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

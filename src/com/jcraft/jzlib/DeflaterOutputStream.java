@@ -49,21 +49,21 @@ public class DeflaterOutputStream extends FilterOutputStream {
 
   private boolean close_out = true;
 
-  protected static final int DEFAULT_BUFSIZE = 512;
-
+  private static final int DEFAULT_BUFSIZE = 512;
+/*
   public DeflaterOutputStream(OutputStream out) {
-    this(out, new Deflater(JZlib.Z_DEFAULT_COMPRESSION), DEFAULT_BUFSIZE, true);
+    this(out, new Deflater().init(JZlib.Z_DEFAULT_COMPRESSION, 0, false), DEFAULT_BUFSIZE, true);
     mydeflater = true;
   }
 
   public DeflaterOutputStream(OutputStream out, Deflater def) {
-    this(out, def, DEFAULT_BUFSIZE, true);
-  }
-
+    this(out, def, 0, true);
+  }  
+  
   public DeflaterOutputStream(OutputStream out, Deflater deflater, int size) {
     this(out, deflater, size, true);
   }
-
+*/
   /**
    * @param out
    * @param deflater
@@ -80,6 +80,8 @@ public class DeflaterOutputStream extends FilterOutputStream {
     //    else if (size <= 0) {
     //      throw new IllegalArgumentException("buffer size must be greater than 0");
     //    }
+    if (size == 0)
+      size = DEFAULT_BUFSIZE;
     this.deflater = deflater;
     buffer = new byte[size];
     this.close_out = close_out;

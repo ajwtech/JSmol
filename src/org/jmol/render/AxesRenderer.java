@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-09 13:14:27 -0600 (Wed, 09 Jan 2013) $
- * $Revision: 17851 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -28,7 +28,7 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.shape.Axes;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.StateManager;
 
@@ -40,12 +40,12 @@ public class AxesRenderer extends FontLineShapeRenderer {
                                   "X", "Y", "Z", null, null, null,
                                   "X", null, "Z", null, "(Y)", null};
 
-  private final Point3f[] screens = new Point3f[6];
+  private final P3[] screens = new P3[6];
   {
     for (int i = 6; --i >= 0; )
-      screens[i] = new Point3f();
+      screens[i] = new P3();
   }
-  private final Point3f originScreen = new Point3f();
+  private final P3 originScreen = new P3();
   
   private short[] colixes = new short[3];
 
@@ -75,7 +75,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
 
-    SymmetryInterface[] cellInfos = modelSet.getCellInfos();
+    SymmetryInterface[] cellInfos = modelSet.unitCells;
 
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
