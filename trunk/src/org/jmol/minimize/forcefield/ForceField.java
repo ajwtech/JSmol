@@ -38,7 +38,7 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
@@ -89,12 +89,12 @@ abstract public class ForceField {
   MinBond[] minBonds;
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
-  BitSet bsFixed;
+  BS bsFixed;
   
   Minimizer minimizer;
 
   abstract public void clear();
-  abstract public boolean setModel(BitSet bsElements, int elemnoMax);
+  abstract public boolean setModel(BS bsElements, int elemnoMax);
   
   protected void setModelFields() {   
     this.minAtoms = minimizer.minAtoms;
@@ -169,7 +169,7 @@ abstract public class ForceField {
 
       double e1 = energyFull(false, false);
       dE = e1 - e0;
-      boolean done = Util.isNear(e1, e0, criterion);
+      boolean done = Util.isNear3(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
         String s = TextFormat.sprintf(name + " Step %-4d E = %10.6f    dE = %8.6f ",
@@ -205,7 +205,7 @@ abstract public class ForceField {
     return true; // continue
   }
 
-  private double getEnergy(int terms, boolean gradients) {
+  private double getEnergies(int terms, boolean gradients) {
     if ((terms & ENERGY) != 0)
       return energyFull(gradients, true);
     double e = 0.0;
@@ -244,7 +244,7 @@ abstract public class ForceField {
   private double getDE(MinAtom atom, int terms, int i, double delta) {
     // get energy derivative
     atom.coord[i] += delta;
-    double e = getEnergy(terms, false);
+    double e = getEnergies(terms, false);
     atom.coord[i] -= delta;
     //if (atom.atom.getAtomIndex() == 2)
       //System.out.println ((i==0 ? "\n" : "") + "atom 3: " + atom.atom.getInfo() + " " + i + " " + (e - e0) + " " + (Point3f)atom.atom + "{" + atom.coord[0] + " " + atom.coord[1] + " " + atom.coord[2] + "} delta=" + delta);
@@ -403,7 +403,7 @@ abstract public class ForceField {
 
       //System.out.println("step is " + step + " " + (e2 < e1) + " " + e1 + " "
       // + e2);
-      if (Util.isNear(e2, e1, 1.0e-3))
+      if (Util.isNear3(e2, e1, 1.0e-3))
         break;
       if (e2 > e1) {
         step *= 0.1;

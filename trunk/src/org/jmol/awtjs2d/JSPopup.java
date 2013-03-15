@@ -24,7 +24,7 @@
 package org.jmol.awtjs2d;
 
 import org.jmol.popup.GenericPopup;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /**
  * all popup-related awt/swing class references are in this file.
@@ -66,9 +66,10 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *            if (icon != null) b.setIcon(icon); if (entry != null)
-     *            b.setText(entry); if (script != null)
-     *            b.setActionCommand(script); this.thisPopup.tainted = true;
+     *            if (icon != null) b.setIcon(icon); 
+     *            if (entry != null) b.setText(entry); 
+     *            if (script != null) b.setActionCommand(script); 
+     *            this.thisPopup.tainted = true;
      * 
      */
     {
@@ -210,7 +211,7 @@ abstract public class JSPopup extends GenericPopup {
     }
   }
 
-  public void menuGetAsText(StringXBuilder sb, int level, Object menu,
+  public void menuGetAsText(SB sb, int level, Object menu,
                             String menuName) {
     /**
      * @j2sNative

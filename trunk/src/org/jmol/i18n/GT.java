@@ -75,8 +75,10 @@ public class GT {
 
   /**
    * @param TF  
+   * @return false
    */
-  public static void setDoTranslate(boolean TF) {
+  public static boolean setDoTranslate(boolean TF) {
+    return false;
   }
 
   public static boolean getDoTranslate() {

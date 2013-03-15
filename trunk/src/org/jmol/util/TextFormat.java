@@ -25,10 +25,12 @@
 
 package org.jmol.util;
 
+import java.util.List;
+
 
 
 //import java.text.DecimalFormat;
-import java.util.List;
+
 
 
 
@@ -136,7 +138,7 @@ public class TextFormat {
           value + (isNeg ? -1 : 1) * formatAdds[decimalDigits], decimalDigits);
     }
 
-    StringXBuilder sb = StringXBuilder.newS(s1.substring(0, (decimalDigits == 0 ? pt
+    SB sb = SB.newS(s1.substring(0, (decimalDigits == 0 ? pt
         : ++pt)));
     for (int i = 0; i < decimalDigits; i++, pt++) {
       if (pt < len)
@@ -200,7 +202,7 @@ public class TextFormat {
     char padChar = (zeroPad ? '0' : ' ');
     char padChar0 = (isNeg ? '-' : padChar);
 
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (alignLeft)
       sb.append(value);
     sb.appendC(padChar0);
@@ -263,7 +265,7 @@ public class TextFormat {
                 ((Double) values[o]).doubleValue(), true);
             break;
           case 'p':
-            Point3f pVal = (Point3f) values[o];
+            P3 pVal = (P3) values[o];
             strFormat = formatString(strFormat, "p", null, pVal.x, Double.NaN,
                 true);
             strFormat = formatString(strFormat, "p", null, pVal.y, Double.NaN,
@@ -272,7 +274,7 @@ public class TextFormat {
                 true);
             break;
           case 'q':
-            Point4f qVal = (Point4f) values[o];
+            P4 qVal = (P4) values[o];
             strFormat = formatString(strFormat, "q", null, qVal.x, Double.NaN,
                 true);
             strFormat = formatString(strFormat, "q", null, qVal.y, Double.NaN,
@@ -429,7 +431,7 @@ public class TextFormat {
     strFormat = simpleReplace(strFormat, "%p", "%6.2p");
     strFormat = simpleReplace(strFormat, "%q", "%6.2q");
     String[] format = split(strFormat, '%');
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       String f = "%" + format[i];
@@ -475,7 +477,7 @@ public class TextFormat {
       }
     }
     String s = f.substring(0, pt + 1);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < n; i++)
       sb.append(s);
     sb.append(f.substring(pt + 1));
@@ -577,7 +579,7 @@ public class TextFormat {
     boolean isOnce = (strTo.indexOf(strFrom) >= 0);
     int ipt;
     while (str.indexOf(strFrom) >= 0) {
-      StringXBuilder s = new StringXBuilder();
+      SB s = new SB();
       int ipt0 = 0;
       while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
         s.append(str.substring(ipt0, ipt)).append(strTo);
@@ -609,14 +611,14 @@ public class TextFormat {
     return splitChars(text, "" + ch);
   }
   
-  public static void lFill(StringXBuilder s, String s1, String s2) {
+  public static void lFill(SB s, String s1, String s2) {
     s.append(s2);
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));
   }
   
-  public static void rFill(StringXBuilder s, String s1, String s2) {
+  public static void rFill(SB s, String s1, String s2) {
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));
@@ -693,7 +695,7 @@ public class TextFormat {
   public static String join(String[] s, char c, int i0) {
     if (s.length < i0)
       return null;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(s[i0++]);
     for (int i = i0; i < s.length; i++)
       sb.appendC(c).append(s[i]);
@@ -723,6 +725,109 @@ public class TextFormat {
         s = simpleReplace(s, name, newName);
     }
     return s;
+  }
+
+  /**
+   * For @{....}
+   * 
+   * @param script
+   * @param ichT
+   * @param len
+   * @return     position of "}"
+   */
+  public static int ichMathTerminator(String script, int ichT, int len) {
+    int nP = 1;
+    char chFirst = '\0';
+    char chLast = '\0';
+    while (nP > 0 && ++ichT < len) {
+      char ch = script.charAt(ichT);
+      if (chFirst != '\0') {
+        if (chLast == '\\') {
+          ch = '\0';
+        } else if (ch == chFirst) {
+          chFirst = '\0';
+        }
+        chLast = ch;
+        continue;
+      }
+      switch(ch) {
+      case '\'':
+      case '"':
+        chFirst = ch;
+        break;
+      case '{':
+        nP++;
+        break;
+      case '}':
+        nP--;
+        break;
+      }
+    }
+    return ichT;
+  }
+
+  /**
+   * used by app to separate a command line into three sections:
+   * 
+   * prefix....;cmd ........ token
+   * 
+   * where token can be a just-finished single or double quote or
+   * a string of characters
+   * 
+   * @param cmd
+   * @return String[] {prefix, cmd..... token}
+   */
+  public static String[] splitCommandLine(String cmd) {
+    String[] sout = new String[3];
+    boolean isEscaped1 = false;
+    boolean isEscaped2 = false;
+    boolean isEscaped = false;
+    if (cmd.length() == 0)
+      return null;
+    int ptQ = -1;
+    int ptCmd = 0;
+    int ptToken = 0;
+    for (int i = 0; i < cmd.length(); i++) {
+      switch(cmd.charAt(i)) {
+      case '"':
+        if (!isEscaped && !isEscaped1) {
+          isEscaped2 = !isEscaped2;
+          if (isEscaped2)
+            ptQ = ptToken = i;
+        }
+        break;
+      case '\'':
+        if (!isEscaped && !isEscaped2) {
+          isEscaped1 = !isEscaped1;
+          if (isEscaped1)
+            ptQ = ptToken = i;
+        }
+        break;
+      case '\\':
+        isEscaped = !isEscaped;
+        continue;
+      case ' ':
+        if (!isEscaped && !isEscaped1 && !isEscaped2) {
+          ptToken = i + 1;
+          ptQ = -1;
+        }
+        break;
+      case ';':
+        if (!isEscaped1 && !isEscaped2) {
+          ptCmd = ptToken = i + 1;
+          ptQ = -1;
+        }
+        break;
+      default:
+        if (!isEscaped1 && !isEscaped2)
+          ptQ = -1;
+      }
+      isEscaped = false;        
+     }
+    sout[0] = cmd.substring(0, ptCmd);
+    sout[1] = (ptToken == ptCmd ? cmd.substring(ptCmd) : cmd.substring(ptCmd, (ptToken > ptQ ? ptToken : ptQ)));
+    sout[2] = (ptToken == ptCmd ? null : cmd.substring(ptToken));
+    return sout;
   }
 
 }

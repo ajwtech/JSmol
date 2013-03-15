@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -29,7 +29,7 @@ import org.jmol.modelset.Group;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 
 public class LabelsRenderer extends ShapeRenderer {
@@ -40,10 +40,12 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int ascent;
   protected int descent;
   final int[] minZ = new int[1];
+  private int zCutoff;
 
   @Override
   protected boolean render() {
     fidPrevious = 0;
+    zCutoff = viewer.getZShadeStart();
 
     Labels labels = (Labels) shape;
 
@@ -75,9 +77,9 @@ public class LabelsRenderer extends ShapeRenderer {
           && labels.mads[i] < 0)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
-      colix = Colix.getColixInherited(colix, atom.getColix());
-      if (Colix.isColixTranslucent(colix))
-        colix = Colix.getColixTranslucent3(colix, false, 0);
+      colix = C.getColixInherited(colix, atom.getColix());
+      if (C.isColixTranslucent(colix))
+        colix = C.getColixTranslucent3(colix, false, 0);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
@@ -92,6 +94,8 @@ public class LabelsRenderer extends ShapeRenderer {
       int textAlign = Labels.getAlignment(offsetFull);
       int pointer = offsetFull & Labels.POINTER_FLAGS;
       int zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
+      if (zCutoff > 0 && zSlab > zCutoff)
+        continue;
       if (zSlab < 1)
         zSlab = 1;
       int zBox = zSlab;
@@ -111,7 +115,7 @@ public class LabelsRenderer extends ShapeRenderer {
 
       Text text = labels.getLabel(i);
       float[] boxXY = (!isExport
-          || viewer.getCreatingImage() ? labels.getBox(i) : new float[5]);
+          || viewer.creatingImage ? labels.getBox(i) : new float[5]);
       if (boxXY == null)
         labels.putBox(i, boxXY = new float[5]);
       if (text != null) {

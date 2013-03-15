@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 import java.util.Iterator;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 
 public abstract class TextShape extends Object2dShape {
@@ -34,8 +34,11 @@ public abstract class TextShape extends Object2dShape {
   // echo, hover
   
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
+    setPropTS(propertyName, value, bsSelected);
+  }
 
+  protected void setPropTS(String propertyName, Object value, BS bsSelected) {
     if ("text" == propertyName) {
       String text = (String) value;
       if (currentObject == null) {
@@ -67,7 +70,8 @@ public abstract class TextShape extends Object2dShape {
       return;
     }
     
-    super.setProperty(propertyName, value, bsSelected);
+    setPropOS(propertyName, value, bsSelected);
   }
+  
 }
 

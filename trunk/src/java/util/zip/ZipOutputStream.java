@@ -120,7 +120,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements
   }
 
   private static Deflater newDeflater() {
-    return new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+    return (Deflater) (new Deflater(Integer.MAX_VALUE)).init(Deflater.DEFAULT_COMPRESSION, 0, true);
   }
 
   /**

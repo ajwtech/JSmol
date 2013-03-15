@@ -34,16 +34,15 @@ import org.jmol.io.CifDataReader;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 
@@ -97,11 +96,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean filterAssembly;
   
 
-  private List<Matrix4f> vBiomts;
-  private List<Map<String, Object>> vBiomolecules;
+  private  JmolList<Matrix4f> vBiomts;
+  private  JmolList<Map<String, Object>> vBiomolecules;
   private Map<String,Matrix4f> htBiomts;
 
-  private Map<String, BitSet> assemblyIdAtoms;
+  private Map<String, BS> assemblyIdAtoms;
   
   private String appendedData;
   private boolean skipping;
@@ -232,6 +231,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   @Override
   protected void finalizeReader() throws Exception {
+    if (atomSetCollection.getStructureCount() > 0)
+      atomSetCollection.bsStructuredModels.setBits(0, atomSetCollection.getAtomSetCount());
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -256,20 +257,20 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = TextFormat.split((String) biomolecule.get("operators"), ',');
       String assemblies = (String) biomolecule.get("assemblies");
-      vBiomts = new ArrayList<Matrix4f>();
+      vBiomts = new  JmolList<Matrix4f>();
       biomolecule.put("biomts", vBiomts);
-      vBiomts.add(mident);
+      vBiomts.addLast(mident);
       for (int j = 0; j < ops.length; j++) {
         Matrix4f m = htBiomts.get(ops[j]);
         if (m != null && !m.equals(mident))
-          vBiomts.add(m);
+          vBiomts.addLast(m);
       }
       if (vBiomts.size() < 2)
         return;
-      BitSet bsAll = new BitSet();
+      BS bsAll = new BS();
       for (int j = assemblies.length() - 1; --j >= 0;)
         if (assemblies.charAt(j) == '$') {
-          BitSet bs = assemblyIdAtoms.get("" + assemblies.charAt(j + 1));
+          BS bs = assemblyIdAtoms.get("" + assemblies.charAt(j + 1));
           if (bs != null)
             bsAll.or(bs);
         }
@@ -531,7 +532,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
 
   private Map<String, Float> atomTypes;
-  private List<Object[]> bondTypes = new ArrayList<Object[]>();
+  private  JmolList<Object[]> bondTypes = new  JmolList<Object[]>();
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
@@ -578,7 +579,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         continue;
       if (atomTypes == null)
         atomTypes = new Hashtable<String, Float>();
-      atomTypes.put(atomTypeSymbol, new Float(oxidationNumber));
+      atomTypes.put(atomTypeSymbol, Float.valueOf(oxidationNumber));
     }
   }
 
@@ -971,10 +972,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.addAtomWithMappedName(atom);
         if (assemblyId != '\0') {
           if (assemblyIdAtoms == null)
-            assemblyIdAtoms = new Hashtable<String, BitSet>();
-          BitSet bs = assemblyIdAtoms.get("" + assemblyId);
+            assemblyIdAtoms = new Hashtable<String, BS>();
+          BS bs = assemblyIdAtoms.get("" + assemblyId);
           if (bs == null)
-            assemblyIdAtoms.put("" + assemblyId, bs = new BitSet());
+            assemblyIdAtoms.put("" + assemblyId, bs = new BS());
           bs.set(atom.atomIndex);
         }          
         if (atom.isHetero && htHetero != null) {
@@ -1128,15 +1129,15 @@ _pdbx_struct_oper_list.vector[3]
     if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
       return;
     if (vBiomolecules == null) {
-      vBiomolecules = new ArrayList<Map<String,Object>>();
+      vBiomolecules = new  JmolList<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("molecule", Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
     info.put("operators", assem[ASSEM_OPERS]);
-    info.put("biomts", new ArrayList<Matrix4f>());
+    info.put("biomts", new  JmolList<Matrix4f>());
     Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
-    vBiomolecules.add(info);
+    vBiomolecules.addLast(info);
     assem = null;
   }
 
@@ -1330,7 +1331,7 @@ _pdbx_struct_oper_list.vector[3]
       if (atomIndex1 < 0 || atomIndex2 < 0)
         continue;
       if (distance > 0) 
-        bondTypes.add(new Object[] { name1, name2, new Float(distance), new Float(dx) });
+        bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx) });
     }
   }
   
@@ -1489,7 +1490,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
+      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -1565,7 +1566,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
+      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
@@ -1614,31 +1615,27 @@ _pdbx_struct_oper_list.vector[3]
   };
 
   
-  /*
+//  loop_
+//  _struct_site_gen.id 
+//  _struct_site_gen.site_id 
+//  _struct_site_gen.pdbx_num_res 
+//  _struct_site_gen.label_comp_id 
+//  _struct_site_gen.label_asym_id 
+//  _struct_site_gen.label_seq_id 
+//  _struct_site_gen.auth_comp_id 
+//  _struct_site_gen.auth_asym_id 
+//  _struct_site_gen.auth_seq_id 
+//  _struct_site_gen.label_atom_id 
+//  _struct_site_gen.label_alt_id 
+//  _struct_site_gen.symmetry 
+//  _struct_site_gen.details 
+//  1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
+//  2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
+//  3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
+//  4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
+//  5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
+//  # 
 
-loop_
-_struct_site_gen.id 
-_struct_site_gen.site_id 
-_struct_site_gen.pdbx_num_res 
-_struct_site_gen.label_comp_id 
-_struct_site_gen.label_asym_id 
-_struct_site_gen.label_seq_id 
-_struct_site_gen.auth_comp_id 
-_struct_site_gen.auth_asym_id 
-_struct_site_gen.auth_seq_id 
-_struct_site_gen.label_atom_id 
-_struct_site_gen.label_alt_id 
-_struct_site_gen.symmetry 
-_struct_site_gen.details 
-1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
-2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
-3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
-4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
-5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
-# 
-
-*/
-  
   //private int siteNum;
   private Map<String, Map<String, Object>> htSites;
   
@@ -1863,11 +1860,11 @@ _struct_site_gen.details
   /////////////////////////////////////
   
   private float[] atomRadius;
-  private BitSet[] bsConnected;
-  private BitSet[] bsSets;
-  final private Point3f ptOffset = new Point3f();
-  private BitSet bsMolecule;
-  private BitSet bsExclude;
+  private BS[] bsConnected;
+  private BS[] bsSets;
+  final private P3 ptOffset = new P3();
+  private BS bsMolecule;
+  private BS bsExclude;
   private int firstAtom;
   private int atomCount;
   private Atom[] atoms;
@@ -1899,13 +1896,13 @@ _struct_site_gen.details
 
     // get list of sites based on atom names
 
-    bsSets = new BitSet[nAtoms];
+    bsSets = new BS[nAtoms];
     symmetry = atomSetCollection.getSymmetry();
     for (int i = firstAtom; i < atomCount; i++) {
       int ipt = atomSetCollection.getAtomIndexFromName(atoms[i].atomName)
           - firstAtom;
       if (bsSets[ipt] == null)
-        bsSets[ipt] = new BitSet();
+        bsSets[ipt] = new BS();
       bsSets[ipt].set(i - firstAtom);
     }
 
@@ -1921,18 +1918,18 @@ _struct_site_gen.details
         if (elemnoWithIsotope > 0)
           atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemnoWithIsotope, charge);
       }
-      bsConnected = new BitSet[atomCount];
+      bsConnected = new BS[atomCount];
       for (int i = firstAtom; i < atomCount; i++)
-        bsConnected[i] = new BitSet();
+        bsConnected[i] = new BS();
 
       // Set up a working set of atoms in the "molecule".
 
-      bsMolecule = new BitSet();
+      bsMolecule = new BS();
 
       // Set up a working set of atoms that should be excluded 
       // because they would map onto an equivalent atom's position.
 
-      bsExclude = new BitSet();
+      bsExclude = new BS();
     }
 
     boolean isFirst = true;
@@ -1947,7 +1944,7 @@ _struct_site_gen.details
       // bonds are delivered by the iterators.
 
       if (atomSetCollection.bsAtoms == null)
-        atomSetCollection.bsAtoms = new BitSet();
+        atomSetCollection.bsAtoms = new BS();
       atomSetCollection.bsAtoms.clearBits(firstAtom, atomCount);
       atomSetCollection.bsAtoms.or(bsMolecule);
       atomSetCollection.bsAtoms.andNot(bsExclude);
@@ -2013,8 +2010,8 @@ _struct_site_gen.details
       float dx = ((Float) o[3]).floatValue();
       int iatom1 = atomSetCollection.getAtomIndexFromName((String) o[0]);
       int iatom2 = atomSetCollection.getAtomIndexFromName((String) o[1]);
-      BitSet bs1 = bsSets[iatom1 - firstAtom];
-      BitSet bs2 = bsSets[iatom2 - firstAtom];
+      BS bs1 = bsSets[iatom1 - firstAtom];
+      BS bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
         continue;
       for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
@@ -2062,9 +2059,9 @@ _struct_site_gen.details
     // go ahead and move it, but mark it as excluded.
     
     float bondTolerance = viewer.getBondTolerance();
-    BitSet bsBranch = new BitSet();
-    Point3f cart1 = new Point3f();
-    Point3f cart2 = new Point3f();
+    BS bsBranch = new BS();
+    P3 cart1 = new P3();
+    P3 cart2 = new P3();
     int nFactor = 2; // 1 was not enough. (see data/cif/triclinic_issue.cif)
     for (int i = firstAtom; i < atomCount; i++)
       if (!bsMolecule.get(i) && !bsExclude.get(i))
@@ -2078,7 +2075,7 @@ _struct_site_gen.details
               atoms[k].add(ptOffset);
               cart1.setT(atoms[k]);
               symmetry.toCartesian(cart1, true);
-              BitSet bs = bsSets[atomSetCollection
+              BS bs = bsSets[atomSetCollection
                   .getAtomIndexFromName(atoms[k].atomName)
                   - firstAtom];
               if (bs != null)
@@ -2121,8 +2118,8 @@ _struct_site_gen.details
    * @param bsBonds
    * @param bs
    */
-  private void setBs(Atom[] atoms, int iatom, BitSet[] bsBonds, BitSet bs) {
-    BitSet bsBond = bsBonds[iatom];
+  private void setBs(Atom[] atoms, int iatom, BS[] bsBonds, BS bs) {
+    BS bsBond = bsBonds[iatom];
     bs.set(iatom);
     for (int i = bsBond.nextSetBit(0); i >= 0; i = bsBond.nextSetBit(i + 1)) {
       if (!bs.get(i))

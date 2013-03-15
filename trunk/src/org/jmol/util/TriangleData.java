@@ -1,7 +1,7 @@
 package org.jmol.util;
 
 
-import java.util.List;
+
 
 
 public class TriangleData {
@@ -50,15 +50,15 @@ public class TriangleData {
     { 0, 1, 2, 0 }, { 2, 3, 0, 0 }, // bottom
   };
   
-  protected final static Point3i[] cubeVertexOffsets = { 
-    Point3i.new3(0, 0, 0), //0 pt
-    Point3i.new3(1, 0, 0), //1 pt + yz
-    Point3i.new3(1, 0, 1), //2 pt + yz + 1
-    Point3i.new3(0, 0, 1), //3 pt + 1
-    Point3i.new3(0, 1, 0), //4 pt + z
-    Point3i.new3(1, 1, 0), //5 pt + yz + z
-    Point3i.new3(1, 1, 1), //6 pt + yz + z + 1
-    Point3i.new3(0, 1, 1)  //7 pt + z + 1 
+  protected final static P3i[] cubeVertexOffsets = { 
+    P3i.new3(0, 0, 0), //0 pt
+    P3i.new3(1, 0, 0), //1 pt + yz
+    P3i.new3(1, 0, 1), //2 pt + yz + 1
+    P3i.new3(0, 0, 1), //3 pt + 1
+    P3i.new3(0, 1, 0), //4 pt + z
+    P3i.new3(1, 1, 0), //5 pt + yz + z
+    P3i.new3(1, 1, 1), //6 pt + yz + z + 1
+    P3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
 
   protected final static byte edgeVertexes[] = { 
@@ -306,16 +306,16 @@ public class TriangleData {
    */
 
 
-  public static List<Object> intersectPlane(Point4f plane, List<Object> v, int flags) {
+  public static JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags) {
     if (plane == null) {
-      v.add(fullCubePolygon);
+      v.addLast(fullCubePolygon);
       return v;
     }
-    Point3f[] vertices = (Point3f[]) v.get(0);
+    P3[] vertices = (P3[]) v.get(0);
     if (flags != 0)
       v.clear();
     float[] values = new float[8];
-    Point3f[] edgePoints = new Point3f[12];
+    P3[] edgePoints = new P3[12];
     int insideMask = 0;
     for (int i = 0; i < 8; i++) {
       values[i] = plane.x * vertices[i].x + plane.y * vertices[i].y + plane.z
@@ -332,14 +332,14 @@ public class TriangleData {
       // (P - P1) / (P2 - P1) = (0 - v1) / (v2 - v1)
       // or
       // P = P1 + (P2 - P1) * (0 - v1) / (v2 - v1)
-      Point3f result = Point3f.newP(vertices[v2]);
+      P3 result = P3.newP(vertices[v2]);
       result.sub(vertices[v1]);
       result.scale(values[v1] / (values[v1] - values[v2]));
       result.add(vertices[v1]);
       edgePoints[i >> 1] = result;
     }
     if (flags == 0) {
-      BitSet bsPoints = new BitSet();
+      BS bsPoints = new BS();
       v.clear();
       for (int i = 0; i < triangles.length; i++) {
         bsPoints.set(triangles[i]);
@@ -348,9 +348,9 @@ public class TriangleData {
           i++;
       }
       //System.out.println();
-      int nPoints = BitSetUtil.cardinalityOf(bsPoints);
-      Point3f[] pts = new Point3f[nPoints];
-      v.add(pts);
+      int nPoints = BSUtil.cardinalityOf(bsPoints);
+      P3[] pts = new P3[nPoints];
+      v.addLast(pts);
       int[]list = new int[12];
       int ptList = 0;
       for (int i = 0; i < triangles.length; i++) {
@@ -365,26 +365,26 @@ public class TriangleData {
       }
       
       int[][]polygons = ArrayUtil.newInt2(triangles.length >> 2);
-      v.add(polygons);
+      v.addLast(polygons);
       for (int i = 0; i < triangles.length; i++)
           polygons[i >> 2] = new int[] { list[triangles[i++]], 
               list[triangles[i++]], list[triangles[i++]], triangles[i] };
       return v;
     }
     for (int i = 0; i < triangles.length; i++) {
-      Point3f pt1 = edgePoints[triangles[i++]];
-      Point3f pt2 = edgePoints[triangles[i++]];
-      Point3f pt3 = edgePoints[triangles[i++]];
+      P3 pt1 = edgePoints[triangles[i++]];
+      P3 pt2 = edgePoints[triangles[i++]];
+      P3 pt3 = edgePoints[triangles[i++]];
       if ((flags & 1) == 1)
-        v.add(new Point3f[] { pt1, pt2, pt3 });
+        v.addLast(new P3[] { pt1, pt2, pt3 });
       if ((flags & 2) == 2) {
         byte b = triangles[i];
         if ((b & 1) == 1)
-          v.add(new Point3f[] { pt1, pt2 });
+          v.addLast(new P3[] { pt1, pt2 });
         if ((b & 2) == 2)
-          v.add(new Point3f[] { pt2, pt3 });
+          v.addLast(new P3[] { pt2, pt3 });
         if ((b & 4) == 4)
-          v.add(new Point3f[] { pt1, pt3 });
+          v.addLast(new P3[] { pt1, pt3 });
       }
     }
     return v;

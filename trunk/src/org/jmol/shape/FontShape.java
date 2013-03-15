@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
 
 
@@ -40,20 +39,11 @@ public abstract class FontShape extends Shape {
     translucentAllowed = false;
   }
 
-  @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setPropFS(String propertyName, Object value) {
     if ("font" == propertyName) {
       font3d = (JmolFont) value;
       return;
     }
   }
 
-  @Override
-  public String getShapeState() {
-    String s = viewer.getObjectState(myType);
-    String fcmd = Shape.getFontCommand(myType, font3d);
-      if (fcmd.length() > 0)
-        fcmd = "  " + fcmd + ";\n"; 
-    return (s.length() < 3 ? "" : s + fcmd);
-  }
 }

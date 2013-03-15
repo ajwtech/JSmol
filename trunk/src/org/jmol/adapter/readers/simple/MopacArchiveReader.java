@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /**
  * 
@@ -106,7 +106,7 @@ MERS=(1,2,2)   GNORM=4
     String sym = null;
     setFractionalCoordinates(false);
     while (readLine() != null && line.length() >= 50) {
-      vAtoms.add(atom = new Atom());
+      vAtoms.addLast(atom = new Atom());
       atom.x = parseFloatRange(line, 5, 18);
       atom.y = parseFloatRange(line, 21, 34);
       atom.z = parseFloatRange(line, 37, 50);
@@ -145,7 +145,7 @@ MERS=(1,2,2)   GNORM=4
       setSpaceGroupName("P1");
       int nTv = vAtoms.size() - atomCount;
       for (int i = nTv; i < 3; i++)
-        vAtoms.add(new Atom()); 
+        vAtoms.addLast(new Atom()); 
       float[] xyz = new float[9];
       for (int i = 0; i < 3; i++) {
         int j = i * 3;
@@ -159,8 +159,8 @@ MERS=(1,2,2)   GNORM=4
       }
       for (int i = atomCount; --i >= 0;)
         setAtomCoord(vAtoms.get(i));
-      Point3f ptMax = Point3f.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-      Point3f ptMin = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      P3 ptMax = P3.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+      P3 ptMin = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
       if (doCentralize) {
         for (int i = atomCount; --i >= 0;) {
           atom = vAtoms.get(i);
@@ -171,7 +171,7 @@ MERS=(1,2,2)   GNORM=4
           ptMin.y = Math.min(ptMin.y, atom.y);
           ptMin.z = Math.min(ptMin.z, atom.z);
         }
-        Point3f ptCenter = new Point3f();
+        P3 ptCenter = new P3();
         switch (nTv) {
         case 3:
           ptCenter.x = 0.5f;

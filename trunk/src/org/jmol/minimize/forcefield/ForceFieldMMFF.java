@@ -25,9 +25,9 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.SmilesMatcherInterface;
@@ -40,12 +40,13 @@ import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * MMFF94 implementation 5/14/2012
@@ -201,7 +202,7 @@ public class ForceFieldMMFF extends ForceField {
   private static final int TYPE_OOP = 0xD;     // 00 1101;
   
 
-  private static List<AtomType> atomTypes;
+  private static JmolList<AtomType> atomTypes;
   private static Map<Integer, Object> ffParams;
 
   private int[] rawAtomTypes;
@@ -224,7 +225,7 @@ public class ForceFieldMMFF extends ForceField {
    * vRings[2] list of all 5-membered rings
    * vRings[3] list of aromatic 5-membered and 6-membered rings
    */
-  private List<BitSet>[] vRings;
+  private JmolList<BS>[] vRings;
   
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
@@ -240,7 +241,7 @@ public class ForceFieldMMFF extends ForceField {
   }
 
   @Override
-  public boolean setModel(BitSet bsElements, int elemnoMax) {
+  public boolean setModel(BS bsElements, int elemnoMax) {
     getMinimizationParameters();
     Minimizer m = minimizer;
     if (!setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false, false))
@@ -253,7 +254,7 @@ public class ForceFieldMMFF extends ForceField {
     return calc.setupCalculations();
   }
 
-  public boolean setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds,
+  public boolean setArrays(Atom[] atoms, BS bsAtoms, Bond[] bonds,
                         int rawBondCount, boolean doRound, boolean allowUnknowns) {
     Minimizer m = minimizer;
     // these are original atom-index-based, not minAtom-index based. 
@@ -367,52 +368,52 @@ public class ForceFieldMMFF extends ForceField {
         switch (dataType) {
         case TYPE_OOP:
         case TYPE_TORSION: 
-          a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
+          a4 = Parser.parseInt(line.substring(18,20).trim());
           //$FALL-THROUGH$
         case TYPE_ANGLE:
         case TYPE_SB:
         case TYPE_SBDEF:
-          a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
+          a3 = Parser.parseInt(line.substring(13,15).trim());
           //$FALL-THROUGH$
         case TYPE_BNDK:
         case TYPE_BOND:
         case TYPE_CHRG:
-          a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
+          a2 = Parser.parseInt(line.substring(8,10).trim());
           //$FALL-THROUGH$
         case TYPE_PBCI:
         case TYPE_VDW:
-          a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
+          a1 = Parser.parseInt(line.substring(3,5).trim());
           break;
         }
         switch (dataType) {
         case TYPE_BNDK: // empirical bond stretch: kb, r0 (reversed in file) 
           value = new double[] {
-              Double.valueOf(line.substring(19,25).trim()).doubleValue(),
-              Double.valueOf(line.substring(13,18).trim()).doubleValue() };
+              Parser.dVal(line.substring(19,25).trim()),
+              Parser.dVal(line.substring(13,18).trim()) };
           break;
         case TYPE_BOND: // bond stretch: kb, r0 
           value = new double[] {
-              Double.valueOf(line.substring(14,20).trim()).doubleValue(),
-              Double.valueOf(line.substring(25,31).trim()).doubleValue() };
+              Parser.dVal(line.substring(14,20).trim()),
+              Parser.dVal(line.substring(25,31).trim()) };
          break;
         case TYPE_ANGLE:   // angles: ka, theta0
         case TYPE_SB:  // stretch-bend: kbaIJK, kbaKJI
           value = new double[] {
-              Double.valueOf(line.substring(19,25).trim()).doubleValue(),
-              Double.valueOf(line.substring(28,35).trim()).doubleValue() };
+              Parser.dVal(line.substring(19,25).trim()),
+              Parser.dVal(line.substring(28,35).trim()) };
           break;
         case TYPE_CHRG: // bond chrg
-          value = Float.valueOf(line.substring(10,20).trim());
+          value = Float.valueOf(Parser.fVal(line.substring(10,20).trim()));
           break;
         case TYPE_OOP: // oop: koop  
-          value = new double[] { Double.valueOf(line.substring(24,30).trim()).doubleValue() };
+          value = new double[] { Parser.dVal(line.substring(24,30).trim()) };
           break;
         case TYPE_PBCI:
-          value = Float.valueOf(line.substring(5,15).trim());
+          value = Float.valueOf(Parser.fVal(line.substring(5,15).trim()));
           break;
         case TYPE_SBDEF: // default stretch-bend: F(I_J,K),F(K_J,I)  
-          double v1 = Double.valueOf(line.substring(19,25).trim()).doubleValue();
-          double v2 = Double.valueOf(line.substring(28,35).trim()).doubleValue();
+          double v1 = Parser.dVal(line.substring(19,25).trim());
+          double v2 = Parser.dVal(line.substring(28,35).trim());
           value = new double[] { v1, v2 };
           Integer key = MinObject.getKey(type, a1, a2, a3, a4);
           data.put(key, value);
@@ -423,17 +424,17 @@ public class ForceFieldMMFF extends ForceField {
           break;
         case TYPE_TORSION: // tor: v1, v2, v3
           value = new double[] {
-              Double.valueOf(line.substring(22,28).trim()).doubleValue(),
-              Double.valueOf(line.substring(30,36).trim()).doubleValue(),
-              Double.valueOf(line.substring(38,44).trim()).doubleValue()
+              Parser.dVal(line.substring(22,28).trim()),
+              Parser.dVal(line.substring(30,36).trim()),
+              Parser.dVal(line.substring(38,44).trim())
               };
           break;
         case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
           value = new double[] {
-              Double.valueOf(line.substring(10,15).trim()).doubleValue(),
-              Double.valueOf(line.substring(20,25).trim()).doubleValue(),
-              Double.valueOf(line.substring(30,35).trim()).doubleValue(),
-              Double.valueOf(line.substring(40,45).trim()).doubleValue(),
+              Parser.dVal(line.substring(10,15).trim()),
+              Parser.dVal(line.substring(20,25).trim()),
+              Parser.dVal(line.substring(30,35).trim()),
+              Parser.dVal(line.substring(40,45).trim()),
               line.charAt(46) // '-', 'A', 'D'
               };
           break;
@@ -441,7 +442,7 @@ public class ForceFieldMMFF extends ForceField {
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
         data.put(key, value);
         if (Logger.debugging)
-          Logger.info(MinObject.decodeKey(key) + " " + Escape.escape(value));
+          Logger.info(MinObject.decodeKey(key) + " " + Escape.e(value));
       }
       br.close();
     } catch (Exception e) {
@@ -452,7 +453,7 @@ public class ForceFieldMMFF extends ForceField {
 
   
   private void getAtomTypes(String fileName) {
-    List<AtomType> types = new ArrayList<AtomType>();
+    JmolList<AtomType> types = new  JmolList<AtomType>();
     String line = null;
     try {
       BufferedReader br = getBufferedReader(fileName);
@@ -462,7 +463,7 @@ public class ForceFieldMMFF extends ForceField {
       // and within Eclipse it's a BufferedInputStream
 
       AtomType at;
-      types.add(new AtomType(0, 0, 0, 0, 1, "H or NOT FOUND", ""));
+      types.addLast(new AtomType(0, 0, 0, 0, 1, "H or NOT FOUND", ""));
       while ((line = br.readLine()) != null) {
         if (line.length() == 0 || line.startsWith("#"))
           continue;
@@ -470,14 +471,14 @@ public class ForceFieldMMFF extends ForceField {
         //0123456789012345678901234567890123456789012345678901234567890123456789
         //Mg 12 99  0  24  0 DIPOSITIVE MAGNESIUM CATI [MgD0]
         //#AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
-        int elemNo = Integer.valueOf(line.substring(3,5).trim()).intValue();
-        int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
-        int hType = Integer.valueOf(line.substring(9,11).trim()).intValue();
-        float formalCharge = Float.valueOf(line.substring(12,15).trim()).floatValue()/12;
-        int val = Integer.valueOf(line.substring(16,18).trim()).intValue();
+        int elemNo = Parser.parseInt(line.substring(3,5).trim());
+        int mmType = Parser.parseInt(line.substring(6,8).trim());
+        int hType = Parser.parseInt(line.substring(9,11).trim());
+        float formalCharge = Parser.fVal(line.substring(12,15).trim())/12;
+        int val = Parser.parseInt(line.substring(16,18).trim());
         String desc = line.substring(19,44).trim();
         String smarts = line.substring(45).trim();
-        types.add(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));
+        types.addLast(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));
         setFlags(at);
       }
       br.close();
@@ -654,7 +655,7 @@ public class ForceFieldMMFF extends ForceField {
    * @return   full array of partial charges
    */
   public static float[] getPartialCharges(Bond[] bonds, int[] bTypes, Atom[] atoms,
-                                          int[] aTypes, BitSet bsAtoms, boolean doRound) {
+                                          int[] aTypes, BS bsAtoms, boolean doRound) {
 
     // start with formal charges specified by MMFF94 (not what is in file!)
 
@@ -767,7 +768,7 @@ public class ForceFieldMMFF extends ForceField {
   private boolean isAromaticBond(int a1, int a2) {
     if (vRings[R56] != null)
       for (int i = vRings[R56].size(); --i >= 0;) {
-        BitSet bsRing = vRings[R56].get(i);
+        BS bsRing = vRings[R56].get(i);
         if (bsRing.get(a1) && bsRing.get(a2))
           return true;
       }
@@ -801,15 +802,15 @@ public class ForceFieldMMFF extends ForceField {
    * @param allowUnknowns
    * @return array of indexes into AtomTypes or, for H, negative of mmType
    */
-  private static int[] setAtomTypes(Atom[] atoms, BitSet bsAtoms,
+  private static int[] setAtomTypes(Atom[] atoms, BS bsAtoms,
                                     SmilesMatcherInterface smartsMatcher,
-                                    List<BitSet>[] vRings, boolean allowUnknowns) {
-    List<BitSet> bitSets = new ArrayList<BitSet>();
+                                    JmolList<BS>[] vRings, boolean allowUnknowns) {
+    JmolList<BS> bitSets = new  JmolList<BS>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
-    BitSet bsElements = new BitSet();
-    BitSet bsHydrogen = new BitSet();
-    BitSet bsConnected = BitSetUtil.copy(bsAtoms);
+    BS bsElements = new BS();
+    BS bsHydrogen = new BS();
+    BS bsConnected = BSUtil.copy(bsAtoms);
 
     // It may be important to include all attached atoms
 
@@ -855,9 +856,9 @@ public class ForceFieldMMFF extends ForceField {
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
         bsConnected, bitSets, vRings);
-    BitSet bsDone = new BitSet();
+    BS bsDone = new BS();
     for (int j = 0; j < bitSets.size(); j++) {
-      BitSet bs = bitSets.get(j);
+      BS bs = bitSets.get(j);
       if (bs == null)
         continue;
       // This is a one-pass system. We first exclude
@@ -898,7 +899,7 @@ public class ForceFieldMMFF extends ForceField {
     return types;
   }
 
-  private int[] setBondTypes(Bond[] bonds, int bondCount, BitSet bsAtoms) {
+  private int[] setBondTypes(Bond[] bonds, int bondCount, BS bsAtoms) {
      int[] bTypes = new int[bondCount];
      for (int i = bondCount; --i >= 0;) {
        Atom a1 = bonds[i].getAtom1();
@@ -1011,10 +1012,10 @@ public class ForceFieldMMFF extends ForceField {
     return minAtoms[iAtom].ffType;
   }
   
-  private boolean checkRings(List<BitSet> v, int[] minlist, int n) {
+  private boolean checkRings(JmolList<BS> v, int[] minlist, int n) {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
-        BitSet bs = v.get(i);
+        BS bs = v.get(i);
         if (bs.get(minAtoms[minlist[0]].atom.index)
             && bs.get(minAtoms[minlist[1]].atom.index)
             && (n < 3 || bs.get(minAtoms[minlist[2]].atom.index))

@@ -1,17 +1,17 @@
 package org.jmol.viewer.binding;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Event;
 import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 abstract public class Binding {
@@ -58,25 +58,25 @@ abstract public class Binding {
     return name;
   }
   
-  public final void bind(int mouseAction, int jmolAction) {
+  public final void bindAction(int mouseAction, int jmolAction) {
     //System.out.println("binding " + mouseAction + "\t" + jmolAction);
     addBinding(mouseAction + "\t" + jmolAction, new int[] {mouseAction, jmolAction});
   }
   
-  public void bind(int mouseAction, String name) {
+  public void bindName(int mouseAction, String name) {
     addBinding(mouseAction + "\t", Boolean.TRUE);
     addBinding(mouseAction + "\t" + name, new String[] { getMouseActionName(mouseAction, false), name });
   }
 
 
-  public final void unbind(int mouseAction, int jmolAction) {
+  public final void unbindAction(int mouseAction, int jmolAction) {
     if (mouseAction == 0)
       unbindJmolAction(jmolAction);
     else
       removeBinding(null, mouseAction + "\t" + jmolAction);
   }
   
-  public final void unbind(int mouseAction, String name) {
+  public final void unbindName(int mouseAction, String name) {
     if (name == null)
       unbindMouseAction(mouseAction);
     else
@@ -95,7 +95,7 @@ abstract public class Binding {
   
   private void addBinding(String key, Object value) {
     if (Logger.debugging)
-      Logger.debug("adding binding " + key + "\t==\t" + Escape.escape(value));
+      Logger.debug("adding binding " + key + "\t==\t" + Escape.e(value));
     bindings.put(key, value);
   }
   private void removeBinding(Iterator<String> e, String key) {
@@ -146,7 +146,7 @@ abstract public class Binding {
    * @param desc
    * @return      action code
    */
-  public static int getMouseAction(String desc) {
+  public static int getMouseActionStr(String desc) {
     if (desc == null)
       return 0;
     int action = 0;
@@ -193,13 +193,13 @@ abstract public class Binding {
 
   @SuppressWarnings("unchecked")
   public String getBindingInfo(String[] actionNames, String qualifiers) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    List<String>[] names = new ArrayList[actionNames.length];
+    JmolList<String>[] names = new JmolList[actionNames.length];
     for (int i = 0; i < actionNames.length; i++)
       names[i] = (qlow == null
-          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new ArrayList<String>()
+          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new  JmolList<String>()
           : null);
     Iterator<String> e = bindings.keySet().iterator();
     while (e.hasNext()) {
@@ -210,19 +210,19 @@ abstract public class Binding {
       int i = info[1];
       if (names[i] == null)
         continue;
-      names[i].add(getMouseActionName(info[0], true));
+      names[i].addLast(getMouseActionName(info[0], true));
     }
     for (int i = 0; i < actionNames.length; i++) {
       int n;
       if (names[i] == null || (n = names[i].size()) == 0)
         continue;
-      Object[] list = names[i].toArray();
+      String[] list = names[i].toArray(new String[n]);
       Arrays.sort(list);
       sb.append(actionNames[i]).append("\t");
       String sep = "";
       for (int j = 0; j < n; j++) {
         sb.append(sep);
-        sb.append(((String) list[j]).substring(7));
+        sb.append(list[j].substring(7));
         sep = ", ";
       }
       sb.appendC('\n');
@@ -234,7 +234,7 @@ abstract public class Binding {
     return ((mouseAction & mod) == mod);
   }
   public static String getMouseActionName(int mouseAction, boolean addSortCode) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (mouseAction == 0)
       return "";
     boolean isMiddle = (includes(mouseAction, MIDDLE)

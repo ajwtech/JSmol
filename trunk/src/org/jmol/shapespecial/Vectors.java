@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -26,7 +26,7 @@ package org.jmol.shapespecial;
 
 
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class Vectors extends AtomShape {
 
@@ -38,21 +38,17 @@ protected void initModelSet() {
   }
 
  @Override
-public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+public void setProperty(String propertyName, Object value, BS bsSelected) {
     if (!isActive)
       return;
-    super.setProperty(propertyName, value, bsSelected);
+    setPropAS(propertyName, value, bsSelected);
   }
   
  @Override
 public Object getProperty(String propertyName, int param) {
    if (propertyName == "mad")
      return Integer.valueOf(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
-   return super.getProperty(propertyName, param);
+   return null;
  }
 
- @Override
-public String getShapeState() {
-    return (isActive ? super.getShapeState() : "");
-  }
 }

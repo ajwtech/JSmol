@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-03-13 19:10:30 -0500 (Wed, 13 Mar 2013) $
+ * $Revision: 17975 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -25,8 +25,8 @@
 package org.jmol.smiles;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ import java.util.Map;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Logger;
 
@@ -195,7 +195,7 @@ public class SmilesParser {
 
   private String parseVariableLength(String pattern)
       throws InvalidSmilesException {
-    StringXBuilder sout = new StringXBuilder();
+    SB sout = new SB();
     // fix internal ||
     int len = pattern.length() - 1;
     int nParen = 0;
@@ -295,7 +295,7 @@ public class SmilesParser {
         if (repeat.indexOf("|") >= 0)
           repeat = "[$(" + repeat + ")]";
         for (int i = min; i <= max; i++) {
-          StringXBuilder sb = new StringXBuilder();
+          SB sb = new SB();
           sb.append("||").append(pattern.substring(0, pt0));
           for (int j = 0; j < i; j++)
             sb.append(repeat);
@@ -549,7 +549,7 @@ public class SmilesParser {
                 bond, ch == '[', false, isBranchAtom);
             if (bond.order != SmilesBond.TYPE_UNKNOWN
                 && bond.order != SmilesBond.TYPE_NONE)
-              bond.set(null, currentAtom);
+              bond.set2a(null, currentAtom);
             break;
           default:
             // [atomType]
@@ -645,7 +645,7 @@ public class SmilesParser {
           s = strMeasure.substring(pt2 + 1);
           float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
-          molecule.measures.add(m);
+          molecule.measures.addLast(m);
           if (index > 0)
             htMeasures.put(id, m);
           else if (index == 0 && Logger.debugging)
@@ -709,8 +709,8 @@ public class SmilesParser {
   }
 
   private String parseVariables(String pattern) throws InvalidSmilesException {
-    List<String> keys = new ArrayList<String>();
-    List<String> values = new ArrayList<String>();
+    JmolList<String> keys = new  JmolList<String>();
+    JmolList<String> values = new  JmolList<String>();
     int index;
     int ipt = 0;
     int iptLast = -1;
@@ -724,8 +724,8 @@ public class SmilesParser {
       if (key.lastIndexOf('$') > 0 || key.indexOf(']') > 0)
         throw new InvalidSmilesException("Invalid variable name: " + key);
       String s = getSubPattern(pattern, ipt + 1, '\"');
-      keys.add("[" + key + "]");
-      values.add(s);
+      keys.addLast("[" + key + "]");
+      values.addLast(s);
       ipt += s.length() + 2;
       ipt = skipTo(pattern, ipt, ';');
       iptLast = ++ipt;
@@ -1010,7 +1010,7 @@ public class SmilesParser {
             : isSmarts || currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_ANY
                 : SmilesBond.TYPE_SINGLE);
       if (!isBracketed)
-        bond.set(null, newAtom);
+        bond.set2a(null, newAtom);
       if (branchLevel == 0 && 
           (bond.order == SmilesBond.TYPE_AROMATIC 
               || bond.order == SmilesBond.TYPE_BIO_PAIR))
@@ -1169,7 +1169,7 @@ public class SmilesParser {
       if (bond != null || bondSet != null)
         throw new InvalidSmilesException("invalid '.'");
       isBioSequence = (getChar(pattern, 1) == '~');
-      return new SmilesBond(SmilesBond.TYPE_NONE, false);
+      return new SmilesBond(null, null, SmilesBond.TYPE_NONE, false);
     }
     if (ch == '+' && bondSet != null)
       throw new InvalidSmilesException("invalid '+'");
@@ -1222,11 +1222,11 @@ public class SmilesParser {
           molecule.top.needRingData = true;
         break;
       }
-      newBond.set(bondType, isBondNot);
+      newBond.set2(bondType, isBondNot);
       // in the case of a bioSequence, we also mark the 
       // parent bond, especially if NOT
       if (isBioSequence && bondSet != null) 
-        bondSet.set(bondType, isBondNot);
+        bondSet.set2(bondType, isBondNot);
     }
     return newBond;
   }
@@ -1276,7 +1276,7 @@ public class SmilesParser {
         if (bond != null && pt < 0) {
           // bonds are simpler, because they have only one character
           if (len > 1) {
-            StringXBuilder sNew = new StringXBuilder();
+            SB sNew = new SB();
             for (int i = 0; i < len;) {
               char ch = pattern.charAt(i++);
               sNew.appendC(ch);
@@ -1382,13 +1382,14 @@ public class SmilesParser {
    * @return  comments and white space removed, also ^^ to '
    */
   static String cleanPattern(String pattern) {
-    pattern = pattern.replaceAll("\\s", "").replaceAll("\\^\\^","'");
+    pattern = TextFormat.replaceAllCharacters(pattern, " \t\n\r", "");
+    pattern = TextFormat.simpleReplace(pattern, "^^", "'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0
         && (i2 = pattern.indexOf("*//")) >= i)
       pattern = pattern.substring(0, i) + pattern.substring(i2 + 3);
-    pattern = pattern.replaceAll("//", "");
+    pattern = TextFormat.simpleReplace(pattern, "//", "");
     return pattern;
   }
 

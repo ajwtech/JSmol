@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-01-23 14:58:01 -0600 (Wed, 23 Jan 2013) $
- * $Revision: 17876 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,10 +24,8 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.TextFormat;
 
 import java.util.Iterator;
@@ -47,7 +45,7 @@ public class Echo extends TextShape {
 
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
-  private final static short COLOR = Colix.RED;
+  private final static short COLOR = C.RED;
     
   @Override
   public void initShape() {
@@ -56,7 +54,7 @@ public class Echo extends TextShape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("scalereference" == propertyName) {
       if (currentObject != null) {
@@ -168,7 +166,7 @@ public class Echo extends TextShape {
         return;
       }
     }
-    super.setProperty(propertyName, value, null);
+    setPropTS(propertyName, value, null);
   }
 
   @Override
@@ -190,20 +188,11 @@ public class Echo extends TextShape {
       }
       return false;
     }
-    return super.getPropertyData(property, data);
+    return false;
   }
 
   @Override
   public String getShapeState() {
-    StringXBuilder s = new StringXBuilder();
-    s.append("\n  set echo off;\n");
-    Iterator<Text> e = objects.values().iterator();
-    while (e.hasNext()) {
-      Text t = e.next();
-      s.append(t.getState());
-      if (t.hidden)
-        s.append("  set echo ID ").append(Escape.escapeStr(t.target)).append(" hidden;\n");
-    }
-    return s.toString();
+    return viewer.getShapeState(this);
   }
 }

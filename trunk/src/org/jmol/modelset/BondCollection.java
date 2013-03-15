@@ -28,15 +28,15 @@ package org.jmol.modelset;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 abstract public class BondCollection extends AtomCollection {
 
@@ -48,36 +48,28 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED
-  protected JmolMolecule[] molecules;
-  protected int moleculeCount;
+  public JmolMolecule[] molecules;
+  public int moleculeCount;
 
   protected void resetMolecules() {
     molecules = null;
     moleculeCount = 0;
   }
 
-  protected Bond[] bonds;
-  protected int bondCount;
+  public Bond[] bonds;
+  public int bondCount;
   
-  public Bond[] getBonds() {
-    return bonds;
-  }
-
   public Bond getBondAt(int bondIndex) {
     return bonds[bondIndex];
   }
 
-  public int getBondCount() {
-    return bondCount;
-  }
-  
-  public BondIterator getBondIteratorForType(int bondType, BitSet bsAtoms) {
+  public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
         viewer.getBondSelectionModeOr());
   }
 
-  public BondIterator getBondIterator(BitSet bsBonds) {
+  public BondIterator getBondIterator(BS bsBonds) {
     //Sticks
     return new BondIteratorSelected(bonds, bondCount, JmolEdge.BOND_ORDER_NULL, bsBonds, false);
   }
@@ -124,8 +116,8 @@ abstract public class BondCollection extends AtomCollection {
     return n;
   }
 
-  public BitSet getBondsForSelectedAtoms(BitSet bsAtoms, boolean bondSelectionModeOr) {
-    BitSet bs = new BitSet();
+  public BS getBondsForSelectedAtoms(BS bsAtoms, boolean bondSelectionModeOr) {
+    BS bs = new BS();
     for (int iBond = 0; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];
       boolean isSelected1 = bsAtoms.get(bond.atom1.index);
@@ -137,7 +129,7 @@ abstract public class BondCollection extends AtomCollection {
     return bs;
   }
 
-  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy, boolean addGroup, boolean isNew) {
+  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BS bsBonds, float energy, boolean addGroup, boolean isNew) {
     // this method used when a bond must be flagged as new
     Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, energy, true);
     if (isNew) {
@@ -154,7 +146,7 @@ abstract public class BondCollection extends AtomCollection {
   protected final static int BOND_GROWTH_INCREMENT = 250;
 
   private Bond getOrAddBond(Atom atom, Atom atomOther, int order, short mad,
-                            BitSet bsBonds, float energy, boolean overrideBonding) {
+                            BS bsBonds, float energy, boolean overrideBonding) {
     int i;
     if (order == JmolEdge.BOND_ORDER_NULL || order == JmolEdge.BOND_ORDER_ANY)
       order = 1;
@@ -184,7 +176,7 @@ abstract public class BondCollection extends AtomCollection {
 
   protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
     Bond bond;
-    if (Bond.isHydrogen(order)) {
+    if (Bond.isOrderH(order)) {
       bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
     } else {
       bond = new Bond(atom, atomOther, order, mad, (short) 0);
@@ -249,7 +241,7 @@ abstract public class BondCollection extends AtomCollection {
         energy)).index;
   }
 
-  protected static short getBondOrder(float bondingRadiusA,
+  protected static short getBondOrderFull(float bondingRadiusA,
                              float bondingRadiusB, float distance2,
                              float minBondDistance2, float bondTolerance) {
     if (bondingRadiusA == 0 || bondingRadiusB == 0 || distance2 < minBondDistance2)
@@ -262,9 +254,9 @@ abstract public class BondCollection extends AtomCollection {
   private boolean haveWarned = false;
 
   protected boolean checkValencesAndBond(Atom atomA, Atom atomB, int order, short mad,
-                            BitSet bsBonds) {
-    if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
-        || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
+                            BS bsBonds) {
+    if (atomA.getCurrentBondCount() > JC.MAXIMUM_AUTO_BOND_COUNT
+        || atomB.getCurrentBondCount() > JC.MAXIMUM_AUTO_BOND_COUNT) {
       if (!haveWarned)
         Logger.warn("maximum auto bond count reached");
       haveWarned = true;
@@ -284,8 +276,8 @@ abstract public class BondCollection extends AtomCollection {
     return true;
   }
 
-  protected void deleteAllBonds() {
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reset", null);
+  protected void deleteAllBonds2() {
+    viewer.setShapeProperty(JC.SHAPE_STICKS, "reset", null);
     for (int i = bondCount; --i >= 0;) {
       bonds[i].deleteAtomReferences();
       bonds[i] = null;
@@ -303,13 +295,13 @@ abstract public class BondCollection extends AtomCollection {
    * @return if hydrogen bond, default to 1; otherwise 0 (general default)
    */
   public short getDefaultMadFromOrder(int order) {
-    return (short) (Bond.isHydrogen(order) ? 1
+    return (short) (Bond.isOrderH(order) ? 1
         : (order & JmolEdge.BOND_STRUT) != 0 ? (int) Math.floor(viewer
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
   }
 
   protected int[] deleteConnections(float minDistance, float maxDistance,
-                                    int order, BitSet bsA, BitSet bsB,
+                                    int order, BS bsA, BS bsB,
                                     boolean isBonds, boolean matchNull,
                                     float minDistanceSquared,
                                     float maxDistanceSquared) {
@@ -321,16 +313,16 @@ abstract public class BondCollection extends AtomCollection {
       minDistance = -minDistance;
     if (maxDistanceIsFractionRadius)
       maxDistance = -maxDistance;
-    BitSet bsDelete = new BitSet();
+    BS bsDelete = new BS();
     int nDeleted = 0;
     int newOrder = order |= JmolEdge.BOND_NEW;
-    if (!matchNull && Bond.isHydrogen(order))
+    if (!matchNull && Bond.isOrderH(order))
       order = JmolEdge.BOND_HYDROGEN_MASK;
-    BitSet bsBonds;
+    BS bsBonds;
     if (isBonds) {
       bsBonds = bsA;
     } else {
-      bsBonds = new BitSet();
+      bsBonds = new BS();
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
         Atom a = atoms[i];
         if (a.bonds != null)
@@ -362,11 +354,11 @@ abstract public class BondCollection extends AtomCollection {
         }
     }
     if (nDeleted > 0)
-      deleteBonds(bsDelete, false);
+      dBb(bsDelete, false);
     return new int[] { 0, nDeleted };
   }
 
-  public void deleteBonds(BitSet bsBond, boolean isFullModel) {
+  protected void dBb(BS bsBond, boolean isFullModel) {
     int iDst = bsBond.nextSetBit(0);
     if (iDst < 0)
       return;
@@ -391,12 +383,12 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= iDst;)
       bonds[i] = null;
     bondCount = iDst;
-    BitSet[] sets = (BitSet[]) viewer.getShapeProperty(
-        JmolConstants.SHAPE_STICKS, "sets");
+    BS[] sets = (BS[]) viewer.getShapeProperty(
+        JC.SHAPE_STICKS, "sets");
     if (sets != null)
       for (int i = 0; i < sets.length; i++)
-        BitSetUtil.deleteBits(sets[i], bsBond);
-    BitSetUtil.deleteBits(bsAromatic, bsBond);
+        BSUtil.deleteBits(sets[i], bsBond);
+    BSUtil.deleteBits(bsAromatic, bsBond);
   }
 
 
@@ -468,9 +460,9 @@ abstract public class BondCollection extends AtomCollection {
    * 
    */
 
-  private BitSet bsAromaticSingle;
-  private BitSet bsAromaticDouble;
-  protected BitSet bsAromatic = new BitSet();
+  private BS bsAromaticSingle;
+  private BS bsAromaticDouble;
+  protected BS bsAromatic = new BS();
 
   public void resetAromatic() {
     for (int i = bondCount; --i >= 0;) {
@@ -492,17 +484,17 @@ abstract public class BondCollection extends AtomCollection {
    *                            were a bondOrder command.
    * @param bsBonds  passed to us by autoBond routine
    */
-  protected void assignAromaticBondsBs(boolean isUserCalculation, BitSet bsBonds) {
+  protected void assignAromaticBondsBs(boolean isUserCalculation, BS bsBonds) {
     // bsAromatic tracks what was originally in the file, but
     // individual bonds are cleared if the connect command has been used.
     // in this way, users can override the file designations.
     if (!isUserCalculation)
-      bsAromatic = new BitSet();
+      bsAromatic = new BS();
 
     //set up the two temporary bitsets and reset bonds.
 
-    bsAromaticSingle = new BitSet();
-    bsAromaticDouble = new BitSet();
+    bsAromaticSingle = new BS();
+    bsAromaticDouble = new BS();
     boolean isAll = (bsBonds == null);
     int i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
@@ -684,7 +676,7 @@ abstract public class BondCollection extends AtomCollection {
     return false;
   }
   
-  private void assignAromaticNandO(BitSet bsSelected) {
+  private void assignAromaticNandO(BS bsSelected) {
     Bond bond;
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? bondCount - 1 : bsSelected.nextSetBit(0));
@@ -729,32 +721,31 @@ abstract public class BondCollection extends AtomCollection {
       }
   }
 
-  @Override
-  protected BitSet getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
-    BitSet bs;
+  protected BS getAtomBitsMDb(int tokType, Object specInfo) {
+    BS bs;
     switch (tokType) {
     default:
-      return super.getAtomBitsMaybeDeleted(tokType, specInfo);
-    case Token.isaromatic:
-      bs = new BitSet();
+      return getAtomBitsMDa(tokType, specInfo);
+    case T.bonds:
+      bs = new BS();
+      BS bsBonds = (BS) specInfo;
+      for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1)) {
+        bs.set(bonds[i].atom1.index);
+        bs.set(bonds[i].atom2.index);
+      }
+      return bs;
+    case T.isaromatic:
+      bs = new BS();
       for (int i = bondCount; --i >= 0;)
         if (bonds[i].isAromatic()) {
           bs.set(bonds[i].atom1.index);
           bs.set(bonds[i].atom2.index);
         }
       return bs;
-    case Token.bonds:
-      bs = new BitSet();
-      BitSet bsBonds = (BitSet) specInfo;
-      for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1)) {
-        bs.set(bonds[i].atom1.index);
-        bs.set(bonds[i].atom2.index);
-      }
-      return bs;
     }
   }
  
-  public BitSet setBondOrder(int bondIndex, char type) {
+  public BS setBondOrder(int bondIndex, char type) {
     int bondOrder = type - '0';
     Bond bond = bonds[bondIndex];
     switch (type) {
@@ -776,14 +767,14 @@ abstract public class BondCollection extends AtomCollection {
     default:
       return null;
     }
-    BitSet bsAtoms = new BitSet();
+    BS bsAtoms = new BS();
     try {
       if (bondOrder == 0) {
-        BitSet bs = new BitSet();
+        BS bs = new BS();
         bs.set(bond.index);
         bsAtoms.set(bond.getAtomIndex1());
         bsAtoms.set(bond.getAtomIndex2());
-        deleteBonds(bs, false);
+        dBb(bs, false);
         return bsAtoms;
       }
       bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
@@ -798,8 +789,8 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   protected void removeUnnecessaryBonds(Atom atom, boolean deleteAtom) {
-    BitSet bs = new BitSet();
-    BitSet bsBonds = new BitSet();
+    BS bs = new BS();
+    BS bsBonds = new BS();
     Bond[] bonds = atom.bonds;
     if (bonds == null)
       return;
@@ -812,14 +803,14 @@ abstract public class BondCollection extends AtomCollection {
         bsBonds.set(bonds[i].index);
       }
     if (bsBonds.nextSetBit(0) >= 0)
-      deleteBonds(bsBonds, false);
+      dBb(bsBonds, false);
     if (deleteAtom)
       bs.set(atom.index);
     if (bs.nextSetBit(0) >= 0)
       viewer.deleteAtoms(bs, false);
   }
   
-  protected boolean haveHiddenBonds;
+  public boolean haveHiddenBonds;
   
   public void displayBonds(BondSet bs, boolean isDisplay) {
     if (!isDisplay)

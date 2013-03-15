@@ -24,12 +24,12 @@
 
 package org.jmol.minimize;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 import org.jmol.minimize.forcefield.AtomType;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class MinAtom {
 
@@ -41,12 +41,12 @@ public class MinAtom {
   public Integer vdwKey;
   public double[] coord = new double[3];
   public double[] force = new double[3];
-  private List<MinBond> bonds = new ArrayList<MinBond>();
+  private JmolList<MinBond> bonds = new  JmolList<MinBond>();
   public int nBonds;
   public int hCount;
   public double partialCharge;
-  public BitSet bsVdw = new BitSet();
-  public BitSet bs14 = new BitSet();
+  public BS bsVdw = new BS();
+  public BS bs14 = new BS();
 
   int[] bondedAtoms;
 
@@ -92,7 +92,7 @@ public class MinAtom {
   }
 
   public void addBond(MinBond bond, int i) {
-    bonds.add(bond);
+    bonds.addLast(bond);
     nBonds++;
     bsVdw.clear(i);
   }

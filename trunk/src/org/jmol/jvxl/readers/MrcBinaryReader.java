@@ -27,7 +27,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 class MrcBinaryReader extends MapFileReader {
 
@@ -51,7 +51,7 @@ class MrcBinaryReader extends MapFileReader {
    */
   @Override
   void init2(SurfaceGenerator sg, BufferedReader brNull) {
-    String fileName = (String) sg.getReaderData();
+    String fileName = (String) ((Object[]) sg.getReaderData())[0];
     super.init2(sg, null);
     binarydoc = newBinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
@@ -248,7 +248,7 @@ class MrcBinaryReader extends MapFileReader {
       Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + params.cutoff + ")\n");
     }
 
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("MRC DATA ").append(nlabel > 0 ? labels[0]: "").append("\n");
     jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
   }

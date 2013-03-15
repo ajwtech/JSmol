@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import java.util.List;
+
 
 
 import org.jmol.minimize.MinAngle;
@@ -33,8 +33,9 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.JmolList;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Vector3d;
 
@@ -56,7 +57,7 @@ abstract class Calculations {
   final static int CALC_MAX = 7;
 
   ForceField ff;
-  List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
+  JmolList<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
 
   int atomCount;
   int bondCount;
@@ -66,17 +67,17 @@ abstract class Calculations {
   MinBond[] minBonds;
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
-  List<Object[]> constraints;
+  JmolList<Object[]> constraints;
   boolean isPreliminary;
 
-  public void setConstraints(List<Object[]> constraints) {
+  public void setConstraints(JmolList<Object[]> constraints) {
     this.constraints = constraints;
   }
 
   Calculations(ForceField ff, 
       MinAtom[] minAtoms, MinBond[] minBonds,
       MinAngle[] minAngles, MinTorsion[] minTorsions, 
-      List<Object[]> constraints) {
+      JmolList<Object[]> constraints) {
     this.ff = ff;
     this.minAtoms = minAtoms;
     this.minBonds = minBonds;
@@ -109,7 +110,7 @@ abstract class Calculations {
     silent = TF;
   }
 
-  StringXBuilder logData = new StringXBuilder();
+  SB logData = new SB();
 
   public String getLogData() {
     return logData.toString();
@@ -125,7 +126,7 @@ abstract class Calculations {
   void setLoggingEnabled(boolean TF) {
     loggingEnabled = TF;
     if (loggingEnabled)
-      logData = new StringXBuilder();
+      logData = new SB();
   }
 
   void setPreliminary(boolean TF) {
@@ -134,14 +135,14 @@ abstract class Calculations {
 
   abstract class PairCalc extends Calculation {
     
-    abstract void setData(List<Object[]> calc, int ia, int ib);
+    abstract void setData(JmolList<Object[]> calc, int ia, int ib);
 
   }
   
-  protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
-                            List<Object[]> calc2, PairCalc pc2) {
+  protected void pairSearch(JmolList<Object[]> calc1, PairCalc pc1, 
+                            JmolList<Object[]> calc2, PairCalc pc2) {
     for (int i = 0; i < atomCount - 1; i++) {
-      BitSet bsVdw = minAtoms[i].bsVdw;
+      BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
         pc1.setData(calc1, i, j);
         if (pc2 != null)
@@ -153,7 +154,7 @@ abstract class Calculations {
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;
-    List<Object[]> calc = calculations[iType];
+    JmolList<Object[]> calc = calculations[iType];
     int nCalc;
     double energy = 0;
     if (calc == null || (nCalc = calc.size()) == 0)
@@ -368,7 +369,7 @@ abstract class Calculations {
     String trailer =
           "----------------------------------------"
           + "-------------------------------------------------------\n";  
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("\n" + title + "\n\n"
         + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
         + "---------BONDED ATOMS--------\n"
@@ -536,7 +537,7 @@ abstract class Calculations {
     } else {
       c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
     }
-    if (Util.isNearZero(c.rab, 1.0e-3))
+    if (Util.isNearZero2(c.rab, 1.0e-3))
       c.rab = 1.0e-3;
   }
   

@@ -25,10 +25,10 @@ package org.jmol.util;
 
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -208,10 +208,10 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static Point3f[] arrayCopyPt(Point3f[] array, int newLength) {
+  public static P3[] arrayCopyPt(P3[] array, int newLength) {
     if (newLength < 0)
       newLength = array.length;
-    Point3f[] t = new Point3f[newLength];
+    P3[] t = new P3[newLength];
     if (array != null) {
       int oldLength = array.length;
       System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
@@ -350,7 +350,7 @@ final public class ArrayUtil {
     return str;
   }
 
-  public static String sortedItem(List<String> v, int n) {
+  public static String sortedItem(JmolList<String> v, int n) {
     if (v.size() == 0)
       return null;
     if (v.size() == 1)
@@ -361,15 +361,15 @@ final public class ArrayUtil {
   }
 
   /**
-   * Helper method for creating a List<T>[] without warnings.
+   * Helper method for creating a JmolList<T>[] without warnings.
    * 
    * @param <T> Type of objects in the list.
    * @param size Array size.
-   * @return Array of List<T>
+   * @return Array of JmolList<T>
    */
   @SuppressWarnings("unchecked")
-  public static <T> List<T>[] createArrayOfArrayList(int size) {
-    return new ArrayList[size];
+  public static <T> JmolList<T>[] createArrayOfArrayList(int size) {
+    return new JmolList[size];
   }
 
   /**

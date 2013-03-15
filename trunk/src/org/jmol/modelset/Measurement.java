@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-23 02:11:27 -0500 (Tue, 23 Oct 2012) $
- * $Revision: 17676 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -25,22 +25,22 @@ package org.jmol.modelset;
 
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.TickInfo;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 public class Measurement {
 
@@ -51,7 +51,13 @@ public class Measurement {
   private Viewer viewer;
 
   public ModelSet modelSet;
-
+  public int index;
+  public boolean isVisible = true;
+  public boolean isHidden = false;
+  public boolean isDynamic = false;
+  public boolean isTrajectory = false;
+  public short colix;
+  
   public int traceX = Integer.MIN_VALUE, traceY;
   
   protected int count;
@@ -118,65 +124,16 @@ public class Measurement {
   public float getValue() {
     return value;
   }
-  
-  private boolean isVisible = true;
-  private boolean isHidden = false;
-  private boolean isDynamic = false;
-  private boolean isTrajectory = false;
-  
-  public boolean isVisible() {
-    return isVisible;
-  }
-  public boolean isHidden() {
-    return isHidden;
-  }
-  public boolean isDynamic() {
-    return isDynamic;
-  }
-  
-  public boolean isTrajectory() {
-    return isTrajectory;
-  }
-  
-  public void setVisible(boolean TF) {
-    this.isVisible = TF;
-  }
-  public void setHidden(boolean TF) {
-    this.isHidden = TF;
-  }
-  public void setDynamic(boolean TF) {
-    this.isDynamic = TF;
-  }
-  
-  private short colix;
-  
-  public short getColix() {
-    return colix;
-  }
-  
-  public void setColix(short colix) {
-    this.colix = colix;
-  }
-  
-  private int index;
-  
-  public void setIndex(int index) {
-    this.index = index;
-  }
-  
-  public int getIndex() {
-    return index;
-  }
-  
+    
   private AxisAngle4f aa;
   
   public AxisAngle4f getAxisAngle() {
     return aa;
   }
   
-  private Point3f pointArc;
+  private P3 pointArc;
 
-  public Point3f getPointArc() {
+  public P3 getPointArc() {
     return pointArc;
   }
   
@@ -265,16 +222,16 @@ public class Measurement {
         aa = null;
         pointArc = null;
       } else {
-        Vector3f vectorBA = new Vector3f();
-        Vector3f vectorBC = new Vector3f();        
+        V3 vectorBA = new V3();
+        V3 vectorBC = new V3();        
         float radians = Measure.computeAngle(getAtom(1), getAtom(2), getAtom(3), vectorBA, vectorBC, false);
-        Vector3f vectorAxis = new Vector3f();
+        V3 vectorAxis = new V3();
         vectorAxis.cross(vectorBA, vectorBC);
         aa = AxisAngle4f.new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
         vectorBA.normalize();
         vectorBA.scale(0.5f);
-        pointArc = Point3f.newP(vectorBA);
+        pointArc = P3.newP(vectorBA);
       }
       //$FALL-THROUGH$
     case 4:
@@ -293,6 +250,8 @@ public class Measurement {
 
   private String formatDistance(String units) {
     String label = getLabelString();
+    if (label == null)
+      return "";
     if (units == null) {
       int pt = strFormat.indexOf("//"); 
       if (pt >= 0) {
@@ -344,7 +303,7 @@ public class Measurement {
       if (units.equals("pm"))
         return (andRound? Math.round (dist * 1000) / 10f : dist * 100);
       if (units.equals("au"))
-        return (andRound ? Math.round (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
+        return (andRound ? Math.round (dist / JC.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JC.ANGSTROMS_PER_BOHR);
     }
     return (andRound ? Math.round(dist * 100) / 100f : dist);
   }
@@ -358,8 +317,13 @@ public class Measurement {
 
   private String getLabelString() {
     String s = countPlusIndices[0] + ":";
-    String label = (strFormat != null && strFormat.length() > 2 
+    String label = null;
+    if (strFormat != null) {
+      if (strFormat.length() == 0)
+        return null;
+      label = (strFormat.length() > 2 
         && strFormat.indexOf(s)==0? strFormat : null);
+    }
     if (label == null) {
       strFormat = null;
       label = viewer.getDefaultMeasurementLabel(countPlusIndices[0]);
@@ -417,11 +381,11 @@ public class Measurement {
     return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
-  public List<String> toVector(boolean asBitSet) {
-    List<String> V = new ArrayList<String>();
+  public JmolList<String> toVector(boolean asBitSet) {
+    JmolList<String> V = new  JmolList<String>();
     for (int i = 1; i <= count; i++ )
-      V.add(getLabel(i, asBitSet, false));
-    V.add(strMeasurement);
+      V.addLast(getLabel(i, asBitSet, false));
+    V.addLast(strMeasurement);
     return V;  
   }
   
@@ -458,7 +422,7 @@ public class Measurement {
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
-            + Escape.escapePt(getAtom(i))
+            + Escape.eP(getAtom(i))
         : asBitSet ? "(({" + atomIndex + "}))"
         : viewer.getAtomInfo(atomIndex));
   }
@@ -477,7 +441,7 @@ public class Measurement {
     return !(sameAs(1,2) || count > 2 && sameAs(1,3) || count == 4 && sameAs(2,4));
   }
 
-  public static int find(List<Measurement> measurements, Measurement m) {
+  public static int find(JmolList<Measurement> measurements, Measurement m) {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
     for (int i = measurements.size(); --i >= 0; )
@@ -502,7 +466,7 @@ public class Measurement {
 
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
     sb.append(" \t").append(getString());

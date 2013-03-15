@@ -23,15 +23,16 @@
 
 package org.jmol.script;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
+import org.jmol.api.JmolScriptFunction;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
-public class ScriptFunction {
+public class ScriptFunction implements JmolScriptFunction {
 
   // / functions
 
@@ -53,18 +54,18 @@ public class ScriptFunction {
   int chpt0;
   int cmdpt0 = -1;
   protected String typeName;
-  public String name;
+  String name;
   int nParameters;
-  List<String> names = new ArrayList<String>();
-  public int tok;
+  JmolList<String> names = new  JmolList<String>();
+  int tok;
 
   Map<String, String> variables = new Hashtable<String, String>();
-  public boolean isVariable(String ident) {
+  boolean isVariable(String ident) {
     return variables.containsKey(ident);
   }
 
-  ScriptVariable returnValue;
-  public Token[][] aatoken;
+  SV returnValue;
+  T[][] aatoken;
   int[][] lineIndices;
   short[] lineNumbers;
   String script;
@@ -75,7 +76,7 @@ public class ScriptFunction {
 
   protected ScriptFunction(String name, int tok) {
     set(name, tok);
-    typeName = Token.nameOf(tok);
+    typeName = T.nameOf(tok);
   }
 
   public void set(String name, int tok) {
@@ -83,20 +84,20 @@ public class ScriptFunction {
     this.tok = tok;
   }
 
-  void setVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+  void setVariables(Map<String, SV> contextVariables, JmolList<SV> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
-      ScriptVariable var = (i < nParameters && i < nParams ? params.get(i) : null);
-      if (var != null && var.tok != Token.varray)  // TODO: list type?
-        var = ScriptVariable.newScriptVariableToken(var);
+      SV var = (i < nParameters && i < nParams ? params.get(i) : null);
+      if (var != null && var.tok != T.varray)  // TODO: list type?
+        var = SV.newScriptVariableToken(var);
       contextVariables.put(name, (var == null ? 
-          ScriptVariable.newVariable(Token.string, "").setName(name) : var));
+          SV.newVariable(T.string, "").setName(name) : var));
     }
-    contextVariables.put("_retval", new ScriptVariableInt(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
+    contextVariables.put("_retval", SV.newScriptVariableInt(tok == T.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  public void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+  void unsetVariables(Map<String, SV> contextVariables, JmolList<SV> params) {
     // note: this method is never called.
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
@@ -104,11 +105,11 @@ public class ScriptFunction {
     if (nParams == 0 || nNames == 0)
       return;
     for (int i = 0; i < nNames && i < nParams; i++) {
-      ScriptVariable global = params.get(i);
-      if (global.tok != Token.varray)  // TODO: list type?
+      SV global = params.get(i);
+      if (global.tok != T.varray)  // TODO: list type?
         continue;
-      ScriptVariable local = contextVariables.get(names.get(i).toLowerCase());
-      if (local.tok != Token.varray)  // TODO: list type?
+      SV local = contextVariables.get(names.get(i).toLowerCase());
+      if (local.tok != T.varray)  // TODO: list type?
         continue;
       global.value = local.value;
     }
@@ -116,19 +117,19 @@ public class ScriptFunction {
 
   void addVariable(String name, boolean isParameter) {
     variables.put(name, name);
-    names.add(name);
+    names.addLast(name);
     if (isParameter)
       nParameters++;
   }
 
   static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
-                          int[][] lineIndices, List<Token[]> lltoken) {
+                          int[][] lineIndices, JmolList<T[]> lltoken) {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;
     function.setScript(script.substring(chpt0, ichCurrentCommand));
-    Token[][] aatoken = function.aatoken = new Token[nCommands][];
+    T[][] aatoken = function.aatoken = new T[nCommands][];
     function.lineIndices = ArrayUtil.newInt2(nCommands);
     function.lineNumbers = new short[nCommands];
     short line0 = (short) (lineNumbers[cmdpt0] - 1);
@@ -141,8 +142,8 @@ public class ScriptFunction {
       // by the 0-point offset of the command pointer
       // negative less negative;positive less positive
       if (aatoken[i].length > 0) {
-        Token tokenCommand = aatoken[i][0];
-        if (Token.tokAttr(tokenCommand.tok, Token.flowCommand))
+        T tokenCommand = aatoken[i][0];
+        if (T.tokAttr(tokenCommand.tok, T.flowCommand))
           tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0
               : cmdpt0);
       }
@@ -159,8 +160,18 @@ public class ScriptFunction {
       script += "\n";
   }
 
+  @Override
+  public String toString() {
+    SB s = new SB().append("/*\n * ").append(name)
+        .append("\n */\n").append(getSignature()).append("{\n");
+    if (script != null)
+      s.append(script);
+    s.append("}\n");
+    return s.toString();
+  }
+
   public String getSignature() {
-    StringXBuilder s = new StringXBuilder().append(typeName)
+    SB s = new SB().append(typeName)
       .append(" ").append(name).append(" (");
     for (int i = 0; i < nParameters; i++) {
       if (i > 0)
@@ -171,13 +182,15 @@ public class ScriptFunction {
     return s.toString();
   }
 
-  @Override
-  public String toString() {
-    StringXBuilder s = new StringXBuilder().append("/*\n * ").append(name)
-        .append("\n */\n").append(getSignature()).append("{\n");
-    if (script != null)
-      s.append(script);
-    s.append("}\n");
-    return s.toString();
+  public Object geTokens() {
+    return aatoken;
+  }
+
+  public String getName() {
+    return name;
+  }
+  
+  public int getTok() {
+    return tok;
   }
 }

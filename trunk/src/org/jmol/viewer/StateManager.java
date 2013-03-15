@@ -1,4 +1,4 @@
-/* $RCSfile$
+ /* $RCSfile$
  * $Author: egonw $
  * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
  * $Revision: 4255 $
@@ -27,25 +27,22 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
-import org.jmol.script.ScriptFunction;
-import org.jmol.script.ScriptVariable;
-import org.jmol.script.Token;
+import org.jmol.script.SV;
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.GData;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
@@ -76,16 +73,16 @@ public class StateManager {
   public final static int OBJ_MAX = 8;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  public static String getVariableList(Map<String, ScriptVariable> htVariables, int nMax,
+  public static String getVariableList(Map<String, SV> htVariables, int nMax,
                                        boolean withSites, boolean definedOnly) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     // user variables only:
     int n = 0;
 
     String[] list = new String[htVariables.size()];
-    for (Map.Entry<String, ScriptVariable> entry : htVariables.entrySet()) {
+    for (Map.Entry<String, SV> entry : htVariables.entrySet()) {
       String key = entry.getKey();
-      ScriptVariable var = entry.getValue();
+      SV var = entry.getValue();
       if ((withSites || !key.startsWith("site_")) && (!definedOnly || key.charAt(0) == '@'))
         list[n++] = key
             + (key.charAt(0) == '@' ? " " + var.asString() : " = "
@@ -94,7 +91,7 @@ public class StateManager {
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
       if (list[i] != null)
-        appendCmd(sb, list[i]);
+        sb.append("  ").append(list[i]).append(";\n");
     if (n == 0 && !definedOnly)
       sb.append("# --no global user variables defined--;\n");
     return sb.toString();
@@ -115,6 +112,7 @@ public class StateManager {
 
   Viewer viewer;
   Map<String, Object> saved = new Hashtable<String, Object>();
+  
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
@@ -125,7 +123,7 @@ public class StateManager {
   StateManager(Viewer viewer) {
     this.viewer = viewer;
   }
-
+  
   GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
     return new GlobalSettings(gsOld, clearUserVariables);
   }
@@ -148,9 +146,9 @@ public class StateManager {
   private void setCommonDefaults() {
     viewer.setBooleanProperty("perspectiveDepth", true);
     viewer.setFloatProperty("bondTolerance",
-        JmolConstants.DEFAULT_BOND_TOLERANCE);
+        JC.DEFAULT_BOND_TOLERANCE);
     viewer.setFloatProperty("minBondDistance",
-        JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
+        JC.DEFAULT_MIN_BOND_DISTANCE);
   }
 
   void setJmolDefaults() {
@@ -159,9 +157,9 @@ public class StateManager {
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
     viewer.setIntProperty("percentVdwAtom",
-        JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+        JC.DEFAULT_PERCENT_VDW_ATOM);
     viewer.setIntProperty("bondRadiusMilliAngstroms",
-        JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
+        JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
     viewer.setDefaultVdw("auto");
   }
 
@@ -198,21 +196,21 @@ public class StateManager {
     saved.remove(name);
   }
   
-  void saveSelection(String saveName, BitSet bsSelected) {
+  void saveSelection(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Selected_");
       return;
     }
     saveName = lastSelected = "Selected_" + saveName;
-    saved.put(saveName, BitSetUtil.copy(bsSelected));
+    saved.put(saveName, BSUtil.copy(bsSelected));
   }
 
   boolean restoreSelection(String saveName) {
     String name = (saveName.length() > 0 ? "Selected_" + saveName
         : lastSelected);
-    BitSet bsSelected = (BitSet) saved.get(name);
+    BS bsSelected = (BS) saved.get(name);
     if (bsSelected == null) {
-      viewer.select(new BitSet(), false, null, false);
+      viewer.select(new BS(), false, null, false);
       return false;
     }
     viewer.select(bsSelected, false, null, false);
@@ -261,7 +259,7 @@ public class StateManager {
     return (script == null ? "" : script);
   }
 
-  void saveCoordinates(String saveName, BitSet bsSelected) {
+  void saveCoordinates(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Coordinates_");
       return;
@@ -287,7 +285,7 @@ public class StateManager {
       o = getOrientation(saveName);
       return (o == null ? "" : o.getMoveToText(true));      
     } 
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     Iterator<String> e = saved.keySet().iterator();
     while (e.hasNext()) {
        String name = e.next();
@@ -332,8 +330,8 @@ public class StateManager {
     Matrix3f rotationMatrix = new Matrix3f();
     float xTrans, yTrans;
     float zoom, rotationRadius;
-    Point3f center = new Point3f();
-    Point3f navCenter = new Point3f();
+    P3 center = new P3();
+    P3 navCenter = new P3();
     float xNav = Float.NaN;
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
@@ -367,7 +365,7 @@ public class StateManager {
         xNav = viewer.getNavigationOffsetPercent('X');
         yNav = viewer.getNavigationOffsetPercent('Y');
         navDepth = viewer.getNavigationDepthPercent();
-        navCenter = Point3f.newP(viewer.getNavigationCenter());
+        navCenter = P3.newP(viewer.getNavigationCenter());
       }
     }
 
@@ -420,13 +418,13 @@ public class StateManager {
       ModelSet modelSet = viewer.getModelSet();
       if (modelSet == null)
         return;
-      bondCount = modelSet.getBondCount();
+      bondCount = modelSet.bondCount;
       connections = new Connection[bondCount + 1];
-      Bond[] bonds = modelSet.getBonds();
+      Bond[] bonds = modelSet.bonds;
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
-            .getMad(), b.getColix(), b.order, b.getEnergy(), b.getShapeVisibilityFlags());
+            .mad, b.colix, b.order, b.getEnergy(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -447,7 +445,7 @@ public class StateManager {
       }
       for (int i = bondCount; --i >= 0;)
         modelSet.getBondAt(i).setIndex(i);
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
+      viewer.setShapeProperty(JC.SHAPE_STICKS, "reportAll", null);
     }
   }
 
@@ -472,78 +470,9 @@ public class StateManager {
     }
   }
 
-  private final static Map<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
-  private Map<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
-
-  Map<String, ScriptFunction> getFunctions(boolean isStatic) {
-    return (isStatic ? staticFunctions : localFunctions);
-  }
-
-  String getFunctionCalls(String selectedFunction) {
-    if (selectedFunction == null)
-      selectedFunction = "";
-    StringXBuilder s = new StringXBuilder();
-    int pt = selectedFunction.indexOf("*");
-    boolean isGeneric = (pt >= 0);
-    boolean isStatic = (selectedFunction.indexOf("static_") == 0);
-    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("static_names"));
-    if (namesOnly)
-      selectedFunction = "";
-    if (isGeneric)
-      selectedFunction = selectedFunction.substring(0, pt);
-    selectedFunction = selectedFunction.toLowerCase();
-    Map<String, ScriptFunction> ht = getFunctions(isStatic);
-    String[] names = new String[ht.size()];
-    Iterator<String> e = ht.keySet().iterator();
-    int n = 0;
-    while (e.hasNext()) {
-      String name = e.next();
-      if (selectedFunction.length() == 0 && !name.startsWith("_")
-          || name.equalsIgnoreCase(selectedFunction) || isGeneric
-          && name.toLowerCase().indexOf(selectedFunction) == 0)
-        names[n++] = name;
-    }
-    Arrays.sort(names, 0, n);
-    for (int i = 0; i < n; i++) {
-      ScriptFunction f = ht.get(names[i]);
-      s.append(namesOnly ? f.getSignature() : f.toString());
-      s.appendC('\n');
-    }
-    return s.toString();
-  }
-
-  public void clearFunctions() {
-    staticFunctions.clear();
-    localFunctions.clear();
-  }
-
-  private static boolean isStaticFunction(String name) {
-    return name.startsWith("static_");  
-  }
-  
-  boolean isFunction(String name) {
-    return (isStaticFunction(name) ? staticFunctions : localFunctions).containsKey(name);
-  }
-
-  void addFunction(ScriptFunction function) {
-    (isStaticFunction(function.name) ? staticFunctions
-        : localFunctions).put(function.name, function);
-  }
-  
-  void removeFunction(String name) {
-    ScriptFunction function = getFunction(name);
-    if (function == null)
-      return;
-    staticFunctions.remove(name);
-    localFunctions.remove(name);
-  }
-
-  ScriptFunction getFunction(String name) {
-    if (name == null)
-      return null;
-    ScriptFunction function = (isStaticFunction(name) ? staticFunctions
-        : localFunctions).get(name);
-    return (function == null || function.aatoken == null ? null : function);
+  static boolean doReportProperty(String name) {
+    return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
+        + ";") < 0);
   }
   
   protected final static String unreportedProperties =
@@ -568,7 +497,7 @@ public class StateManager {
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
-        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;celshading;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         //    saved in the hash table but not considered part of the state:
@@ -585,7 +514,7 @@ public class StateManager {
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999
-    String s = JmolConstants.version;
+    String s = JC.version;
     int version = -1;
 
     try {
@@ -627,7 +556,8 @@ public class StateManager {
     Map<String, Object> htNonbooleanParameterValues;
     Map<String, Boolean> htBooleanParameterFlags;
     Map<String, Boolean> htPropertyFlagsRemoved;
-    Map<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
+    Map<String, SV> htUserVariables = new Hashtable<String, SV>();
+    Map<String, String> databases;
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
@@ -654,12 +584,12 @@ public class StateManager {
 
       // PER-zap settings made
       setPicked(-1);
-      setParamI("_atomhovered", -1);
-      setParamS("_pickinfo", "");
-      setParamB("selectionhalos", false);
-      setParamB("hidenotselected", false); // to synchronize with selectionManager
-      setParamB("measurementlabels", measurementLabels = true);
-      setParamB("drawHover", drawHover = false);
+      setI("_atomhovered", -1);
+      setS("_pickinfo", "");
+      setB("selectionhalos", false);
+      setB("hidenotselected", false); // to synchronize with selectionManager
+      setB("measurementlabels", measurementLabels = true);
+      setB("drawHover", drawHover = false);
       
 
     }
@@ -683,12 +613,26 @@ public class StateManager {
         legacyAutoBonding = g.legacyAutoBonding;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
+        databases = g.databases;
       }
+      if (databases == null) {
+        databases = new Hashtable<String, String>();
+        getDataBaseList(JC.databases);
+        getDataBaseList(userDatabases);
+      }
+      loadFormat = databases.get("pdb");
+      loadLigandFormat = databases.get("ligand");
+      nmrUrlFormat = databases.get("nmr");
+      smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
+      nihResolverFormat = databases.get("nci");
+      pubChemFormat = databases.get("pubchem");
 
-      for (EnumCallback item : EnumCallback.values())        
-        resetValue(item.name() + "Callback", g);        
+      // beyond these six, they are just in the form load =xxx/id
 
-      setParamI("historyLevel", 0); //deprecated ? doesn't do anything
+      for (EnumCallback item : EnumCallback.values())
+        resetValue(item.name() + "Callback", g);
+
+      setI("historyLevel", 0); //deprecated ? doesn't do anything
 
       // These next are just placeholders so that the math processor
       // knows they are Jmol variables. They are held by other managers.
@@ -701,282 +645,281 @@ public class StateManager {
       // we really just have to make sure that all these values are definitely
       // also initialized within the managers. 
 
-      setParamI("depth", 0);                 // maintained by TransformManager
-      setParamF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
-      setParamB("hideNotSelected", false); //maintained by the selectionManager
-      setParamS("hoverLabel", ""); // maintained by the Hover shape
-      setParamB("isKiosk", viewer.isKiosk()); // maintained by Viewer
-      setParamS("logFile", viewer.getLogFile()); // maintained by Viewer
-      setParamI("logLevel", Logger.getLogLevel());
-      setParamF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
-      setParamF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
-      setParamI("navFps", TransformManager.DEFAULT_NAV_FPS); 
-      setParamI("navigationDepth", 0);   // maintained by TransformManager
-      setParamI("navigationSlab", 0);    // maintained by TransformManager
-      setParamI("navX", 0);              // maintained by TransformManager
-      setParamI("navY", 0);              // maintained by TransformManager
-      setParamI("navZ", 0);              // maintained by TransformManager
-      setParamS("pathForAllFiles", "");
-      setParamI("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
-      setParamS("picking", "identify");      // maintained by ActionManager
-      setParamS("pickingStyle", "toggle");   // maintained by ActionManager
-      setParamB("refreshing", true);         // maintained by Viewer
-      setParamI("rotationRadius", 0);        // maintained by TransformManager
-      setParamI("scaleAngstromsPerInch", 0); // maintained by TransformManager
-      setParamI("scriptReportingLevel", 0);  // maintained by ScriptEvaluator
-      setParamB("selectionHalos", false);    // maintained by ModelSet
-      setParamB("showaxes", false);          // maintained by Axes
-      setParamB("showboundbox", false);      // maintained by Bbcage
-      setParamB("showfrank", false);         // maintained by Viewer
-      setParamB("showUnitcell", false);      // maintained by Uccage
-      setParamI("slab", 100);                // maintained by TransformManager
-      setParamB("slabEnabled", false);       // maintained by TransformManager     
-      setParamF("slabrange", 0f);            // maintained by TransformManager
-      setParamI("spinX", 0);                 // maintained by TransformManager
-      setParamI("spinY", TransformManager.DEFAULT_SPIN_Y);
-      setParamI("spinZ", 0);                 // maintained by TransformManager
-      setParamI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
-      setParamI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
-      setParamI("stateversion", 0); // only set by a saved state being recalled
-      setParamB("syncScript", viewer.getStatusManager().syncingScripts);
-      setParamB("syncMouse", viewer.getStatusManager().syncingMouse);
-      setParamB("syncStereo", viewer.getStatusManager().stereoSync);
-      setParamB("windowCentered", true); // maintained by TransformManager
-      setParamB("zoomEnabled", true);    // maintained by TransformManager
-      setParamI("zDepth", 0);            // maintained by TransformManager
-      setParamB("zShade", false);        // maintained by TransformManager
-      setParamI("zSlab", 50);            // maintained by TransformManager
-      
+      setI("depth", 0); // maintained by TransformManager
+      setF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
+      setB("hideNotSelected", false); //maintained by the selectionManager
+      setS("hoverLabel", ""); // maintained by the Hover shape
+      setB("isKiosk", viewer.isKiosk()); // maintained by Viewer
+      setS("logFile", viewer.getLogFile()); // maintained by Viewer
+      setI("logLevel", Logger.getLogLevel());
+      setF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
+      setF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
+      setI("navFps", TransformManager.DEFAULT_NAV_FPS);
+      setI("navigationDepth", 0); // maintained by TransformManager
+      setI("navigationSlab", 0); // maintained by TransformManager
+      setI("navX", 0); // maintained by TransformManager
+      setI("navY", 0); // maintained by TransformManager
+      setI("navZ", 0); // maintained by TransformManager
+      setS("pathForAllFiles", "");
+      setI("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
+      setS("picking", "identify"); // maintained by ActionManager
+      setS("pickingStyle", "toggle"); // maintained by ActionManager
+      setB("refreshing", true); // maintained by Viewer
+      setI("rotationRadius", 0); // maintained by TransformManager
+      setI("scaleAngstromsPerInch", 0); // maintained by TransformManager
+      setI("scriptReportingLevel", 0); // maintained by ScriptEvaluator
+      setB("selectionHalos", false); // maintained by ModelSet
+      setB("showaxes", false); // maintained by Axes
+      setB("showboundbox", false); // maintained by Bbcage
+      setB("showfrank", false); // maintained by Viewer
+      setB("showUnitcell", false); // maintained by Uccage
+      setI("slab", 100); // maintained by TransformManager
+      setB("slabEnabled", false); // maintained by TransformManager     
+      setF("slabrange", 0f); // maintained by TransformManager
+      setI("spinX", 0); // maintained by TransformManager
+      setI("spinY", TransformManager.DEFAULT_SPIN_Y);
+      setI("spinZ", 0); // maintained by TransformManager
+      setI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
+      setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
+      setI("stateversion", 0); // only set by a saved state being recalled
+      setB("syncScript", viewer.getStatusManager().syncingScripts);
+      setB("syncMouse", viewer.getStatusManager().syncingMouse);
+      setB("syncStereo", viewer.getStatusManager().stereoSync);
+      setB("windowCentered", true); // maintained by TransformManager
+      setB("zoomEnabled", true); // maintained by TransformManager
+      setI("zDepth", 0); // maintained by TransformManager
+      setB("zShade", false); // maintained by TransformManager
+      setI("zSlab", 50); // maintained by TransformManager
 
       // These next values have no other place than the global Hashtables.
       // This just means that a call to viewer.getXxxxProperty() is necessary.
       // Otherwise, it's the same as if they had a global variable. 
       // It's just an issue of speed of access. Generally, these should only be
       // accessed by the user. 
-      
-      setParamI("_version", getJmolVersionInt());
 
-      setParamB("axesWindow", true);
-      setParamB("axesMolecular", false);
-      setParamB("axesPosition", false);
-      setParamB("axesUnitcell", false);
-      setParamI("backgroundModel", 0);
-      setParamB("colorRasmol", false);
-      setParamS("currentLocalPath", "");
-      setParamS("defaultLattice", "{0 0 0}");
-      setParamS("defaultColorScheme", "Jmol");
-      setParamS("defaultDirectoryLocal", "");
-      setParamS("defaults", "Jmol");
-      setParamS("defaultVDW", "Jmol");
-      setParamS("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
-      setParamI("propertyAtomNumberColumnCount", 0);
-      setParamI("propertyAtomNumberField", 0);
-      setParamI("propertyDataColumnCount", 0);
-      setParamI("propertyDataField", 0);
-      setParamB("undo", true);
+      setI("_version", getJmolVersionInt());
+
+      setB("axesWindow", true);
+      setB("axesMolecular", false);
+      setB("axesPosition", false);
+      setB("axesUnitcell", false);
+      setI("backgroundModel", 0);
+      setB("colorRasmol", false);
+      setS("currentLocalPath", "");
+      setS("defaultLattice", "{0 0 0}");
+      setS("defaultColorScheme", "Jmol");
+      setS("defaultDirectoryLocal", "");
+      setS("defaults", "Jmol");
+      setS("defaultVDW", "Jmol");
+      setS("exportDrivers", JC.EXPORT_DRIVER_LIST);
+      setI("propertyAtomNumberColumnCount", 0);
+      setI("propertyAtomNumberField", 0);
+      setI("propertyDataColumnCount", 0);
+      setI("propertyDataField", 0);
+      setB("undo", true);
 
       // OK, all of the rest of these are maintained here as global values (below)
 
-      setParamB("allowEmbeddedScripts", allowEmbeddedScripts);
-      setParamB("allowGestures", allowGestures);
-      setParamB("allowKeyStrokes", allowKeyStrokes);
-      setParamB("allowModelkit", allowModelkit);
-      setParamB("allowMultiTouch", allowMultiTouch);
-      setParamB("allowRotateSelected", allowRotateSelected);
-      setParamB("allowMoveAtoms", allowMoveAtoms);
-      setParamI("ambientPercent", ambientPercent);
-      setParamI("animationFps", animationFps);
-      setParamB("antialiasImages", antialiasImages);
-      setParamB("antialiasDisplay", antialiasDisplay);
-      setParamB("antialiasTranslucent", antialiasTranslucent);
-      setParamB("appendNew", appendNew);
-      setParamS("appletProxy", appletProxy);
-      setParamB("applySymmetryToBonds", applySymmetryToBonds);
-      setParamB("atomPicking", atomPicking);
-      setParamS("atomTypes", atomTypes);
-      setParamB("autoBond", autoBond);
-      setParamB("autoFps", autoFps);
-//      setParameterValue("autoLoadOrientation", autoLoadOrientation);
-      setParamI("axesMode", axesMode.getCode());
-      setParamF("axesScale", axesScale);
-      setParamB("axesOrientationRasmol", axesOrientationRasmol);
-      setParamB("bondModeOr", bondModeOr);
-      setParamB("bondPicking", bondPicking);
-      setParamI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
-      setParamF("bondTolerance", bondTolerance);
-      setParamF("cameraDepth", cameraDepth);
-      setParamB("cartoonBaseEdges", cartoonBaseEdges);
-      setParamB("cartoonFancy", cartoonFancy);
-      setParamB("cartoonRockets", cartoonRockets);
-      setParamB("chainCaseSensitive", chainCaseSensitive);
-      setParamS("dataSeparator", dataSeparator);
-      setParamB("debugScript", debugScript);
-      setParamS("defaultAngleLabel", defaultAngleLabel);
-      setParamF("defaultDrawArrowScale", defaultDrawArrowScale);
-      setParamS("defaultDirectory", defaultDirectory);
-      setParamS("defaultDistanceLabel", defaultDistanceLabel);
-      setParamS("defaultDropScript", defaultDropScript);
-      setParamS("defaultLabelPDB", defaultLabelPDB);
-      setParamS("defaultLabelXYZ", defaultLabelXYZ);
-      setParamS("defaultLoadFilter", defaultLoadFilter);
-      setParamS("defaultLoadScript", defaultLoadScript);
-      setParamB("defaultStructureDSSP", defaultStructureDSSP);
-      setParamS("defaultTorsionLabel", defaultTorsionLabel);
-      setParamF("defaultTranslucent", defaultTranslucent);
-      setParamI("delayMaximumMs", delayMaximumMs);
-      setParamI("diffusePercent", diffusePercent);
-      setParamF("dipoleScale", dipoleScale);
-      setParamB("disablePopupMenu", disablePopupMenu);
-      setParamB("displayCellParameters", displayCellParameters);
-      setParamI("dotDensity", dotDensity);
-      setParamI("dotScale", dotScale);
-      setParamB("dotsSelectedOnly", dotsSelectedOnly);
-      setParamB("dotSurface", dotSurface);
-      setParamB("dragSelected", dragSelected);
-      setParamB("drawHover", drawHover);
-      setParamB("drawPicking", drawPicking);
-      setParamB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
-      setParamB("dynamicMeasurements", dynamicMeasurements);
-      setParamS("edsUrlFormat", edsUrlFormat);
+      setB("allowEmbeddedScripts", allowEmbeddedScripts);
+      setB("allowGestures", allowGestures);
+      setB("allowKeyStrokes", allowKeyStrokes);
+      setB("allowModelkit", allowModelkit);
+      setB("allowMultiTouch", allowMultiTouch);
+      setB("allowRotateSelected", allowRotateSelected);
+      setB("allowMoveAtoms", allowMoveAtoms);
+      setI("ambientPercent", ambientPercent);
+      setI("animationFps", animationFps);
+      setB("antialiasImages", antialiasImages);
+      setB("antialiasDisplay", antialiasDisplay);
+      setB("antialiasTranslucent", antialiasTranslucent);
+      setB("appendNew", appendNew);
+      setS("appletProxy", appletProxy);
+      setB("applySymmetryToBonds", applySymmetryToBonds);
+      setB("atomPicking", atomPicking);
+      setS("atomTypes", atomTypes);
+      setB("autoBond", autoBond);
+      setB("autoFps", autoFps);
+      //      setParameterValue("autoLoadOrientation", autoLoadOrientation);
+      setI("axesMode", axesMode.getCode());
+      setF("axesScale", axesScale);
+      setB("axesOrientationRasmol", axesOrientationRasmol);
+      setB("bondModeOr", bondModeOr);
+      setB("bondPicking", bondPicking);
+      setI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
+      setF("bondTolerance", bondTolerance);
+      setF("cameraDepth", cameraDepth);
+      setB("cartoonBaseEdges", cartoonBaseEdges);
+      setB("cartoonFancy", cartoonFancy);
+      setB("cartoonRockets", cartoonRockets);
+      setB("chainCaseSensitive", chainCaseSensitive);
+      setB("celShading", celShading);
+      setS("dataSeparator", dataSeparator);
+      setB("debugScript", debugScript);
+      setS("defaultAngleLabel", defaultAngleLabel);
+      setF("defaultDrawArrowScale", defaultDrawArrowScale);
+      setS("defaultDirectory", defaultDirectory);
+      setS("defaultDistanceLabel", defaultDistanceLabel);
+      setS("defaultDropScript", defaultDropScript);
+      setS("defaultLabelPDB", defaultLabelPDB);
+      setS("defaultLabelXYZ", defaultLabelXYZ);
+      setS("defaultLoadFilter", defaultLoadFilter);
+      setS("defaultLoadScript", defaultLoadScript);
+      setB("defaultStructureDSSP", defaultStructureDSSP);
+      setS("defaultTorsionLabel", defaultTorsionLabel);
+      setF("defaultTranslucent", defaultTranslucent);
+      setI("delayMaximumMs", delayMaximumMs);
+      setI("diffusePercent", diffusePercent);
+      setF("dipoleScale", dipoleScale);
+      setB("disablePopupMenu", disablePopupMenu);
+      setB("displayCellParameters", displayCellParameters);
+      setI("dotDensity", dotDensity);
+      setI("dotScale", dotScale);
+      setB("dotsSelectedOnly", dotsSelectedOnly);
+      setB("dotSurface", dotSurface);
+      setB("dragSelected", dragSelected);
+      setB("drawHover", drawHover);
+      setB("drawPicking", drawPicking);
+      setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
+      setB("dynamicMeasurements", dynamicMeasurements);
+      setS("edsUrlFormat", edsUrlFormat);
       //setParameterValue("edsUrlOptions", edsUrlOptions);
-      setParamS("edsUrlCutoff", edsUrlCutoff);
-      setParamB("ellipsoidArcs", ellipsoidArcs);
-      setParamB("ellipsoidAxes", ellipsoidAxes);
-      setParamF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
-      setParamB("ellipsoidBall", ellipsoidBall);
-      setParamI("ellipsoidDotCount", ellipsoidDotCount);
-      setParamB("ellipsoidDots", ellipsoidDots);
-      setParamB("ellipsoidFill", ellipsoidFill);
-      setParamS("energyUnits", energyUnits);
-//      setParameterValue("_fileCaching", _fileCaching);
-//      setParameterValue("_fileCache", _fileCache);
-      setParamB("fontScaling", fontScaling);
-      setParamB("fontCaching", fontCaching);
-      setParamB("forceAutoBond", forceAutoBond);
-      setParamS("forceField", forceField);
-      setParamB("fractionalRelative", fractionalRelative);
-      setParamB("greyscaleRendering", greyscaleRendering);
-      setParamF("hbondsAngleMinimum", hbondsAngleMinimum);
-      setParamF("hbondsDistanceMaximum", hbondsDistanceMaximum);
-      setParamB("hbondsBackbone", hbondsBackbone);
-      setParamB("hbondsRasmol", hbondsRasmol);
-      setParamB("hbondsSolid", hbondsSolid);
-      setParamI("helixStep", helixStep);
-      setParamS("helpPath", helpPath);
-      setParamI("hermiteLevel", hermiteLevel);
-      setParamB("hideNameInPopup", hideNameInPopup);
-      setParamB("hideNavigationPoint", hideNavigationPoint);
-      setParamB("highResolution", highResolutionFlag);
-      setParamF("hoverDelay", hoverDelayMs / 1000f);
-      setParamB("imageState", imageState);
-      setParamB("isosurfaceKey", isosurfaceKey);
-      setParamB("isosurfacePropertySmoothing",
-          isosurfacePropertySmoothing);
-      setParamI("isosurfacePropertySmoothingPower",
-          isosurfacePropertySmoothingPower);
-      setParamB("justifyMeasurements", justifyMeasurements);
-      setParamB("legacyAutoBonding", legacyAutoBonding);
-      setParamF("loadAtomDataTolerance", loadAtomDataTolerance);
-      setParamS("loadFormat", loadFormat);
-      setParamS("loadLigandFormat", loadLigandFormat);
-      setParamB("logCommands", logCommands);
-      setParamB("logGestures", logGestures);
-      setParamB("measureAllModels", measureAllModels);
-      setParamB("measurementLabels", measurementLabels);
-      setParamS("measurementUnits", measureDistanceUnits);
-      setParamI("meshScale", meshScale);
-      setParamB("messageStyleChime", messageStyleChime);
-      setParamF("minBondDistance", minBondDistance);
-      setParamI("minPixelSelRadius", minPixelSelRadius);
-      setParamI("minimizationSteps", minimizationSteps);
-      setParamB("minimizationRefresh", minimizationRefresh);
-      setParamB("minimizationSilent", minimizationSilent);
-      setParamF("minimizationCriterion", minimizationCriterion);
-      setParamB("modelKitMode", modelKitMode);
-      setParamB("monitorEnergy", monitorEnergy);
-      setParamF("multipleBondRadiusFactor", multipleBondRadiusFactor);
-      setParamF("multipleBondSpacing", multipleBondSpacing);
-      setParamB("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
-      setParamB("navigationMode", navigationMode);
+      setS("edsUrlCutoff", edsUrlCutoff);
+      setB("ellipsoidArcs", ellipsoidArcs);
+      setB("ellipsoidAxes", ellipsoidAxes);
+      setF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
+      setB("ellipsoidBall", ellipsoidBall);
+      setI("ellipsoidDotCount", ellipsoidDotCount);
+      setB("ellipsoidDots", ellipsoidDots);
+      setB("ellipsoidFill", ellipsoidFill);
+      setS("energyUnits", energyUnits);
+      //      setParameterValue("_fileCaching", _fileCaching);
+      //      setParameterValue("_fileCache", _fileCache);
+      setB("fontScaling", fontScaling);
+      setB("fontCaching", fontCaching);
+      setB("forceAutoBond", forceAutoBond);
+      setS("forceField", forceField);
+      setB("fractionalRelative", fractionalRelative);
+      setB("greyscaleRendering", greyscaleRendering);
+      setF("hbondsAngleMinimum", hbondsAngleMinimum);
+      setF("hbondsDistanceMaximum", hbondsDistanceMaximum);
+      setB("hbondsBackbone", hbondsBackbone);
+      setB("hbondsRasmol", hbondsRasmol);
+      setB("hbondsSolid", hbondsSolid);
+      setI("helixStep", helixStep);
+      setS("helpPath", helpPath);
+      setI("hermiteLevel", hermiteLevel);
+      setB("hideNameInPopup", hideNameInPopup);
+      setB("hideNavigationPoint", hideNavigationPoint);
+      setB("highResolution", highResolutionFlag);
+      setF("hoverDelay", hoverDelayMs / 1000f);
+      setB("imageState", imageState);
+      setB("isosurfaceKey", isosurfaceKey);
+      setB("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
+      setI("isosurfacePropertySmoothingPower", isosurfacePropertySmoothingPower);
+      setB("justifyMeasurements", justifyMeasurements);
+      setB("legacyAutoBonding", legacyAutoBonding);
+      setF("loadAtomDataTolerance", loadAtomDataTolerance);
+      setS("loadFormat", loadFormat);
+      setS("loadLigandFormat", loadLigandFormat);
+      setB("logCommands", logCommands);
+      setB("logGestures", logGestures);
+      setB("measureAllModels", measureAllModels);
+      setB("measurementLabels", measurementLabels);
+      setS("measurementUnits", measureDistanceUnits);
+      setI("meshScale", meshScale);
+      setB("messageStyleChime", messageStyleChime);
+      setF("minBondDistance", minBondDistance);
+      setI("minPixelSelRadius", minPixelSelRadius);
+      setI("minimizationSteps", minimizationSteps);
+      setB("minimizationRefresh", minimizationRefresh);
+      setB("minimizationSilent", minimizationSilent);
+      setF("minimizationCriterion", minimizationCriterion);
+      setB("modelKitMode", modelKitMode);
+      setB("monitorEnergy", monitorEnergy);
+      setF("multipleBondRadiusFactor", multipleBondRadiusFactor);
+      setF("multipleBondSpacing", multipleBondSpacing);
+      setB("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
+      setB("navigationMode", navigationMode);
       //setParamB("navigateSurface", navigateSurface);
-      setParamB("navigationPeriodic", navigationPeriodic);
-      setParamF("navigationSpeed", navigationSpeed);
-      setParamS("nmrUrlFormat", nmrUrlFormat);
-      setParamB("partialDots", partialDots);
-      setParamB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
-      setParamB("pdbGetHeader", pdbGetHeader); // new 11.5.39
-      setParamB("pdbSequential", pdbSequential); // new 11.5.39
-      setParamB("perspectiveDepth", perspectiveDepth);
-      setParamI("percentVdwAtom", percentVdwAtom);
-      setParamI("phongExponent", phongExponent);
-      setParamI("pickingSpinRate", pickingSpinRate);
-      setParamS("pickLabel", pickLabel);
-      setParamF("pointGroupLinearTolerance", pointGroupLinearTolerance);
-      setParamF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
-      setParamB("preserveState", preserveState);
-      setParamS("propertyColorScheme", propertyColorScheme);
-      setParamS("quaternionFrame", quaternionFrame);
-      setParamB("rangeSelected", rangeSelected);
-      setParamI("repaintWaitMs", repaintWaitMs);
-      setParamI("ribbonAspectRatio", ribbonAspectRatio);
-      setParamB("ribbonBorder", ribbonBorder);
-      setParamB("rocketBarrels", rocketBarrels);
-      setParamB("saveProteinStructureState", saveProteinStructureState);
-      setParamB("scriptqueue", useScriptQueue);
-      setParamB("selectAllModels", selectAllModels);
-      setParamB("selectHetero", rasmolHeteroSetting);
-      setParamB("selectHydrogen", rasmolHydrogenSetting);
-      setParamF("sheetSmoothing", sheetSmoothing);
-      setParamB("showHiddenSelectionHalos", showHiddenSelectionHalos);
-      setParamB("showHydrogens", showHydrogens);
-      setParamB("showKeyStrokes", showKeyStrokes);
-      setParamB("showMeasurements", showMeasurements);
-      setParamB("showMultipleBonds", showMultipleBonds);
-      setParamB("showNavigationPointAlways", showNavigationPointAlways);
-      setParamI("showScript", scriptDelay);
-      setParamB("showtiming", showTiming);
-      setParamB("slabByMolecule", slabByMolecule);
-      setParamB("slabByAtom", slabByAtom);
-      setParamB("smartAromatic", smartAromatic);
-      setParamI("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
-      setParamS("smilesUrlFormat", smilesUrlFormat);
-      setParamS("nihResolverFormat", nihResolverFormat);
-      setParamS("pubChemFormat", pubChemFormat);
-      setParamB("solventProbe", solventOn);
-      setParamF("solventProbeRadius", solventProbeRadius);
-      setParamB("specular", specular);
-      setParamI("specularExponent", specularExponent);
-      setParamI("specularPercent", specularPercent);
-      setParamI("specularPower", specularPower);
-      setParamB("ssbondsBackbone", ssbondsBackbone);
-      setParamB("statusReporting", statusReporting);
-      setParamI("strandCount", strandCountForStrands);
-      setParamI("strandCountForStrands", strandCountForStrands);
-      setParamI("strandCountForMeshRibbon", strandCountForMeshRibbon);
-      setParamF("strutDefaultRadius", strutDefaultRadius);
-      setParamF("strutLengthMaximum", strutLengthMaximum);
-      setParamI("strutSpacing", strutSpacing);
-      setParamB("strutsMultiple", strutsMultiple);
-      setParamB("testFlag1", testFlag1);
-      setParamB("testFlag2", testFlag2);
-      setParamB("testFlag3", testFlag3);
-      setParamB("testFlag4", testFlag4);
-      setParamB("traceAlpha", traceAlpha);
-      setParamB("useArcBall", useArcBall);
-      setParamB("useMinimizationThread", useMinimizationThread);
-      setParamB("useNumberLocalization", useNumberLocalization);
-      setParamF("vectorScale", vectorScale);
-      setParamB("vectorSymmetry", vectorSymmetry);
-      setParamF("vibrationPeriod", vibrationPeriod);
-      setParamF("vibrationScale", vibrationScale);
-      setParamF("visualRange", visualRange);
-      setParamB("waitForMoveTo", waitForMoveTo);
-      setParamB("wireframeRotation", wireframeRotation);
-      setParamI("zDepth", zDepth);
-      setParamB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
-      setParamB("zoomLarge", zoomLarge);
-      setParamI("zShadePower", zShadePower);
-      setParamI("zSlab", zSlab);  
+      setB("navigationPeriodic", navigationPeriodic);
+      setF("navigationSpeed", navigationSpeed);
+      setS("nmrUrlFormat", nmrUrlFormat);
+      setB("partialDots", partialDots);
+      setB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
+      setB("pdbGetHeader", pdbGetHeader); // new 11.5.39
+      setB("pdbSequential", pdbSequential); // new 11.5.39
+      setB("perspectiveDepth", perspectiveDepth);
+      setI("percentVdwAtom", percentVdwAtom);
+      setI("phongExponent", phongExponent);
+      setI("pickingSpinRate", pickingSpinRate);
+      setS("pickLabel", pickLabel);
+      setF("pointGroupLinearTolerance", pointGroupLinearTolerance);
+      setF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
+      setB("preserveState", preserveState);
+      setS("propertyColorScheme", propertyColorScheme);
+      setS("quaternionFrame", quaternionFrame);
+      setB("rangeSelected", rangeSelected);
+      setI("repaintWaitMs", repaintWaitMs);
+      setI("ribbonAspectRatio", ribbonAspectRatio);
+      setB("ribbonBorder", ribbonBorder);
+      setB("rocketBarrels", rocketBarrels);
+      setB("saveProteinStructureState", saveProteinStructureState);
+      setB("scriptqueue", useScriptQueue);
+      setB("selectAllModels", selectAllModels);
+      setB("selectHetero", rasmolHeteroSetting);
+      setB("selectHydrogen", rasmolHydrogenSetting);
+      setF("sheetSmoothing", sheetSmoothing);
+      setB("showHiddenSelectionHalos", showHiddenSelectionHalos);
+      setB("showHydrogens", showHydrogens);
+      setB("showKeyStrokes", showKeyStrokes);
+      setB("showMeasurements", showMeasurements);
+      setB("showMultipleBonds", showMultipleBonds);
+      setB("showNavigationPointAlways", showNavigationPointAlways);
+      setI("showScript", scriptDelay);
+      setB("showtiming", showTiming);
+      setB("slabByMolecule", slabByMolecule);
+      setB("slabByAtom", slabByAtom);
+      setB("smartAromatic", smartAromatic);
+      setI("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
+      setS("smilesUrlFormat", smilesUrlFormat);
+      setS("nihResolverFormat", nihResolverFormat);
+      setS("pubChemFormat", pubChemFormat);
+      setB("solventProbe", solventOn);
+      setF("solventProbeRadius", solventProbeRadius);
+      setB("specular", specular);
+      setI("specularExponent", specularExponent);
+      setI("specularPercent", specularPercent);
+      setI("specularPower", specularPower);
+      setB("ssbondsBackbone", ssbondsBackbone);
+      setB("statusReporting", statusReporting);
+      setI("strandCount", strandCountForStrands);
+      setI("strandCountForStrands", strandCountForStrands);
+      setI("strandCountForMeshRibbon", strandCountForMeshRibbon);
+      setF("strutDefaultRadius", strutDefaultRadius);
+      setF("strutLengthMaximum", strutLengthMaximum);
+      setI("strutSpacing", strutSpacing);
+      setB("strutsMultiple", strutsMultiple);
+      setB("testFlag1", testFlag1);
+      setB("testFlag2", testFlag2);
+      setB("testFlag3", testFlag3);
+      setB("testFlag4", testFlag4);
+      setB("traceAlpha", traceAlpha);
+      setB("twistedSheets", twistedSheets);
+      setB("useArcBall", useArcBall);
+      setB("useMinimizationThread", useMinimizationThread);
+      setB("useNumberLocalization", useNumberLocalization);
+      setF("vectorScale", vectorScale);
+      setB("vectorSymmetry", vectorSymmetry);
+      setF("vibrationPeriod", vibrationPeriod);
+      setF("vibrationScale", vibrationScale);
+      setF("visualRange", visualRange);
+      setB("waitForMoveTo", waitForMoveTo);
+      setB("wireframeRotation", wireframeRotation);
+      setI("zDepth", zDepth);
+      setB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
+      setB("zoomLarge", zoomLarge);
+      setI("zShadePower", zShadePower);
+      setI("zSlab", zSlab);
     }
 
     //lighting (see GData.Shade3D
@@ -1007,11 +950,11 @@ public class StateManager {
        // starting with Jmol 12.0.RC10, this setting is ignored, and FILTER "NoOrient" is required if the file
        // is to be loaded without reference to the orientation saved in the file.
     boolean axesOrientationRasmol = false;
-    short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
-    float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
+    short bondRadiusMilliAngstroms = JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    float bondTolerance = JC.DEFAULT_BOND_TOLERANCE;
     String defaultDirectory = "";
     boolean defaultStructureDSSP = true; // Jmol 12.1.15
-    final Point3f ptDefaultLattice = new Point3f();
+    final P3 ptDefaultLattice = new P3();
     String defaultLoadScript = "";
     String defaultLoadFilter = "";
     String defaultDropScript = "zap; load SYNC %FILE;if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}";
@@ -1020,98 +963,27 @@ public class StateManager {
     boolean forceAutoBond = false;
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
-    String loadLigandFormat = "http://www.rcsb.org/pdb/files/ligand/%FILE.cif";
-    String nmrUrlFormat = "http://www.nmrdb.org/predictor?smiles=";
-    String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
-    String nihResolverFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE";
-    String pubChemFormat = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d";
+    String loadFormat, loadLigandFormat, nmrUrlFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
+
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
-    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    float minBondDistance = JC.DEFAULT_MIN_BOND_DISTANCE;
     int minPixelSelRadius = 6;
     boolean pdbAddHydrogens = false; // true to add hydrogen atoms
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check
-    int percentVdwAtom = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    int percentVdwAtom = JC.DEFAULT_PERCENT_VDW_ATOM;
     int smallMoleculeMaxAtoms = 40000;
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
     boolean legacyAutoBonding = false;
 
-    /**
-     *  these settings are determined when the file is loaded and are
-     *  kept even though they might later change. So we list them here
-     *  and ALSO let them be defined in the settings. 10.9.98 missed this. 
-     * @param htParams 
-     *  
-     * @return script command
-     */
-    String getLoadState(Map<String, Object> htParams) {
-      
-      
-      // some commands register flags so that they will be 
-      // restored in a saved state definition, but will not execute
-      // now so that there is no chance any embedded scripts or
-      // default load scripts will run and slow things down.
-      StringXBuilder str = new StringXBuilder();
-      appendCmd(str, "set allowEmbeddedScripts false");
-      if (allowEmbeddedScripts)
-        setParamB("allowEmbeddedScripts", true);
-      appendCmd(str, "set appendNew " + appendNew);
-      appendCmd(str, "set appletProxy " + Escape.escapeStr(appletProxy));
-      appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
-      if (atomTypes.length() > 0)
-        appendCmd(str, "set atomTypes " + Escape.escapeStr(atomTypes));
-      appendCmd(str, "set autoBond " + autoBond);
-//      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
-      if (axesOrientationRasmol)
-        appendCmd(str, "set axesOrientationRasmol true");
-      appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
-      appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultLattice " + Escape.escapePt(ptDefaultLattice));
-      appendCmd(str, "set defaultLoadFilter " + Escape.escapeStr(defaultLoadFilter)) ;
-      appendCmd(str, "set defaultLoadScript \"\"");
-      if (defaultLoadScript.length() > 0)
-        setParamS("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "set defaultStructureDssp " + defaultStructureDSSP);
-      String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null);
-      appendCmd(str, "set defaultVDW " + sMode);
-      if (sMode.equals("User"))
-        appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
-      appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "#set defaultDirectory " + Escape.escapeStr(defaultDirectory));
-      appendCmd(str, "#set loadFormat " + Escape.escapeStr(loadFormat));
-      appendCmd(str, "#set loadLigandFormat " + Escape.escapeStr(loadLigandFormat));
-      appendCmd(str, "#set smilesUrlFormat " + Escape.escapeStr(smilesUrlFormat));
-      appendCmd(str, "#set nihResolverFormat " + Escape.escapeStr(nihResolverFormat));
-      appendCmd(str, "#set pubChemFormat " + Escape.escapeStr(pubChemFormat));
-      appendCmd(str, "#set edsUrlFormat " + Escape.escapeStr(edsUrlFormat));
-      appendCmd(str, "#set edsUrlCutoff " + Escape.escapeStr(edsUrlCutoff));
-//      if (autoLoadOrientation)
-  //      appendCmd(str, "set autoLoadOrientation true");
-      appendCmd(str, "set legacyAutoBonding " + legacyAutoBonding);
-      appendCmd(str, "set minBondDistance " + minBondDistance);
-      // these next two might be part of a 2D->3D operation
-      appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);
-      appendCmd(str, "set minimizationSteps  " + minimizationSteps);
-      appendCmd(str, "set pdbAddHydrogens " + (htParams != null && htParams.get("pdbNoHydrogens") == null ? pdbAddHydrogens : false));
-      appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
-      appendCmd(str, "set pdbSequential " + pdbSequential);
-      appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
-      appendCmd(str, "set smallMoleculeMaxAtoms " + smallMoleculeMaxAtoms);
-      appendCmd(str, "set smartAromatic " + smartAromatic);
-      if (zeroBasedXyzRasmol)
-        appendCmd(str, "set zeroBasedXyzRasmol true");
-      return str.toString();
-    }
-
-    void setDefaultLattice(Point3f ptLattice) {
+    void setDefaultLattice(P3 ptLattice) {
       ptDefaultLattice.setT(ptLattice);
     }
 
-    Point3f getDefaultLattice() {
+    P3 getDefaultLattice() {
       return ptDefaultLattice;
     }
 
@@ -1175,7 +1047,7 @@ public class StateManager {
     float hbondsDistanceMaximum = 3.25f;
     boolean hbondsRasmol = true; // 12.0.RC3
     boolean hbondsSolid = false;
-    byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
+    byte modeMultipleBond = JC.MULTIBOND_NOTSMALL;
     boolean showHydrogens = true;
     boolean showMultipleBonds = true;
     boolean ssbondsBackbone = false;
@@ -1198,6 +1070,7 @@ public class StateManager {
     boolean rocketBarrels = false;
     float sheetSmoothing = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
     boolean traceAlpha = true;
+    boolean twistedSheets = false;
 
     //misc
 
@@ -1212,6 +1085,7 @@ public class StateManager {
     float axesScale = 2;
     boolean bondPicking = false;
     float cameraDepth = 3.0f;
+    boolean celShading = false;
     String dataSeparator = "~~~";
     boolean debugScript = false;
     float defaultDrawArrowScale = 0.5f;
@@ -1226,7 +1100,7 @@ public class StateManager {
     boolean drawPicking = false;
     boolean dsspCalcHydrogen = true;
     String energyUnits = "kJ";
-    String helpPath = JmolConstants.DEFAULT_HELP_PATH;
+    String helpPath = JC.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;
     String forceField = "MMFF";
@@ -1245,7 +1119,7 @@ public class StateManager {
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;
     float pointGroupLinearTolerance = 8.0f;
-    boolean preserveState = true;
+    public boolean preserveState = true;
     String propertyColorScheme = "roygb";
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     boolean saveProteinStructureState = true;
@@ -1257,7 +1131,7 @@ public class StateManager {
     int strandCountForMeshRibbon = 7;
     int strutSpacing = 6;
     float strutLengthMaximum = 7.0f;
-    float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
+    float strutDefaultRadius = JC.DEFAULT_STRUT_RADIUS;
     boolean strutsMultiple = false; //on a single position    
     boolean useArcBall = false;
     boolean useMinimizationThread = true;
@@ -1296,51 +1170,6 @@ public class StateManager {
     int ellipsoidDotCount = 200;
     float ellipsoidAxisDiameter = 0.02f;
 
-    String getWindowState(StringXBuilder sfunc, int width, int height) {
-      StringXBuilder str = new StringXBuilder();
-      if (sfunc != null) {
-        sfunc
-            .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
-        str.append("\nfunction _setWindowState() {\n");
-      }
-      if (width != 0)
-        str.append("# preferredWidthHeight ").appendI(width).append(" ").appendI(height).append(";\n");
-      str
-      .append("# width ").appendI(width == 0 ? viewer.getScreenWidth() : width)
-      .append(";\n# height ").appendI(height == 0 ? viewer.getScreenHeight() : height)
-      .append(";\n");
-      appendCmd(str, "stateVersion = " + getParameter("_version"));
-      appendCmd(str, "background " + Escape.escapeColor(objColors[0]));
-      for (int i = 1; i < OBJ_MAX; i++)
-        if (objColors[i] != 0)
-          appendCmd(str, getObjectNameFromId(i) + "Color = \""
-              + Escape.escapeColor(objColors[i]) + '"');
-      if (backgroundImageFileName != null)
-        appendCmd(str, "background IMAGE /*file*/" + Escape.escapeStr(backgroundImageFileName));
-      str.append(getSpecularState());
-      appendCmd(str, "statusReporting  = " + statusReporting);
-      if (sfunc != null)
-        str.append("}\n\n");
-      return str.toString();
-    }
-
-    String getSpecularState() {
-      StringXBuilder str = new StringXBuilder();
-      appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
-      appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
-      appendCmd(str, "set specular " + GData.getSpecular());
-      appendCmd(str, "set specularPercent " + GData.getSpecularPercent());
-      appendCmd(str, "set specularPower " + GData.getSpecularPower());
-      int se = GData.getSpecularExponent();
-      int pe = GData.getPhongExponent();
-      if (Math.pow(2, se) == pe)
-        appendCmd(str, "set specularExponent " + se);
-      else
-        appendCmd(str, "set phongExponent " + pe);        
-      appendCmd(str, "set zShadePower " + zShadePower);
-      return str.toString();
-    }
-
     //testing
 
     boolean testFlag1 = false;
@@ -1370,9 +1199,9 @@ public class StateManager {
       else if (units.equalsIgnoreCase("kcal"))
         energyUnits = "kcal";
       if (!mu.equalsIgnoreCase(measureDistanceUnits))
-        setParamS("measurementUnits", measureDistanceUnits);
+        setS("measurementUnits", measureDistanceUnits);
       else if (!eu.equalsIgnoreCase(energyUnits)) 
-        setParamS("energyUnits", energyUnits);
+        setS("energyUnits", energyUnits);
     }
 
     boolean isJmolVariable(String key) {
@@ -1383,33 +1212,33 @@ public class StateManager {
     }
 
     private void resetValue(String name, GlobalSettings g) {
-      setParamS(name, g == null ? "" : (String) g.getParameter(name));
+      setS(name, g == null ? "" : (String) g.getParameter(name));
     }
     
-    public void setParamB(String name, boolean value) {
+    public void setB(String name, boolean value) {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric
       htBooleanParameterFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    void setParamI(String name, int value) {
+    void setI(String name, int value) {
       name = name.toLowerCase();
       if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
       htNonbooleanParameterValues.put(name, Integer.valueOf(value));
     }
 
-    public void setParamF(String name, float value) {
+    public void setF(String name, float value) {
       if (Float.isNaN(value))
         return;
       name = name.toLowerCase();
       if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
-      htNonbooleanParameterValues.put(name, new Float(value));
+      htNonbooleanParameterValues.put(name, Float.valueOf(value));
     }
 
-    void setParamS(String name, String value) {
+    void setS(String name, String value) {
       name = name.toLowerCase();
       if (value == null || htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting string of a boolean
@@ -1435,7 +1264,7 @@ public class StateManager {
         htNonbooleanParameterValues.remove(key);
     }
 
-    ScriptVariable setUserVariable(String key, ScriptVariable var) {
+    SV setUserVariable(String key, SV var) {
       if (var == null) 
         return null;
 //      System.out.println("stateman setting user variable " + key );
@@ -1458,7 +1287,7 @@ public class StateManager {
       htUserVariables.remove(key);
     }
 
-    ScriptVariable getUserVariable(String name) {
+    SV getUserVariable(String name) {
       if (name == null)
         return null;
       name = name.toLowerCase();
@@ -1469,7 +1298,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name)) {
         Object v = htNonbooleanParameterValues.get(name);
-        return varClip(name, Escape.escape(v), nMax);
+        return varClip(name, Escape.e(v), nMax);
       }
       if (htBooleanParameterFlags.containsKey(name))
         return htBooleanParameterFlags.get(name).toString();
@@ -1500,13 +1329,13 @@ public class StateManager {
      * @return     a new variable if possible, but null if "_xxx"
      * 
      */
-    ScriptVariable getOrSetNewVariable(String name, boolean doSet) {
+    SV getOrSetNewVariable(String name, boolean doSet) {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParam(name, true);
       return (v == null && doSet && name.charAt(0) != '_' ?
-        setUserVariable(name, ScriptVariable.newVariable(Token.string, ""))
-         : ScriptVariable.getVariable(v));
+        setUserVariable(name, SV.newVariable(T.string, ""))
+         : SV.getVariable(v));
     }
 
     Object getParam(String name, boolean asVariable) {
@@ -1532,157 +1361,10 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        ScriptVariable v = htUserVariables.get(name);
-        return (asVariable ? v : ScriptVariable.oValue(v));
+        SV v = htUserVariables.get(name);
+        return (asVariable ? v : SV.oValue(v));
       }
       return null;
-    }
-
-    String getAllSettings(String prefix) {
-      StringXBuilder commands = new StringXBuilder();
-      Iterator<String> e;
-      String key;
-      String[] list = new String[htBooleanParameterFlags.size()
-          + htNonbooleanParameterValues.size()+ htUserVariables.size()];
-      //booleans
-      int n = 0;
-      String _prefix = "_" + prefix;
-      e = htBooleanParameterFlags.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (prefix == null || key.indexOf(prefix) == 0
-            || key.indexOf(_prefix) == 0)
-          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
-              + htBooleanParameterFlags.get(key);
-      }
-      //save as _xxxx if you don't want "set" to be there first
-      e = htNonbooleanParameterValues.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (key.charAt(0) != '@'
-            && (prefix == null || key.indexOf(prefix) == 0 || key
-                .indexOf(_prefix) == 0)) {
-          Object value = htNonbooleanParameterValues.get(key);
-          if (value instanceof String)
-            value = chop(Escape.escapeStr((String) value));
-          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
-              + value;
-        }
-      }
-      e = htUserVariables.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (prefix == null || key.indexOf(prefix) == 0) {
-          ScriptVariable value = htUserVariables.get(key);
-          String s = value.asString();
-          list[n++] = key + " " + (key.startsWith("@") ? "" : "= ") + (value.tok == Token.string ? chop(Escape.escapeStr(s)) : s);
-        }
-      }
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(commands, list[i]);
-      commands.append("\n");
-      return commands.toString();
-    }
-
-    private String chop(String s) {
-      int len = s.length();
-      if (len < 512)
-        return s;
-      StringXBuilder sb = new StringXBuilder();
-      String sep = "\"\\\n    + \"";
-      int pt = 0;
-      for (int i = 72; i < len; pt = i, i += 72) {
-        while (s.charAt(i - 1) == '\\')
-          i++;
-        sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
-      }
-      sb.append(sep).append(s.substring(pt, len));
-      return sb.toString();
-    }
-
-    String getState(StringXBuilder sfunc) {
-      String[] list = new String[htBooleanParameterFlags.size()
-          + htNonbooleanParameterValues.size()];
-      StringXBuilder commands = new StringXBuilder();
-      boolean isState = (sfunc != null);
-      if (isState) {
-        sfunc.append("  _setVariableState;\n");
-        commands.append("function _setVariableState() {\n\n");
-      }
-      int n = 0;
-      Iterator<String> e;
-      String key;
-      //booleans
-      e = htBooleanParameterFlags.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();       
-        if (doReportProperty(key))
-          list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
-      }
-      e = htNonbooleanParameterValues.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (doReportProperty(key)) {
-          Object value = htNonbooleanParameterValues.get(key);
-          if (key.charAt(0) == '=') {
-            //save as =xxxx if you don't want "set" to be there first
-            // (=color [element], =frame ...; set unitcell) -- see Viewer.java
-            key = key.substring(1);
-          } else {
-            if (key.indexOf("default") == 0)
-              key = " set " + key;
-            else
-              key = "set " + key;
-            value = Escape.escape(value);
-          }
-          list[n++] = key + " " + value;
-        }
-      }
-      switch (axesMode) {
-      case UNITCELL:
-        list[n++] = "set axes unitcell";
-        break;
-      case BOUNDBOX:
-        list[n++] = "set axes window";
-        break;
-      default:
-        list[n++] = "set axes molecular";
-      }
-
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(commands, list[i]);
-
-      String s = StateManager.getVariableList(htUserVariables, 0, false, true);
-      if (s.length() > 0) {
-        commands.append("\n#user-defined atom sets; \n");
-        commands.append(s);
-      }
-
-      // label defaults
-
-      viewer.loadShape(JmolConstants.SHAPE_LABELS);
-      commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
-          "defaultState"));
-
-      // structure defaults
-      
-      if (haveSetStructureList) {
-        commands.append("struture HELIX set " + Escape.escape(structureList.get(EnumStructure.HELIX)));
-        commands.append("struture SHEET set " + Escape.escape(structureList.get(EnumStructure.SHEET)));
-        commands.append("struture TURN set " + Escape.escape(structureList.get(EnumStructure.TURN)));
-      }
-      if (sfunc != null)
-        commands.append("\n}\n\n");
-      return commands.toString();
-    }
-
-    private boolean doReportProperty(String name) {
-      return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
-          + ";") < 0);
     }
 
     String getVariableList() {
@@ -1690,7 +1372,7 @@ public class StateManager {
     }
 
     // static because we don't plan to be changing these
-    private Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
+    Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
     
     {
       structureList.put(EnumStructure.TURN, 
@@ -1709,8 +1391,9 @@ public class StateManager {
       });
     }
     
-    private boolean haveSetStructureList;
-    
+    boolean haveSetStructureList;
+    private String[] userDatabases;
+   
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
       structureList.put(type, list);
@@ -1721,32 +1404,39 @@ public class StateManager {
     }
 
     void setPicked(int atomIndex) {
-      ScriptVariable pickedSet = null;
+      SV pickedSet = null;
       if (atomIndex >= 0) {
-        setParamI("_atompicked", atomIndex);
-        pickedSet = (ScriptVariable) getParam("picked", true);
+        setI("_atompicked", atomIndex);
+        pickedSet = (SV) getParam("picked", true);
       }
-      if (pickedSet == null || pickedSet.tok != Token.bitset) {
-        pickedSet = ScriptVariable.newVariable(Token.bitset, new BitSet());
+      if (pickedSet == null || pickedSet.tok != T.bitset) {
+        pickedSet = SV.newVariable(T.bitset, new BS());
         setUserVariable("picked", pickedSet);
       }
       if (atomIndex >= 0)
-        ScriptVariable.getBitSet(pickedSet, false).set(atomIndex);
+        SV.getBitSet(pickedSet, false).set(atomIndex);
     }
-  }
 
-  ///////// state serialization 
-
-  public static void setStateInfo(Map<String, BitSet> ht,
-                                  int i1, int i2, String key) {
-    BitSet bs;
-    if (ht.containsKey(key)) {
-      bs = ht.get(key);
-    } else {
-      bs = new BitSet();
-      ht.put(key, bs);
+    public String resolveDataBase(String database, String id) {
+      String format = databases.get(database.toLowerCase());
+      if (format == null)
+        return null;
+      if (id.indexOf("/") < 0) {
+        if (database.equals("pubchem"))
+          id = "name/" + id;
+        else if (database.equals("nci"))
+          id += "/file?format=sdf&get3d=True";
+      }
+      return (format.indexOf("%FILE") < 0 ? format + id : TextFormat
+          .formatStringS(format, "FILE", id));
     }
-    bs.setBits(i1, i2 + 1);
+
+    private void getDataBaseList(String[] list) {
+      if (list == null)
+        return;
+      for (int i = 0; i < list.length; i += 2)
+        databases.put(list[i].toLowerCase(), list[i + 1]);
+    }
   }
 
   public static String varClip(String name, String sv, int nMax) {
@@ -1757,39 +1447,6 @@ public class StateManager {
     return sv;
   }
 
-  public static String getCommands(Map<String, BitSet> htDefine,
-                                   Map<String, BitSet> htMore,
-                                   String selectCmd) {
-    StringXBuilder s = new StringXBuilder();
-    String setPrev = getCommands2(htDefine, s, null, selectCmd);
-    if (htMore != null)
-      getCommands2(htMore, s, setPrev, "select");
-    return s.toString();
-  }
+  ///////// state serialization 
 
-  private static String getCommands2(Map<String, BitSet> ht,
-                                    StringXBuilder s,
-                                    String setPrev, String selectCmd) {
-    if (ht == null)
-      return "";
-    for (Map.Entry<String, BitSet> entry : ht.entrySet()) {
-      String key = entry.getKey();
-      String set = Escape.escape(entry.getValue());
-      if (set.length() < 5) // nothing selected
-        continue;
-      set = selectCmd + " " + set;
-      if (!set.equals(setPrev))
-        appendCmd(s, set);
-      setPrev = set;
-      if (key.indexOf("-") != 0) // - for key means none required
-        appendCmd(s, key);
-    }
-    return setPrev;
-  }
-
-  public static void appendCmd(StringXBuilder s, String cmd) {
-    if (cmd.length() == 0)
-      return;
-    s.append("  ").append(cmd).append(";\n");
-  }
 }

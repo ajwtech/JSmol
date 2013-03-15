@@ -36,7 +36,7 @@ package com.jcraft.jzlib;
 
 public class Deflater extends ZStream {
 
-  static final protected int MAX_WBITS = 15; // 32K LZ77 window
+  static final private int MAX_WBITS = 15; // 32K LZ77 window
 
   //static final private int DEF_WBITS=MAX_WBITS;
 
@@ -60,36 +60,28 @@ public class Deflater extends ZStream {
 
   private boolean finished = false;
 
-  public Deflater() {
-    super();
-  }
+  /*
 
   public Deflater(int level) {
-    this(level, MAX_WBITS);
+    this(level, 0, false);
   }
 
   public Deflater(int level, boolean nowrap) {
-    this(level, MAX_WBITS, nowrap);
+    this(level, 0, nowrap);
   }
 
   public Deflater(int level, int bits) {
     this(level, bits, false);
   }
-
-  public Deflater(int level, int bits, boolean nowrap){
-    super();
-    init3b(level, bits, nowrap);
-    //if (ret != Z_OK)
-      //throw new GZIPException(ret + ": " + msg);
-  }
-
+   */
+  
+/*
   public Deflater(int level, int bits, int memlevel) {
     super();
     init3(level, bits, memlevel);
     //if (ret != Z_OK)
       //throw new GZIPException(ret + ": " + msg);
   }
-
   public int init(int level) {
     return init2(level, MAX_WBITS);
   }
@@ -97,6 +89,7 @@ public class Deflater extends ZStream {
   public int init2(int level, int bits) {
     return init3b(level, bits, false);
   }
+
 
   public int init2b(int level, boolean nowrap) {
     return init3b(level, MAX_WBITS, nowrap);
@@ -108,10 +101,15 @@ public class Deflater extends ZStream {
     return dstate.deflateInit3(level, bits, memlevel);
   }
 
-  public int init3b(int level, int bits, boolean nowrap) {
+
+*/
+  public Deflater init(int level, int bits, boolean nowrap) {
+    if (bits == 0)
+      bits = MAX_WBITS;
     finished = false;
     dstate = new Deflate(this);
-    return dstate.deflateInit2(level, nowrap ? -bits : bits);
+    dstate.deflateInit2(level, nowrap ? -bits : bits);
+    return this;
   }
 
   @Override

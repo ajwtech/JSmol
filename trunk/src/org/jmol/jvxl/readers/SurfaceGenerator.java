@@ -118,7 +118,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -134,16 +134,17 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point4f;
+import org.jmol.util.P3;
+import org.jmol.util.P4;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public class SurfaceGenerator {
 
@@ -246,11 +247,11 @@ public class SurfaceGenerator {
     return params.title;
   }
   
-  public BitSet getBsSelected() {
+  public BS getBsSelected() {
     return params.bsSelected;
   }
   
-  public BitSet getBsIgnore() {
+  public BS getBsIgnore() {
     return params.bsIgnore;
   }
   
@@ -258,7 +259,7 @@ public class SurfaceGenerator {
     return volumeData;
   }
 
-  public Point4f getPlane() {
+  public P4 getPlane() {
     return params.thePlane;
   }
   
@@ -318,7 +319,7 @@ public class SurfaceGenerator {
    */
 
   public boolean setParameter(String propertyName, Object value) {
-    return setParameter(propertyName, value, null);
+    return setProp(propertyName, value, null);
   }
 
   /**
@@ -329,7 +330,7 @@ public class SurfaceGenerator {
    * @return TRUE if done processing
    */
   @SuppressWarnings("unchecked")
-  public boolean setParameter(String propertyName, Object value, BitSet bs) {
+  public boolean setProp(String propertyName, Object value, BS bs) {
 
     if ("debug" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
@@ -384,14 +385,14 @@ public class SurfaceGenerator {
     }
 
     if ("withinPoints" == propertyName) {
-      params.boundingBox = (Point3f[]) ((Object[]) value)[1];
+      params.boundingBox = (P3[]) ((Object[]) value)[1];
       return true;
     }
 
     if ("boundingBox" == propertyName) {
-      Point3f[] pts = (Point3f[]) value;
-      params.boundingBox = new Point3f[] { Point3f.newP(pts[0]),
-          Point3f.newP(pts[pts.length - 1]) };
+      P3[] pts = (P3[]) value;
+      params.boundingBox = new P3[] { P3.newP(pts[0]),
+          P3.newP(pts[pts.length - 1]) };
       return true;
     }
 
@@ -401,22 +402,22 @@ public class SurfaceGenerator {
     }
 
     if ("intersection" == propertyName) {
-      params.intersection = (BitSet[]) value;
+      params.intersection = (BS[]) value;
       return true;
     }
 
     if ("bsSolvent" == propertyName) {
-      params.bsSolvent = (BitSet) value;
+      params.bsSolvent = (BS) value;
       return true;
     }
 
     if ("select" == propertyName) {
-      params.bsSelected = (BitSet) value;
+      params.bsSelected = (BS) value;
       return true;
     }
 
     if ("ignore" == propertyName) {
-      params.bsIgnore = (BitSet) value;
+      params.bsIgnore = (BS) value;
       return true;
     }
 
@@ -512,12 +513,12 @@ public class SurfaceGenerator {
 
     if ("anisotropy" == propertyName) {
       if ((params.dataType & Parameters.NO_ANISOTROPY) == 0)
-        params.setAnisotropy((Point3f) value);
+        params.setAnisotropy((P3) value);
       return true;
     }
 
     if ("eccentricity" == propertyName) {
-      params.setEccentricity((Point4f) value);
+      params.setEccentricity((P4) value);
       return true;
     }
 
@@ -616,7 +617,7 @@ public class SurfaceGenerator {
     }
 
     if ("center" == propertyName) {
-      params.center.setT((Point3f) value);
+      params.center.setT((P3) value);
       return true;
     }
     
@@ -627,17 +628,17 @@ public class SurfaceGenerator {
       
 
     if ("origin" == propertyName) {
-      params.origin = (Point3f) value;
+      params.origin = (P3) value;
       return true;
     }
 
     if ("step" == propertyName) {
-      params.steps = (Point3f) value;
+      params.steps = (P3) value;
       return true;
     }
 
     if ("point" == propertyName) {
-      params.points = (Point3f) value;
+      params.points = (P3) value;
       return true;
     }
 
@@ -647,7 +648,7 @@ public class SurfaceGenerator {
     }
 
     if ("withinPoint" == propertyName) {
-      params.point = (Point3f) value;
+      params.point = (P3) value;
       return true;
     }
 
@@ -732,7 +733,7 @@ public class SurfaceGenerator {
     }
 
     if ("plane" == propertyName) {
-      params.setPlane((Point4f) value);
+      params.setPlane((P4) value);
       return true;
     }
 
@@ -743,8 +744,8 @@ public class SurfaceGenerator {
         // discrete values
         params.contoursDiscrete = (float[]) value;
         params.nContours = params.contoursDiscrete.length;
-      } else if (value instanceof Point3f) {
-        Point3f pt = params.contourIncrements = (Point3f) value;
+      } else if (value instanceof P3) {
+        P3 pt = params.contourIncrements = (P3) value;
         float from = pt.x;
         float to = pt.y;
         float step = pt.z;
@@ -795,7 +796,7 @@ public class SurfaceGenerator {
     }
     
     if ("mapLattice" == propertyName) {
-      params.mapLattice = (Point3f) value;
+      params.mapLattice = (P3) value;
       return true;
     }
 
@@ -810,21 +811,30 @@ public class SurfaceGenerator {
 
     // these next four set the reader themselves.
     if ("sphere" == propertyName) {
-      params.setSphere(((Float) value).floatValue());
-      readerData = new Float(params.distance);
+      params.setSphere(((Float) value).floatValue(), false);
+      readerData = Float.valueOf(params.distance);
+      surfaceReader = newReader("IsoShapeReader");
+      generateSurface();
+      return true;
+    }
+
+    // these next four set the reader themselves.
+    if ("geodesic" == propertyName) {
+      params.setSphere(((Float) value).floatValue(), true);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("ellipsoid" == propertyName) {
-      if (value instanceof Point4f)
-        params.setEllipsoid((Point4f) value);
+      if (value instanceof P4)
+        params.setEllipsoid((P4) value);
       else if (Escape.isAF(value))
         params.setEllipsoid((float[]) value);
       else
         return true;
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -832,14 +842,14 @@ public class SurfaceGenerator {
 
     if ("ellipsoid3" == propertyName) {
       params.setEllipsoid((float[]) value);
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("lp" == propertyName) {
-      params.setLp((Point4f) value);
+      params.setLp((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -847,7 +857,7 @@ public class SurfaceGenerator {
     }
 
     if ("rad" == propertyName) {
-      params.setRadical((Point4f) value);
+      params.setRadical((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -855,7 +865,7 @@ public class SurfaceGenerator {
     }
 
     if ("lobe" == propertyName) {
-      params.setLobe((Point4f) value);
+      params.setLobe((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -875,9 +885,9 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((List<Object>) value);
+      params.setFunctionXY((JmolList<Object>) value);
       if (params.isContoured)
-        volumeData.setPlaneParameters(Point4f.new4(0, 0, 1, 0)); // xy plane
+        volumeData.setPlaneParameters(P4.new4(0, 0, 1, 0)); // xy plane
       // through
       // origin
       if (((String) params.functionInfo.get(0)).indexOf("_xyz") >= 0)
@@ -887,7 +897,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((List<Object>) value);
+      params.setFunctionXYZ((JmolList<Object>) value);
       processState();
       return true;
     }
@@ -901,13 +911,14 @@ public class SurfaceGenerator {
       if (++params.state != Parameters.STATE_DATA_READ)
         return true;
       if (params.center.x == Float.MAX_VALUE)
-        params.center.setT((Vector3f) value);
+        params.center.setT((V3) value);
       return false;
     }
 
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
+
       Logger.info(params.calculationType);
       processState();
       return true;
@@ -1208,7 +1219,7 @@ public class SurfaceGenerator {
     surfaceReader = null;
   }
 
-  public List<Object[]> getSlabInfo() {
+  public JmolList<Object[]> getSlabInfo() {
     return params.slabInfo;
   }
   
@@ -1263,7 +1274,7 @@ public class SurfaceGenerator {
       fname += Parser.getQuotedStringAt(fileType,
           fileType.indexOf("A HREF") + 1);
       params.fileName = fname;
-        value = atomDataServer.getBufferedInputStream(fname);
+      value = atomDataServer.getBufferedInputStream(fname);
       if (value == null) {
         Logger.error("Isosurface: could not open file " + fname);
         return null;
@@ -1272,7 +1283,7 @@ public class SurfaceGenerator {
         br = JmolBinary.getBufferedReader((BufferedInputStream) value, null);
       } catch (Exception e) {
         // TODO
-      }        
+      }
       fileType = JmolBinary.determineSurfaceFileType(br);
     }
     if (fileType == null)
@@ -1280,66 +1291,29 @@ public class SurfaceGenerator {
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))
       return newReaderBr("JvxlReader", br);
-    if (fileType.equals("Jvxl"))
-      return newReaderBr("JvxlReader", br);
-    if (fileType.equals("JvxlXML"))
-      return newReaderBr("JvxlXmlReader", br);
-    if (fileType.equals("Apbs"))
-      return newReaderBr("ApbsReader", br);
-    if (fileType.equals("Cube"))
-      return newReaderBr("CubeReader", br);
-    if (fileType.equals("Jaguar"))
-      return newReaderBr("JaguarReader", br);
-    if (fileType.equals("Xplor"))
-      return newReaderBr("XplorReader", br);
-    if (fileType.equals("Xsf"))
-      return newReaderBr("XsfReader", br);
-    if (fileType.equals("PltFormatted"))
-      return newReaderBr("PltFormattedReader", br);
-    if (fileType.equals("MRC")) {
-      try {
-        br.close();
-      } catch (IOException e) {
-        // ignore
-      }
-      br = null;
-      readerData = params.fileName;
-      return newReaderBr("MrcBinaryReader", br);
-    }
+    
     readerData = new Object[] { params.fileName, data };
-    if (fileType.equals("DSN6")) {
+
+    if ("MRC DELPHI DSN6".indexOf(fileType.toUpperCase()) >= 0) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
-      return newReaderBr("Dsn6BinaryReader", br);
+      fileType += "Binary";
     }
-    if (fileType.equals("Efvet")) {
-      return newReaderBr("EfvetReader", br);
-    }
-    if (fileType.equals("Pmesh")) {
-      return newReaderBr("PmeshReader", br);
-    }
-    if (fileType.equals("Obj")) {
-      return newReaderBr("ObjReader", br);
-    }
-    if (fileType.equals("Msms")) {
-      return newReaderBr("MsmsReader", br);
-    }
-    if (fileType.equals("Kinemage")) {
-      return newReaderBr("KinemageReader", br);
-    }
-    if (fileType.equals("CastepDensity")) {
-      return newReaderBr("CastepDensityReader", br);
-    }
-    if (fileType.equals("Nff")) {
-      return newReaderBr("NffFileReader", br);
-    }
-    return null;
+    return newReaderBr(fileType + "Reader", br);
   }
   
+  private Object readerData;
+  
+  Object getReaderData() {
+    // needed by DelPhiBinary, Dsn6Binary, IsoShape, MrcBinary, Msms, Pmesh
+    Object o = readerData;
+    readerData = null;
+    return o;
+  }
 
   void initializeIsosurface() {
     params.initialize();
@@ -1362,21 +1336,21 @@ public class SurfaceGenerator {
   }
 
   private void getFunctionZfromXY() {
-    Point3f origin = (Point3f) params.functionInfo.get(1);
+    P3 origin = (P3) params.functionInfo.get(1);
     int[] counts = new int[3];
     int[] nearest = new int[3];
-    Vector3f[] vectors = new Vector3f[3];
+    V3[] vectors = new V3[3];
     for (int i = 0; i < 3; i++) {
-      Point4f info = (Point4f) params.functionInfo.get(i + 2);
+      P4 info = (P4) params.functionInfo.get(i + 2);
       counts[i] = Math.abs((int) info.x);
-      vectors[i] = Vector3f.new3(info.y, info.z, info.w);
+      vectors[i] = V3.new3(info.y, info.z, info.w);
     }
     int nx = counts[0];
     int ny = counts[1];
-    Point3f pt = new Point3f();
-    Point3f pta = new Point3f();
-    Point3f ptb = new Point3f();
-    Point3f ptc = new Point3f();
+    P3 pt = new P3();
+    P3 pta = new P3();
+    P3 ptb = new P3();
+    P3 ptc = new P3();
 
     float[][] data = (float[][]) params.functionInfo.get(5);
     float[][] data2 = new float[nx][ny];
@@ -1403,13 +1377,13 @@ public class SurfaceGenerator {
     params.functionInfo.set(5, data2);
   }
 
-  final Vector3f vAC = new Vector3f();
-  final Vector3f vAB = new Vector3f();
-  final Vector3f vNorm = new Vector3f();
-  final Point3f ptRef = Point3f.new3(0, 0, 1e15f);
+  final V3 vAC = new V3();
+  final V3 vAB = new V3();
+  final V3 vNorm = new V3();
+  final P3 ptRef = P3.new3(0, 0, 1e15f);
   
-  private float distanceVerticalToPlane(float x, float y, Point3f pta,
-                                              Point3f ptb, Point3f ptc) {
+  private float distanceVerticalToPlane(float x, float y, P3 pta,
+                                              P3 ptb, P3 ptc) {
     // ax + by + cz + d = 0
 
     float d = Measure.getDirectedNormalThroughPoints(pta, ptb, ptc, ptRef, vNorm, vAB, vAC);
@@ -1471,9 +1445,9 @@ public class SurfaceGenerator {
     return (params.thePlane != null || params.fullyLit);
   }
 
-  BitSet bsVdw;
+  BS bsVdw;
   
-  public BitSet geVdwBitSet() {
+  public BS geVdwBitSet() {
     return bsVdw;
   }
   
@@ -1481,20 +1455,14 @@ public class SurfaceGenerator {
     if ((mode & AtomData.MODE_FILL_RADII) != 0 
         && atomData.bsSelected != null) {
       if (bsVdw == null)
-        bsVdw = new BitSet();
+        bsVdw = new BS();
       bsVdw.or(atomData.bsSelected);
     }
     atomDataServer.fillAtomData(atomData, mode);
   }
 
-  public Vector3f[] getSpanningVectors() {
+  public V3[] getSpanningVectors() {
     return surfaceReader.getSpanningVectors();
   }
 
-  Object readerData;
-  public Object getReaderData() {
-    Object o = readerData;
-    readerData = null;
-    return o;
-  }
 }

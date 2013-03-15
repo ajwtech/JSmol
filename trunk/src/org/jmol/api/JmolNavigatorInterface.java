@@ -1,10 +1,10 @@
 package org.jmol.api;
 
-import java.util.List;
 
-import org.jmol.script.ScriptEvaluator;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+
+import org.jmol.util.JmolList;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -12,10 +12,10 @@ public interface JmolNavigatorInterface extends Runnable {
 
   void set(TransformManager transformManager, Viewer viewer);
 
-  void navigateTo(float floatSecondsTotal, Vector3f axis, float degrees,
-                  Point3f center, float depthPercent, float xTrans, float yTrans);
+  void navigateTo(float floatSecondsTotal, V3 axis, float degrees,
+                  P3 center, float depthPercent, float xTrans, float yTrans);
 
-  void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
+  void navigate(float seconds, P3[][] pathGuide, P3[] path,
                 float[] theta, int indexStart, int indexEnd);
 
   void zoomByFactor(float factor, int x, int y);
@@ -26,9 +26,9 @@ public interface JmolNavigatorInterface extends Runnable {
 
   void navigateKey(int keyCode, int modifiers);
 
-  void navigateList(ScriptEvaluator eval, List<Object[]> list);
+  void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list);
 
-  void navigateAxis(Vector3f rotAxis, float degrees);
+  void navigateAxis(V3 rotAxis, float degrees);
 
   void setNavigationDepthPercent(float percent);
 

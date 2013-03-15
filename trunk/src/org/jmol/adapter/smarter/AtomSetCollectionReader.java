@@ -27,27 +27,26 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer;
 
 
 /*
@@ -140,7 +139,7 @@ public abstract class AtomSetCollectionReader {
   protected JmolDocument doc;
   protected String readerName;
   public Map<String, Object> htParams;
-  public List<Point3f[]> trajectorySteps;
+  public JmolList<P3[]> trajectorySteps;
 
   //protected String parameterData;
 
@@ -156,7 +155,7 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveSymmetryOperators;
   public boolean continuing = true;
   
-  public JmolViewer viewer; // used by GenNBOReader and by CifReader
+  public Viewer viewer; // used by GenNBOReader and by CifReader
 
   protected boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;
@@ -169,7 +168,7 @@ public abstract class AtomSetCollectionReader {
   public int modelNumber;
   protected int vibrationNumber;
   public int desiredVibrationNumber = Integer.MIN_VALUE;
-  protected BitSet bsModels;
+  protected BS bsModels;
   protected boolean havePartialChargeFilter;
   public String calculationType = "?";
   protected String spaceGroup;
@@ -182,11 +181,11 @@ public abstract class AtomSetCollectionReader {
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
   protected String strSupercell;
-  protected Point3f ptSupercell;
+  protected P3 ptSupercell;
 
   // private state variables
 
-  private StringXBuilder loadNote = new StringXBuilder();
+  private SB loadNote = new SB();
   private boolean doConvertToFractional;
   private boolean fileCoordinatesAreFractional;
   private boolean merging;
@@ -194,10 +193,10 @@ public abstract class AtomSetCollectionReader {
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
-  protected Point3f fileScaling;
-  protected Point3f fileOffset;
-  private Point3f fileOffsetFractional;
-  private Point3f unitCellOffset;
+  protected P3 fileScaling;
+  protected P3 fileOffset;
+  private P3 fileOffsetFractional;
+  private P3 unitCellOffset;
   private boolean unitCellOffsetFractional;
 
   /*  
@@ -319,9 +318,9 @@ public abstract class AtomSetCollectionReader {
   protected void initializeTrajectoryFile() {
     // add a dummy atom, just so not "no atoms found"
     atomSetCollection.addAtom(new Atom());
-    trajectorySteps = (List<Point3f[]>) htParams.get("trajectorySteps");
+    trajectorySteps = (JmolList<P3[]>) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
-      htParams.put("trajectorySteps", trajectorySteps = new ArrayList<Point3f[]>());
+      htParams.put("trajectorySteps", trajectorySteps = new  JmolList<P3[]>());
   }
 
   protected void finalizeReader() throws Exception {
@@ -356,8 +355,8 @@ public abstract class AtomSetCollectionReader {
       htParams.put("templateAtomCount", Integer.valueOf(atomSetCollection
           .getAtomCount()));
     if (htParams.containsKey("bsFilter"))
-      htParams.put("filteredAtomCount", Integer.valueOf(BitSetUtil
-          .cardinalityOf((BitSet) htParams.get("bsFilter"))));
+      htParams.put("filteredAtomCount", Integer.valueOf(BSUtil
+          .cardinalityOf((BS) htParams.get("bsFilter"))));
     if (!calculationType.equals("?"))
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
           calculationType);
@@ -410,9 +409,9 @@ public abstract class AtomSetCollectionReader {
     if (o instanceof String)
       strSupercell = (String) o;
     else
-      ptSupercell = (Point3f) o;
+      ptSupercell = (P3) o;
     initializeSymmetry();
-    viewer = (JmolViewer) htParams.remove("viewer"); // don't pass this on to user
+    viewer = (Viewer) htParams.remove("viewer"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
       stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt"))
           .intValue();
@@ -429,7 +428,7 @@ public abstract class AtomSetCollectionReader {
     else if (htParams.containsKey("modelNumber"))
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
-    bsFilter = (BitSet) htParams.get("bsFilter");
+    bsFilter = (BS) htParams.get("bsFilter");
     setFilter(null);
     // ptFile < 0 indicates just one file being read
     // ptFile >= 0 indicates multiple files are being loaded
@@ -439,17 +438,17 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((List<Object>) htParams.get("firstLastSteps"))
+      Object val = ((JmolList<Object>) htParams.get("firstLastSteps"))
           .get(ptFile - 1);
-      if (val instanceof BitSet) {
-        bsModels = (BitSet) val;
+      if (val instanceof BS) {
+        bsModels = (BS) val;
       } else {
         firstLastStep = (int[]) val;
       }
     } else if (htParams.containsKey("firstLastStep")) {
       firstLastStep = (int[]) htParams.get("firstLastStep");
     } else if (htParams.containsKey("bsModels")) {
-      bsModels = (BitSet) htParams.get("bsModels");
+      bsModels = (BS) htParams.get("bsModels");
     }
     if (htParams.containsKey("templateAtomCount"))
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
@@ -463,7 +462,7 @@ public abstract class AtomSetCollectionReader {
         firstLastStep[1] = -1;
       if (firstLastStep[2] < 1)
         firstLastStep[2] = 1;
-      bsModels = BitSetUtil.newAndSetBit(firstLastStep[0]);
+      bsModels = BSUtil.newAndSetBit(firstLastStep[0]);
       if (firstLastStep[1] > firstLastStep[0]) {
         for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
           bsModels.set(i);
@@ -476,11 +475,13 @@ public abstract class AtomSetCollectionReader {
         .get("symmetryRange")).floatValue() : 0);
     latticeCells = new int[3];
     if (htParams.containsKey("lattice")) {
-      Point3f pt = ((Point3f) htParams.get("lattice"));
+      P3 pt = ((P3) htParams.get("lattice"));
       latticeCells[0] = (int) pt.x;
       latticeCells[1] = (int) pt.y;
       latticeCells[2] = (int) pt.z;
       doCentroidUnitCell = (htParams.containsKey("centroid"));
+      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
+        latticeCells[2] = 1;
       centroidPacked = doCentroidUnitCell && htParams.containsKey("packed");
       doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
       
@@ -513,9 +514,9 @@ public abstract class AtomSetCollectionReader {
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
     if (htParams.containsKey("unitCellOffset")) {
-      fileScaling = Point3f.new3(1, 1, 1);
-      fileOffset = (Point3f) htParams.get("unitCellOffset");
-      fileOffsetFractional = Point3f.newP(fileOffset);
+      fileScaling = P3.new3(1, 1, 1);
+      fileOffset = (P3) htParams.get("unitCellOffset");
+      fileOffsetFractional = P3.newP(fileOffset);
       unitCellOffsetFractional = htParams
           .containsKey("unitCellOffsetFractional");
     }
@@ -600,7 +601,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, atomSetCollection.getCurrentAtomSetIndex()));
   }
 
-  protected int cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {
+  protected int cloneLastAtomSet(int atomCount, P3[] pts) throws Exception {
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSetFromPoints(atomCount, pts);
     if (atomSetCollection.haveUnitCell) {
@@ -739,7 +740,7 @@ public abstract class AtomSetCollectionReader {
 
   /////////// FILTER /////////////////
 
-  protected BitSet bsFilter;
+  protected BS bsFilter;
   protected String filter;
   private boolean haveAtomFilter;
   private boolean filterAltLoc;
@@ -826,7 +827,7 @@ public abstract class AtomSetCollectionReader {
       // which atoms were selected by the filter. This then
       // gets used by COORD files to load just those coordinates
       // and it returns the bitset of filtered atoms
-      bsFilter = new BitSet();
+      bsFilter = new BS();
       htParams.put("bsFilter", bsFilter);
       filter = (";" + filter + ";").replace(',', ';');
       Logger.info("filtering with " + filter);
@@ -914,7 +915,7 @@ public abstract class AtomSetCollectionReader {
     if (matrixRotate != null || !doSetOrientation)
       return;
     matrixRotate = new Matrix3f();
-    Vector3f v = new Vector3f();
+    V3 v = new V3();
     // rows in Sygress/CAChe and Spartan become columns here
     v.set(x1, y1, z1);
     v.normalize();
@@ -1025,7 +1026,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;
-    List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData
+    JmolList<Map<String, Object>> orbitals = (JmolList<Map<String, Object>>) moData
         .get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model "
@@ -1254,11 +1255,11 @@ public abstract class AtomSetCollectionReader {
         float[] data = new float[15];
         parseStringInfestedFloatArray(line.substring(10).replace('=', ' ')
             .replace('{', ' ').replace('}', ' '), data);
-        Point3f minXYZ = Point3f.new3(data[0], data[1], data[2]);
-        Point3f maxXYZ = Point3f.new3(data[3], data[4], data[5]);
-        fileScaling = Point3f.new3(data[6], data[7], data[8]);
-        fileOffset = Point3f.new3(data[9], data[10], data[11]);
-        Point3f plotScale = Point3f.new3(data[12], data[13], data[14]);
+        P3 minXYZ = P3.new3(data[0], data[1], data[2]);
+        P3 maxXYZ = P3.new3(data[3], data[4], data[5]);
+        fileScaling = P3.new3(data[6], data[7], data[8]);
+        fileOffset = P3.new3(data[9], data[10], data[11]);
+        P3 plotScale = P3.new3(data[12], data[13], data[14]);
         if (plotScale.x <= 0)
           plotScale.x = 100;
         if (plotScale.y <= 0)
@@ -1283,7 +1284,7 @@ public abstract class AtomSetCollectionReader {
         symmetry.toCartesian(unitCellOffset);
         System.out.println(unitCellOffset);
         */
-        unitCellOffset = Point3f.newP(plotScale);
+        unitCellOffset = P3.newP(plotScale);
         unitCellOffset.scale(-1);
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
@@ -1297,7 +1298,7 @@ public abstract class AtomSetCollectionReader {
         System.out.println("ASCR maxXYZ " + pt);
         */
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling",
-            new Point3f[] { minXYZ, maxXYZ, plotScale });
+            new P3[] { minXYZ, maxXYZ, plotScale });
       }
     }
     if (line.endsWith("#noautobond")) {
@@ -1462,8 +1463,8 @@ public abstract class AtomSetCollectionReader {
    * @param s
    * @return Vector of integers
    */
-  protected static ArrayList<Integer> getFortranFormatLengths(String s) {
-    ArrayList<Integer> vdata = new ArrayList<Integer>();
+  protected static JmolList<Integer> getFortranFormatLengths(String s) {
+    JmolList<Integer> vdata = new  JmolList<Integer>();
     int n = 0;
     int c = 0;
     int factor = 1;
@@ -1478,7 +1479,7 @@ public abstract class AtomSetCollectionReader {
         continue;
       case ',':
         for (int j = 0; j < c; j++)
-          vdata.add(Integer.valueOf(n * factor));
+          vdata.addLast(Integer.valueOf(n * factor));
         inN = false;
         inCount = true;
         c = 0;
@@ -1524,8 +1525,8 @@ public abstract class AtomSetCollectionReader {
    * @throws Exception 
    * 
    */
-  protected Vector3f[] read3Vectors(boolean isBohr) throws Exception {
-    Vector3f[] vectors = new Vector3f[3];   
+  protected V3[] read3Vectors(boolean isBohr) throws Exception {
+    V3[] vectors = new V3[3];   
     float[] f = new float[3];
     for (int i = 0; i < 3; i++) {
       if (i > 0 || Float.isNaN(parseFloatStr(line))) {
@@ -1536,7 +1537,7 @@ public abstract class AtomSetCollectionReader {
         }
       }
       fillFloatArray(line, 0, f);
-      vectors[i] = new Vector3f();
+      vectors[i] = new V3();
       vectors[i].setA(f);
       if (isBohr)
         vectors[i].scale(ANGSTROMS_PER_BOHR);

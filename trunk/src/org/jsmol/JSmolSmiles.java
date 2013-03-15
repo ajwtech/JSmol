@@ -24,7 +24,7 @@
 
 package org.jsmol;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
@@ -82,7 +82,7 @@ public class JSmolSmiles {
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
-      BitSet[] result = sm.find(pattern, smiles, isSmarts, !isAll);
+      BS[] result = sm.find(pattern, smiles, isSmarts, !isAll);
       if (result == null)
         lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);

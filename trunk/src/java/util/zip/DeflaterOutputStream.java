@@ -39,6 +39,6 @@ public
 class DeflaterOutputStream extends com.jcraft.jzlib.DeflaterOutputStream {
 
   public DeflaterOutputStream(OutputStream out, Deflater deflater) {
-    super(out, deflater);
+    super(out, deflater, 0, true);
   }
 }

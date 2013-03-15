@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-24 00:54:59 -0500 (Wed, 24 Oct 2012) $
- * $Revision: 17678 $
+ * $Date: 2013-03-02 11:23:01 -0600 (Sat, 02 Mar 2013) $
+ * $Revision: 17958 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -27,16 +27,16 @@ package org.jmol.modelset;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class Bond extends JmolEdge {
 
-  public static class BondSet extends BitSet {
+  public static class BondSet extends BS {
 
     public BondSet() {
     }
@@ -47,31 +47,21 @@ public class Bond extends JmolEdge {
       return associatedAtoms;
     }
 
-    public BondSet(BitSet bs) {
-      BitSetUtil.copy2(bs, this);
+    public BondSet(BS bs) {
+      BSUtil.copy2(bs, this);
     }
 
-    public BondSet(BitSet bs, int[] atoms) {
+    public BondSet(BS bs, int[] atoms) {
       this(bs);
       associatedAtoms = atoms;
     }
-
   }
 
-  Atom atom1;
-  Atom atom2;
+  public Atom atom1;
+  public Atom atom2;
 
-  short mad;
-  public short getMad() {
-    return mad;
-  }
-
-
-  short colix;
-  
-  public short getColix() {
-    return colix;
-  }
+  public short mad;
+  public short colix;
   
   public Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
@@ -87,7 +77,7 @@ public class Bond extends JmolEdge {
     setShapeVisibility(mad != 0);
   }
 
-  int shapeVisibilityFlags;
+  public int shapeVisibilityFlags;
   
   public void setShapeVisibilityFlags(int shapeVisibilityFlags) {
     this.shapeVisibilityFlags = shapeVisibilityFlags;
@@ -110,7 +100,7 @@ public class Bond extends JmolEdge {
   }
             
   
-  final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
+  public final static int myVisibilityFlag = JC.getShapeVisibilityFlag(JC.SHAPE_STICKS);
 
   public String getIdentity() {
     return (index + 1) + " "+ getOrderNumberAsString() + " " + atom1.getInfo() + " -- "
@@ -124,10 +114,10 @@ public class Bond extends JmolEdge {
 
   @Override
   public boolean isHydrogen() {
-    return isHydrogen(order);
+    return isOrderH(order);
   }
 
-  public static boolean isHydrogen(int order) {
+  public static boolean isOrderH(int order) {
     return (order & BOND_HYDROGEN_MASK) != 0;
   }
 
@@ -156,7 +146,7 @@ public class Bond extends JmolEdge {
     return 0;
   }
   
-  int getValence() {
+  public int getValence() {
     return (!isCovalent() ? 0
         : isPartial() || is(BOND_AROMATIC) ? 1
         : order & 7);
@@ -175,11 +165,11 @@ public class Bond extends JmolEdge {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
+    colix = C.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
   
-  boolean isTranslucent() {
-    return Colix.isColixTranslucent(colix);
+  public boolean isTranslucent() {
+    return C.isColixTranslucent(colix);
     //but may show up translucent anyway!
   }
 
@@ -227,11 +217,11 @@ public class Bond extends JmolEdge {
   }
 
   short getColix1() {
-    return Colix.getColixInherited(colix, atom1.colixAtom);
+    return C.getColixInherited(colix, atom1.colixAtom);
   }
 
   short getColix2() {
-    return Colix.getColixInherited(colix, atom2.colixAtom);
+    return C.getColixInherited(colix, atom2.colixAtom);
   }
 
   public Atom getOtherAtom(Atom thisAtom) {

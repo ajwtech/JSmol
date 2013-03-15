@@ -23,8 +23,8 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 
 import org.jmol.constant.EnumStructure;
@@ -33,12 +33,12 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class AlphaPolymer extends BioPolymer {
@@ -49,35 +49,34 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   @Override
-  protected Point3f getControlPoint(int i, Vector3f v) {
+  protected P3 getControlPoint(int i, V3 v) {
     if (!monomers[i].isSheet())
       return leadPoints[i];
     v.sub2(leadMidpoints[i], leadPoints[i]);
     v.scale(sheetSmoothing);
-    Point3f pt = Point3f.newP(leadPoints[i]);
+    P3 pt = P3.newP(leadPoints[i]);
     pt.add(v);
     return pt;
   }
 
   @Override
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
-                         BitSet bsAtoms, BitSet bsSelected, 
+                         BS bsAtoms, BS bsSelected, 
                          boolean bothEnds, boolean isDraw, boolean addHeader, 
                          LabelToken[] tokens, OutputStringBuilder pdbATOM, 
-                         StringXBuilder pdbCONECT, BitSet bsWritten) {
+                         SB pdbCONECT, BS bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }
 
   @Override
-  public void addStructure(EnumStructure type,
-                                    String structureID, int serialID, int strandCount,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
+  public void addStructure(EnumStructure type, String structureID,
+                           int serialID, int strandCount, char startChainID,
+                           int startSeqcode, char endChainID, int endSeqcode) {
     int indexStart, indexEnd;
-    if ((indexStart = getIndex(startChainID, startSeqcode)) == -1 ||
-        (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
-      return;
+      if ((indexStart = getIndex(startChainID, startSeqcode)) == -1
+          || (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
+        return;
     //System.out.println("AlphaPolymer addSecStr " + type + " " + indexStart + " " + indexEnd);
     addStructureProtected(type, structureID, serialID, strandCount, indexStart, indexEnd);
   }
@@ -172,17 +171,17 @@ public class AlphaPolymer extends BioPolymer {
    * 
    */
   @Override
-  public List<Atom[]> calculateStruts(ModelSet modelSet, BitSet bs1,
-                                      BitSet bs2, List<Atom> vCA, float thresh,
+  public JmolList<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, JmolList<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return calculateStrutsStatic(modelSet, bs1, bs2, vCA, thresh, delta,
         allowMultiple);
   }
     
-  private List<Atom[]> calculateStrutsStatic(ModelSet modelSet, BitSet bs1, BitSet bs2,
-                                             List<Atom> vCA, float thresh,
+  private JmolList<Atom[]> calculateStrutsStatic(ModelSet modelSet, BS bs1, BS bs2,
+                                             JmolList<Atom> vCA, float thresh,
                                              int delta, boolean allowMultiple) {
-    List<Atom[]> vStruts = new ArrayList<Atom[]>(); // the output vector
+    JmolList<Atom[]> vStruts = new  JmolList<Atom[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
     int n = vCA.size();  // the set of alpha carbons
@@ -192,9 +191,9 @@ public class AlphaPolymer extends BioPolymer {
     // check for a strut. We are tracking both individual atoms (bsStruts) and
     // pairs of atoms (bsNotAvailable and bsNearbyResidues)
     
-    BitSet bsStruts = new BitSet();         // [i]
-    BitSet bsNotAvailable = new BitSet();   // [ipt]
-    BitSet bsNearbyResidues = new BitSet(); // [ipt]
+    BS bsStruts = new BS();         // [i]
+    BS bsNotAvailable = new BS();   // [ipt]
+    BS bsNearbyResidues = new BS(); // [ipt]
     
     // check for a strut. We are going to set struts within 3 residues
     // of the ends of biopolymers, so we track those positions as well.
@@ -327,15 +326,15 @@ public class AlphaPolymer extends BioPolymer {
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private static void setStrut(int i, int j, int n, List<Atom> vCA, BitSet bs1, BitSet bs2, 
-                        List<Atom[]> vStruts,
-                        BitSet bsStruts, BitSet bsNotAvailable,
-                        BitSet bsNearbyResidues, int delta) {
+  private static void setStrut(int i, int j, int n, JmolList<Atom> vCA, BS bs1, BS bs2, 
+                        JmolList<Atom[]> vStruts,
+                        BS bsStruts, BS bsNotAvailable,
+                        BS bsNearbyResidues, int delta) {
     Atom a1 = vCA.get(i);
     Atom a2 = vCA.get(j);
     if (!bs1.get(a1.index) || !bs2.get(a2.index))
       return;
-    vStruts.add(new Atom[] { a1, a2 });
+    vStruts.addLast(new Atom[] { a1, a2 });
     bsStruts.set(i);
     bsStruts.set(j);
     for (int k1 = Math.max(0, i - delta); k1 <= i + delta && k1 < n; k1++) {

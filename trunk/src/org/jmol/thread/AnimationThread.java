@@ -77,11 +77,12 @@ public class AnimationThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
+        //System.out.println("anim thred " + animationManager.getCurrentFrame() +" "+ framePointer);
         if (checkInterrupted() || !animationManager.animationOn) {
           mode = FINISH;
           break;
         }
-        if (animationManager.currentModelIndex == framePointer) {
+        if (animationManager.currentFrameIs(framePointer)) {
           targetTime += animationManager.firstFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK1))
@@ -90,7 +91,7 @@ public class AnimationThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1:
-        if (animationManager.currentModelIndex == framePointer2) {
+        if (animationManager.currentFrameIs(framePointer2)) {
           targetTime += animationManager.lastFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK2))
@@ -100,14 +101,14 @@ public class AnimationThread extends JmolThread {
         break;
       case CHECK2:
         if (!isFirst
-            && animationManager.lastModelPainted == animationManager.currentModelIndex
+            && animationManager.currentIsLast()
             && !animationManager.setAnimationNext()) {
           mode = FINISH;
           break;
         }
         isFirst = false;
         targetTime += (int) ((1000f / animationManager.animationFps) + viewer
-            .getFrameDelayMs(animationManager.currentModelIndex));
+            .getFrameDelayMs(animationManager.getCurrentFrame()));
         mode = CHECK3;
         break;
       case CHECK3:
@@ -125,7 +126,7 @@ public class AnimationThread extends JmolThread {
         break;
       case FINISH:
         Logger.debug("animation thread " + intThread + " exiting");
-        animationManager.setAnimationOff(false);
+        animationManager.stopThread(false);
         return;
       }
   }

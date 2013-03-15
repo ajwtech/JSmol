@@ -29,12 +29,15 @@ public class Deflater extends com.jcraft.jzlib.Deflater {
   
   public static final int DEFAULT_COMPRESSION = -1;
   
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   * @param compressionLevel
+   */
   public Deflater(int compressionLevel) {
-    super(compressionLevel);
-  }
-
-  public Deflater(int compressionLevel, boolean noWrap) {
-    super(compressionLevel, noWrap);
+    super();
+    if (compressionLevel != Integer.MAX_VALUE)
+      init(compressionLevel, 0, false);
   }
 
 }

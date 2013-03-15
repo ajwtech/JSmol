@@ -26,15 +26,16 @@ package org.jmol.jvxl.readers;
 import java.util.Map;
 import java.util.Random;
 
-import java.util.List;
+
 
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
@@ -66,7 +67,7 @@ class IsoMOReader extends AtomDataReader {
   @Override
   @SuppressWarnings("unchecked")
   protected void setup(boolean isMapData) {
-    mos = (List<Map<String, Object>>) params.moData.get("mos");
+    mos = (JmolList<Map<String, Object>>) params.moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
     Map<String, Object> mo = (mos != null && linearCombination == null ? mos
         .get(params.qm_moNumber - 1) : null);
@@ -114,11 +115,11 @@ class IsoMOReader extends AtomDataReader {
     }
     volumeData.sr = null;
     if (isMapData && !isElectronDensityCalc && !haveVolumeData) {
-      volumeData.sr = this;
       volumeData.doIterate = false;
       volumeData.setVoxelDataAsArray(voxelData = new float[1][1][1]);
-      points = new Point3f[1];
-      points[0] = new Point3f();
+      volumeData.sr = this;
+      points = new P3[1];
+      points[0] = new P3();
       if (!setupCalculation())
         q = null;
     } else if (params.psi_monteCarloCount > 0) {
@@ -212,11 +213,11 @@ class IsoMOReader extends AtomDataReader {
     }
     if (points != null)
       return; // already done
-    points = new Point3f[1000];
+    points = new P3[1000];
     for (int j = 0; j < 1000; j++)
-      points[j] = new Point3f();
+      points[j] = new P3();
     if (params.thePlane != null)
-      vTemp = new Vector3f();
+      vTemp = new V3();
     // presumes orthogonal
     for (int i = 0; i < 3; i++)
       vDist[i] = volumeData.volumetricVectorLengths[i]
@@ -239,7 +240,7 @@ class IsoMOReader extends AtomDataReader {
         float absValue = Math.abs(value);
         if (absValue <= getRnd(f))
           continue;
-        addVertexCopy(points[j], value, 0);
+        addVC(points[j], value, 0);
         if (++i == params.psi_monteCarloCount)
           break;
       }
@@ -267,7 +268,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     return (q == null ? 0 : q.process(pt));
   }
   
@@ -286,10 +287,10 @@ class IsoMOReader extends AtomDataReader {
     createOrbital();
   }
 
-  private Point3f[] points;
-  private Vector3f vTemp;
+  private P3[] points;
+  private V3 vTemp;
   QuantumCalculationInterface q;
-  List<Map<String, Object>> mos;
+  JmolList<Map<String, Object>> mos;
   boolean isNci;
   float[] coef; 
   int[][] dfCoefMaps;
@@ -325,7 +326,7 @@ class IsoMOReader extends AtomDataReader {
   public float[] getPlane(int x) {
     if (!qSetupDone) 
       setupCalculation();
-    return super.getPlane(x); 
+    return getPlane2(x); 
   }
 
   private boolean qSetupDone;
@@ -339,7 +340,7 @@ class IsoMOReader extends AtomDataReader {
     case Parameters.QM_TYPE_GAUSSIAN:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) params.moData.get("shells"), (float[][]) params.moData
+          atomData.atomXyz, atomData.firstAtomIndex, (JmolList<int[]>) params.moData.get("shells"), (float[][]) params.moData
                           .get("gaussians"), dfCoefMaps, null,
           coef, linearCombination, params.isSquaredLinear, coefs,
           null, params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
@@ -362,12 +363,11 @@ class IsoMOReader extends AtomDataReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             Point3f pointA,
-                                             Vector3f edgeVector, int x, int y,
+                                             P3 pointA,
+                                             V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
-                                             float[] fReturn, Point3f ptReturn) {
-      
-      float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+                                             float[] fReturn, P3 ptReturn) {
+      float zero = getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
       if (q != null && !Float.isNaN(zero)) {
       zero = q.process(ptReturn);

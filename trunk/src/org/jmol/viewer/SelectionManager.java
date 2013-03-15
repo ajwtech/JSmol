@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-07 18:01:26 -0500 (Sun, 07 Oct 2012) $
- * $Revision: 17634 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development
  *
@@ -23,22 +23,16 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.ModelSet;
 
-
-import java.util.Hashtable;
-import java.util.Map;
-
-class SelectionManager {
+public class SelectionManager {
 
   private Viewer viewer;
 
@@ -48,19 +42,19 @@ class SelectionManager {
     this.viewer = viewer;
   }
 
-  private final BitSet bsHidden = new BitSet();
-  private final BitSet bsSelection = new BitSet();
-  private final BitSet bsFixed = new BitSet();
+  final BS bsHidden = new BS();
+  final BS bsSelection = new BS();
+  final BS bsFixed = new BS();
 
-  BitSet bsSubset; // set in Eval and only pointed to here
-  private BitSet bsDeleted;
+  BS bsSubset; // set in Eval and only pointed to here
+  BS bsDeleted;
 
-  void deleteModelAtoms(BitSet bsDeleted) {
-    BitSetUtil.deleteBits(bsHidden, bsDeleted);
-    BitSetUtil.deleteBits(bsSelection, bsDeleted);
-    BitSetUtil.deleteBits(bsSubset, bsDeleted);
-    BitSetUtil.deleteBits(bsFixed, bsDeleted);
-    BitSetUtil.deleteBits(this.bsDeleted, bsDeleted);
+  void deleteModelAtoms(BS bsDeleted) {
+    BSUtil.deleteBits(bsHidden, bsDeleted);
+    BSUtil.deleteBits(bsSelection, bsDeleted);
+    BSUtil.deleteBits(bsSubset, bsDeleted);
+    BSUtil.deleteBits(bsFixed, bsDeleted);
+    BSUtil.deleteBits(this.bsDeleted, bsDeleted);
   }
 
 
@@ -70,7 +64,7 @@ class SelectionManager {
   private final static int UNKNOWN = -1;
   private int empty = TRUE;
 
-  private boolean hideNotSelected;
+  boolean hideNotSelected;
 
   void clear() {
     clearSelection(true);
@@ -80,7 +74,7 @@ class SelectionManager {
     setMotionFixedAtoms(null);
   }
 
-  void hide(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
+  void hide(ModelSet modelSet, BS bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       bsHidden.clearAll();
     } else if (addRemove == null) {
@@ -98,8 +92,8 @@ class SelectionManager {
           + bsHidden.cardinality()));
   }
 
-  void display(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
-      BitSet bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false); 
+  void display(ModelSet modelSet, BS bs, Boolean addRemove, boolean isQuiet) {
+      BS bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false); 
         if (bs == null) {
       bsHidden.clearAll();
     } else if (addRemove == null) {
@@ -110,14 +104,14 @@ class SelectionManager {
     } else {
       bsHidden.or(bs);
     }
-    BitSetUtil.andNot(bsHidden, bsDeleted);
+    BSUtil.andNot(bsHidden, bsDeleted);
     modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
       viewer.reportSelection(GT._("{0} atoms hidden", ""
           + bsHidden.cardinality()));
   }
 
-  BitSet getHiddenSet() {
+  BS getHiddenSet() {
     return bsHidden;
   }
 
@@ -135,13 +129,13 @@ class SelectionManager {
     return (atomIndex >= 0 && bsSelection.get(atomIndex));
   }
 
-  void select(BitSet bs, Boolean addRemove, boolean isQuiet) {
+  void select(BS bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
-      if (!viewer.getRasmolSetting(Token.hydrogen))
-        excludeSelectionSet(viewer.getAtomBits(Token.hydrogen, null));
-      if (!viewer.getRasmolSetting(Token.hetero))
-        excludeSelectionSet(viewer.getAtomBits(Token.hetero, null));
+      if (!viewer.getRasmolSetting(T.hydrogen))
+        excludeSelectionSet(viewer.getAtomBits(T.hydrogen, null));
+      if (!viewer.getRasmolSetting(T.hetero))
+        excludeSelectionSet(viewer.getAtomBits(T.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
@@ -163,7 +157,7 @@ class SelectionManager {
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0;)
       bsSelection.set(i);
-    BitSetUtil.andNot(bsSelection, bsDeleted);
+    BSUtil.andNot(bsSelection, bsDeleted);
     selectionChanged(isQuiet);
   }
 
@@ -196,7 +190,7 @@ class SelectionManager {
       empty = UNKNOWN;
   }
 
-  void setSelectionSet(BitSet set, Boolean addRemove) {
+  void setSelectionSet(BS set, Boolean addRemove) {
     if (set == null) {
       bsSelection.clearAll();
     } else if (addRemove == null) {
@@ -211,7 +205,7 @@ class SelectionManager {
     selectionChanged(false);
   }
 
-  void setSelectionSubset(BitSet bs) {
+  void setSelectionSubset(BS bs) {
 
     // for informational purposes only
     // the real copy is in Eval so that eval operations
@@ -226,25 +220,25 @@ class SelectionManager {
   }
 
   void invertSelection() {
-    BitSetUtil.invertInPlace(bsSelection, viewer.getAtomCount());
+    BSUtil.invertInPlace(bsSelection, viewer.getAtomCount());
     empty = (bsSelection.length() > 0 ? FALSE : TRUE);
     selectionChanged(false);
   }
 
-  private void excludeSelectionSet(BitSet setExclude) {
+  private void excludeSelectionSet(BS setExclude) {
     if (setExclude == null || empty == TRUE)
       return;
     bsSelection.andNot(setExclude);
     empty = UNKNOWN;
   }
 
-  private final BitSet bsTemp = new BitSet();
+  private final BS bsTemp = new BS();
 
   int getSelectionCount() {
     if (empty == TRUE)
       return 0;
     empty = TRUE;
-    BitSet bs;
+    BS bs;
     if (bsSubset != null) {
       bsTemp.clearAll();
       bsTemp.or(bsSubset);
@@ -280,7 +274,7 @@ class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(viewer.getModelSet(), BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
+      hide(viewer.getModelSet(), BSUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)
@@ -288,44 +282,8 @@ class SelectionManager {
         listeners[i].selectionChanged(bsSelection);
   }
 
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setSelectionState;\n");
-      commands.append("function _setSelectionState() {\n");
-    }
-    StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    String cmd = null;
-    addBs(commands, "hide ", bsHidden);
-    addBs(commands, "subset ", bsSubset);
-    addBs(commands, "delete ", bsDeleted);
-    addBs(commands, "fix ", bsFixed);
-    temp.put("-", bsSelection);
-    cmd = StateManager.getCommands(temp, null, "select");
-    if (cmd == null)
-      StateManager.appendCmd(commands, "select none");
-    else
-      commands.append(cmd);
-    StateManager.appendCmd(commands, "set hideNotSelected " + hideNotSelected);
-    commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
-        "selectionState"));
-    if (viewer.getSelectionHaloEnabled(false))
-      StateManager.appendCmd(commands, "SelectionHalos ON");
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
-  }
-
-  private static void addBs(StringXBuilder sb, String key, 
-                            BitSet bs) {
-    if (bs == null || bs.length() == 0)
-      return;
-    StateManager.appendCmd(sb, key + Escape.escape(bs));
-  }
-
-  int deleteAtoms(BitSet bs) {
-    BitSet bsNew = BitSetUtil.copy(bs);
+  int deleteAtoms(BS bs) {
+    BS bsNew = BSUtil.copy(bs);
     if (bsDeleted == null) {
       bsDeleted = bsNew;
     } else {
@@ -337,49 +295,49 @@ class SelectionManager {
     return bsNew.cardinality();
   }
 
-  BitSet getDeletedAtoms() {
+  BS getDeletedAtoms() {
     return bsDeleted;
   }
 
-  BitSet getSelectionSet(boolean includeDeleted) {
+  BS getSelectionSet(boolean includeDeleted) {
     if (includeDeleted || bsDeleted == null && bsSubset == null)
       return bsSelection;
-    BitSet bs = new BitSet();
+    BS bs = new BS();
     bs.or(bsSelection);
     excludeAtoms(bs, false);
     return bs;
   }
 
-  BitSet getSelectionSubset() {
+  BS getSelectionSubset() {
     return bsSubset;
   }
 
-  void excludeAtoms(BitSet bs, boolean ignoreSubset) {
+  void excludeAtoms(BS bs, boolean ignoreSubset) {
     if (bsDeleted != null)
       bs.andNot(bsDeleted);
     if (!ignoreSubset && bsSubset != null)
       bs.and(bsSubset);
   }
 
-  void processDeletedModelAtoms(BitSet bsAtoms) {
+  void processDeletedModelAtoms(BS bsAtoms) {
     if (bsDeleted != null)
-      BitSetUtil.deleteBits(bsDeleted, bsAtoms);
+      BSUtil.deleteBits(bsDeleted, bsAtoms);
     if (bsSubset != null)
-      BitSetUtil.deleteBits(bsSubset, bsAtoms);
-    BitSetUtil.deleteBits(bsFixed, bsAtoms);
-    BitSetUtil.deleteBits(bsHidden, bsAtoms);
-    BitSet bs = BitSetUtil.copy(bsSelection);
-    BitSetUtil.deleteBits(bs, bsAtoms);
+      BSUtil.deleteBits(bsSubset, bsAtoms);
+    BSUtil.deleteBits(bsFixed, bsAtoms);
+    BSUtil.deleteBits(bsHidden, bsAtoms);
+    BS bs = BSUtil.copy(bsSelection);
+    BSUtil.deleteBits(bs, bsAtoms);
     setSelectionSet(bs, null);
   }
 
-  void setMotionFixedAtoms(BitSet bs) {
+  void setMotionFixedAtoms(BS bs) {
     bsFixed.clearAll();
     if (bs != null)
       bsFixed.or(bs);
   }
 
-  BitSet getMotionFixedAtoms() {
+  BS getMotionFixedAtoms() {
     return bsFixed;
   }
 

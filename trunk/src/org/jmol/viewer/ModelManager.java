@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -27,15 +27,15 @@ package org.jmol.viewer;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BitSet;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.SB;
 
 class ModelManager {
 
   private final Viewer viewer;
   private ModelSet modelSet;
 
-  private String fullPathName;
+  private String modelSetPathName;
   private String fileName;
 
   ModelManager(Viewer viewer) {
@@ -43,7 +43,7 @@ class ModelManager {
   }
 
   ModelSet zap() {
-    fullPathName = fileName = null;
+    modelSetPathName = fileName = null;
     return (modelSet = (new ModelLoader(viewer, viewer.getZapName(), null, null, null, null)).getModelSet());
   }
   
@@ -52,15 +52,15 @@ class ModelManager {
   }
 
   String getModelSetPathName() {
-    return fullPathName;
+    return modelSetPathName;
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
-                          StringXBuilder loadScript, Object atomSetCollection,
-                          BitSet bsNew, boolean isAppend) {
+                          SB loadScript, Object atomSetCollection,
+                          BS bsNew, boolean isAppend) {
     String modelSetName = null;
     if (isAppend) {
-      modelSetName = modelSet.getModelSetName();
+      modelSetName = modelSet.modelSetName;
       if (modelSetName.equals("zapped"))
         modelSetName = null;
       else if (modelSetName.indexOf(" (modified)") < 0)
@@ -68,7 +68,7 @@ class ModelManager {
     } else if (atomSetCollection == null) {
       return zap();
     } else {
-      this.fullPathName = fullPathName;
+      this.modelSetPathName = fullPathName;
       this.fileName = fileName;
     }
     if (atomSetCollection != null) {

@@ -43,10 +43,10 @@ import java.io.UnsupportedEncodingException;
  *
  * deprecated?  Not for public use in the future.
  */
-public class ZStream{
+abstract public class ZStream{
 
-  static final private int MAX_WBITS=15;        // 32K LZ77 window
-  static final private int DEF_WBITS=MAX_WBITS;
+//  static final private int MAX_WBITS=15;        // 32K LZ77 window
+//  static final private int DEF_WBITS=MAX_WBITS;
 
 //  static final private int Z_NO_FLUSH=0;
 //  static final private int Z_PARTIAL_FLUSH=1;
@@ -56,7 +56,7 @@ public class ZStream{
 
 //  static final private int MAX_MEM_LEVEL=9;
 
-  static final private int Z_OK=0;
+// static final private int Z_OK=0;
 //  static final private int Z_STREAM_END=1;
 //  static final private int Z_NEED_DICT=2;
 //  static final private int Z_ERRNO=-1;
@@ -66,17 +66,17 @@ public class ZStream{
 //  static final private int Z_BUF_ERROR=-5;
 //  static final private int Z_VERSION_ERROR=-6;
 
-  public byte[] next_in;     // next input byte
-  public int next_in_index;
-  public int avail_in;       // number of bytes available at next_in
-  public long total_in;      // total nb of input bytes read so far
+  byte[] next_in;     // next input byte
+  int next_in_index;
+  protected int avail_in;       // number of bytes available at next_in
+  protected long total_in;      // total nb of input bytes read so far
 
-  public byte[] next_out;    // next output byte should be put there
-  public int next_out_index;
-  public int avail_out;      // remaining free space at next_out
-  public long total_out;     // total nb of bytes output so far
+  byte[] next_out;    // next output byte should be put there
+  int next_out_index;
+  int avail_out;      // remaining free space at next_out
+  protected long total_out;     // total nb of bytes output so far
 
-  public String msg;
+  String msg;
 
   Deflate dstate; 
   Inflate istate; 
@@ -85,14 +85,12 @@ public class ZStream{
 
   Checksum checksum;
   
-  public ZStream(){
-    this(new Adler32());
+  ZStream setAdler32() {
+    this.checksum=new Adler32();
+    return this;
   }
 
-  public ZStream(Checksum adler){
-    this.checksum=adler;
-  }
-
+  /*
   public int inflateInit(){
     return inflateInit(DEF_WBITS);
   }
@@ -108,16 +106,24 @@ public class ZStream{
     return istate.inflateInit(nowrap?-w:w);
   }
 
-  public int inflate(int f){
-    if(istate==null) return Z_STREAM_ERROR;
-    return istate.inflate(f);
-  }
   public int inflateEnd(){
     if(istate==null) return Z_STREAM_ERROR;
     int ret=istate.inflateEnd();
 //    istate = null;
     return ret;
   }
+
+  */
+  
+  
+  int inflate(int f){
+    if(istate==null) return Z_STREAM_ERROR;
+    return istate.inflate(f);
+  }
+  
+
+  /*
+
   public int inflateSync(){
     if(istate == null)
       return Z_STREAM_ERROR;
@@ -134,7 +140,7 @@ public class ZStream{
     return istate.inflateSetDictionary(dictionary, dictLength);
   }
   public boolean inflateFinished(){
-    return istate.mode==12 /*DONE*/;
+    return istate.mode==12; //DONE
   }
 
   public int deflateInit(int level){
@@ -154,28 +160,33 @@ public class ZStream{
     dstate=new Deflate(this);
     return dstate.deflateInit2(level, nowrap?-bits:bits);
   }
-  public int deflate(int flush){
-    if(dstate==null){
-      return Z_STREAM_ERROR;
-    }
-    return dstate.deflate(flush);
-  }
+
   public int deflateEnd(){
     if(dstate==null) return Z_STREAM_ERROR;
     int ret=dstate.deflateEnd();
     dstate=null;
     return ret;
   }
+
   public int deflateParams(int level, int strategy){
     if(dstate==null) return Z_STREAM_ERROR;
     return dstate.deflateParams(level, strategy);
   }
+
   public int deflateSetDictionary (byte[] dictionary, int dictLength){
     if(dstate == null)
       return Z_STREAM_ERROR;
     return dstate.deflateSetDictionary(dictionary, dictLength);
   }
 
+  */
+  int deflate(int flush){
+    if(dstate==null){
+      return Z_STREAM_ERROR;
+    }
+    return dstate.deflate(flush);
+  }
+  
   // Flush as much pending output as possible. All deflate() output goes
   // through this function so some applications may wish to modify it
   // to avoid allocating a large strm->next_out buffer and copying into it.
@@ -230,35 +241,23 @@ public class ZStream{
     return len;
   }
 
-  public long getAdler(){
+  long getAdler(){
     return checksum.getValue();
   }
 
-  public void free(){
+  void free(){
     next_in=null;
     next_out=null;
     msg=null;
   }
 
-  public void setOutput(byte[] buf){
-    setOutput(buf, 0, buf.length); 
-  }
-
-  public void setOutput(byte[] buf, int off, int len){
+  void setOutput(byte[] buf, int off, int len){
     next_out = buf;
     next_out_index = off;
     avail_out = len;
   }
 
-  public void setInput(byte[] buf){
-    setInput(buf, 0, buf.length, false); 
-  }
-
-  public void setInput(byte[] buf, boolean append){
-    setInput(buf, 0, buf.length, append); 
-  }
-
-  public void setInput(byte[] buf, int off, int len, boolean append){
+  void setInput(byte[] buf, int off, int len, boolean append){
     if(len<=0 && append && next_in!=null) return;
     if(avail_in>0 && append){  
       byte[] tmp = new byte[avail_in+len];
@@ -275,6 +274,7 @@ public class ZStream{
     }
   }
 
+  /*
   public byte[] getNextIn(){
     return next_in;
   }
@@ -290,11 +290,6 @@ public class ZStream{
   public void setNextInIndex(int next_in_index){
     this.next_in_index = next_in_index;
   }
-
-  public int getAvailIn(){
-    return avail_in;
-  }
-
   public void setAvailIn(int avail_in){
     this.avail_in = avail_in;
   }
@@ -323,6 +318,14 @@ public class ZStream{
   public void setAvailOut(int avail_out){
     this.avail_out = avail_out;
   }
+  public String getMessage(){
+    return msg;
+  }
+
+*/
+  public int getAvailIn(){
+    return avail_in;
+  }
 
   public long getTotalOut(){
     return total_out;
@@ -332,17 +335,13 @@ public class ZStream{
     return total_in;
   }
 
-  public String getMessage(){
-    return msg;
-  }
-
   /**
    * Those methods are expected to be override by Inflater and Deflater.
    * In the future, they will become abstract methods.
    * @return true or false
    */ 
-  public int end(){ return Z_OK; }
-  public boolean finished(){ return false; }
+  abstract int end();//{ return Z_OK; }
+  abstract boolean finished();//{ return false; }
   
   /**
    * added by Bob Hanson

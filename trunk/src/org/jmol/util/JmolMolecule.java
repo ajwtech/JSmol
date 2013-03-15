@@ -27,7 +27,7 @@ package org.jmol.util;
 
 
 
-import java.util.List;
+
 
 
 /**
@@ -52,7 +52,7 @@ public class JmolMolecule {
   public int elementNumberMax;
   public int altElementMax;
   public String mf;
-  public BitSet atomList;
+  public BS atomList;
 
   /**
    * Creates an array of JmolMolecules from a set of atoms in the form of simple
@@ -68,16 +68,16 @@ public class JmolMolecule {
    * @return an array of JmolMolecules
    */
   public final static JmolMolecule[] getMolecules(JmolNode[] atoms,
-                                                  BitSet[] bsModelAtoms,
-                                                  List<BitSet> biobranches, BitSet bsExclude) {
-    BitSet bsToTest = null;
-    BitSet bsBranch = new BitSet();
+                                                  BS[] bsModelAtoms,
+                                                  JmolList<BS> biobranches, BS bsExclude) {
+    BS bsToTest = null;
+    BS bsBranch = new BS();
     int thisModelIndex = -1;
     int indexInModel = 0;
     int moleculeCount = 0;
     JmolMolecule[] molecules = new JmolMolecule[4];
     if (bsExclude == null)
-      bsExclude = new BitSet();
+      bsExclude = new BS();
     
     for (int i = 0; i < atoms.length; i++)
       if (!bsExclude.get(i) && !bsBranch.get(i)) {
@@ -123,26 +123,26 @@ public class JmolMolecule {
    *        TODO
    * @return a bitset of atoms along this branch
    */
-  public static BitSet getBranchBitSet(JmolNode[] atoms, int atomIndex,
-                                       BitSet bsToTest, List<BitSet> biobranches,
+  public static BS getBranchBitSet(JmolNode[] atoms, int atomIndex,
+                                       BS bsToTest, JmolList<BS> biobranches,
                                        int atomIndexNot, boolean allowCyclic,
                                        boolean allowBioResidue) {
-    BitSet bs = BitSetUtil.newBitSet(atoms.length);
+    BS bs = BSUtil.newBitSet(atoms.length);
     if (atomIndex < 0)
       return bs;
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
     return (getCovalentlyConnectedBitSet(atoms, atoms[atomIndex],
-        bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs : new BitSet());
+        bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs : new BS());
   }
 
   public final static JmolMolecule[] addMolecule(JmolMolecule[] molecules,
                                                  int iMolecule,
                                                  JmolNode[] atoms, int iAtom,
-                                                 BitSet bsBranch,
+                                                 BS bsBranch,
                                                  int modelIndex,
                                                  int indexInModel,
-                                                 BitSet bsExclude) {
+                                                 BS bsExclude) {
     bsExclude.or(bsBranch);
     if (iMolecule == molecules.length)
       molecules = allocateArray(molecules, iMolecule * 2 + 1);
@@ -151,7 +151,7 @@ public class JmolMolecule {
     return molecules;
   }
   
-  public static String getMolecularFormula(JmolNode[] atoms, BitSet bsSelected, boolean includeMissingHydrogens) {
+  public static String getMolecularFormula(JmolNode[] atoms, BS bsSelected, boolean includeMissingHydrogens) {
     JmolMolecule m = new JmolMolecule();
     m.nodes = atoms;
     m.atomList = bsSelected;
@@ -185,12 +185,13 @@ public class JmolMolecule {
   }
 
   
-  private static JmolMolecule initialize(JmolNode[] nodes, int moleculeIndex, int firstAtomIndex, BitSet atomList, int modelIndex,
+  private static JmolMolecule initialize(JmolNode[] nodes, int moleculeIndex, int firstAtomIndex, BS atomList, int modelIndex,
       int indexInModel) {
     JmolMolecule jm = new JmolMolecule();
     jm.nodes = nodes;
     jm.firstAtomIndex = firstAtomIndex;
     jm.atomList = atomList;
+    jm.atomCount = atomList.cardinality();
     jm.moleculeIndex = moleculeIndex;
     jm.modelIndex = modelIndex;
     jm.indexInModel = indexInModel;
@@ -199,14 +200,13 @@ public class JmolMolecule {
 
   private void getElementAndAtomCount(boolean includeMissingHydrogens) {
     if (atomList == null) {
-      atomList = new BitSet();
+      atomList = new BS();
       atomList.setBits(0, nodes.length);
     }
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];
-    int count = 0;
+    atomCount = atomList.cardinality();
     for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
-      count++;
       int n = nodes[i].getAtomicAndIsotopeNumber();
       if (n < Elements.elementNumberMax) {
         elementCounts[n]++;
@@ -229,16 +229,15 @@ public class JmolMolecule {
         altElementMax = Math.max(altElementMax, n);
       }
     }
-    atomCount = count;
   }
 
   private static boolean getCovalentlyConnectedBitSet(JmolNode[] atoms, 
                                                       JmolNode atom,
-                                                      BitSet bsToTest,
+                                                      BS bsToTest,
                                                       boolean allowCyclic,
                                                       boolean allowBioResidue,
-                                                      List<BitSet> biobranches,
-                                                      BitSet bsResult) {
+                                                      JmolList<BS> biobranches,
+                                                      BS bsResult) {
     int atomIndex = atom.getIndex();
     if (!bsToTest.get(atomIndex))
       return allowCyclic;
@@ -247,7 +246,7 @@ public class JmolMolecule {
     bsToTest.clear(atomIndex);
     if (biobranches != null && !bsResult.get(atomIndex)) {
       for (int i = biobranches.size(); --i >= 0;) {
-        BitSet b = biobranches.get(i);
+        BS b = biobranches.get(i);
         if (b.get(atomIndex)) {
           bsResult.or(b); // prevent iteration to same set 
           bsToTest.andNot(b);

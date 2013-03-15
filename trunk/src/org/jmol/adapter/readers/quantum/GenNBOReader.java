@@ -28,11 +28,11 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -251,7 +251,7 @@ public class GenNBOReader extends MOReader {
     }
 
     // read basis functions
-    shells = new ArrayList<int[]>();
+    shells = new  JmolList<int[]>();
     gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[6];
@@ -301,7 +301,7 @@ public class GenNBOReader extends MOReader {
       }
       slater[2] = parseIntStr(tokens[2]) - 1; // gaussian list pointer
       slater[3] = parseIntStr(tokens[3]);     // number of gaussians
-      shells.add(slater);
+      shells.addLast(slater);
     }
 
     // get alphas and exponents
@@ -362,13 +362,13 @@ public class GenNBOReader extends MOReader {
     }
     if (!ntype.equals("AO"))
       discardLinesUntilContains(ntype.equals("MO") ? "NBO" : ntype);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (readLine() != null && line.indexOf("O    ") < 0 && line.indexOf("ALPHA") < 0 && line.indexOf("BETA") < 0)
       sb.append(line);
     sb.appendC(' ');
     String data = sb.toString();
     int n = data.length() - 1;
-    sb = new StringXBuilder();
+    sb = new SB();
     for (int i = 0; i < n; i++) {
       char c = data.charAt(i);
       switch (c) {
@@ -397,7 +397,7 @@ public class GenNBOReader extends MOReader {
       String type = tokens[i];
       mo.put("type", moType + " " + type);
       // TODO: does not account for SOMO
-      mo.put("occupancy", new Float(type.indexOf("*") >= 0 ? 0 : 2));
+      mo.put("occupancy", Float.valueOf(type.indexOf("*") >= 0 ? 0 : 2));
     }
     return true;
   }

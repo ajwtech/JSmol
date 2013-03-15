@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-09 22:10:56 -0600 (Sun, 09 Dec 2012) $
- * $Revision: 17802 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -28,13 +28,16 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
+import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 import java.io.BufferedReader;
-import java.util.List;
+import java.io.IOException;
+
 import java.util.Map;
 
 
@@ -72,7 +75,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   @Override
   public Object getAtomSetCollectionReader(String name, String type,
-                                           BufferedReader bufferedReader, Map<String, Object> htParams) {
+                                           Object bufferedReader, Map<String, Object> htParams) {
     return staticGetAtomSetCollectionReader(name, type, bufferedReader, htParams);
   }
 
@@ -87,13 +90,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * 
    */
   public static Object staticGetAtomSetCollectionReader(String name, String type,
-                                   BufferedReader bufferedReader, Map<String, Object> htParams) {
+                                   Object bufferedReader, Map<String, Object> htParams) {
     try {
       Object ret = Resolver.getAtomCollectionReader(name, type,
           bufferedReader, htParams, -1);
       if (ret instanceof String) {
         try {
-          bufferedReader.close();
+          close(bufferedReader);
         } catch (Exception e) {
           //
         }
@@ -103,7 +106,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return ret;        
     } catch (Throwable e) {
       try {
-        bufferedReader.close();
+        close(bufferedReader);
       } catch (Exception ex) {
         //
       }
@@ -115,7 +118,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   @Override
   public Object getAtomSetCollectionFromReader(String fname,
-                                            BufferedReader reader,
+                                            Object reader,
                                             Map<String, Object> htParams) throws Exception {
     Object ret = Resolver.getAtomCollectionReader(fname, null, reader,
         htParams, -1);
@@ -167,21 +170,24 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   /**
-   * primary for String[] or File[] reading -- two options
-   * are implemented --- return a set of simultaneously open readers,
-   * or return one single collection using a single reader
+   * primary for String[] or File[] reading -- two options are implemented ---
+   * return a set of simultaneously open readers, or return one single
+   * collection using a single reader
    * 
-   * @param fileReader 
-   * @param names 
-   * @param types 
-   * @param htParams 
-   * @param getReadersOnly  TRUE for a set of readers; FALSE for one atomSetCollection
+   * @param filesReader
+   * @param names
+   * @param types
+   * @param htParams
+   * @param getReadersOnly
+   *        TRUE for a set of readers; FALSE for one atomSetCollection
    * 
-   * @return a set of AtomSetCollectionReaders, a single AtomSetCollection, or an error string
+   * @return a set of AtomSetCollectionReaders, a single AtomSetCollection, or
+   *         an error string
    * 
    */
   @Override
-  public Object getAtomSetCollectionReaders(JmolFilesReaderInterface fileReader,
+  public Object getAtomSetCollectionReaders(
+                                            JmolFilesReaderInterface filesReader,
                                             String[] names, String[] types,
                                             Map<String, Object> htParams,
                                             boolean getReadersOnly) {
@@ -193,18 +199,18 @@ public class SmarterJmolAdapter extends JmolAdapter {
         : new AtomSetCollection[size]);
     for (int i = 0; i < size; i++) {
       try {
-        Object reader = fileReader.getBufferedReaderOrBinaryDocument(i, false);
-        if (!(reader instanceof BufferedReader))
+        Object reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
+        if (!(reader instanceof BufferedReader || reader instanceof JmolDocument))
           return reader;
         Object ret = Resolver.getAtomCollectionReader(names[i],
-            (types == null ? null : types[i]), (BufferedReader) reader,
-            htParams, i);
+            (types == null ? null : types[i]), reader, htParams, i);
         if (!(ret instanceof AtomSetCollectionReader))
           return ret;
         AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
         if (r.isBinary) {
-          r.setup(names[i], htParams, fileReader.getBufferedReaderOrBinaryDocument(i, true));
-        } else { 
+          r.setup(names[i], htParams, filesReader
+              .getBufferedReaderOrBinaryDocument(i, true));
+        } else {
           r.setup(names[i], htParams, reader);
         }
         if (getReadersOnly) {
@@ -268,13 +274,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
       result = asc[0];
       try {
         result.finalizeTrajectoryAs(
-            (List<Point3f[]>) htParams.get("trajectorySteps"),
-            (List<Vector3f[]>) htParams.get("vibrationSteps"));
+            (JmolList<P3[]>) htParams.get("trajectorySteps"),
+            (JmolList<V3[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
         if (result.errorMessage == null)
           result.errorMessage = "" + e;
       }
-    } else { 
+    } else if (asc[0].isTrajectory){ 
+      result = asc[0];
+      for (int i = 1; i < asc.length; i++)
+        asc[0].mergeTrajectories(asc[i]);
+    } else {
       result = new AtomSetCollection("Array", null, asc, null);
     }
     return (result.errorMessage == null ? result : result.errorMessage);
@@ -420,6 +430,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     getStructureIterator(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
         null : new StructureIterator((AtomSetCollection)atomSetCollection);
+  }
+
+  public static void close(Object bufferedReader) throws IOException {
+    if (bufferedReader instanceof BufferedReader)
+      ((BufferedReader) bufferedReader).close();
+      else
+        ((JmolDocument) bufferedReader).close();
   }
 
 }

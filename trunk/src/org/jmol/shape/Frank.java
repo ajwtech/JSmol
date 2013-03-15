@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-03 07:51:51 -0600 (Mon, 03 Dec 2012) $
- * $Revision: 17786 $
+ * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
+ * $Revision: 17949 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -25,7 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.i18n.GT;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 
 
@@ -55,6 +55,11 @@ public class Frank extends FontShape {
   }
 
   @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFS(propertyName, value);
+  }
+  
+  @Override
   public boolean wasClicked(int x, int y) {
     int width = viewer.getScreenWidth();
     int height = viewer.getScreenHeight();
@@ -64,7 +69,7 @@ public class Frank extends FontShape {
   }
 
   @Override
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     if (!viewer.getShowFrank() || !wasClicked(x, y) || !viewer.menuEnabled())
       return false;
     if (gdata.isDisplayAntialiased() && !viewer.isSingleThreaded) {
@@ -93,4 +98,10 @@ public class Frank extends FontShape {
     font3d = gdata.getFont3DScaled(baseFont3d, imageFontScaling);
     calcMetrics();
   }
+  
+  @Override
+  public String getShapeState() {
+    return viewer.getFontState(myType, font3d);
+  }
+  
 }

@@ -74,7 +74,7 @@ class GZIPInputStream extends InflaterInputStream {
      * @exception IllegalArgumentException if size is <= 0
      */
     public GZIPInputStream(InputStream in, int size) throws IOException {
-        super(in, new Inflater(true), size);
+        super(in, (Inflater) new Inflater().init(0, true), size);
         //usesDefaultInflater = true;
         readHeader(in);
     }
@@ -115,7 +115,7 @@ class GZIPInputStream extends InflaterInputStream {
         if (eos) {
             return -1;
         }
-        int n = super.read(buf, off, len);
+        int n = readInf(buf, off, len);
         if (n == -1) {
             if (readTrailer())
                 eos = true;

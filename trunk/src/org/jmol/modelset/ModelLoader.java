@@ -26,20 +26,20 @@
 package org.jmol.modelset;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
+import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 import org.jmol.api.Interface;
@@ -54,11 +54,11 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -88,15 +88,16 @@ public final class ModelLoader {
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   private String[] group3Lists;
   private int[][] group3Counts;
-  private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
+  private final int[] specialAtomIndexes = new int[JC.ATOMID_MAX];
   
   public ModelLoader(Viewer viewer, String modelSetName,
-      StringXBuilder loadScript, Object atomSetCollection, ModelSet mergeModelSet,
-      BitSet bsNew) {
+      SB loadScript, Object atomSetCollection, ModelSet mergeModelSet,
+      BS bsNew) {
     this.viewer = viewer;
     modelSet = new ModelSet(viewer, modelSetName);
+    JmolAdapter adapter = viewer.getModelAdapter();
     this.mergeModelSet = mergeModelSet;
-    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
+    merging = (this.mergeModelSet != null && this.mergeModelSet.atomCount > 0);
     if (merging) {
       modelSet.canSkipLoad = false;
     } else {
@@ -112,7 +113,6 @@ public final class ModelLoader {
     }    
     if (!modelSet.preserveState)
       modelSet.canSkipLoad = false;
-    JmolAdapter adapter = viewer.getModelAdapter();
     Map<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
@@ -172,19 +172,21 @@ public final class ModelLoader {
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfoValue("fileHeader");
-    modelSet.trajectorySteps = (List<Point3f[]>) modelSet
+    modelSet.trajectorySteps = (JmolList<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    if (isTrajectory) {
-      info.remove("trajectorySteps");
-      modelSet.vibrationSteps = (List<Vector3f[]>) info.get("vibrationSteps");
-      info.remove("vibrationSteps");
-    }
     doAddHydrogens = (jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens"));
-    if (info != null)
+    if (info != null) {
       info.remove("pdbNoHydrogens");
+      info.remove("trajectorySteps");
+      shapes = (JmolList<ModelSettings>) info.remove("shapes");
+      if (shapes != null)
+        doAddHydrogens = false;
+      if (isTrajectory)
+        modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
+    }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize");
@@ -254,6 +256,7 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean is2D;
+  private JmolList<ModelSettings> shapes;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -264,7 +267,7 @@ public final class ModelLoader {
   }
 
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection,
-                              BitSet bsNew) {
+                              BS bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
@@ -286,17 +289,17 @@ public final class ModelLoader {
     currentModel = null;
     if (merging) {
       baseModelCount = mergeModelSet.modelCount;
-      baseTrajectoryCount = mergeModelSet.getMergeTrajectoryCount(isTrajectory);
+      baseTrajectoryCount = mergeModelSet.mergeTrajectories(isTrajectory);
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {
-            mergeModelSet.vibrationSteps = new ArrayList<Vector3f[]>();
+            mergeModelSet.vibrationSteps = new  JmolList<V3[]>();
             for (int i = mergeModelSet.trajectorySteps.size(); --i >= 0; )
-              mergeModelSet.vibrationSteps.add(null);
+              mergeModelSet.vibrationSteps.addLast(null);
           }
           for (int i = 0; i < modelSet.trajectorySteps.size(); i++) {
-            mergeModelSet.trajectorySteps.add(modelSet.trajectorySteps.get(i));
-            mergeModelSet.vibrationSteps.add(modelSet.vibrationSteps == null ? null  : modelSet.vibrationSteps.get(i));
+            mergeModelSet.trajectorySteps.addLast(modelSet.trajectorySteps.get(i));
+            mergeModelSet.vibrationSteps.addLast(modelSet.vibrationSteps == null ? null  : modelSet.vibrationSteps.get(i));
           }
         }
         modelSet.trajectorySteps = mergeModelSet.trajectorySteps;
@@ -371,7 +374,7 @@ public final class ModelLoader {
 
     freeze();
 
-    finalizeShapes();
+    finalizeShapes(shapes);
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
@@ -379,7 +382,7 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
     for (int i = baseModelIndex; i < modelCount; i++)
@@ -412,12 +415,12 @@ public final class ModelLoader {
         String key = entry.getKey();
         String value = entry.getValue();
         // no deletions yet...
-        BitSet bs = modelSet.getModelAtomBitSetIncludingDeleted(i, true);
+        BS bs = modelSet.getModelAtomBitSetIncludingDeleted(i, true);
         if (doAddHydrogens)
           value = jbr.fixPropertyValue(bs, value);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + modelSet.getModelName(i));
-        viewer.setData(key, new Object[] { key, value, bs, new Integer(0) }, modelSet.atomCount, 0,
+        viewer.setData(key, new Object[] { key, value, bs, Integer.valueOf(0) }, modelSet.atomCount, 0,
             0, Integer.MAX_VALUE, 0);
       }
     }
@@ -492,7 +495,7 @@ public final class ModelLoader {
     group3Lists = new String[modelSet.modelCount + 1];
     group3Counts = ArrayUtil.newInt2(modelSet.modelCount + 1);
 
-    structuresDefinedInFile = new BitSet();
+    structuresDefinedInFile = new BS();
 
     if (merging)
       mergeGroups();
@@ -517,11 +520,11 @@ public final class ModelLoader {
           modelName, modelNumber, modelProperties, modelAuxiliaryInfo,
           jmolData);
       if (isPDBModel) {
-        group3Lists[ipt + 1] = JmolConstants.getGroup3List();
-        group3Counts[ipt + 1] = new int[JmolConstants.getGroup3Count() + 10];
+        group3Lists[ipt + 1] = JC.getGroup3List();
+        group3Counts[ipt + 1] = new int[JC.getGroup3Count() + 10];
         if (group3Lists[0] == null) {
-          group3Lists[0] = JmolConstants.getGroup3List();
-          group3Counts[0] = new int[JmolConstants.getGroup3Count() + 10];
+          group3Lists[0] = JC.getGroup3List();
+          group3Counts[0] = new int[JC.getGroup3Count() + 10];
         }
       }
       if (modelSet.getModelAuxiliaryInfoValue(ipt, "periodicOriginXyz") != null)
@@ -530,17 +533,17 @@ public final class ModelLoader {
     Model m = modelSet.models[baseModelIndex];
     viewer.setSmilesString((String) modelSet.modelSetAuxiliaryInfo.get("smilesString"));
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
-    StringXBuilder loadScript = (StringXBuilder)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
+    SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       String[] lines = TextFormat.split(loadState, '\n');
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);
         if (pt < 0 || pt != m.loadState.lastIndexOf(lines[i]))
           sb.append(lines[i]).appendC('\n');
       }
       m.loadState += m.loadScript.toString() + sb.toString();
-      m.loadScript = new StringXBuilder();
+      m.loadScript = new SB();
       m.loadScript.append("  ").appendSB(loadScript).append(";\n");
       
     }
@@ -739,7 +742,7 @@ public final class ModelLoader {
     int nRead = 0;
     Model[] models = modelSet.models;
     if (modelSet.modelCount > 0)
-      nullGroup = new Group(new Chain(modelSet.models[baseModelIndex], ' '), "",
+      nullGroup = new Group().setGroup(new Chain(modelSet.models[baseModelIndex], ' '), "",
           0, -1, -1);
     while (iterAtom.hasNext()) {
       nRead++;
@@ -814,7 +817,7 @@ public final class ModelLoader {
     return 0;
   }
 
-  private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
+  private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
                        Quadric[] ellipsoid, int occupancy, float bfactor,
@@ -826,8 +829,8 @@ public final class ModelLoader {
     if (atomName != null) {
       if (isPDB && atomName.indexOf('*') >= 0)
         atomName = atomName.replace('*', '\'');
-      specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
-      if (isPDB && specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+      specialAtomID = JC.lookupSpecialAtomID(atomName);
+      if (isPDB && specialAtomID == JC.ATOMID_ALPHA_CARBON
           && "CA".equalsIgnoreCase(group3)) // calcium
         specialAtomID = 0;
     }
@@ -869,7 +872,7 @@ public final class ModelLoader {
       firstAtomIndexes[groupCount] = modelSet.atomCount;
       chainOf[groupCount] = currentChain;
       group3Of[groupCount] = group3;
-      seqcodes[groupCount] = Group.getSeqcode(groupSequenceNumber,
+      seqcodes[groupCount] = Group.getSeqcodeFor(groupSequenceNumber,
           groupInsertionCode);
       ++groupCount;      
     }
@@ -904,7 +907,7 @@ public final class ModelLoader {
     modelSet.defaultCovalentMad = mad;
   }
   
-  private List<Bond> vStereo;
+  private JmolList<Bond> vStereo;
   private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -927,9 +930,9 @@ public final class ModelLoader {
     if (isNear || isFar) {
       bond = modelSet.bondMutually(atom1, atom2, (is2D ? order : 1), modelSet.getDefaultMadFromOrder(1), 0);
       if (vStereo == null) {
-        vStereo = new ArrayList<Bond>();
+        vStereo = new  JmolList<Bond>();
       }
-      vStereo.add(bond);
+      vStereo.addLast(bond);
     } else {
       bond = modelSet.bondMutually(atom1, atom2, order, modelSet.getDefaultMadFromOrder(order), 0);
       if (bond.isAromatic()) {
@@ -945,9 +948,8 @@ public final class ModelLoader {
   /**
    * Pull in all spans of helix, etc. in the file(s)
    * 
-   * We do turn first, because sometimes a group is defined
-   * twice, and this way it gets marked as helix or sheet
-   * if it is both one of those and turn.
+   * We do turn first, because sometimes a group is defined twice, and this way
+   * it gets marked as helix or sheet if it is both one of those and turn.
    * 
    * @param adapter
    * @param atomSetCollection
@@ -956,41 +958,42 @@ public final class ModelLoader {
                                            Object atomSetCollection) {
     JmolAdapterStructureIterator iterStructure = adapter
         .getStructureIterator(atomSetCollection);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() != EnumStructure.TURN) {
-          defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getSubstructureType(),
-              iterStructure.getStructureID(), 
-              iterStructure.getSerialID(),
-              iterStructure.getStrandCount(),
-              iterStructure.getStartChainID(), iterStructure
-                  .getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-        }
-      }
+    if (iterStructure == null)
+      return;
+    BS bs = iterStructure.getStructuredModels();
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        structuresDefinedInFile.set(baseModelIndex + i);
+    while (iterStructure.hasNext()) {
+      if (iterStructure.getStructureType() != EnumStructure.TURN)
+        setStructure(iterStructure);
+    }
 
     // define turns LAST. (pulled by the iterator first)
     // so that if they overlap they get overwritten:
 
     iterStructure = adapter.getStructureIterator(atomSetCollection);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() == EnumStructure.TURN)
-          defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getSubstructureType(),
-              iterStructure.getStructureID(), 1, 1,
-              iterStructure.getStartChainID(), iterStructure
-                  .getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-      }
+    while (iterStructure.hasNext()) {
+      if (iterStructure.getStructureType() == EnumStructure.TURN)
+        setStructure(iterStructure);
+    }
   }
   
-  private BitSet structuresDefinedInFile = new BitSet();
+  private void setStructure(JmolAdapterStructureIterator iterStructure) {
+    int i = iterStructure.getModelIndex();
+    EnumStructure t = iterStructure.getSubstructureType();
+    String id = iterStructure.getStructureID();
+    int serID = iterStructure.getSerialID();
+    int count = iterStructure.getStrandCount();
+    iterStructure.getSerialID();
+    defineStructure(i, t, id, serID, count, iterStructure.getStartChainID(),
+          iterStructure.getStartSequenceNumber(), iterStructure
+              .getStartInsertionCode(), iterStructure.getEndChainID(),
+          iterStructure.getEndSequenceNumber(), iterStructure
+              .getEndInsertionCode());
+  }
+
+  private BS structuresDefinedInFile = new BS();
 
   private void defineStructure(int modelIndex, EnumStructure subType,
                                String structureID, int serialID,
@@ -999,9 +1002,8 @@ public final class ModelLoader {
                                char startInsertionCode, char endChainID,
                                int endSequenceNumber, char endInsertionCode) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
-    int startSeqCode = Group.getSeqcode(startSequenceNumber,
-        startInsertionCode);
-    int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);
+    int startSeqCode = Group.getSeqcodeFor(startSequenceNumber, startInsertionCode);
+    int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
     Model[] models = modelSet.models;
     if (modelIndex >= 0 || isTrajectory) { //from PDB file
       if (isTrajectory)
@@ -1036,6 +1038,7 @@ public final class ModelLoader {
 
     if (someModelsHaveUnitcells) {
       modelSet.unitCells = new SymmetryInterface[modelSet.modelCount];
+      modelSet.haveUnitCells = true;
       boolean haveMergeCells = (mergeModelSet != null && mergeModelSet.unitCells != null);
       for (int i = 0; i < modelSet.modelCount; i++) {
         if (haveMergeCells && i < baseModelCount) {
@@ -1048,7 +1051,7 @@ public final class ModelLoader {
       }
     }
     if (appendNew && modelSet.someModelsHaveSymmetry) {
-      modelSet.getAtomBits(Token.symmetry, null);
+      modelSet.getAtomBits(T.symmetry, null);
       Atom[] atoms = modelSet.atoms;
       for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < modelSet.atomCount; iAtom++) {
         if (atoms[iAtom].modelIndex != iModel) {
@@ -1079,7 +1082,7 @@ public final class ModelLoader {
         if (modelSet.isTrajectory(imodel)) {
           c = modelSet.getUnitCell(imodel);
           if (c != null && c.getCoordinatesAreFractional() && c.isSupercell()) {
-            Point3f[] list = modelSet.trajectorySteps.get(imodel);
+            P3[] list = modelSet.trajectorySteps.get(imodel);
             for (int i = list.length; --i >= 0;)
               if (list[i] != null)
                 c.toSupercell(list[i]);
@@ -1095,8 +1098,8 @@ public final class ModelLoader {
     // 1. apply CONECT records and set bsExclude to omit them
     // 2. apply stereochemistry from JME
 
-    BitSet bsExclude = (modelSet.getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
-        : new BitSet());
+    BS bsExclude = (modelSet.getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
+        : new BS());
     if (bsExclude != null)
       modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
 
@@ -1106,7 +1109,7 @@ public final class ModelLoader {
     boolean symmetryAlreadyAppliedToBonds = viewer.getApplySymmetryToBonds();
     boolean doAutoBond = viewer.getAutoBond();
     boolean forceAutoBond = viewer.getForceAutoBond();
-    BitSet bs = null;
+    BS bs = null;
     boolean autoBonding = false;
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
@@ -1143,7 +1146,7 @@ public final class ModelLoader {
         autoBonding = true;
         if (merging || modelCount > 1) {
           if (bs == null)
-            bs = BitSetUtil.newBitSet(modelSet.atomCount);
+            bs = BSUtil.newBitSet(modelSet.atomCount);
           if (i == baseModelIndex || !isTrajectory)
             bs.or(models[i].bsAtoms);
         }
@@ -1153,6 +1156,7 @@ public final class ModelLoader {
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
+      modelSet.initializeBspf();
       Logger
           .info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
     }
@@ -1175,6 +1179,9 @@ public final class ModelLoader {
       if (modelSet.modelSetAuxiliaryInfo != null) {
         modelSet.modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
         modelSet.modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+        for (int i = 0; i < group3Counts.length; i++)
+          if (group3Counts[i] == null)
+            group3Counts[i] = new int[0];
       }
   }
 
@@ -1210,7 +1217,7 @@ public final class ModelLoader {
     }
     String key;
     if (group == null) {
-      group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+      group = new Group().setGroup(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
       key = "o>";
     } else {
       key = (group.isProtein() ? "p>" : group.isNucleic() ? "n>" : group
@@ -1298,9 +1305,9 @@ public final class ModelLoader {
   }
 
   private void findElementsPresent() {
-    modelSet.elementsPresent = new BitSet[modelSet.modelCount];
+    modelSet.elementsPresent = new BS[modelSet.modelCount];
     for (int i = 0; i < modelSet.modelCount; i++)
-      modelSet.elementsPresent[i] = BitSetUtil.newBitSet(64);
+      modelSet.elementsPresent[i] = BSUtil.newBitSet(64);
     for (int i = modelSet.atomCount; --i >= 0;) {
       int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
       if (n >= Elements.elementNumberMax)
@@ -1319,7 +1326,7 @@ public final class ModelLoader {
     // 2) explicit stereochemistry
     
     if (vStereo != null) {
-      BitSet bsToTest = new BitSet();
+      BS bsToTest = new BS();
       bsToTest.setBits(baseAtomIndex, modelSet.atomCount);
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = vStereo.get(i);
@@ -1329,7 +1336,7 @@ public final class ModelLoader {
           dz2 /= 3;
         //float dz1 = dz2/3;
         //b.atom1.z += dz1;
-        BitSet bs = JmolMolecule.getBranchBitSet(modelSet.atoms, b.atom2.index, bsToTest, null, b.atom1.index, false, true);
+        BS bs = JmolMolecule.getBranchBitSet(modelSet.atoms, b.atom2.index, bsToTest, null, b.atom1.index, false, true);
         bs.set(b.atom2.index); // ring structures
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
           modelSet.atoms[j].z += dz2;
@@ -1343,12 +1350,12 @@ public final class ModelLoader {
   }
 
   private void set2dZ(int iatom1, int iatom2) {
-    BitSet atomlist = BitSetUtil.newBitSet(iatom2);
-    BitSet bsBranch = new BitSet();
-    Vector3f v = new Vector3f();
-    Vector3f v0 = Vector3f.new3(0, 1, 0);
-    Vector3f v1 = new Vector3f();
-    BitSet bs0 = new BitSet();
+    BS atomlist = BSUtil.newBitSet(iatom2);
+    BS bsBranch = new BS();
+    V3 v = new V3();
+    V3 v0 = V3.new3(0, 1, 0);
+    V3 v1 = new V3();
+    BS bs0 = new BS();
     bs0.setBits(iatom1, iatom2);
     for (int i = iatom1; i < iatom2; i++)
       if (!atomlist.get(i) && !bsBranch.get(i)) {
@@ -1368,12 +1375,12 @@ public final class ModelLoader {
    * @param v1 
    * @return   atom bitset
    */
-  private BitSet getBranch2dZ(int atomIndex, int atomIndexNot, BitSet bs0, 
-                              BitSet bsBranch, Vector3f v, Vector3f v0, Vector3f v1) {
-    BitSet bs = BitSetUtil.newBitSet(modelSet.atomCount);
+  private BS getBranch2dZ(int atomIndex, int atomIndexNot, BS bs0, 
+                              BS bsBranch, V3 v, V3 v0, V3 v1) {
+    BS bs = BSUtil.newBitSet(modelSet.atomCount);
     if (atomIndex < 0)
       return bs;
-    BitSet bsToTest = new BitSet();
+    BS bsToTest = new BS();
     bsToTest.or(bs0);
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
@@ -1381,9 +1388,9 @@ public final class ModelLoader {
     return bs;
   }
 
-  private static void setBranch2dZ(Atom atom, BitSet bs,
-                                            BitSet bsToTest, Vector3f v,
-                                            Vector3f v0, Vector3f v1) {
+  private static void setBranch2dZ(Atom atom, BS bs,
+                                            BS bsToTest, V3 v,
+                                            V3 v0, V3 v1) {
     int atomIndex = atom.index;
     if (!bsToTest.get(atomIndex))
       return;
@@ -1401,7 +1408,7 @@ public final class ModelLoader {
     }
   }
 
-  private static void setAtom2dZ(Atom atomRef, Atom atom2, Vector3f v, Vector3f v0, Vector3f v1) {
+  private static void setAtom2dZ(Atom atomRef, Atom atom2, V3 v, V3 v0, V3 v1) {
     v.setT(atom2);
     v.sub(atomRef);
     v.z = 0;
@@ -1413,15 +1420,25 @@ public final class ModelLoader {
 
   ///////////////  shapes  ///////////////
   
-  private void finalizeShapes() {
+  private void finalizeShapes(JmolList<ModelSettings> shapeSettings) {
     modelSet.shapeManager = viewer.getShapeManager();
+    modelSet.shapeManager.setModelSet(modelSet);
+    modelSet.setBsHidden(viewer.getHiddenSet());
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
     if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       modelSet.assignAromaticBonds(false);
     if (merging && baseModelCount == 1)
-        modelSet.shapeManager.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
+        modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
+    if (shapeSettings != null) {
+      for (int i = 0; i < shapeSettings.size(); i++) {
+        ModelSettings ss = shapeSettings.get(i);
+        ss.offset(baseModelIndex, baseAtomIndex);
+        ss.createShape(modelSet);
+      }
+    }
+    
   }
 
   /**
@@ -1438,7 +1455,7 @@ public final class ModelLoader {
    * 
    * @param bsDeletedAtoms
    */
-  public void deleteAtoms(BitSet bsDeletedAtoms) {
+  public void deleteAtoms(BS bsDeletedAtoms) {
     doRemoveAddedHydrogens = true;
     if (doRemoveAddedHydrogens) {
       // get map
@@ -1483,13 +1500,13 @@ public final class ModelLoader {
 
   
   public static void createAtomDataSet(Viewer viewer, ModelSet modelSet, int tokType, Object atomSetCollection,
-                                BitSet bsSelected) {
+                                BS bsSelected) {
     if (atomSetCollection == null)
       return;
     // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
     JmolAdapter adapter = viewer.getModelAdapter();
-    Point3f pt = new Point3f();
-    Point3f v = new Point3f();
+    P3 pt = new P3();
+    P3 v = new P3();
     Atom[] atoms = modelSet.atoms;
     float tolerance = viewer.getLoadAtomDataTolerance();
     if (modelSet.unitCells != null)
@@ -1501,7 +1518,7 @@ public final class ModelLoader {
         }
     int i = -1;
     int n = 0;
-    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer
+    boolean loadAllData = (BSUtil.cardinalityOf(bsSelected) == viewer
         .getAtomCount());
     for (JmolAdapterAtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
@@ -1511,7 +1528,7 @@ public final class ModelLoader {
       if (Float.isNaN(x + y + z))
         continue;
 
-      if (tokType == Token.xyz) {
+      if (tokType == T.xyz) {
         // we are loading selected coordinates only
         i = bsSelected.nextSetBit(i + 1);
         if (i < 0)
@@ -1524,11 +1541,11 @@ public final class ModelLoader {
         continue;
       }
       pt.set(x, y, z);
-      BitSet bs = BitSetUtil.newBitSet(modelSet.atomCount);
+      BS bs = BSUtil.newBitSet(modelSet.atomCount);
       modelSet.getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (loadAllData) {
-        n = BitSetUtil.cardinalityOf(bs);
+        n = BSUtil.cardinalityOf(bs);
         if (n == 0) {
           Logger.warn("createAtomDataSet: no atom found at position " + pt);
           continue;
@@ -1538,7 +1555,7 @@ public final class ModelLoader {
         }
       }
       switch (tokType) {
-      case Token.vibxyz:
+      case T.vibxyz:
         float vx = iterAtom.getVectorX();
         float vy = iterAtom.getVectorY();
         float vz = iterAtom.getVectorZ();
@@ -1547,19 +1564,19 @@ public final class ModelLoader {
         v.set(vx, vy, vz);
         if (Logger.debugging)
           Logger.info("xyz: " + pt + " vib: " + v);
-        modelSet.setAtomCoord(bs, Token.vibxyz, v);
+        modelSet.setAtomCoords(bs, T.vibxyz, v);
         break;
-      case Token.occupancy:
+      case T.occupancy:
         // [0 to 100], default 100
         modelSet.setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null,
             null);
         break;
-      case Token.partialcharge:
+      case T.partialcharge:
         // anything but NaN, default NaN
         modelSet.setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null,
             null, null);
         break;
-      case Token.temperature:
+      case T.temperature:
         // anything but NaN but rounded to 0.01 precision and stored as a short (-32000 - 32000), default NaN
         modelSet.setAtomProperty(bs, tokType, 0, iterAtom.getBfactor(), null, null, null);
         break;
@@ -1567,12 +1584,12 @@ public final class ModelLoader {
     }
     //finally:
     switch (tokType) {
-    case Token.vibxyz:
+    case T.vibxyz:
       String vibName = adapter.getAtomSetName(atomSetCollection, 0);
       Logger.info("_vibrationName = " + vibName);
       viewer.setStringProperty("_vibrationName", vibName);
       break;
-    case Token.xyz:
+    case T.xyz:
       Logger.info(n + " atom positions read");
       modelSet.recalculateLeadMidpointsAndWingVectors(-1);
       break;

@@ -21,7 +21,6 @@ import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.util.Escape;
 import org.jmol.io.JmolBinary;
-import org.jmol.io2.ZipUtil;
 import org.jmol.viewer.Viewer;
 
 public class Test implements JmolStatusListener{
@@ -198,7 +197,7 @@ public class Test implements JmolStatusListener{
 	}
 
 	public void notifyCallback(EnumCallback message, Object[] data) {
-		System.out.println("callback " + message + ": " + Escape.escape(data));
+		System.out.println("callback " + message + ": " + Escape.e(data));
 	}
 
 	public boolean notifyEnabled(EnumCallback type) {

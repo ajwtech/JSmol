@@ -90,7 +90,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
   }
 
   private static Inflater newInflater() {
-    return new Inflater(true);
+    return (Inflater) new Inflater().init(0, true);
   }
 
   private byte[] byteTest = new byte[] { 0x20 };
@@ -219,7 +219,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
     }
     switch (entry.method) {
     case DEFLATED:
-      len = super.read(b, off, len);
+      len = readInf(b, off, len);
       if (len == -1) {
         readEnd(entry);
         entryEOF = true;
@@ -237,7 +237,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
       if (len > remaining) {
         len = (int) remaining;
       }
-      len = in.read(b, off, len);
+      len = in.read(b, off, len); 
       if (len == -1) {
         throw new ZipException("unexpected EOF");
       }
@@ -334,7 +334,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
     // Force to use UTF-8 if the EFS bit is ON, even the cs is NOT UTF-8
     ZipEntry e = createZipEntry(((flag & ZipConstants64.EFS) != 0) ? toStringUTF8(
         b, len)
-        : toString(b, len));
+        : toStringb2(b, len));
     // now get the remaining fields for the entry
     if ((flag & 1) == 1) {
       throw new ZipException("encrypted ZIP entry not supported");
@@ -384,16 +384,16 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
     return e;
   }
 
-  private String toString(byte[] b2, int len) {
-    return new String(b2, 0, len);
-  }
-
   private String toStringUTF8(byte[] b2, int len) {
     try {
       return new String(b2, 0, len, zc);
     } catch (UnsupportedEncodingException e) {
-      return toString(b2, len);
+      return toStringb2(b2, len);
     }
+  }
+
+  private String toStringb2(byte[] b2, int len) {
+    return new String(b2, 0, len);
   }
 
   /**
@@ -411,15 +411,15 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
    * Reads end of deflated entry as well as EXT descriptor if present.
    */
   private void readEnd(ZipEntry e) throws IOException {
-    int n = inf.getRemaining();
+    int n = inf.getAvailIn();
     if (n > 0) {
       ((PushbackInputStream) in).unread(buf, len - n, n);
       this.eof = false;
     }
     if ((flag & 8) == 8) {
       /* "Data Descriptor" present */
-      if (inf.getBytesWritten() > ZipConstants64.ZIP64_MAGICVAL
-          || inf.getBytesRead() > ZipConstants64.ZIP64_MAGICVAL) {
+      if (inf.getTotalOut() > ZipConstants64.ZIP64_MAGICVAL
+          || inf.getTotalIn() > ZipConstants64.ZIP64_MAGICVAL) {
         // ZIP64 format
         readFully(tmpbuf, 0, ZipConstants64.ZIP64_EXTHDR);
         long sig = get32(tmpbuf, 0);
@@ -452,13 +452,13 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
         }
       }
     }
-    if (e.size != inf.getBytesWritten()) {
+    if (e.size != inf.getTotalOut()) {
       throw new ZipException("invalid entry size (expected " + e.size
-          + " but got " + inf.getBytesWritten() + " bytes)");
+          + " but got " + inf.getTotalOut() + " bytes)");
     }
-    if (e.csize != inf.getBytesRead()) {
+    if (e.csize != inf.getTotalIn()) {
       throw new ZipException("invalid entry compressed size (expected "
-          + e.csize + " but got " + inf.getBytesRead() + " bytes)");
+          + e.csize + " but got " + inf.getTotalIn() + " bytes)");
     }
     if (e.crc != crc.getValue()) {
       throw new ZipException("invalid entry CRC (expected 0x"

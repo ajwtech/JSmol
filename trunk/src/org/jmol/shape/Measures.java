@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-24 00:54:59 -0500 (Wed, 24 Oct 2012) $
- * $Revision: 17678 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -30,41 +30,36 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
-import org.jmol.util.StringXBuilder;
 import org.jmol.modelset.TickInfo;
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
+import org.jmol.viewer.JC;
+import org.jmol.script.T;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
-import java.util.List;
+
 import java.util.Hashtable;
 import java.util.Map;
 
 
-public class Measures extends Shape implements JmolMeasurementClient {
+public class Measures extends AtomShape implements JmolMeasurementClient {
 
-  private BitSet bsColixSet;
-  private BitSet bsSelected;
+  private BS bsSelected;
   private String strFormat;
   private boolean mustBeConnected = false;
   private boolean mustNotBeConnected = false;
   private RadiusData radiusData;
   private Boolean intramolecular;
 
-  private Atom[] atoms;
-
   public int measurementCount = 0;
-  public final List<Measurement> measurements = new ArrayList<Measurement>();
+  public final JmolList<Measurement> measurements = new  JmolList<Measurement>();
   public MeasurementPending measurementPending;
   
-  public short mad = (short)-1;
   public short colix; // default to none in order to contrast with background
   
   public JmolFont font3d;
@@ -84,17 +79,16 @@ public class Measures extends Shape implements JmolMeasurementClient {
   
   @Override
   public void initShape() {
-    super.initShape();
-    font3d = gdata.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JC.MEASURE_DEFAULT_FONTSIZE);
   }
 
   @Override
-  protected void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BS bsSelected) {
     mad = (short)size;
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsIgnored) {
+  public void setProperty(String propertyName, Object value, BS bsIgnored) {
     // the following can be used with "select measures ({bitset})"
     
     Measurement mt;
@@ -105,7 +99,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     
     if ("color" == propertyName) {
-      setColor(value == null ? Colix.INHERIT_ALL : Colix.getColixO(value));
+      setColor(value == null ? C.INHERIT_ALL : C.getColixO(value));
       return;
     } 
 
@@ -135,17 +129,17 @@ public class Measures extends Shape implements JmolMeasurementClient {
         || "refreshTrajectories" == propertyName) {
       for (int i = measurements.size(); --i >= 0;)
         if ((mt = measurements.get(i)) != null 
-            && (isRefresh || mt.isTrajectory()))
+            && (isRefresh || mt.isTrajectory))
           mt.refresh();
       return;
     } 
 
     if ("select" == propertyName) {
-      BitSet bs = (BitSet) value;
-      if (bs == null || BitSetUtil.cardinalityOf(bs) == 0) {
+      BS bs = (BS) value;
+      if (bs == null || BSUtil.cardinalityOf(bs) == 0) {
         bsSelected = null;
       } else {
-        bsSelected = new BitSet();
+        bsSelected = new BS();
         bsSelected.or(bs);
       }
       return;
@@ -185,28 +179,30 @@ public class Measures extends Shape implements JmolMeasurementClient {
       strFormat = md.strFormat;
       if (md.isAll) {
         if (tickInfo != null)
-          define(md, Token.delete);
+          define(md, T.delete);
         define(md, md.tokAction);
         setIndices();
         return;
       }
       Measurement pt = setSingleItem(md.points);
       switch (md.tokAction) {
-      case Token.delete:
+      case T.delete:
         defineAll(Integer.MIN_VALUE, pt, true, false, false);
         setIndices();
         break;
-      case Token.on:
+      case T.on:
         showHideM(pt, false);          
         break;
-      case Token.off:
+      case T.off:
         showHideM(pt, true);
         break;
-      case Token.define:
+      case T.define:
         deleteM(pt);
+        if (md.colix != 0)
+          pt.colix = md.colix;
         toggle(pt);        
         break;
-      case Token.opToggle:
+      case T.opToggle:
         toggle(pt);        
       }
       return;
@@ -275,14 +271,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
     
   }
 
-  private Measurement setSingleItem(List<Object> vector) {
+  private Measurement setSingleItem(JmolList<Object> vector) {
     Point3fi[] points = new Point3fi[4];
     int[] indices = new int[5];
     indices[0] = vector.size();
     for (int i = vector.size(); --i >= 0; ) {
       Object value = vector.get(i);
-      if (value instanceof BitSet) {
-        int atomIndex = ((BitSet) value).nextSetBit(0);
+      if (value instanceof BS) {
+        int atomIndex = ((BS) value).nextSetBit(0);
         if (atomIndex < 0)
           return null;
         indices[i + 1] = atomIndex;
@@ -324,15 +320,15 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private void setColor(short colix) {
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = new BS();
       if (bsSelected == null)
         this.colix = colix;
     Measurement mt;
     for (int i = measurements.size(); --i >= 0; )
       if ((mt = measurements.get(i)) != null
           && (bsSelected != null && bsSelected.get(i) || bsSelected == null
-              && (colix == Colix.INHERIT_ALL || mt.getColix() == Colix.INHERIT_ALL))) {
-        mt.setColix(colix);
+              && (colix == C.INHERIT_ALL || mt.colix == C.INHERIT_ALL))) {
+        mt.colix = colix;
         bsColixSet.set(i);
       }
   }
@@ -348,13 +344,13 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private void showHide(boolean isHide) {
     for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        measurements.get(i).setHidden(isHide);
+        measurements.get(i).isHidden = isHide;
   }
 
   private void showHideM(Measurement m, boolean isHide) {
     int i = find(m);
     if (i >= 0)
-      measurements.get(i).setHidden(isHide);
+      measurements.get(i).isHidden = isHide;
   }
   
   private void toggle(Measurement m) {
@@ -362,7 +358,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     Measurement mt;
-    if (i >= 0 && !(mt = measurements.get(i)).isHidden()) // delete it and all like it
+    if (i >= 0 && !(mt = measurements.get(i)).isHidden) // delete it and all like it
       defineAll(i, mt, true, false, false);
     else // define OR turn on if measureAllModels
       defineAll(-1, m, false, true, false);
@@ -372,7 +368,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private void toggleOn(int[] indices) {
     radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
-    bsSelected = new BitSet();
+    bsSelected = new BS();
     defineAll(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
@@ -395,8 +391,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
   }
 
-  private void defineAll(int iPt, Measurement m, boolean isDelete, boolean isShow,
-                      boolean doSelect) {
+  private void defineAll(int iPt, Measurement m, boolean isDelete,
+                         boolean isShow, boolean doSelect) {
     if (!viewer.getMeasureAllModelsFlag()) {
       if (isDelete) {
         if (iPt == Integer.MIN_VALUE)
@@ -415,25 +411,17 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     // we create a set of atoms involving all atoms with the
     // same atom number in each model
-    List<Object> points = new ArrayList<Object>();
+    JmolList<Object> points = new  JmolList<Object>();
     int nPoints = m.getCount();
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(
-          Token.atomno, Integer.valueOf(atoms[atomIndex].getAtomNumber()))
-          : (Object) m.getAtom(i));
+      points.addLast(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
+          Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
+          .getAtom(i));
     }
-    MeasurementData md = new MeasurementData(viewer, points, 
-                   tokAction,
-                   radiusData, 
-                   strFormat, null,
-                   tickInfo,
-                   mustBeConnected,
-                   mustNotBeConnected,
-                   intramolecular, true);
-    define(md, (isDelete ? Token.delete 
-        : Token.define
-        ));
+    define((new MeasurementData(viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
+        mustBeConnected, mustNotBeConnected, intramolecular, true),
+        (isDelete ? T.delete : T.define));
   }
 
   private int find(Measurement m) {
@@ -442,7 +430,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private void setIndices() {
     for (int i = 0; i < measurementCount; i++)
-      measurements.get(i).setIndex(i);
+      measurements.get(i).index = i;
   }
   
   private int tokAction;
@@ -457,15 +445,15 @@ public class Measures extends Shape implements JmolMeasurementClient {
     // all atom bitsets have been iterated
     int iThis = find(m);
     if (iThis >= 0) {
-      if (tokAction == Token.delete) {
+      if (tokAction == T.delete) {
         deleteI(iThis);
       } else if (strFormat != null) {
         measurements.get(iThis).formatMeasurementAs(strFormat,
             null, true);
       } else {
-        measurements.get(iThis).setHidden(tokAction == Token.off);
+        measurements.get(iThis).isHidden = (tokAction == T.off);
       }
-    } else if (tokAction == Token.define || tokAction == Token.opToggle) {
+    } else if (tokAction == T.define || tokAction == T.opToggle) {
       m.tickInfo = (tickInfo == null ? defaultTickInfo : tickInfo);
       defineMeasurement(-1, m, true);
     }
@@ -478,14 +466,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
     if (i == Integer.MIN_VALUE)
       i = find(m);
     if (i >= 0) {
-      measurements.get(i).setHidden(false);
+      measurements.get(i).isHidden = false;
       if (doSelect)
         bsSelected.set(i);
       return;
     }
-    Measurement measureNew = new Measurement(modelSet, m, value, colix,
+    Measurement measureNew = new Measurement(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
-    measurements.add(measureNew);
+    measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
         measureNew.toVector(false).toString(), measureNew.getValue());
   }
@@ -511,10 +499,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
       measurements.get(i).reformatDistanceIfSelected();    
   }
   
-  private List<Map<String, Object>> getAllInfo() {
-    List<Map<String, Object>> info = new ArrayList<Map<String,Object>>();
+  private JmolList<Map<String, Object>> getAllInfo() {
+    JmolList<Map<String, Object>> info = new  JmolList<Map<String,Object>>();
     for (int i = 0; i< measurementCount; i++) {
-      info.add(getInfo(i));
+      info.addLast(getInfo(i));
     }
     return info;
   }
@@ -536,7 +524,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
         : "dihedral"));
     info.put("strMeasurement", m.getString());
     info.put("count", Integer.valueOf(count));
-    info.put("value", new Float(m.getValue()));
+    info.put("value", Float.valueOf(m.getValue()));
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null) {
       info.put("ticks", tickInfo.ticks);
@@ -545,33 +533,34 @@ public class Measures extends Shape implements JmolMeasurementClient {
       if (tickInfo.tickLabelFormats != null)
         info.put("tickLabelFormats", tickInfo.tickLabelFormats);
       if (!Float.isNaN(tickInfo.first))
-        info.put("tickStart", new Float(tickInfo.first));
+        info.put("tickStart", Float.valueOf(tickInfo.first));
     }
-    List<Map<String, Object>> atomsInfo = new ArrayList<Map<String,Object>>();
+    JmolList<Map<String, Object>> atomsInfo = new  JmolList<Map<String,Object>>();
     for (int i = 1; i <= count; i++) {
       Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
       atomInfo.put("_ipt", Integer.valueOf(atomIndex));
-      atomInfo.put("coord", Escape.escapePt(m.getAtom(i)));
+      atomInfo.put("coord", Escape.eP(m.getAtom(i)));
       atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
-      atomsInfo.add(atomInfo);
+      atomsInfo.addLast(atomInfo);
     }
     info.put("atoms", atomsInfo);
     return info;
   }
 
-  private String getInfoAsString(int index) {
+  @Override
+  public String getInfoAsString(int index) {
     return measurements.get(index).getInfoAsString(null);
   }
   
   public void setVisibilityInfo() {
-    BitSet bsModels = viewer.getVisibleFramesBitSet();
+    BS bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
       Measurement m = measurements.get(i);
-      m.setVisible(false);
-      if(mad == 0 || m.isHidden())
+      m.isVisible = false;
+      if(mad == 0 || m.isHidden)
         continue;
       for (int iAtom = m.getCount(); iAtom > 0; iAtom--) {
         int atomIndex = m.getAtomIndex(iAtom);
@@ -584,66 +573,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
             continue out;
         }
       }
-      m.setVisible(true);
+      m.isVisible = true;
     }
   }
   
- @Override
-public String getShapeState() {
-    StringXBuilder commands = new StringXBuilder();
-    appendCmd(commands, "measures delete");
-    for (int i = 0; i < measurementCount; i++)
-      appendCmd(commands, getState(i));
-    appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
-    appendCmd(commands, getFontCommand("measures", font3d));
-    int nHidden = 0;
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    BitSet bs = BitSetUtil.newBitSet(measurementCount);
-    for (int i = 0; i < measurementCount; i++) {
-      Measurement m = measurements.get(i);
-      if (m.isHidden()) {
-        nHidden++;
-        bs.set(i);
-      }
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommandUnk("measure", m.getColix()));
-      if (m.getStrFormat() != null)
-        setStateInfo(temp, i, "measure "
-            + Escape.escapeStr(m.getStrFormat()));
-    }
-    if (nHidden > 0)
-      if (nHidden == measurementCount)
-        appendCmd(commands, "measures off; # lines and numbers off");
-      else
-        for (int i = 0; i < measurementCount; i++)
-          if (bs.get(i))
-            setStateInfo(temp, i, "measure off");
-    if (defaultTickInfo != null) {
-      commands.append(" measure ");
-      FontLineShape.addTickInfo(commands, defaultTickInfo, true);
-      commands.append(";\n");
-    }
-    if (mad >= 0)
-      commands.append(" set measurements " + (mad / 2000f)).append(";\n");
-    String s = getShapeCommandsSel(temp, null, "select measures");
-    if (s != null && s.length() != 0) {
-      commands.append(s);
-      appendCmd(commands, "select measures ({null})");
-    }
-    
-    return commands.toString();
+  @Override
+  public String getShapeState() {
+    return viewer.getMeasurementState(this, measurements, 
+        measurementCount, font3d, defaultTickInfo);
   }
   
-  private String getState(int index) {
-    Measurement m = measurements.get(index);
-    int count = m.getCount();
-    StringXBuilder sb = new StringXBuilder().append("measure");
-    TickInfo tickInfo = m.getTickInfo();
-    if (tickInfo != null)
-      FontLineShape.addTickInfo(sb, tickInfo, true);
-    for (int i = 1; i <= count; i++)
-      sb.append(" ").append(m.getLabel(i, true, true));
-    sb.append("; # " + getInfoAsString(index));
-    return sb.toString();
-  }
 }

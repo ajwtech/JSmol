@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Revision: 17937 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -27,8 +27,8 @@ package org.jmol.g3d;
 //import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quadric;
 import org.jmol.util.Shader;
 
@@ -57,10 +57,12 @@ import org.jmol.util.Shader;
  */
 public class SphereRenderer {
 
-  Graphics3D g3d;
+  private final Graphics3D g3d;
+  private final Shader shader;
   
   SphereRenderer(Graphics3D g3d) {
     this.g3d = g3d;
+    shader = g3d.shader;
   }
 
   private int minX, maxX, minY, maxY, minZ, maxZ;
@@ -76,7 +78,7 @@ public class SphereRenderer {
   private double[] coef;
   private Matrix4f mDeriv;
   private int selectedOctant;
-  private Point3i[] octantPoints;
+  private P3i[] octantPoints;
   private int planeShade;
   private int[] zbuf;
   private int width;
@@ -88,7 +90,7 @@ public class SphereRenderer {
 
   void render(int[] shades, boolean tScreened, int diameter, int x, int y,
               int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
-              int selectedOctant, Point3i[] octantPoints, boolean addAllPixels) {
+              int selectedOctant, P3i[] octantPoints, boolean addAllPixels) {
     if (z == 1)
       return;
     width = g3d.width;
@@ -109,7 +111,7 @@ public class SphereRenderer {
     if (maxZ < slab || minZ > depth)
       return;
     
-    Shader.nOut = Shader.nIn = 0;
+    shader.nOut = shader.nIn = 0;
     zbuf = g3d.zbuf;
     this.addAllPixels = addAllPixels;
     offsetPbufBeginLine = width * y + x;
@@ -147,12 +149,12 @@ public class SphereRenderer {
     //System.out.println("sphere3d " + nIn + " " + nOut + " " + (1.0 * nIn / (nIn + nOut)));
   } 
   
-  private static int[] getSphereShape(int diameter) {
+  private int[] getSphereShape(int diameter) {
     int[] ss;
-    return ((ss = Shader.sphereShapeCache[diameter - 1]) == null ? createSphereShape(diameter): ss);
+    return ((ss = shader.sphereShapeCache[diameter - 1]) == null ? createSphereShape(diameter): ss);
   }
 
-  private synchronized static int[] createSphereShape(int diameter) {
+  private int[] createSphereShape(int diameter) {
     int countSE = 0;
     boolean oddDiameter = (diameter & 1) != 0;
     float radiusF = diameter / 2.0f;
@@ -184,10 +186,10 @@ public class SphereRenderer {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int shadeIndexSE = Shader.getDitheredNoisyShadeIndex( x,  y, z, radiusF);
-          int shadeIndexSW = Shader.getDitheredNoisyShadeIndex(-x,  y, z, radiusF);
-          int shadeIndexNE = Shader.getDitheredNoisyShadeIndex( x, -y, z, radiusF);
-          int shadeIndexNW = Shader.getDitheredNoisyShadeIndex(-x, -y, z, radiusF);
+          int shadeIndexSE = shader.getShadeN( x,  y, z, radiusF);
+          int shadeIndexSW = shader.getShadeN(-x,  y, z, radiusF);
+          int shadeIndexNE = shader.getShadeN( x, -y, z, radiusF);
+          int shadeIndexNW = shader.getShadeN(-x, -y, z, radiusF);
           int packed = (height |
                         (shadeIndexSE << 7) |
                         (shadeIndexSW << 13) |
@@ -198,7 +200,7 @@ public class SphereRenderer {
       }
       sphereShape[offset - 1] |= 0x80000000;
     }
-    return Shader.sphereShapeCache[diameter - 1] = sphereShape;
+    return shader.sphereShapeCache[diameter - 1] = sphereShape;
   }
 
   private void renderShapeUnclipped(int[] sphereShape) {
@@ -377,12 +379,12 @@ public class SphereRenderer {
 
   private void renderLarge() {
     if (mat != null) {
-      if (Shader.ellipsoidShades == null)
-        Shader.createEllipsoidShades();
+      if (shader.ellipsoidShades == null)
+        shader.createEllipsoidShades();
       if (octantPoints != null)
         setPlaneDerivatives();
-    } else if (!Shader.sphereShadingCalculated)
-      Shader.calcSphereShading();
+    } else if (!shader.sphereShadingCalculated)
+      shader.calcSphereShading();
     renderQuadrant(-1, -1);
     renderQuadrant(-1, 1);
     renderQuadrant(1, -1);
@@ -438,15 +440,16 @@ public class SphereRenderer {
           if (zbuf[offset] <= z0)
             continue;
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          g3d.addPixel(offset,z0, shades[Shader.sphereShadeIndexes[((y8 << 8) + x8)]]);
+          g3d.addPixel(offset,z0, shades[shader.sphereShadeIndexes[((y8 << 8) + x8)]]);
         }
       }
     }
   }
 
-  private final Point3f ptTemp = new Point3f();
+  private final P3 ptTemp = new P3();
   private final int[] planeShades = new int[3];
   private final float[][] dxyz = new float[3][3];
+  private int z0;
   
   private void renderQuadrantClipped(int radius, int xSign, int ySign) {
     boolean isEllipsoid = (mat != null);
@@ -515,27 +518,35 @@ public class SphereRenderer {
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
             mat.transform(ptTemp);
-            int thisOctant = Quadric.getOctant(ptTemp); 
+            int thisOctant = Quadric.getOctant(ptTemp);
+            z0 = zPixel;
             if (thisOctant == selectedOctant) {
-              iShade = getPlaneShade(xCurrent, yCurrent, zroot);
+              iShade = getPlaneShade(xCurrent, yCurrent, zroot);              
               zPixel = (int) zroot[0];
               mode = 3;
                 // another option: show back only
                 //iRoot = 1;
                 //zPixel = (int) zroot[iRoot];
             }
+            boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
+            if (isCore) {
+              z0 = zPixel = slab;
+              mode = 0;
+            }
+            if (zPixel < slab || zPixel > depth || zbuf[offset] <= z0)
+              continue;
           }
         } else {
           int zOffset = (int)Math.sqrt(s2 - j2);
           zPixel = z + (z < slab ? zOffset : -zOffset);          
+          boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
+          if (isCore) {
+            zPixel = slab;
+            mode = 0;
+          }
+          if (zPixel < slab || zPixel > depth || zbuf[offset] <= zPixel)
+            continue;
         }
-        boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
-        if (isCore) {
-          zPixel = slab;
-          mode = 0;
-        }
-        if (zPixel < slab || zPixel > depth || zbuf[offset] <= zPixel)
-          continue;
         switch(mode) {
         case 0: //core
           iShade = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07));
@@ -543,13 +554,14 @@ public class SphereRenderer {
           mode = 1;
           break;
         case 2: //ellipsoid
-          iShade = Shader.getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
+          iShade = shader.getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
           break;
         case 3: //ellipsoid fill
+          g3d.clearPixel(offset, z0);
           break;
         default: //sphere
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          iShade = Shader.sphereShadeIndexes[(y8 << 8) + x8];
+          iShade = shader.sphereShadeIndexes[(y8 << 8) + x8];
           break;
         }
         g3d.addPixel(offset, zPixel, shades[iShade]);
@@ -572,7 +584,7 @@ public class SphereRenderer {
       float dx = dxyz[i][0] = octantPoints[i].x - x;
       float dy = dxyz[i][1] = octantPoints[i].y - y;
       float dz = dxyz[i][2] = octantPoints[i].z - z;
-      planeShades[i] = Shader.getShadeIndex(dx, dy, -dz);
+      planeShades[i] = shader.getShadeIndex(dx, dy, -dz);
       if (dx == 0 && dy == 0) {
         planeShade = planeShades[i];
         return;

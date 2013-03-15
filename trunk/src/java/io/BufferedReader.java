@@ -25,7 +25,7 @@
 
 package java.io;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /**
  * Reads text from a character-input stream, buffering characters so as to
@@ -332,7 +332,7 @@ public class BufferedReader extends Reader {
    *            If an I/O error occurs
    */
   private String readLine1(boolean ignoreLF) throws IOException {
-    StringXBuilder s = null;
+    SB s = null;
     int startChar;
 
     synchronized (lock) {
@@ -386,7 +386,7 @@ public class BufferedReader extends Reader {
         }
 
         if (s == null)
-          s = StringXBuilder.newN(defaultExpectedLineLength);
+          s = SB.newN(defaultExpectedLineLength);
         s.appendCB(cb, startChar, i - startChar);
       }
     }

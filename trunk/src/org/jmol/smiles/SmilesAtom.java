@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-06 16:10:11 -0500 (Sat, 06 Oct 2012) $
- * $Revision: 17624 $
+ * $Date: 2013-03-13 19:10:30 -0500 (Wed, 13 Mar 2013) $
+ * $Revision: 17975 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -25,23 +25,24 @@
 package org.jmol.smiles;
 
 
-import java.util.List;
+
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 //import org.jmol.util.Logger;
 
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
-public class SmilesAtom extends Point3f implements JmolNode {
+public class SmilesAtom extends P3 implements JmolNode {
 
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
@@ -134,7 +135,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       atomsOr = new SmilesAtom[2];
     if (nAtomsOr >= atomsOr.length)
       atomsOr = (SmilesAtom[]) ArrayUtil.doubleLength(atomsOr);
-    SmilesAtom sAtom = new SmilesAtom(index);
+    SmilesAtom sAtom = new SmilesAtom().setIndex(index);
     sAtom.parent = this;
     atomsOr[nAtomsOr] = sAtom;
     nAtomsOr++;
@@ -149,7 +150,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       System.arraycopy(primitives, 0, tmp, 0, primitives.length);
       primitives = tmp;
     }
-    SmilesAtom sAtom = new SmilesAtom(index);
+    SmilesAtom sAtom = new SmilesAtom().setIndex(index);
     sAtom.parent = this;
     primitives[nPrimitives] = sAtom;
     setSymbol("*");
@@ -180,9 +181,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * Constructs a <code>SmilesAtom</code>.
    * 
    * @param index Atom number in the molecule. 
+   * @return this
    */
-  public SmilesAtom(int index) {
+  public SmilesAtom setIndex(int index) {
     this.index = index;
+    return this;
   }
 
   int component;
@@ -195,13 +198,14 @@ public class SmilesAtom extends Point3f implements JmolNode {
   int ringSize = Integer.MIN_VALUE;
   int ringConnectivity = -1;
 
-  public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber,
+  public SmilesAtom setAll(int iComponent, int ptAtom, int flags, short atomicNumber,
       int charge) {
     component = iComponent;
     index = ptAtom;
     this.atomSite = flags;
     this.elementNumber = atomicNumber;
     this.charge = charge;
+    return this;
   }
 
   /**
@@ -680,7 +684,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return -1;
   }
 
-  public void getGroupBits(BitSet bs) {
+  public void getGroupBits(BS bs) {
     bs.set(index);
     return;
   }
@@ -690,10 +694,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return bond.isHydrogen();
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
+  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].order == SmilesBond.TYPE_BIO_PAIR)
-        vLinks.add(Integer.valueOf(bonds[k].getOtherAtom(this).index));
+        vLinks.addLast(Integer.valueOf(bonds[k].getOtherAtom(this).index));
     return true;
   }
 
@@ -763,7 +767,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return (atomType == null ? atomName : atomType);
   }
 
-  public BitSet findAtomsLike(String substring) {
+  public BS findAtomsLike(String substring) {
     return null;
   }
 
