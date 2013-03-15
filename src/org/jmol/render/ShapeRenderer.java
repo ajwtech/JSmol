@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-12 07:10:55 -0500 (Tue, 12 Mar 2013) $
- * $Revision: 17970 $
+ * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17980 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -54,14 +54,15 @@ public abstract class ShapeRenderer {
   protected int exportType;
   protected boolean isExport;
 
+  protected void initRenderer() {}
+
+  abstract protected boolean render();
+
   public final void setViewerG3dShapeID(Viewer viewer, int shapeID) {
     this.viewer = viewer;
     this.shapeID = shapeID;
     myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     initRenderer();
-  }
-
-  protected void initRenderer() {
   }
 
   public boolean renderShape(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
@@ -76,7 +77,6 @@ public abstract class ShapeRenderer {
     return needsTranslucent;
   }
 
-  abstract protected boolean render();
  
 }
 

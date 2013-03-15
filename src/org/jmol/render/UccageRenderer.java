@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17980 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -40,11 +40,6 @@ public class UccageRenderer extends CageRenderer {
   byte fid;
   //boolean doLocalize;
   
-  @Override
-  protected void setEdges() {
-    tickEdges = BoxInfo.uccageTickEdges;    
-  }
-
   private final P3[] verticesT = new P3[8];  
   {
     for (int i = 8; --i >= 0; ) {
@@ -54,7 +49,7 @@ public class UccageRenderer extends CageRenderer {
 
   @Override
   protected void initRenderer() {
-    super.initRenderer();
+    tickEdges = BoxInfo.uccageTickEdges;    
     draw000 = false;
   }
   
@@ -126,7 +121,7 @@ public class UccageRenderer extends CageRenderer {
           }
           for (int i = 8; --i >= 0;)
             verticesT[i].add2(vertices[i], offsetT);
-          render(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
+          renderCage(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
         }
       }
     }

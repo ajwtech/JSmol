@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-03-15 07:49:38 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17981 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -119,12 +119,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
 
   void renderDistance(boolean renderLabel) {
-    tickInfo = measurement.getTickInfo();
+    tickInfo = measurement.tickInfo;
     if (tickInfo != null) {
-      drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, 
-          atomB.screenX, atomB.screenY, atomB.screenZ, mad);
-      if (tickInfo != null)
-        drawTicks(atomA, atomB, mad, renderLabel);
+      drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, atomB.screenX,
+          atomB.screenY, atomB.screenZ, mad);
+      drawTicks(atomA, atomB, mad, renderLabel);
       return;
     }
     int zA = atomA.screenZ - atomA.screenDiameter - 10;

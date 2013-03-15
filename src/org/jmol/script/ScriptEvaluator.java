@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-13 13:35:34 -0500 (Wed, 13 Mar 2013) $
- * $Revision: 17972 $
+ * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17980 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -13768,7 +13768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         str = "measure";
       break;
     }
-    if (ActionManager.getPickingStyle(str) < 0)
+    if (ActionManager.getPickingStyleIndex(str) < 0)
       errorStr2(ERROR_unrecognizedParameter, "SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
   }

@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2010-07-31 04:51:00 -0500 (Sat, 31 Jul 2010) $
- * $Revision: 13783 $
+ * $Author: hansonr $
+ * $Date: 2013-03-15 07:49:38 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17981 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -49,8 +49,9 @@ public class MeasurementPending extends Measurement {
     return numSet;
   }
 
-  public MeasurementPending(ModelSet modelSet) {
-    super(modelSet, null, Float.NaN, (short) 0, null, 0);
+  public static MeasurementPending getMP(ModelSet modelSet) {
+    return (MeasurementPending) new MeasurementPending().setM(modelSet, null,
+        Float.NaN, (short) 0, null, 0);
   }
 
   private boolean checkPoint(Point3fi ptClicked) {

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17980 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -30,7 +30,7 @@ import org.jmol.viewer.StateManager;
 public class BbcageRenderer extends CageRenderer {
 
   @Override
-  protected void setEdges() {
+  protected void initRenderer() {
     tickEdges = BoxInfo.bbcageTickEdges; 
   }
   
@@ -41,7 +41,7 @@ public class BbcageRenderer extends CageRenderer {
     if (bbox.isVisible && (isExport || g3d.checkTranslucent(false))
         && !viewer.isJmolDataFrame()) {
       colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
-      render(bbox.mad, modelSet.getBboxVertices(), null, 0, 0xFF, 0xFF, 1);
+      renderCage(bbox.mad, modelSet.getBboxVertices(), null, 0, 0xFF, 0xFF, 1);
     }
     return false;
   }
