@@ -9,7 +9,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 
 
-public interface QuantumCalculationInterface {
+public interface MOCalculationInterface {
 
   public abstract boolean setupCalculation(VolumeDataInterface volumeData, BS bsSelected,
                                  BS bsExclude,

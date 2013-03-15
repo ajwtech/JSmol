@@ -454,7 +454,7 @@ public abstract class URLStreamHandler {
      * @return  a string representation of the <code>URL</code> argument.
      */
     protected String toExternalForm(URL u) {
-      return "" + u;
+      return "";
     }
 //
 //    // pre-compute length of StringBuilder
