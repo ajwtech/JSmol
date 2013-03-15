@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17976 $
+ * $Date: 2013-03-14 22:04:12 -0500 (Thu, 14 Mar 2013) $
+ * $Revision: 17978 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -934,7 +934,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void renderAllStrings(Object jmolRenderer) {
-    if (strings == null)
+    if (strings == null || stringCount < 2)
       return;
     if (sort == null)
       sort = new TextSorter();

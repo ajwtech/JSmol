@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17976 $
+ * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17980 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -4962,7 +4962,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!haveDisplay)
       return;
     if (style != null)
-      pickingStyle = ActionManager.getPickingStyle(style);
+      pickingStyle = ActionManager.getPickingStyleIndex(style);
     if (pickingStyle < 0)
       pickingStyle = ActionManager.PICKINGSTYLE_SELECT_JMOL;
     actionManager.setPickingStyle(pickingStyle);
