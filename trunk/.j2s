@@ -1,5 +1,5 @@
 #Java2Script Configuration
-#Thu Mar 14 22:45:00 CDT 2013
+#Fri Mar 15 08:21:06 CDT 2013
 iMolecule=this.parseIntStr (this.line.substring (this.line.indexOf ("\:") + 1));
 switch=(i) {
 this.lastTargetSerial=targetSerial;
