@@ -59,7 +59,7 @@
       	     not BitSet.java, which is a 64-bit version. The Jmol version is just
       	     there for reference; it is only used in JSmol.  -->
         <include name="**/*.java" />
-        <exclude name="BitSet.java"/>
+        <exclude name="BS.java"/>
         <exclude name="BitSet32.java"/>
         <exclude name="FastBitSet.java"/>
       </fileset>
