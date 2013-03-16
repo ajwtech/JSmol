@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-15 12:55:45 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17988 $
+ * $Date: 2013-03-16 15:23:34 -0500 (Sat, 16 Mar 2013) $
+ * $Revision: 17993 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -76,8 +76,8 @@ public class JC {
       }
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
-        // NOTE : date is update in the properties by SVN, and is in the format
-        // "$Date: 2013-03-15 12:55:45 -0500 (Fri, 15 Mar 2013) $"
+        // NOTE : date is updated in the properties by SVN, and is in the format
+        // "$Date: 2013-03-16 15:23:34 -0500 (Sat, 16 Mar 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
