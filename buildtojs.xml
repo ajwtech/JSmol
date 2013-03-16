@@ -2,70 +2,45 @@
  
    <target name="toJs" id="toJs">
   			
-  	<!-- create a JS directory for SVN -->
-  			
-    <copy todir="js/JZ" >
+  	<!-- create a NON svn local directory not containing .svn  -->
+  	
+  	<delete dir="jslocal/**/*.js" />
+
+   	<copy todir="jslocal/JZ" >
       <fileset dir="bin/com/jcraft/jzlib">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="js/java" >
+    <copy todir="jslocal/java" >
       <fileset dir="bin/java">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="js/J" >
+    <copy todir="jslocal/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="js/J/minimize/forcefield/data" >
+    <copy todir="jslocal/J/minimize/forcefield/data" >
       <fileset dir="src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
-    <copy todir="js/J/modelkit/images">
+    <copy todir="jslocal/J/modelkit/images">
       <fileset dir="src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
-  	<replace dir="js" includes="**/*.js" token="org.jmol" value="J"/>
-  	<replace dir="js" includes="**/*.js" token="org/jmol" value="J"/>
-  	<replace dir="js" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
-  	<replace dir="js" includes="**/*.js" token="src/J" value="src/org/jmol"/>
-  	<replace dir="js" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
+  	<replace dir="jslocal" includes="**/*.js" token="org.jmol" value="J"/>
+  	<replace dir="jslocal" includes="**/*.js" token="org/jmol" value="J"/>
+  	<replace dir="jslocal" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
+  	<replace dir="jslocal" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+  	<replace dir="jslocal" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
-  	<!-- create a NON svn local directory not containing .svn  -->
-  	
-  	<delete dir="jslocal/**/*.js" />
     <copy overwrite="true" todir="jslocal" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
-    </copy>
-    <copy overwrite="true" todir="jslocal/JZ" >
-      <fileset dir="js/JZ">
-        <include name="**/*.js" />
-        <exclude name="**/.svn/*" />
-      </fileset>
-    </copy>
-    <copy overwrite="true" todir="jslocal/java" >
-      <fileset dir="j2s/java">
-        <include name="**/*.js" />
-        <exclude name="**/.svn/*" />
-      </fileset>
-    </copy>
-    <copy overwrite="true" todir="jslocal/java" >
-      <fileset dir="js/java">
-        <include name="**/*.js" />
-        <exclude name="**/.svn/*" />
-      </fileset>
-    </copy>
-    <copy overwrite="true" todir="jslocal/J" >
-      <fileset dir="js/J">
-        <include name="**/*.js" />
-        <exclude name="**/.svn/*" />
-      </fileset>
     </copy>
     <copy overwrite="true" todir="jslocal/J" >
   	  <fileset dir="">
@@ -78,7 +53,7 @@
       </fileset>
     </copy>
     <copy todir="jslocal/J/modelkit/images">
-      <fileset dir="js/J/modelkit/images">
+      <fileset dir="src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>

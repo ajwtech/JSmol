@@ -324,6 +324,19 @@ public final class Deflate /*implements Cloneable*/{
     bl_tree = new short[(2 * BL_CODES + 1) * 2]; // Huffman tree for bit lengths
   }
 
+  int deflateInit(int level) {
+    return deflateInit2(level, MAX_WBITS);
+  }
+
+  int deflateInit2(int level, int bits) {
+    return deflateInit5(level, Z_DEFLATED, bits, DEF_MEM_LEVEL,
+        Z_DEFAULT_STRATEGY);
+  }
+
+  int deflateInit3(int level, int bits, int memlevel) {
+    return deflateInit5(level, Z_DEFLATED, bits, memlevel, Z_DEFAULT_STRATEGY);
+  }
+
   void lm_init() {
     window_size = 2 * w_size;
 
@@ -1348,19 +1361,6 @@ public final class Deflate /*implements Cloneable*/{
     if (best_len <= lookahead)
       return best_len;
     return lookahead;
-  }
-
-  int deflateInit3(int level, int bits, int memlevel) {
-    return deflateInit5(level, Z_DEFLATED, bits, memlevel, Z_DEFAULT_STRATEGY);
-  }
-
-  int deflateInit2(int level, int bits) {
-    return deflateInit5(level, Z_DEFLATED, bits, DEF_MEM_LEVEL,
-        Z_DEFAULT_STRATEGY);
-  }
-
-  int deflateInit(int level) {
-    return deflateInit2(level, MAX_WBITS);
   }
 
   private int deflateInit5(int level, int method, int windowBits, int memLevel,

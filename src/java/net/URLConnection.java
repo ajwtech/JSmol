@@ -12,7 +12,7 @@ package java.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 /**
  * The abstract class <code>URLConnection</code> is the superclass of all
@@ -266,7 +266,7 @@ public abstract class URLConnection {
 	 */
 	protected boolean connected = false;
 
-	protected ArrayList<String[]> requests;
+	protected JmolList<String[]> requests;
 
 	/**
 	 * Opens a communications link to the resource referenced by this URL, if such
@@ -373,13 +373,13 @@ public abstract class URLConnection {
 		if (key == null)
 			throw new NullPointerException("key is null");
 		if (requests == null)
-			requests = new ArrayList<String[]>();
+			requests = new JmolList<String[]>();
 		for (int i = requests.size(); --i >= 0;)
 			if (requests.get(i)[0].equals(key)) {
 				requests.get(i)[1] = value;
 				return;
 			}
-		requests.add(new String[] { key, value });
+		requests.addLast(new String[] { key, value });
 	}
 
 }

@@ -85,9 +85,8 @@ abstract public class ZStream{
 
   Checksum checksum;
   
-  ZStream setAdler32() {
+  void setAdler32() {
     this.checksum=new Adler32();
-    return this;
   }
 
   /*
