@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-03-14 22:04:12 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17978 $
+ * $Date: 2013-03-15 12:14:55 -0500 (Fri, 15 Mar 2013) $
+ * $Revision: 17986 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -934,11 +934,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void renderAllStrings(Object jmolRenderer) {
-    if (strings == null || stringCount < 2)
+    if (strings == null)
       return;
-    if (sort == null)
-      sort = new TextSorter();
-    Arrays.sort(strings, sort);
+    if (stringCount >= 2) {
+      if (sort == null)
+        sort = new TextSorter();
+      Arrays.sort(strings, sort);
+    }
     for (int i = 0; i < stringCount; i++) {
       TextString ts = strings[i];
       plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font,
