@@ -4,7 +4,7 @@
   			
   	<!-- create a NON svn local directory not containing .svn  -->
   	
-  	<delete dir="jslocal/**/*.js" />
+  	<delete dir="jslocal/**/*" />
 
    	<copy todir="jslocal/JZ" >
       <fileset dir="bin/com/jcraft/jzlib">
@@ -21,33 +21,23 @@
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="jslocal/J/minimize/forcefield/data" >
-      <fileset dir="src/org/jmol/minimize/forcefield/data">
-        <include name="*.txt" />
-      </fileset>
-    </copy>
-    <copy todir="jslocal/J/modelkit/images">
-      <fileset dir="src/org/jmol/modelkit/images">
-        <include name="*" />
-      </fileset>
-    </copy>
   	<replace dir="jslocal" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="jslocal" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="jslocal" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<replace dir="jslocal" includes="**/*.js" token="src/J" value="src/org/jmol"/>
   	<replace dir="jslocal" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
-    <copy overwrite="true" todir="jslocal" >
+    <copy todir="jslocal" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
-    <copy overwrite="true" todir="jslocal/J" >
+    <copy todir="jslocal/J" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
-    <copy overwrite="true" todir="jslocal/J/minimize/forcefield/data" >
+    <copy todir="jslocal/J/minimize/forcefield/data" >
       <fileset dir="src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>

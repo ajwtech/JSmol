@@ -3,11 +3,19 @@
 	<!-- note that org.jmol.util.BitSet is NOT transferred, because we already have the 32-bit version in JSmol.
 	     org.jmol.util.BitSet32.java is just there for a backup. -->
   <target name="fromJmol" id="fromJmol">
-    <copy todir="" >
-      <fileset dir="../Jmol">
-        <include name="Jmol.properties" />
-      </fileset>
-    </copy>
+	<copy todir="" >
+	  <fileset dir="../Jmol/src/org/jmol/viewer/">
+	    <include name="Jmol.properties" />
+	  </fileset>
+	  <filterchain>
+	    <striplinecomments>
+	      <comment value="#" />
+	    </striplinecomments>
+	    <linecontains>
+	      <contains value="___" />
+	    </linecontains>
+	  </filterchain>
+	</copy>
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="../Jmol/src/org/jmol">
         <include name="**/*.java" />
