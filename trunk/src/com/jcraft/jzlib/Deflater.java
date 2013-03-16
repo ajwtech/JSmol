@@ -107,6 +107,7 @@ public class Deflater extends ZStream {
     if (bits == 0)
       bits = MAX_WBITS;
     finished = false;
+    setAdler32();
     dstate = new Deflate(this);
     dstate.deflateInit2(level, nowrap ? -bits : bits);
     return this;

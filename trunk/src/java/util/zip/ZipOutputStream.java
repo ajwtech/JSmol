@@ -28,10 +28,10 @@ package java.util.zip;
 import java.io.OutputStream;
 import java.io.IOException;
 //import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+
+import org.jmol.util.JmolList;
 
 import com.jcraft.jzlib.ZStream;
 
@@ -46,7 +46,7 @@ import com.jcraft.jzlib.ZStream;
 public class ZipOutputStream extends DeflaterOutputStream implements
     ZipConstants {
   private ZipEntry current;
-  private List<ZipEntry> xentries = new ArrayList<ZipEntry>();
+  private JmolList<ZipEntry> xentries = new JmolList<ZipEntry>();
   private Map<String, Boolean> names = new Hashtable<String, Boolean>();
   private CRC32 crc = new CRC32();
   private long written = 0;
@@ -227,7 +227,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements
     e.flag |= ZipConstants64.EFS;
     current = e;
     current.offset = written;
-    xentries.add(current);
+    xentries.addLast(current);
     writeLOC(current);
   }
 
