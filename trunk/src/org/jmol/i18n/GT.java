@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: nicove $
- * $Date: 2012-08-26 11:11:54 -0500 (Sun, 26 Aug 2012) $
- * $Revision: 17481 $
+ * $Author: hansonr $
+ * $Date: 2013-03-19 06:32:45 -0500 (Tue, 19 Mar 2013) $
+ * $Revision: 17997 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,34 +24,118 @@
 package org.jmol.i18n;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * special "dummy" version just for JavaScript
- * 
- * @author Bob Hanson
- *
- */
+import org.jmol.util.Logger;
+
 public class GT {
 
-
-  private boolean doTranslate = true;
-
   /**
-   * @param la  
+   * 
+   * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
+   * 
+   * implementing translations in JavaScript
+   * 
    */
-  public GT(String la) {
-  }
-  
-  public static String getLanguage() {
-  	return "en_US";
-  }
-  
+
+  private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;
   private static Language[] languageList;
 
-  private static GT getTextWrapper() {
-    return (getTextWrapper == null ? getTextWrapper = new GT(null)
-        : getTextWrapper);
+  private Resource[] resources = null;
+  private int resourceCount = 0;
+
+  private boolean doTranslate = true;
+  private String language;
+
+  public GT(String langCode) {
+    resources = null;
+    resourceCount = 0;
+    getTextWrapper = this;
+    if (langCode != null && langCode.length() == 0)
+      langCode = "none";
+    if (langCode != null)
+      language = langCode;
+    if ("none".equals(language))
+      language = null;
+    if (language == null)
+      language = Resource.getLanguage();
+    if (language == null)
+      language = "en";
+
+    String la = language;
+    String la_co = null;
+    String la_co_va = null;
+    int i = language.indexOf("_");
+    if (i >= 0) {
+      la = la.substring(0, i);
+      la_co = language;
+      if ((i = la_co.indexOf("_", ++i)) >= 0) {
+        la_co = la_co.substring(0, i);
+        la_co_va = language;
+      }
+    }
+
+    /*
+     * find the best match. In each case, if the match is not found
+     * but a variation at the next level higher exists, pick that variation.
+     * So, for example, if fr_CA does not exist, but fr_FR does, then 
+     * we choose fr_FR, because that is taken as the "base" class for French.
+     * 
+     * Or, if the language requested is "fr", and there is no fr.po, but there
+     * is an fr_FR.po, then return that. 
+     * 
+     * Thus, the user is informed of which country/variant is in effect,
+     * if they want to know. 
+     * 
+     */
+    if ((language = getSupported(la_co_va)) == null
+        && (language = getSupported(la_co)) == null
+        && (language = getSupported(la)) == null) {
+      language = "en";
+      Logger.debug(language + " not supported -- using en");
+      return;
+    }
+    la_co_va = null;
+    la_co = null;
+    switch (language.length()) {
+    default:
+      la_co_va = language;
+      la_co = language.substring(0, 5);
+      la = language.substring(0, 2);
+      break;
+    case 5:
+      la_co = language;
+      la = language.substring(0, 2);
+      break;
+    case 2:
+      la = language;
+      break;
+    }
+
+    /*
+     * Time to determine exactly what .po files we actually have.
+     * No need to check a file twice.
+     * 
+     */
+
+    la_co = getSupported(la_co);
+    la = getSupported(la);
+
+    if (la == la_co || "en_US".equals(la))
+      la = null;
+    if (la_co == la_co_va)
+      la_co = null;
+    if ("en_US".equals(la_co))
+      return;
+    if (Logger.debugging)
+      Logger.debug("Instantiating gettext wrapper for " + language
+          + " using files for language:" + la + " country:" + la_co
+          + " variant:" + la_co_va);
+    if (!ignoreApplicationBundle)
+      addBundles("Jmol", la_co_va, la_co, la);
+    addBundles("JmolApplet", la_co_va, la_co, la);
   }
 
   public static Language[] getLanguageList(GT gt) {
@@ -63,92 +147,130 @@ public class GT {
     return languageList;
   }
 
-  synchronized private void createLanguageList() {
-    boolean wasTranslating = doTranslate ;
-    doTranslate = false;
-    languageList = new Language[] { };//Language.getLanguageList();
-    doTranslate = wasTranslating;
+  public static String getLanguage() {
+    return getTextWrapper().language;
   }
 
   public static void ignoreApplicationBundle() {
+    ignoreApplicationBundle = true;
   }
 
   /**
-   * @param TF  
-   * @return false
+   * 
+   * @param TF
+   * @return  initial setting of GT.doTranslate
+   * 
    */
   public static boolean setDoTranslate(boolean TF) {
-    return false;
+    boolean b = getDoTranslate();
+    getTextWrapper().doTranslate = TF;
+    return b;
   }
 
   public static boolean getDoTranslate() {
-  	return false;
+    return getTextWrapper().doTranslate;
   }
 
   public static String _(String string) {
-  	return string;
+    return getTextWrapper().getString(string, null);
   }
 
   public static String _(String string, String item) {
-    return getString(string, new Object[] { item });
+    return getTextWrapper().getString(string, new Object[] { item });
   }
 
   public static String _(String string, int item) {
-    return getString(string,
+    return getTextWrapper().getString(string,
         new Object[] { Integer.valueOf(item) });
   }
 
   public static String _(String string, Object[] objects) {
-    return getString(string, objects);
+    return getTextWrapper().getString(string, objects);
   }
 
-  //forced translations
-  
-  /**
-   * @param string 
-   * @param t  
-   * @return S
-   */
-  public static String _(String string, boolean t) {
-    return string;
+  public static String escapeHTML(String msg) {
+    char ch;
+    for (int i = msg.length(); --i >= 0;)
+      if ((ch = msg.charAt(i)) > 0x7F) {
+        msg = msg.substring(0, i) + "&#" + ((int) ch) + ";"
+            + msg.substring(i + 1);
+      }
+    return msg;
   }
 
-  /**
-   * @param string 
-   * @param item 
-   * @param t  
-   * @return S
-   */
-  public static String _(String string,
-                         String item, boolean t) {
-    return getString(string, new Object[] { item });
+  private static GT getTextWrapper() {
+    return (getTextWrapper == null ? getTextWrapper = new GT(null)
+        : getTextWrapper);
   }
 
-  /**
-   * @param string 
-   * @param item 
-   * @param t  
-   * @return S
-   */
-  public static String _(String string,
-                         int item, boolean t) {
-    return getString(string, new Object[] { Integer.valueOf(item) });
+  synchronized private void createLanguageList() {
+    boolean wasTranslating = doTranslate;
+    doTranslate = false;
+    languageList = Language.getLanguageList();
+    doTranslate = wasTranslating;
   }
 
-  /**
-   * @param string 
-   * @param objects 
-   * @param t  
-   * @return S
-   */
-  public static synchronized String _(String string,
-                                      Object[] objects, boolean t) {
-    return (objects == null ? string : getString(string, objects));
+  private static Map<String, String> htLanguages = new HashMap<String, String>();
+
+  private String getSupported(String code) {
+    if (code == null)
+      return null;
+    if (htLanguages.containsKey(code))
+      return htLanguages.get(code); //may be null
+    String s = Language.getSupported(getLanguageList(this), code);
+    htLanguages.put(code, s);
+    return s;
   }
 
-  private static String getString(String string, Object[] objects) {
-  	//System.out.println("TESTING GT "  + string);
-      return MessageFormat.format(string, objects);
+  private void addBundles(String type, String la_co_va, String la_co, String la) {
+    try {
+      String className = "org.jmol.translation." + type + ".";
+      if (la_co_va != null)
+        addBundle(className, la_co_va);
+      if (la_co != null)
+        addBundle(className, la_co);
+      if (la != null)
+        addBundle(className, la);
+    } catch (Exception exception) {
+      Logger.errorEx("Some exception occurred!", exception);
+      resources = null;
+      resourceCount = 0;
+    }
   }
 
+  private void addBundle(String className, String name) {
+    Resource resource = Resource.getResource(className, name);    
+    if (resource != null) {
+      if (resources == null) {
+        resources = new Resource[8];
+        resourceCount = 0;
+      }
+      resources[resourceCount] = resource;
+      resourceCount++;
+      Logger.debug("GT adding " + className);
+    }
+  }
+
+  private String getString(String string, Object[] objects) {
+    String trans = null;
+    if (doTranslate) {
+      for (int bundle = resourceCount; --bundle >= 0;) {
+        trans = resources[bundle].getString(string);
+        break;
+      }
+      if (trans == null) {
+        if (resourceCount > 0 && Logger.debugging)
+          Logger.debug("No trans, using default: " + string);
+      } else {
+        string = trans;
+      }
+    }
+    if (trans == null) {
+      if (string.startsWith("["))
+        string = string.substring(string.indexOf("]") + 1);
+      else if (string.endsWith("]"))
+        string = string.substring(0, string.indexOf("["));
+    }
+    return (objects == null ? string : MessageFormat.format(string, objects));
+  }
 }
