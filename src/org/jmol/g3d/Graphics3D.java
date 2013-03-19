@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-03-15 12:14:55 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17986 $
+ * $Date: 2013-03-17 12:16:23 -0500 (Sun, 17 Mar 2013) $
+ * $Revision: 17995 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
