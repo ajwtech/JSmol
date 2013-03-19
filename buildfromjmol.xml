@@ -25,10 +25,8 @@
       	<!-- see next block -->
         <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
-      	<exclude name="**/i18n/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/popup/*"/>
-        <exclude name="**/util/*"/>
       	<!-- unused -->
         <exclude name="**/multitouch/**/*"/>
       </fileset>
@@ -41,11 +39,6 @@
   	<copy overwrite="true" todir="src/org/jmol/export/image" >
       <fileset dir="../Jmol/src/org/jmol/export/image">
         <include name="Generic*.java" />
-      </fileset>
-    </copy>
-  	<copy overwrite="true" todir="src/org/jmol/i18n" >
-      <fileset dir="../Jmol/src/org/jmol/i18n">
-        <include name="Language.java" />
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/modelkit" >
@@ -61,18 +54,8 @@
         <exclude name="SwingPopup.java"/>
       </fileset>
     </copy>
-  	<copy overwrite="true" todir="src/org/jmol/util" >
-      <fileset dir="../Jmol/src/org/jmol/util">
-      	<!-- note that JSmol's BitSet.java is derived from Jmol's BitSet32.java, 
-      	     not BitSet.java, which is a 64-bit version. The Jmol version is just
-      	     there for reference; it is only used in JSmol.  -->
-        <include name="**/*.java" />
-        <exclude name="BS.java"/>
-        <exclude name="BitSet32.java"/>
-        <exclude name="FastBitSet.java"/>
-      </fileset>
-    </copy>
-
+  	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
+  	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
   </target>
 	
 </project>

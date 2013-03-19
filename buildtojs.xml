@@ -47,6 +47,14 @@
         <include name="*" />
       </fileset>
     </copy>
+   	
+  	<!-- get .po files  -->		
+   	<copy overwrite="true" todir="jslocal/trans" >
+	  <fileset dir="../Jmol/src/org/jmol/translation/JmolApplet">
+	    <include name="*.po" />
+	  </fileset>
+	</copy>
+
  
   </target>
   	
