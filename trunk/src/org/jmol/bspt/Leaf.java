@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -83,7 +83,7 @@ class Leaf extends Element {
       P3 t = tuples[i];
       for (int j = 0; j < level; ++j)
         sb.append(".");
-      sb.append(Escape.e(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
+      sb.append(Escape.eP(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
     }
   }
 

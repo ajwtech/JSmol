@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
+ * $Revision: 18000 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -316,7 +316,7 @@ public class Dots extends AtomShape {
       if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "
-            + Escape.e(bs));
+            + Escape.eBS(bs));
       }
     }
     return s.append(sc.getCommands(temp, null, "select")).toString();

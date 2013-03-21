@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-17 12:16:23 -0500 (Sun, 17 Mar 2013) $
- * $Revision: 17995 $
+ * $Date: 2013-03-20 18:18:25 -0500 (Wed, 20 Mar 2013) $
+ * $Revision: 18002 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -97,6 +97,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Dimension;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
@@ -180,6 +181,7 @@ import java.io.StringReader;
  * ****************************************************************
  */
 
+@J2SIgnoreImport({Runtime.class})
 public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
@@ -1021,7 +1023,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void navTranslatePercent(float x, float y) {
     if (isJmolDataFrame())
       return;
-    transformManager.navTranslatePercent(0, x, y);
+    transformManager.navTranslatePercentOrTo(0, x, y);
     setSync();
   }
 
@@ -9429,11 +9431,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object executor;
   public static int nProcessors = 1;
   static {
-    try {
+    /**
+     * @j2sIgnore
+     * 
+     */
+    {
       nProcessors = Runtime.getRuntime().availableProcessors();
-    } catch (Throwable e) {
-      // Runtime absent (JavaScript)
     }
+    
   }
 
   public Object getExecutor() {

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
+ * $Revision: 18000 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -178,7 +178,7 @@ public class Sticks extends Shape {
   @Override
   public Object getProperty(String property, int index) {
     if (property.equals("selectionState"))
-      return (selectedBonds != null ? "select BONDS " + Escape.e(selectedBonds) + "\n":"");
+      return (selectedBonds != null ? "select BONDS " + Escape.eBS(selectedBonds) + "\n":"");
     if (property.equals("sets"))
       return new BS[] { bsOrderSet, bsSizeSet, bsColixSet };
     return null;
