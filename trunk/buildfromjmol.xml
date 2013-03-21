@@ -1,8 +1,84 @@
 <project name="JSmol" default="fromJmol" basedir=".">
- 
-	<!-- note that org.jmol.util.BitSet is NOT transferred, because we already have the 32-bit version in JSmol.
-	     org.jmol.util.BitSet32.java is just there for a backup. -->
+	<!-- 
+
+	The overall process of creating JSmol starts here. 
+	
+	1) All org.jmol source files in JSmol are derived from Jmol, so you must have both SourceForge
+	   projects checked out. Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
+	   not even, such as 13.1.18, not 13.0.18.) 
+	   
+	   Here we just assume that Jmol source code is in ../Jmol/src.
+
+		!!Never modify any file in JSmol/src/org!! - Only work in Jmol. 
+		
+	   The files that are specific to JSmol and not Jmol are:
+	   
+	     src/com/jcraft/jzlib   -  gzip/zip compresion/decompression classes
+	     src/java               -  modified Java classes, including awt, io, net, and util
+	     org/jsmol              -  some early test files; no longer of much value
+	     
+	   There are also some java.lang and java.util classes that are defined in core.z.js. 
+	   
+	   These include (among a few others):
+	   
+		   java.lang.Number
+		   java.lang.Integer
+		   java.lang.Long
+		   java.lang.Short
+		   java.lang.Float
+		   java.lang.Double
+		   java.lang.Byte
+		   java.lang.Boolean
+		   java.lang.String
+		   java.lang.Character
+		   java.util.Date
+		   java.util.Array
+	   
+	   
+	2) Do all your coding in Jmol, then run this Ant task (buildfromjmol.xml)
+	
+	3) Do a REFRESH on the JSmol project (I use right-click on the project folder...refresh.)
+	
+	4) Build the JSmol project... (Eclipse menu Project...Build Project)
+	
+	   The Java2Script compiler will also compile additional Java code: 
+	
+		JSmol/src/java  -	Selected Java classes. I have created these myself based on Sun Java code, 
+		                    specially optimizing them for speed in JavaScript. Some have been 
+		                    streamlined, with unnecessary signatures removed. In all cases,
+		                    multiple signatures for the same method were renamed. In a few cases 
+							(ArrayList, Arrays, and Hashtable) I just include modified 
+							Java2Script-compiled JavaScript versions. The Java2Script compiler 
+							will simply copy these JavaScript files into the bin directory.
+							  
+		JSmol/src/com   - 	www.jcraft.com/jzlib/ files that I have specially optimized for 
+							Jmol and JavaScript.
+							
+	5) Run buildtojs.xml to copy all needed JS files to a local folder, jslocal. Note that
+	   this also copies all pre-compiled Java2Script classes from the j2s/java directory. This
+	   Ant task does important renaming of classes:
+	   
+	       org.jmol      		J
+	       com.jcraft.jzlib		JZ
+	       
+	   It also copies all the language localization .po files from Jmol's 
+	   src/org/jmol/translation/JmolApplet directory into jslocal/trans.
+	   (Thus, there is also a reference to ../Jmol/src in that Ant script.)
+	
+	6) Do a REFRESH on the project (I use right-click on the project folder...refresh.)
+
+	7) Copy all files in jslocal to the j2s directory of your test site.
+	   I advise starting by unzipping the test site found in the dist folder here.
+	   
+	8) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
+	   will probably not allow you to read binary files locally.  
+	
+	     - Bob Hanson March 20, 2013.
+	 -->
+
   <target name="fromJmol" id="fromJmol">
+  	
+	<!-- pull Jmol.properties key info -->
 	<copy todir="" >
 	  <fileset dir="../Jmol/src/org/jmol/viewer/">
 	    <include name="Jmol.properties" />
@@ -16,13 +92,15 @@
 	    </linecontains>
 	  </filterchain>
 	</copy>
+  	
+	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="../Jmol/src/org/jmol">
         <include name="**/*.java" />
       	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
-      	<!-- see next block -->
+      	<!-- selective - see next block -->
         <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
       	<exclude name="**/modelkit/*"/>
@@ -54,8 +132,11 @@
         <exclude name="SwingPopup.java"/>
       </fileset>
     </copy>
+	
+  	<!-- replace BS.java with BitSet32.java, since JavaScript does not have LONG data type -->
   	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
+  	
   </target>
 	
 </project>
