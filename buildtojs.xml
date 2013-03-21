@@ -2,41 +2,55 @@
  
    <target name="toJs" id="toJs">
   			
-  	<!-- create a NON svn local directory not containing .svn  -->
+  	<!-- create a NON svn local directory only containing JS files  -->
   	
-  	<delete dir="jslocal/**/*" />
+  	<delete dir="jslocal" />
 
-   	<copy todir="jslocal/JZ" >
-      <fileset dir="bin/com/jcraft/jzlib">
+   	<copy todir="jslocal/java" >
+      <fileset dir="j2s/java">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="jslocal/java" >
+
+    <copy overwrite="true" todir="jslocal/java" >
       <fileset dir="bin/java">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy todir="jslocal/J" >
+
+    <copy todir="jslocal/JZ" >
+      <fileset dir="bin/com/jcraft/jzlib">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+    
+   	<copy todir="jslocal/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
       </fileset>
     </copy>
+   	
+  	<!-- modify class names -->		
   	<replace dir="jslocal" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="jslocal" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="jslocal" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<replace dir="jslocal" includes="**/*.js" token="src/J" value="src/org/jmol"/>
   	<replace dir="jslocal" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
+  	<!-- get version information  -->		
     <copy todir="jslocal" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
+   	
     <copy todir="jslocal/J" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
+   	
+  	<!-- get required non-JavaScript resources -->		
     <copy todir="jslocal/J/minimize/forcefield/data" >
       <fileset dir="src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
@@ -48,7 +62,7 @@
       </fileset>
     </copy>
    	
-  	<!-- get .po files  -->		
+  	<!-- get .po files from the Jmol project -->		
    	<copy overwrite="true" todir="jslocal/trans" >
 	  <fileset dir="../Jmol/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
