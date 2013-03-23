@@ -503,6 +503,13 @@ public final class URL implements java.io.Serializable {
     public URL(URL context, String spec, URLStreamHandler handler)
         throws MalformedURLException
     {
+      /**
+       * @j2sNative
+       * 
+       * if (arguments.length == 1) {
+       *   spec = context;context = handler = null;
+       * }
+       */
         String original = spec;
         int i, limit, c;
         int start = 0;
