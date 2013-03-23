@@ -70,10 +70,29 @@
 	7) Copy all files in jslocal to the j2s directory of your test site.
 	   I advise starting by unzipping the test site found in the dist folder here.
 	   
-	8) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
+	8) The file test2.htm in the jsmol directory on your test site needs to be run
+	   using the URL extended with
+	      
+	      ?debugcode
+	      
+	   This bypasses the j2s/core files and reads those from the actual J, JZ, and java
+	   directories. 
+	   
+	9) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
 	   will probably not allow you to read binary files locally.  
 	
-	     - Bob Hanson March 20, 2013.
+   10) To do the final compressions at least on windows you will need to run make.bat 
+       in the test site jsmol/make directory. This runs the Google closure compiler,
+       creating JSmol.min.js and the various core JavaScript files in jsmol/j2s/core
+       and also deposits the latest version of jsmol.zip in the dist directory here.
+       Note that there is a reference there to 7z.exe in both min.bat and zip.bat. 
+       I do not have Linyx equivalents to these batch files.
+       
+   11) Update the JSmol project again and check in dist/jsmol.zip.
+   
+   12) At some time go to SourceForge and create a release. It is just jsmol.zip.
+       
+            - Bob Hanson March 23, 2013.
 	 -->
 
   <target name="fromJmol" id="fromJmol">
