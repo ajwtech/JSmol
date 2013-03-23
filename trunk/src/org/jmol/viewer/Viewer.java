@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-20 18:18:25 -0500 (Wed, 20 Mar 2013) $
- * $Revision: 18002 $
+ * $Date: 2013-03-22 15:55:43 -0500 (Fri, 22 Mar 2013) $
+ * $Revision: 18006 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -2378,7 +2378,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return openStringInlineParams(strModel, htParams, isAppend);
   }
 
-  public String fixInlineString(String strModel, char newLine) {
+  public static String fixInlineString(String strModel, char newLine) {
     // only if first character is "|" do we consider "|" to be new line
     int i;
     if (strModel.indexOf("\\/n") >= 0) {

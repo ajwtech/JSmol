@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-20 18:18:25 -0500 (Wed, 20 Mar 2013) $
- * $Revision: 18002 $
+ * $Date: 2013-03-22 15:55:43 -0500 (Fri, 22 Mar 2013) $
+ * $Revision: 18006 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -28,8 +28,10 @@ import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger; 
 
+@J2SRequireImport({org.jmol.i18n.Resource.class, org.jmol.i18n.Language.class})
 public class GT {
 
   /**
