@@ -518,13 +518,14 @@ this.next=null;
 this.hashcode=0;
 $_Z(this,arguments);
 },java.util.Hashtable,"Entry",java.util.MapEntry);
-$_K(c$,
+$_k(c$,
 function(a,b){
+	// _k for @j2sOverride
 this.key = a;
 this.value = b;
 //$_R(this,java.util.Hashtable.Entry,[a,b]);
 this.hashcode=a.hashCode();
-},"@"); // BH -- designating "@" as "DO NOT CHECK"
+});
 $_M(c$,"clone",
 function(){
 var a=$_U(this,java.util.Hashtable.Entry,"clone",[]);

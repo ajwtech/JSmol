@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-03-23 13:57:52 -0500 (Sat, 23 Mar 2013) $
+ * $Revision: 18009 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -562,7 +562,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI
         / nPer));
-    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, (short) 0, i);
+    Mesh mesh = meshes[i] = new Mesh().mesh1("mesh_" + shapeID + "_" + i, (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
 
     // control points and vectors:

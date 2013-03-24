@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
- * $Revision: 18000 $
+ * $Date: 2013-03-23 13:57:52 -0500 (Sat, 23 Mar 2013) $
+ * $Revision: 18009 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -8800,7 +8800,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String strModel = (key.indexOf("@") >= 0 ? ""
             + getParameter(key.substring(key.indexOf("@") + 1), T.string)
             : parameterAsString(++i));
-        strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
+        strModel = Viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
         htParams.put("isData", Boolean.TRUE);
         //note: ScriptCompiler will remove an initial \n if present
