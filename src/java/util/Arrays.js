@@ -69,7 +69,7 @@ function(a,c,d,e){
       a[i]=aux[i-fromIndex];
     }
   }
-},"@");
+});
 
 c$.rangeCheck=$_M(c$,"rangeCheck",
 ($fz=function(arrayLen,fromIndex,toIndex){
@@ -143,7 +143,7 @@ if (arguments.length == 2) {
 	}	
 	java.util.Arrays.rangeCheck(a.length,fromIndex,toIndex);
 	for(var i=fromIndex;i<toIndex;i++)a[i]=val;
-},"@");
+});
 
 c$.asList=$_M(c$,"asList",
 function(a){

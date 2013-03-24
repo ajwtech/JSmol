@@ -6,10 +6,10 @@ this.array=null;
 $_Z(this,arguments);
 },java.util,"ArrayList",java.util.AbstractList,[java.util.List,Cloneable,java.io.Serializable,java.util.RandomAccess]);
 
-$_K(c$,
+$_k(c$,
 function(){
 this.setup(0);
-},"@");
+});
 
 $_M(c$, "setup",
 function(capacity){
@@ -68,14 +68,14 @@ throw new IndexOutOfBoundsException();
 }this.modCount++;
 },"~N,~O");
 
-$_M(c$,"add1",
+$_V(c$,"add1",
 function(object){
 if(this.lastIndex==this.array.length){
 this.growAtEnd(1);
 }this.array[this.lastIndex++]=object;
 this.modCount++;
 return true;
-},"@"); // BH
+},"~O");
 
 /* BH disallow addAll(int,List)
  * 
@@ -302,7 +302,7 @@ return i-this.firstIndex;
 }}
 }return-1;
 },"~O");
-$_M(c$,"remove",
+$_V(c$,"remove",
 function(location){
 var result;
 var size=this.size();
@@ -326,7 +326,7 @@ this.array[--this.lastIndex]=null;
 throw new IndexOutOfBoundsException();
 }this.modCount++;
 return result;
-},"@"); // BH -- to 
+},"~N"); 
 
 //$_M(c$, "removeObject")
 $_V(c$,"removeRange",
@@ -372,7 +372,7 @@ return result;
 });
 */
 
-$_M(c$,"toArray",
+$_V(c$,"toArray",
 function(contents){
 var size=this.size();
 if(size>contents.length){
@@ -382,7 +382,7 @@ contents=java.lang.reflect.Array.newInstance(ct,size);
 if(size<contents.length){
 contents[size]=null;
 }return contents;
-},"@");
+},"~O");
 $_M(c$,"trimToSize",
 function(){
 var size=this.size();
