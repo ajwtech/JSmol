@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-23 13:57:52 -0500 (Sat, 23 Mar 2013) $
- * $Revision: 18009 $
+ * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
+ * $Revision: 18010 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -10054,7 +10054,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // msg);
       // return;
     }
-    if (viewer.autoExit || !viewer.haveDisplay && !viewer.isJS3D)
+    if (viewer.autoExit || !viewer.haveDisplay && !viewer.isWebGL)
       return false;
     if (scriptLevel == 0 && pc == aatoken.length - 1) {
       viewer.scriptStatus("nothing to pause: " + msg);

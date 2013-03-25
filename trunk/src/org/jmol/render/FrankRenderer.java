@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
+ * $Revision: 18010 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -38,7 +38,7 @@ public class FrankRenderer extends ShapeRenderer {
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
     boolean modelKitMode = viewer.isModelKitMode();
     colix = (modelKitMode ? C.MAGENTA 
-        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS2D? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
+        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS && !viewer.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
     if (isExport || !viewer.getShowFrank())
       return false;
     if (!g3d.setColix(C.getColixTranslucent3(colix,
