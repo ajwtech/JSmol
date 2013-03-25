@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
+ * $Revision: 18010 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -82,7 +82,7 @@ public class Frank extends FontShape {
   }
   
   void calcMetrics() {
-    if (viewer.isJS2D || viewer.isJS3D)
+    if (viewer.isJS)
       frankString = "JSmol";
     else if (viewer.isSignedApplet())
       frankString = "Jmol_S";

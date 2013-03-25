@@ -44,6 +44,12 @@ return new Array(size);
 
 $_V(c$,"add",
 function(location,object){
+
+if (arguments.length == 1) {
+	// coming from Java methods, e.g. Collections.list()
+	// location is actually the object
+	return this.add1(location);
+}
 var size=this.size();
 if(0<location&&location<size){
 if(this.firstIndex==0&&this.lastIndex==this.array.length){
