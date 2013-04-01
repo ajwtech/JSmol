@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
- * $Revision: 18010 $
+ * $Date: 2013-04-01 07:18:02 -0500 (Mon, 01 Apr 2013) $
+ * $Revision: 18052 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1965,9 +1965,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * 
-   * @j2sIgnore
-   * 
-   * for JmolSimpleViewer -- external applications only
+   * for JmolSimpleViewer -- external applications only (and no-script JavaScript)
    * 
    * @param fileName
    * @return null or error

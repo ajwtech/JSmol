@@ -50,32 +50,42 @@ public class Parser {
   }
 
   public static float[] parseFloatArray(String str) {
-    return parseFloatArrayNext(str, new int[1]);
+    return parseFloatArrayNext(str, new int[1], null, null, null);
   }
 
   /**
-   * @param str 
-   * @param next 
+   * @param str
+   * @param next
+   * @param f
+   * @param strStart or null
+   * @param strEnd   or null
    * @return array of float values
-   *
+   * 
    */
-  public static float[] parseFloatArrayNext(String str, int[] next) {
+  public static float[] parseFloatArrayNext(String str, int[] next, float[] f,
+                                            String strStart, String strEnd) {
+    int n = 0;
     int pt = next[0];
-    if (pt < 0)
+    if (pt >= 0) {
+      if (strStart != null) {
+        int p = str.indexOf(strStart, pt);
+        if (p >= 0)
+          next[0] = p + strStart.length();
+      }
+      str = str.substring(next[0]);
+      pt = (strEnd == null ? -1 : str.indexOf(strEnd));
+      if (pt < 0)
+        pt = str.length();
+      else
+        str = str.substring(0, pt);
+      next[0] += pt + 1;
+      String[] tokens = getTokens(str);
+      if (f == null)
+        f = new float[tokens.length];
+      n = parseFloatArrayBsData(tokens, null, f);
+    }
+    if (f == null)
       return new float[0];
-    pt = str.indexOf("[", pt);
-    if (pt >= 0)
-      str = str.substring(pt + 1);
-    next[0] = pt + 1;
-    pt = str.indexOf("]");
-    if (pt < 0)
-      pt = str.length();
-    else
-      str = str.substring(0, pt);
-    next[0] += pt + 1;
-    String[] tokens = getTokens(str);
-    float[] f = new float[tokens.length];
-    int n = parseFloatArrayBsData(tokens, null, f);
     for (int i = n; i < f.length; i++)
       f[i] = Float.NaN;
     return f;
@@ -584,14 +594,17 @@ public class Parser {
     return (i < 0 ? null : getQuotedStringAt(info, i));
   }
 
-  public static int parseIntRadix(String s, int i) {
+  public static int parseIntRadix(String s, int i) throws NumberFormatException {
     /**
      * 
      * JavaScript uses parseIntRadix
      * 
      * @j2sNative
      * 
-     *    return parseInt(s, i);
+     *    i = parseInt(s, i);
+     *    if (isNaN(i))
+     *      throw new NumberFormatException("Not a Number : "+s);
+     *    return i;
      */
     {
       return Integer.parseInt(s, i);

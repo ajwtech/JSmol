@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-03-17 12:16:23 -0500 (Sun, 17 Mar 2013) $
- * $Revision: 17995 $
+ * $Date: 2013-03-29 10:47:56 -0500 (Fri, 29 Mar 2013) $
+ * $Revision: 18020 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -542,7 +542,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     int gA = (argbA & 0x0000FF00);
     int rbB = (argbB & 0x00FF00FF);
     int gB = (argbB & 0x0000FF00);
-    int logAlpha = (argbB >> 24) & 7;
+    int logAlpha = (argbB >> 24) & 0xF;
     //just for now:
     //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
     switch (logAlpha) {
@@ -551,6 +551,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     //     t           32  64  96  128 160 192 224
     //     t >> 5       1   2   3   4   5   6   7
 
+    case 0: // 8:0
+      rbA = rbB;
+      gA = gB;
+      break;
     case 1: // 7:1
       rbA = (((rbB << 2) + (rbB << 1) + rbB  + rbA) >> 3) & 0x00FF00FF;
       gA = (((gB << 2) + + (gB << 1) + gB + gA) >> 3) & 0x0000FF00;
@@ -1783,7 +1787,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                     vectorNormal.z)
             : shader.getShadeIndex(vectorNormal.x, vectorNormal.y,
                                     -vectorNormal.z));
-    //System.out.println(i + " " + screenA + " " + screenB + " " + screenC);
     return i;
   }
     
