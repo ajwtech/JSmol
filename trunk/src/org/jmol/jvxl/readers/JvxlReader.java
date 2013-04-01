@@ -87,9 +87,9 @@ public class JvxlReader extends JvxlXmlReader {
     readVoxelVector(0);
     readVoxelVector(1);
     readVoxelVector(2);
-    skipComments(true);
     for (int i = 0; i < atomCount; ++i)
       jvxlFileHeaderBuffer.append(readLine() + "\n");    
+    skipComments(true);
     Logger.info("Reading extra JVXL information line: " + line);
     nSurfaces = parseIntStr(line);
     if (!(isJvxl = (nSurfaces < 0)))
@@ -110,16 +110,16 @@ public class JvxlReader extends JvxlXmlReader {
       colorFractionRange = parseInt();
     }
     cJvxlEdgeNaN = (char)(edgeFractionBase + edgeFractionRange);
-
+    vertexDataOnly = jvxlData.vertexDataOnly = (volumetricVectors[0].length() == 0);
   }
 
   @Override
-  protected String jvxlReadData(String type, int nPoints) {
+  protected String jvxlReadFractionData(String type, int nPoints) {
     String str = "";
     try {
       while (str.length() < nPoints) {
         readLine();
-        str += JvxlCoder.jvxlUncompressString(line);
+        str += JvxlCoder.jvxlDecompressString(line);
       }
     } catch (Exception e) {
       Logger.error("Error reading " + type + " data " + e);
@@ -207,7 +207,7 @@ public class JvxlReader extends JvxlXmlReader {
       int nContoursRead = parseInt();
       if (nContoursRead == Integer.MIN_VALUE) {
         if (line.charAt(next[0]) == '[') {
-           jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
+           jvxlData.contourValues = params.contoursDiscrete = parseFloatArray(null, null, null);
            Logger.info("JVXL read: contourValues " + Escape.eAF(jvxlData.contourValues));            
            jvxlData.contourColixes = params.contourColixes = C.getColixArray(getQuotedStringNext());
            jvxlData.contourColors = C.getHexCodes(jvxlData.contourColixes);
@@ -287,7 +287,7 @@ public class JvxlReader extends JvxlXmlReader {
     int n = 0;
     while (n < nPoints) {
       readLine();
-      n += (isInt ? countData(line) : JvxlCoder.jvxlUncompressString(line).length());
+      n += (isInt ? countData(line) : JvxlCoder.jvxlDecompressString(line).length());
     }
   }
 
