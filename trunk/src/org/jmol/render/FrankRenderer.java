@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
- * $Revision: 18010 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.render;
+import org.jmol.script.T;
 import org.jmol.shape.Frank;
 import org.jmol.util.C;
 
@@ -36,7 +37,7 @@ public class FrankRenderer extends ShapeRenderer {
   protected boolean render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
-    boolean modelKitMode = viewer.isModelKitMode();
+    boolean modelKitMode = viewer.getBoolean(T.modelkitmode);
     colix = (modelKitMode ? C.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys || viewer.isJS && !viewer.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
     if (isExport || !viewer.getShowFrank())

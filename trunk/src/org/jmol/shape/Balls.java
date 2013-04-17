@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -28,6 +28,7 @@ package org.jmol.shape;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.viewer.JC;
@@ -97,6 +98,8 @@ public class Balls extends AtomShape {
       if (bsColixSet == null)
         bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (i >= colixes.length)
+          continue;
         atoms[i].setColixAtom(colixes[i]);
         atoms[i].setPaletteID(EnumPalette.UNKNOWN.id);
         bsColixSet.set(i);
@@ -133,7 +136,7 @@ public void setModelClickability() {
   
  @Override
 public void setVisibilityFlags(BS bs) {
-    boolean showHydrogens = viewer.getShowHydrogens();
+    boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
     BS bsDeleted = viewer.getDeletedAtoms();
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
- * $Revision: 18000 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.shapespecial;
 
+import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -74,7 +75,7 @@ public class Dots extends AtomShape {
   @Override
   public int getSize(int atomIndex) {
     // mads are actually radii not diameters
-    return (mads == null ? (int) Math.floor(ec.getRadius(atomIndex) * 2000) : mads[atomIndex]*2);
+    return (mads != null ? mads[atomIndex]*2 : bsOn.get(atomIndex) ? (int) Math.floor(ec.getRadius(atomIndex) * 2000) : 0);
   }
   
   @Override
@@ -277,8 +278,8 @@ public class Dots extends AtomShape {
       colixes = new short[atomCount];
       paletteIDs = new byte[atomCount];
     }
-    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
-        viewer.getDotsSelectedOnlyFlag(), isSurface, true);
+    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getBoolean(T.dotsurface),
+        viewer.getBoolean(T.dotsselectedonly), isSurface, true);
 
     rdLast = rd;
 

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -26,6 +26,7 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.script.T;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
@@ -61,7 +62,7 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
+    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
         .getScalePixelsPerAngstrom(true) * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
- * $Revision: 18000 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -216,7 +216,7 @@ public class Sticks extends Shape {
 
   @Override
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers,
-                                    BS bsVisible) {
+                                    BS bsVisible, boolean drawPicking) {
     P3 pt = new P3();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)

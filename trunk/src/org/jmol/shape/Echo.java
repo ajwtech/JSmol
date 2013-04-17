@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.TextFormat;
@@ -65,7 +66,7 @@ public class Echo extends TextShape {
     }
 
     if ("xyz" == propertyName) {
-      if (currentObject != null && viewer.getFontScaling())
+      if (currentObject != null && viewer.getBoolean(T.fontscaling))
         currentObject.setScalePixelsPerMicron(viewer
             .getScalePixelsPerAngstrom(false) * 10000f);
       // continue on to Object2d setting

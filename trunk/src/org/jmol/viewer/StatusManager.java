@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-24 20:44:26 -0500 (Sun, 24 Mar 2013) $
- * $Revision: 18010 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -23,7 +23,9 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.T;
 import org.jmol.util.BS;
+import org.jmol.util.Dimension;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
@@ -473,8 +475,8 @@ class StatusManager {
     }
 
     Object[] data;
-    if (isScriptCompletion && viewer.getMessageStyleChime()
-        && viewer.getDebugScript()) {
+    if (isScriptCompletion && viewer.getBoolean(T.messagestylechime)
+        && viewer.getBoolean(T.debugscript)) {
       data = new Object[] { null, "script <exiting>", statusMessage,
           Integer.valueOf(-1), strErrorMessageUntranslated };
       if (notifyEnabled(EnumCallback.SCRIPT))
@@ -697,9 +699,9 @@ class StatusManager {
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
   }
 
-  public void resizeInnerPanel(int width, int height) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";");    
+  public Dimension resizeInnerPanel(int width, int height) {
+   return (jmolStatusListener == null ? new Dimension().set(width, height) :
+      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));    
   }
 
 }

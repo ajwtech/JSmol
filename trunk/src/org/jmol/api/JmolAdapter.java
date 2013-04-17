@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-04-10 06:41:04 -0500 (Wed, 10 Apr 2013) $
+ * $Revision: 18088 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -31,6 +31,7 @@ import java.util.Map;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JC;
@@ -240,8 +241,11 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
 
   /**
    * @param atomSetCollection  
+   * @param modelSet 
+   * @param baseAtomIndex 
+   * @param baseModelIndex 
    */
-  public void finish(Object atomSetCollection) {}
+  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {}
 
   /**
    * Get the type of this file or molecular model, if known.

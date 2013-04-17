@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-15 19:22:07 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17989 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -336,7 +336,7 @@ import java.util.Map;
   
   protected final Atom[] closest = new Atom[1];
 
-  public int findNearestAtomIndex(int x, int y, BS bsNot) {
+  public int findNearestAtomIndex(int x, int y, BS bsNot, int min) {
     if (atomCount == 0)
       return -1;
     closest[0] = null;
@@ -344,7 +344,7 @@ import java.util.Map;
       x <<= 1;
       y <<= 1;
     }
-    findNearest2(x, y, closest, bsNot);
+    findNearest2(x, y, closest, bsNot, min);
     shapeManager.findNearestShapeAtomIndex(x, y, closest, bsNot);
     int closestIndex = (closest[0] == null ? -1 : closest[0].index);
     closest[0] = null;
@@ -431,7 +431,7 @@ import java.util.Map;
     SymmetryInterface symmetry = (SymmetryInterface) Interface
         .getOptionInterface("symmetry.Symmetry");
     pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
-        viewer.getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
+        viewer.getFloat(T.pointgroupdistancetolerance), viewer.getFloat(T.pointgrouplineartolerance));
     if (!doAll && !asInfo)
       return pointGroup.getPointGroupName();
     Object ret = pointGroup.getPointGroupInfo(modelIndex, asDraw, asInfo, type,
@@ -441,7 +441,7 @@ import java.util.Map;
     return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
         : "") + ret;
   }
-
+  
   private BS modelsOf(BS bsAtoms, BS bsAllAtoms) {
     BS bsModels = BSUtil.newBitSet(modelCount);
     boolean isAll = (bsAtoms == null);
@@ -663,6 +663,13 @@ import java.util.Map;
     case T.trace:
       if (fValue > Shape.RADIUS_MAX)
         fValue = Shape.RADIUS_MAX;
+      if (values != null) {
+        // convert to atom indices
+        float[] newValues = new float[atomCount];
+        for (int i = bs.nextSetBit(0), ii = 0; i >= 0; i = bs.nextSetBit(i + 1))
+          newValues[i] = values[ii++];
+        values = newValues;
+      }
       //$FALL-THROUGH$
     case T.halo:
     case T.star:

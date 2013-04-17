@@ -1,6 +1,7 @@
 package org.jmol.adapter.readers.pymol;
 
 import org.jmol.util.JmolList;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -13,17 +14,28 @@ import org.jmol.viewer.Viewer;
  * generic Python Pickle file reader
  * only utilizing records needed for PyMOL.
  * 
+ * It appears we must read integers littleEndian and doubles bigEndian.
+ * 
+ * 2013.04.06 -- added memo functions. PyMOL pickling is using LONG_BINPUT way too often. 
+ * This results in a huge unnecessary memory overhead. My only solution is to only
+ * cache Strings in memo, and then only selectively -- not parts of movie; not when 
+ * markCount > 5 (residues). This seems to work, but it is still way overkill, since each 
+ * atom generates several items. My only   
+ * 
+ * see http://www.picklingtools.com/
+ * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 
  */
 class PickleReader {
 
   private JmolDocument binaryDoc;
-  private JmolList<Object> list = new  JmolList<Object>();
+  private JmolList<Object> stack = new  JmolList<Object>();
   private JmolList<Integer> marks = new  JmolList<Integer>();
   private JmolList<Object> build = new  JmolList<Object>();
   private boolean logging;
   private Viewer viewer;
+  private int id;
 
 
   final private static byte APPEND = 97; /* a */
@@ -48,7 +60,7 @@ class PickleReader {
   final private static byte SHORT_BINSTRING = 85; /* U */
   final private static byte STOP = 46; /* . */
 
-  //  final private static byte BINGET = 104; /* h */
+  final private static byte BINGET = 104; /* h */
   //  final private static byte BINPERSID = 81; /* Q */
   //  final private static byte DICT = 100; /* d */
   //  final private static byte DUP = 50; /* 2 */
@@ -59,30 +71,31 @@ class PickleReader {
   //  final private static byte INT = 73; /* I */
   //  final private static byte LIST = 108; /* l */
   //  final private static byte LONG = 76; /* L */
-  //  final private static byte LONG_BINGET = 106; /* j */
+  final private static byte LONG_BINGET = 106; /* j */
   //  final private static byte PERSID = 80; /* P */
   //  final private static byte POP = 48; /* 0 */
   //  final private static byte POP_MARK = 49; /* 1 */
   //  final private static byte PUT = 112; /* p */
   //  final private static byte REDUCE = 82; /* R */
   //  final private static byte STRING = 83; /* S */
-  //  final private static byte TUPLE = 116; /* t */
+  final private static byte TUPLE = 116; /* t */
   //  final private static byte UNICODE = 86; /* V */
 
   PickleReader(JmolDocument doc, Viewer viewer) {
     binaryDoc = doc;
-    logging = (viewer.getLogFile().length() > 0);
-    if (logging)
-      this.viewer = viewer;
+    this.viewer = viewer;
   }
 
   private void log(String s) {
     viewer.log(s + "\0");
   }
   
+  private Map<Integer, Object> memo = new Hashtable<Integer, Object>();
+  
   @SuppressWarnings("unchecked")
-  Map<String, Object> getMap() throws Exception {
-    String s, module, name;
+  Map<String, Object> getMap(boolean logging) throws Exception {
+    this.logging = logging;
+    String s;
     byte b;
     int i, mark;
     double d;
@@ -94,6 +107,8 @@ class PickleReader {
 
     while (going) {
       b = binaryDoc.readByte();
+      //if (logging)
+        //log(" " + b);
       switch (b) {
       case EMPTY_DICT: //}
         push(new Hashtable<String, Object>());
@@ -111,7 +126,7 @@ class PickleReader {
         push(Double.valueOf(d));
         break;
       case BININT:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         push(Integer.valueOf(i));
         break;
       case BININT1:
@@ -124,28 +139,59 @@ class PickleReader {
         break;
       case BINPUT:
         i = binaryDoc.readByte();
-        //unnec? temp.put(Integer.valueOf(i), peek());
+        o = peek();
+        if (o instanceof String) {
+          memo.put(Integer.valueOf(i), peek());
+          //System.out.println("BINPUT " + i + " " + peek());
+        }
         break;
       case LONG_BINPUT:
-        i = binaryDoc.readInt();
-        //unnec? temp.put(Integer.valueOf(i), peek());
+        i = binaryDoc.readIntLE();
+        o = peek();
+        if (o instanceof String && markCount < 6) {
+          if (markCount == 3 && "movie".equals(stack.get(marks.get(1).intValue() - 2)))
+            break;
+          //System.out.println("LONG_BINPUT " + i + " " + o + " " + memo.size());
+          memo.put(Integer.valueOf(i), peek());
+        }
+        break;
+      case BINGET:
+        i = binaryDoc.readByte();
+        o = memo.get(Integer.valueOf(i));
+        //System.out.println("BINGET " + i + " " + o);
+        push(o == null ? "BINGET" + (++id) : o);
+        break;
+      case LONG_BINGET:
+        i = binaryDoc.readIntLE();
+        o = memo.get(Integer.valueOf(i));
+        //if (!(o instanceof String)) {
+          //System.out.println("LONG_BINGET " + i + " " + o);
+         
+        //}
+        if (o == null) {
+          System.out.println("did not find memo item for " + i);
+          push("LONG_BINGET" + (++id));
+        } else {
+          push(o);
+        }
+        
         break;
       case SHORT_BINSTRING:
-        i = binaryDoc.readByte();
+        i = binaryDoc.readByte() & 0xff;
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
         push(s);
         break;
       case BINSTRING:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
         push(s);
         break;
       case BINUNICODE:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
@@ -155,9 +201,11 @@ class PickleReader {
         push(new  JmolList<Object>());
         break;
       case GLOBAL:
-        module = readString();
-        name = readString();
-        push(new String[] { "global", module, name });
+        l = new JmolList<Object>();
+        l.addLast("global");
+        l.addLast(readString());
+        l.addLast(readString());
+        push(l);
         break;
       case BUILD:
         o = pop();
@@ -165,10 +213,11 @@ class PickleReader {
         //System.out.println("build");
         break;
       case MARK:
-        i = list.size();
+        i = stack.size();
         if (logging)
           log("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
         marks.addLast(Integer.valueOf(i));
+        markCount++;
         break;
       case NONE:
         push(null);
@@ -179,21 +228,33 @@ class PickleReader {
         break;
       case SETITEM:
         o = pop();
+        if (!(peek() instanceof String))
+          System.out.println(peek() + " is not a string");
         s = (String) pop();
         ((Map<String, Object>) peek()).put(s, o);
         break;
       case SETITEMS:
         mark = getMark();
         l = getObjects(mark);
-        map = (Map<String, Object>) peek();
+        o = peek();
+        if (o instanceof JmolList) {
+          for (i = 0; i < l.size(); i++)
+            ((JmolList) o).addLast(l.get(i));
+        } else {
+        map = (Map<String, Object>) o;
         for (i = l.size(); --i >= 0;) {
           o = l.get(i);
           s = (String) l.get(--i);
           map.put(s, o);
         }
+        }
         break;
       case STOP:
         going = false;
+        break;
+      case TUPLE:
+        // used for view_dict
+        push(getObjects(getMark()));
         break;
       default:
 
@@ -202,10 +263,6 @@ class PickleReader {
             + binaryDoc.getPosition());
 
         //        switch (b) {
-        //        case BINGET:
-        //          i = binaryDoc.readByte();
-        //          push(temp.remove(Integer.valueOf(i)));
-        //          break;
         //        case BINPERSID:
         //          s = (String) pop();
         //          push(new Object[] { "persid", s }); // for now
@@ -257,10 +314,6 @@ class PickleReader {
         //          i = (int) binaryDoc.readLong();
         //          push(Long.valueOf(i));
         //          break;
-        //        case LONG_BINGET:
-        //          i = binaryDoc.readInt();
-        //          push(temp.remove(Integer.valueOf(i)));
-        //          break;
         //        case PERSID:
         //          s = readString();
         //          push(new Object[] { "persid", s });
@@ -282,13 +335,6 @@ class PickleReader {
         //          s = readString();
         //          push(Escape.unescapeUnicode(s));
         //          break;
-        //        case TUPLE:
-        //          l = getObjects(getMark());
-        //          Point3f pt = new Point3f();
-        //          pt.x = ((Double) l.get(0)).floatValue();
-        //          pt.y = ((Double) l.get(1)).floatValue();
-        //          pt.z = ((Double) l.get(2)).floatValue();
-        //          break;
         //        case UNICODE:
         //          a = readLineBytes();
         //          s = new String(a, "UTF-8");
@@ -299,16 +345,25 @@ class PickleReader {
     }
     if (logging)
       log("");
-    return (Map<String, Object>) list.remove(0);
+    System.out.println("PyMOL Pickle reader cached " + memo.size() + " tokens");
+    memo = null;
+    map = (Map<String, Object>) stack.remove(0);
+    if (map.size() == 0)
+      for (i = stack.size(); --i >= 0;) {
+        o = stack.get(i--);
+        s = (String) stack.get(i);
+        map.put(s, o);
+      }
+    return map;
   }
   
   private JmolList<Object> getObjects(int mark) {
-    int n = list.size() - mark;
+    int n = stack.size() - mark;
     JmolList<Object> args = new  JmolList<Object>();
     for (int j = 0; j < n; j++)
       args.addLast(null);
-    for (int j = n, i = list.size(); --i >= mark;)
-      args.set(--j, list.remove(i));
+    for (int j = n, i = stack.size(); --i >= mark;)
+      args.set(--j, stack.remove(i));
     return args;
   }
 
@@ -328,23 +383,25 @@ class PickleReader {
     return sb.toString();
   }
 
+  private int markCount;
+  
   private int getMark() {
-    return marks.remove(marks.size() - 1).intValue();
+    return marks.remove(--markCount).intValue();
   }
 
   private void push(Object o) {
     if (logging
         && (o instanceof String || o instanceof Double || o instanceof Integer))
       log((o instanceof String ? "'" + o + "'" : o) + ", ");
-    list.addLast(o);
+    stack.addLast(o);
   }
 
   private Object peek() {
-    return list.get(list.size() - 1);
+    return stack.get(stack.size() - 1);
   }
 
   private Object pop() {
-    return list.remove(list.size() - 1);
+    return stack.remove(stack.size() - 1);
   }
 
 }

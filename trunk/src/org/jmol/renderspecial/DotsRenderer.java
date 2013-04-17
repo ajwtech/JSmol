@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -26,6 +26,7 @@ package org.jmol.renderspecial;
 
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
+import org.jmol.script.T;
 import org.jmol.shapespecial.Dots;
 import org.jmol.util.BS;
 import org.jmol.util.C;
@@ -58,8 +59,7 @@ public class DotsRenderer extends ShapeRenderer {
 
   @Override
   protected boolean render() {
-    Dots dots = (Dots) shape;
-    render1(dots);
+    render1((Dots) shape);
     return false;
   }
 
@@ -73,10 +73,10 @@ public class DotsRenderer extends ShapeRenderer {
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
         : 0);
     if (!iShowSolid)
-      screenLevel += viewer.getDotDensity() - 3;
+      screenLevel += viewer.getInt(T.dotdensity) - 3;
     screenLevel = Math.max(Math.min(screenLevel, Dots.MAX_LEVEL), 0);
     screenDotCount = Geodesic.getVertexCount(screenLevel);
-    dotScale = viewer.getDotScale();
+    dotScale = viewer.getInt(T.dotscale);
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);

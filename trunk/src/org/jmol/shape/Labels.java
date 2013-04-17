@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
- * $Revision: 17960 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -375,7 +376,7 @@ public class Labels extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BS();
-    isScaled = viewer.getFontScaling();
+    isScaled = viewer.getBoolean(T.fontscaling);
     scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
   }

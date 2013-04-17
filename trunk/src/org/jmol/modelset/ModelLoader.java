@@ -104,7 +104,7 @@ public final class ModelLoader {
       viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
-    modelSet.showRebondTimes = viewer.getShowTiming();
+    modelSet.showRebondTimes = viewer.global.showTiming;
     if (bsNew == null) {
       initializeInfo(modelSetName, null);
       createModelSet(null, null, null);
@@ -181,9 +181,6 @@ public final class ModelLoader {
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
-      shapes = (JmolList<ModelSettings>) info.remove("shapes");
-      if (shapes != null)
-        doAddHydrogens = false;
       if (isTrajectory)
         modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
     }
@@ -256,7 +253,6 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean is2D;
-  private JmolList<ModelSettings> shapes;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -275,7 +271,7 @@ public final class ModelLoader {
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
     appendNew = (!merging || adapter == null || adapterModelCount > 1
-        || isTrajectory || viewer.getAppendNew());
+        || isTrajectory || viewer.getBoolean(T.appendnew));
     htAtomMap.clear();
     chainOf = new Chain[defaultGroupCount];
     group3Of = new String[defaultGroupCount];
@@ -356,10 +352,10 @@ public final class ModelLoader {
     if (adapter != null) {
       modelSet.calculatePolymers(groups, groupCount, baseGroupIndex, null);
       iterateOverAllNewStructures(adapter, atomSetCollection);
-      adapter.finish(atomSetCollection);
     }
 
-    setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
+    
+    setDefaultRendering(viewer.getInt(T.smallmoleculemaxatoms));
 
     RadiusData rd = viewer.getDefaultRadiusData();
     int atomCount = modelSet.atomCount;
@@ -374,7 +370,9 @@ public final class ModelLoader {
 
     freeze();
 
-    finalizeShapes(shapes);
+    finalizeShapes();
+    if (adapter != null)
+      adapter.finish(atomSetCollection, modelSet, baseModelIndex, baseAtomIndex);    
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
@@ -382,16 +380,19 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
+    if (modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+      return;
     SB sb = new SB();
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
-    for (int i = baseModelIndex; i < modelCount; i++)
-      if (models[i].isBioModel)
-        models[i].getDefaultLargePDBRendering(sb, maxAtoms);
+      for (int i = baseModelIndex; i < modelCount; i++)
+        if (models[i].isBioModel)
+          models[i].getDefaultLargePDBRendering(sb, maxAtoms);
     if (sb.length() == 0)
       return;
     sb.append("select *;");
-    String script = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolscript");
+    String script = (String) modelSet
+        .getModelSetAuxiliaryInfoValue("jmolscript");
     if (script == null)
       script = "";
     sb.append(script);
@@ -898,32 +899,40 @@ public final class ModelLoader {
     boolean haveMultipleBonds = false;
     while (iterBond.hasNext()) {
       order = (short) iterBond.getEncodedOrder();
-      bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      Bond b = bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      if (b != null) {
       if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR && order != JmolEdge.BOND_STEREO_FAR)
-        haveMultipleBonds = true; 
+        haveMultipleBonds = true;
+        float radius = iterBond.getRadius();
+        if (radius > 0)
+          b.setMad((short) (radius * 2000));
+        short colix = iterBond.getColix();
+        if (colix >= 0)
+          b.setColix(colix);
+      }
     }
-    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
+    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getBoolean(T.applysymmetrytobonds))
       Logger.info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
     modelSet.defaultCovalentMad = mad;
   }
   
   private JmolList<Bond> vStereo;
-  private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
+  private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
       Logger.error("bondAtoms cannot find atomUid1?:" + atomUid1);
-      return;
+      return null;
     }
     Atom atom2 = htAtomMap.get(atomUid2);
     if (atom2 == null) {
       Logger.error("bondAtoms cannot find atomUid2?:" + atomUid2);
-      return;
+      return null;
     }
     
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
-      return;
+      return null;
     boolean isNear = (order == JmolEdge.BOND_STEREO_NEAR);
     boolean isFar = (order == JmolEdge.BOND_STEREO_FAR);
     Bond bond;
@@ -943,6 +952,7 @@ public final class ModelLoader {
       modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
     }
     modelSet.setBond(modelSet.bondCount++, bond);
+    return bond;
   }
 
   /**
@@ -1098,7 +1108,8 @@ public final class ModelLoader {
     // 1. apply CONECT records and set bsExclude to omit them
     // 2. apply stereochemistry from JME
 
-    BS bsExclude = (modelSet.getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
+    BS bsExclude = (modelSet
+        .getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
         : new BS());
     if (bsExclude != null)
       modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
@@ -1106,9 +1117,9 @@ public final class ModelLoader {
     // 2. for each model in the collection,
     int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
-    boolean symmetryAlreadyAppliedToBonds = viewer.getApplySymmetryToBonds();
-    boolean doAutoBond = viewer.getAutoBond();
-    boolean forceAutoBond = viewer.getForceAutoBond();
+    boolean symmetryAlreadyAppliedToBonds = viewer.getBoolean(T.applysymmetrytobonds);
+    boolean doAutoBond = viewer.getBoolean(T.autobond);
+    boolean forceAutoBond = viewer.getBoolean(T.forceautobond);
     BS bs = null;
     boolean autoBonding = false;
     int modelCount = modelSet.modelCount;
@@ -1116,8 +1127,9 @@ public final class ModelLoader {
     if (!noAutoBond)
       for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
         modelAtomCount = models[i].bsAtoms.cardinality();
-        int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i, "initialBondCount");
-        
+        int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i,
+            "initialBondCount");
+
         boolean modelIsPDB = models[i].isBioModel;
         if (modelBondCount < 0) {
           modelBondCount = modelSet.bondCount;
@@ -1133,14 +1145,14 @@ public final class ModelLoader {
         // use ATOM, so that's a problem. Those atoms would not be excluded from
         // the
         // automatic bonding, and additional bonds might be made.
-        boolean doBond = (forceAutoBond || doAutoBond && (
-                modelBondCount == 0
-                || modelIsPDB && jmolData == null 
-                  && (modelSet.getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") 
-                      || modelBondCount < modelAtomCount / 2) 
-                || modelHasSymmetry && !symmetryAlreadyAppliedToBonds 
-                  && !modelSet.getModelAuxiliaryInfoBoolean(i, "hasBonds")
-                ));
+        boolean doBond = (forceAutoBond || doAutoBond
+            && (modelBondCount == 0
+                || modelIsPDB
+                && jmolData == null
+                && (modelSet
+                    .getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") || modelBondCount < modelAtomCount / 2) || modelHasSymmetry
+                && !symmetryAlreadyAppliedToBonds
+                && !modelSet.getModelAuxiliaryInfoBoolean(i, "hasBonds")));
         if (!doBond)
           continue;
         autoBonding = true;
@@ -1152,7 +1164,8 @@ public final class ModelLoader {
         }
       }
     if (autoBonding) {
-      modelSet.autoBondBs4(bs, bs, bsExclude, null, modelSet.defaultCovalentMad, viewer.checkAutoBondLegacy());
+      modelSet.autoBondBs4(bs, bs, bsExclude, null,
+          modelSet.defaultCovalentMad, viewer.getBoolean(T.legacyautobonding));
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
@@ -1296,7 +1309,7 @@ public final class ModelLoader {
       modelSet.freezeModels();
       return;
     }
-    boolean asDSSP = viewer.getDefaultStructureDSSP();
+    boolean asDSSP = viewer.getBoolean(T.defaultstructuredssp);
     String ret = modelSet.calculateStructuresAllExcept(structuresDefinedInFile, 
           asDSSP, 
           false, true, true, asDSSP); // now DSSP
@@ -1420,25 +1433,17 @@ public final class ModelLoader {
 
   ///////////////  shapes  ///////////////
   
-  private void finalizeShapes(JmolList<ModelSettings> shapeSettings) {
+  private void finalizeShapes() {
     modelSet.shapeManager = viewer.getShapeManager();
     modelSet.shapeManager.setModelSet(modelSet);
     modelSet.setBsHidden(viewer.getHiddenSet());
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
-    if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())      
+    if (modelSet.someModelsHaveAromaticBonds && viewer.getBoolean(T.smartaromatic))      
       modelSet.assignAromaticBondsBs(false, null);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
-    if (shapeSettings != null) {
-      for (int i = 0; i < shapeSettings.size(); i++) {
-        ModelSettings ss = shapeSettings.get(i);
-        ss.offset(baseModelIndex, baseAtomIndex);
-        ss.createShape(modelSet);
-      }
-    }
-    
   }
 
   /**
@@ -1508,7 +1513,7 @@ public final class ModelLoader {
     P3 pt = new P3();
     P3 v = new P3();
     Atom[] atoms = modelSet.atoms;
-    float tolerance = viewer.getLoadAtomDataTolerance();
+    float tolerance = viewer.getFloat(T.loadatomdatatolerance);
     if (modelSet.unitCells != null)
       for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
           .nextSetBit(i + 1))

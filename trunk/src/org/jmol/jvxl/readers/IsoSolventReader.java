@@ -38,7 +38,6 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.P4;
-import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
@@ -373,8 +372,6 @@ class IsoSolventReader extends AtomDataReader {
       return getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     int iAtom = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
-    //if (iAtom < 1 || iAtom -   1 >= atomIndex.length)
-      //System.out.println("isosolv HHHHHMMMM");
     iAtomSurface = atomIndex[iAtom - 1];
     float fraction = fReturn[0] = MeshSurface
         .getSphericalInterpolationFraction((voxelSource[vA] < 0 ? solventRadius : 
@@ -796,15 +793,15 @@ class IsoSolventReader extends AtomDataReader {
       this.ib = Math.max(ia, ib);
     }
 
-//    private JmolList<Face> aFaces;
+    private JmolList<Face> aFaces;
     void addFace(Face f) {
       if (f == null) {
         nInvalid++;
         return;
       }
-  //    if (aFaces == null)
-    //    aFaces = new  JmolList<Face>();
-      //aFaces.add(f);
+      if (aFaces == null)
+        aFaces = new  JmolList<Face>();
+      aFaces.addLast(f);
       nFaces++;
     }
 
@@ -812,16 +809,16 @@ class IsoSolventReader extends AtomDataReader {
       return (nFaces > 0 ? nFaces : nInvalid > 0 ? -nInvalid : 0);
     }
 
-    /*
-        void dump() {
-          System.out.println("draw e" + (nTest++) + " @{point"
-              + Point3f.new3(atomXyz[ia]) + "} @{point" + Point3f.new3(atomXyz[ib])
-              + "} color green # " + getType());
-          for (int i = 0; i < aFaces.size(); i++)
-            aFaces.get(i).dump();
-        }
+//    
+//        void dump() {
+//          System.out.println("draw e" + (nTest++) + " @{point"
+//              + P3.newP(atomXyz[ia]) + "} @{point" + P3.newP(atomXyz[ib])
+//              + "} color green # " + getType());
+//          for (int i = 0; i < aFaces.size(); i++)
+//            aFaces.get(i).dump();
+//        }
     
-   */
+   
     @Override
     public String toString() {
       return ia + "_" + ib;
@@ -857,21 +854,20 @@ class IsoSolventReader extends AtomDataReader {
         edges[k].addFace(f);
     }
 
-    protected void dump() {
-      return;
-/*
-      Point3f ptA = atomXyz[ia];
-      Point3f ptB = atomXyz[ib];
-      Point3f ptC = atomXyz[ic];
-      String color = "green";
-      dumpLine(ptA, ptB, "f", color);
-      dumpLine(ptB, ptC, "f", color);
-      dumpLine(ptC, ptA, "f", color);
-      dumpLine2(pS, ptA, "f", solventRadius, color, "white");
-      dumpLine2(pS, ptB, "f", solventRadius, color, "white");
-      dumpLine2(pS, ptC, "f", solventRadius, color, "white");
- */
-    }
+//    protected void dump() {
+//      //return;
+//
+//      P3 ptA = atomXyz[ia];
+//      P3 ptB = atomXyz[ib];
+//      P3 ptC = atomXyz[ic];
+//      String color = "green";
+//      //dumpLine(ptA, ptB, "f", color);
+//      //dumpLine(ptB, ptC, "f", color);
+//      //dumpLine(ptC, ptA, "f", color);
+//      dumpLine2(pS, ptA, "f", solventRadius, color, "white");
+//      dumpLine2(pS, ptB, "f", solventRadius, color, "white");
+//      dumpLine2(pS, ptC, "f", solventRadius, color, "white");
+//    }
   }
 
   private void getFaces() {
@@ -953,15 +949,17 @@ class IsoSolventReader extends AtomDataReader {
     P3 ptC = atomXyz[ic];
     float rCS = atomRadius[ic] + solventRadius;
     float dCT = Measure.distanceToPlane(plane, ptC);
-    if (Math.abs(dCT) >= rCS)
-      return false;
+    if (Math.abs(dCT) >= rCS * 0.9f) 
+      // need a fudge factor here to avoid extremely 
+      // flat situations (1bna isosurface solvent 1.4)
+      return false; // out of range
     double dST = Math.sqrt(rCS * rCS - dCT * dCT);
     ptTemp.scaleAdd2(-dCT, vTemp, ptC);
     double dpT = p.distance(ptTemp);
     float dsp2 = (float) (dPS * dPS);
     double cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
-    if (Math.abs(cosTheta) >= 1)
-      return false;
+    if (Math.abs(cosTheta) >= 0.99) 
+      return false; // very close to all points A, B, P, S, T, and C all in same plane
     V3 vXS = vTemp2;
     vXS.setT(ptTemp);
     vXS.sub(p);
@@ -1047,9 +1045,9 @@ class IsoSolventReader extends AtomDataReader {
       P3 ptB = atomXyz[f.ib];
       P3 ptC = atomXyz[f.ic];
       P3 ptS = f.pS;
-      if (Logger.debugging) {
-        f.dump();
-      }
+      //if (Logger.debugging) {
+        //f.dump();
+      //}
       // For the second pass (exterior of faces), we track 
       // voxels that have already been over-written by another face.
       // If they have, we go for the more positive one (further out);
@@ -1328,31 +1326,31 @@ class IsoSolventReader extends AtomDataReader {
 
   ///////////////// debugging ////////////////
 
-  protected int nTest;
-
-  void dumpLine(P3 pt1, Tuple3f pt2, String label, String color) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
-        + "} @{point" + P3.newP(pt2) + "} color " + color);
-  }
-
-  void dumpLine2(P3 pt1, P3 pt2, String label, float d,
-                 String color1, String color2) {
-    V3 pt = new V3();
-    pt.setT(pt2);
-    pt.sub(pt1);
-    pt.normalize();
-    pt.scale(d);
-    pt.add(pt1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
-        + "} @{point" + P3.newP(pt) + "} color " + color1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
-        + "} @{point" + P3.newP(pt2) + "} color " + color2);
-  }
-
-  void dumpPoint(P3 pt, String label, String color) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
-        + "} color " + color);
-  }
+//  protected int nTest;
+//
+//  void dumpLine(P3 pt1, Tuple3f pt2, String label, String color) {
+//    sg.log("draw ID \"x" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
+//        + "} @{point" + P3.newP(pt2) + "} color " + color);
+//  }
+//
+//  void dumpLine2(P3 pt1, P3 pt2, String label, float d,
+//                 String color1, String color2) {
+//    V3 pt = new V3();
+//    pt.setT(pt2);
+//    pt.sub(pt1);
+//    pt.normalize();
+//    pt.scale(d);
+//    pt.add(pt1);
+//    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
+//        + "} @{point" + P3.newP(pt) + "} color " + color1);
+//    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
+//        + "} @{point" + P3.newP(pt2) + "} color " + color2);
+//  }
+//
+//  void dumpPoint(P3 pt, String label, String color) {
+//    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
+//        + "} color " + color);
+//  }
 
   @Override
   public float getValueAtPoint(P3 pt) {

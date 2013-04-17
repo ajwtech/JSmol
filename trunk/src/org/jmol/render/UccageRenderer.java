@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-15 07:16:24 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17980 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -26,6 +26,7 @@ package org.jmol.render;
 //import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.script.T;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
@@ -59,7 +60,7 @@ public class UccageRenderer extends CageRenderer {
     font3d = g3d.getFont3DScaled(((Uccage) shape).font3d, imageFontScaling);
     int mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     if (mad == 0 || viewer.isJmolDataFrame() || viewer.isNavigating()
-        && viewer.getNavigationPeriodic())
+        && viewer.getBoolean(T.navigationperiodic))
       return false;
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
     boolean needTranslucent = C.isColixTranslucent(colix);
@@ -99,7 +100,7 @@ public class UccageRenderer extends CageRenderer {
     }
     P3[] axisPoints = viewer.getAxisPoints();
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0
-        || viewer.getAxesScale() < 2 || axisPoints == null);
+        || viewer.getFloat(T.axesscale) < 2 || axisPoints == null);
     P3[] aPoints = axisPoints;
     for (int x = (int) cell0.x; x < cell1.x; x++) {
       for (int y = (int) cell0.y; y < cell1.y; y++) {
@@ -126,7 +127,7 @@ public class UccageRenderer extends CageRenderer {
       }
     }
 
-    if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly()
+    if (viewer.getBoolean(T.displaycellparameters) && !viewer.isPreviewOnly()
         && !unitcell.isPeriodic())
       renderInfo(unitcell);
   }
