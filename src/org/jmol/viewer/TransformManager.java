@@ -115,14 +115,14 @@ public class TransformManager {
       matrixRotate.setM(m);
     //}
     setZoomEnabled(true);
-    zoomToPercent(viewer.isModelKitMode() ? 50 : 100);
+    zoomToPercent(viewer.global.modelKitMode ? 50 : 100);
     zoomPercent = zoomPercentSetting;
     slabReset();
     resetFitToScreen(true);
     if (viewer.isJmolDataFrame()) {
       fixedRotationCenter.set(0, 0, 0);
     } else {
-      if (viewer.getAxesOrientationRasmol())
+      if (viewer.global.axesOrientationRasmol)
         rotateX((float) Math.PI);
     }
     viewer.saveOrientation("default");
@@ -800,7 +800,7 @@ public class TransformManager {
   int zDepthValue;
 
   int getZShadeStart() {
-    return (zShadeEnabled ? zSlabValue : 0);
+    return (zShadeEnabled ? zDepthValue : 0);
   }
 
   float slabRange = 0f;
@@ -1267,7 +1267,7 @@ public class TransformManager {
   }
 
   private void resetFitToScreen(boolean andCenter) {
-    scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
+    scaleFitToScreen(andCenter, viewer.global.zoomLarge, true, true);
   }
 
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
@@ -1365,7 +1365,7 @@ public class TransformManager {
     float newZoom = getZoomSetting();
     if (zoomPercent != newZoom) {
       zoomPercent = newZoom;
-      if (!viewer.getFontCaching())
+      if (!viewer.global.fontCaching)
         viewer.getGraphicsData().clearFontCache();
     }
     calcCameraFactors();
@@ -1666,7 +1666,7 @@ public class TransformManager {
         motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom,
           xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
-      if (nSteps <= 0 || viewer.waitForMoveTo()) {
+      if (nSteps <= 0 || viewer.global.waitForMoveTo) {
         if (nSteps > 0)
           motion.setEval(eval);
         motion.run();
@@ -2010,7 +2010,7 @@ public class TransformManager {
   public void setVibrationT(float t) {
     vibrationRadians = (float) (t * twoPI);
     if (vibrationScale == 0)
-      vibrationScale = viewer.getVibrationScale();
+      vibrationScale = viewer.global.vibrationScale;
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
   }
 
@@ -2103,8 +2103,10 @@ public class TransformManager {
   }
 
   public float setRotationRadius(float angstroms, boolean doAll) {
+    //System.out.println("tm setRotationRadius1 " + angstroms);
     angstroms = (modelRadius = (angstroms <= 0 ? viewer
         .calcRotationRadius(fixedRotationCenter) : angstroms));
+    //System.out.println("tm setRotationRadius2 " + angstroms);
     if (doAll)
       viewer.setRotationRadius(angstroms, false);
     return angstroms;
@@ -2263,10 +2265,10 @@ public class TransformManager {
     // model center offset for zoom 100
     float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; // (s)
 
-    //System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
-    // perspectiveDepth
-    // + " spC " + screenPixelCount + " vR " + visualRange
-    // + " sDPPA " + scaleDefaultPixelsPerAngstrom);
+//    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
+//     perspectiveDepth + " s3dspi " + scale3DAngstromsPerInch + " " 
+//     + " spC " + screenPixelCount + " vR " + visualRange
+//     + " sDPPA " + scaleDefaultPixelsPerAngstrom);
 
     if (mode == MODE_NAVIGATION) {
       calcNavCameraFactors(offset100);
@@ -2287,8 +2289,10 @@ public class TransformManager {
     // so that's sppa = (spc / vR) * rPO * (vR / 2) / mR * rPO = spc/2/mR
 
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)
-    //System.out.println("transformman scalppa modelrad " +
-    // scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
+//    System.out.println("transformman zoom scalppa modelrad " + zoomPercent + " " +
+//     scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange 
+//     + " -- "+ viewer.dimScreen.width+ "  "+ viewer.dimScreen.height);
+//    System.out.println("modelCenterOffset " + modelCenterOffset + " " + modelRadius);
   }
 
   private void calcNavCameraFactors(float offset100) {

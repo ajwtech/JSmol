@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-02 11:23:01 -0600 (Sat, 02 Mar 2013) $
- * $Revision: 17958 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -29,6 +29,7 @@ package org.jmol.render;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
@@ -85,37 +86,40 @@ public class SticksRenderer extends ShapeRenderer {
     if (!isPass2)
       bsForPass2.clearAll();
     slabbing = viewer.getSlabEnabled();
-    slabByAtom = viewer.getSlabByAtom();          
+    slabByAtom = viewer.getBoolean(T.slabbyatom);
     endcaps = GData.ENDCAPS_SPHERICAL;
-    dashDots = (viewer.getPartialDots() ? sixdots : dashes);
-    multipleBondSpacing = viewer.getMultipleBondSpacing();
+    dashDots = (viewer.getBoolean(T.partialdots) ? sixdots : dashes);
+    multipleBondSpacing = viewer.getFloat(T.multiplebondspacing);
     isCartesianExport = (exportType == GData.EXPORT_CARTESIAN);
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
-    multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
-    showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
+    multipleBondRadiusFactor = viewer.getFloat(T.multiplebondradiusfactor);
+    showMultipleBonds = multipleBondSpacing != 0
+        && viewer.getBoolean(T.showmultiplebonds);
     modeMultipleBond = viewer.getModeMultipleBond();
-    renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
-    ssbondsBackbone = viewer.getSsbondsBackbone();
-    hbondsBackbone = viewer.getHbondsBackbone();
+    renderWireframe = viewer.getInMotion() && viewer.getBoolean(T.wireframerotation);
+    ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
+    hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
-    hbondsSolid = viewer.getHbondsSolid();
+    hbondsSolid = viewer.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
     Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
-    if (isPass2)
-      for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2.nextSetBit(i + 1)) {
+    if (!isExport && isPass2)
+      for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2
+          .nextSetBit(i + 1)) {
         bond = bonds[i];
         renderBond();
       }
     else
-    for (int i = modelSet.bondCount; --i >= 0; ) {
-      bond = bonds[i];
-      if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0 && renderBond()) {
-        needTranslucent = true;
-        bsForPass2.set(i);
+      for (int i = modelSet.bondCount; --i >= 0;) {
+        bond = bonds[i];
+        if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+            && renderBond()) {
+          needTranslucent = true;
+          bsForPass2.set(i);
+        }
       }
-    }
     return needTranslucent;
   }
 

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-03-17 19:52:47 -0500 (Sat, 17 Mar 2012) $
- * $Revision: 16899 $
+ * $Date: 2013-04-13 17:43:06 -0500 (Sat, 13 Apr 2013) $
+ * $Revision: 18108 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -25,6 +25,8 @@
 package org.jmol.api;
 
 import java.util.Map;
+
+import org.jmol.util.Dimension;
 
 public interface JmolStatusListener extends JmolCallbackListener {
 /*
@@ -78,7 +80,7 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public void showUrl(String url);
 
-  public void resizeInnerPanel(String data);
+  public Dimension resizeInnerPanel(String data);
 
   public Map<String, Object> getProperty(String type);
 

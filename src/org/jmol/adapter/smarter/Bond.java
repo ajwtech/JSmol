@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-09-26 01:57:24 -0500 (Wed, 26 Sep 2012) $
- * $Revision: 17579 $
+ * $Date: 2013-04-12 08:44:56 -0500 (Fri, 12 Apr 2013) $
+ * $Revision: 18104 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -27,8 +27,10 @@ public class Bond extends AtomSetObject {
   public int atomIndex1;
   public int atomIndex2;
   public int order;
+  public float radius = -1;
+  public short colix = -1;
 
-  public Bond(int atomIndex1, int atomIndex2, int order) {
+  public Bond (int atomIndex1, int atomIndex2, int order) {
     this.atomIndex1 = atomIndex1;
     this.atomIndex2 = atomIndex2;
     this.order = order;

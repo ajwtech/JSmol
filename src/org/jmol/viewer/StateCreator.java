@@ -354,8 +354,8 @@ public class StateCreator implements JmolStateCreator {
         //        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");
       }
-      commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
-      if (viewer.isModelKitMode())
+      commands.append("  set fontScaling " + viewer.getBoolean(T.fontscaling) + ";\n");
+      if (viewer.getBoolean(T.modelkitmode))
         commands.append("  set modelKitMode true;\n");
     }
     if (sfunc != null)
@@ -2297,7 +2297,7 @@ public class StateCreator implements JmolStateCreator {
     scriptEditor.setVisible(true);
   }
 
-  public void log(String data) {
+  public void logToFile(String data) {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)

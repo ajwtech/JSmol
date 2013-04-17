@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development
  *
@@ -132,15 +132,15 @@ public class SelectionManager {
   void select(BS bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
-      if (!viewer.getRasmolSetting(T.hydrogen))
+      if (!viewer.getBoolean(T.hydrogen))
         excludeSelectionSet(viewer.getAtomBits(T.hydrogen, null));
-      if (!viewer.getRasmolSetting(T.hetero))
+      if (!viewer.getBoolean(T.hetero))
         excludeSelectionSet(viewer.getAtomBits(T.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
     }
-    boolean reportChime = viewer.getMessageStyleChime();
+    boolean reportChime = viewer.getBoolean(T.messagestylechime);
     if (!reportChime && isQuiet)
       return;
     int n = getSelectionCount();

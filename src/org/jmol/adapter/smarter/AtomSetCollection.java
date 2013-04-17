@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-15 19:22:07 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17989 $
+ * $Date: 2013-04-15 21:29:53 -0500 (Mon, 15 Apr 2013) $
+ * $Revision: 18111 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -190,15 +191,17 @@ public class AtomSetCollection {
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
   public boolean allowMultiple;
+  AtomSetCollectionReader reader;
   
   public AtomSetCollection(String fileTypeName,
-      AtomSetCollectionReader atomSetCollectionReader, 
+      AtomSetCollectionReader reader, 
       AtomSetCollection[] array, JmolList<?> list) {
     
     // merging files
     
     this.fileTypeName = fileTypeName;
-    allowMultiple = (atomSetCollectionReader == null || atomSetCollectionReader.desiredVibrationNumber < 0);
+    this.reader = reader;
+    allowMultiple = (reader == null || reader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
     Properties p = new Properties();
     p.put("PATH_KEY", SmarterJmolAdapter.PATH_KEY);
@@ -445,7 +448,9 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfoForSet(type, lists[i], i);
   }
 
-  void finish() {
+  void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+    if (reader != null)
+      reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];

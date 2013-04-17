@@ -231,12 +231,12 @@ abstract public class ModelCollection extends BondCollection {
     if (!isPDB)
       return;
     
-    
+    boolean checkConnections  = !viewer.getBoolean(T.pdbsequential);
     for (int i = 0; i < modelCount; i++)
       if ((modelsExcluded == null || !modelsExcluded.get(i))
           && models[i].isBioModel) {
         models[i].calculatePolymers(groups, groupCount, baseGroupIndex,
-            modelsExcluded);
+            modelsExcluded, checkConnections);
         return;
       }
   }
@@ -512,7 +512,7 @@ abstract public class ModelCollection extends BondCollection {
     switch (tok) {
     case T.valence:
     case T.formalcharge:
-      if (viewer.getSmartAromatic())
+      if (viewer.getBoolean(T.smartaromatic))
         assignAromaticBonds();
       break;
     }
@@ -1032,9 +1032,9 @@ abstract public class ModelCollection extends BondCollection {
             .getBioPolymerCount());
   }
 
-  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList) {
-    boolean isTraceAlpha = viewer.getTraceAlpha();
-    float sheetSmoothing = viewer.getSheetSmoothing();
+  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
+                                         boolean isTraceAlpha,
+                                         float sheetSmoothing) {
     for (int i = 0; i < modelCount; ++i)
       models[i].getPolymerPointsAndVectors(bs, vList, isTraceAlpha,
           sheetSmoothing);
@@ -1120,7 +1120,7 @@ abstract public class ModelCollection extends BondCollection {
       return;
     char ctype = 'S';//(viewer.getTestFlag3() ? 's' : 'S');
     char qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getHelixStep();
+    int mStep = viewer.getInt(T.helixstep);
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
     // testflag3 OFF --> final: Kohler's new quaternion-based straightness
     for (int i = modelCount; --i >= 0;)
@@ -1832,7 +1832,7 @@ abstract public class ModelCollection extends BondCollection {
 
   protected BS bsAll;
 
-  protected ShapeManager shapeManager;
+  public ShapeManager shapeManager;
 
   /**
    * note -- this method returns ALL atoms, including deleted.
@@ -1898,7 +1898,7 @@ abstract public class ModelCollection extends BondCollection {
       P3 ptcell = P3.new3(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
       pt = new P3();
-      boolean isAbsolute = !viewer.getFractionalRelative();
+      boolean isAbsolute = !viewer.getBoolean(T.fractionalrelative);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, ptcell, pt, isAbsolute))
           bs.set(i);
@@ -1913,7 +1913,7 @@ abstract public class ModelCollection extends BondCollection {
       int seqcodeB = info[1];
       char chainID = (char) info[2];
       bs = new BS();
-      boolean caseSensitive = viewer.getChainCaseSensitive();
+      boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
       if (!caseSensitive)
         chainID = Character.toUpperCase(chainID);
       for (int i = modelCount; --i >= 0;)
@@ -2275,8 +2275,8 @@ abstract public class ModelCollection extends BondCollection {
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
-    float bondTolerance = viewer.getBondTolerance();
-    float minBondDistance = viewer.getMinBondDistance();
+    float bondTolerance = viewer.getFloat(T.bondtolerance);
+    float minBondDistance = viewer.getFloat(T.minbonddistance);
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     if (showRebondTimes)// && Logger.debugging)
@@ -2366,8 +2366,8 @@ abstract public class ModelCollection extends BondCollection {
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
-    float bondTolerance = viewer.getBondTolerance();
-    float minBondDistance = viewer.getMinBondDistance();
+    float bondTolerance = viewer.getFloat(T.bondtolerance);
+    float minBondDistance = viewer.getFloat(T.minbonddistance);
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     initializeBspf();
@@ -2485,7 +2485,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       }
     BS bsHBonds = new BS();
-    boolean useRasMol = viewer.getHbondsRasmol();
+    boolean useRasMol = viewer.getBoolean(T.hbondsrasmol);
     if (bsB == null || useRasMol && !haveHAtoms) {
       Logger.info((bsB == null ? "DSSP " : "RasMol")
           + " pseudo-hbond calculation");
@@ -2512,8 +2512,8 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     }
-    float maxXYDistance = viewer.getHbondsDistanceMax();
-    float minAttachedAngle = (float) (viewer.getHbondsAngleMin() * Math.PI / 180);
+    float maxXYDistance = viewer.getFloat(T.hbondsdistancemaximum);
+    float minAttachedAngle = (float) (viewer.getFloat(T.hbondsangleminimum) * Math.PI / 180);
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
     float hxbondMin2 = 1;
@@ -2758,6 +2758,42 @@ abstract public class ModelCollection extends BondCollection {
       symTemp = (SymmetryInterface) Interface
           .getOptionInterface("symmetry.Symmetry");
     return symTemp;
+  }
+
+  public void createModels(int n) {
+    int newModelCount = modelCount + n;
+    Model[] newModels = (Model[]) ArrayUtil.arrayCopyObject(models,
+        newModelCount);
+    validateBspf(false);
+    modelNumbers = ArrayUtil.arrayCopyI(modelNumbers, newModelCount);
+    modelFileNumbers = ArrayUtil.arrayCopyI(modelFileNumbers, newModelCount);
+    modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelNumbersForAtomLabel,
+        newModelCount);
+    modelNames = ArrayUtil.arrayCopyS(modelNames, newModelCount);
+    frameTitles = ArrayUtil.arrayCopyS(frameTitles, newModelCount);
+    int f = getModelFileNumber(modelCount - 1) / 1000000 + 1;
+    for (int i = modelCount, pt = 0; i < newModelCount; i++) {
+      modelNumbers[i] = i + modelCount;
+      modelFileNumbers[i] = f * 1000000 + (++pt);
+      modelNumbersForAtomLabel[i] = modelNames[i] = f + "." + pt;
+    }    
+    thisStateModel = -1;
+    String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
+    if (group3Lists != null) {
+      int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
+      group3Lists = ArrayUtil.arrayCopyS(group3Lists, newModelCount);
+      group3Counts = ArrayUtil.arrayCopyII(group3Counts, newModelCount);
+      modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
+      modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+    }
+    unitCells = (SymmetryInterface[]) ArrayUtil.arrayCopyObject(unitCells,
+        newModelCount);
+    for (int i = modelCount; i < newModelCount; i++) {
+      newModels[i] = new Model((ModelSet) this, i, -1, null, null, null);
+      newModels[i].loadState = " model create #" + i + ";";
+    }
+    models = newModels;
+    modelCount = newModelCount;
   }
 
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
@@ -3215,7 +3251,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomNames == null)
       atomNames = new String[atomCount];
     // now, we'll assign 1-based atom numbers within each model
-    boolean isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
+    boolean isZeroBased = isXYZ && viewer.getBoolean(T.zerobasedxyzrasmol);
     int lastModelIndex = Integer.MAX_VALUE;
     int atomNo = 1;
     for (int i = iFirst; i < atomCount; ++i) {

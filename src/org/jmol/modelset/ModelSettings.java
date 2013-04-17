@@ -136,18 +136,22 @@ public class ModelSettings {
           bsAtoms);
       String s = info.toString().replace('\'', '_').replace('"', '_');
       s = "script('isosurface ID \"" + s + "\"  model "
-          + m.models[modelIndex].getModelNumberDotted() + " select "
-          + Escape.eBS(bsAtoms) + " solvent " + (size / 1000f)
+          + m.models[modelIndex].getModelNumberDotted() + " select ("
+          + Escape.eBS(bsAtoms) + " and not solvent) only solvent " + (size / 1000f)
           + " map property color')";
       if (translucency > 0)
         s += " translucent " + translucency;
-      //System.out.println("shapeSettings: " + s);
+      System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "labels", info, bsAtoms);
       return;
+    case JC.SHAPE_DOTS:
+      sm.loadShape(id);
+      sm.setShapePropertyBs(id, "ignore",BSUtil.copyInvert(bsAtoms, sm.viewer.getAtomCount()), null);
+      break;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;

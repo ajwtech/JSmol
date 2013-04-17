@@ -1,9 +1,9 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-06-10 13:54:48 -0500 (Sun, 10 Jun 2012) $
- * $Revision: 17269 $
+ * $Date: 2006-02-25 17:19:14 -0600 (Sat, 25 Feb 2006) $
+ * $Revision: 4529 $
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2002-2005  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,19 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.api;
+package org.jmol.shapespecial;
 
-public abstract class JmolAdapterBondIterator {
-	public abstract boolean hasNext();
-
-	public abstract Object getAtomUniqueID1();
-
-	public abstract Object getAtomUniqueID2();
-
-	public abstract int getEncodedOrder();
-
-  public abstract float getRadius();
-  
-  public abstract short getColix();
+public class CGO extends Draw {
 }
-

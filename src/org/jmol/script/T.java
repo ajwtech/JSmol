@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 22:04:12 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17978 $
+ * $Date: 2013-04-16 07:36:10 -0500 (Tue, 16 Apr 2013) $
+ * $Revision: 18114 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -367,7 +367,8 @@ public class T {
   public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
 //final static int boundbox     see mathproperty
 //final static int contact      see mathfunc
-  public final static int dipole       = shapeCommand | 6;
+  public final static int cgo          = shapeCommand | 6; // PyMOL Compiled Graphical Object
+  public final static int dipole       = shapeCommand | 7;
   public final static int draw         = shapeCommand | 8;
   public final static int frank        = shapeCommand | 10 | deprecatedparam | defaultON;
   public final static int isosurface   = shapeCommand | 12;
@@ -860,6 +861,7 @@ public class T {
   public final static int spinx                          = floatparam | 54;
   public final static int spiny                          = floatparam | 56;
   public final static int spinz                          = floatparam | 58;
+  public final static int starscale                      = floatparam | 59; // Jmol 13.1.15
   public final static int stereodegrees                  = floatparam | 60;
   public final static int strutdefaultradius             = floatparam | 62;
   public final static int strutlengthmaximum             = floatparam | 64;
@@ -930,9 +932,10 @@ public class T {
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
-  public final static int cartoonbaseedges               = booleanparam | 42;
-  public final static int cartoonrockets                 = booleanparam | 43;
-  public final static int cartoonfancy                   = booleanparam | 44;
+  public final static int cartoonbaseedges               = booleanparam | 41;
+  public final static int cartoonrockets                 = booleanparam | 42;
+  public final static int cartoonsfancy                   = booleanparam | 43;
+  public final static int cartoonladders                  = booleanparam | 44;
   public final static int celshading                     = booleanparam | 45;
   public final static int chaincasesensitive             = booleanparam | 46;
   public final static int colorrasmol                    = booleanparam | 47;
@@ -1541,6 +1544,7 @@ public class T {
       "center",            T.t(center),
       "centre",            null,
       "centerat",          T.t(centerAt),
+      "cgo",               T.t(cgo),
       "color",             T.t(color),
       "colour",            null,
       "compare",           T.t(compare),
@@ -1946,6 +1950,7 @@ public class T {
       "specialPosition", T.t(specialposition),
       "sqrt",            T.t(sqrt),
       "split",           T.t(split),
+      "starScale",       T.t(starscale),
       "stddev",          T.t(stddev),
       "straightness",    T.t(straightness),
       "structureId",     T.t(strucid),
@@ -2318,7 +2323,9 @@ public class T {
       "bonds",                                    T.t(bonds),
       "bond",                                     null, 
       "cartoonBaseEdges",                         T.t(cartoonbaseedges),
-      "cartoonFancy",                             T.t(cartoonfancy),
+      "cartoonsFancy",                            T.t(cartoonsfancy),
+      "cartoonFancy",                             null,
+      "cartoonLadders",                           T.t(cartoonladders),
       "cartoonRockets",                           T.t(cartoonrockets),
       "chainCaseSensitive",                       T.t(chaincasesensitive),
       "colorRasmol",                              T.t(colorrasmol),

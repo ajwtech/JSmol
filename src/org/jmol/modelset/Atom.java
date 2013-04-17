@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17976 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -1365,7 +1365,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getVibrationCoord('Z');
     case T.vectorscale:
       V3 v = atom.getVibrationVector();
-      return (v == null ? 0 : v.length() * viewer.getVectorScale());
+      return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
 
     }
     return atomPropertyInt(atom, tokWhat);

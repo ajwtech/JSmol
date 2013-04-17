@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-23 13:57:52 -0500 (Sat, 23 Mar 2013) $
- * $Revision: 18009 $
+ * $Date: 2013-04-16 10:58:50 -0500 (Tue, 16 Apr 2013) $
+ * $Revision: 18117 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -64,7 +64,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private float aspectRatio;
   private int hermiteLevel;
   private float sheetSmoothing;
-  protected boolean cartoonFancy;
+  protected boolean cartoonsFancy;
 
 
   private Mesh[] meshes;
@@ -101,19 +101,19 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    boolean TF = isExport || viewer.getHighResolution();
+    boolean TF = (isExport || viewer.getBoolean(T.highresolution));
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;
 
-    boolean v = viewer.getCartoonFlag(T.cartoonfancy);
-    if (cartoonFancy != v) {
+    boolean v = viewer.getBoolean(T.cartoonsfancy);
+    if (cartoonsFancy != v) {
       invalidateMesh = true;
-      cartoonFancy = v;
+      cartoonsFancy = v;
     }
     int val1 = viewer.getHermiteLevel();
     val1 = (val1 <= 0 ? -val1 : viewer.getInMotion() ? 0 : val1);
-    if (cartoonFancy)
+    if (cartoonsFancy)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
       //val1 = 5; // forces hermite for 3D exporters
@@ -121,9 +121,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     hermiteLevel = Math.min(val1, 8);
 
-    int val = viewer.getRibbonAspectRatio();
+    int val = viewer.getInt(T.ribbonaspectratio);
     val = Math.min(Math.max(0, val), 20);
-    if (cartoonFancy && val >= 16)
+    if (cartoonsFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
     if (hermiteLevel == 0)
       val = 0;
@@ -133,13 +133,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     aspectRatio = val;
 
 
-    TF = (viewer.getTraceAlpha());
+    TF = viewer.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
       invalidateMesh = true;
     isTraceAlpha = TF;
 
     invalidateSheets = false;
-    float fval = viewer.getSheetSmoothing();
+    float fval = viewer.getFloat(T.sheetsmoothing);
     if (fval != sheetSmoothing && isTraceAlpha) {
       sheetSmoothing = fval;
       invalidateMesh = true;
@@ -203,7 +203,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     if (!haveVisible)
       return false;
-    ribbonBorder = viewer.getRibbonBorder();
+    ribbonBorder = viewer.getBoolean(T.ribbonborder);
 
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
@@ -553,16 +553,16 @@ abstract class BioShapeRenderer extends MeshRenderer {
     // isFlatMesh == using mesh even for hermiteLevel = 0 (for exporters)
     boolean isFlatMesh = (aspectRatio == 0);
     // isElliptical == newer cartoonFancy business
-    boolean isElliptical = (cartoonFancy || this.hermiteLevel >= 6);
+    boolean isElliptical = (cartoonsFancy || hermiteLevel >= 6);
 
     // parameters:
 
-    int hermiteLevel = Math.max(this.hermiteLevel, 5);
-    int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
+    int nHermites = (hermiteLevel + 1) * 2 + 1; // 5 for hermiteLevel = 1; 13 for hermitelevel 5
     int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI
         / nPer));
-    Mesh mesh = meshes[i] = new Mesh().mesh1("mesh_" + shapeID + "_" + i, (short) 0, i);
+    Mesh mesh = meshes[i] = new Mesh().mesh1("mesh_" + shapeID + "_" + i,
+        (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
 
     // control points and vectors:
@@ -691,13 +691,25 @@ abstract class BioShapeRenderer extends MeshRenderer {
       nPoints += nPer;
     }
     if (!isFlatMesh) {
-      if (doCap0)
+      int nPointsPreCap = nPoints;
+      // copying vertices here so that the caps are not connected to the rest of
+      // the mesh preventing light leaking around the sharp edges
+      if (doCap0) {
+        for (int l = 0; l < nPer; l++)
+          mesh.addV(mesh.vertices[l]);
+        nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
-          mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-      if (doCap1)
+          mesh.addQuad(nPoints - nPer + k + 2, nPoints - nPer + k + 1, nPoints
+              - nPer + (nPer - k) % nPer, nPoints - k - 1);
+      }
+      if (doCap1) {
+        for (int l = 0; l < nPer; l++)
+          mesh.addV(mesh.vertices[nPointsPreCap - nPer + l]);
+        nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
               nPoints - nPer + k + 1, nPoints - nPer + k + 2);
+      }
     }
     meshReady[i] = true;
     adjustCartoonSeamNormals(i, nPer);
@@ -726,6 +738,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         V3[] normals2 = meshes[iNext].getNormalsTemp();
         V3[] normals = meshes[i].getNormalsTemp();
         int normixCount = normals.length;
+        if (doCap0) normixCount -= nPer;
         for (int j = 1; j <= nPer; ++j) {
           norml.add2(normals[normixCount - j], normals2[nPer - j]);
           norml.normalize();

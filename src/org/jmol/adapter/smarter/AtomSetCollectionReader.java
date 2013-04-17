@@ -28,6 +28,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -239,6 +240,12 @@ public abstract class AtomSetCollectionReader {
       finalizeReader();
     } catch (Throwable e) {
       System.out.println(e);
+      /**
+       * @j2sNative
+       */
+      {
+      e.printStackTrace();
+      }
       setError(e);
     }
     if (reader != null)
@@ -311,8 +318,9 @@ public abstract class AtomSetCollectionReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
-  protected void appendLoadNote(String info) {
+  protected String appendLoadNote(String info) {
     loadNote.append(info).append("\n");
+    return info;
   }
 
   @SuppressWarnings("unchecked")
@@ -1561,6 +1569,16 @@ public abstract class AtomSetCollectionReader {
       atom.elementNumber = (short) (str.length() == 0 ? isotope
           : ((isotope << 7) + JmolAdapter.getElementNumber(str)));
     }
+  }
+
+  /**
+   * @param modelSet  
+   * @param baseModelIndex 
+   * @param baseAtomIndex 
+   */
+  public void finalizeModelSet(ModelSet modelSet, int baseModelIndex,
+                               int baseAtomIndex) {
+    // PyMOL reader only
   }
 
 }

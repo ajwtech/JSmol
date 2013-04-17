@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
- * $Revision: 17960 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -285,9 +285,10 @@ public abstract class Shape {
    * @param y
    * @param modifiers
    * @param bsVisible
+   * @param drawPicking TODO
    * @return Hashtable containing information about pt clicked
    */
-  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     return null;
   }
 

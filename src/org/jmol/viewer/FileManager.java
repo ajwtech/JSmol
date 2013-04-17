@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 22:04:12 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17978 $
+ * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
+ * $Revision: 18110 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
@@ -214,7 +215,7 @@ public class FileManager {
     String fileName = names[1];
     htParams.put("fullPathName", (fileType == null ? "" : fileType + "::")
         + fullPathName.replace('\\', '/'));
-    if (viewer.getMessageStyleChime() && viewer.getDebugScript())
+    if (viewer.getBoolean(T.messagestylechime) && viewer.getBoolean(T.debugscript))
       viewer.scriptStatus("Requesting " + fullPathName);
     FileReader fileReader = new FileReader(this, viewer, fileName, fullPathName, nameAsGiven,
         fileType, null, htParams, isAppend);
