@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-11-18 20:48:45 -0600 (Sun, 18 Nov 2012) $
- * $Revision: 17727 $
+ * $Date: 2013-04-19 09:46:01 -0500 (Fri, 19 Apr 2013) $
+ * $Revision: 18129 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -28,7 +28,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.shape.Hover;
 import org.jmol.shape.Text;
 
-public class HoverRenderer extends ShapeRenderer {
+public class HoverRenderer extends LabelsRenderer {
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
@@ -57,7 +57,7 @@ public class HoverRenderer extends ShapeRenderer {
     } else {
       return true;
     }
-    TextRenderer.render(text, g3d, 0, antialias ? 2 : 1, false, null);
+    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, xy);
     return true;
   }
   

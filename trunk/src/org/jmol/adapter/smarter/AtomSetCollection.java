@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-15 21:29:53 -0500 (Mon, 15 Apr 2013) $
- * $Revision: 18111 $
+ * $Date: 2013-04-23 18:06:38 -0500 (Tue, 23 Apr 2013) $
+ * $Revision: 18148 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -330,6 +330,8 @@ public class AtomSetCollection {
   }
   
   void freeze(boolean reverseModels) {
+    if (atomSetCount == 1 && collectionName == null)
+      collectionName = (String) getAtomSetAuxiliaryInfoValue(0, "name");
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (reverseModels)
       reverseAtomSets();
@@ -449,7 +451,7 @@ public class AtomSetCollection {
   }
 
   void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
-    if (reader != null)
+    if (reader != null) 
       reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
@@ -1530,7 +1532,10 @@ public class AtomSetCollection {
   }
   
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
-    atomSetCollectionAuxiliaryInfo.put(key, value);
+    if (value == null)
+      atomSetCollectionAuxiliaryInfo.remove(key);
+    else
+      atomSetCollectionAuxiliaryInfo.put(key, value);
   }
   
   /**

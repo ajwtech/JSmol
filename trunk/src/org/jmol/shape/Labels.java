@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-20 12:24:15 -0500 (Sat, 20 Apr 2013) $
+ * $Revision: 18135 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -34,6 +34,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.JmolList;
+import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
@@ -125,8 +126,7 @@ public class Labels extends AtomShape {
           continue;
         text = getLabel(i);
         if (text == null) {
-          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0,
-              0, 0, 0, 0, 0, scalePixelsPerMicron);
+          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
           putLabel(i, text);
         } else {
           text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -188,6 +188,15 @@ public class Labels extends AtomShape {
     if (bsFontSet == null)
       bsFontSet = new BS();
 
+    if ("textLabels" == propertyName) {
+      setScaling();
+      JmolList<Text> labels = (JmolList<Text>) value;
+      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1))
+        setTextLabel(i, labels.get(pt++));
+      return;
+    }
+
     if ("fontsize" == propertyName) {
       int fontsize = ((Integer) value).intValue();
       if (fontsize < 0) {
@@ -216,6 +225,14 @@ public class Labels extends AtomShape {
     }
 
     if ("offset" == propertyName || "offsetexact" == propertyName) {
+      if (value instanceof P3) {
+        if (!setDefaults)
+          for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+              .nextSetBit(i + 1))
+            setPymolOffset(i, (P3) value);
+        return;
+      }
+      
       int offset = ((Integer) value).intValue();
       // 0 must be the default, because we initialize the array
       // in segments and so there will be extra 0s.
@@ -368,6 +385,22 @@ public class Labels extends AtomShape {
 
   }
 
+  private void setPymolOffset(int i, P3 value) {
+    Text text = getLabel(i);
+    if (text == null) {
+      byte fid = (bsFontSet != null && bsFontSet.get(i) ? fids[i] : -1);
+      if (fid < 0)
+        setFont(i, fid = defaultFontId);
+      JmolFont font = JmolFont.getFont3D(fid);
+      short colix = getColix2(i, atoms[i], false);
+      text = Text.newLabel(gdata, font, formats[i], colix, getColix2(i, atoms[i], true), 
+          0, 0, 0, 0, 0, scalePixelsPerMicron, value);
+      setTextLabel(i, text);
+    } else {
+      text.pymolOffset = value;
+    }
+  }
+
   private final static LabelToken[][] nullToken = new LabelToken[][] { null };
   private boolean isScaled;
   private float scalePixelsPerMicron;
@@ -381,26 +414,27 @@ public class Labels extends AtomShape {
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
   }
   
+  private void setTextLabel(int i, Text t) {
+    String label = t.getText();
+    Atom atom = atoms[i];
+    addString(atom, i, label, label);
+    atom.setShapeVisibility(myVisibilityFlag, true);
+    setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
+    setFont(i, t.font.fid);
+    putLabel(i, t);
+  }
+
   private void setLabel(LabelToken[][] temp, String strLabel, int i) {
     Atom atom = atoms[i];
     LabelToken[] tokens = temp[0];
     if (tokens == null)
       tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-    String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(viewer,
-        atom, tokens, '\0', null));
-    atom.setShapeVisibility(myVisibilityFlag, label != null);
-    if (strings == null || i >= strings.length)
-      strings = ArrayUtil.ensureLengthS(strings, i + 1);
-    if (formats == null || i >= formats.length)
-      formats = ArrayUtil.ensureLengthS(formats, i + 1);
-    strings[i] = label;
-    formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
-        : strLabel);
-    bsSizeSet.setBitTo(i, (strLabel != null));
+    String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(
+        viewer, atom, tokens, '\0', null));
+    addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {
-      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
-          scalePixelsPerMicron);
+      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
     } else if (text != null) {
       text.setText(label);
@@ -421,6 +455,18 @@ public class Labels extends AtomShape {
       setBgcolix(i, defaultBgcolix);
     if (defaultFontId != zeroFontId)
       setFont(i, defaultFontId);
+  }
+
+  private void addString(Atom atom, int i, String label, String strLabel) {
+    atom.setShapeVisibility(myVisibilityFlag, label != null);
+    if (strings == null || i >= strings.length)
+      strings = ArrayUtil.ensureLengthS(strings, i + 1);
+    if (formats == null || i >= formats.length)
+      formats = ArrayUtil.ensureLengthS(formats, i + 1);
+    strings[i] = label;
+    formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
+        : strLabel);
+    bsSizeSet.setBitTo(i, (strLabel != null));
   }
 
   @Override
@@ -661,6 +707,19 @@ public class Labels extends AtomShape {
     else if (offset == zeroOffset)
       offset = 0;
     setOffsets(pickedAtom, offset, true);
+  }
+
+  public short getColix2(int i, Atom atom, boolean isBg) {
+    short colix;
+    if (isBg) {
+      colix = (bgcolixes == null || i >= bgcolixes.length) ? 0 : bgcolixes[i];
+    } else {
+      colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
+      colix = C.getColixInherited(colix, atom.getColix());
+      if (C.isColixTranslucent(colix))
+        colix = C.getColixTranslucent3(colix, false, 0);
+    }
+    return colix;
   }
   
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-16 07:36:10 -0500 (Tue, 16 Apr 2013) $
- * $Revision: 18114 $
+ * $Date: 2013-04-24 08:53:32 -0500 (Wed, 24 Apr 2013) $
+ * $Revision: 18151 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1168,7 +1168,7 @@ public class T {
   final static int manifest       = misc  | 186;
   final static int maxset         = misc  | 190;
   final static int menu           = misc  | 191;
-  final static int mep            = misc  | 192;
+  public final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;

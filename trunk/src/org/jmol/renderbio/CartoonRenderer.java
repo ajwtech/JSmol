@@ -36,13 +36,13 @@ import org.jmol.util.P3i;
 
 public class CartoonRenderer extends RocketsRenderer {
 
-  private boolean newRockets = true;
   private boolean renderAsRockets;
   private boolean renderEdges;
   private boolean ladderOnly;
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
+    newRockets = true;
     if (bioShape.wingVectors == null || isCarbohydrate)
       return;
     getScreenControlPoints();
@@ -207,7 +207,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL,
-                     viewer.scaleToScreen(backboneScreen.z,
+                     (int) viewer.scaleToScreen(backboneScreen.z,
                                           mad),
                      backboneScreen, stepScreen, ptConnect, stepPt, mad / 2000f);
     if (ladderOnly)

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-10-27 13:41:10 -0500 (Sat, 27 Oct 2012) $
- * $Revision: 17679 $
+ * $Date: 2013-04-20 10:36:06 -0500 (Sat, 20 Apr 2013) $
+ * $Revision: 18134 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -129,11 +129,9 @@ final public class JmolFont {
   {"Plain", "Bold", "Italic", "BoldItalic"};
   
   public static int getFontFaceID(String fontface) {
-    if ("Monospaced".equalsIgnoreCase(fontface))
-      return FONT_FACE_MONO;
-    if ("Serif".equalsIgnoreCase(fontface))
-      return FONT_FACE_SERIF;
-    return FONT_FACE_SANS;
+    return ("Monospaced".equalsIgnoreCase(fontface) ? FONT_FACE_MONO 
+        : "Serif".equalsIgnoreCase(fontface) ? FONT_FACE_SERIF 
+        : FONT_FACE_SANS);
   }
 
   public static int getFontStyleID(String fontstyle) {

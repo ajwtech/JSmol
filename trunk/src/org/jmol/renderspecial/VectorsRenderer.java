@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -109,8 +109,8 @@ public class VectorsRenderer extends ShapeRenderer {
     pointArrowHead.add(headOffsetVector);
     screenArrowHead.setT(viewer.transformPtVib(pointArrowHead, vibrationVector));
     screenVectorEnd.setT(viewer.transformPtVib(pointVectorEnd, vibrationVector));
-    diameter = (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
-    headWidthPixels = Math.round(diameter * 2.0f);
+    diameter = (int) (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
+    headWidthPixels = diameter << 1;
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
     return true;

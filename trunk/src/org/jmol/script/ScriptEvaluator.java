@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-24 08:53:32 -0500 (Wed, 24 Apr 2013) $
+ * $Revision: 18151 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -13522,8 +13522,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean setLabel(String str) throws ScriptException {
     sm.loadShape(JC.SHAPE_LABELS);
     Object propertyValue = null;
-    setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer
-        .getNoneSelected());
+    setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
     while (true) {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
@@ -13535,9 +13534,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (str.equals("offset") || str.equals("offsetexact")) {
-        int xOffset = intParameterRange(2, -127, 127);
-        int yOffset = intParameterRange(3, -127, 127);
-        propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+        if (isPoint3f(2)) {
+          // PyMOL offsets -- {x, y, z} in angstroms
+          propertyValue = getPoint3f(2, false);
+        } else {
+          int xOffset = intParameterRange(2, -127, 127);
+          int yOffset = intParameterRange(3, -127, 127);
+          propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+        }
         break;
       }
       if (str.equals("alignment")) {
@@ -17404,11 +17408,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         propertyValue = data;
         break;
+      case T.modelindex:
       case T.model:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
-        modelIndex = modelNumberParameter(++i);
-        sbCommand.append(" model " + modelIndex);
+        modelIndex = (theTok == T.modelindex ? intParameter(++i) : modelNumberParameter(++i));
+        sbCommand.append(" modelIndex " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -18296,7 +18301,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             addShapeProperty(propertyList, "calculationType", sType);
         }
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
-        propertyName = (firstPass ? "readFile" : "mapColor");
+        propertyName = (firstPass && !isMapped ? "readFile" : "mapColor");
         if (isInline) {
           if (sType == null)
             error(ERROR_invalidArgument);
