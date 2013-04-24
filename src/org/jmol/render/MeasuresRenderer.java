@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -262,7 +262,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
                          int mad) {
     // small numbers refer to pixels already? 
-    int diameter = (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
+    int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
   }

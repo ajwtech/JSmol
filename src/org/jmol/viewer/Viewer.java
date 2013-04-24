@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-16 07:36:10 -0500 (Tue, 16 Apr 2013) $
- * $Revision: 18114 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1346,7 +1346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         * (asAntialiased || !antialiasDisplay ? 1f : 0.5f);
   }
 
-  public short scaleToScreen(int z, int milliAngstroms) {
+  public float scaleToScreen(int z, int milliAngstroms) {
     // all shapes
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
@@ -5664,7 +5664,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case T.cartoonsfancy:
       return global.cartoonFancy;
     case T.cartoonladders:
-      return global.cartoonLadder;
+      return global.cartoonLadders;
     case T.cartoonrockets:
       return global.cartoonRockets;
     case T.chaincasesensitive:
@@ -6478,7 +6478,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (tok) {
     case T.cartoonladders:
       // 13.1.15
-      global.cartoonLadder = value;
+      global.cartoonLadders = value;
       break;
     case T.twistedsheets:
       boolean b = global.twistedSheets;

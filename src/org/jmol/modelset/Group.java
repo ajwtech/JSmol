@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 22:04:12 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17978 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -377,7 +377,7 @@ public class Group {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }
 
-  protected int scaleToScreen(int Z, int mar) {
+  protected float scaleToScreen(int Z, int mar) {
     return chain.model.modelSet.viewer.scaleToScreen(Z, mar);
   }
   

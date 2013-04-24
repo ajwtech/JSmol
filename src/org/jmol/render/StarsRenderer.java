@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:16:40 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18109 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -34,7 +34,7 @@ import org.jmol.util.GData;
 public class StarsRenderer extends ShapeRenderer {
 
   private int mar; // milliangstrom radius
-  private short width;
+  private int width;
 
   @Override
   protected boolean render() {
@@ -63,13 +63,13 @@ public class StarsRenderer extends ShapeRenderer {
     int x = atom.screenX;
     int y = atom.screenY;
     int z = atom.screenZ;
-    int d = viewer.scaleToScreen(z, mad);
+    int d = (int) viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
     if (r < 3)
       return;
     if (mar > 0) {
-      width = viewer.scaleToScreen(z, mar);
+      width = (int) viewer.scaleToScreen(z, mar);
     } else {
       // added to strengthen:
       drawLine(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);

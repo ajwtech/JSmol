@@ -36,9 +36,12 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
+import org.jmol.util.SB;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 
@@ -46,7 +49,7 @@ import org.jmol.viewer.ShapeManager;
  * a class to store rendering information prior to finishing file loading,
  * specifically designed for reading PyMOL PSE files.
  * 
- * More direct than a script.
+ * More direct than a script
  * 
  */
 public class ModelSettings {
@@ -125,7 +128,10 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    String s, sID;
     Atom[] atoms;
+    SB sb;
+    float min, max;
     switch (id) {
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
@@ -149,11 +155,55 @@ public class ModelSettings {
       break;
     case JC.SHAPE_BALLS:
       break;
+    case T.mep:
+      JmolList<Object> mep = (JmolList<Object>) info;
+      sID = mep.get(mep.size() - 2).toString();
+      String mapID = mep.get(mep.size() - 1).toString();
+      min = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 0);
+      max = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 2);
+      sb = new SB();
+      sb.append("script('");
+      sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
+      .append(" map \"\" ").append(Escape.eS(mapID))
+      .append(";color isosurface range " + min + " " + max + ";isosurface colorscheme rwb");
+      sb.append("');");
+      s = sb.toString();
+      System.out.println("shapeSettings: " + s);
+      sm.viewer.evaluateExpression(s);
+      return;
+    case T.mesh:
+      modelIndex = sm.viewer.getCurrentModelIndex();
+      JmolList<Object> mesh = (JmolList<Object>) info;
+      sID = mesh.get(mesh.size() - 2).toString();
+      sb = new SB();
+      sb.append("script('");
+      sb.append("isosurface ID ").append(Escape.eS(sID))
+      .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
+      .append(" color ").append(Escape.escapeColor(argb))
+      .append(" \"\" ").append(Escape.eS(sID)).append(" mesh nofill frontonly"); 
+      float within = PyMOLReader.getFloatAt(
+          PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 12); 
+      if (within > 0) {
+        P3 pt = new P3();
+        sb.append(";isosurface slab within ").appendF(within).append(" [ ");
+        for (int j = list.size() - 3; j >= 0; j -= 3) {
+           PyMOLReader.getPoint(list, j, pt);
+           sb.append(Escape.eP(pt));
+        }        
+        sb.append(" ]");
+      }
+      sb.append(";set meshScale ").appendI(size/1000 + 1);
+      sb.append("');");
+      s = sb.toString();
+      System.out.println("shapeSettings: " + s);
+      sm.viewer.evaluateExpression(s);
+      return;
     case JC.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
       sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      String s = ((String[]) info)[0].toString().replace('\'', '_').replace(
+      s = ((String[]) info)[0].toString().replace('\'', '_').replace(
           '"', '_');
       String lighting = ((String[]) info)[1];
       String resolution = "";
@@ -175,7 +225,7 @@ public class ModelSettings {
       return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
-      sm.setShapePropertyBs(id, "labels", info, bsAtoms);
+      sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
@@ -207,8 +257,8 @@ public class ModelSettings {
 
       double sum = 0.0,
       sumsq = 0.0;
-      float min = Float.MAX_VALUE;
-      float max = 0;
+      min = Float.MAX_VALUE;
+      max = 0;
       int n = bsAtoms.cardinality();
       for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);

@@ -24,10 +24,12 @@
 package org.jmol.shape;
 
 
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.P3;
 import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
@@ -43,6 +45,11 @@ public class Text extends Object2d {
   public float fontScale;
 
   private String text, textUnformatted;
+  
+  public String getText() {
+    return text;
+  }
+
   public boolean doFormatText;
 
   public String[] lines;
@@ -63,10 +70,10 @@ public class Text extends Object2d {
 
   static public Text newLabel(GData gdata, JmolFont font, String text,
                               short colix, short bgcolix, int x, int y, int z,
-                              int zSlab, int align, float scalePixelsPerMicron) {
+                              int zSlab, int align, float scalePixelsPerMicron, P3 pymolOffsetAngstroms) {
     // for labels and hover
     Text t = new Text();
-    t.set(gdata, font, colix, align, true, scalePixelsPerMicron);
+    t.set(gdata, font, colix, align, true, scalePixelsPerMicron, pymolOffsetAngstroms);
     t.setText(text);
     t.bgcolix = bgcolix;
     t.setXYZs(x, y, z, zSlab);
@@ -78,7 +85,7 @@ public class Text extends Object2d {
                       float scalePixelsPerMicron) {
     // for echo
     Text t = new Text();
-    t.set(gdata, font, colix, align, false, scalePixelsPerMicron);
+    t.set(gdata, font, colix, align, false, scalePixelsPerMicron, null);
     t.viewer = viewer;
     t.target = target;
     if (target.equals("error"))
@@ -90,12 +97,13 @@ public class Text extends Object2d {
   }
 
   private void set(GData gdata, JmolFont font, short colix, int align, boolean isLabelOrHover,
-                   float scalePixelsPerMicron) {
+                   float scalePixelsPerMicron, P3 pymolOffsetAngstroms) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.gdata = gdata;
     this.isLabelOrHover = isLabelOrHover;
     this.colix = colix;
     this.align = align;
+    this.pymolOffset = pymolOffsetAngstroms;
     this.setFont(font, isLabelOrHover);
   }
 
@@ -202,8 +210,11 @@ public class Text extends Object2d {
   }
 
 
-  public void setPosition(int width, int height, float scalePixelsPerMicron, float imageFontScaling,
+  public void setPosition(Viewer viewer, JmolRendererInterface g3d, float scalePixelsPerMicron, float imageFontScaling,
                           boolean isExact, float[] boxXY) {
+    
+    int width = g3d.getRenderWidth();
+    int height = g3d.getRenderHeight();
     if (boxXY == null)
       boxXY = this.boxXY;
     else
@@ -215,12 +226,40 @@ public class Text extends Object2d {
       setFontScale(imageFontScaling);
     if (doFormatText)
       formatText();
-
+    float dx = offsetX * imageFontScaling;
+    float dy = offsetY * imageFontScaling;
+    xAdj = (fontScale >= 2 ? 8 : 4);
+    yAdj = ascent - lineHeight + xAdj;
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
-          * imageFontScaling, boxXY, isExact);
+      if (pymolOffset != null) {
+        float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        z -= (int) (pymolOffset.z* pixelsPerAngstrom);
+        pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        boolean isOld = (pymolOffset.x >= -1 && pymolOffset.x <= 1 && pymolOffset.y >= -1 && pymolOffset.y <= 1);
+        if (isOld) {
+          // PyMOL 0.98
+          // 1: left
+          // 0: center
+          // -1: right
+          dx = textWidth * (pymolOffset.x - 1) / 2;
+          dy = -textHeight * ((pymolOffset.y - 1) / 2);
+          dy += descent;
+        } else {
+          dx = pymolOffset.x * pixelsPerAngstrom;
+          dy = -pymolOffset.y * pixelsPerAngstrom;
+          // empirical fudge here; probably a bit off.
+          dy *= 1.05f;
+          dy += textHeight * 0.66f;
+        }
+        xAdj = (fontScale >= 2 ? 8 : 4);
+        yAdj = 0;
+        boxXY[0] = movableX - xAdj;
+        boxXY[1] = movableY - yAdj;
+        isExact = true;
+      }
+      setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isExact);
     } else {
       setPos(fontScale);
     }
@@ -427,22 +466,23 @@ public class Text extends Object2d {
     return w;
   }
 
+  private float xAdj, yAdj;
+
   public void setXYA(float[] xy, int i) {
     if (i == 0) {
-      int adj = (fontScale >= 2 ? 8 : 4);
       xy[2] = boxX;
       switch (align) {
       case ALIGN_CENTER:
         xy[2] += boxWidth / 2;
         break;
       case ALIGN_RIGHT:
-        xy[2] += boxWidth - adj;
+        xy[2] += boxWidth - xAdj;
         break;
       default:
-        xy[2] += adj;
+        xy[2] += xAdj;
       }
       xy[0] = xy[2];
-      xy[1] = boxY + ascent - lineHeight + adj;
+      xy[1] = boxY + yAdj;
     }
     switch (align) {
     case ALIGN_CENTER:
@@ -452,6 +492,15 @@ public class Text extends Object2d {
       xy[0] = xy[2] - widths[i];
     }
     xy[1] += lineHeight;
+  }
+
+  public String getCommand() {
+    SB cmd = new SB();
+    cmd.append("label ").append(Escape.eS(textUnformatted));
+    if (pymolOffset == null)
+      return cmd.toString();
+    cmd.append(";set labelOffset ").append(Escape.eP(pymolOffset));
+    return cmd.toString();
   }
 
 }

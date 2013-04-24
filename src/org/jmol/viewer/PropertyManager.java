@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-19 22:42:37 -0500 (Tue, 19 Mar 2013) $
- * $Revision: 18000 $
+ * $Date: 2013-04-18 06:40:41 -0500 (Thu, 18 Apr 2013) $
+ * $Revision: 18122 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -567,14 +567,12 @@ public class PropertyManager implements JmolPropertyManager {
   public JmolList<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                                    Object atomExpression) {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
-    if (modelSet.moleculeCount == 0) {
-      modelSet.getMolecules();
-    }
+    JmolMolecule[] molecules = viewer.modelSet.getMolecules();
     JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
     BS bsTemp = new BS();
-    for (int i = 0; i < modelSet.moleculeCount; i++) {
+    for (int i = 0; i < molecules.length; i++) {
       bsTemp = BSUtil.copy(bsAtoms);
-      JmolMolecule m = modelSet.molecules[i];
+      JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
         Map<String, Object> info = new Hashtable<String, Object>();

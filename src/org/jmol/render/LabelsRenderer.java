@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -30,7 +30,6 @@ import org.jmol.script.T;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
-import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 
 public class LabelsRenderer extends ShapeRenderer {
@@ -42,7 +41,8 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int descent;
   final int[] minZ = new int[1];
   private int zCutoff;
-
+  protected float[] xy = new float[3];
+  
   @Override
   protected boolean render() {
     fidPrevious = 0;
@@ -51,7 +51,6 @@ public class LabelsRenderer extends ShapeRenderer {
     Labels labels = (Labels) shape;
 
     String[] labelStrings = labels.strings;
-    short[] colixes = labels.colixes;
     short[] bgcolixes = labels.bgcolixes;
     if (isExport)
       bgcolixes = g3d.getBgColixes(bgcolixes);
@@ -62,8 +61,8 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
-        .getScalePixelsPerAngstrom(true) * 10000f : 0);
+    float sppm = viewer.getScalePixelsPerAngstrom(true);
+    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? sppm * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
     minZ[0] = Integer.MAX_VALUE;
@@ -73,16 +72,11 @@ public class LabelsRenderer extends ShapeRenderer {
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      //System.out.println("labelsren " + label);
       if (label == null || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
-      short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
-      colix = C.getColixInherited(colix, atom.getColix());
-      if (C.isColixTranslucent(colix))
-        colix = C.getColixTranslucent3(colix, false, 0);
-      short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
-          : bgcolixes[i];
+      short colix = labels.getColix2(i, atom, false);
+      short bgcolix = labels.getColix2(i, atom, true);
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
         colix = backgroundColixContrast;
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
@@ -123,8 +117,12 @@ public class LabelsRenderer extends ShapeRenderer {
         if (text.font == null)
           text.setFontFromFid(fid);
         text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
-        text.setColix(colix);
-        text.setBgColix(bgcolix);
+        if (text.pymolOffset == null) { 
+          text.setColix(colix);
+          text.setBgColix(bgcolix);          
+        } else {
+          text.setScalePixelsPerMicron(sppm);
+        }
       } else {
         boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
         if (fid != fidPrevious || ascent == 0) {
@@ -152,16 +150,16 @@ public class LabelsRenderer extends ShapeRenderer {
           atom = null;
         } else {
           text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, atom.screenX,
-              atom.screenY, zBox, zSlab, textAlign, 0);
+              atom.screenY, zBox, zSlab, textAlign, 0, null);
           labels.putLabel(i, text);
         }
       }
       if (atom != null) {
         text.setOffset(offset);
-        if (textAlign != Object2d.ALIGN_NONE)
+        if (textAlign != Object2d.ALIGN_NONE && text.pymolOffset == null)
           text.setAlignment(textAlign);
         text.setPointer(pointer);
-        TextRenderer.render(text, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
+        TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY, xy);
       }
       if (isAntialiased) {
         boxXY[0] /= 2;

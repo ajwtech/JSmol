@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-07 10:30:16 -0500 (Sun, 07 Apr 2013) $
- * $Revision: 18080 $
+ * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
+ * $Revision: 18136 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-04-07 10:30:16 -0500 (Sun, 07 Apr 2013) $"
+        // "$Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -1072,7 +1072,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   // this form is used for counting groups in ModelSet
   private final static String allCarbohydrates = 
-    ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
+    ",[AHR],[ALL],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
     ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC]" +
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-16 10:58:50 -0500 (Tue, 16 Apr 2013) $
- * $Revision: 18117 $
+ * $Date: 2013-04-22 07:29:31 -0500 (Mon, 22 Apr 2013) $
+ * $Revision: 18146 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -175,6 +175,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   private boolean initializePolymer(BioShape bioShape) {
+    BS bsDeleted = viewer.getDeletedAtoms();
     if (viewer.isJmolDataFrameForModel(bioShape.modelIndex)) {
       controlPoints = bioShape.bioPolymer.getControlPoints(true, 0, false);
     } else {
@@ -193,7 +194,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       bioShape.falsifyMesh();
     for (int i = monomerCount; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(leadAtomIndices[i]))
+          || modelSet.isAtomHidden(leadAtomIndices[i]) || bsDeleted != null && bsDeleted.get(leadAtomIndices[i]))
         continue;
       Atom lead = modelSet.atoms[leadAtomIndices[i]];
       if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))
@@ -335,10 +336,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
         madEnd = (short) (((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
-    diameterBeg = viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
+    diameterBeg = (int) viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
+    diameterMid = (int) viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
         madMid);
-    diameterEnd = viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
+    diameterEnd = (int) viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     doCap0 = (i == iPrev || thisTypeOnly
         && structureTypes[i] != structureTypes[iPrev]);
     doCap1 = (iNext == iNext2 || thisTypeOnly
@@ -479,27 +480,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
     }
-  }
-
-  //  rockets --not satisfactory yet
-  /**
-   * @param i
-   *        IGNORED
-   * @param pointBegin
-   *        IGNORED
-   * @param pointEnd
-   *        IGNORED
-   * @param screenPtBegin
-   * @param screenPtEnd
-   * 
-   */
-  protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
-                            P3 screenPtBegin, P3 screenPtEnd) {
-    int coneDiameter = mad + (mad >> 2);
-    coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        coneDiameter);
-    g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
-        screenPtEnd);
   }
 
   //////////////////////////// mesh 
