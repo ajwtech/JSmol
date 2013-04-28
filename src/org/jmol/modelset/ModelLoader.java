@@ -84,6 +84,7 @@ public final class ModelLoader {
   private ModelSet mergeModelSet;
 
   private boolean merging;
+  private boolean appendNew;
 
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   private String[] group3Lists;
@@ -138,13 +139,16 @@ public final class ModelLoader {
 */
 
   private boolean someModelsHaveUnitcells;
+  private boolean is2D;
+  private boolean isPDB;
   private boolean isTrajectory; 
+  private boolean isPyMOLsession;
   private boolean doMinimize;
   private boolean doAddHydrogens;
   private boolean doRemoveAddedHydrogens;
+
   private String fileHeader;
   private JmolBioResolver jbr;
-  private boolean isPDB;
   private Group[] groups;
   private int groupCount;
   
@@ -175,8 +179,9 @@ public final class ModelLoader {
     modelSet.trajectorySteps = (JmolList<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    doAddHydrogens = (jbr != null && !isTrajectory
-        && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
+    isPyMOLsession  = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
+    doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
+        && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens")
         && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null) {
       info.remove("pdbNoHydrogens");
@@ -248,11 +253,9 @@ public final class ModelLoader {
   private int baseGroupIndex = 0;
 
   private int baseTrajectoryCount = 0;
-  private boolean appendNew;
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
-  private boolean is2D;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -380,7 +383,7 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
-    if (modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+    if (isPyMOLsession)
       return;
     SB sb = new SB();
     int modelCount = modelSet.modelCount;
@@ -917,6 +920,7 @@ public final class ModelLoader {
   }
   
   private JmolList<Bond> vStereo;
+  private BS bsAssigned;
   private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -988,19 +992,23 @@ public final class ModelLoader {
         setStructure(iterStructure);
     }
   }
-  
+
   private void setStructure(JmolAdapterStructureIterator iterStructure) {
     int i = iterStructure.getModelIndex();
     EnumStructure t = iterStructure.getSubstructureType();
     String id = iterStructure.getStructureID();
     int serID = iterStructure.getSerialID();
     int count = iterStructure.getStrandCount();
+    int istart = iterStructure.getStartIndex() + baseAtomIndex;
+    int iend = iterStructure.getEndIndex() + baseAtomIndex;
+    if (bsAssigned == null)
+      bsAssigned = new BS();
     iterStructure.getSerialID();
     defineStructure(i, t, id, serID, count, iterStructure.getStartChainID(),
           iterStructure.getStartSequenceNumber(), iterStructure
               .getStartInsertionCode(), iterStructure.getEndChainID(),
           iterStructure.getEndSequenceNumber(), iterStructure
-              .getEndInsertionCode());
+              .getEndInsertionCode(), istart, iend, bsAssigned);
   }
 
   private BS structuresDefinedInFile = new BS();
@@ -1010,7 +1018,8 @@ public final class ModelLoader {
                                int strandCount, char startChainID,
                                int startSequenceNumber,
                                char startInsertionCode, char endChainID,
-                               int endSequenceNumber, char endInsertionCode) {
+                               int endSequenceNumber, char endInsertionCode,
+                               int istart, int iend, BS bsAssigned) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber, startInsertionCode);
     int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
@@ -1022,14 +1031,14 @@ public final class ModelLoader {
       structuresDefinedInFile.set(modelIndex);
       models[modelIndex].addSecondaryStructure(type,
           structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode);
+          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
       return;
     }
     for (int i = baseModelIndex; i < modelSet.modelCount; i++) {
       structuresDefinedInFile.set(i);
       models[i].addSecondaryStructure(type,
           structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode);
+          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
     }
   }
   

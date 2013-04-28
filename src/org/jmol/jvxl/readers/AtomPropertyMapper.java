@@ -146,7 +146,9 @@ class AtomPropertyMapper extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
+    if (haveOneProperty && !getSource)
+      return theProperty;
     float dmin = Float.MAX_VALUE;
     float dminNearby = Float.MAX_VALUE;
     float value = (doSmoothProperty ? 0 : Float.NaN);
@@ -155,10 +157,10 @@ class AtomPropertyMapper extends AtomDataReader {
     iAtomSurface = -1;
     while (iter.hasNext()) {
       int ia = iter.next();
-      int iAtom = myIndex[ia];
-      boolean isNearby = (iAtom >= firstNearbyAtom);
-      P3 ptA = atomXyz[iAtom];
-      float p = atomProp[iAtom];
+      int myAtom = myIndex[ia];
+      boolean isNearby = (myAtom >= firstNearbyAtom);
+      P3 ptA = atomXyz[myAtom];
+      float p = atomProp[myAtom];
       //System.out.println(iAtom + " " + ia + ptA + " " + isNearby + " " + p);
       if (Float.isNaN(p))
         continue;
@@ -173,7 +175,7 @@ class AtomPropertyMapper extends AtomDataReader {
         }
       } else if (d2 < dmin) {
         dmin = d2;
-        iAtomSurface = iAtom;
+        iAtomSurface = ia;
         if (!doSmoothProperty)
           value = p;
       }

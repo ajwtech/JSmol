@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-19 09:46:01 -0500 (Fri, 19 Apr 2013) $
- * $Revision: 18129 $
+ * $Date: 2013-04-26 07:19:48 -0500 (Fri, 26 Apr 2013) $
+ * $Revision: 18168 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -51,8 +51,8 @@ public class Hover extends TextShape {
     JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
     short colix = C.BLACK;
-    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, 0, 0,
-        1, Integer.MIN_VALUE, Object2d.ALIGN_LEFT, 0, null);
+    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, Object2d.ALIGN_LEFT, 0,
+        null);
     hoverText.setAdjustForWindow(true);
   }
 

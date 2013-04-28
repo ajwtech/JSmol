@@ -792,9 +792,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
-    Map<String, Object> info = modelSetAuxiliaryInfo;
-    return (info != null && info.containsKey(keyName) && ((Boolean) info
-        .get(keyName)).booleanValue());    
+    Object val = getModelSetAuxiliaryInfoValue(keyName);
+    return (val instanceof Boolean && ((Boolean) val).booleanValue());
   }
 
   /*
@@ -1713,7 +1712,7 @@ abstract public class ModelCollection extends BondCollection {
       // important that we go backward here, because we are going to 
       // use System.arrayCopy to expand the array ONCE only
       Atom atom = atoms[i];
-      if (!atom.isDeleted()) {
+      if (!atom.isDeleted() && !isTrajectorySubFrame(atom.modelIndex)) {
         bspf.addTuple(models[atom.modelIndex].trajectoryBaseIndex, atom);
         bsNew.set(atom.modelIndex);
       }

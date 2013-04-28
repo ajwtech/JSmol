@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-10 06:41:04 -0500 (Wed, 10 Apr 2013) $
- * $Revision: 18088 $
+ * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18171 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -242,10 +242,10 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
    * @param atomSetCollection  
    * @param modelSet 
-   * @param baseAtomIndex 
    * @param baseModelIndex 
+   * @param baseAtomIndex 
    */
-  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {}
+  abstract public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex);
 
   /**
    * Get the type of this file or molecular model, if known.

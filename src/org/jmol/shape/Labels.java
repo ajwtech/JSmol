@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-20 12:24:15 -0500 (Sat, 20 Apr 2013) $
- * $Revision: 18135 $
+ * $Date: 2013-04-26 07:19:48 -0500 (Fri, 26 Apr 2013) $
+ * $Revision: 18168 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -34,7 +34,6 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.JmolList;
-import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
@@ -126,7 +125,7 @@ public class Labels extends AtomShape {
           continue;
         text = getLabel(i);
         if (text == null) {
-          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
+          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
           putLabel(i, text);
         } else {
           text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -225,11 +224,11 @@ public class Labels extends AtomShape {
     }
 
     if ("offset" == propertyName || "offsetexact" == propertyName) {
-      if (value instanceof P3) {
+      if (!(value instanceof Integer)) {
         if (!setDefaults)
           for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
               .nextSetBit(i + 1))
-            setPymolOffset(i, (P3) value);
+            setPymolOffset(i, (float[]) value);
         return;
       }
       
@@ -385,7 +384,7 @@ public class Labels extends AtomShape {
 
   }
 
-  private void setPymolOffset(int i, P3 value) {
+  private void setPymolOffset(int i, float[] value) {
     Text text = getLabel(i);
     if (text == null) {
       byte fid = (bsFontSet != null && bsFontSet.get(i) ? fids[i] : -1);
@@ -394,7 +393,7 @@ public class Labels extends AtomShape {
       JmolFont font = JmolFont.getFont3D(fid);
       short colix = getColix2(i, atoms[i], false);
       text = Text.newLabel(gdata, font, formats[i], colix, getColix2(i, atoms[i], true), 
-          0, 0, 0, 0, 0, scalePixelsPerMicron, value);
+          0, scalePixelsPerMicron, value);
       setTextLabel(i, text);
     } else {
       text.pymolOffset = value;
@@ -434,7 +433,7 @@ public class Labels extends AtomShape {
     addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {
-      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
+      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
     } else if (text != null) {
       text.setText(label);

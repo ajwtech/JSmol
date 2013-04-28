@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-28 10:33:35 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18176 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -420,7 +420,9 @@ public class Model {
   }
 
   /**
-   * 
+   *  create a new structure, being careful to not
+   *  overwrite existing structure. 
+   *
    * @param type
    * @param structureID
    * @param serialID
@@ -429,11 +431,14 @@ public class Model {
    * @param startSeqcode
    * @param endChainID
    * @param endSeqcode
+   * @param istart     starting atom index
+   * @param iend       ending atom index
+   * @param bsAssigned already assigned
    */
   public void addSecondaryStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
                                     char startChainID, int startSeqcode,
-                                    char endChainID, int endSeqcode) {
+                                    char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
   }
 
   /**

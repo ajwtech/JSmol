@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-24 08:53:32 -0500 (Wed, 24 Apr 2013) $
- * $Revision: 18151 $
+ * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18171 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1951,6 +1951,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
+  public Map<String, Object> getDefinedAtomSets() {
+    return definedAtomSets;
+  }
   private SB outputBuffer;
 
   private String contextPath = "";
@@ -13536,7 +13539,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (str.equals("offset") || str.equals("offsetexact")) {
         if (isPoint3f(2)) {
           // PyMOL offsets -- {x, y, z} in angstroms
-          propertyValue = getPoint3f(2, false);
+          P3 pt = getPoint3f(2, false);
+          propertyValue = new float[] {1, pt.x, pt.y, pt.z, 0, 0, 0};
+        } else  if (isArrayParameter(2)) {
+          // PyMOL offsets -- [1, scrx, scry, scrz, molx, moly, molz] in angstroms
+          propertyValue = floatParameterSet(2, 7, 7);
         } else {
           int xOffset = intParameterRange(2, -127, 127);
           int yOffset = intParameterRange(3, -127, 127);
@@ -15426,10 +15433,124 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
-  private void cgo() {
-    System.out.println("CGO command not implemented");
+  private void cgo() throws ScriptException {
+    sm.loadShape(JC.SHAPE_CGO);
+    if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CGO))
+      return;
+    int iptDisplayProperty = 0;
+    String thisId = initIsosurface(JC.SHAPE_CGO);
+    boolean idSeen = (thisId != null);
+    boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
+    boolean isTranslucent = false;
+    boolean isInitialized = false;
+    float[] data = null;
+    float translucentLevel = Float.MAX_VALUE;
+    int colorArgb = Integer.MIN_VALUE;
+    int intScale = 0;
+    for (int i = iToken; i < slen; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (getToken(i).tok) {
+      case T.varray:
+      case T.leftsquare:
+      case T.spacebeforesquare:
+        if (data != null || isWild)
+          error(ERROR_invalidArgument);
+        data = floatParameterSet(i, 2, Integer.MAX_VALUE);
+        i = iToken;
+        continue;
+      case T.scale:
+        if (++i >= slen)
+          error(ERROR_numberExpected);
+        switch (getToken(i).tok) {
+        case T.integer:
+          intScale = intParameter(i);
+          continue;
+        case T.decimal:
+          intScale = Math.round(floatParameter(i) * 100);
+          continue;
+        }
+        error(ERROR_numberExpected);
+        break;
+      case T.color:
+      case T.translucent:
+      case T.opaque:
+        if (theTok != T.color)
+          --i;
+        if (tokAt(i + 1) == T.translucent) {
+          i++;
+          isTranslucent = true;
+          if (isFloatParameter(i + 1))
+            translucentLevel = getTranslucentLevel(++i);
+        } else if (tokAt(i + 1) == T.opaque) {
+          i++;
+          isTranslucent = true;
+          translucentLevel = 0;
+        }
+        if (isColorParam(i + 1)) {
+          colorArgb = getArgbParam(++i);
+          i = iToken;
+        } else if (!isTranslucent) {
+          error(ERROR_invalidArgument);
+        }
+        idSeen = true;
+        continue;
+      case T.id:
+        thisId = setShapeId(JC.SHAPE_CGO, ++i, idSeen);
+        isWild = (getShapeProperty(JC.SHAPE_CGO, "ID") == null);
+        i = iToken;
+        break;
+      default:
+        if (!setMeshDisplayProperty(JC.SHAPE_CGO, 0, theTok)) {
+          if (theTok == T.times || T.tokAttr(theTok, T.identifier)) {
+            thisId = setShapeId(JC.SHAPE_CGO, i, idSeen);
+            i = iToken;
+            break;
+          }
+          error(ERROR_invalidArgument);
+        }
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        i = iToken;
+        continue;
+      }
+      idSeen = (theTok != T.delete);
+      if (data != null && !isInitialized) {
+        propertyName = "points";
+        propertyValue = Integer.valueOf(intScale);
+        isInitialized = true;
+        intScale = 0;
+      }
+      if (propertyName != null)
+        setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
+    }
+    finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
+        : Float.MAX_VALUE, intScale, true, data, iptDisplayProperty);
   }
   
+  private void finalizeObject(int shapeID, int colorArgb,
+                              float translucentLevel, int intScale,
+                              boolean havePoints, Object data, int iptDisplayProperty) throws ScriptException {
+    if (havePoints) {
+      setShapeProperty(shapeID, "set", data);
+    }
+    if (colorArgb != Integer.MIN_VALUE)
+      setShapeProperty(shapeID, "color", Integer
+          .valueOf(colorArgb));
+    if (translucentLevel != Float.MAX_VALUE)
+      setShapeTranslucency(shapeID, "", "translucent",
+          translucentLevel, null);
+    if (intScale != 0) {
+      setShapeProperty(shapeID, "scale", Integer
+          .valueOf(intScale));
+    }
+    if (iptDisplayProperty > 0) {
+      if (!setMeshDisplayProperty(shapeID, iptDisplayProperty,
+          0))
+        error(ERROR_invalidArgument);
+    }
+  }
+
   private void draw() throws ScriptException {
     sm.loadShape(JC.SHAPE_DRAW);
     switch (tokAt(1)) {
@@ -15896,24 +16017,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    if (havePoints) {
-      setShapeProperty(JC.SHAPE_DRAW, "set", connections);
-    }
-    if (colorArgb != Integer.MIN_VALUE)
-      setShapeProperty(JC.SHAPE_DRAW, "color", Integer
-          .valueOf(colorArgb));
-    if (isTranslucent)
-      setShapeTranslucency(JC.SHAPE_DRAW, "", "translucent",
-          translucentLevel, null);
-    if (intScale != 0) {
-      setShapeProperty(JC.SHAPE_DRAW, "scale", Integer
-          .valueOf(intScale));
-    }
-    if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JC.SHAPE_DRAW, iptDisplayProperty,
-          0))
-        error(ERROR_invalidArgument);
-    }
+    finalizeObject(JC.SHAPE_DRAW, colorArgb, isTranslucent ? translucentLevel : Float.MAX_VALUE, 
+        intScale, havePoints, connections, iptDisplayProperty);
   }
 
   private void polyhedra() throws ScriptException {
@@ -17111,13 +17216,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
     boolean isColorSchemeTranslucent = false;
-    boolean isInline;
+    boolean isInline = false;
     Object onlyOneModel = null;
     String translucency = null;
     String colorScheme = null;
     String mepOrMlp = null;
     short[] discreteColixes = null;
-    JmolList<Object[]> propertyList = new  JmolList<Object[]>();
+    JmolList<Object[]> propertyList = new JmolList<Object[]>();
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
@@ -17154,8 +17259,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.rotate:
         propertyName = "rotate";
-        propertyValue = (tokAt(iToken = ++i) == T.none ? null
-            : getPoint4f(i));
+        propertyValue = (tokAt(iToken = ++i) == T.none ? null : getPoint4f(i));
         i = iToken;
         break;
       case T.scale3d:
@@ -17179,8 +17283,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (fullCommand.indexOf("# BBOX=") >= 0) {
           String[] bbox = TextFormat.split(Parser.getQuotedAttribute(
               fullCommand, "# BBOX"), ',');
-          pts = new P3[] { (P3) Escape.uP(bbox[0]),
-              (P3) Escape.uP(bbox[1]) };
+          pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (isCenterParameter(i + 1)) {
           pts = new P3[] { getPoint3f(i + 1, true),
               getPoint3f(iToken + 1, true) };
@@ -17215,8 +17318,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           bs.andNot(viewer.getAtomBits(T.molecule, bsSelect));
         }
         bs.andNot(bsSelect);
-        sbCommand.append(" intersection ").append(Escape.eBS(bsSelect))
-            .append(" ").append(Escape.eBS(bs));
+        sbCommand.append(" intersection ").append(Escape.eBS(bsSelect)).append(
+            " ").append(Escape.eBS(bs));
         i = iToken;
         if (tokAt(i + 1) == T.function) {
           i++;
@@ -17275,8 +17378,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             havePt = true;
             iToken = iToken + 2;
           } else {
-            bs = atomExpression(st, i + 5, slen, true, false,
-                false, true);
+            bs = atomExpression(st, i + 5, slen, true, false, false, true);
             if (bs == null)
               error(ERROR_invalidArgument);
           }
@@ -17288,11 +17390,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           checkLast(iToken);
         i = iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
-          bs = Escape.uB(Parser.getQuotedAttribute(fullCommand,
-              "# WITHIN"));
+          bs = Escape.uB(Parser.getQuotedAttribute(fullCommand, "# WITHIN"));
         else if (!havePt)
-          bs = (expressionResult instanceof BS ? (BS) expressionResult
-              : null);
+          bs = (expressionResult instanceof BS ? (BS) expressionResult : null);
         if (!chk) {
           if (bs != null && modelIndex >= 0) {
             bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
@@ -17412,7 +17512,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.model:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
-        modelIndex = (theTok == T.modelindex ? intParameter(++i) : modelNumberParameter(++i));
+        modelIndex = (theTok == T.modelindex ? intParameter(++i)
+            : modelNumberParameter(++i));
         sbCommand.append(" modelIndex " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
@@ -17494,8 +17595,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i = iToken;
             continue;
           }
-          if ((theTok = tokAt(i + 1)) == T.translucent
-              || theTok == T.opaque) {
+          if ((theTok = tokAt(i + 1)) == T.translucent || theTok == T.opaque) {
             sbCommand.append(" color");
             translucency = setColorOptions(sbCommand, i + 1,
                 JC.SHAPE_ISOSURFACE, -2);
@@ -17602,7 +17702,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyValue = getPoint4f(i);
           propertyName = "ellipsoid";
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(Escape.eP4((P4) propertyValue));
+          sbCommand.append(" ellipsoid ")
+              .append(Escape.eP4((P4) propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -17610,7 +17711,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyName = "ellipsoid";
           propertyValue = floatParameterSet(i, 6, 6);
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(Escape.eAF((float[]) propertyValue));
+          sbCommand.append(" ellipsoid ").append(
+              Escape.eAF((float[]) propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -17811,8 +17913,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.anisotropy:
         propertyName = "anisotropy";
         propertyValue = getPoint3f(++i, false);
-        sbCommand.append(" anisotropy").append(
-            Escape.eP((P3) propertyValue));
+        sbCommand.append(" anisotropy").append(Escape.eP((P3) propertyValue));
         i = iToken;
         break;
       case T.area:
@@ -17892,7 +17993,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         switch (tokAt(i + 1)) {
         case T.discrete:
           propertyValue = floatParameterSet(i + 2, 1, Integer.MAX_VALUE);
-          sbCommand.append(" discrete ").append(Escape.eAF((float[]) propertyValue));
+          sbCommand.append(" discrete ").append(
+              Escape.eAF((float[]) propertyValue));
           i = iToken;
           break;
         case T.increment:
@@ -17944,7 +18046,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "eccentricity";
         propertyValue = getPoint4f(++i);
         //if (surfaceObjectSeen)
-        sbCommand.append(" eccentricity ").append(Escape.eP4((P4) propertyValue));
+        sbCommand.append(" eccentricity ").append(
+            Escape.eP4((P4) propertyValue));
         i = iToken;
         break;
       case T.ed:
@@ -17978,7 +18081,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // isosurface origin.. step... count... functionXY[Z] = "x + y + z"
         boolean isFxyz = (theTok == T.functionxyz);
         propertyName = "" + theToken.value;
-        JmolList<Object> vxy = new  JmolList<Object>();
+        JmolList<Object> vxy = new JmolList<Object>();
         propertyValue = vxy;
         isFxy = surfaceObjectSeen = true;
         //if (surfaceObjectSeen)
@@ -18152,14 +18255,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isMapped = true;
         if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
-          addShapeProperty(propertyList, "bsSolvent", (haveRadius
-              || haveIntersection ? new BS()
-              : lookupIdentifierValue("solvent")));
+          addShapeProperty(propertyList, "bsSolvent",
+              (haveRadius || haveIntersection ? new BS()
+                  : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
-          plane = (P4) getShapeProperty(JC.SHAPE_ISOSURFACE,
-              "plane");
+          plane = (P4) getShapeProperty(JC.SHAPE_ISOSURFACE, "plane");
           if (plane == null) {
             if (getShapeProperty(JC.SHAPE_ISOSURFACE, "contours") != null) {
               addShapeProperty(propertyList, "nocontour", null);
@@ -18194,7 +18296,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyValue = getPoint4f(++i);
         i = iToken;
         //if (!surfaceObjectSeen)
-        sbCommand.append(" radical ").append(Escape.eP4((P4)propertyValue));
+        sbCommand.append(" radical ").append(Escape.eP4((P4) propertyValue));
         break;
       case T.modelbased:
         propertyName = "fixed";
@@ -18291,156 +18393,130 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         sbCommand.append(" squared");
         break;
       case T.inline:
+        propertyName = (!surfaceObjectSeen && !planeSeen && !isMapped ? "readFile" : "mapColor");
+        str = stringParameter(++i);
+        if (str == null)
+          error(ERROR_invalidArgument);
+        // inline PMESH data
+        if (isPmesh)
+          str = TextFormat.replaceAllCharacter(str, "{,}|", ' ');
+        if (logMessages)
+          Logger.debug("pmesh inline data:\n" + str);
+        propertyValue = (chk ? null : str);
+        addShapeProperty(propertyList, "fileName", "");
+        sbCommand.append(" INLINE ").append(Escape.eS(str));
+        surfaceObjectSeen = true;
+        break;
       case T.string:
-        String filename = parameterAsString(i);
-        String sType = null;
-        isInline = filename.equalsIgnoreCase("inline");
-        if (tokAt(i + 1) == T.string) {
-          sType = stringParameter(++i);
-          if (!isInline)
-            addShapeProperty(propertyList, "calculationType", sType);
-        }
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
         propertyName = (firstPass && !isMapped ? "readFile" : "mapColor");
-        if (isInline) {
-          if (sType == null)
-            error(ERROR_invalidArgument);
-          // inline PMESH data
-          if (isPmesh)
-            sType = TextFormat.replaceAllCharacter(sType, "{,}|", ' ');
-          if (logMessages)
-            Logger.debug("pmesh inline data:\n" + sType);
-          propertyValue = (chk ? null : sType);
-          addShapeProperty(propertyList, "fileName", "");
-          //if (!surfaceObjectSeen)
-          sbCommand.append(" INLINE");
-          surfaceObjectSeen = true;
-        } else {
-          if (filename.startsWith("=") && filename.length() > 1) {
-            // Uppsala Electron Density Server (default, at least)
-            String[] info = (String[]) viewer.setLoadFormat(filename, '_',
-                false);
-            filename = info[0];
-            String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
-                : info[1]);
-            if (strCutoff != null && !chk) {
-              cutoff = SV.fValue(SV.getVariable(viewer
-                  .evaluateExpression(strCutoff)));
-              if (cutoff > 0) {
-                if (!Float.isNaN(sigma)) {
-                  cutoff *= sigma;
-                  sigma = Float.NaN;
-                  addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
-                }
-                addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
-                //if (!surfaceObjectSeen)
-                sbCommand.append(" cutoff ").appendF(cutoff);
+        String filename = parameterAsString(i);
+        /*
+         * A file name, optionally followed by a calculation type and/or an integer file index.
+         * Or =xxxx, an EDM from Uppsala Electron Density Server
+         * If the model auxiliary info has "jmolSufaceInfo", we use that.
+         */
+        if (filename.startsWith("=") && filename.length() > 1) {
+          String[] info = (String[]) viewer.setLoadFormat(filename, '_', false);
+          filename = info[0];
+          String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
+              : info[1]);
+          if (strCutoff != null && !chk) {
+            cutoff = SV.fValue(SV.getVariable(viewer
+                .evaluateExpression(strCutoff)));
+            if (cutoff > 0) {
+              if (!Float.isNaN(sigma)) {
+                cutoff *= sigma;
+                sigma = Float.NaN;
+                addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
               }
+              addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
+              sbCommand.append(" cutoff ").appendF(cutoff);
             }
-            if (ptWithin == 0) {
-              onlyOneModel = "=xxxx";
-              if (modelIndex < 0)
-                modelIndex = viewer.getCurrentModelIndex();
-              bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-              getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
-              //if (!surfaceObjectSeen)
-              sbCommand.append(" within 2.0 ").append(Escape.eBS(bs));
-            }
-            if (firstPass)
-              defaultMesh = true;
           }
-          if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
-              && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
-            // negative sigma just indicates that 
-            addShapeProperty(propertyList, "sigma", Float.valueOf(-1));
-            //if (!surfaceObjectSeen)
-            sbCommand.append(" sigma -1.0");
-          }
-          /*
-           * a file name, optionally followed by an integer file index. OR empty.
-           * In that case, if the model auxiliary info has the data stored in it,
-           * we use that. There are two possible structures:
-           * 
-           * jmolSurfaceInfo jmolMappedDataInfo
-           * 
-           * Both can be present, but if jmolMappedDataInfo is missing, then
-           * jmolSurfaceInfo is used by default.
-           */
-
-          if (filename.equals("TESTDATA") && testData != null) {
-            propertyValue = testData;
-            break;
-          }
-          if (filename.equals("TESTDATA2") && testData2 != null) {
-            propertyValue = testData2;
-            break;
-          }
-          if (filename.length() == 0) {
-            // "" 
+          if (ptWithin == 0) {
+            onlyOneModel = "=xxxx";
             if (modelIndex < 0)
               modelIndex = viewer.getCurrentModelIndex();
-            if (surfaceObjectSeen || planeSeen)
-              propertyValue = viewer.getModelAuxiliaryInfoValue(modelIndex,
-                  "jmolMappedDataInfo");
-            if (propertyValue == null)
-              propertyValue = viewer.getModelAuxiliaryInfoValue(modelIndex,
-                  "jmolSurfaceInfo");
-            if (propertyValue != null) {
-              surfaceObjectSeen = true;
-              break;
-            }
-            filename = getFullPathName();
+            bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+            getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
+            sbCommand.append(" within 2.0 ").append(Escape.eBS(bs));
           }
-          int fileIndex = -1;
-          if (tokAt(i + 1) == T.integer)
-            addShapeProperty(propertyList, "fileIndex", Integer
-                .valueOf(fileIndex = intParameter(++i)));
-          if (!chk) {
-            String[] fullPathNameOrError;
-            String localName = null;
-            if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
-              filename = Parser.getQuotedAttribute(fullCommand, "# FILE"
-                  + nFiles);
-              if (tokAt(i + 1) == T.as)
-                i += 2; // skip that
-            } else if (tokAt(i + 1) == T.as) {
-              localName = viewer.getFilePath(
-                  stringParameter(iToken = (i = i + 2)), false);
-              fullPathNameOrError = viewer.getFullPathNameOrError(localName);
-              localName = fullPathNameOrError[0];
-              if (viewer.getPathForAllFiles() != "") {
-                // we use the LOCAL name when reading from a local path only (in the case of JMOL files)
-                filename = localName;
-                localName = null;
-              } else {
-                addShapeProperty(propertyList, "localName", localName);
-                viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
-              }
-            }
-            // just checking here, and getting the full path name
-            if (!filename.startsWith("cache://")) {
-              fullPathNameOrError = viewer.getFullPathNameOrError(filename);
-              filename = fullPathNameOrError[0];
-              if (fullPathNameOrError[1] != null)
-                errorStr(ERROR_fileNotFoundException, filename + ":"
-                    + fullPathNameOrError[1]);
-            }
-            Logger.info("reading isosurface data from " + filename);
-            addShapeProperty(propertyList, "fileName", filename);
-            if (localName != null)
+          if (firstPass)
+            defaultMesh = true;
+        }
+
+        if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
+            && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
+          // negative sigma just indicates that 
+          addShapeProperty(propertyList, "sigma", Float.valueOf(-1));
+          sbCommand.append(" sigma -1.0");
+        }
+        if (filename.length() == 0) {
+          if (modelIndex < 0)
+            modelIndex = viewer.getCurrentModelIndex();
+          filename = getFullPathName();
+          propertyValue = viewer.getModelAuxiliaryInfoValue(modelIndex,
+              "jmolSurfaceInfo");
+        }
+        int fileIndex = -1;
+        if (propertyValue == null && tokAt(i + 1) == T.integer)
+          addShapeProperty(propertyList, "fileIndex", Integer
+              .valueOf(fileIndex = intParameter(++i)));
+        String stype = (tokAt(i + 1) == T.string ? stringParameter(++i) : null);
+        // done reading parameters
+        surfaceObjectSeen = true;
+        if (chk) {
+          break;
+        }
+        String[] fullPathNameOrError;
+        String localName = null;
+        if (propertyValue == null) {
+          if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
+            // old way, abandoned
+            filename = Parser
+                .getQuotedAttribute(fullCommand, "# FILE" + nFiles);
+            if (tokAt(i + 1) == T.as)
+              i += 2; // skip that
+          } else if (tokAt(i + 1) == T.as) {
+            localName = viewer.getFilePath(
+                stringParameter(iToken = (i = i + 2)), false);
+            fullPathNameOrError = viewer.getFullPathNameOrError(localName);
+            localName = fullPathNameOrError[0];
+            if (viewer.getPathForAllFiles() != "") {
+              // we use the LOCAL name when reading from a local path only (in the case of JMOL files)
               filename = localName;
-            //if (!surfaceObjectSeen)
-            sbCommand.append(" /*file*/").append(Escape.eS(filename));
-            // null propertyValue indicates that we need a reader based on the fileName
+              localName = null;
+            } else {
+              addShapeProperty(propertyList, "localName", localName);
+              viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
+            }
           }
-          //if (!surfaceObjectSeen)
+        }
+        // just checking here, and getting the full path name
+        if (!filename.startsWith("cache://")) {
+          fullPathNameOrError = viewer.getFullPathNameOrError(filename);
+          filename = fullPathNameOrError[0];
+          if (fullPathNameOrError[1] != null)
+            errorStr(ERROR_fileNotFoundException, filename + ":"
+                + fullPathNameOrError[1]);
+        }
+        Logger.info("reading isosurface data from " + filename);
+
+        if (stype != null) {
+          propertyValue = viewer.cacheGet(filename + "#jmolSurfaceInfo");
+          addShapeProperty(propertyList, "calculationType", stype);
+        }
+        if (propertyValue == null) {
+          addShapeProperty(propertyList, "fileName", filename);
+          if (localName != null)
+            filename = localName;
           if (fileIndex >= 0)
             sbCommand.append(" ").appendI(fileIndex);
         }
-        //if (!surfaceObjectSeen)
-        if (sType != null)
-          sbCommand.append(" ").append(Escape.eS(sType));
-        surfaceObjectSeen = true;
+        sbCommand.append(" /*file*/").append(Escape.eS(filename));
+        if (stype != null)
+          sbCommand.append(" ").append(Escape.eS(stype));
         break;
       case T.connect:
         propertyName = "connections";
@@ -18457,7 +18533,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.link:
         propertyName = "link";
-        //if (!surfaceObjectSeen)
         sbCommand.append(" link");
         break;
       case T.lattice:
@@ -18555,9 +18630,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (needSelect) {
             propertyList.add(0, new Object[] { "select", bsSelect });
             if (sbCommand.indexOf("; isosurface map") == 0) {
-              sbCommand = new SB().append(
-                  "; isosurface map select ").append(Escape.eBS(bsSelect))
-                  .append(sbCommand.substring(16));
+              sbCommand = new SB().append("; isosurface map select ").append(
+                  Escape.eBS(bsSelect)).append(sbCommand.substring(16));
             }
           }
         }
@@ -18588,7 +18662,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty, 0))
         error(ERROR_invalidArgument);
     }
-
     if (chk)
       return;
     Object area = null;
@@ -18632,18 +18705,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
           if (minMax[0] != Float.MAX_VALUE)
             s += " min=" + minMax[0] + " max=" + minMax[1];
-          s += "; " + JC.shapeClassBases[iShape].toLowerCase()
-              + " count: " + getShapeProperty(iShape, "count");
+          s += "; " + JC.shapeClassBases[iShape].toLowerCase() + " count: "
+              + getShapeProperty(iShape, "count");
           s += getIsosurfaceDataRange(iShape, "\n");
         }
       }
       String sarea, svol;
       if (doCalcArea || doCalcVolume) {
         sarea = (doCalcArea ? "isosurfaceArea = "
-            + (area instanceof Float ? "" + area : Escape.eAD((double[]) area)) : null);
-        svol = (doCalcVolume ? "isosurfaceVolume = "
-            + (volume instanceof Float ? "" + volume : Escape.eAD((double[]) volume))
+            + (area instanceof Float ? "" + area : Escape.eAD((double[]) area))
             : null);
+        svol = (doCalcVolume ? "isosurfaceVolume = "
+            + (volume instanceof Float ? "" + volume : Escape
+                .eAD((double[]) volume)) : null);
         if (s == null) {
           if (doCalcArea)
             showString(sarea);
@@ -18731,9 +18805,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         + " with color scheme spanning " + dataRange[2] + " to " + dataRange[3]
         : "");
   }
-
-  private static Object testData; // for isosurface
-  private static Object testData2; // for isosurface
 
   private void getWithinDistanceVector(JmolList<Object[]> propertyList,
                                        float distance, P3 ptc, BS bs,

@@ -88,7 +88,7 @@
        Note that there is a reference there to 7z.exe in both min.bat and zip.bat. 
        I do not have Linyx equivalents to these batch files.
        
-   11) Update the JSmol project again and check in dist/jsmol.zip.
+   11) Update the JSmol and Jmol projects again and check in dist/jsmol.zip.
    
    12) At some time go to SourceForge and create a release. It is just jsmol.zip.
        
