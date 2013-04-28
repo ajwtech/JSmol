@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-19 09:46:01 -0500 (Fri, 19 Apr 2013) $
- * $Revision: 18129 $
+ * $Date: 2013-04-26 07:19:48 -0500 (Fri, 26 Apr 2013) $
+ * $Revision: 18168 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -48,12 +48,10 @@ public class HoverRenderer extends LabelsRenderer {
       if (label == null)
         return false;
       text.setText(label);
-      text.setMovableX(atom.screenX);
-      text.setMovableY(atom.screenY);
+      text.setXYZs(atom.screenX, atom.screenY, 1, Integer.MIN_VALUE);
     } else if (hover.text != null) {
       text.setText(hover.text);
-      text.setMovableX(hover.xy.x);
-      text.setMovableY(hover.xy.y);
+      text.setXYZs(hover.xy.x, hover.xy.y, 1, Integer.MIN_VALUE);
     } else {
       return true;
     }

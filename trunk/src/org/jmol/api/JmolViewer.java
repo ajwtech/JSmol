@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18171 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-
-
-import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Dimension;
@@ -534,15 +531,6 @@ abstract public class JmolViewer {
   
   public String menuStructure;
 
-  /**
-   * retrieves list of draw/isosurface objects
-   * 
-   * @param map 
-   * @param b 
-   * 
-   */
-  abstract public void getObjectMap(Map<String, T> map, boolean b);
-  
   abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 
@@ -620,6 +608,15 @@ abstract public class JmolViewer {
   abstract public Dimension resizeInnerPanel(int width, int height);
 
   abstract public String getAtomDefs(Map<String, Object> names);
+
+  /**
+   * run a script immediately and return output buffer string
+   * Jmol 13.1.15
+   * 
+   * @param script
+   * @return string from ScriptEvaluator#outputBuffer
+   */
+  abstract public String runScript(String script);
 
 }
 

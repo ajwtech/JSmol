@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
- * $Revision: 18136 $
+ * $Date: 2013-04-28 10:14:59 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18174 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1982,6 +1982,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     zap(true, true, false);
     return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0);
   }
+
 
   /**
    * Used by the ScriptEvaluator LOAD command to open one or more files. Now
@@ -4058,7 +4059,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setShapeProperty(JC.SHAPE_LABELS, "clearBoxes", null);
     antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
         && !isExport ? global.antialiasImages : false);
-    //System.out.println("antialiasd = " + antialiasDisplay);
     imageFontScaling = (isReset || width <= 0 ? 1
         : (global.zoomLarge == (height > width) ? height : width)
             / getScreenDim())
@@ -9597,9 +9597,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calcAtomsMinMax(bs, boxInfo);
   }
 
-  @Override
-  public void getObjectMap(Map<String, T> map, boolean withDollar) {
-    shapeManager.getObjectMap(map, withDollar);
+  /**
+   * used in autocompletion in console using TAB
+   * @param map
+   * @param c
+   */
+  @SuppressWarnings("unchecked")
+  public void getObjectMap(Map<String, ?> map, char c) {
+    switch (c) {
+    case '{':
+      if (getScriptManager() != null) {
+        Map<String, Object> m = (Map<String, Object>) map;
+        Map<String, Object> sets = eval.getDefinedAtomSets();
+        if (sets != null)
+          m.putAll(sets);
+        T.getTokensType(m, T.predefinedset);
+      }
+      return;
+    case '$':
+    case '0':
+      shapeManager.getObjectMap(map, c == '$');
+      return;
+    }
   }
 
   Map<String, String[][]> htPdbBondInfo;
@@ -9619,16 +9638,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setPicked(iAtom);
   }
 
-  public boolean runScriptImmediately(String script) {
+  @Override
+  public String runScript(String script) {
     // from isosurface reading JVXL file with slab
+    SB outputBuffer = new SB();
     try {
       if (getScriptManager() == null)
-        return false;
-      eval.runScript(script);
+        return null;
+      eval.runScriptBuffer(script, outputBuffer);
     } catch (Exception e) {
-      return false;
+      return eval.getErrorMessage();
     }
-    return true;
+    return outputBuffer.toString();
   }
 
   public boolean allowSpecAtom() {
@@ -9696,7 +9717,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.cachePut(key, data);
   }
 
+  public Object cacheGet(String key) {
+    return fileManager.cacheGet(key, false);
+  }
+
   public void cacheClear() {
+    // script: reset cache
     fileManager.cacheClear();
     fileManager.clearPngjCache(null);
   }
@@ -9726,7 +9752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int cacheFileByName(String fileName, boolean isAdd) {
-    return fileManager.cacheFileByName(fileName, isAdd);
+    return fileManager.cacheFileByNameAdd(fileName, isAdd);
   }
 
   public Map<String, Integer> cacheList() {
@@ -9938,5 +9964,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void createModels(int n) {
     modelSet.createModels(n);
   }
-  
+
+  public void setCGO(JmolList<Object> info) {
+    shapeManager.loadShape(JC.SHAPE_CGO);
+    shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);    
+  }
+
 }

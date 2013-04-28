@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
+ * $Revision: 18171 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -86,7 +86,7 @@ class ModelManager {
       modelSet = (new ModelLoader(viewer, modelSetName, loadScript,
           atomSetCollection, (isAppend ? modelSet : null), bsNew)).getModelSet();
     }
-    if (modelSet.getAtomCount() == 0)
+    if (modelSet.getAtomCount() == 0 && !modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
       zap();
     return modelSet;
   }

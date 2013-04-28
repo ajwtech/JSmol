@@ -1301,7 +1301,7 @@ public class StateCreator implements JmolStateCreator {
     appendCmd(
         str,
         "set pdbAddHydrogens "
-            + (htParams != null && htParams.get("pdbNoHydrogens") == null ? g.pdbAddHydrogens
+            + (htParams != null && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? g.pdbAddHydrogens
                 : false));
     appendCmd(str, "set pdbGetHeader " + g.pdbGetHeader);
     appendCmd(str, "set pdbSequential " + g.pdbSequential);
@@ -2323,7 +2323,7 @@ public class StateCreator implements JmolStateCreator {
   
   public String getAtomDefs(Map<String, Object> names) {
     SB sb = new SB();
-    for (Map.Entry<String, Object> e : names.entrySet()) {
+    for (Map.Entry<String, ?> e : names.entrySet()) {
       if (e.getValue() instanceof BS)
         sb.append("{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
             + " atoms>\n");

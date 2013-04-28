@@ -1,6 +1,7 @@
 package org.jmol.adapter.readers.pymol;
 
 import org.jmol.util.JmolList;
+import org.jmol.util.Logger;
 
 import java.util.Hashtable;
 
@@ -30,56 +31,56 @@ import org.jmol.viewer.Viewer;
 class PickleReader {
 
   private JmolDocument binaryDoc;
-  private JmolList<Object> stack = new  JmolList<Object>();
-  private JmolList<Integer> marks = new  JmolList<Integer>();
-  private JmolList<Object> build = new  JmolList<Object>();
+  private JmolList<Object> stack = new JmolList<Object>();
+  private JmolList<Integer> marks = new JmolList<Integer>();
+  private JmolList<Object> build = new JmolList<Object>();
   private boolean logging;
   private Viewer viewer;
   private int id;
 
+  private final static byte APPEND = 97; /* a */
+  private final static byte APPENDS = 101; /* e */
+  private final static byte BINFLOAT = 71; /* G */
+  private final static byte BININT = 74; /* J */
+  private final static byte BININT1 = 75; /* K */
+  private final static byte BININT2 = 77; /* M */
+  private final static byte BINPUT = 113; /* q */
+  private final static byte BINSTRING = 84; /* T */
+  private final static byte BINUNICODE = 87; /* X */
+  private final static byte BUILD = 98; /* b */
+  private final static byte EMPTY_DICT = 125; /* } */
+  private final static byte EMPTY_LIST = 93; /* ] */
+  private final static byte GLOBAL = 99; /* c */
+  private final static byte LONG_BINPUT = 114; /* r */
+  private final static byte MARK = 40; /* ( */
+  private final static byte NONE = 78; /* N */
+  private final static byte OBJ = 111; /* o */
+  private final static byte SETITEM = 115; /* s */
+  private final static byte SETITEMS = 117; /* u */
+  private final static byte SHORT_BINSTRING = 85; /* U */
+  private final static byte STOP = 46; /* . */
+  private final static byte BINGET = 104; /* h */
+  private final static byte LONG_BINGET = 106; /* j */
+  private final static byte TUPLE = 116; /* t */
+  private final static byte INT = 73; /* I */
 
-  final private static byte APPEND = 97; /* a */
-  final private static byte APPENDS = 101; /* e */
-  final private static byte BINFLOAT = 71; /* G */
-  final private static byte BININT = 74; /* J */
-  final private static byte BININT1 = 75; /* K */
-  final private static byte BININT2 = 77; /* M */
-  final private static byte BINPUT = 113; /* q */
-  final private static byte BINSTRING = 84; /* T */
-  final private static byte BINUNICODE = 87; /* X */
-  final private static byte BUILD = 98; /* b */
-  final private static byte EMPTY_DICT = 125; /* } */
-  final private static byte EMPTY_LIST = 93; /* ] */
-  final private static byte GLOBAL = 99; /* c */
-  final private static byte LONG_BINPUT = 114; /* r */
-  final private static byte MARK = 40; /* ( */
-  final private static byte NONE = 78; /* N */
-  final private static byte OBJ = 111; /* o */
-  final private static byte SETITEM = 115; /* s */
-  final private static byte SETITEMS = 117; /* u */
-  final private static byte SHORT_BINSTRING = 85; /* U */
-  final private static byte STOP = 46; /* . */
 
-  final private static byte BINGET = 104; /* h */
-  //  final private static byte BINPERSID = 81; /* Q */
-  //  final private static byte DICT = 100; /* d */
-  //  final private static byte DUP = 50; /* 2 */
-  //  final private static byte EMPTY_TUPLE = 41; /* ) */
-  //  final private static byte FLOAT = 70; /* F */
-  //  final private static byte GET = 103; /* g */
-  //  final private static byte INST = 105; /* i */
-  //  final private static byte INT = 73; /* I */
-  //  final private static byte LIST = 108; /* l */
-  //  final private static byte LONG = 76; /* L */
-  final private static byte LONG_BINGET = 106; /* j */
-  //  final private static byte PERSID = 80; /* P */
-  //  final private static byte POP = 48; /* 0 */
-  //  final private static byte POP_MARK = 49; /* 1 */
-  //  final private static byte PUT = 112; /* p */
-  //  final private static byte REDUCE = 82; /* R */
-  //  final private static byte STRING = 83; /* S */
-  final private static byte TUPLE = 116; /* t */
-  //  final private static byte UNICODE = 86; /* V */
+//  private final static byte BINPERSID = 81; /* Q */
+//  private final static byte DICT = 100; /* d */
+//  private final static byte DUP = 50; /* 2 */
+//  private final static byte EMPTY_TUPLE = 41; /* ) */
+//  private final static byte FLOAT = 70; /* F */
+//  private final static byte GET = 103; /* g */
+//  private final static byte INST = 105; /* i */
+//  private final static byte LIST = 108; /* l */
+//  private final static byte LONG = 76; /* L */
+//  private final static byte PERSID = 80; /* P */
+//  private final static byte POP = 48; /* 0 */
+//  private final static byte POP_MARK = 49; /* 1 */
+//  private final static byte PUT = 112; /* p */
+//  private final static byte REDUCE = 82; /* R */
+//  private final static byte STRING = 83; /* S */
+//  private final static byte UNICODE = 86; /* V */
 
   PickleReader(JmolDocument doc, Viewer viewer) {
     binaryDoc = doc;
@@ -256,10 +257,22 @@ class PickleReader {
         // used for view_dict
         push(getObjects(getMark()));
         break;
+      case INT:
+        /// 0x88000000 for instance
+        s = readString();
+        try {
+          push(Integer.valueOf(Integer.parseInt(s)));
+        } catch (Exception e) {
+          long ll = Long.parseLong(s);
+          push(Integer.valueOf((int) (ll & 0xFFFFFFFF)));
+          System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
+          push(Integer.valueOf(Integer.MAX_VALUE));
+        }
+        break;
       default:
 
         // not used?
-        System.out.println("PyMOL reader error: " + b + " "
+        Logger.error("Pickle reader error: " + b + " "
             + binaryDoc.getPosition());
 
         //        switch (b) {
@@ -297,15 +310,6 @@ class PickleReader {
         //          module = readString();
         //          name = readString();
         //          push(new Object[] { "inst", module, name, l });
-        //          break;
-        //        case INT:
-        //          s = readString();
-        //          try {
-        //            push(Integer.valueOf(Integer.parseInt(s)));
-        //          } catch (Exception e) {
-        //            System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
-        //            push(Integer.valueOf(Integer.MAX_VALUE));
-        //          }
         //          break;
         //        case LIST:
         //          push(getObjects(getMark()));
