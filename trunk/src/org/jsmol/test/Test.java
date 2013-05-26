@@ -19,6 +19,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
+import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.io.JmolBinary;
 import org.jmol.viewer.Viewer;
@@ -186,7 +187,8 @@ public class Test implements JmolStatusListener{
 		return null;
 	}
 
-	public void resizeInnerPanel(String data) {
+	public Dimension resizeInnerPanel(String data) {
+    return null;
 		// TODO Auto-generated method stub
 		
 	}
