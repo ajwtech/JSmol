@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-22 15:55:43 -0500 (Fri, 22 Mar 2013) $
- * $Revision: 18006 $
+ * $Date: 2013-05-22 18:39:40 -0500 (Wed, 22 May 2013) $
+ * $Revision: 18241 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -31,16 +31,16 @@ import java.util.Map;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger; 
 
+/**
+ * 
+ * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
+ * 
+ * implementing translations in JavaScript
+ * 
+ */
+
 @J2SRequireImport({org.jmol.i18n.Resource.class, org.jmol.i18n.Language.class})
 public class GT {
-
-  /**
-   * 
-   * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
-   * 
-   * implementing translations in JavaScript
-   * 
-   */
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;

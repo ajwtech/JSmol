@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18171 $
+ * $Date: 2013-05-03 20:27:16 -0500 (Fri, 03 May 2013) $
+ * $Revision: 18193 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -83,6 +83,8 @@ public abstract class JmolAdapter {
   public final static int        SHELL_D_CARTESIAN = EnumQuantumShell.D_CARTESIAN.id;
   public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
   public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
+  public final static int        SHELL_G_SPHERICAL = EnumQuantumShell.G_SPHERICAL.id;
+  public final static int        SHELL_G_CARTESIAN = EnumQuantumShell.G_CARTESIAN.id;
   public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
   public static final String NOTE_SCRIPT_FILE = JC.NOTE_SCRIPT_FILE;
   

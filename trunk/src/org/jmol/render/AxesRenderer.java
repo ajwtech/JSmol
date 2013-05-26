@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-05 21:55:48 -0500 (Sun, 05 May 2013) $
+ * $Revision: 18202 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -121,8 +121,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
           diameter += diameter;
       }
       g3d.setSlab(0);
-      pt0.setT(viewer.transformPt(axes.axisXY));
-      originScreen.set(pt0.x, pt0.y, pt0.z);
+      pt0i.setT(viewer.transformPt(axes.axisXY));
+      originScreen.set(pt0i.x, pt0i.y, pt0i.z);
       float zoomDimension = viewer.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;
       if (g3d.isAntialiased())
@@ -169,7 +169,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
           tickInfo.signFactor = (i % 6 >= 3 ? -1 : 1);
         }
       }
-      renderLine(originScreen, screens[i], diameter, pt0, pt1, drawTicks
+      renderLine(originScreen, screens[i], diameter, pt0i, pt1i, drawTicks
           && tickInfo != null);
     }
     if (nPoints == 3 && !isXY) { // a b c [orig]

@@ -208,7 +208,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @SuppressWarnings("unchecked")
   protected void setPropI(String propertyName, Object value, BS bs) {
 
-    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + T.nameOf(((Integer)value).intValue()) : ""));
 
     //isosurface-only (no calculation required; no calc parameters to set)
 
@@ -216,6 +216,23 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //      navigate(((Integer) value).intValue());
     //      return;
     //    }
+    if ("cache" == propertyName) {
+      if (currentMesh == null)
+        return;
+      String id = currentMesh.thisID;
+      int imodel = currentMesh.modelIndex;
+      viewer.cachePut("cache://isosurface_" + id, getPropI("jvxlDataXml"));
+      deleteMeshI(currentMesh.index);
+      setPropI("init", null, null);
+      setPropI("thisID", id, null);
+      setPropI("modelIndex", Integer.valueOf(imodel), null);
+      setPropI("fileName", "cache://isosurface_" + id, null);
+      setPropI("readFile", null, null);
+      setPropI("finalize", "isosurface ID " + Escape.eS(id) + (imodel >= 0 ? " modelIndex " + imodel : "")
+          + " /*file*/" + Escape.eS("cache://isosurface_" + id), null);
+      setPropI("clear", null, null);
+      return;
+    }
     if ("delete" == propertyName) {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)
@@ -539,6 +556,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     } else if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
+      if (thisMesh != null)
+        thisMesh.atomIndex = atomIndex;
     } else if ("center" == propertyName) {
       center.setT((P3) value);
     } else if ("colorRGB" == propertyName) {
@@ -634,6 +653,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("colorDensity" == propertyName) {
+      if (value != null && currentMesh != null)
+        currentMesh.volumeRenderPointSize = ((Float) value).floatValue();
+      return;
+    }
     /*
      * if ("background" == propertyName) { boolean doHide = !((Boolean)
      * value).booleanValue(); if (thisMesh != null) thisMesh.hideBackground =
@@ -909,6 +933,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     cmd = TextFormat.trim(cmd, ";");
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
+    if (myType == "lcaoCartoon" && imesh.atomIndex >= 0)
+      cmd += " ATOMINDEX " + imesh.atomIndex;
     appendCmd(sb, cmd);
     String id = myType + " ID " + Escape.eS(imesh.thisID);
     if (imesh.jvxlData.thisSet >= 0)
@@ -1014,27 +1040,28 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //System.out.println("isosurface initializing " + thisMesh);
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
+    atomIndex = -1;
+    //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
+    bsDisplay = null;
+    center = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    colix = C.ORANGE;
+    connections = null;
+    cutoffRange = null;
+    defaultColix = meshColix = 0;
+    displayWithinPoints = null;
+    explicitContours = false;
     isFixed = (modelIndex < 0);
+    isPhaseColored = isColorExplicit = false;
+    linkedMesh = null;
     if (modelIndex < 0)
-      modelIndex = 0; // but note that modelIndex = -1
+      modelIndex = 0; 
+    // but note that modelIndex = -1
     // is critical for surfaceGenerator. Setting this equal to 
     // 0 indicates only surfaces for model 0.
-    title = null;
-    explicitContours = false;
-    atomIndex = -1;
-    colix = C.ORANGE;
-    translucentLevel = 0;
-    defaultColix = meshColix = 0;
-    isPhaseColored = isColorExplicit = false;
-    //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
-    center = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     scale3d = 0;
+    title = null;
+    translucentLevel = 0;
     withinPoints = null;
-    cutoffRange = null;
-    displayWithinPoints = null;
-    bsDisplay = null;
-    linkedMesh = null;
-    connections = null;
     initState();
   }
 
@@ -1350,6 +1377,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setBsVdw();
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
+    thisMesh.volumeRenderPointSize = jvxlData.pointSize;
     thisMesh.colorEncoder = sg.getColorEncoder();
     thisMesh.getContours();
     if (thisMesh.jvxlData.nContours != 0 && thisMesh.jvxlData.nContours != -1)

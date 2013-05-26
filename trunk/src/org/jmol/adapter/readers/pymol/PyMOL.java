@@ -3,12 +3,14 @@ package org.jmol.adapter.readers.pymol;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.Logger;
+
 /**
  * PyMOL settings and constants. 
  * 
  *  see http://sourceforge.net/projects/pymol/files/pymol/
  *  
- *  Settings: http://sourceforge.net/p/pymol/code/4008/tree/trunk/pymol/layer1/Setting.h
+ *  Settings: http://sourceforge.net/p/pymol/code/4025/tree/trunk/pymol/layer1/Setting.h
  *
  *  Colors: http://sourceforge.net/p/pymol/code/4008/tree/trunk/pymol/layer1/Color.c 
  *  
@@ -37,6 +39,13 @@ import java.util.Map;
 
 class PyMOL {
 
+  final static String[] repList = new String[] { 
+    "lines","sticks","spheres",
+    "dots","surface","mesh",
+    "nonbonded", "nb_spheres",
+    "cartoon","ribbon","labels","slice"};
+
+
   final static int REP_STICKS = 0;
   final static int REP_SPHERES = 1;
   final static int REP_SURFACE = 2;
@@ -45,12 +54,23 @@ class PyMOL {
   final static int REP_CARTOON = 5;
   final static int REP_BACKBONE = 6;
   final static int REP_LINES = 7;
-  final static int REP_DOTS = 9;
   final static int REP_MESH = 8;
+  final static int REP_DOTS = 9;
   final static int REP_DASHES = 10;  // ??
   final static int REP_NONBONDED = 11;
   final static int REP_MAX = 12;
 
+  // ???
+  final static int REP_CELL = 12;
+  final static int REP_CGO = 13;
+  final static int REP_CALLBACK = 14;
+  final static int REP_EXTENT = 15;
+  final static int REP_SLICE = 16;
+  final static int REP_ANGLES = 17;
+  final static int REP_DIHEDRALS = 18;
+
+
+  
   // flag 24: 
   
   // a[24] - don't surface these atoms (waters, ligands, etc.) 
@@ -70,7 +90,7 @@ class PyMOL {
   
   static int FLAG_NOSURFACE = FLAG_ignore | FLAG_exfoliate;
   
-  // settings: There are 711 of these...
+  // settings: There are 715 of these...
   
   final static int active_selections                     = 351;
   final static int alignment_as_cylinders                = 692;
@@ -113,6 +133,10 @@ class PyMOL {
   final static int backface_cull                         =  75;
   final static int batch_prefix                          = 187;
   final static int bg_gradient                           = 662;
+  final static int bg_image_filename                     = 712;
+  final static int bg_image_mode                         = 713;
+  final static int bg_image_tilesize                     = 714;
+  final static int bg_image_linear                       = 715; 
   final static int bg_rgb                                =   6;
   final static int bg_rgb_bottom                         = 664;
   final static int bg_rgb_top                            = 663;
@@ -783,6 +807,10 @@ class PyMOL {
   final static int wildcard                              = 412;
   final static int wizard_prompt_mode                    = 366;
   final static int wrap_output                           = 191;
+  
+  final static int COLOR_FRONT = -6;
+  final static int COLOR_BACK = -7;
+  final static int COLOR_BLACK = 1;
   
   private final static int[] colors = {
     /* 0     */ 0xFFFFFFFF, 
@@ -6174,13 +6202,14 @@ class PyMOL {
   };
 
   static int getRGB(int color) {
-    if (color < colors.length)
-      return (colors[color]);
     if (moreColors != null) {
-      Integer c = moreColors.get(Integer.valueOf(color));
+      Integer key = Integer.valueOf(color);
+      Integer c = moreColors.get(key);
       if (c != null)
         return c.intValue();
     }
+    if (color < colors.length)
+      return (colors[color]);
     return 0;
   }
   
@@ -6188,6 +6217,24 @@ class PyMOL {
   
   static void addColor(Integer id, int value) {
     moreColors.put(id, Integer.valueOf(value));
+  }
+
+  public static float getDefaultSetting(int i, int pymolVersion) {
+    switch (i) {
+    case stick_color:
+      return -1;
+    case label_size:
+      return 14;
+    case label_distance_digits:
+    case label_angle_digits:
+    case label_dihedral_digits:
+      return -1;
+    case ray_pixel_scale:
+      return 1;
+    default:
+      Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
+      return 0;
+    }
   }
 
 }

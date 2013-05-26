@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,6 +24,8 @@
 
 package org.jmol.shape;
 
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;

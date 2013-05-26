@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-20 10:36:06 -0500 (Sat, 20 Apr 2013) $
- * $Revision: 18134 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -155,6 +155,10 @@ final public class JmolFont {
   
   public int stringWidth(String text) {
     return apiPlatform.fontStringWidth(this, fontMetrics, text);
+  }
+
+  public String getInfo() {
+    return  fontSizeNominal + " " + fontFace + " " + fontStyle;
   }
 }
 

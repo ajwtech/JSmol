@@ -77,6 +77,7 @@ public class Mesh extends MeshSurface {
   public Map<String, BS> vertexColorMap;
   
   public int color;
+  public boolean useColix = true;
   public SymmetryInterface unitCell;
   
   public float scale3d = 0;
@@ -130,6 +131,7 @@ public class Mesh extends MeshSurface {
     bsSlabGhost = null;
     cappingObject = null;
     colix = C.GOLD;
+    useColix = true;
     colorDensity = false;
     connections = null;
     diameter = 0;
@@ -151,15 +153,16 @@ public class Mesh extends MeshSurface {
     showTriangles = false; //as distinct entities
     slabbingObject = null;
     slabOptions = null;
+    spanningVectors = null;    
     title = null;
     unitCell = null;
     vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     vertices = null;
-    spanningVectors = null;    
+    volumeRenderPointSize = 0.15f;
     this.meshType = meshType;
   }
 
-  private BS bsTemp;
+  protected BS bsTemp;
   
   public void initialize(int lighting, P3[] vertices, P4 plane) {
     if (vertices == null)
@@ -239,6 +242,7 @@ public class Mesh extends MeshSurface {
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;
+  public float volumeRenderPointSize = 0.15f;
 
   public int[] connections;
 

@@ -335,13 +335,17 @@ public abstract class AtomSetCollectionReader {
 
   protected void finalizeReader() throws Exception {
     applySymmetryAndSetTrajectory();
-    if (loadNote.length() > 0)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
+    setLoadNote();
     if (doCentralize)
       atomSetCollection.centralize();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
+
+  protected void setLoadNote() {
+    if (loadNote.length() > 0)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
+  }
 
   public void setIsPDB() {
     atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
@@ -1032,7 +1036,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   @SuppressWarnings("unchecked")
-  public void setMOData(Map<String, Object> moData) {
+  public void finalizeMOData(Map<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;

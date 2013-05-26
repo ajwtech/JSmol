@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-26 07:19:48 -0500 (Fri, 26 Apr 2013) $
- * $Revision: 18168 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -27,6 +27,8 @@ package org.jmol.shape;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
@@ -392,7 +394,7 @@ public class Labels extends AtomShape {
         setFont(i, fid = defaultFontId);
       JmolFont font = JmolFont.getFont3D(fid);
       short colix = getColix2(i, atoms[i], false);
-      text = Text.newLabel(gdata, font, formats[i], colix, getColix2(i, atoms[i], true), 
+      text = Text.newLabel(gdata, font, strings[i], colix, getColix2(i, atoms[i], true), 
           0, scalePixelsPerMicron, value);
       setTextLabel(i, text);
     } else {
@@ -418,7 +420,8 @@ public class Labels extends AtomShape {
     Atom atom = atoms[i];
     addString(atom, i, label, label);
     atom.setShapeVisibility(myVisibilityFlag, true);
-    setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
+    if (t.colix >= 0)
+      setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
     setFont(i, t.font.fid);
     putLabel(i, t);
   }

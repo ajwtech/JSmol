@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-13 07:03:44 -0500 (Mon, 13 May 2013) $
+ * $Revision: 18216 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -35,7 +35,7 @@ public class BallsRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     boolean needTranslucent = false;
-    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion()) {
+    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion(true)) {
       Atom[] atoms = modelSet.atoms;
       BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {

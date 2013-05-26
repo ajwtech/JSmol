@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-24 15:52:13 -0600 (Sun, 24 Feb 2013) $
- * $Revision: 17949 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -43,11 +43,10 @@ public class Bbcage extends FontLineShape {
   }
 
   public boolean isVisible;
-  public int mad;
   
   @Override
   public void setVisibilityFlags(BS bs) {
-    isVisible = ((mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
+    isVisible = ((mad = (short) viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
     if (!isVisible)
       return;
     BS bboxModels = viewer.getBoundBoxModels();

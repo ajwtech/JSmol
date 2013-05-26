@@ -102,7 +102,7 @@ public class JvxlData {
   public boolean jvxlDataIs2dContour;
   public boolean jvxlDataIsColorDensity;
   public boolean isColorReversed;
-  public int thisSet = -1;
+  public int thisSet = Integer.MIN_VALUE;
   
   public int edgeFractionBase = JvxlCoder.defaultEdgeFractionBase;
   public int edgeFractionRange = JvxlCoder.defaultEdgeFractionRange;
@@ -150,6 +150,7 @@ public class JvxlData {
   public int excludedTriangleCount;
   public int excludedVertexCount;
   public boolean colorDensity;
+  public float pointSize;
   public String moleculeXml;
   public float dataMin, dataMax;
   public int saveVertexCount;
@@ -180,6 +181,7 @@ public class JvxlData {
     color = null;
     colorScheme = null;
     colorDensity = false;
+    pointSize = Float.NaN;
     contourValues = null;
     contourValuesUsed = null;
     contourColixes = null;
@@ -191,7 +193,7 @@ public class JvxlData {
     nVertexColors = 0;
     slabInfo = null;
     slabValue = Integer.MIN_VALUE;
-    thisSet = -1;
+    thisSet = Integer.MIN_VALUE;
     rendering = null;    
     translucency = 0;
     vContours = null;
