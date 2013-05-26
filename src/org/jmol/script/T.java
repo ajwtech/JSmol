@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18171 $
+ * $Date: 2013-05-24 07:52:27 -0500 (Fri, 24 May 2013) $
+ * $Revision: 18249 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -33,6 +33,11 @@ import org.jmol.util.JmolList;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
+/**
+ * 
+ * Script token class.
+ * 
+ */
 public class T {
   public int tok;
   public Object value;
@@ -251,7 +256,7 @@ public class T {
   public final static int delete       = 3 | atomExpressionCommand;
   public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
-  final static int hide         = 6 | atomExpressionCommand;
+  public final static int hide         = 6 | atomExpressionCommand;
   final static int restrict     = 7 | atomExpressionCommand;
 //final static int select       see mathfunc
   final static int subset       = 8 | atomExpressionCommand | predefinedset;
@@ -290,7 +295,7 @@ public class T {
   final static int defaultcmd   = 13 | flowCommand;
   public final static int trycmd       = 14 | flowCommand | noArgs;
   
-  final static int animation    = scriptCommand | 1;
+  public final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;
   final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;
@@ -345,7 +350,7 @@ public class T {
   public final static int save  = scriptCommand | 50;
 //final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
-  final static int show         = scriptCommand | 52;
+  public final static int show         = scriptCommand | 52;
   public final static int slab  = scriptCommand | 53 | intparam | defaultON;
   final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
   public final static int ssbond = scriptCommand | 56 | deprecatedparam | defaultON;
@@ -723,7 +728,7 @@ public class T {
   public final static int cross = 1 | 2 << 9 | mathfunc;
   final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
   final static int random       = 4 | 2 << 9 | mathfunc;
-  final static int script       = 5 | 2 << 9 | mathfunc | scriptCommand;
+  public final static int script       = 5 | 2 << 9 | mathfunc | scriptCommand;
   public final static int substructure = 6 | 2 << 9 | mathfunc | intproperty | strproperty;
   final static int search       = 7 | 2 << 9 | mathfunc;
   final static int smiles       = 8 | 2 << 9 | mathfunc;
@@ -1047,7 +1052,8 @@ public class T {
   public final static int wireframerotation              = booleanparam | 200;
   public final static int zerobasedxyzrasmol             = booleanparam | 202;
   public final static int zoomenabled                    = booleanparam | 204;
-  public final static int zoomlarge                      = booleanparam | 206;
+  public final static int zoomheight                     = booleanparam | 206;
+  public final static int zoomlarge                      = booleanparam | 207;
   public final static int zshade                         = booleanparam | 208;
 
   
@@ -1246,7 +1252,7 @@ public class T {
   final static int rubberband     = misc  | 310;
   public final static int sasurface      = misc  | 312;
   final static int scale          = misc  | 314;
-  final static int scene          = misc  | 315; // Jmol 12.3.32
+  public final static int scene          = misc  | 315; // Jmol 12.3.32
   final static int selection      = misc  | 316;
   final static int shapely        = misc  | 320;
   final static int sigma          = misc  | 322;
@@ -2445,6 +2451,7 @@ public class T {
       "wireframeRotation",                        T.t(wireframerotation),
       "zeroBasedXyzRasmol",                       T.t(zerobasedxyzrasmol),
       "zoomEnabled",                              T.t(zoomenabled),
+      "zoomHeight",                               T.t(zoomheight),
       "zoomLarge",                                T.t(zoomlarge),
       "zShade",                                   T.t(zshade),
 

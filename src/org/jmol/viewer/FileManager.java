@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-20 06:57:32 -0500 (Mon, 20 May 2013) $
+ * $Revision: 18229 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -1268,13 +1268,14 @@ public class FileManager {
   
   public Object cacheGet(String key, boolean bytesOnly) {
     key = key.replace('\\', '/');
-    if (Logger.debugging && cache.containsKey(key))
-      Logger.info("cacheGet " + key);
+    if (Logger.debugging)
+      Logger.info("cacheGet " + key + " " + cache.containsKey(key));
     Object data = cache.get(key);
     return (bytesOnly && (data instanceof String) ? null : data);
   }
 
   void cacheClear() {
+    Logger.info("cachClear");
     cache.clear();
   }
 

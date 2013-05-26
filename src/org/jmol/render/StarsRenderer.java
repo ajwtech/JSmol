@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
- * $Revision: 18136 $
+ * $Date: 2013-05-24 07:52:27 -0500 (Fri, 24 May 2013) $
+ * $Revision: 18249 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -66,10 +66,14 @@ public class StarsRenderer extends ShapeRenderer {
     int d = (int) viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
-    if (r < 3)
-      return;
+    if (r < 1)
+      r = 1;
     if (mar > 0) {
       width = (int) viewer.scaleToScreen(z, mar);
+      if (width == 0)
+        width = 1;
+      if (width == 1 && g3d.isAntialiased())
+        width = 2;
     } else {
       // added to strengthen:
       drawLine(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);

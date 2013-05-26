@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-15 07:49:38 -0500 (Fri, 15 Mar 2013) $
- * $Revision: 17981 $
+ * $Date: 2013-05-25 22:39:10 -0500 (Sat, 25 May 2013) $
+ * $Revision: 18250 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -46,6 +46,8 @@ public class Measurement {
    * a class to contain a single measurement.
    * 
    */
+  
+  public String thisID;
   public ModelSet modelSet;
   public int index;
   public boolean isVisible = true;
@@ -53,6 +55,8 @@ public class Measurement {
   public boolean isDynamic = false;
   public boolean isTrajectory = false;
   public short colix;
+  public short labelColix = -1; // use colix
+  public int mad;
   public TickInfo tickInfo;
   public int traceX = Integer.MIN_VALUE, traceY;
 
@@ -60,12 +64,13 @@ public class Measurement {
   protected int[] countPlusIndices = new int[5];
   protected Point3fi[] pts;
   protected float value;
+  public String strFormat;
 
   private Viewer viewer;
-  private String strFormat;
   private String strMeasurement;
   private AxisAngle4f aa;
   private P3 pointArc;
+  public Text text;
 
   public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
@@ -76,8 +81,13 @@ public class Measurement {
     this.colix = colix;
     this.strFormat = strFormat;
     if (m != null) {
-      this.tickInfo = m.tickInfo;
-      this.pts = m.pts;
+      tickInfo = m.tickInfo;
+      pts = m.pts;
+      mad = m.mad;
+      thisID = m.thisID;
+      text = m.text;
+      if (thisID != null && text != null)
+        labelColix = text.colix;
     }
     if (pts == null)
       pts = new Point3fi[4];
@@ -461,9 +471,11 @@ public class Measurement {
     SB sb = new SB();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
-    sb.append(" \t").append(getString());
+    sb.append(" \t").append(Escape.eS(strMeasurement));
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));
+    if (thisID != null)
+      sb.append(" \t").append(thisID);
     return sb.toString();
   }
 

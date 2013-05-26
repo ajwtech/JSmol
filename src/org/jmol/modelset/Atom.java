@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-10 22:25:17 -0500 (Fri, 10 May 2013) $
+ * $Revision: 18208 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -406,7 +406,6 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getFormalCharge() {
-    //System.out.println("Atom " + this + " " + this.formalChargeAndFlags);
     return formalChargeAndFlags >> 2;
   }
 
@@ -1004,7 +1003,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   /**
    * determine if an atom or its PDB group is visible
-   * @param flags TODO
+   * @param flags
    * @return true if the atom is in the "select visible" set
    */
   public boolean isVisible(int flags) {

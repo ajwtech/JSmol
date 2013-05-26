@@ -245,9 +245,14 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlDataIsColorMapped = 
       ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE)
     && (params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true")));
-    //next is for information only -- will be superceded by encoding attribute of jvxlColorData
+    //isJvxlPrecisionColor is for information only -- will be superceded by encoding attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
     jvxlData.jvxlDataIsColorDensity = params.colorDensity = (params.colorRgb == Integer.MIN_VALUE && XmlReader.getXmlAttrib(data, "colorDensity").equals("true"));
+    if (jvxlData.jvxlDataIsColorDensity && Float.isNaN(params.pointSize)) {
+      s = XmlReader.getXmlAttrib(data, "pointSize");
+      if (s.length() > 0)
+        jvxlData.pointSize = params.pointSize = parseFloatStr(s);
+    }
     s = XmlReader.getXmlAttrib(data, "allowVolumeRender");
       jvxlData.allowVolumeRender = params.allowVolumeRender = (s.length() == 0 || s.equalsIgnoreCase("true"));
     s = XmlReader.getXmlAttrib(data, "plane");
@@ -596,17 +601,26 @@ public class JvxlXmlReader extends VolumeFileReader {
       n = Math.min(n, vertexCount);
       String[] tokens = Parser.getTokens(jvxlColorDataRead.substring(nextc[0]));
       boolean haveTranslucent = false;
+      float trans = jvxlData.translucency;
+      int lastColor = 0;
       for (int i = 0; i < n; i++)
         // colix will be one of 8 shades of translucent if A in ARGB is not FF.
         try{
-          colixes[i] = C.getColixTranslucent(jvxlData.vertexColors[i] = getColor(tokens[i]));
+          int c = getColor(tokens[i]);
+          if (c == 0)
+            c = lastColor;
+          else
+            lastColor = c;
+          colixes[i] = C.getColixTranslucent(jvxlData.vertexColors[i] = c);
           if (C.isColixTranslucent(colixes[i]))
             haveTranslucent = true;
+          else if (trans != 0)
+            colixes[i] = C.getColixTranslucent3(colixes[i], true, trans);
         } catch (Exception e) {
           Logger.info("JvxlXmlReader: Cannot interpret color code: " + tokens[i]);
           // ignore this color if parsing error
         }
-      if (haveTranslucent){
+      if (haveTranslucent && trans == 0){
         // set to show in pass2
         jvxlData.translucency = 0.5f;
       }

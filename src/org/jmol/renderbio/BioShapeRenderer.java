@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-22 07:29:31 -0500 (Mon, 22 Apr 2013) $
- * $Revision: 18146 $
+ * $Date: 2013-05-13 07:03:44 -0500 (Mon, 13 May 2013) $
+ * $Revision: 18216 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -112,7 +112,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       cartoonsFancy = v;
     }
     int val1 = viewer.getHermiteLevel();
-    val1 = (val1 <= 0 ? -val1 : viewer.getInMotion() ? 0 : val1);
+    val1 = (val1 <= 0 ? -val1 : viewer.getInMotion(true) ? 0 : val1);
     if (cartoonsFancy)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)

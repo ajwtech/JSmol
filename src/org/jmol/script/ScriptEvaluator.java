@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18171 $
+ * $Date: 2013-05-25 22:39:10 -0500 (Sat, 25 May 2013) $
+ * $Revision: 18250 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -53,10 +53,11 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.MeshCollection;
-import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.thread.ScriptDelayThread;
 import org.jmol.util.BSUtil;
@@ -4519,6 +4520,62 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return 0;
   }
 
+  
+  private JmolList<Object> listParameter(int i, int nMin, int nMax) throws ScriptException {
+    JmolList<Object> v = new JmolList<Object>();
+    P3 pt;
+    int tok = tokAt(i);
+    if (tok == T.spacebeforesquare)
+      tok = tokAt(++i);
+    boolean haveBrace = (tok == T.leftbrace);
+    boolean haveSquare = (tok == T.leftsquare);
+    if (haveBrace || haveSquare)
+      i++;
+    int n = 0;
+    while (n < nMax) {
+      tok = tokAt(i);
+      if (haveBrace && tok == T.rightbrace || haveSquare
+          && tok == T.rightsquare)
+        break;
+      switch (tok) {
+      case T.comma:
+      case T.leftbrace:
+      case T.rightbrace:
+        break;
+      case T.string:
+        break;
+      case T.point3f:
+        pt = getPoint3f(i, false);
+        v.addLast(Float.valueOf(pt.x));
+        v.addLast(Float.valueOf(pt.y));
+        v.addLast(Float.valueOf(pt.z));
+        n += 3;
+        break;
+      case T.point4f:
+        P4 pt4 = getPoint4f(i);
+        v.addLast(Float.valueOf(pt4.x));
+        v.addLast(Float.valueOf(pt4.y));
+        v.addLast(Float.valueOf(pt4.z));
+        v.addLast(Float.valueOf(pt4.w));
+        n += 4;
+        break;
+      default:
+        v.addLast(Float.valueOf(floatParameter(i)));
+        n++;
+        if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
+          i++;
+      }
+      i++;
+    }
+    if (haveBrace && tokAt(i++) != T.rightbrace || haveSquare
+        && tokAt(i++) != T.rightsquare
+        || n < nMin || n > nMax)
+      error(ERROR_invalidArgument);
+    iToken = i - 1;
+    return v;
+  }
+
+
   /**
    * process a general string or set of parameters as an array of floats,
    * allowing for relatively free form input
@@ -4531,17 +4588,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   private float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
-    int tok = tokAt(i);
-    if (tok == T.spacebeforesquare)
-      tok = tokAt(++i);
-    boolean haveBrace = (tok == T.leftbrace);
-    boolean haveSquare = (tok == T.leftsquare);
+    JmolList<Object> v = null;
     float[] fparams = null;
-    JmolList<Float> v = new  JmolList<Float>();
     int n = 0;
-    if (haveBrace || haveSquare)
-      i++;
-    P3 pt;
     String s = null;
     switch (tokAt(i)) {
     case T.string:
@@ -4551,56 +4600,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       n = fparams.length;
       break;
     case T.varray:
-      fparams = SV.flistValue(st[i++], 0);
+      fparams = SV.flistValue(st[i], 0);
       n = fparams.length;
       break;
     default:
-      while (n < nMax) {
-        tok = tokAt(i);
-        if (haveBrace && tok == T.rightbrace || haveSquare
-            && tok == T.rightsquare)
-          break;
-        switch (tok) {
-        case T.comma:
-        case T.leftbrace:
-        case T.rightbrace:
-          break;
-        case T.string:
-          break;
-        case T.point3f:
-          pt = getPoint3f(i, false);
-          v.addLast(Float.valueOf(pt.x));
-          v.addLast(Float.valueOf(pt.y));
-          v.addLast(Float.valueOf(pt.z));
-          n += 3;
-          break;
-        case T.point4f:
-          P4 pt4 = getPoint4f(i);
-          v.addLast(Float.valueOf(pt4.x));
-          v.addLast(Float.valueOf(pt4.y));
-          v.addLast(Float.valueOf(pt4.z));
-          v.addLast(Float.valueOf(pt4.w));
-          n += 4;
-          break;
-        default:
-          v.addLast(Float.valueOf(floatParameter(i)));
-          n++;
-          if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
-            i++;
-        }
-        i++;
-      }
+      v = listParameter(i, nMin, nMax);
+      n = v.size();
     }
-    if (haveBrace && tokAt(i++) != T.rightbrace || haveSquare
-        && tokAt(i++) != T.rightsquare)
-      error(ERROR_invalidArgument);
-    iToken = i - 1;
     if (n < nMin || n > nMax)
       error(ERROR_invalidArgument);
     if (fparams == null) {
       fparams = new float[n];
       for (int j = 0; j < n; j++)
-        fparams[j] = v.get(j).floatValue();
+        fparams[j] = ((Float) v.get(j)).floatValue();
     }
     return fparams;
   }
@@ -5700,7 +5712,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           break;
         case T.frame:
         case T.model:
-          frame(1);
+          model(1);
           break;
         case T.parallel: // not actually found 
         case T.function:
@@ -5892,14 +5904,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void cache() throws ScriptException {
-    checkLength(3);
     int tok = tokAt(1);
-    String fileName = parameterAsString(2);
+    String fileName = null;
+    int n = 2;
     switch (tok) {
     case T.add:
     case T.remove:
+      fileName = optParameterAsString(n++);
+      //$FALL-THROUGH$
+    case T.clear:
+      checkLength(n);
       if (!chk) {
-        if (tok == T.remove && tokAt(2) == T.all)
+        if ("all".equals(fileName))
           fileName = null;
         int nBytes = viewer.cacheFileByName(fileName, tok == T.add);
         showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
@@ -6537,8 +6553,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void move() throws ScriptException {
-    if (slen > 11)
-      error(ERROR_badArgumentCount);
+    checkLength(-11);
     // rotx roty rotz zoom transx transy transz slab seconds fps
     V3 dRot = V3.new3(floatParameter(1), floatParameter(2),
         floatParameter(3));
@@ -6582,8 +6597,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         floatSecondsTotal = 0;
       if (floatSecondsTotal > 0)
         refresh();
-      viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0, 0, 0,
-          null, Float.NaN, Float.NaN, Float.NaN);
+      viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0,
+          0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
       if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
         throw new ScriptInterruption(this, "moveTo", 1);
       return;
@@ -6594,7 +6609,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
     float degrees = 90;
     BS bsCenter = null;
+    boolean isChange = true;
+    float xTrans = 0;
+    float yTrans = 0;
+    float zoom = Float.NaN;
+    float rotationRadius = Float.NaN;
+    float zoom0 = viewer.getZoomSetting();
+    P3 navCenter = null;
+    float xNav = Float.NaN;
+    float yNav = Float.NaN;
+    float navDepth = Float.NaN;
+    float cameraDepth = Float.NaN;
+    float cameraX = Float.NaN;
+    float cameraY = Float.NaN;
+    float[] pymolView = null;
     switch (getToken(i).tok) {
+    case T.pymol:
+      // 18-element standard PyMOL view matrix 
+      // [0-8] are 3x3 rotation matrix (inverted)
+      // [9,10] are x,y translations (y negative)
+      // [11] is distance from camera to center (negative)
+      // [12-14] are rotation center coords
+      // [15-16] are slab and depth distance from camera (0 to ignore)
+      // [17] is field of view; positive for orthographic projection
+      // or 21-element extended matrix (PSE file reading)
+      // [18,19] are boolean depth_cue and fog settings
+      // [20] is fogStart (usually 0.45)
+      pymolView = floatParameterSet(++i, 18, 21);
+      i = iToken + 1;
+      if (chk && checkLength(i) > 0) 
+        return;
+      break;
     case T.quaternion:
       Quaternion q;
       boolean isMolecular = false;
@@ -6609,8 +6654,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!(expressionResult instanceof BS))
           error(ERROR_invalidArgument);
         bsCenter = (BS) expressionResult;
-        q = (chk ? new Quaternion() : viewer
-            .getAtomQuaternion(bsCenter.nextSetBit(0)));
+        q = (chk ? new Quaternion() : viewer.getAtomQuaternion(bsCenter
+            .nextSetBit(0)));
       } else {
         q = getQuaternionParameter(i);
       }
@@ -6682,16 +6727,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
+    if (pymolView != null) {
+    }
     if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
       axis.set(0, 0, 0);
     else if (axis.length() == 0 && degrees == 0)
       degrees = Float.NaN;
-    boolean isChange = !viewer.isInPosition(axis, degrees);
+    isChange = !viewer.isInPosition(axis, degrees);
     // optional zoom
-    float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
+    if (isFloatParameter(i))
+      zoom = floatParameter(i++);
     // optional xTrans yTrans
-    float xTrans = 0;
-    float yTrans = 0;
     if (isFloatParameter(i) && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
@@ -6707,8 +6753,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsCenter = (BS) expressionResult;
       i = iToken + 1;
     }
-    float rotationRadius = Float.NaN;
-    float zoom0 = viewer.getZoomSetting();
     if (center != null) {
       if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
         isChange = true;
@@ -6719,8 +6763,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
             && (zoom == 0 || Float.isNaN(zoom))) {
           // alternative (atom expression) 0 zoomFactor
-          float newZoom = Math
-              .abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0 : zoom0)));
+          float newZoom = Math.abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0
+              : zoom0)));
           i = iToken + 1;
           zoom = newZoom;
         } else {
@@ -6729,35 +6773,40 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             isChange = true;
         }
       }
-    }
-    if (zoom == 0 || Float.isNaN(zoom))
-      zoom = 100;
-    if (Float.isNaN(rotationRadius))
-      rotationRadius = 0;
+      if (zoom == 0 || Float.isNaN(zoom))
+        zoom = 100;
+      if (Float.isNaN(rotationRadius))
+        rotationRadius = 0;
 
-    if (!isChange && Math.abs(zoom - zoom0) >= 1)
-      isChange = true;
-    // (navCenter) xNav yNav navDepth
+      if (!isChange && Math.abs(zoom - zoom0) >= 1)
+        isChange = true;
+      // (navCenter) xNav yNav navDepth
 
-    P3 navCenter = null;
-    float xNav = Float.NaN;
-    float yNav = Float.NaN;
-    float navDepth = Float.NaN;
-
-    if (i != slen) {
-      navCenter = centerParameter(i);
-      i = iToken + 1;
       if (i != slen) {
-        xNav = floatParameter(i++);
-        yNav = floatParameter(i++);
+        navCenter = centerParameter(i);
+        i = iToken + 1;
+        if (i != slen) {
+          xNav = floatParameter(i++);
+          yNav = floatParameter(i++);
+        }
+        if (i != slen)
+          navDepth = floatParameter(i++);
+        if (i != slen) {
+          cameraDepth = floatParameter(i++);
+          if (!isChange && Math.abs(cameraDepth - viewer.getCameraDepth()) >= 0.01f)
+            isChange = true;
+        }
+        if (i + 1 < slen) {
+          cameraX = floatParameter(i++);
+          cameraY = floatParameter(i++);
+          if (!isChange && Math.abs(cameraX - viewer.getCamera().x) >= 0.01f) 
+            isChange = true;
+          if (!isChange && Math.abs(cameraY - viewer.getCamera().y) >= 0.01f)
+            isChange = true;
+        }
       }
-      if (i != slen)
-        navDepth = floatParameter(i++);
     }
-
-    if (i != slen)
-      error(ERROR_badArgumentCount);
-
+    checkLength(i);
     if (chk)
       return;
     if (!isChange)
@@ -6765,9 +6814,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (floatSecondsTotal > 0)
       refresh();
     if (!useThreads())
-        floatSecondsTotal = 0;
-    viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
-        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+      floatSecondsTotal = 0;
+    if (pymolView != null)
+      viewer.movePyMOL(this, floatSecondsTotal, pymolView);
+    else
+      viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
+          xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
+          cameraDepth, cameraX, cameraY);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "moveTo", 1);
   }
@@ -7115,12 +7168,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean doRotate = false;
     boolean doTranslate = false;
     boolean doAnimate = false;
-    float nSeconds = Float.NaN;
     Quaternion[] data1 = null, data2 = null;
     BS bsAtoms1 = null, bsAtoms2 = null;
     JmolList<BS[]> vAtomSets = null;
     JmolList<Object[]> vQuatSets = null;
-    BS bsFrom = (tokAt(1) == T.subset ? null : atomExpressionAt(1));
+    iToken = 0;
+    float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken) : Float.NaN);
+    BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     if (bsFrom == null || bsTo == null)
       error(ERROR_invalidArgument);
@@ -7776,10 +7830,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (name.indexOf("[") >= 0)
       name = name.substring(0, name.indexOf("["));
     int propertyID = viewer.getPropertyNumber(name);
-    String param = optParameterAsString(2);
-    int tok = tokAt(2);
-    BS bs = (tok == T.expressionBegin || tok == T.bitset ? atomExpressionAt(2)
-        : null);
+    Object param = "";
+    switch (tokAt(2)) {
+    default:
+      param = optParameterAsString(2);
+      break;
+    case T.expressionBegin:
+    case T.bitset:
+      param = atomExpressionAt(2);
+      if (property.equalsIgnoreCase("bondInfo")) {
+        switch (tokAt(++iToken)) {
+        case T.expressionBegin:
+        case T.bitset:
+          param = new BS[] { (BS) param, atomExpressionAt(iToken) };
+          break;
+        }
+      }
+      break;
+    }
     if (property.length() > 0 && propertyID < 0) {
       // no such property
       property = ""; // produces a list from Property Manager
@@ -7788,14 +7856,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       param = viewer.getDefaultPropertyParam(propertyID);
       if (param.equals("(visible)")) {
         viewer.setModelVisibility();
-        bs = viewer.getVisibleSet();
+        param = viewer.getVisibleSet();
       }
     } else if (propertyID == viewer.getPropertyNumber("fileContents")) {
+      String s = param.toString();
       for (int i = 3; i < slen; i++)
-        param += parameterAsString(i);
+        s += parameterAsString(i);
+      param = s;
     }
-    retValue = (String) viewer.getProperty("readable", property,
-        (bs == null ? (Object) param : (Object) bs));
+    retValue = (String) viewer.getProperty("readable", property, param);
     showString(retValue);
   }
 
@@ -9311,6 +9380,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
+      if (filter.toUpperCase().indexOf("DOCACHE") >= 0)
+        viewer.cacheClear();
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
@@ -9469,7 +9540,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void measure() throws ScriptException {
-    if (tokAt(1) == T.search) {
+    String id = null;
+    int pt = 1;
+    short colix = 0;
+    float[] offset = null;
+    switch (tokAt(1)) {
+    case T.search:
       String smarts = stringParameter(slen == 3 ? 2 : 4);
       if (chk)
         return;
@@ -9483,9 +9559,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     switch (slen) {
-    case 1:
     case 2:
-      switch (getToken(1).tok) {
+      switch (getToken(pt).tok) {
       case T.nada:
       case T.on:
         setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
@@ -9539,13 +9614,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Boolean intramolecular = null;
     int tokAction = T.opToggle;
     String strFormat = null;
+    JmolFont font = null;
+    
     JmolList<Object> points = new  JmolList<Object>();
     BS bs = new BS();
     Object value = null;
     TickInfo tickInfo = null;
     int nBitSets = 0;
+    int mad = 0;
     for (int i = 1; i < slen; ++i) {
       switch (getToken(i).tok) {
+      case T.id:
+        if (i != 1)
+          error(ERROR_invalidArgument);
+        id = optParameterAsString(++i);
+        continue;
       case T.identifier:
         errorStr(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
         break;
@@ -9567,6 +9650,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isAllConnected && isNotConnected)
           error(ERROR_invalidArgument);
         break;
+      case T.color:
+        colix = C.getColix(getArgbParam(++i));
+        i = iToken;
+        break;
+      case T.offset:
+        if (isPoint3f(++i)) {
+          // PyMOL offsets -- {x, y, z} in angstroms
+          P3 p = getPoint3f(i, false);
+          offset = new float[] {1, p.x, p.y, p.z, 0, 0, 0};
+        } else {
+          offset = floatParameterSet(i, 7, 7);
+        }
+        i = iToken;
+        break;
+      case T.radius:
+      case T.diameter:
+        mad = (int) ((theTok == T.radius ? 2000 : 1000) * floatParameter(++i));
+        if (id != null && mad <= 0)
+          mad = -1;
+        break;
       case T.decimal:
         if (rd != null)
           error(ERROR_invalidArgument);
@@ -9579,6 +9682,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tokAction != T.opToggle)
           error(ERROR_invalidArgument);
         tokAction = T.delete;
+        break;
+      case T.font:
+        float fontsize = floatParameter(++i);
+        String fontface = parameterAsString(++i);
+        String fontstyle = parameterAsString(++i);
+        if (!chk)
+          font = viewer.getFont3D(fontface, fontstyle, fontsize);
         break;
       case T.integer:
         int iParam = intParameter(i);
@@ -9677,8 +9787,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
     }
-    if (rd != null && (ptFloat >= 0 || nAtoms != 2) || nAtoms < 2
-        && (tickInfo == null || nAtoms == 1))
+    if (rd != null && (ptFloat >= 0 || nAtoms != 2) || 
+        nAtoms < 2 && id == null && (tickInfo == null || nAtoms == 1))
       error(ERROR_badArgumentCount);
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;
@@ -9698,24 +9808,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tickInfo.id = "default";
       if (value != null && strFormat != null && tokAction == T.opToggle)
         tokAction = T.define;
+      Text text = null;
+      if (font != null)
+        text = Text.newLabel(viewer.getGraphicsData(), font, "", colix, (short) 0, 0, 0, null);
+      if (text != null)
+        text.pymolOffset = offset;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
-          (new MeasurementData(viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
-              isAllConnected, isNotConnected, intramolecular, isAll));
+          (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
+              isAllConnected, isNotConnected, intramolecular, isAll, mad, colix, text));
       return;
     }
+    Object propertyValue = (id == null ? countPlusIndexes : id);
     switch (tokAction) {
     case T.delete:
-      setShapeProperty(JC.SHAPE_MEASURES, "delete", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "delete", propertyValue);
       break;
     case T.on:
-      setShapeProperty(JC.SHAPE_MEASURES, "show", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "show", propertyValue);
       break;
     case T.off:
-      setShapeProperty(JC.SHAPE_MEASURES, "hide", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "hide", propertyValue);
       break;
     default:
       setShapeProperty(JC.SHAPE_MEASURES,
-          (strFormat == null ? "toggle" : "toggleOn"), countPlusIndexes);
+          (strFormat == null ? "toggle" : "toggleOn"), propertyValue);
       if (strFormat != null)
         setShapeProperty(JC.SHAPE_MEASURES, "setFormats", strFormat);
     }
@@ -11317,14 +11433,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (chk)
       return;
-    if (Float.isNaN(xTrans))
-      xTrans = 0;
-    if (Float.isNaN(yTrans))
-      yTrans = 0;
+    //if (Float.isNaN(xTrans))
+      //xTrans = 0;
+    //if (Float.isNaN(yTrans))
+      //yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       floatSecondsTotal = 0;
     viewer.moveTo(this, floatSecondsTotal, center, JC.center, Float.NaN, null,
-        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "zoomTo", 1);
 
@@ -12056,34 +12172,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setShapeProperty(JC.SHAPE_DIPOLES, "set", null);
   }
 
-  private void animationMode() throws ScriptException {
-    float startDelay = 1, endDelay = 1;
-    if (slen > 5)
-      error(ERROR_badArgumentCount);
-    EnumAnimationMode animationMode = null;
-    switch (getToken(2).tok) {
-    case T.once:
-      animationMode = EnumAnimationMode.ONCE;
-      startDelay = endDelay = 0;
-      break;
-    case T.loop:
-      animationMode = EnumAnimationMode.LOOP;
-      break;
-    case T.palindrome:
-      animationMode = EnumAnimationMode.PALINDROME;
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
-    if (slen >= 4) {
-      startDelay = endDelay = floatParameter(3);
-      if (slen == 5)
-        endDelay = floatParameter(4);
-    }
-    if (!chk)
-      viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
-  }
-
   private void vibration() throws ScriptException {
     checkLength(-3);
     float period = 0;
@@ -12122,31 +12210,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     viewer.setVibrationPeriod(-period);
-  }
-
-  private void animationDirection() throws ScriptException {
-    int i = 2;
-    int direction = 0;
-    switch (tokAt(i)) {
-    case T.minus:
-      direction = -intParameter(++i);
-      break;
-    case T.plus:
-      direction = intParameter(++i);
-      break;
-    case T.integer:
-      direction = intParameter(i);
-      if (direction > 0)
-        direction = 0;
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
-    checkLength(++i);
-    if (direction != 1 && direction != -1)
-      errorStr2(ERROR_numberMustBe, "-1", "1");
-    if (!chk)
-      viewer.setAnimationDirection(direction);
   }
 
   private void calculate() throws ScriptException {
@@ -12438,13 +12501,72 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setAnimDisplay(bs);
       return;
     case T.frame:
-      frame(2);
+      if (isArrayParameter(2)) {
+        float[] f = floatParameterSet(2, 0, Integer.MAX_VALUE);
+        checkLength(iToken + 1);
+        if (chk)
+          return;
+        int[] frames = new int[f.length];
+        for (int i = f.length; --i >= 0;)
+          frames[i] = (int) f[i];
+        Map<String, Object> movie = new Hashtable<String, Object>();
+        movie.put("frames", frames);
+        movie.put("currentFrame", Integer.valueOf(0));
+        viewer.setMovie(movie);
+      } else {
+        model(2);
+      }
       break;
     case T.mode:
-      animationMode();
+      float startDelay = 1, endDelay = 1;
+      if (slen > 5)
+        error(ERROR_badArgumentCount);
+      EnumAnimationMode animationMode = null;
+      switch (getToken(2).tok) {
+      case T.once:
+        animationMode = EnumAnimationMode.ONCE;
+        startDelay = endDelay = 0;
+        break;
+      case T.loop:
+        animationMode = EnumAnimationMode.LOOP;
+        break;
+      case T.palindrome:
+        animationMode = EnumAnimationMode.PALINDROME;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      if (slen >= 4) {
+        startDelay = endDelay = floatParameter(3);
+        if (slen == 5)
+          endDelay = floatParameter(4);
+      }
+      if (!chk)
+        viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
       break;
     case T.direction:
-      animationDirection();
+      int i = 2;
+      int direction = 0;
+      switch (tokAt(i)) {
+      case T.minus:
+        direction = -intParameter(++i);
+        break;
+      case T.plus:
+        direction = intParameter(++i);
+        break;
+      case T.integer:
+        direction = intParameter(i);
+        if (direction > 0)
+          direction = 0;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      checkLength(++i);
+      if (direction != 1 && direction != -1)
+        errorStr2(ERROR_numberMustBe, "-1", "1");
+      if (!chk)
+        viewer.setAnimationDirection(direction);
       break;
     case T.fps:
       setIntProperty("animationFps", intParameter(checkLast(2)));
@@ -12509,10 +12631,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setMotionFixedAtoms(bs);
   }
 
-  private void frame(int offset) throws ScriptException {
+  private void model(int offset) throws ScriptException {
+    boolean isFrame = (theTok == T.frame);
     boolean useModelNumber = true;
-    // for now -- as before -- remove to implement
-    // frame/model difference
     if (slen == 1 && offset == 1) {
       int modelIndex = viewer.getCurrentModelIndex();
       int m;
@@ -12522,6 +12643,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     switch (tokAt(1)) {
+    case T.integer:
+      if (isFrame && slen == 2) {
+        // FRAME n
+        if (!chk)
+          viewer.setFrame(intParameter(1));
+        return;
+      }
+      break;
     case T.expressionBegin:
     case T.bitset:
       int i = atomExpressionAt(1).nextSetBit(0);
@@ -14322,13 +14451,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen > 1) {
       String saveName = optParameterAsString(2);
       switch (tokAt(1)) {
+      case T.orientation:
       case T.rotation:
         if (!chk)
-          viewer.saveOrientation(saveName);
-        return;
-      case T.orientation:
-        if (!chk)
-          viewer.saveOrientation(saveName);
+          viewer.saveOrientation(saveName, null);
         return;
       case T.bonds:
         if (!chk)
@@ -14360,30 +14486,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // restore orientation name time
     if (slen > 1) {
       String saveName = optParameterAsString(2);
-      if (getToken(1).tok != T.orientation)
-        checkLength23();
-      float floatSecondsTotal;
-      switch (getToken(1).tok) {
-      case T.rotation:
-        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
-        if (floatSecondsTotal < 0)
-          error(ERROR_invalidArgument);
-        if (!chk) {
-          viewer.restoreRotation(saveName, floatSecondsTotal);
-          if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
-            throw new ScriptInterruption(this, "restoreRotation", 1);
-        }
-        return;
+      int tok = tokAt(1);
+      switch (tok) {
       case T.orientation:
-        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
+      case T.rotation:
+      case T.scene:
+        float floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
         if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!chk) {
+        if (chk)
+          return;
+        String type = "";
+        switch (tok) {
+        case T.orientation:
+          type = "Orientation";
           viewer.restoreOrientation(saveName, floatSecondsTotal);
-          if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
-            throw new ScriptInterruption(this, "restoreOrientation", 1);
+          break;
+        case T.rotation:
+          type = "Rotation";
+          viewer.restoreRotation(saveName, floatSecondsTotal);
+          break;
+        case T.scene:
+          type = "Scene";
+          viewer.restoreScene(saveName, floatSecondsTotal);
+          break;
         }
+        if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
+          throw new ScriptInterruption(this, "restore" + type, 1);
         return;
+      }
+      checkLength(2);
+      switch (tok) {
       case T.bonds:
         if (!chk)
           viewer.restoreBonds(saveName);
@@ -14396,6 +14529,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         runScript(script);
         viewer.checkCoordinatesChanged();
+        return;
+      case T.selection:
+        if (!chk)
+          viewer.restoreSelection(saveName);
         return;
       case T.state:
         if (chk)
@@ -14413,14 +14550,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         runScript(shape);
         return;
-      case T.selection:
-        if (!chk)
-          viewer.restoreSelection(saveName);
-        return;
       }
     }
     errorStr2(ERROR_what, "RESTORE",
-        "bonds? coords? orientation? selection? state? structure?");
+        "bonds? coords? orientation? rotation? scene? selection? state? structure?");
   }
 
   String write(T[] args) throws ScriptException {
@@ -15443,7 +15576,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
     boolean isTranslucent = false;
     boolean isInitialized = false;
-    float[] data = null;
+    JmolList<Object> data = null;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
@@ -15456,7 +15589,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spacebeforesquare:
         if (data != null || isWild)
           error(ERROR_invalidArgument);
-        data = floatParameterSet(i, 2, Integer.MAX_VALUE);
+        data = listParameter(i, 2, Integer.MAX_VALUE);
         i = iToken;
         continue;
       case T.scale:
@@ -15525,7 +15658,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
     }
     finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
-        : Float.MAX_VALUE, intScale, true, data, iptDisplayProperty);
+        : Float.MAX_VALUE, intScale, data != null, data, iptDisplayProperty);
   }
   
   private void finalizeObject(int shapeID, int colorArgb,
@@ -17194,7 +17327,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean haveIntersection = false;
     float[] data = null;
     String cmd = null;
-    int thisSetNumber = -1;
+    int thisSetNumber = Integer.MIN_VALUE;
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
     float sigma = Float.NaN;
@@ -17570,6 +17703,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i++;
             propertyName = "colorDensity";
             sbCommand.append(" color density");
+            if (isFloatParameter(i + 1)) {
+              float ptSize = floatParameter(++i);
+              sbCommand.append(" " + ptSize);
+              propertyValue = Float.valueOf(ptSize);
+            }
             break;
           }
           /*
@@ -18310,20 +18448,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         float radius;
         if (theTok == T.molecular) {
           propertyName = "molecular";
-          //if (!surfaceObjectSeen)
           sbCommand.append(" molecular");
-          radius = 1.4f;
+          radius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.4f);
         } else {
           addShapeProperty(propertyList, "bsSolvent",
               lookupIdentifierValue("solvent"));
           propertyName = (theTok == T.sasurface ? "sasurface" : "solvent");
-          //if (!surfaceObjectSeen)
           sbCommand.append(" ").appendO(theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
               .getFloat(T.solventproberadius));
-          //if (!surfaceObjectSeen)
-          sbCommand.append(" ").appendF(radius);
         }
+        sbCommand.append(" ").appendF(radius);
         propertyValue = Float.valueOf(radius);
         if (tokAt(i + 1) == T.full) {
           addShapeProperty(propertyList, "doFullMolecular", null);
@@ -18531,6 +18666,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         i = iToken;
         break;
+      case T.atomindex:
+        propertyName = "atomIndex";
+        propertyValue = Integer.valueOf(intParameter(++i));
+        break;
       case T.link:
         propertyName = "link";
         sbCommand.append(" link");
@@ -18599,7 +18738,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addShapeProperty(propertyList, "nomap", Float.valueOf(0));
         surfaceObjectSeen = true;
       }
-      if (thisSetNumber >= 0)
+      if (thisSetNumber >= -1)
         addShapeProperty(propertyList, "getSurfaceSets", Integer
             .valueOf(thisSetNumber - 1));
       if (discreteColixes != null) {
@@ -18736,14 +18875,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
-    if (toCache) {
-      String id = (String) getShapeProperty(iShape, "ID");
-      viewer.cachePut("cache://isosurface_" + id, getShapeProperty(iShape,
-          "jvxlDataXml"));
-      runScript("isosurface ID \"" + id + "\" delete;isosurface ID \"" + id
-          + "\"" + (modelIndex >= 0 ? " model " + modelIndex : "")
-          + " \"cache://isosurface_" + getShapeProperty(iShape, "ID") + "\"");
-    }
+    if (toCache)
+      setShapeProperty(iShape, "cache", null);
   }
 
   private String setColorOptions(SB sb, int index, int iShape,

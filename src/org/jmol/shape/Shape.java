@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -358,8 +358,7 @@ public abstract class Shape {
   public static String getFontCommand(String type, JmolFont font) {
     if (font == null)
       return "";
-    return "font " + type + " " + font.fontSizeNominal + " " + font.fontFace + " "
-        + font.fontStyle;
+    return "font " + type + " " + font.getInfo();
   }
 
   public static String getColorCommandUnk(String type, short colix,

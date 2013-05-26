@@ -102,7 +102,6 @@ public class IsosurfaceMesh extends Mesh {
     vertexIncrement = 1;
     vertexSets = null;
     vertexValues = null;
-    volumeRenderPointSize = 0.15f;
   }
 
   void allocVertexColixes() {
@@ -410,7 +409,6 @@ public class IsosurfaceMesh extends Mesh {
   short[] contourColixes;
   public ColorEncoder colorEncoder;
   
-  public float volumeRenderPointSize = 0.15f;
   BS bsVdw;
   public boolean colorPhased;
 
@@ -640,7 +638,8 @@ public class IsosurfaceMesh extends Mesh {
    * scheme information, and vertex color mappings (as from COLOR ISOSURFACE
    * {hydrophobic} WHITE), returning these settings when the JVXL file is
    * opened.
-   * @param colorRgb 
+   * 
+   * @param colorRgb
    */
   void setColorsFromJvxlData(int colorRgb) {
     diameter = jvxlData.diameter;
@@ -657,7 +656,7 @@ public class IsosurfaceMesh extends Mesh {
     if (jvxlData.meshColor != null)
       meshColix = C.getColixS(jvxlData.meshColor);
     setJvxlDataRendering();
-      
+
     isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null;
     if (colorEncoder != null) {
       // bicolor map will be taken care of with params.isBicolorMap
@@ -731,6 +730,8 @@ public class IsosurfaceMesh extends Mesh {
       }
       return;
     }
+    jvxlData.vertexColors = null;
+    jvxlData.vertexColorMap = null;
     if (jvxlData.isBicolorMap) {
       for (int i = mergeVertexCount0; i < vertexCount; i++)
         vertexColixes[i] = C.copyColixTranslucency(colix,

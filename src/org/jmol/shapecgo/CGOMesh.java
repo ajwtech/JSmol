@@ -24,12 +24,14 @@
 
 package org.jmol.shapecgo;
 
-
-
-
 import org.jmol.shapespecial.DrawMesh;
+import org.jmol.util.BS;
+import org.jmol.util.C;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
+import org.jmol.util.Normix;
+import org.jmol.util.Tuple3f;
 
 /*
  * Compiled Graphical Object -- ala PyMOL
@@ -44,6 +46,14 @@ public class CGOMesh extends DrawMesh {
   CGOMesh(String thisID, short colix, int index) {
     super(thisID, colix, index);
   }
+  
+  public final static int GL_POINTS = 0;
+  public final static int GL_LINES = 1;
+  public final static int GL_LINE_LOOP = 2;
+  public final static int GL_LINE_STRIP = 3;
+  public final static int GL_TRIANGLES = 4;
+  public final static int GL_TRIANGLE_STRIP = 5;
+  public final static int GL_TRIANGLE_FAN = 6;
   
 
   private final static int[] sizes = new int[] {
@@ -60,7 +70,7 @@ public class CGOMesh extends DrawMesh {
   }
   
   public final static int STOP                = 0;
-  public final static int NULL                = 1;
+  public final static int SIMPLE_LINE           = 1;
   public final static int BEGIN               = 2;
   public final static int END                 = 3;
   public final static int VERTEX              = 4;
@@ -68,7 +78,7 @@ public class CGOMesh extends DrawMesh {
   public final static int NORMAL              = 5;
   public final static int COLOR               = 6;
   public final static int SPHERE              = 7;
-  public final static int TRIANGLE            = 8;
+  public final static int TRICOLOR_TRIANGLE            = 8;
   public final static int CYLINDER            = 9;
   
   public final static int LINEWIDTH           = 10;
@@ -95,27 +105,66 @@ public class CGOMesh extends DrawMesh {
   public final static int RESET_NORMAL        = 28;
   public final static int PICK_COLOR          = 29;
 
+  @Override
+  public void clear(String meshType) {
+    super.clear(meshType);
+    useColix = false;
+  }
+
   @SuppressWarnings("unchecked")
   boolean set(JmolList<Object> list) {
     // vertices will be in list.get(0). normals?
     width = 200;
     diameter = 0;//200;
+    useColix = true;
+    bsTemp = new BS();
     try {
-      cmds = (JmolList<Object>) list.get(1);
-      if (cmds == null)
-        cmds = (JmolList<Object>) list.get(0);
-      cmds = (JmolList<Object>) cmds.get(1);
+      if (list.get(0) instanceof Float) {
+        cmds = list;
+      } else {
+        cmds = (JmolList<Object>) list.get(1);
+        if (cmds == null)
+          cmds = (JmolList<Object>) list.get(0);
+        cmds = (JmolList<Object>) cmds.get(1);
+      }
+
       int n = cmds.size();
       for (int i = 0; i < n; i++) {
         int type = ((Number) cmds.get(i)).intValue();
-        if (type == 0)
-          break;
         int len = getSize(type);
         if (len < 0) {
           Logger.error("CGO unknown type: " + type);
           return false;
         }
-        Logger.info("CGO " + thisID + " type " + type + " len " + len);
+        switch (type) {
+        case SIMPLE_LINE:
+          // para_closed_wt-MD-27.9.12.pse
+          // total hack.... could be a strip of lines?
+          len = 8;
+          break;
+        case STOP:
+          return true;
+        case NORMAL:
+          addNormix(i);
+          break;
+        case COLOR:
+          addColix(i);
+          useColix = false;
+          break;
+        case CGOMesh.SAUSAGE:
+          addColix(i + 7);
+          addColix(i + 10);
+          break;
+        case CGOMesh.TRICOLOR_TRIANGLE:
+          addNormix(i + 9);
+          addNormix(i + 12);
+          addNormix(i + 15);
+          addColix(i + 18);
+          addColix(i + 21);
+          addColix(i + 24);
+          break;
+        }
+        //Logger.info("CGO " + thisID + " type " + type + " len " + len);
         i += len;
       }
       return true;
@@ -125,4 +174,46 @@ public class CGOMesh extends DrawMesh {
       return false;
     }
   }
+  
+  private void addColix(int i) {
+    getPoint(i, vTemp);
+    cList.addLast(Short.valueOf(C.getColix(ColorUtil.colorPtToInt(vTemp))));
+  }
+
+  private void addNormix(int i) {
+    getPoint(i, vTemp);
+    nList.addLast(Short.valueOf(Normix.get2SidedNormix(vTemp, bsTemp)));
+  }
+
+  public JmolList<Short> nList = new JmolList<Short>();
+  public JmolList<Short> cList = new JmolList<Short>();
+  
+  /**
+   * 
+   * @param i  pointer to PRECEDING item
+   * @param pt
+   */
+  public void getPoint(int i, Tuple3f pt) {
+    pt.set(getFloat(++i), getFloat(++i), getFloat(++i));
+  }
+
+  /**
+   * 
+   * @param i pointer to THIS value
+   * @return int
+   */
+  public int getInt(int i) {
+    return ((Number) cmds.get(i)).intValue();
+  }
+
+  /**
+   * 
+   * @param i pointer to THIS value
+   * @return float
+   */
+  public float getFloat(int i) {
+    return ((Number) cmds.get(i)).floatValue();
+  }
+  
+
 }
