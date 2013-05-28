@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17976 $
+ * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18256 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -40,7 +40,9 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
+  public float vectorX = Float.NaN;
+  public float vectorY = Float.NaN;
+  public float vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
   public int occupancy = 100;
   public float radius = Float.NaN;

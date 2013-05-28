@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-05-21 08:39:33 -0500 (Tue, 21 May 2013) $
- * $Revision: 18238 $
+ * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18256 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -2597,7 +2597,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case '<':
     case '=':
     case '>':
-      if ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>')
+      if ((ch = charAt(ichT)) == '<' || ch == '=' || ch == '>')
         ++ichT;
       tokLastMath = 1;
       break;
