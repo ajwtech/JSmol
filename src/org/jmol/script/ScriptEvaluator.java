@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-25 22:39:10 -0500 (Sat, 25 May 2013) $
- * $Revision: 18250 $
+ * $Date: 2013-05-28 10:01:21 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18257 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -16259,7 +16259,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isDesignParameter = true;
         continue;
       case T.distancefactor:
-        if (!needsGenerating)
+        if (nAtomSets == 0)
           error(ERROR_insufficientArguments);
         decimalPropertyName = "distanceFactor";
         isDesignParameter = true;

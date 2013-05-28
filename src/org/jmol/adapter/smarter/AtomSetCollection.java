@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-23 18:06:38 -0500 (Tue, 23 Apr 2013) $
- * $Revision: 18148 $
+ * $Date: 2013-05-28 10:01:21 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18257 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1488,8 +1488,7 @@ public class AtomSetCollection {
   boolean haveMappedSerials;
 
   public BS bsStructuredModels;
-  void mapMostRecentAtomSerialNumber() {
-    // from ??
+  private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)
       return;
     int index = atomCount - 1;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
- * $Revision: 18245 $
+ * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18256 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -191,10 +191,10 @@ public class Labels extends AtomShape {
 
     if ("textLabels" == propertyName) {
       setScaling();
-      JmolList<Text> labels = (JmolList<Text>) value;
-      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+      Map<Integer, Text> labels = (Map<Integer, Text>) value;
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
           .nextSetBit(i + 1))
-        setTextLabel(i, labels.get(pt++));
+        setTextLabel(i, labels.get(Integer.valueOf(i)));
       return;
     }
 

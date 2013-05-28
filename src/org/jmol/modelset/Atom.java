@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-10 22:25:17 -0500 (Fri, 10 May 2013) $
- * $Revision: 18208 $
+ * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
+ * $Revision: 18256 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -24,7 +24,6 @@
  */
 
 package org.jmol.modelset;
-
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
