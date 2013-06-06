@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2012-12-22 19:22:41 -0600 (Sat, 22 Dec 2012) $
- * $Revision: 17827 $
+ * $Date: 2013-06-06 15:59:04 -0500 (Thu, 06 Jun 2013) $
+ * $Revision: 18301 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -54,7 +54,7 @@ public class InvalidSmilesException extends Exception {
   public InvalidSmilesException(String message) {
     super(message);
     lastError = message;
-    printStackTrace();
+    //printStackTrace();
   }
 
   /**
