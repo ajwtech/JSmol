@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-20 07:21:36 -0500 (Mon, 20 May 2013) $
- * $Revision: 18230 $
+ * $Date: 2013-05-30 07:46:23 -0500 (Thu, 30 May 2013) $
+ * $Revision: 18263 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -60,12 +60,14 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   MENU_NAME,
-          "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu FILEUNITMenu - "
-              + "zoomMenu spinMenu VIBRATIONMenu spectraMenu "
-              + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - showConsole showMenu fileMenu computationMenu - "
-              + "languageComputedMenu aboutComputedMenu" },
-              
+          "FRAMESbyModelComputedMenu configurationComputedMenu " +
+          "- selectMenuText viewMenu renderMenu colorMenu " +
+          "- surfaceMenu FILEUNITMenu " +
+          "- sceneComputedMenu zoomMenu spinMenu VIBRATIONMenu spectraMenu FRAMESanimateMenu " +
+          "- measureMenu pickingMenu " +
+          "- showConsole showMenu fileMenu computationMenu " +
+          "- languageComputedMenu aboutComputedMenu" },
+
       {   "selectMenuText",
           "hideNotSelectedCB showSelectionsCB - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
@@ -596,6 +598,8 @@ public class MainPopupResourceBundle extends PopupResource {
         "bottom", GT._("Bottom"),
         "back", GT._("Back"),
 
+        "sceneComputedMenu" , GT._("Scenes"),
+        
         "PDBproteinMenu", GT._("Protein"),
         "allProtein", GT._("All"),
         "proteinBackbone", GT._("Backbone"),

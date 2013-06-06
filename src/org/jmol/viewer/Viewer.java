@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
- * $Revision: 18245 $
+ * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
+ * $Revision: 18282 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -796,10 +796,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getOrientation();
   }
 
-  public String getSavedOrienationText(String name) {
-    return stateManager.getSavedOrientationText(name);
-  }
-
   void restoreModelOrientation(int modelIndex) {
     StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
@@ -1431,7 +1427,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getOrientationText(int type, String name) {
-    return (name == null ? transformManager.getOrientationText(type)
+    return (name == null && type != T.state ? transformManager.getOrientationText(type)
         : stateManager.getSavedOrientationText(name));
   }
 
@@ -1665,7 +1661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  public void select(BS bs, boolean isGroup, Boolean addRemove, boolean isQuiet) {
+  public void select(BS bs, boolean isGroup, int addRemove, boolean isQuiet) {
     // Eval, ActionManager
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -1676,7 +1672,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setSelectionSet(BS set) {
     // JmolViewer API only -- not used in Jmol 
-    select(set, false, null, true);
+    select(set, false, 0, true);
   }
 
   public void selectBonds(BS bs) {
@@ -1684,7 +1680,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void displayAtoms(BS bs, boolean isDisplay, boolean isGroup,
-                           Boolean addRemove, boolean isQuiet) {
+                           int addRemove, boolean isQuiet) {
     // Eval
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -1728,6 +1724,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     definedAtomSets.clear();
   }
 
+  public BS getDefinedAtomSet(String name) {
+    Object o = definedAtomSets.get(name.toLowerCase());
+    return (o instanceof BS ? (BS) o : new BS());
+  }
+  
   @Override
   public void selectAll() {
     // initializeModel
@@ -2457,7 +2458,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setErrorMessage(null, null);
     try {
       BS bsNew = new BS();
-      modelSet = modelManager.createModelSet(fullPathName, fileName,
+      modelManager.createModelSet(fullPathName, fileName,
           loadScript, atomSetCollection, bsNew, isAppend);
       if (bsNew.cardinality() > 0) {
         // is a 2D dataset, as from JME
@@ -2771,7 +2772,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAllMeasurements();
       clearMinimization();
       gdata.clear();
-      modelSet = modelManager.zap();
+      modelManager.zap();
       if (scriptManager != null)
         scriptManager.clear(false);
       if (haveDisplay) {
@@ -2795,7 +2796,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       System.gc();
     } else {
-      modelSet = modelManager.zap();
+      modelManager.zap();
     }
     initializeModel(false);
     if (notify)
@@ -8835,7 +8836,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
       Logger.error("viewer handling error condition: " + er + "  ");
-      //er.printStackTrace();
+      er.printStackTrace();
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {
       try {
@@ -9982,6 +9983,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public P3 getCamera() {
     return transformManager.camera;
+  }
+
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = modelManager.modelSet = modelSet;
+  }
+  
+  public String setObjectProp(String id, int tokCommand) {
+    // for PyMOL session scene setting
+    getScriptManager();
+    if (id == null)
+      id = "*";
+    return (eval == null ? null : eval.setObjectPropSafe(id, tokCommand, -1));
+  }
+
+  public String[] getSceneList() {
+    try {
+      return (String[]) getModelSetAuxiliaryInfoValue("scenes");
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public void setBondParameters(int modelIndex, int i, BS bsBonds, float rad, float pymolValence, int argb, float trans) {
+    modelSet.setBondParametersBS(modelIndex, i, bsBonds, rad, pymolValence, argb, trans);
   }
 
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18171 $
+ * $Date: 2013-05-30 07:46:23 -0500 (Thu, 30 May 2013) $
+ * $Revision: 18263 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -33,7 +33,7 @@ import org.jmol.util.SB;
 class ModelManager {
 
   private final Viewer viewer;
-  private ModelSet modelSet;
+  ModelSet modelSet;
 
   private String modelSetPathName;
   private String fileName;
@@ -42,9 +42,9 @@ class ModelManager {
     this.viewer = viewer;
   }
 
-  ModelSet zap() {
+  void zap() {
     modelSetPathName = fileName = null;
-    return (modelSet = (new ModelLoader(viewer, viewer.getZapName(), null, null, null, null)).getModelSet());
+    new ModelLoader(viewer, viewer.getZapName(), null, null, null, null);
   }
   
   String getModelSetFileName() {
@@ -54,8 +54,8 @@ class ModelManager {
   String getModelSetPathName() {
     return modelSetPathName;
   }
-
-  ModelSet createModelSet(String fullPathName, String fileName,
+  
+  void createModelSet(String fullPathName, String fileName,
                           SB loadScript, Object atomSetCollection,
                           BS bsNew, boolean isAppend) {
     String modelSetName = null;
@@ -66,7 +66,7 @@ class ModelManager {
       else if (modelSetName.indexOf(" (modified)") < 0)
         modelSetName += " (modified)";
     } else if (atomSetCollection == null) {
-      return zap();
+      zap();
     } else {
       this.modelSetPathName = fullPathName;
       this.fileName = fileName;
@@ -83,12 +83,11 @@ class ModelManager {
         if (modelSetName == null)
           modelSetName = reduceFilename(fileName);
       }
-      modelSet = (new ModelLoader(viewer, modelSetName, loadScript,
-          atomSetCollection, (isAppend ? modelSet : null), bsNew)).getModelSet();
+      new ModelLoader(viewer, modelSetName, loadScript,
+          atomSetCollection, (isAppend ? modelSet : null), bsNew);
     }
     if (modelSet.getAtomCount() == 0 && !modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
       zap();
-    return modelSet;
   }
 
   private static String reduceFilename(String fileName) {

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-03 20:27:16 -0500 (Fri, 03 May 2013) $
- * $Revision: 18193 $
+ * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
+ * $Revision: 18282 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -31,7 +31,6 @@ import java.util.Map;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JC;
@@ -57,20 +56,21 @@ import org.jmol.viewer.JC;
  ****************************************************************/
 public abstract class JmolAdapter {
 
-  public final static short ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
-  public final static short ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
-  public final static short ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;
-  public final static short ORDER_AROMATIC        = JmolEdge.BOND_AROMATIC;
-  public final static short ORDER_AROMATIC_SINGLE = JmolEdge.BOND_AROMATIC_SINGLE;
-  public final static short ORDER_AROMATIC_DOUBLE = JmolEdge.BOND_AROMATIC_DOUBLE;
-  public final static short ORDER_HBOND           = JmolEdge.BOND_H_REGULAR;
-  public final static short ORDER_STEREO_NEAR     = JmolEdge.BOND_STEREO_NEAR; 
-  public final static short ORDER_STEREO_FAR      = JmolEdge.BOND_STEREO_FAR; 
-  public final static short ORDER_PARTIAL01       = JmolEdge.BOND_PARTIAL01;
-  public final static short ORDER_PARTIAL12       = JmolEdge.BOND_PARTIAL12;
-  public final static short ORDER_PARTIAL23       = JmolEdge.BOND_PARTIAL23;
-  public final static short ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
-  public final static short ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
+  public final static int ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
+  public final static int ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
+  public final static int ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;
+  public final static int ORDER_AROMATIC        = JmolEdge.BOND_AROMATIC;
+  public final static int ORDER_AROMATIC_SINGLE = JmolEdge.BOND_AROMATIC_SINGLE;
+  public final static int ORDER_AROMATIC_DOUBLE = JmolEdge.BOND_AROMATIC_DOUBLE;
+  public final static int ORDER_HBOND           = JmolEdge.BOND_H_REGULAR;
+  public final static int ORDER_STEREO_NEAR     = JmolEdge.BOND_STEREO_NEAR; 
+  public final static int ORDER_STEREO_FAR      = JmolEdge.BOND_STEREO_FAR; 
+  public final static int ORDER_PARTIAL01       = JmolEdge.BOND_PARTIAL01;
+  public final static int ORDER_PARTIAL12       = JmolEdge.BOND_PARTIAL12;
+  public final static int ORDER_PARTIAL23       = JmolEdge.BOND_PARTIAL23;
+  public final static int ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
+  public final static int ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
+  public final static int ORDER_AS_SINGLE       = JmolEdge.BOND_AS_SINGLE;
   
   public final static EnumQuantumShell getShellEnumeration(int i) { return EnumQuantumShell.getItem(i); }
   public final static int[][] getNewDfCoefMap() { return EnumQuantumShell.getNewDfCoefMap(); }
@@ -243,11 +243,10 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
 
   /**
    * @param atomSetCollection  
-   * @param modelSet 
    * @param baseModelIndex 
    * @param baseAtomIndex 
    */
-  abstract public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex);
+  abstract public void finish(Object atomSetCollection, int baseModelIndex, int baseAtomIndex);
 
   /**
    * Get the type of this file or molecular model, if known.

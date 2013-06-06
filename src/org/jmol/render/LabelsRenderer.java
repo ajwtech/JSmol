@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
- * $Revision: 18245 $
+ * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
+ * $Revision: 18282 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -105,7 +105,8 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      if (label == null || label.length() == 0 || labels.mads != null
+      if (label == null 
+          || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
       labelColix = labels.getColix2(i, atom, false);

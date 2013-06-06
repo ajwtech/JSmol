@@ -36,7 +36,7 @@ class XsfReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
   }
   
   private boolean isBXSF = false;
@@ -113,7 +113,7 @@ class XsfReader extends VolumeFileReader {
 
   @Override
   protected void skipData(int nPoints) throws Exception {
-    super.skipData(nPoints);
+    skipDataVFR(nPoints);
     if (isBXSF)
       Logger.info(readLine()); //"BAND: <n>" line
   }

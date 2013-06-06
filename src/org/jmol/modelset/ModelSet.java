@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-10 22:25:17 -0500 (Fri, 10 May 2013) $
- * $Revision: 18208 $
+ * $Date: 2013-05-31 10:20:56 -0500 (Fri, 31 May 2013) $
+ * $Revision: 18269 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -714,7 +714,7 @@ import java.util.Map;
   @Override
   public int calculateStruts(BS bs1, BS bs2) {
     viewer.setModelVisibility();
-    return super.calculateStruts(bs1, bs2);
+    return calculateStrutsMC(bs1, bs2);
   }
 
   /**

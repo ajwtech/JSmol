@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-20 07:48:59 -0500 (Mon, 20 May 2013) $
- * $Revision: 18234 $
+ * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
+ * $Revision: 18283 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-05-20 07:48:59 -0500 (Mon, 20 May 2013) $"
+        // "$Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -1424,6 +1424,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int shapeTokenIndex(int tok) {
     switch (tok) {
     case T.atoms:
+    case T.balls:
       return SHAPE_BALLS;
     case T.bonds:
     case T.wireframe:

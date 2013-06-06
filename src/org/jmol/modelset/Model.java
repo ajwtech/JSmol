@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 10:33:35 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18176 $
+ * $Date: 2013-05-31 10:20:56 -0500 (Fri, 31 May 2013) $
+ * $Revision: 18269 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -271,6 +271,10 @@ public class Model {
   }
 
   public void fixIndices(int modelIndex, int nAtomsDeleted, BS bsDeleted) {
+    fixIndicesM(modelIndex, nAtomsDeleted, bsDeleted);
+  }
+
+  protected void fixIndicesM(int modelIndex, int nAtomsDeleted, BS bsDeleted) {
     if (dataSourceFrame > modelIndex)
       dataSourceFrame--;
     if (trajectoryBaseIndex > modelIndex)
@@ -283,6 +287,10 @@ public class Model {
   }
 
   public void freeze() {
+    freezeM();
+  }
+
+  protected void freezeM() {
     chains = (Chain[]) ArrayUtil.arrayCopyObject(chains, chainCount);
     groupCount = -1;
     getGroupCount();
@@ -462,6 +470,10 @@ public class Model {
   }
 
   public void getChimeInfo(SB sb, int nHetero) {
+    getChimeInfoM(sb, nHetero);
+  }
+
+  protected void getChimeInfoM(SB sb, int nHetero) {
     sb.append("\nNumber of Atoms ..... " + (modelSet.atomCount - nHetero));
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");

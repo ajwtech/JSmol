@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-28 10:01:21 -0500 (Tue, 28 May 2013) $
- * $Revision: 18257 $
+ * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
+ * $Revision: 18283 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -3532,16 +3532,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void setShapeProperty(int shapeType, String propertyName,
                                 Object propertyValue) {
-    if (chk)
-      return;
-    sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
+    if (!chk)
+      sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
   }
 
   private void setShapePropertyBs(int iShape, String propertyName,
                                 Object propertyValue, BS bs) {
-    if (chk)
-      return;
-    sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
+    if (!chk)
+      sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
   }
 
   private void setShapeSizeBs(int shapeType, int size, BS bs) {
@@ -6815,6 +6813,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       refresh();
     if (!useThreads())
       floatSecondsTotal = 0;
+    if (cameraDepth == 0) {
+      cameraDepth = cameraX = cameraY = Float.NaN;
+    }
     if (pymolView != null)
       viewer.movePyMOL(this, floatSecondsTotal, pymolView);
     else
@@ -7905,13 +7906,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String setObjectProperty() throws ScriptException {
-    String s = "";
     String id = getShapeNameParameter(2);
-    Object[] data = new Object[] { id, null };
     if (chk)
       return "";
     int iTok = iToken;
     int tokCommand = tokAt(0);
+    return setObjectProp(id, tokCommand, iTok);
+  }
+
+  public String setObjectPropSafe(String id, int tokCommand, int iTok) {
+    try {
+      return setObjectProp(id, tokCommand, iTok);
+    } catch (ScriptException e) {
+      return null;
+    }
+  }
+  
+  public String setObjectProp(String id, int tokCommand, int iTok) throws ScriptException {
+    Object[] data = new Object[] { id, null };
+    String s = "";
     boolean isWild = TextFormat.isWild(id);
     for (int iShape = JC.SHAPE_DIPOLES;;) {
       if (iShape != JC.SHAPE_MO
@@ -7934,7 +7947,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           s += (String) getShapeProperty(iShape, "command") + "\n";
           break;
         case T.color:
-          colorShape(iShape, iTok + 1, false);
+          if (iTok >= 0)
+            colorShape(iShape, iTok + 1, false);
           break;
         }
         if (!isWild)
@@ -8130,7 +8144,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Object colorvalue = null;
     Object colorvalue1 = null;
     BS bs = null;
-    String prefix = "";
+    String prefix = (index == 2 && tokAt(1) == T.balls ? "ball" : "");
     boolean isColor = false;
     boolean isIsosurface = (shapeType == JC.SHAPE_ISOSURFACE || shapeType == JC.SHAPE_CONTACT);
     int typeMask = 0;
@@ -8144,9 +8158,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         shapeType = JC.SHAPE_STICKS;
       }
     }
+    int tok = getToken(index).tok;
     if (isBackground)
       getToken(index);
-    else if ((isBackground = (getToken(index).tok == T.background)) == true)
+    else if ((isBackground = (tok == T.background)) == true)
       getToken(++index);
     if (isBackground)
       prefix = "bg";
@@ -8186,13 +8201,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (isTranslucent && isFloatParameter(index))
         translucentLevel = getTranslucentLevel(index++);
     }
-    int tok = 0;
-    if (index < slen && tokAt(index) != T.on
-        && tokAt(index) != T.off) {
+    tok = 0;
+    if (index < slen && tokAt(index) != T.on && tokAt(index) != T.off) {
       isColor = true;
       tok = getToken(index).tok;
-      if ((!isIsosurface || tokAt(index + 1) != T.to)
-          && isColorParam(index)) {
+      if ((!isIsosurface || tokAt(index + 1) != T.to) && isColorParam(index)) {
         int argb = getArgbParamOrNone(index, false);
         colorvalue = (argb == 0 ? null : Integer.valueOf(argb));
         if (translucency == null && tokAt(index = iToken + 1) != T.nada) {
@@ -8202,9 +8215,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             translucency = parameterAsString(index);
             if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
-          } else if (isColorParam(index)){
+          } else if (isColorParam(index)) {
             argb = getArgbParamOrNone(index, false);
-            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));            
+            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));
           }
           // checkLength(index + 1);
           // iToken = index;
@@ -8222,8 +8235,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
         EnumPalette pal = (isColorIndex || isIsosurface ? EnumPalette.PROPERTY
-            : tok == T.spacefill ? EnumPalette.CPK
-                : EnumPalette.getPalette(name));
+            : tok == T.spacefill ? EnumPalette.CPK : EnumPalette
+                .getPalette(name));
         // color atoms "cpkScheme"
         if (pal == EnumPalette.UNKNOWN
             || (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY)
@@ -8231,22 +8244,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         Object data = null;
         BS bsSelected = (pal != EnumPalette.PROPERTY
-            && pal != EnumPalette.VARIABLE
-            || !viewer.global.rangeSelected ? null : viewer.getSelectionSet(false));
+            && pal != EnumPalette.VARIABLE || !viewer.global.rangeSelected ? null
+            : viewer.getSelectionSet(false));
         if (pal == EnumPalette.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
-              data = getBitsetPropertyFloat(
-                  bsSelected,
-                  (isByElement ? T.elemno : T.groupid) | T.allfloat,
-                  Float.NaN, Float.NaN);
+              data = getBitsetPropertyFloat(bsSelected, (isByElement ? T.elemno
+                  : T.groupid)
+                  | T.allfloat, Float.NaN, Float.NaN);
             }
           } else {
             if (!isColorIndex && !isIsosurface)
               index++;
             if (name.equals("property")
-                && T.tokAttr((tok = getToken(index).tok),
-                    T.atomproperty)
+                && T.tokAttr((tok = getToken(index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
               if (!chk) {
                 data = getBitsetPropertyFloat(bsSelected, getToken(index++).tok
@@ -8267,7 +8278,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (tokAt(index) == T.string) {
             scheme = parameterAsString(index++).toLowerCase();
             if (isArrayParameter(index)) {
-              scheme += "=" + SV.sValue(SV.getVariableAS(stringParameterSet(index))).replace('\n',' ');
+              scheme += "="
+                  + SV.sValue(SV.getVariableAS(stringParameterSet(index)))
+                      .replace('\n', ' ');
               index = iToken + 1;
             }
           } else if (isIsosurface && isColorParam(index)) {
@@ -8385,9 +8398,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      if (colorvalue1 != null 
+      if (colorvalue1 != null
           && (isIsosurface || shapeType == JC.SHAPE_CARTOON || shapeType == JC.SHAPE_RIBBONS))
-        setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
+        setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1,
+            colorvalue });
       else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);
       else
@@ -10274,44 +10288,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void restrictSelected(boolean isBond, boolean doInvert) {
-    if (chk)
-      return;
-    BS bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
-    if (doInvert) {
-      viewer.invertSelection();
-      BS bsSubset = viewer.getSelectionSubset();
-      if (bsSubset != null) {
-        bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
-        bsSelected.and(bsSubset);
-        viewer.select(bsSelected, false, null, true);
-        BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
-        bsSelected.and(bsSubset);
-      }
-    }
-    BSUtil.andNot(bsSelected, viewer.getDeletedAtoms());
-    boolean bondmode = viewer.getBoolean(T.bondmodeor);
-
-    if (!isBond)
-      setBooleanProperty("bondModeOr", true);
-    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
-    // wireframe will not operate on STRUTS even though they are
-    // a form of bond order (see BondIteratoSelected)
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_STRUT));
-    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_COVALENT_MASK));
-    // also need to turn off backbones, ribbons, strands, cartoons
-    BS bs = viewer.getSelectionSet(false);
-    for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
-      if (iShape != JC.SHAPE_MEASURES && sm.getShape(iShape) != null)
-        setShapeSizeBs(iShape, 0, bs);
-    if (sm.getShape(JC.SHAPE_POLYHEDRA) != null)
-      setShapeProperty(JC.SHAPE_POLYHEDRA, "delete", bs);
-    sm.setLabel(null, bs);
-    if (!isBond)
-      setBooleanProperty("bondModeOr", bondmode);
-    viewer.select(bsSelected, false, null, true);
+    if (!chk)
+      sm.restrictSelected(isBond, doInvert);
   }
 
   private void rotate(boolean isSpin, boolean isSelected)
@@ -11025,13 +11003,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void display(boolean isDisplay) throws ScriptException {
     BS bs = null;
-    Boolean addRemove = null;
+    int addRemove = 0;
     int i = 1;
     int tok;
     switch (tok = tokAt(1)) {
     case T.add:
     case T.remove:
-      addRemove = Boolean.valueOf(tok == T.add);
+      addRemove = tok;
       tok = tokAt(++i);
       break;
     }
@@ -11166,7 +11144,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (slen == 1) {
-      viewer.select(null, false, null, tQuiet
+      viewer.select(null, false, 0, tQuiet
           || scriptLevel > scriptReportingLevel);
       return;
     }
@@ -11193,8 +11171,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       error(ERROR_invalidArgument);
     }
-    BS bs = null;
-    Boolean addRemove = null;
+    BS bs;
+    int addRemove = 0;
     boolean isGroup = false;
     if (getToken(1).intValue == 0) {
       Object v = parameterExpressionToken(0).value;
@@ -11207,7 +11185,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       switch (tok) {
       case T.add:
       case T.remove:
-        addRemove = Boolean.valueOf(tok == T.add);
+        addRemove = tok;
         tok = tokAt(++i);
       }
       isGroup = (tok == T.group);
@@ -11343,7 +11321,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
     if (!isQuiet)
       scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
-    viewer.select(null, false, null, isQuiet);
+    viewer.select(null, false, 0, isQuiet);
   }
 
   private void zoom(boolean isZoomTo) throws ScriptException {
@@ -12022,7 +12000,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
     viewer.autoHbond(bsAtoms, bsAtoms, true);
-    viewer.select(bsAtoms, false, null, tQuiet);
+    viewer.select(bsAtoms, false, 0, tQuiet);
   }
 
   private void vector() throws ScriptException {

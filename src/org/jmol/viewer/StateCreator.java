@@ -63,6 +63,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
+import org.jmol.shape.Balls;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Halos;
 import org.jmol.shape.Hover;
@@ -563,7 +564,7 @@ public class StateCreator implements JmolStateCreator {
         + am.firstFrameDelay + " " + am.lastFrameDelay);
     if (am.morphCount > 0)
       appendCmd(commands, "animation MORPH " + am.morphCount);
-    int[] frames = am.gettAnimationFrames();
+    int[] frames = am.getAnimationFrames();
     boolean showModel = true;
     if (frames != null) {
       appendCmd(commands, "anim frames " + Escape.eAI(frames));
@@ -755,7 +756,7 @@ public class StateCreator implements JmolStateCreator {
       appendCmd(commands, "set navigationMode true");
     appendCmd(commands, viewer.getBoundBoxCommand(false));
     appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
-    commands.append(viewer.getSavedOrienationText(null));
+    commands.append(viewer.getOrientationText(T.state, null));
 
     appendCmd(commands, tm.getMoveToText(0, false));
     if (tm.stereoMode != EnumStereoMode.NONE)
@@ -1241,6 +1242,9 @@ public class StateCreator implements JmolStateCreator {
     case JC.SHAPE_BALLS:
       int atomCount = viewer.getAtomCount();
       Atom[] atoms = viewer.modelSet.atoms;
+      Balls balls = (Balls) shape;
+      short[] colixes = balls.colixes;
+      byte[] pids = balls.paletteIDs;
       float r = 0;
       for (int i = 0; i < atomCount; i++) {
         if (shape.bsSizeSet != null && shape.bsSizeSet.get(i)) {
@@ -1254,9 +1258,12 @@ public class StateCreator implements JmolStateCreator {
           if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
             BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
                 pid, atoms[i].getColix(), shape.translucentAllowed));
+          if (colixes != null && i < colixes.length)
+            BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("balls",
+                pids[i], colixes[i], shape.translucentAllowed));
         }
       }
-      s = getCommands(temp, null, "select");
+      s = getCommands(temp, temp2, "select");
       break;
     default:
       s = "";
@@ -1267,7 +1274,8 @@ public class StateCreator implements JmolStateCreator {
 
   private String getTextState(Text t) {
     SB s = new SB();
-    if (t.text == null || t.isLabelOrHover || t.target.equals("error"))
+    String text = t.getText();
+    if (text == null || t.isLabelOrHover || t.target.equals("error"))
       return "";
     //set echo top left
     //set echo myecho x y
@@ -1305,7 +1313,7 @@ public class StateCreator implements JmolStateCreator {
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
       s.append("; echo ");
-    s.append(Escape.eS(t.text)); // was textUnformatted, but that is not really the STATE
+    s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && t.imageScale != 1)
       s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale).append(";\n");
