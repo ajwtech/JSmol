@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
- * $Revision: 18283 $
+ * $Date: 2013-06-06 15:59:04 -0500 (Thu, 06 Jun 2013) $
+ * $Revision: 18301 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -328,7 +328,7 @@ public class T {
   final static int minimize     = scriptCommand | 30;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
-  final static int move         = scriptCommand | 32;
+  public final static int move         = scriptCommand | 32;
   public final static int moveto = scriptCommand | 34;
   public final static int navigate = scriptCommand | 35;
 //final static int quaternion   see mathfunc

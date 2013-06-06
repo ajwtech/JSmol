@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
- * $Revision: 18283 $
+ * $Date: 2013-06-06 15:59:04 -0500 (Thu, 06 Jun 2013) $
+ * $Revision: 18301 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -707,8 +707,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
       if (e.thisContext == null) {
-        Logger.error("Error evaluating context");
-        ex.printStackTrace();
+        Logger.error("Error evaluating context " + ex);
+        if (!viewer.isApplet())
+          ex.printStackTrace();
       }
       return false;
     }
@@ -14493,7 +14494,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           throw new ScriptInterruption(this, "restore" + type, 1);
         return;
       }
-      checkLength(2);
+      checkLength23();
       switch (tok) {
       case T.bonds:
         if (!chk)
@@ -14682,13 +14683,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       default:
-      case T.string:
+        tok = T.image;
+        break;
+      }
+      if (tok == T.image) {
         T t = T.getTokenFromName(SV.sValue(args[pt])
             .toLowerCase());
-        if (t != null) {
-          tok = t.tok;
+        if (t != null)
           type = SV.sValue(t).toUpperCase();
-        }
         if (Parser.isOneOf(type, driverList.toUpperCase())) {
           // povray, maya, vrml, idtf
           pt++;
@@ -14697,7 +14699,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // Povray, Maya, Vrml, Idtf
           isExport = true;
           if (isCommand)
-            fileName = "Jmol." + type;
+            fileName = "Jmol." + type.toLowerCase();
         } else if (type.equals("ZIP")) {
           pt++;
         } else if (type.equals("ZIPALL")) {
