@@ -30,6 +30,7 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -42,9 +43,13 @@ abstract public class BondCollection extends AtomCollection {
 
   @Override
   protected void releaseModelSet() {
+    releaseModelSetBC();
+  }
+
+  protected void releaseModelSetBC() {
     bonds = null;
     freeBonds = null;
-    super.releaseModelSet();
+    releaseModelSetAC();
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED
@@ -842,6 +847,50 @@ abstract public class BondCollection extends AtomCollection {
       if (i < bondCount && bonds[i].mad != 0)
         bonds[i].setShapeVisibility(isDisplay);
   }
+
+  /**
+   * used in PyMOL reader to set unique bond settings and for valence
+   * 
+   * @param modelIndex
+   * @param iBond
+   * @param bsBonds
+   * @param rad
+   * @param pymolValence  1 for "show multiple bonds
+   * @param argb
+   * @param trans
+   */
+  public void setBondParametersBS(int modelIndex, int iBond, BS bsBonds,
+                                  float rad, float pymolValence, int argb,
+                                  float trans) {
+    if (bsBonds == null)
+      setBondParameters(modelIndex, iBond, rad, pymolValence, argb, trans);
+    else
+      for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1))
+        setBondParameters(modelIndex, i, rad, pymolValence, argb, trans);
+  }
+
+  public void setBondParameters(int modelIndex, int i, float rad, float pymolValence,
+                             int argb, float trans) {
+    if (i < 0 || i >= bondCount)
+      return;
+    Bond b = bonds[i];
+    if (modelIndex >= 0 && b.atom1.modelIndex != modelIndex)
+      return; 
+    if (!Float.isNaN(rad))
+      b.mad = (short) (rad * 2000);
+    short colix = b.colix;
+    if (argb != Integer.MAX_VALUE)
+      colix = C.getColix(argb);
+    if (!Float.isNaN(trans))
+      b.colix = C.getColixTranslucent3(colix, trans != 0, trans);
+    else if (b.colix != colix)
+      b.colix = C.copyColixTranslucency(b.colix, colix);
+    if (pymolValence == 1)
+      b.order &= ~JmolEdge.BOND_AS_SINGLE;
+    else if (pymolValence == 0)
+      b.order |= JmolEdge.BOND_AS_SINGLE;
+  }
+
 
 }
 

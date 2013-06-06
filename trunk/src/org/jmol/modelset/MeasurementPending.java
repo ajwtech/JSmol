@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-05 21:55:48 -0500 (Sun, 05 May 2013) $
- * $Revision: 18202 $
+ * $Date: 2013-05-31 10:20:56 -0500 (Fri, 31 May 2013) $
+ * $Revision: 18269 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -71,7 +71,7 @@ public class MeasurementPending extends Measurement {
 
   @Override
   public void setCount(int count) {
-    super.setCount(count);
+    setCountM(count);
     numSet = count;
   }
 

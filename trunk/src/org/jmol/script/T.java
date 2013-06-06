@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-24 07:52:27 -0500 (Fri, 24 May 2013) $
- * $Revision: 18249 $
+ * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
+ * $Revision: 18283 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -257,14 +257,14 @@ public class T {
   public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
   public final static int hide         = 6 | atomExpressionCommand;
-  final static int restrict     = 7 | atomExpressionCommand;
+  public final static int restrict     = 7 | atomExpressionCommand;
 //final static int select       see mathfunc
   final static int subset       = 8 | atomExpressionCommand | predefinedset;
   final static int zap          = 9 | atomExpressionCommand | expression;
 
   final static int print        = 1 | mathExpressionCommand;
   final static int returncmd    = 2 | mathExpressionCommand;
-  final static int set          = 3 | mathExpressionCommand | expression;
+  public final static int set          = 3 | mathExpressionCommand | expression;
   final static int var          = 4 | mathExpressionCommand;
   final static int log          = 5 | mathExpressionCommand;
   //final static int prompt     see mathfunc
@@ -743,7 +743,7 @@ public class T {
   //     distance(a,b)
   //so it can be a math property and it can have up to two parameters
   
-  final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
+  public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
   final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
@@ -1077,7 +1077,8 @@ public class T {
   public final static int axis   = misc  | 30;
   final static int babel         = misc  | 32;
   final static int babel21       = misc  | 34; 
-  final static int back          = misc  | 36;
+  final static int back          = misc  | 35;
+  public final static int balls         = misc  | 36;
   final static int barb          = misc  | 37;
   public final static int backlit = misc  | 38;
   public final static int basepair      = misc  | 40;
@@ -1241,7 +1242,7 @@ public class T {
   public final static int range   = misc  | 290;
   public final static int rasmol  = misc  | 292;
   final static int reference      = misc  | 294;
-  final static int remove         = misc  | 295;
+  public final static int remove         = misc  | 295;
   public final static int residue = misc  | 296;
   final static int resolution     = misc  | 298;
   final static int reversecolor   = misc  | 300;
@@ -1262,7 +1263,7 @@ public class T {
   final static int spacegroup     = misc  | 328;
   public final static int sphere  = misc  | 330;
   final static int squared        = misc  | 332;
-  final static int state          = misc  | 334;
+  public final static int state          = misc  | 334;
   final static int stop           = misc  | 338;
   final static int supercell      = misc  | 339;//
   final static int ticks          = misc  | 340; 
@@ -1776,6 +1777,7 @@ public class T {
       "babel21",         T.t(babel21), 
       "back",            T.t(back),
       "backlit",         T.t(backlit),
+      "balls",           T.t(balls),
       "baseModel",       T.t(basemodel), // Jmol 12.3.19
       "bin",             T.t(bin),
       "bondCount",       T.t(bondcount),

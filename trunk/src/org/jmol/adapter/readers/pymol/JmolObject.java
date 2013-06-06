@@ -91,6 +91,9 @@ class JmolObject {
   void offset(int modelOffset, int atomOffset) {
     if (modelOffset > 0) {
       switch (id) {
+      case T.display:
+      case T.hide:
+        return;
       case T.frame:
         int i = ((Integer) info).intValue();
         if (i >= 0)
@@ -123,12 +126,37 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void finalizeObject(ModelSet m, String mepList, boolean doCache) {
+  void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList,
+                      boolean doCache) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    String color = "color";
     String sID;
     SB sb = null;
     switch (id) {
+    case T.hidden:
+      // bsHidden
+      sm.viewer.displayAtoms(bsAtoms, false, false, T.add, true);
+      return;
+    case T.restrict:
+      // start of generating shapes; argb is modelIndex
+      BS bs = sm.viewer.getModelUndeletedAtomsBitSet(argb);
+      BSUtil.invertInPlace(bs, sm.viewer.getAtomCount());
+      sm.viewer.select(bs, false, 0, true);
+      sm.restrictSelected(false, true);
+      return;
+    case T.display:
+    case T.hide:
+      // from PyMOLScene after restore scene
+      if (bsAtoms == null) {
+        if (info == null) {
+          sm.viewer.displayAtoms(null, true, false, 0, true);
+        }
+        sm.viewer.setObjectProp((String) info, id);
+      } else {
+        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, T.add, true);
+      }
+      return;
     case T.define:
       // executed even for states
       sm.viewer.defineAtomSets((Map<String, Object>) info);
@@ -153,30 +181,39 @@ class JmolObject {
       sm.viewer.saveOrientation(objectNameID,
           (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
-    case T.hidden:
-      sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
-      return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
+    case T.bonds:
+      break;
+    case T.wireframe:
     case JC.SHAPE_STICKS:
+      if (size != -1) {
+        sm.setShapeSizeBs(JC.SHAPE_STICKS, size, null, bsAtoms);
+        BS bsBonds = ((BS[]) sm.getShapePropertyIndex(JC.SHAPE_STICKS, "sets",
+            0))[1];
+        pymolScene.setUniqueBonds(bsBonds, id == JC.SHAPE_STICKS);
+        size = -1;
+      }
+      id = JC.SHAPE_STICKS;
+      break;
+    case T.atoms:
+      id = JC.SHAPE_BALLS;
+      break;
     case JC.SHAPE_BALLS:
+      color = "colorballs";
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
       sm.loadShape(id);
-      BS bsCarb = sm.viewer.modelSet.getAtomBits(T.carbohydrate, null);
+      BS bsCarb = m.getAtomBits(T.carbohydrate, null);
       BSUtil.andNot(bsAtoms, bsCarb);
       break;
     case JC.SHAPE_DOTS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
           .getAtomCount()), null);
-      break;
-    case T.isosurface:
-      if (bsAtoms == null ? !visible : modelIndex < 0)
-        return;
       break;
     default:
       if (!visible)
@@ -198,6 +235,11 @@ class JmolObject {
       return;
     case T.isosurface:
       sID = (bsAtoms == null ? (String) info : objectNameID);
+      // when getting a scene, ignore creation of this surface
+      if (sm.getShapeIdFromObjectName(sID) >= 0) {
+        sm.viewer.setObjectProp(sID, T.display);
+        return;
+      }
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID));
       if (bsAtoms == null) {
@@ -210,10 +252,11 @@ class JmolObject {
         if (doCache)
           sb.append(";isosurface cache");
       } else {
-        //if (argb == 0)
-        //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-        String lighting = ((String[]) info)[0];
-        String only = ((String[]) info)[1];
+        String lighting = (String) ((Object[]) info)[0];
+        String only = (String) ((Object[]) info)[1];
+        only = " only";
+        BS bsCarve = (BS) ((Object[]) info)[2];
+        float carveDistance = ((Float) ((Object[]) info)[3]).floatValue();
         // not implementing "not only" yet because if we did that, since we have so
         // many sets of atoms, we could have real problems here.
         String resolution = "";
@@ -222,10 +265,16 @@ class JmolObject {
           resolution = " resolution 1.5";
         }
         boolean haveMep = Parser.isOneOf(sID, mepList);
-        sb.append(" model ")
-            .append(m.models[modelIndex].getModelNumberDotted()).append(
-                resolution).append(" select ").append(Escape.eBS(bsAtoms))
-            .append(" only").append(" solvent ").appendF(size / 1000f);
+        String model = m.models[modelIndex].getModelNumberDotted();
+        //        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
+        //            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
+        //        bsIgnore.andNot(bsAtoms);
+        //        String ignore = " ignore " + Escape.eBS(bsIgnore);
+        String ignore = "";
+        String type = (size < 0 ? " sasurface " : " solvent ");
+        sb.append(" model ").append(model).append(resolution)
+            .append(" select ").append(Escape.eBS(bsAtoms)).append(only)
+            .append(ignore).append(type).appendF(Math.abs(size / 1000f));
         if (!haveMep) {
           if (argb == 0)
             sb.append(" map property color");
@@ -235,6 +284,9 @@ class JmolObject {
         sb.append(";isosurface frontOnly ").append(lighting);
         if (translucency > 0)
           sb.append(";color isosurface translucent " + translucency);
+        if (bsCarve != null && !bsCarve.isEmpty())
+          sb.append(";isosurface slab within " + carveDistance + " {" + model
+              + " and " + Escape.eBS(bsCarve) + "}");
         if (doCache && !haveMep)
           sb.append(";isosurface cache");
       }
@@ -264,10 +316,10 @@ class JmolObject {
           .append(m.models[modelIndex].getModelNumberDotted())
           .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
           .append(Escape.eS(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene
-          .listAt(mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(
-          PyMOLScene.listAt(mesh, 2), 0), 12);
+      float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
+          mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
+          .listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");
@@ -302,7 +354,7 @@ class JmolObject {
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
     if (argb != 0)
-      sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
+      sm.setShapePropertyBs(id, color, Integer.valueOf(argb), bsAtoms);
     if (translucency > 0) {
       sm.setShapePropertyBs(id, "translucentLevel",
           Float.valueOf(translucency), bsAtoms);

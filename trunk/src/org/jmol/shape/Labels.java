@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
- * $Revision: 18256 $
+ * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
+ * $Revision: 18282 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -416,6 +416,8 @@ public class Labels extends AtomShape {
   }
   
   private void setTextLabel(int i, Text t) {
+    if (t == null)
+      return;
     String label = t.getText();
     Atom atom = atoms[i];
     addString(atom, i, label, label);
@@ -438,7 +440,7 @@ public class Labels extends AtomShape {
     if (isScaled) {
       text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
-    } else if (text != null) {
+    } else if (text != null && label != null) {
       text.setText(label);
     }
     if (defaultOffset != zeroOffset)

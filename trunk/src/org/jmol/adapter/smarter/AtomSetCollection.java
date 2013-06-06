@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-28 10:01:21 -0500 (Tue, 28 May 2013) $
- * $Revision: 18257 $
+ * $Date: 2013-05-30 07:46:23 -0500 (Thu, 30 May 2013) $
+ * $Revision: 18263 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,7 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -450,9 +449,9 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfoForSet(type, lists[i], i);
   }
 
-  void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+  void finish(int baseModelIndex, int baseAtomIndex) {
     if (reader != null) 
-      reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
+      reader.finalizeModelSet(baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];

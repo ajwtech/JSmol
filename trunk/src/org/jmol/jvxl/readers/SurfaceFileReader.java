@@ -31,6 +31,9 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.util.Parser;
 
+/**
+ * PolygonFileReader or VolumeFileReader
+ */
 abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
@@ -41,7 +44,15 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   @Override
+  void init(SurfaceGenerator sg) {
+    initSR(sg);
+  }
+
   void init2(SurfaceGenerator sg, BufferedReader br) {
+    init2SFR(sg, br);
+  }
+
+  void init2SFR(SurfaceGenerator sg, BufferedReader br) {
     init(sg);
     this.br = br;
   }
@@ -60,6 +71,10 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   @Override
   protected void closeReader() {
+    closeReaderSFR();
+  }
+
+  protected void closeReaderSFR() {
     if (br != null)
       try {
         br.close();
@@ -80,7 +95,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   @Override
   void discardTempData(boolean discardAll) {
     closeReader();
-    super.discardTempData(discardAll);
+    discardTempDataSR(discardAll);
   }
 
   protected String line;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-06-02 12:38:09 -0500 (Sun, 02 Jun 2013) $
+ * $Revision: 18273 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -274,7 +274,7 @@ public class Dots extends AtomShape {
     }
     // now, calculate surface for selected atoms
 
-    if (dotsConvexMaps == null) {
+    if (dotsConvexMaps == null && (colixes == null || colixes.length != atomCount)) {
       colixes = new short[atomCount];
       paletteIDs = new byte[atomCount];
     }

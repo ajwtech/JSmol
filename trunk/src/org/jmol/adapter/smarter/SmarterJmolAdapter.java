@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-10 06:41:04 -0500 (Wed, 10 Apr 2013) $
- * $Revision: 18088 $
+ * $Date: 2013-05-30 07:46:23 -0500 (Thu, 30 May 2013) $
+ * $Revision: 18263 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -30,7 +30,6 @@ import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
@@ -321,8 +320,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
-    ((AtomSetCollection)atomSetCollection).finish(modelSet, baseModelIndex, baseAtomIndex);
+  public void finish(Object atomSetCollection, int baseModelIndex, int baseAtomIndex) {
+    ((AtomSetCollection)atomSetCollection).finish(baseModelIndex, baseAtomIndex);
   }
 
   ////////////////////////// post processing ////////////////////////////

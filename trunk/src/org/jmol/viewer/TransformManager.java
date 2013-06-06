@@ -1098,7 +1098,7 @@ public class TransformManager {
 
   protected boolean perspectiveDepth = true;
   protected boolean scale3D = false;
-  protected float cameraDepth = Float.NaN;
+  protected float cameraDepth = 3f;
   protected float cameraDepthSetting = 3f;
   protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
@@ -1184,7 +1184,8 @@ public class TransformManager {
       return;
     cameraDepthSetting = screenMultiples;
     viewer.global.setF("cameraDepth", cameraDepthSetting);
-    cameraDepth = Float.NaN;
+    if (mode == MODE_NAVIGATION)
+      cameraDepth = Float.NaN;
   }
 
   public float getCameraDepth() {
@@ -1497,6 +1498,8 @@ public class TransformManager {
     getTemporaryScreenPoint(pointAngstroms);
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
+    //if (!(pointAngstroms instanceof Atom))
+      //System.out.println("pt=" + pointAngstroms + " " + point3iScreenTemp + " " + Thread.currentThread());
     return point3iScreenTemp;
   }
 
@@ -1757,6 +1760,7 @@ public class TransformManager {
   }
 
   String getMoveToText(float timespan, boolean addComments) {
+    finalizeTransformParameters();
     SB sb = new SB();
     sb.append("moveto ");
     if (addComments)

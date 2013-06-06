@@ -56,7 +56,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
+  }
+
+  void init2VFR(SurfaceGenerator sg, BufferedReader br) {
+    init2SFR(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
@@ -84,7 +88,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (readerClosed)
       return;
     readerClosed = true;
-    super.closeReader();
+    closeReaderSFR();
     if (nData == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= nData;
@@ -212,6 +216,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
+    readSurfaceDataVFR(isMapData);
+  }
+
+  protected void readSurfaceDataVFR(boolean isMapData) throws Exception {
     /*
      * possibilities:
      * 
@@ -483,6 +491,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
 
   protected void skipData(int nPoints) throws Exception {
+    skipDataVFR(nPoints);
+  }
+
+  protected void skipDataVFR(int nPoints) throws Exception {
     int iV = 0;
     while (iV < nPoints)
       iV += countData(readLine());

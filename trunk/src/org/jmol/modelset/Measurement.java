@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-25 22:39:10 -0500 (Sat, 25 May 2013) $
- * $Revision: 18250 $
+ * $Date: 2013-05-31 10:20:56 -0500 (Fri, 31 May 2013) $
+ * $Revision: 18269 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -119,6 +119,10 @@ public class Measurement {
   }
 
   public void setCount(int count) {
+    setCountM(count);
+  }
+
+  protected void setCountM(int count) {
     this.count = countPlusIndices[0] = count;
   }
 

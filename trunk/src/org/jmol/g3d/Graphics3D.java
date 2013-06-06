@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-03-29 10:47:56 -0500 (Fri, 29 Mar 2013) $
- * $Revision: 18020 $
+ * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
+ * $Revision: 18283 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -310,6 +310,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     pbufT = null;
     zbufT = null;
     platform.releaseBuffers();
+    line3d.clearLineCache();
   }
   
   @Override

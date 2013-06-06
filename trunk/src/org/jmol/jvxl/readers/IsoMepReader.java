@@ -34,11 +34,15 @@ class IsoMepReader extends AtomDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
-    type = "Mep";
+    initIMR(sg);
   }
     
   /////// molecular electrostatic potential ///////
+
+  protected void initIMR(SurfaceGenerator sg) {
+    initADR(sg);
+    type = "Mep";
+  }
 
   @Override
   protected void setup(boolean isMapData) {
