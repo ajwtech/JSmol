@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-21 11:52:35 -0500 (Sun, 21 Apr 2013) $
- * $Revision: 18136 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -177,7 +177,7 @@ public class Group {
     return groupID;
   }
 
-  public final char getChainID() {
+  public final int getChainID() {
     return chain.chainID;
   }
 

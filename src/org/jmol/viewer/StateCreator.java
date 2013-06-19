@@ -585,8 +585,7 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  private String getVariableState(StateManager.GlobalSettings global,
-                                  SB sfunc) {
+  private String getVariableState(StateManager.GlobalSettings global, SB sfunc) {
     String[] list = new String[global.htBooleanParameterFlags.size()
         + global.htNonbooleanParameterValues.size()];
     SB commands = new SB();
@@ -650,9 +649,9 @@ public class StateCreator implements JmolStateCreator {
 
     // label defaults
 
-    viewer.loadShape(JC.SHAPE_LABELS);
-    commands
-        .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
+    if (viewer.shapeManager.getShape(JC.SHAPE_LABELS) != null)
+      commands
+          .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
 
     // structure defaults
 
@@ -1836,7 +1835,8 @@ public class StateCreator implements JmolStateCreator {
     Map<String, String> htScenes = new Hashtable<String, String>();
     JmolList<Integer> list = new  JmolList<Integer>();
     String script = JmolBinary.getSceneScript(scenes, htScenes, list);
-    Logger.debug(script);
+    if (Logger.debugging)
+      Logger.debug(script);
     script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
@@ -2433,7 +2433,8 @@ public class StateCreator implements JmolStateCreator {
       }
       out.close();
     } catch (Exception e) {
-      Logger.debug("cannot log " + data);
+      if (Logger.debugging)
+        Logger.debug("cannot log " + data);
     }
   }
   

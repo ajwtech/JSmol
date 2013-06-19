@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-28 07:36:11 -0500 (Sun, 28 Apr 2013) $
- * $Revision: 18171 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -34,9 +34,9 @@ public class Structure extends AtomSetObject {
   public int strandCount;
   
   
-  public char startChainID = '\0';
+  public int startChainID;
   public char startInsertionCode = '\0';
-  public char endChainID = '\0';
+  public int endChainID;
   public char endInsertionCode = '\0';
   public int startSequenceNumber;
   public int endSequenceNumber;
@@ -68,8 +68,8 @@ public class Structure extends AtomSetObject {
   }
   
   
-  public void set(char startChainID, int startSequenceNumber, char startInsertionCode,
-            char endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
+  public void set(int startChainID, int startSequenceNumber, char startInsertionCode,
+            int endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
     this.startChainID = startChainID;
     this.startSequenceNumber = startSequenceNumber;
     this.startInsertionCode = startInsertionCode;

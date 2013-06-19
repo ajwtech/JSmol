@@ -23,9 +23,6 @@
  */
 package org.jmol.rendersurface;
 
-
-
-
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.render.MeshRenderer;
@@ -67,7 +64,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
     iShowNormals = viewer.getTestFlag(4);
     showNumbers = viewer.getTestFlag(3);
     isosurface = (Isosurface) shape;
-    exportPass = (isExport ? 2 : 0);
+    // exporters will do two passes here if there is translucency
+    // first pass is #2 (translucent), then #1 (opaque).
+    exportPass = (isExport ? 2 : 0); 
     isNavigationMode = viewer.getBoolean(T.navigationmode);
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
@@ -84,7 +83,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (renderMeshSlab(mySlabValue, slabValue)) {
         if (!isExport)
           renderInfo();
-        if (isExport && haveBsSlabGhost) {
+        if (isExport && isGhostPass) {
           exportPass = 1;
           renderMeshSlab(mySlabValue, slabValue);
           exportPass = 2;
@@ -166,7 +165,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         mySlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
       }
     }
-    g3d.setTranslucentCoverOnly(imesh.frontOnly);
+    boolean tcover = g3d.getTranslucentCoverOnly();
+    g3d.setTranslucentCoverOnly(imesh.frontOnly || !viewer.getBoolean(T.translucent));
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = imesh.vertexValues;
     boolean isOK;
@@ -177,7 +177,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     } else {
       isOK = renderMesh(imesh);
     }
-    g3d.setTranslucentCoverOnly(false);
+    g3d.setTranslucentCoverOnly(tcover);
     return isOK;
   }
   
@@ -273,7 +273,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     try {
       if (volumeRender)
         g3d.volumeRender(true);
-      boolean slabPoints = ((volumeRender || imesh.polygonCount == 0) && haveBsSlabDisplay);
+      boolean slabPoints = ((volumeRender || imesh.polygonCount == 0) && selectedPolyOnly);
       int incr = imesh.vertexIncrement;
       int diam;
       if (imesh.diameter <= 0) {
@@ -296,7 +296,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && imesh.vertexSets[i] != imesh.jvxlData.thisSet || !imesh.isColorSolid
             && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
             || haveBsDisplay && !imesh.bsDisplay.get(i)
-            || slabPoints && !bsSlab.get(i))
+            || slabPoints && !bsPolygons.get(i))
           continue;
         hasColorRange = true; // maybe
         if (showNumbers && screens[i].z > 10
@@ -345,7 +345,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
     int[][] polygonIndexes = imesh.polygonIndexes;
-    colix = (haveBsSlabGhost ? imesh.slabColix
+    colix = (isGhostPass ? imesh.slabColix
         : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null
         : imesh.vertexColixes);
@@ -355,14 +355,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsPolygons.clearAll();
+      bsPolygonsToExport.clearAll();
     }
     if (exportType == GData.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
-    boolean colorSolid = (haveBsSlabGhost && (!isBicolorMap)
+    boolean colorSolid = (isGhostPass && (!isBicolorMap)
         || vertexColixes == null || imesh.isColorSolid);
-    boolean noColor = (haveBsSlabGhost && !isBicolorMap
+    boolean noColor = (isGhostPass && !isBicolorMap
         || vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
@@ -385,7 +385,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     hasColorRange = !colorSolid && !isBicolorMap;
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] polygon = polygonIndexes[i];
-      if (polygon == null || haveBsSlabDisplay && !bsSlab.get(i))
+      if (polygon == null || selectedPolyOnly && !bsPolygons.get(i))
         continue;
       int iA = polygon[0];
       int iB = polygon[1];
@@ -419,7 +419,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (isBicolorMap) {
           if (colixA != colixB || colixB != colixC)
             continue;
-          if (haveBsSlabGhost)
+          if (isGhostPass)
             colixA = colixB = colixC = C.copyColixTranslucency(
                 imesh.slabColix, colixA);
         }
@@ -437,7 +437,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
       if (fill) {
         if (generateSet) {
-          bsPolygons.set(i);
+          bsPolygonsToExport.set(i);
           continue;
         }
         if (iB == iC) {

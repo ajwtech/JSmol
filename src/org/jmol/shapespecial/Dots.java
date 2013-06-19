@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-02 12:38:09 -0500 (Sun, 02 Jun 2013) $
- * $Revision: 18273 $
+ * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
+ * $Revision: 18351 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -195,10 +195,6 @@ public class Dots extends AtomShape {
     // 11003- 13002 (mad - 11002)/1000 set radius to vdw + additional radius
     // Short.MIN_VALUE -- ADP min
     // Short.MAX_VALUE -- ADP max
-
-    if (Logger.debugging) {
-      Logger.debug("Dots.setSize " + rd.value);
-    }
 
     boolean isVisible = true;
     float setRadius = Float.MAX_VALUE;

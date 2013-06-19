@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-29 10:47:56 -0500 (Fri, 29 Mar 2013) $
- * $Revision: 18020 $
+ * $Date: 2013-06-08 15:27:11 -0500 (Sat, 08 Jun 2013) $
+ * $Revision: 18316 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -110,7 +110,7 @@ public class C {
      
   */
 
-  public final static short INHERIT_ALL = 0;
+  public final static short INHERIT_ALL = 0; // do not change this from 0; new colix[n] must be this
   public final static short INHERIT_COLOR = 1;
   public final static short USE_PALETTE = 2;
   public final static short RAW_RGB = 3;

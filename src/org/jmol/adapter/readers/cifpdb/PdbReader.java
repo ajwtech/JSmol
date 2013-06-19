@@ -339,6 +339,10 @@ public class PdbReader extends AtomSetCollectionReader {
 
   @Override
   protected void finalizeReader() throws Exception {
+    finalizeReaderPDB();
+  }
+  
+  protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial, isConnectStateBug);
     if (atomSetCollection.getStructureCount() > 0)
@@ -373,7 +377,7 @@ public class PdbReader extends AtomSetCollectionReader {
       appendLoadNote(sbTlsErrors.toString());
     }
     
-    super.finalizeReader();
+    finalizeReaderASCR();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
     if (htSites != null) { // && atomSetCollection.getAtomSetCount() == 1)
@@ -387,7 +391,7 @@ public class PdbReader extends AtomSetCollectionReader {
       Logger.info(sbIgnored.toString());
     }
   }
-  
+
   private void checkForResidualBFactors(SymmetryInterface symmetry) {
     Atom[] atoms = atomSetCollection.getAtoms();
     boolean isResidual = false;
@@ -1791,9 +1795,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         + L[0][1] * xz - S[1][1] * x + S[2][2] * x + S[0][1] * y - S[0][2] * z;
     anisou[6] = 12; // macromolecular Cartesian
     anisou[7] = bresidual;
-    if (Float.isNaN(bresidual))
-      System.out.println("hmm");
-    
     if (tlsU == null)
       tlsU = new Hashtable<Atom, float[]>();
      tlsU.put(atom, anisou);

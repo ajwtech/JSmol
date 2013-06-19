@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
- * $Revision: 18283 $
+ * $Date: 2013-06-07 14:15:26 -0500 (Fri, 07 Jun 2013) $
+ * $Revision: 18305 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -198,11 +198,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   private boolean addAllPixels;
   private boolean haveTranslucentObjects;
-  protected boolean translucentCoverOnly = false;
-  public void setTranslucentCoverOnly(boolean TF) {
-    translucentCoverOnly = TF;
-  }
-  
   protected int[] pbuf;
   protected int[] pbufT;
   protected int[] zbuf;
@@ -264,7 +259,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void beginRendering(Matrix3f rotationMatrix, boolean isImageWrite) {
+  public void beginRendering(Matrix3f rotationMatrix, boolean translucentMode, boolean isImageWrite) {
     if (currentlyRendering)
       endRendering();
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
@@ -285,6 +280,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     isPass2 = false;
     colixCurrent = 0;
     haveTranslucentObjects = false;
+    translucentCoverOnly = !translucentMode;
     addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,

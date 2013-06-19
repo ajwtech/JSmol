@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-06 15:59:04 -0500 (Thu, 06 Jun 2013) $
- * $Revision: 18301 $
+ * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
+ * $Revision: 18351 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -185,7 +185,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   protected void finalize() throws Throwable {
-    Logger.debug("viewer finalize " + this);
+    if (Logger.debugging)
+      Logger.debug("viewer finalize " + this);
     super.finalize();
   }
 
@@ -338,6 +339,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isApplet;
   }
 
+  public boolean isJS() {
+    return isJS;
+  }
+
   public boolean isRestricted(ACCESS a) {
     // disables WRITE, LOAD file:/, set logFile 
     // command line -g and -w options ARE available for final writing of image
@@ -453,7 +458,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
     noGraphicsAllowed = checkOption2("noGraphics", "-n");
-    haveDisplay = (display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
+    haveDisplay = (isWebGL || display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
         "isDataOnly", "\0"));
     noGraphicsAllowed &= (display == null);
     if (haveDisplay) {
@@ -2313,7 +2318,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info("loading model inline, " + strModel.length()
           + " bytes, with newLine character " + (int) newLine + " isAppend="
           + isAppend);
-    Logger.debug(strModel);
+    if (Logger.debugging)
+      Logger.debug(strModel);
     String datasep = getDataSeparator();
     int i;
     if (datasep != null && datasep != ""
@@ -2782,6 +2788,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       stateManager.clear(global);
       tempArray.clear();
+      chainMap.clear();
+      chainList.clear();
       colorManager.clear();
       definedAtomSets.clear();
       dataManager.clear();
@@ -2845,9 +2853,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void startHoverWatcher(boolean tf) {
-    if (!haveDisplay)
+    if (!haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
       return;
-    if (hoverEnabled || !tf)
       actionManager.startHoverWatcher(tf);
   }
 
@@ -3340,12 +3347,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
-  public BS getBranchBitSet(int atomIndex, int atomIndexNot) {
+  public BS getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
     if (atomIndex < 0 || atomIndex >= getAtomCount())
       return new BS();
     return JmolMolecule.getBranchBitSet(modelSet.atoms, atomIndex,
         getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
-        null, atomIndexNot, true, true);
+        null, atomIndexNot, allowCyclic, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -4173,8 +4180,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     Object image = null;
     try {
-      gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
-          isImageWrite);
+      beginRendering(isDouble, isImageWrite);
       render();
       gdata.endRendering();
       image = gdata.getScreenImage(isImageWrite);
@@ -4184,6 +4190,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setErrorMessage("Error during rendering: " + er, null);
     }
     return image;
+  }
+
+  private void beginRendering(boolean isDouble, boolean isImageWrite) {
+    gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
+        global.translucent, 
+        isImageWrite);
   }
 
   private boolean antialiasDisplay;
@@ -4249,13 +4261,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       boolean mergeImages = (graphic == null && isStereoDouble());
       Object imageBuffer;
       if (transformManager.stereoMode.isBiColor()) {
-        gdata.beginRendering(transformManager.getStereoRotationMatrix(true),
-            isImageWrite);
+        beginRendering(true, isImageWrite);
         render();
         gdata.endRendering();
         gdata.snapshotAnaglyphChannelBytes();
-        gdata.beginRendering(transformManager.getStereoRotationMatrix(false),
-            isImageWrite);
+        beginRendering(false, isImageWrite);
         render();
         gdata.endRendering();
         gdata.applyAnaglygh(transformManager.stereoMode,
@@ -4428,6 +4438,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                         boolean isScriptFile,
                                                         boolean isQuiet,
                                                         boolean isQueued) {
+    /**
+     * @j2sNative
+     * 
+     * if (strScript.indexOf("JSCONSOLE") == 0) {
+     *   this.applet._showInfo(true);
+     *   return null;
+     * }
+     */
     if (getScriptManager() == null)
       return null;
     return scriptManager.evalStringWaitStatusQueued(returnType, strScript,
@@ -4449,7 +4467,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
 
-    Logger.debug("exitJmol -- exiting");
+    if (Logger.debugging)
+      Logger.debug("exitJmol -- exiting");
     System.out.flush();
     System.exit(0);
   }
@@ -4551,7 +4570,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case ':': // PubChem
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
-      int fi = Parser.parseInt(f);
+      int fi = Integer.MIN_VALUE;
+      try {
+        fi = Integer.parseInt(f);
+      } catch (Exception e) {
+        //
+      }
       if (fi != Integer.MIN_VALUE) {
         f = "cid/" + fi;
       } else {
@@ -5651,7 +5675,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case T.cartoonrockets:
       return global.cartoonRockets;
     case T.chaincasesensitive:
-      return global.chainCaseSensitive;
+      return global.chainCaseSensitive || chainList.size() > 0;
     case T.debugscript:
       return global.debugScript;
     case T.defaultstructuredssp:
@@ -5748,6 +5772,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.strutsMultiple;
     case T.tracealpha:
       return global.traceAlpha;
+    case T.translucent:
+      return global.translucent;
     case T.twistedsheets:
       return global.twistedSheets;
     case T.vectorsymmetry:
@@ -6443,7 +6469,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int tok = T.getTokFromName(key);
     switch (T.getParamType(tok)) {
     case T.strparam:
-      setStringPropertyTok(key, tok, "" + value);
+      setStringPropertyTok(key, tok, "");
       break;
     case T.intparam:
       setIntPropertyTok(key, tok, value ? 1 : 0);
@@ -6459,6 +6485,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.translucent:
+      // 13.1.17 false -> translucent objects are opaque among themselves (Pymol transparency_mode 2)
+      global.translucent = value;
+      break;
     case T.cartoonladders:
       // 13.1.15
       global.cartoonLadders = value;
@@ -7631,17 +7661,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return gdata.getColorArgbOrGray(modelSet.getAtomColix(i));
   }
 
-  String getAtomChain(int i) {
-    return modelSet.getAtomChain(i);
-  }
-
   @Override
   public int getAtomModelIndex(int i) {
     return modelSet.atoms[i].modelIndex;
-  }
-
-  String getAtomSequenceCode(int i) {
-    return modelSet.atoms[i].getSeqcodeString();
   }
 
   @Override
@@ -7921,11 +7943,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                            P3 point2, float degreesPerSecond,
                                            float endDegrees, boolean isSpin,
                                            BS bsSelected, V3 translation,
-                                           JmolList<P3> finalPoints) {
+                                           JmolList<P3> finalPoints, float[] dihedralList) {
     // Eval: rotate INTERNAL
     boolean isOK = transformManager.rotateAboutPointsInternal(eval, point1,
         point2, degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
-        translation, finalPoints);
+        translation, finalPoints, dihedralList);
     if (isOK)
       refresh(-1, "rotateAxisAboutPointsInternal");
     return isOK;
@@ -7941,7 +7963,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     transformManager.rotateAboutPointsInternal(null, pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null,
-        false, null, null);
+        false, null, null, null);
   }
 
   public V3 getModelDipole() {
@@ -8137,7 +8159,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setStatusAtomMoved(bs);
   }
 
-  void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, V3 translation,
+  public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, V3 translation,
                  P3 center, boolean isInternal, BS bsAtoms) {
     // from TransformManager exclusively
     if (bsAtoms.cardinality() == 0)
@@ -8277,7 +8299,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (Measure.computeAngleABC(pt, atom1, atom2, true) > 90
           || Measure.computeAngleABC(pt, atom2, atom1, true) > 90) {
-        bsBranch = getBranchBitSet(atom2.index, atom1.index);
+        bsBranch = getBranchBitSet(atom2.index, atom1.index, true);
       }
       if (bsBranch != null)
         for (int n = 0, i = atom1.getBonds().length; --i >= 0;) {
@@ -8306,7 +8328,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     bs.andNot(selectionManager.getMotionFixedAtoms());
 
     rotateAboutPointsInternal(eval, atom1, atom2, 0, degrees, false, bs, null,
-        null);
+        null, null);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -8842,7 +8864,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
       Logger.error("viewer handling error condition: " + er + "  ");
-      er.printStackTrace();
+      if (!isJS)
+        er.printStackTrace();
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {
       try {
@@ -9573,7 +9596,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object exporter = export3D.initializeExporter(type, this, privateKey,
         gdata, output);
     if (isJS && exporter != null)
-      this.jsExporter3D = export3D;
+      jsExporter3D = export3D;
     return (exporter == null ? null : export3D);
   }
 
@@ -9713,6 +9736,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void cachePut(String key, Object data) {
+    // PyMOL reader and isosurface only
     fileManager.cachePut(key, data);
   }
 
@@ -9747,10 +9771,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void cacheFile(String fileName, byte[] bytes) {
+    // PyMOL reader only
     fileManager.cachePut(fileName, bytes);
   }
 
   public int cacheFileByName(String fileName, boolean isAdd) {
+    // cache command in script
     return fileManager.cacheFileByNameAdd(fileName, isAdd);
   }
 
@@ -10015,4 +10041,48 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setBondParametersBS(modelIndex, i, bsBonds, rad, pymolValence, argb, trans);
   }
 
+  public int[][] getDihedralMap(int[] atoms) {
+    return modelSet.getDihedralMap(atoms);
+  }
+
+  public void setDihedrals(float[] dihedralList, BS[] bsBranches, float rate) {
+    modelSet.setDihedrals(dihedralList, bsBranches, rate);
+  }
+
+  public BS[] getBsBranches(float[] dihedralList) {
+    return modelSet.getBsBranches(dihedralList);
+  }
+
+  /**
+   * Create a unique integer for any chain string. 
+   * Note that if there are any chains that are more than
+   * a single character, chainCaseSensitive is automatically set TRUE
+   * 
+   * 
+   * @param id  < 256 is just the character of a single-character
+   *                  chain id; >= 256 indicates a list pointer into 
+   *                  chainList.
+   * @return i
+   */
+  public int getChainID(String id) {
+    Integer iboxed = (Integer) chainMap.get(id);
+    if (iboxed != null)
+      return iboxed.intValue();
+    int i = id.charAt(0);
+    if (id.length() > 1) {
+      i = 256 + chainList.size();
+      chainList.addLast(id);
+    }
+    iboxed = Integer.valueOf(i);
+    chainMap.put(iboxed, id);
+    chainMap.put(id, iboxed);
+    return i;
+  }
+
+  public String getChainIDStr(int id) {
+    return (String) chainMap.get(Integer.valueOf(id));
+  }
+  
+  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
+  public JmolList<String> chainList = new JmolList<String>();
 }

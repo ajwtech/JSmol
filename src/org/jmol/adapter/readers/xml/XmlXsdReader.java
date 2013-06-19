@@ -59,7 +59,7 @@ public class XmlXsdReader extends XmlReader {
   protected void processXml(XmlReader parent,
                             Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
-    super.processXml(parent, saxReader);
+    PX(parent, saxReader);
     atomSetCollection.clearSymbolicMap(); 
   }
 
@@ -89,7 +89,7 @@ public class XmlXsdReader extends XmlReader {
       atom.atomName = atts.get("ID");
       atom.atomSerial = ++iAtom;
       if (iChain >= 0)
-        atom.chainID = (char) ((iChain - 1)%26 + 'A');
+        atom.chainID = (iChain - 1)%26 + 'A';
       atom.group3 = "UNK";
       if (iGroup == 0)
         iGroup = 1;

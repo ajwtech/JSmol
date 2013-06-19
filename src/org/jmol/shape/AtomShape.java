@@ -28,6 +28,7 @@ package org.jmol.shape;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.util.ArrayUtil;
@@ -77,9 +78,18 @@ public abstract class AtomShape extends Shape {
     setSize2(size, bsSelected);
   }
 
+  private RadiusData rd;
+
   protected void setSize2(int size, BS bsSelected) {
-    setSizeRD(size == 0 ? null : new RadiusData(null, size, EnumType.SCREEN,
-        null), bsSelected);
+    if (size == 0) {
+      setSizeRD(null, bsSelected);
+      return;
+    }
+    if (rd == null)
+      rd = new RadiusData(null, size, EnumType.SCREEN, null);
+    else
+      rd.value = size;
+    setSizeRD(rd, bsSelected);
   }
 
   @Override
@@ -95,14 +105,15 @@ public abstract class AtomShape extends Shape {
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     if (mads == null && i0 >= 0)
       mads = new short[atomCount];
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-      Atom atom = atoms[i];
-      mads[i] = atom.calculateMad(viewer, rd);
-      //System.out.println("atomshape - setSize " + i + " " + rd);
-//      System.out.println("atomSHape " + atom + " mad=" + mads[i]);
-      bsSizeSet.setBitTo(i, isVisible);
-      atom.setShapeVisibility(myVisibilityFlag, isVisible);
-    }
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
+      setSizeRD2(i, rd, isVisible);
+  }
+
+  protected void setSizeRD2(int i, RadiusData rd, boolean isVisible) {
+    Atom atom = atoms[i];
+    mads[i] = atom.calculateMad(viewer, rd);
+    bsSizeSet.setBitTo(i, isVisible);
+    atom.setShapeVisibility(myVisibilityFlag, isVisible);
   }
 
   protected void setPropAS(String propertyName, Object value, BS bs) {
@@ -116,20 +127,33 @@ public abstract class AtomShape extends Shape {
         setColixAndPalette(colix, pid, i);
       return;
     }
-    if ("colors" == propertyName) {
+    if ("params" == propertyName) {
       isActive = true;
       Object[] data = (Object[]) value;
       short[] colixes = (short[]) data[0];
-      float translucency  = ((Float) data[1]).floatValue();
+      float[] atrans = (float[]) data[1];
+      float[] sizes = (float[]) data[2];
+      RadiusData rd = new RadiusData(null, 0, RadiusData.EnumType.FACTOR,
+          EnumVdw.AUTO);
       if (bsColixSet == null)
         bsColixSet = new BS();
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        if (i >= colixes.length)
-          continue;
-        short colix = colixes[i];
-        if (translucency > 0.01f)
-          colix = C.getColixTranslucent3(colix, true, translucency);
+      if (bsSizeSet == null)
+        bsSizeSet = new BS();
+      int i0 = bs.nextSetBit(0);
+      if (mads == null && i0 >= 0)
+        mads = new short[atomCount];
+      for (int i = i0, pt = 0; i >= 0; i = bs.nextSetBit(i + 1), pt++) {
+        short colix = (colixes == null ? 0 : colixes[pt]);
+        if (colix == 0)
+          colix = C.INHERIT_ALL;
+        float f = (atrans == null ? 0 : atrans[pt]);
+        if (f > 0.01f)
+          colix = C.getColixTranslucent3(colix, true, f);
         setColixAndPalette(colix, EnumPalette.UNKNOWN.id, i);
+        if (sizes == null)
+          continue;
+        boolean isVisible = ((rd.value = sizes[pt]) > 0);
+        setSizeRD2(i, rd, isVisible);
       }
       return;
     }

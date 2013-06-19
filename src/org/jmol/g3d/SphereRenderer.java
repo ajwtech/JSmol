@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-06-07 15:30:25 -0500 (Fri, 07 Jun 2013) $
+ * $Revision: 18308 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -515,11 +515,11 @@ public class SphereRenderer {
           if (zPixel == 0)
             zPixel = z;
           mode = 2;
+          z0 = zPixel;
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
             mat.transform(ptTemp);
             int thisOctant = Quadric.getOctant(ptTemp);
-            z0 = zPixel;
             if (thisOctant == selectedOctant) {
               iShade = getPlaneShade(xCurrent, yCurrent, zroot);              
               zPixel = (int) zroot[0];
@@ -533,9 +533,9 @@ public class SphereRenderer {
               z0 = zPixel = slab;
               mode = 0;
             }
-            if (zPixel < slab || zPixel > depth || zbuf[offset] <= z0)
-              continue;
           }
+          if (zPixel < slab || zPixel > depth || zbuf[offset] <= z0)
+            continue;
         } else {
           int zOffset = (int)Math.sqrt(s2 - j2);
           zPixel = z + (z < slab ? zOffset : -zOffset);          

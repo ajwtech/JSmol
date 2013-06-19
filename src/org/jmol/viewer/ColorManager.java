@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -245,11 +245,12 @@ class ColorManager {
       argb = atom.getProteinStructureSubType().getColor();
       break;
     case StaticConstants.PALETTE_CHAIN:
-      int chain = atom.getChainID() & 0x1F;
+      int chain = atom.getChainID();
       if (chain < 0)
         chain = 0;
-      if (chain >= JC.argbsChainAtom.length)
-        chain = chain % JC.argbsChainAtom.length;
+      else if (chain >= 256)
+        chain -= 256;
+      chain = chain % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero
           : JC.argbsChainAtom)[chain];
       break;

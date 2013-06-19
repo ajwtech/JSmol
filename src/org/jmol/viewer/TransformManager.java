@@ -223,7 +223,7 @@ public class TransformManager {
     unTransformPoint(pt2, pt2);
     viewer.setInMotion(false);
     rotateAboutPointsInternal(null, pt2, pt1, 10 * speed, Float.NaN, false,
-        true, null, true, null, null);
+        true, null, true, null, null, null);
   }
 
   final V3 arcBall0 = new V3();
@@ -361,7 +361,7 @@ public class TransformManager {
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
-      setSpin(eval, true, endDegrees, null, bsAtoms, false);
+      setSpin(eval, true, endDegrees, null, null, bsAtoms, false);
       return false;
     }
     float radians = endDegrees * JC.radiansPerDegree;
@@ -383,12 +383,29 @@ public class TransformManager {
    * ROTATIONS**************************************************************
    */
 
+  /**
+   * 
+   * @param eval
+   * @param point1
+   * @param point2
+   * @param degreesPerSecond
+   * @param endDegrees
+   * @param isClockwise
+   * @param isSpin
+   * @param bsAtoms
+   * @param isGesture
+   * @param translation
+   * @param finalPoints
+   * @param dihedralList
+   * @return  true if synchronous so that JavaScript can restart properly
+   */
   boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, P3 point1,
                                     P3 point2, float degreesPerSecond,
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BS bsAtoms,
                                     boolean isGesture, V3 translation,
-                                    JmolList<P3> finalPoints) {
+                                    JmolList<P3> finalPoints,
+                                    float[] dihedralList) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -401,7 +418,8 @@ public class TransformManager {
       isSpin = false;
     }
 
-    if ((translation == null || translation.length() < 0.001)
+    if (dihedralList == null
+        && (translation == null || translation.length() < 0.001)
         && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
         && (isSpin || endDegrees == 0))
       return false;
@@ -420,26 +438,31 @@ public class TransformManager {
     boolean isSelected = (bsAtoms != null);
     if (isSpin) {
       // we need to adjust the degreesPerSecond to match a multiple of the frame rate
-      int nFrames = (int) (Math.abs(endDegrees) / Math.abs(degreesPerSecond)
-          * spinFps + 0.5);
-      if (Float.isNaN(endDegrees)) {
-        rotationRate = degreesPerSecond;
+      if (dihedralList == null) {
+        int nFrames = (int) (Math.abs(endDegrees) / Math.abs(degreesPerSecond)
+            * spinFps + 0.5);
+        if (Float.isNaN(endDegrees)) {
+          rotationRate = degreesPerSecond;
+        } else {
+          rotationRate = degreesPerSecond = endDegrees / nFrames * spinFps;
+          if (translation != null)
+            internalTranslation.scale(1f / (nFrames));
+        }
+        internalRotationAxis.setVA(axis, rotationRate * JC.radiansPerDegree);
+        isSpinInternal = true;
+        isSpinFixed = false;
+        isSpinSelected = isSelected;
       } else {
-        rotationRate = degreesPerSecond = endDegrees / nFrames * spinFps;
-        if (translation != null)
-          internalTranslation.scale(1f / (nFrames));
+        endDegrees = degreesPerSecond;
       }
-      internalRotationAxis.setVA(axis, rotationRate * JC.radiansPerDegree);
-      isSpinInternal = true;
-      isSpinFixed = false;
-      isSpinSelected = isSelected;
-      setSpin(eval, true, endDegrees, finalPoints, bsAtoms, isGesture);
-      return false;
+      setSpin(eval, true, endDegrees, finalPoints, dihedralList, bsAtoms,
+          isGesture);
+      return (dihedralList != null || bsAtoms != null);
     }
     float radians = endDegrees * JC.radiansPerDegree;
     internalRotationAxis.setVA(axis, radians);
     rotateAxisAngleRadiansInternal(radians, bsAtoms);
-    return true;
+    return false;
   }
 
   public synchronized void rotateAxisAngleRadiansInternal(float radians,
@@ -1964,28 +1987,31 @@ public class TransformManager {
   private SpinThread spinThread;
 
   public void setSpinOn() {
-    setSpin(null, true, Float.MAX_VALUE, null, null, false);
+    setSpin(null, true, Float.MAX_VALUE, null, null, null, false);
   }
 
   public void setSpinOff() {
-    setSpin(null, false, Float.MAX_VALUE, null, null, false);
+    setSpin(null, false, Float.MAX_VALUE, null, null, null, false);
   }
 
   private void setSpin(JmolScriptEvaluator eval, boolean spinOn,
-                       float endDegrees, JmolList<P3> endPositions, BS bsAtoms,
+                       float endDegrees, JmolList<P3> endPositions, float[] dihedralList, 
+                       BS bsAtoms,
                        boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
+    if (this.spinOn == spinOn)
+      return;
     this.spinOn = spinOn;
     viewer.getGlobalSettings().setB("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(this, viewer, endDegrees, endPositions,
+        spinThread = new SpinThread(this, viewer, endDegrees, endPositions, dihedralList,
             bsAtoms, false, isGesture);
-        spinThread.setEval(eval);
-        if (bsAtoms == null) {
+        if (bsAtoms == null && dihedralList == null) {
           spinThread.start();
         } else {
+          spinThread.setEval(eval);
           spinThread.run();
         }
       }
@@ -2000,7 +2026,7 @@ public class TransformManager {
       return;
     boolean wasOn = this.navOn;
     if (navOn && spinOn)
-      setSpin(null, false, 0, null, null, false);
+      setSpin(null, false, 0, null, null, null, false);
     this.navOn = navOn;
     viewer.getGlobalSettings().setB("_navigating", navOn);
     if (!navOn)
@@ -2011,7 +2037,7 @@ public class TransformManager {
       if (navFps == 0)
         navFps = 10;
       if (spinThread == null) {
-        spinThread = new SpinThread(this, viewer, 0, null, null, true, false);
+        spinThread = new SpinThread(this, viewer, 0, null, null, null, true, false);
         spinThread.start();
       }
     } else if (wasOn) {
@@ -2403,7 +2429,7 @@ public class TransformManager {
     // we should probably assign z = 0 as "unrenderable"
 
     if (Float.isNaN(z)) {
-      if (!haveNotifiedNaN)
+      if (!haveNotifiedNaN && Logger.debugging)
         Logger.debug("NaN seen in TransformPoint");
       haveNotifiedNaN = true;
       z = 1;
@@ -2451,7 +2477,8 @@ public class TransformManager {
     }
 
     if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
-      Logger.debug("NaN found in transformPoint ");
+      if (Logger.debugging)
+        Logger.debug("NaN found in transformPoint ");
       haveNotifiedNaN = true;
     }
 
