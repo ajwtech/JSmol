@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-06 15:59:04 -0500 (Thu, 06 Jun 2013) $
- * $Revision: 18301 $
+ * $Date: 2013-06-12 10:45:57 -0400 (Wed, 12 Jun 2013) $
+ * $Revision: 18324 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -215,7 +215,7 @@ public class RepaintManager implements JmolRepaintManager {
       }
       g3d.renderAllStrings(null);
     } catch (Exception e) {
-      if (!viewer.isApplet())
+      if (!viewer.isJS())
         e.printStackTrace();
       Logger.error("rendering error? " + e);
     }

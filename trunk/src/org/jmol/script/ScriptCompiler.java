@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
- * $Revision: 18256 $
+ * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
+ * $Revision: 18351 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -243,7 +243,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private void addTokenToPrefix(T token) {
     if (logMessages)
-      Logger.info("addTokenToPrefix" + token);
+      Logger.debug("addTokenToPrefix" + token);
     ltoken.addLast(token);
     if (token.tok != T.nada)
       lastToken = token;
@@ -871,8 +871,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       
       ident = identLC;
       theToken = null;
-    } else if (ident.length() == 1) {
+    } else if (ident.length() == 1 || lastToken.tok == T.colon) {
       // hack to support case sensitive alternate locations and chains
+      // but now with reading of multicharacter chains, how does that
+      // work? 
       // if an identifier is a single character long, then
       // allocate a new Token with the original character preserved
       if ((theToken = T.getTokenFromName(ident)) == null
@@ -2667,7 +2669,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         : errorLine)
         + " <<<<";
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
-         + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
+         + ScriptEvaluator.getErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       ichToken = Math.max(ichEnd, ichToken);
       while (!lookingAtEndOfLine() && !lookingAtTerminator())

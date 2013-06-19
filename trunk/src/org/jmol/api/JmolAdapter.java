@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
- * $Revision: 18282 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -419,17 +419,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   // range-checking routines
   /////////////////////////////////////////////////////////////////
 
-  public final static char canonizeAlphaDigit(char ch) {
-    if ((ch >= 'A' && ch <= 'Z') ||
-        (ch >= 'a' && ch <= 'z') ||
-        (ch >= '0' && ch <= '9'))
-      return ch;
-    return '\0';
+  private final static char canonizeAlphaDigit(char ch) {
+    return ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
+        || (ch >= '0' && ch <= '9') ? ch : '\0');
   }
 
-  public final static char canonizeChainID(char chainID) {
-    return canonizeAlphaDigit(chainID);
-  }
+//  public final static char canonizeChainID(char chainID) {
+//    return canonizeAlphaDigit(chainID);
+//  }
 
   public final static char canonizeInsertionCode(char insertionCode) {
     return canonizeAlphaDigit(insertionCode);

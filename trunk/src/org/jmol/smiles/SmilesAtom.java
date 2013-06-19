@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-13 19:10:30 -0500 (Wed, 13 Mar 2013) $
- * $Revision: 17975 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -709,8 +709,12 @@ public class SmilesAtom extends P3 implements JmolNode {
     return 0;
   }
 
-  public char getChainID() {
-    return '\0';
+  public int getChainID() {
+    return 0;
+  }
+
+  public String getChainIDStr() {
+    return "";
   }
 
   static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence,

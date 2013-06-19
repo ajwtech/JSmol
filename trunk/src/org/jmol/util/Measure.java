@@ -456,9 +456,11 @@ final public class Measure {
   public static float getTransformMatrix4(JmolList<P3> ptsA, JmolList<P3> ptsB, Matrix4f m, P3 centerA) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
+    //System.out.println("draw d1 @{point" + cptsA[0] + "}");
+    //System.out.println("draw d2 @{point" + cptsB[0] + "}");
     float[] retStddev = new float[2];
     Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
-        cptsB }, retStddev, false);
+        cptsB }, retStddev, true); // was false
     V3 v = V3.newV(cptsB[0]);
     v.sub(cptsA[0]);
     m.setMV(q.getMatrix(), v);

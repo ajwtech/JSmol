@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-28 09:02:13 -0500 (Tue, 28 May 2013) $
- * $Revision: 18256 $
+ * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
+ * $Revision: 18344 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,11 +24,9 @@
 
 package org.jmol.adapter.smarter;
 
-
 import org.jmol.util.BS;
 import org.jmol.util.P3;
 import org.jmol.util.Quadric;
-
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
@@ -48,7 +46,7 @@ public class Atom extends P3 implements Cloneable {
   public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;
-  public char chainID = '\0';
+  public int chainID;
   public char alternateLocationID = '\0';
   public String group3;
   public int sequenceNumber = Integer.MIN_VALUE;
@@ -307,5 +305,4 @@ public class Atom extends P3 implements Cloneable {
     vectorY *= vibScale;
     vectorZ *= vibScale;    
   }
-
 }

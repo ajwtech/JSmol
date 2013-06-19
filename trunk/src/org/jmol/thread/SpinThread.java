@@ -42,6 +42,7 @@ public class SpinThread extends JmolThread {
   private final TransformManager transformManager;
   private float endDegrees;
   private JmolList<P3> endPositions;
+  private float[] dihedralList;
   private float nDegrees;
   private BS bsAtoms;
   private boolean isNav;
@@ -51,16 +52,23 @@ public class SpinThread extends JmolThread {
   private boolean haveNotified;
   private int index;
   //private boolean navigatingSurface;
+  private BS[] bsBranches;
+  boolean isDone = false;
   
   public boolean isGesture() {
     return isGesture;
   }
   
-  public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, JmolList<P3> endPositions, BS bsAtoms, boolean isNav, boolean isGesture) {
+  public SpinThread(TransformManager transformManager, Viewer viewer,
+      float endDegrees, JmolList<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
+      boolean isGesture) {
     super();
     setViewer(viewer, "SpinThread");
     this.transformManager = transformManager;
-    this.endDegrees = Math.abs(endDegrees);
+    this.endDegrees = endDegrees;
+    this.dihedralList = dihedralList;
+    if (dihedralList != null) 
+      bsBranches = viewer.getBsBranches(dihedralList);
     this.endPositions = endPositions;
     this.bsAtoms = bsAtoms;
     this.isNav = isNav;
@@ -156,14 +164,18 @@ public class SpinThread extends JmolThread {
         else
           viewer.requestRepaintAndWait();
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
-        if (!isNav && nDegrees >= endDegrees - 0.001)
+        if (!isNav && nDegrees >= endDegrees - 0.001) {
+          isDone = true;
           transformManager.setSpinOff();
+        }
         if (!runSleep(sleepTime, MAIN))
           return;
         mode = MAIN;
         break;
       case FINISH:
-        if (bsAtoms != null && endPositions != null) {
+        if (dihedralList != null) {
+          viewer.setDihedrals(dihedralList, bsBranches, 0F);
+        } else if (bsAtoms != null && endPositions != null) {
           // when the standard deviations of the end points was
           // exact, we know that we want EXACTLY those final positions
           viewer.setAtomCoords(bsAtoms, T.xyz, endPositions);
@@ -174,13 +186,19 @@ public class SpinThread extends JmolThread {
           transformManager.setSpinOff();
           viewer.startHoverWatcher(true);
         }
+        stopped = !isDone;
         resumeEval();
+        stopped = true;
         return;
       }
   }
 
   private void doTransform() {
-    if (isNav) {
+    if (dihedralList != null) {
+      float f = 1f / myFps / endDegrees;
+      viewer.setDihedrals(dihedralList, bsBranches, f);
+      nDegrees += 1f / myFps;
+    } else if (isNav) {
       transformManager.setNavigationOffsetRelative();//navigatingSurface);
     } else if (transformManager.isSpinInternal
         || transformManager.isSpinFixed) {

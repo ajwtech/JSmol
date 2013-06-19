@@ -3381,4 +3381,35 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }
 
+  public int[][] getDihedralMap(int[] alist) {
+    JmolList<int[]> list = new JmolList<int[]>();
+    int n = alist.length;
+    Atom ai = null, aj = null, ak = null, al = null;
+    for (int i = n - 1; --i >= 0;)
+      for (int j = n; --j > i;) {
+        ai = atoms[alist[i]];
+        aj = atoms[alist[j]];
+        if (ai.isBonded(aj)) {
+          for (int k = n; --k >= 0;)
+            if (k != i && k != j && (ak = atoms[alist[k]]).isBonded(ai))
+              for (int l = n; --l >= 0;)
+                if (l != i && l != j && l != k
+                    && (al = atoms[alist[l]]).isBonded(aj)) {
+                  int[] a = new int[4];
+                  a[0] = ak.index;
+                  a[1] = ai.index;
+                  a[2] = aj.index;
+                  a[3] = al.index;
+                  list.addLast(a);
+                }
+        }
+      }
+    n = list.size();
+    int[][] ilist = ArrayUtil.newInt2(n);
+    for (int i = n; --i >= 0;)
+      ilist[n - i - 1] = list.get(i);
+    return ilist;
+  }
+
+
 }

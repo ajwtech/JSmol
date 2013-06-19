@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-30 07:46:23 -0500 (Thu, 30 May 2013) $
- * $Revision: 18263 $
+ * $Date: 2013-06-08 15:27:11 -0500 (Sat, 08 Jun 2013) $
+ * $Revision: 18316 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1031,6 +1031,7 @@ public class AtomSetCollection {
   public void setEllipsoids() {
     if (!haveAnisou)
       return;
+    getSymmetry();
     int iAtomFirst = getLastAtomSetAtomIndex();
     for (int i = iAtomFirst; i < atomCount; i++)
       atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));

@@ -487,24 +487,40 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.vContours = null;
   }
 
-  /**
-   * color a specific set of vertices based on a set of atoms
-   * 
-   * @param colix
-   * @param bs
-   */
-  void colorAtoms(short colix, BS bs) {
-    colorVertices2(colix, bs, true);
+  void setVertexColorMap() {
+    vertexColorMap = new Hashtable<String, BS>();
+    short lastColix = -999;
+    BS bs = null;
+    for (int i = vertexCount; --i >= 0;) {
+      short c = vertexColixes[i];
+      if (c != lastColix) {
+        String color = C.getHexCode(lastColix = c);
+        bs = vertexColorMap.get(color);
+        if (bs == null)
+          vertexColorMap.put(color, bs = new BS());
+      }
+      bs.set(i);
+    }
   }
 
-  /**
-   * color a specific set of vertices
-   * 
-   * @param colix
-   * @param bs
-   */
-  void colorVertices(short colix, BS bs) {
-    colorVertices2(colix, bs, false);
+  void setVertexColixesForAtoms(Viewer viewer, short[] colixes, int[] atomMap,
+                                BS bs) {
+    jvxlData.vertexDataOnly = true;
+    jvxlData.vertexColors = new int[vertexCount];
+    jvxlData.nVertexColors = vertexCount;
+    Atom[] atoms = viewer.modelSet.atoms;
+    for (int i = mergeVertexCount0; i < vertexCount; i++) {
+      int iAtom = vertexSource[i];
+      if (iAtom < 0 || !bs.get(iAtom))
+        continue;
+      jvxlData.vertexColors[i] = viewer.getColorArgbOrGray(vertexColixes[i] = C
+          .copyColixTranslucency(colix, atoms[iAtom].getColix()));
+
+      short colix = (colixes == null ? C.INHERIT_ALL : colixes[atomMap[iAtom]]);
+      if (colix == C.INHERIT_ALL)
+        colix = atoms[iAtom].getColix();
+      vertexColixes[i] = C.copyColixTranslucency(this.colix, colix);
+    }
   }
 
   /**
@@ -514,23 +530,22 @@ public class IsosurfaceMesh extends Mesh {
    * @param bs
    * @param isAtoms
    */
-  private void colorVertices2(short colix, BS bs, boolean isAtoms) {
+  void colorVertices(short colix, BS bs, boolean isAtoms) {
     if (vertexSource == null)
       return;
     colix = C.copyColixTranslucency(this.colix, colix);
     BS bsVertices = (isAtoms ? new BS() : bs);
-    if (vertexColixes == null || vertexColorMap == null && isColorSolid) {
-      vertexColixes = new short[vertexCount];
-      for (int i = 0; i < vertexCount; i++)
-        vertexColixes[i] = this.colix;
-    }
-    isColorSolid = false;
+    checkAllocColixes();
     // TODO: color translucency?
     if (isAtoms)
       for (int i = 0; i < vertexCount; i++) {
-        if (bs.get(vertexSource[i])) {
+        int pt = vertexSource[i]; 
+        if (pt < 0)
+          continue;
+        if (bs.get(pt)) {
           vertexColixes[i] = colix;
-          bsVertices.set(i);
+          if (bsVertices != null)
+            bsVertices.set(i);
         }
       }
     else
@@ -547,6 +562,12 @@ public class IsosurfaceMesh extends Mesh {
     if (vertexColorMap == null)
       vertexColorMap = new Hashtable<String, BS>();
     addColorToMap(vertexColorMap, color, bs);
+  }
+
+  void checkAllocColixes() {
+    if (vertexColixes == null || vertexColorMap == null && isColorSolid)
+      allocVertexColixes();
+    isColorSolid = false;
   }
 
   /**
@@ -657,27 +678,34 @@ public class IsosurfaceMesh extends Mesh {
       meshColix = C.getColixS(jvxlData.meshColor);
     setJvxlDataRendering();
 
-    isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null;
+    isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null
+        && jvxlData.vertexColorMap == null;
     if (colorEncoder != null) {
       // bicolor map will be taken care of with params.isBicolorMap
-      if (jvxlData.colorScheme != null) {
-        String colorScheme = jvxlData.colorScheme;
-        boolean isTranslucent = colorScheme.startsWith("translucent ");
-        if (isTranslucent)
-          colorScheme = colorScheme.substring(12);
-        colorEncoder.setColorScheme(colorScheme, isTranslucent);
-        remapColors(null, null, Float.NaN);
-      }
-      if (jvxlData.vertexColorMap != null)
-        for (Map.Entry<String, BS> entry : jvxlData.vertexColorMap
-            .entrySet()) {
+      if (jvxlData.vertexColorMap == null) {
+        if (jvxlData.colorScheme != null) {
+          String colorScheme = jvxlData.colorScheme;
+          boolean isTranslucent = colorScheme.startsWith("translucent ");
+          if (isTranslucent)
+            colorScheme = colorScheme.substring(12);
+          colorEncoder.setColorScheme(colorScheme, isTranslucent);
+          remapColors(null, null, Float.NaN);
+        }
+      } else {
+        if (jvxlData.baseColor != null) {
+          for (int i = vertexCount; --i >= 0;)
+            vertexColixes[i] = colix;
+        }
+        for (Map.Entry<String, BS> entry : jvxlData.vertexColorMap.entrySet()) {
           BS bsMap = entry.getValue();
-          short colix = C.copyColixTranslucency(this.colix, C
-              .getColixS(entry.getKey()));
+          short colix = C.copyColixTranslucency(this.colix, C.getColixS(entry
+              .getKey()));
           for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
             vertexColixes[i] = colix;
         }
-    }    
+      }
+    }
+
   }
 
   void setJvxlDataRendering() {
@@ -712,11 +740,12 @@ public class IsosurfaceMesh extends Mesh {
     boolean inherit = (vertexSource != null && ce.currentPalette == ColorEncoder.INHERIT);
     vertexColorMap = null;
     polygonColixes = null;
+    jvxlData.baseColor = null;
     jvxlData.vertexCount = vertexCount;
     if (vertexValues == null || jvxlData.vertexCount == 0)
       return;
     if (vertexColixes == null || vertexColixes.length != vertexCount)
-      vertexColixes = new short[vertexCount];
+      allocVertexColixes();
     if (inherit) {
       jvxlData.vertexDataOnly = true;
       jvxlData.vertexColors = new int[vertexCount];

@@ -126,9 +126,11 @@ public class XmlReader extends AtomSetCollectionReader {
         spf.setNamespaceAware(true);
         javax.xml.parsers.SAXParser saxParser = spf.newSAXParser();
         saxReader = saxParser.getXMLReader();
-        Logger.debug("Using JAXP/SAX XML parser.");
+        if (Logger.debugging)
+          Logger.debug("Using JAXP/SAX XML parser.");
       } catch (Exception e) {
-        Logger.debug("Could not instantiate JAXP/SAX XML reader: "
+        if (Logger.debugging)
+          Logger.debug("Could not instantiate JAXP/SAX XML reader: "
             + e.getMessage());
       }
       if (saxReader == null)
@@ -166,6 +168,10 @@ public class XmlReader extends AtomSetCollectionReader {
    */
   protected void processXml(XmlReader parent, Object saxReader)
       throws Exception {
+    PX(parent, saxReader);
+  }
+
+  protected void PX(XmlReader parent, Object saxReader) throws Exception {
     this.parent = parent;
     atomSetCollection = parent.atomSetCollection;
     reader = parent.reader;
@@ -199,12 +205,11 @@ public class XmlReader extends AtomSetCollectionReader {
       saxHandler.parseXML(this, saxReader, reader);
     }
   }
-
   @Override
   public void applySymmetryAndSetTrajectory() {
     try {
       if (parent == null)
-        super.applySymmetryAndSetTrajectory();
+        applySymTrajASCR();
       else
         parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {

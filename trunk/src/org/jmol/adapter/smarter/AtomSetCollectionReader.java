@@ -236,10 +236,10 @@ public abstract class AtomSetCollectionReader {
       } else {
         processBinaryDocument(doc);
       }
-      finalizeReader();
+      finalizeReader(); // upstairs
     } catch (Throwable e) {
       Logger.info("Reader error: " + e);
-      if (!viewer.isApplet())
+      if (!viewer.isJS())
         e.printStackTrace();
       setError(e);
     }
@@ -328,7 +328,15 @@ public abstract class AtomSetCollectionReader {
       htParams.put("trajectorySteps", trajectorySteps = new  JmolList<P3[]>());
   }
 
+  /**
+   * optional reader-specific method run first.  
+   * @throws Exception
+   */
   protected void finalizeReader() throws Exception {
+    finalizeReaderASCR();
+  }
+
+  protected void finalizeReaderASCR() throws Exception {
     applySymmetryAndSetTrajectory();
     setLoadNote();
     if (doCentralize)
@@ -410,6 +418,8 @@ public abstract class AtomSetCollectionReader {
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;
+    if (!viewer.isJS())
+      e.printStackTrace();
   }
 
   @SuppressWarnings("unchecked")
@@ -994,6 +1004,10 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
+    applySymTrajASCR();
+  }
+  
+  public void applySymTrajASCR() throws Exception {
     if (iHaveUnitCell && doCheckUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell,
@@ -1351,6 +1365,10 @@ public abstract class AtomSetCollectionReader {
   }
 
   public String readLine() throws Exception {
+    return RL();
+  }
+  
+  public String RL() throws Exception {
     prevline = line;
     line = reader.readLine();
     if (os != null && line != null) {

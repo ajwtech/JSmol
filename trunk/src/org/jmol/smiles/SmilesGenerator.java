@@ -121,9 +121,9 @@ public class SmilesGenerator {
           end = null;
           len = 0;
           if (bioStructureName.length() > 0) {
-            char id = a.getChainID();
-            if (id != '\0') {
-              s = "//* chain " + id + " " + bioStructureName + " " + a.getResno() + " *// ";
+            int id = a.getChainID();
+            if (id != 0) {
+              s = "//* chain " + a.getChainIDStr() + " " + bioStructureName + " " + a.getResno() + " *// ";
               len = s.length();
               sb.append(s);
             }
@@ -195,14 +195,14 @@ public class SmilesGenerator {
   private void addBracketedBioName(SB sb, JmolNode a, String atomName) {
     sb.append("[");
     if (atomName != null) {
-      char chChain = a.getChainID();
+      String chain = a.getChainIDStr();
       sb.append(a.getGroup3(false));
       if (!atomName.equals(".0"))
         sb.append(atomName).append("#").appendI(a.getElementNumber());
       sb.append("//* ").appendI(
           a.getResno());
-      if (chChain != '\0')
-        sb.append(":").appendC(chChain);
+      if (chain.length() > 0)
+        sb.append(":").append(chain);
       sb.append(" *//");
     } else {
       sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
@@ -868,11 +868,11 @@ public class SmilesGenerator {
       ht.put(key, new Object[] {
           s = SmilesParser.getRingPointer(++nPairs), Integer.valueOf(i1) });
       if (Logger.debugging)
-        Logger.info("adding for " + i0 + " ring key " + nPairs + ": " + key);
+        Logger.debug("adding for " + i0 + " ring key " + nPairs + ": " + key);
     } else {
       ht.remove(key);
       if (Logger.debugging)
-        Logger.info("using ring key " + key);
+        Logger.debug("using ring key " + key);
     }
     return s;//  + " _" + key + "_ \n";
   }

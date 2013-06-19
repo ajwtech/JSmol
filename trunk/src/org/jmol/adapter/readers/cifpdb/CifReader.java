@@ -96,6 +96,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
   private boolean filterAssembly;
+
   
 
   private  JmolList<Matrix4f> vBiomts;
@@ -106,6 +107,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   private String appendedData;
   private boolean skipping;
+  private boolean haveChainsLC;
   private int nAtoms;
   
   @Override
@@ -243,7 +245,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
-    super.finalizeReader();
+    finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
     if (header.length() > 0)
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
@@ -293,7 +295,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(!isPDB);
     boolean doCheck = doCheckUnitCell && !isPDB;
-    super.applySymmetryAndSetTrajectory();
+    applySymTrajASCR();
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
   }
@@ -319,7 +321,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.setCollectionName(thisDataSetName);
       }
     }
-    Logger.debug(key);
+    if (Logger.debugging)
+      Logger.debug(key);
   }
   
   /**
@@ -848,10 +851,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           assemblyId = firstChar;
           break;
         case AUTH_ASYM_ID:
-          if (field.length() > 1)
-            Logger.warn("Don't know how to deal with chains more than 1 char: "
-                + field);
-          atom.chainID = firstChar;
+          if (!haveChainsLC && !field.toUpperCase().equals(field))
+            haveChainsLC = (viewer.getChainID("lc") != 0); // force chainCaseSensitive
+         atom.chainID = viewer.getChainID(field);
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseIntStr(field);
@@ -1958,7 +1960,7 @@ _pdbx_struct_oper_list.vector[3]
         if (atomSetCollection.bsAtoms.get(i))
           symmetry.toCartesian(atoms[i], true);
         else if (Logger.debugging)
-          Logger.info(molecularType + " removing " + i + " "
+          Logger.debug(molecularType + " removing " + i + " "
               + atoms[i].atomName + " " + atoms[i]);
       }
       atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);

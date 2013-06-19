@@ -435,27 +435,28 @@ public void initShape() {
 }
 
 private void initDraw() {
+   boundBox = null;
+   bsAllModels = null;
    colix = C.ORANGE;
    color = 0xFFFFFFFF;
-   newScale = 0;
-   isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
+   diameter = 0;
+   explicitID = false;
+   indicatedModelIndex = -1;
+   intersectID = null;
    isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
-   isVertices = isPerpendicular = isVector = false;
+   isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
+   isPerpendicular = isVertices = isVector = false;
    isValid = true;
    length = Float.MAX_VALUE;
-   diameter = 0;
-   width = 0;
-   indicatedModelIndex = -1;
+   lineData = null;
+   newScale = 0;
+   nidentifiers = nbitsets = 0;
    offset = null;
    plane = null;
    polygon = null;
-   nidentifiers = nbitsets = 0;
-   vData = new  JmolList<Object[]>();
-   bsAllModels = null;
-   intersectID = null;
    slabData = null;
-   boundBox = null;
-   explicitID = false;
+   vData = new  JmolList<Object[]>();
+   width = 0;
    setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
   }
 
@@ -638,7 +639,8 @@ protected void resetObjects() {
   @Override
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
-      if (meshes[i] == null || meshes[i].vertexCount == 0 && meshes[i].connections == null)
+      if (meshes[i] == null || meshes[i].vertexCount == 0 
+          && meshes[i].connections == null && meshes[i].lineData == null)
         deleteMeshI(i);
   }
 
@@ -1030,11 +1032,11 @@ protected void resetObjects() {
      * have to watch out for double-listed vertices
      * 
      */
-    if (newScale == 0 || dmesh.vertexCount == 0 || dmesh.scale == newScale)
+    if (newScale == 0 || dmesh.vertexCount == 0 && dmesh.connections == null || dmesh.scale == newScale)
       return;
     float f = newScale / dmesh.scale;
     dmesh.scale = newScale;
-    if (dmesh.haveXyPoints || dmesh.drawType == EnumDrawType.ARC || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.CIRCULARPLANE)
+    if (dmesh.isRenderScalable())
       return; // done in renderer
     V3 diff = new V3();
     int iptlast = -1;
@@ -1221,7 +1223,7 @@ protected void resetObjects() {
     }
     P3 pt = new P3();
     int ptVertex = vertexes[iVertex];
-    P3 coord = P3.newP(mesh.vertices[ptVertex]);
+    P3 coord = P3.newP(mesh.altVertices == null ? mesh.vertices[ptVertex] : (P3) mesh.altVertices[ptVertex]);
     P3 newcoord = new P3();
     V3 move = new V3();
     viewer.transformPt3f(coord, pt);
@@ -1258,8 +1260,7 @@ protected void resetObjects() {
    * @param bsVisible
    * @return true if found
    */
-  private boolean findPickedObject(int x, int y, boolean isPicking,
-                                   BS bsVisible) {
+  private boolean findPickedObject(int x, int y, boolean isPicking, BS bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (gdata.isAntialiased()) {
       x <<= 1;
@@ -1284,7 +1285,9 @@ protected void resetObjects() {
           for (int iVertex = (m.isTriangleSet ? 3
               : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
             try {
-              P3 pt = m.vertices[m.polygonIndexes[iModel][iVertex]];
+              int iv = m.polygonIndexes[iModel][iVertex];
+              P3 pt = (m.altVertices == null ? m.vertices[iv]
+                  : (P3) m.altVertices[iv]);
               int d2 = coordinateInRange(x, y, pt, dmin2, ptXY);
               if (d2 >= 0) {
                 pickedMesh = m;
@@ -1342,7 +1345,7 @@ protected void resetObjects() {
     else if (dmesh.isBarb)
       str.append(" barb");
     if (dmesh.scale != 1
-        && (dmesh.haveXyPoints || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.ARC))
+        && (dmesh.haveXyPoints || dmesh.connections != null || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.ARC))
       str.append(" scale ").appendF(dmesh.scale);
     if (dmesh.width != 0)
       str.append(" diameter ").appendF(
@@ -1356,9 +1359,11 @@ protected void resetObjects() {
       int n = dmesh.lineData.size();
       for (int j = 0; j < n;) {
         P3[] pts = dmesh.lineData.get(j);
-        str.append(Escape.eP(pts[0]));
-        str.append(" ");
-        str.append(Escape.eP(pts[1]));
+        String s = Escape.eP(pts[0]);
+        str.append(s.substring(1, s.length() - 1));
+        str.append(",");
+        s = Escape.eP(pts[1]);
+        str.append(s.substring(1, s.length() - 1));
         if (++j < n)
           str.append(", ");
       }

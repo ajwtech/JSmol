@@ -1870,7 +1870,7 @@ public class ActionManager {
           int[] points = new int[nb];
           int ni = 0;
           for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), ni++) {
-            lengths[ni] = viewer.getBranchBitSet(i, atomIndex).cardinality();
+            lengths[ni] = viewer.getBranchBitSet(i, atomIndex, true).cardinality();
             points[ni] = i;
           }
           for (int j = 0; j < nb - 2; j++) {
@@ -1991,8 +1991,6 @@ public class ActionManager {
             : isBound(action, ACTION_select) ? "" : null);
     if (s != null) {
       s += "(" + item + ")";
-      if (Logger.debugging)
-        Logger.debug(s);
       BS bs = getSelectionSet(s);
       if (bs != null) {
         viewer.select(bs, false, 0, false);

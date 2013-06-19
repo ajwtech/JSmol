@@ -77,7 +77,7 @@ class ScriptMathProcessor {
    * 
    */
 
-  private boolean isSyntaxCheck;
+  private boolean chk;
   private boolean wasSyntaxCheck;
   private boolean logMessages;
   private ScriptEvaluator eval;
@@ -105,13 +105,13 @@ class ScriptMathProcessor {
     this.eval = eval;
     this.viewer = eval.viewer;
     this.logMessages = eval.logMessages;
-    this.isSyntaxCheck = wasSyntaxCheck = eval.chk;
+    this.chk = wasSyntaxCheck = eval.chk;
     this.isArrayItem = isArrayItem;
     this.asVector = asVector || isArrayItem;
     this.asBitSet = asBitSet;
     wasX = isArrayItem;
     if (logMessages)
-      Logger.info("initialize RPN");
+      Logger.debug("initialize RPN");
   }
 
   @SuppressWarnings("unchecked")
@@ -153,7 +153,7 @@ class ScriptMathProcessor {
     if (++xPt == xStack.length)
       xStack = (SV[]) ArrayUtil.doubleLength(xStack);
     if (logMessages) {
-      Logger.info("\nputX: " + x);
+      Logger.debug("\nputX: " + x);
     }
 
     xStack[xPt] = x;
@@ -354,7 +354,7 @@ class ScriptMathProcessor {
 
     if (logMessages) {
 
-      Logger.info("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
+      Logger.debug("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
          // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
     }
 
@@ -453,7 +453,7 @@ class ScriptMathProcessor {
     case T.plusPlus:
       incrementX = (op.tok == T.plusPlus ? 1 : -1);
       if (ptid == ptx) {
-        if (isSyntaxCheck)
+        if (chk)
           return true;
         SV x = xStack[xPt];
         xStack[xPt] = SV.newVariable(T.string, "").setv(x, false);
@@ -499,7 +499,7 @@ class ScriptMathProcessor {
         && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)) {
 
       if (logMessages) {
-        Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
+        Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
             + " oStack[oPt]=" + T.nameOf(tok0) + "        prec="
             + T.getPrecedence(tok0) + " pending op=\""
             + T.nameOf(op.tok) + "\" prec=" + T.getPrecedence(op.tok));
@@ -625,7 +625,7 @@ class ScriptMathProcessor {
         boolean tf = getX().asBoolean();
         addXVar(SV.getBoolean(tf));
         if (tf == (op.tok == T.opOr)) { // TRUE or.. FALSE and...
-          isSyntaxCheck = true;
+          chk = true;
           op = (op.tok == T.opOr ? T.tokenOrTRUE : T.tokenAndFALSE);
         }
       }
@@ -688,14 +688,14 @@ class ScriptMathProcessor {
   }
 
   void dumpStacks(String message) {
-    Logger.info("\n\n------------------\nRPN stacks: " + message + "\n");
+    Logger.debug("\n\n------------------\nRPN stacks: " + message + "\n");
     for (int i = 0; i <= xPt; i++)
-      Logger.info("x[" + i + "]: " + xStack[i]);
-    Logger.info("\n");
+      Logger.debug("x[" + i + "]: " + xStack[i]);
+    Logger.debug("\n");
     for (int i = 0; i <= oPt; i++)
-      Logger.info("o[" + i + "]: " + oStack[i] + " prec="
+      Logger.debug("o[" + i + "]: " + oStack[i] + " prec="
           + T.getPrecedence(oStack[i].tok));
-    Logger.info(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
+    Logger.debug(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
   }
 
   private SV getX() throws ScriptException {
@@ -730,7 +730,7 @@ class ScriptMathProcessor {
     // we cannot know what variables are real
     // if this is a property selector, as in x.func(), then we
     // just exit; otherwise we add a new TRUE to xStack
-    if (isSyntaxCheck)
+    if (chk)
       return (op.tok == T.propselector ? true : addXBool(true));
     switch (tok) {
     case T.abs:
@@ -766,13 +766,13 @@ class ScriptMathProcessor {
       return evaluateCross(args);
     case T.data:
       return evaluateData(args);
-    case T.angle:
     case T.distance:
     case T.dot:
+      if (op.tok == T.propselector)
+        return evaluateDot(args, tok, op.intValue);
+      //$FALL-THROUGH$
+    case T.angle:
     case T.measure:
-      if ((tok == T.distance || tok == T.dot) 
-          && op.tok == T.propselector)
-        return evaluateDot(args, tok);
       return evaluateMeasure(args, op.tok);
     case T.file:
     case T.load:
@@ -842,6 +842,7 @@ class ScriptMathProcessor {
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
     // compare({bitset},{bitset},"ISOMER")  12.1.5
+    // compare({bitset},{bitset},"BONDS",smilesString) 13.1.17
 
     if (args.length < 2 || args.length > 5)
       return false;
@@ -849,7 +850,9 @@ class ScriptMathProcessor {
     String sOpt = SV.sValue(args[args.length - 1]);
     boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
     boolean isIsomer = sOpt.equalsIgnoreCase("ISOMER");
-    boolean isSmiles = (!isIsomer && args.length > (isStdDev ? 3 : 2));
+    boolean isBonds = sOpt.equalsIgnoreCase("BONDS");
+    boolean isSmiles = (isBonds || !isIsomer
+        && args.length > (isStdDev ? 3 : 2));
     BS bs1 = (args[0].tok == T.bitset ? (BS) args[0].value : null);
     BS bs2 = (args[1].tok == T.bitset ? (BS) args[1].value : null);
     String smiles1 = (bs1 == null ? SV.sValue(args[0]) : "");
@@ -861,51 +864,82 @@ class ScriptMathProcessor {
       if (bs1 == null || bs2 == null)
         return false;
     }
+    if (isBonds) {
+      if (args.length != 4)
+        return false;
+      smiles1 = SV.sValue(args[2]);
+      int[][] mapSet = ArrayUtil.newInt2(2);
+      eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null,
+          null, null, true, false, mapSet, null);
+      int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
+      int[][] bondMap2 = (bondMap1 == null ? null : viewer.getDihedralMap(mapSet[1]));
+      if (bondMap2 == null || bondMap2.length != bondMap1.length)
+        return addXStr("");
+      float[][] angles = new float[bondMap1.length][3];
+      Atom[] atoms = viewer.modelSet.atoms;
+      getTorsions(atoms, bondMap2, angles, 0);
+      getTorsions(atoms, bondMap1, angles, 1);
+      float[] data = new float[bondMap1.length * 6];
+      for (int i = 0, pt = 0; i < bondMap1.length; i++) {
+        int[] map = bondMap1[i];
+        data[pt++] = map[0];
+        data[pt++] = map[1];
+        data[pt++] = map[2];
+        data[pt++] = map[3];
+        data[pt++] = angles[i][0];
+        data[pt++] = angles[i][1];
+      }
+      return addXAF(data);
+    }
     if (isIsomer) {
       if (args.length != 3)
         return false;
-      if (bs1 == null && bs2 == null) 
-        return addXStr(viewer.getSmilesMatcher().getRelationship(smiles1, smiles2).toUpperCase());
+      if (bs1 == null && bs2 == null)
+        return addXStr(viewer.getSmilesMatcher().getRelationship(smiles1,
+            smiles2).toUpperCase());
       String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles1, false) : JmolMolecule.getMolecularFormula(
-          viewer.getModelSet().atoms, bs1, false));
+          .getMolecularFormula(smiles1, false) : JmolMolecule
+          .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
       String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles2, false) : JmolMolecule.getMolecularFormula(
-          viewer.getModelSet().atoms, bs2, false));
+          .getMolecularFormula(smiles2, false) : JmolMolecule
+          .getMolecularFormula(viewer.getModelSet().atoms, bs2, false));
       if (!mf1.equals(mf2))
         return addXStr("NONE");
       if (bs1 != null)
-        smiles1 = (String) eval.getSmilesMatches("", null, bs1, null, false, true);
+        smiles1 = (String) eval.getSmilesMatches("", null, bs1, null, false,
+            true);
       boolean check;
       if (bs2 == null) {
         // note: find smiles1 IN smiles2 here
         check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
       } else {
-        check = (((BS) eval.getSmilesMatches(smiles1, null, bs2, null,
-            false, true)).nextSetBit(0) >= 0);
+        check = (((BS) eval.getSmilesMatches(smiles1, null, bs2, null, false,
+            true)).nextSetBit(0) >= 0);
       }
       if (!check) {
         // MF matched, but didn't match SMILES
         String s = smiles1 + smiles2;
         if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
-          if (smiles1.indexOf("@") >= 0 && (bs2 != null || smiles2.indexOf("@") >= 0)) {
+          if (smiles1.indexOf("@") >= 0
+              && (bs2 != null || smiles2.indexOf("@") >= 0)) {
             // reverse chirality centers
             smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
             if (bs2 == null) {
               check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
             } else {
-              check = (((BS) eval.getSmilesMatches(smiles1, null, bs2,
-                  null, false, true)).nextSetBit(0) >= 0);
+              check = (((BS) eval.getSmilesMatches(smiles1, null, bs2, null,
+                  false, true)).nextSetBit(0) >= 0);
             }
             if (check)
               return addXStr("ENANTIOMERS");
           }
           // remove all stereochemistry from SMILES string
           if (bs2 == null) {
-            check = (viewer.getSmilesMatcher().areEqual("/nostereo/" + smiles2, smiles1) > 0);
+            check = (viewer.getSmilesMatcher().areEqual("/nostereo/" + smiles2,
+                smiles1) > 0);
           } else {
-            Object ret = eval.getSmilesMatches("/nostereo/" + smiles1, null, bs2, null,
-                false, true);
+            Object ret = eval.getSmilesMatches("/nostereo/" + smiles1, null,
+                bs2, null, false, true);
             check = (((BS) ret).nextSetBit(0) >= 0);
           }
           if (check)
@@ -918,12 +952,12 @@ class ScriptMathProcessor {
       if (bs1 == null || bs2 == null)
         return addXStr("IDENTICAL");
       stddev = eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
-          null, false, false);
+          null, false, false, null, null);
       return addXStr(stddev < 0.2f ? "IDENTICAL"
           : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
     } else if (isSmiles) {
-      ptsA = new  JmolList<P3>();
-      ptsB = new  JmolList<P3>();
+      ptsA = new JmolList<P3>();
+      ptsB = new JmolList<P3>();
       sOpt = SV.sValue(args[2]);
       boolean isMap = sOpt.equalsIgnoreCase("MAP");
       isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
@@ -933,18 +967,19 @@ class ScriptMathProcessor {
       if (sOpt == null)
         return false;
       stddev = eval.getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles, isMap);
+          !isSmiles, isMap, null, null);
       if (isMap) {
         int nAtoms = ptsA.size();
         if (nAtoms == 0)
           return addXStr("");
         int nMatch = ptsB.size() / nAtoms;
-        JmolList<int[][]> ret = new  JmolList<int[][]>();
+        JmolList<int[][]> ret = new JmolList<int[][]>();
         for (int i = 0, pt = 0; i < nMatch; i++) {
           int[][] a = ArrayUtil.newInt2(nAtoms);
           ret.addLast(a);
           for (int j = 0; j < nAtoms; j++, pt++)
-            a[j] = new int[] { ((Atom)ptsA.get(j)).index, ((Atom)ptsB.get(pt)).index};
+            a[j] = new int[] { ((Atom) ptsA.get(j)).index,
+                ((Atom) ptsB.get(pt)).index };
         }
         return addXList(ret);
       }
@@ -955,6 +990,22 @@ class ScriptMathProcessor {
         stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
     }
     return (isStdDev || Float.isNaN(stddev) ? addXFloat(stddev) : addXM4(m));
+  }
+
+  private static void getTorsions(Atom[] atoms, int[][] bondMap,
+                                  float[][] diff, int pt) {
+    for (int i = bondMap.length; --i >= 0;) {
+      int[] map = bondMap[i];
+      float v = Measure.computeTorsion(atoms[map[0]], atoms[map[1]],
+          atoms[map[2]], atoms[map[3]], true);
+      if (pt == 1) {
+        if (v - diff[i][0] > 180)
+          v -= 360;
+        else if (v - diff[i][0] <= -180)
+          v += 360;
+      }
+      diff[i][pt] = v;
+    }
   }
 
 //  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
@@ -1173,43 +1224,78 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateDot(SV[] args, int tok)
+  /**
+   * distance, dot
+   * 
+   * @param args
+   * @param tok
+   * @param intValue
+   * @return variable
+   * @throws ScriptException
+   */
+  private boolean evaluateDot(SV[] args, int tok, int intValue)
       throws ScriptException {
     if (args.length != 1)
       return false;
     SV x1 = getX();
     SV x2 = args[0];
-    P3 pt2 = ptValue(x2, true);
+    P3 pt2 = (x2.tok == T.varray ? null : ptValue(x2, false));
     P4 plane2 = planeValue(x2);
-    if (x1.tok == T.bitset && tok != T.dot)
-      return addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1),
-          T.distance, pt2, plane2, x1.value, null, false, x1.index, false));
+    if (tok == T.distance) {
+      int minMax = intValue & T.minmaxmask;
+      switch (x1.tok) {
+      case T.bitset:
+        switch (x2.tok) {
+        case T.bitset:
+          BS bs = SV.bsSelectVar(x1);
+          if (minMax == T.min || minMax == T.max) {
+            BS bs2 = SV.bsSelectVar(x2);
+            float[] data = new float[bs.cardinality()];
+            Atom[] atoms = viewer.modelSet.atoms;
+            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+              pt2 = atoms[i];
+              data[i] = ((Float) eval.getBitsetProperty(bs2, intValue, pt2,
+                  plane2, x1.value, null, false, x1.index, false)).floatValue();
+            }
+            return addXAF(data);
+          }
+          return addXObj(eval.getBitsetProperty(bs, intValue, pt2, plane2,
+              x1.value, null, false, x1.index, false));
+        }
+      }
+    }
+    return addXFloat(getDistance(x1, x2, tok));
+  }
+
+  private float getDistance(SV x1, SV x2, int tok) throws ScriptException {
     P3 pt1 = ptValue(x1, true);
     P4 plane1 = planeValue(x1);
+    P3 pt2 = ptValue(x2, true);
+    P4 plane2 = planeValue(x2);
     if (tok == T.dot) {
       if (plane1 != null && plane2 != null)
         // q1.dot(q2) assume quaternions
-        return addXFloat(plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
-            * plane2.z + plane1.w * plane2.w);
+        return plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
+            * plane2.z + plane1.w * plane2.w;
       // plane.dot(point) =
       if (plane1 != null)
         pt1 = P3.new3(plane1.x, plane1.y, plane1.z);
       // point.dot(plane)
       if (plane2 != null)
         pt2 = P3.new3(plane2.x, plane2.y, plane2.z);
-      return addXFloat(pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z);
+      return pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z;
     }
 
     if (plane1 == null)
-      return addXFloat(plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
+      return (plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
           plane2, pt1));
-    return addXFloat(Measure.distanceToPlane(plane1, pt2));
+    return Measure.distanceToPlane(plane1, pt2);
   }
 
   public P3 ptValue(SV x, boolean allowFloat)
       throws ScriptException {
     Object pt;
-    if (isSyntaxCheck)
+    if (chk)
       return new P3();
     switch (x.tok) {
     case T.point3f:
@@ -1236,7 +1322,7 @@ class ScriptMathProcessor {
   }
 
   private P4 planeValue(T x) {
-    if (isSyntaxCheck)
+    if (chk)
       return new P4();
     switch (x.tok) {
     case T.point4f:
@@ -1386,6 +1472,7 @@ class ScriptMathProcessor {
     // "CCCC".find("SMARTS", "CC")
     // "CCCC".find("SMILES", "MF")
     // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
+    // {*}.find("ccCCN","BONDS")
 
     SV x1 = getX();
     String sFind = SV.sValue(args[0]);
@@ -1399,7 +1486,9 @@ class ScriptMathProcessor {
       int iPt = (isSmiles || isSearch ? 2 : 1);
       BS bs2 = (iPt < args.length && args[iPt].tok == T.bitset ? (BS) args[iPt++].value
           : null);
-      boolean isAll = (args[args.length - 1].tok == T.on);
+      boolean asBonds = ("bonds".equalsIgnoreCase(SV
+          .sValue(args[args.length - 1])));
+      boolean isAll = (asBonds || args[args.length - 1].tok == T.on);
       Object ret = null;
       switch (x1.tok) {
       case T.string:
@@ -1407,12 +1496,12 @@ class ScriptMathProcessor {
         if (bs2 != null)
           return false;
         if (flags.equalsIgnoreCase("mf")) {
-          ret = viewer.getSmilesMatcher()
-              .getMolecularFormula(smiles, isSearch);
+          ret = viewer.getSmilesMatcher().getMolecularFormula(smiles, isSearch);
           if (ret == null)
             eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
         } else {
-          ret = eval.getSmilesMatches(flags, smiles, null, null, isSearch, !isAll);
+          ret = eval.getSmilesMatches(flags, smiles, null, null, isSearch,
+              !isAll);
         }
         break;
       case T.bitset:
@@ -1420,16 +1509,24 @@ class ScriptMathProcessor {
           return addXStr(JmolMolecule.getMolecularFormula(
               viewer.getModelSet().atoms, (BS) x1.value, false));
         if (isSequence)
-          return addXStr(viewer.getSmiles(-1, -1, (BS) x1.value, true, isAll, isAll, false));
+          return addXStr(viewer.getSmiles(-1, -1, (BS) x1.value, true, isAll,
+              isAll, false));
         if (isSmiles || isSearch)
           sFind = flags;
         BS bsMatch3D = bs2;
-        ret = eval.getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D, !isSmiles,
-            !isAll);
+        if (asBonds) {
+          int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
+              viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
+              !isSmiles, true);
+          ret = (map.length > 0 ? viewer.getDihedralMap(map[0]) : new int[0]);
+        } else {
+          ret = eval.getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D,
+              !isSmiles, !isAll);
+        }
         break;
       }
       if (ret == null)
-        eval.error(ScriptEvaluator.ERROR_invalidArgument); 
+        eval.error(ScriptEvaluator.ERROR_invalidArgument);
       return addXObj(ret);
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
@@ -1452,7 +1549,7 @@ class ScriptMathProcessor {
       int ipt = 0;
       int n = 0;
       Matcher matcher = null;
-      JmolList<String> v = (asMatch ? new  JmolList<String>() : null);
+      JmolList<String> v = (asMatch ? new JmolList<String>() : null);
       for (int i = 0; i < list.length; i++) {
         String what = list[i];
         matcher = pattern.matcher(what);
@@ -1468,8 +1565,8 @@ class ScriptMathProcessor {
       }
       if (!isList) {
         return (asMatch ? addXStr(v.size() == 1 ? (String) v.get(0) : "")
-            : isReverse ? addXBool(n == 1) : asMatch ? addXStr(n == 0 ? "" : matcher
-                .group()) : addXInt(n == 0 ? 0 : matcher.start() + 1));
+            : isReverse ? addXBool(n == 1) : asMatch ? addXStr(n == 0 ? ""
+                : matcher.group()) : addXInt(n == 0 ? 0 : matcher.start() + 1));
       }
       if (n == 1)
         return addXStr(asMatch ? (String) v.get(0) : list[ipt]);
@@ -2341,7 +2438,7 @@ class ScriptMathProcessor {
         return false;
       return addXBs(viewer.getBranchBitSet(
           ((BS) args[2].value).nextSetBit(0), ((BS) args[1].value)
-              .nextSetBit(0)));
+              .nextSetBit(0), true));
     case T.smiles:
     case T.substructure:  // same as "SMILES"
     case T.search:
@@ -2506,7 +2603,7 @@ class ScriptMathProcessor {
     if (i == args.length || !(args[i].value instanceof BS))
       return false;
     BS bsA = BSUtil.copy(SV.bsSelectVar(args[i++]));
-    if (isSyntaxCheck)
+    if (chk)
       return addXBs(new BS());
     BS bsB = (i < args.length ? BSUtil.copy(SV
         .bsSelectVar(args[i])) : null);
@@ -2719,14 +2816,14 @@ class ScriptMathProcessor {
       x2 = SV.selectItemVar(x2);
 
     if (op.tok == T.minusMinus || op.tok == T.plusPlus) {
-      if (!isSyntaxCheck && !x2.increment(incrementX))
+      if (!chk && !x2.increment(incrementX))
         return false;
       wasX = true;
       putX(x2); // reverse getX()
       return true;
     }
     if (op.tok == T.opNot) {
-      if (isSyntaxCheck)
+      if (chk)
         return addXBool(true);
       switch (x2.tok) {
       case T.point4f: // quaternion
@@ -2802,9 +2899,9 @@ class ScriptMathProcessor {
         }
         break;
       case T.boundbox:
-        return (isSyntaxCheck ? addXStr("x") : getBoundBox(x2));
+        return (chk ? addXStr("x") : getBoundBox(x2));
       }
-      if (isSyntaxCheck)
+      if (chk)
         return addXStr(SV.sValue(x2));
       if (x2.tok == T.string) {
         Object v = SV
@@ -2820,9 +2917,9 @@ class ScriptMathProcessor {
 
     // binary:
     SV x1 = getX();
-    if (isSyntaxCheck) {
+    if (chk) {
       if (op == T.tokenAndFALSE || op == T.tokenOrTRUE)
-        isSyntaxCheck = false;
+        chk = false;
       return addXVar(SV.newScriptVariableToken(x1));
     }
     switch (op.tok) {
@@ -3362,7 +3459,7 @@ class ScriptMathProcessor {
       throws ScriptException {
     if (x2.tok != T.bitset)
       return false;
-    if (isSyntaxCheck)
+    if (chk)
       return addXStr("");
     BS bs = SV.bsSelectVar(x2);
     JmolList<T> tokens;
@@ -3397,7 +3494,7 @@ class ScriptMathProcessor {
   private boolean getBoundBox(SV x2) {
     if (x2.tok != T.bitset)
       return false;
-    if (isSyntaxCheck)
+    if (chk)
       return addXStr("");
     BoxInfo b = viewer.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
