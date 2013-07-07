@@ -29,6 +29,9 @@ package org.jmol.util;
 
 public class Parser {
 
+  public final static float FLOAT_MIN_SAFE = 2E-45f; 
+  // Float.MIN_ VALUE is not reliable with JavaScript because of the float/double difference there
+  
   /// general static string-parsing class ///
 
   // next[0] tracks the pointer within the string so these can all be static.
@@ -586,7 +589,11 @@ public class Parser {
   }
 
   public static boolean isOneOf(String key, String semiList) {
-    return key.indexOf(";") < 0  && (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
+    if (semiList.length() == 0)
+      return false;
+    if (semiList.charAt(0) != ';')
+      semiList = ";" + semiList + ";";
+    return key.indexOf(";") < 0  && semiList.indexOf(';' + key + ';') >= 0;
   }
 
   public static String getQuotedAttribute(String info, String name) {
@@ -640,7 +647,7 @@ public class Parser {
      * return this.dVal(s);
      */
     {
-      return Float.valueOf(s).floatValue();
+      return Float.parseFloat(s);
     }
   }
 

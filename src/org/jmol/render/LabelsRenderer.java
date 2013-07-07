@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
- * $Revision: 18282 $
+ * $Date: 2013-06-30 00:32:44 +0100 (Sun, 30 Jun 2013) $
+ * $Revision: 18381 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -164,6 +164,9 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (text != null) {
       if (text.font == null)
         text.setFontFromFid(fid);
+      text.atomX = atomPt.screenX; // just for pointer
+      text.atomY = atomPt.screenY;
+      text.atomZ = zSlab;
       if (text.pymolOffset == null) {
         text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
         text.setColix(labelColix);
@@ -208,6 +211,9 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       } else {
         text = Text.newLabel(g3d.getGData(), font3d, label, labelColix,
             bgcolix, textAlign, 0, null);
+        text.atomX = atomPt.screenX; // just for pointer
+        text.atomY = atomPt.screenY;
+        text.atomZ = zSlab;
         text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
         newText = true;
       }

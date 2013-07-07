@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
- * $Revision: 18245 $
+ * $Date: 2013-07-04 22:54:56 +0100 (Thu, 04 Jul 2013) $
+ * $Revision: 18430 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -26,6 +26,7 @@ package org.jmol.render;
 import java.util.Iterator;
 
 
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
@@ -49,12 +50,27 @@ public class EchoRenderer extends LabelsRenderer {
       if (!t.visible || t.hidden) {
         continue;
       }
+      if (t.pointerPt instanceof Atom) {
+        if (!((Atom) t.pointerPt).isVisible(-1))
+          continue;
+      }
       if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPtScr(t.xyz, pt0i);
         t.setXYZs(pt0i.x, pt0i.y, pt0i.z, pt0i.z);
       } else if (t.movableZPercent != Integer.MAX_VALUE) {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
+      }
+      if (t.pointerPt == null) {
+        t.pointer = Object2d.POINTER_NONE;
+      } else {
+        t.pointer = Object2d.POINTER_ON;
+        viewer.transformPtScr(t.pointerPt, pt0i);
+        t.atomX = pt0i.x;
+        t.atomY = pt0i.y;
+        t.atomZ = pt0i.z;
+        if (t.zSlab == Integer.MIN_VALUE)
+          t.zSlab = 1;
       }
       TextRenderer.render(t, viewer, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null, xy);

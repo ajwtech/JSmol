@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-07-01 09:08:21 +0100 (Mon, 01 Jul 2013) $
+ * $Revision: 18383 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -960,5 +960,6 @@ import java.util.Map;
     }
     return bsBranches;
   }
+
 }
 

@@ -55,7 +55,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -66,6 +66,7 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.io.OutputStringBuilder;
@@ -799,7 +800,7 @@ abstract public class ModelCollection extends BondCollection {
   /*
     int getModelSetAuxiliaryInfoInt(String keyName) {
       if (modelSetAuxiliaryInfo != null
-          && modelSetAuxiliaryInfo.containsKey(keyName)) {
+          && modelSetAuxiliaryInfo.contains(keyName)) {
         return ((Integer) modelSetAuxiliaryInfo.get(keyName)).intValue();
       }
       return Integer.MIN_VALUE;
@@ -1499,10 +1500,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean modelHasVibrationVectors(int modelIndex) {
-    if (vibrationVectors != null)
+    if (vibrations != null)
       for (int i = atomCount; --i >= 0;)
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-            && vibrationVectors[i] != null && vibrationVectors[i].length() > 0)
+            && vibrations[i] != null && vibrations[i].length() > 0)
           return true;
     return false;
   }
@@ -1653,19 +1654,25 @@ abstract public class ModelCollection extends BondCollection {
    * deletes molecules based on: CENTROID -- molecular centroid is not in unit
    * cell CENTROID PACKED -- all molecule atoms are not in unit cell
    * 
-   * @param iAtom0
-   * @param iAtom1
+   * @param bs
    * @param minmax
    *        fractional [xmin, ymin, zmin, xmax, ymax, zmax, 1=packed]
    */
-  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
-    SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);
-    if (uc == null)
-      return;
-    uc.setCentroid((ModelSet) this, iAtom0, iAtom1, minmax);
+  public void setCentroid(BS bs, int[] minmax) {
+    BS bsDelete = getNotInCentroid(bs, minmax);
+    if (bsDelete != null && bsDelete.nextSetBit(0) >= 0)
+       viewer.deleteAtoms(bsDelete, false);
   }
 
-   public JmolMolecule[] getMolecules() {
+  private BS getNotInCentroid(BS bs, int[] minmax) {
+    int iAtom0 = bs.nextSetBit(0);
+    if (iAtom0 < 0)
+      return null;
+    SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);
+    return (uc == null ? null : uc.notInCentroid((ModelSet) this, bs, minmax));
+  }
+
+  public JmolMolecule[] getMolecules() {
     if (moleculeCount > 0)
       return molecules;
     if (molecules == null)
@@ -1897,12 +1904,26 @@ abstract public class ModelCollection extends BondCollection {
       // select cell=555 (an absolute quantity)
       bs = new BS();
       info = (int[]) specInfo;
-      ptTemp1.set(info[0] / 1000f, info[1] / 1000f,
-          info[2] / 1000f);
+      ptTemp1.set(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
       boolean isAbsolute = !viewer.getBoolean(T.fractionalrelative);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, ptTemp1, ptTemp2, isAbsolute))
           bs.set(i);
+      return bs;
+    case T.centroid:
+      // select centroid=555  -- like cell=555 but for whole molecules
+      // if it is one full molecule, then return the EMPTY bitset      
+      bs = BSUtil.newBitSet2(0, atomCount);
+      info = (int[]) specInfo;
+      int[] minmax = new int[] { info[0] / 1000 - 1, info[1] / 1000 - 1, info[2] / 1000 - 1, info[0] / 1000, info[1] / 1000, info[2] / 1000, 0 };
+      for (int i = modelCount; --i >= 0;) {
+        SymmetryInterface uc = getUnitCell(i);
+        if (uc == null) {
+          BSUtil.andNot(bs, models[i].bsAtoms);
+          continue;
+        }
+        bs.andNot(uc.notInCentroid((ModelSet) this, models[i].bsAtoms, minmax));
+      }
       return bs;
     case T.molecule:
       return getMoleculeBitSet((BS) specInfo);
@@ -1952,8 +1973,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       return bs;
     case T.symmetry:
-      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BSUtil.newBitSet(
-          atomCount) : bsSymmetry);
+      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BSUtil
+          .newBitSet(atomCount) : bsSymmetry);
     case T.unitcell:
       // select UNITCELL (a relative quantity)
       bs = new BS();
@@ -1962,33 +1983,23 @@ abstract public class ModelCollection extends BondCollection {
         return bs;
       ptTemp1.set(1, 1, 1);
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptTemp1, ptTemp2, false)) 
+        if (isInLatticeCell(i, ptTemp1, ptTemp2, false))
           bs.set(i);
       return bs;
     }
   }
 
-  private boolean isInLatticeCell(int i, P3 cell, P3 pt,
+  private boolean isInLatticeCell(int i, P3 cell, P3 ptTemp,
                                   boolean isAbsolute) {
     // this is the one method that allows for an absolute fractional cell business
     // but it is always called with isAbsolute FALSE.
     // so then it is determining values for select UNITCELL and the like.
 
+
     int iModel = atoms[i].modelIndex;
     SymmetryInterface uc = getUnitCell(iModel);
-    if (uc == null)
-      return false;
-    pt.setT(atoms[i]);
-    uc.toFractional(pt, isAbsolute);
-    float slop = 0.02f;
-    // {1 1 1} here is the original cell
-    if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
-      return false;
-    if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
-      return false;
-    if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
-      return false;
-    return true;
+    ptTemp.setT(atoms[i]);
+    return (uc != null && uc.checkUnitCell(uc, cell, ptTemp, isAbsolute));
   }
 
   /**
@@ -2273,7 +2284,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Float.MIN_VALUE)
+    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);
@@ -2364,7 +2375,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Float.MIN_VALUE)
+    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);
@@ -3079,9 +3090,9 @@ abstract public class ModelCollection extends BondCollection {
         m.firstAtomIndex = i;
       m.bsAtoms.set(i);
     }
-    if (vibrationVectors != null)
+    if (vibrations != null)
       for (int i = i0; i < atomCount; i++)
-        vibrationVectors[i] = vibrationVectors[map[i]];
+        vibrations[i] = vibrations[map[i]];
     if (occupancies != null)
       for (int i = i0; i < atomCount; i++)
         occupancies[i] = occupancies[map[i]];
@@ -3091,9 +3102,16 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       for (int i = i0; i < atomCount; i++)
         partialCharges[i] = partialCharges[map[i]];
-    if (ellipsoids != null)
-      for (int i = i0; i < atomCount; i++)
-        ellipsoids[i] = ellipsoids[map[i]];
+    if (atomTensors != null) {
+      for (int i = i0; i < atomCount; i++) {
+        Tensor[] list = atomTensorList[i] = atomTensorList[map[i]];
+        for (int j = list.length; --j >= 0;) {
+          Tensor t = list[j];
+          if (t != null)
+            t.atomIndex1 = map[t.atomIndex1];
+        }
+      }
+    }
     if (atomNames != null)
       for (int i = i0; i < atomCount; i++)
         atomNames[i] = atomNames[map[i]];
@@ -3107,8 +3125,8 @@ abstract public class ModelCollection extends BondCollection {
 
   protected void growAtomArrays(int newLength) {
     atoms = (Atom[]) ArrayUtil.arrayCopyObject(atoms, newLength);
-    if (vibrationVectors != null)
-      vibrationVectors = (V3[]) ArrayUtil.arrayCopyObject(vibrationVectors,
+    if (vibrations != null)
+      vibrations = (Vibration[]) ArrayUtil.arrayCopyObject(vibrations,
           newLength);
     if (occupancies != null)
       occupancies = ArrayUtil.arrayCopyByte(occupancies, newLength);
@@ -3116,8 +3134,8 @@ abstract public class ModelCollection extends BondCollection {
       bfactor100s = ArrayUtil.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
-    if (ellipsoids != null)
-      ellipsoids = (Quadric[][]) ArrayUtil.arrayCopyObject(ellipsoids, newLength);
+    if (atomTensors != null)
+      atomTensorList = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
@@ -3131,7 +3149,7 @@ abstract public class ModelCollection extends BondCollection {
                       int atomSerial, int atomSite, float x, float y, float z,
                       float radius, float vectorX, float vectorY,
                       float vectorZ, int formalCharge, float partialCharge,
-                      int occupancy, float bfactor, Quadric[] ellipsoid,
+                      int occupancy, float bfactor, JmolList<Tensor> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
         atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);
@@ -3146,8 +3164,8 @@ abstract public class ModelCollection extends BondCollection {
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);
-    if (ellipsoid != null)
-      setEllipsoid(atomCount, ellipsoid);
+    if (tensors != null)
+      viewer.getNMRCalculation().setAtomTensors((ModelSet) this, atomCount, tensors);
     atom.group = group;
     atom.colixAtom = viewer.getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {
@@ -3410,6 +3428,5 @@ abstract public class ModelCollection extends BondCollection {
       ilist[n - i - 1] = list.get(i);
     return ilist;
   }
-
 
 }

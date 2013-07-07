@@ -154,8 +154,8 @@ public class LabelToken {
       T.unitz, T.valence, T.vectorscale, T.vibx, T.viby, T.vibz,
       T.volume, T.unitxyz, T.fracxyz, T.xyz, T.fuxyz,
       T.fux, T.fuy, T.fuz, T.hydrophobic, T.screenx, 
-      T.screeny, T.screenz, T.screenxyz // added in 12.3.30
-
+      T.screeny, T.screenz, T.screenxyz, // added in 12.3.30
+      T.magneticshielding, T.chemicalshift
   };
 
   private static boolean isLabelPropertyTok(int tok) {
@@ -290,6 +290,8 @@ public class LabelToken {
     htValues.put("VALUE", Float.valueOf(value));
     htValues.put("UNITS", units);
     LabelToken[] tokens = compile(viewer, label, '\1', htValues);
+    if (tokens == null)
+      return "";
     setValues(tokens, htValues);
     Atom[] atoms = m.modelSet.atoms;
     int[] indices = m.getCountPlusIndices();

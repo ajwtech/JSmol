@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
- * $Revision: 18283 $
+ * $Date: 2013-07-02 11:11:41 +0100 (Tue, 02 Jul 2013) $
+ * $Revision: 18403 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $"
+        // "$Date: 2013-07-02 11:11:41 +0100 (Tue, 02 Jul 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -122,7 +122,7 @@ public class JC {
  
   public final static String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
 
-  public final static String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+  public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
 
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
@@ -784,6 +784,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "UREA",// 45 urea, a cosolvent
     "PO4", // 46 phosphate ions  -- from here on is "ligand"
     "SO4", // 47 sulphate ions
+    "UNL", // 48 unknown ligand
+    
 
   };
   
@@ -894,10 +896,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (pt < 0 || pt >= pdbHydrogenCount.length ? -1 : pdbHydrogenCount[pt]);
   }
 
-  public static String[][] getPdbBondInfo(int pt) {
+  public static String[][] getPdbBondInfo(int pt, boolean isLegacy) {
     if (pt < 0 || pt > pdbBondInfo.length)
       return null;
     String s = pdbBondInfo[pt];
+    // unfortunately, this change is not backward compatible.
+    if (isLegacy && (pt = s.indexOf("O3'")) >= 0)
+      s = s.substring(0, pt);
     String[] temp = Parser.getTokens(s);
     String[][] info = new String[temp.length / 2][];
     for (int i = 0, p = 0; i < info.length; i++) {
@@ -938,6 +943,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
   
   private final static String[] pdbBondInfo = {
+    // added O3' HO3' O5' HO5' for nucleic and added 1 H atom for res 1 for 13.1.17
+    // this could throw off states from previous versions
     "",
     /*ALA*/ "N N CA HA C O CB HB?",
     /*ARG*/ "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CD D NE HE CZ NH1 NH1 HH11@HH12 NH2 HH21@HH22", 
@@ -962,18 +969,18 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     /*ASX*/ "CA HA C O CB HB2@HB1 C H",
     /*GLX*/ "CA HA C O CB HB1 CB HB2 CG HG1 CG HG2", 
     /*UNK*/ "",
-    /*G*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
-    /*C*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", 
-    /*A*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2",
-    /*T*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6",
-    /*U*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6", 
-    /*I*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",
-    /*DG*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
-    /*DC*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", 
-    /*DA*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", 
-    /*DT*/ "P OP1 C5' H5'@H5'' C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6",
-    /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6",  
-    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",  
+    /*G*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22 O3' HO3' O5' HO5'", 
+    /*C*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6 O3' HO3' O5' HO5'", 
+    /*A*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2 O3' HO3' O5' HO5'",
+    /*T*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6 O3' HO3' O5' HO5'",
+    /*U*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6 O3' HO3' O5' HO5'", 
+    /*I*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2 O3' HO3' O5' HO5'",
+    /*DG*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22 O3' HO3' O5' HO5'", 
+    /*DC*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6 O3' HO3' O5' HO5'", 
+    /*DA*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2 O3' HO3' O5' HO5'", 
+    /*DT*/ "P OP1 C5' H5'@H5'' C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6 O3' HO3' O5' HO5'",
+    /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6 O3' HO3' O5' HO5'",  
+    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2 O3' HO3' O5' HO5'",  
       };
 
   private final static int[] pdbHydrogenCount = {
@@ -1215,7 +1222,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
         + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
     "@solvent water, (_g>=" + GROUPID_SOLVENT_MIN + " & _g<" + GROUPID_ION_MAX + ")", // water, other solvent or ions
-    "@ligand !(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)",
+    "@ligand _g=0|!(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)", // includes UNL
 
     // structure
     "@turn structure=1",
@@ -1534,6 +1541,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public static final String SCRIPT_COMPLETED = "Script completed";
+  public static final String JPEG_EXTENSIONS = ";jpg;jpeg;jpg64;jpeg64;";
+  public final static String IMAGE_TYPES = JPEG_EXTENSIONS + "gif;ppm;png;pngj;pngt;";
+  public static final String IMAGE_OR_SCENE = IMAGE_TYPES + "scene;";
 
   public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);

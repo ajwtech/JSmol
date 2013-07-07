@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import org.jmol.api.JmolNMRInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -821,6 +822,8 @@ class ScriptMathProcessor {
       return evaluateSymop(args, op.tok == T.propselector);
 //    case Token.volume:
   //    return evaluateVolume(args);
+    case T.tensor:
+      return evaluateTensor(args);
     case T.within:
       return evaluateWithin(args);
     case T.contact:
@@ -829,6 +832,22 @@ class ScriptMathProcessor {
       return evaluateWrite(args);
     }
     return false;
+  }
+
+  private boolean evaluateTensor(SV[] args) throws ScriptException {
+    // {*}.tensor("efg","eigenvalues")
+    // T.tensor is set to allow exactly 2 parameters
+    // change that in T.java to adjust
+    if (args.length == 0 || args.length > 2)
+      return false;
+    BS bs = SV.getBitSet(getX(), false);
+    String tensorType = SV.sValue(args[0]).toLowerCase();
+    String infoType = ";"
+        + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
+    JmolNMRInterface calc = viewer.getNMRCalculation();      
+    if (tensorType.equals("unique"))
+      return addXBs(calc.getUniqueTensorSet(bs));
+    return addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 
   private boolean evaluateCache(SV[] args) {
@@ -1072,6 +1091,17 @@ class ScriptMathProcessor {
 
   }
 
+  /**
+   * 
+   * {xxx}.symop()
+   * 
+   * symop({xxx}
+   * 
+   * @param args
+   * @param haveBitSet
+   * @return true/false
+   * @throws ScriptException
+   */
   private boolean evaluateSymop(SV[] args, boolean haveBitSet)
       throws ScriptException {
     if (args.length == 0)
@@ -1350,6 +1380,7 @@ class ScriptMathProcessor {
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
       // measure({a} {b} "minArray") -- returns array of minimum distance values
+      
       JmolList<Object> points = new  JmolList<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
@@ -1396,7 +1427,7 @@ class ScriptMathProcessor {
           else if (s.equalsIgnoreCase("minArray"))
             asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
-              "nm;nanometers;pm;picometers;angstroms;ang;au"))
+              ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
             units = s.toLowerCase();
           else
             strFormat = nPoints + ":" + s;
@@ -1414,7 +1445,7 @@ class ScriptMathProcessor {
         return addXStr("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
-      return addXObj((new MeasurementData(null, viewer, points)).set(0, rd, strFormat, units, null, isAllConnected,
+      return addXObj((new MeasurementData(null, viewer, points)).set(0, null, rd, strFormat, units, null, isAllConnected,
           isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray));
     case T.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
@@ -3331,6 +3362,8 @@ class ScriptMathProcessor {
         // q%2 y
         // q%3 z
         // q%4 normal
+        // q%5 EulerZXZ (degrees)
+        // q%6 EulerZYZ (degrees)
         // q%-1 vector(1)
         // q%-2 theta
         // q%-3 Matrix column 0
@@ -3346,24 +3379,31 @@ class ScriptMathProcessor {
           return addXFloat(pt4.y);
         case 3:
           return addXFloat(pt4.z);
+        }
+        Quaternion q = Quaternion.newP4(pt4);
+        switch(n) {
         case 4:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getNormal()));
+          return addXPt(P3.newP(q.getNormal()));
+        case 5:
+          return addXAF(q.getEulerZXZ());
+        case 6:
+          return addXAF(q.getEulerZYZ());
         case -1:
-          return addXPt(P3.newP(Quaternion.newP4(pt4).getVector(-1)));
+          return addXPt(P3.newP(q.getVector(-1)));
         case -2:
-          return addXFloat((Quaternion.newP4(pt4)).getTheta());
+          return addXFloat(q.getTheta());
         case -3:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(0)));
+          return addXPt(P3.newP(q.getVector(0)));
         case -4:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(1)));
+          return addXPt(P3.newP(q.getVector(1)));
         case -5:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(2)));
+          return addXPt(P3.newP(q.getVector(2)));
         case -6:
-          AxisAngle4f ax = (Quaternion.newP4(pt4)).toAxisAngle4f();
+          AxisAngle4f ax = q.toAxisAngle4f();
           return addXPt4(P4.new4(ax.x, ax.y, ax.z,
               (float) (ax.angle * 180 / Math.PI)));
         case -9:
-          return addXM3((Quaternion.newP4(pt4)).getMatrix());
+          return addXM3(q.getMatrix());
         default:
           return addXPt4(pt4);
         }

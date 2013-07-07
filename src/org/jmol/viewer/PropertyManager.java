@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-04 21:59:37 +0100 (Thu, 04 Jul 2013) $
+ * $Revision: 18427 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -147,6 +147,8 @@ public class PropertyManager implements JmolPropertyManager {
     "isosurfaceData"  , "", "",
     "consoleText"     , "", "",
     "jspecView"       , "<key>", "",
+    "scriptQueueInfo" , "", "",
+    "nmrInfo" , "<elementSymbol> or 'all' or 'shifts'", "all",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -194,7 +196,9 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_ISOSURFACE_DATA = 36;
   private final static int PROP_CONSOLE_TEXT = 37;
   private final static int PROP_JSPECVIEW = 38;
-  private final static int PROP_COUNT = 39;
+  private final static int PROP_SCRIPT_QUEUE_INFO = 39;
+  private final static int PROP_NMR_INFO = 40;
+  private final static int PROP_COUNT = 41;
 
   //// static methods used by Eval and Viewer ////
 
@@ -276,6 +280,14 @@ public class PropertyManager implements JmolPropertyManager {
           pt += ilist.length;
         if (pt >= 0 && pt < ilist.length)
           return Integer.valueOf(ilist[pt]);
+        return "";
+      }
+      if (Escape.isAD(property)) {
+        double[] dlist = (double[]) property;
+        if (pt < 0)
+          pt += dlist.length;
+        if (pt >= 0 && pt < dlist.length)
+          return Double.valueOf(dlist[pt]);
         return "";
       }
       if (Escape.isAF(property)) {
@@ -414,8 +426,6 @@ public class PropertyManager implements JmolPropertyManager {
       return getAllChainInfo(viewer.getAtomBitSet(myParam));
     case PROP_CONSOLE_TEXT:
       return viewer.getProperty("DATA_API", "consoleText", null);
-    case PROP_JSPECVIEW:
-      return viewer.getJspecViewProperties(myParam);
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_ERROR_MESSAGE:
@@ -456,10 +466,14 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getData");
+    case PROP_NMR_INFO:
+      return viewer.getNMRCalculation().getInfo(myParam.toString());
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
       return viewer;
+    case PROP_JSPECVIEW:
+      return viewer.getJspecViewProperties(myParam);
     case PROP_LIGAND_INFO:
       return getLigandInfo(viewer.getAtomBitSet(myParam));
     case PROP_MEASUREMENT_INFO:
@@ -482,6 +496,8 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getPointGroupInfo(myParam);
     case PROP_POLYMER_INFO:
       return getAllPolymerInfo(viewer.getAtomBitSet(myParam));
+    case PROP_SCRIPT_QUEUE_INFO:
+      return viewer.getScriptQueueInfo();
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
@@ -841,7 +857,7 @@ public class PropertyManager implements JmolPropertyManager {
         mol.appendC('\n');
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
           mol.append(LabelToken.formatLabelAtomArray(viewer, atoms[j],
-              (ms.getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0',
+              (ms.getVibration(j, false) == null ? tokens2 : tokens1), '\0',
               null));
       }
     } else {
@@ -1166,8 +1182,8 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("y", Float.valueOf(atom.y));
     info.put("z", Float.valueOf(atom.z));
     info.put("coord", P3.newP(atom));
-    if (ms.vibrationVectors != null && ms.vibrationVectors[i] != null) {
-      info.put("vibVector", V3.newV(ms.vibrationVectors[i]));
+    if (ms.vibrations != null && ms.vibrations[i] != null) {
+      info.put("vibVector", V3.newV(ms.vibrations[i]));
     }
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
@@ -1220,6 +1236,9 @@ public class PropertyManager implements JmolPropertyManager {
     int bondCount = ms.bondCount;
     Bond[] bonds = ms.bonds;
     BS bs1;
+    if (bsOrArray instanceof String) {
+      bsOrArray = viewer.getAtomBitSet(bsOrArray);
+    }
     if (bsOrArray instanceof BS[]) {
       bs1 = ((BS[]) bsOrArray)[0];
       BS bs2 = ((BS[]) bsOrArray)[1];
@@ -1234,7 +1253,7 @@ public class PropertyManager implements JmolPropertyManager {
       for (int i = bs1.nextSetBit(0); i >= 0 && i < bondCount; i = bs1
           .nextSetBit(i + 1))
         v.addLast(getBondInfo(i));
-    } else {
+    } else if (bsOrArray instanceof BS){
       bs1 = (BS) bsOrArray;
       int thisAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
       for (int i = 0; i < bondCount; i++) {
@@ -1260,6 +1279,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(Parser.fVal(JmolEdge
         .getBondOrderNumberFromOrder(bond.order))));
+    info.put("type", JmolEdge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));

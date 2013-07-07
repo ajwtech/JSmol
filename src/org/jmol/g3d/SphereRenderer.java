@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-07 15:30:25 -0500 (Fri, 07 Jun 2013) $
- * $Revision: 18308 $
+ * $Date: 2013-06-28 08:30:28 +0100 (Fri, 28 Jun 2013) $
+ * $Revision: 18379 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -25,11 +25,11 @@
 package org.jmol.g3d;
 
 //import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
+import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
 import org.jmol.util.Shader;
 
 
@@ -503,7 +503,7 @@ public class SphereRenderer {
           continue;
         int zPixel;
         if (isEllipsoid) {
-          if (!Quadric.getQuardricZ(xCurrent, yCurrent, coef, zroot)) {
+          if (!getQuardricZ(xCurrent, yCurrent, coef, zroot)) {
             if (iRoot >= 0) {
               // done for this line
               break;
@@ -519,7 +519,7 @@ public class SphereRenderer {
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
             mat.transform(ptTemp);
-            int thisOctant = Quadric.getOctant(ptTemp);
+            int thisOctant = GData.getScreenOctant(ptTemp);
             if (thisOctant == selectedOctant) {
               iShade = getPlaneShade(xCurrent, yCurrent, zroot);              
               zPixel = (int) zroot[0];
@@ -577,7 +577,36 @@ public class SphereRenderer {
   // Bob Hanson, 4/2008
   //
   //////////////////////////////////////
-  
+
+  private static boolean getQuardricZ(double x, double y, double[] coef,
+                                     double[] zroot) {
+
+    /* simple quadratic formula for:
+     * 
+     * c0 x^2 + c1 y^2 + c2 z^2 + c3 xy + c4 xz + c5 yz + c6 x + c7 y + c8 z - 1 = 0 
+     * 
+     * or:
+     * 
+     * c2 z^2 + (c4 x + c5 y + c8)z + (c0 x^2 + c1 y^2 + c3 xy + c6 x + c7 y - 1) = 0
+     * 
+     * so:
+     * 
+     *  z = -(b/2a) +/- sqrt( (b/2a)^2 - c/a )
+     */
+
+    double b_2a = (coef[4] * x + coef[5] * y + coef[8]) / coef[2] / 2;
+    double c_a = (coef[0] * x * x + coef[1] * y * y + coef[3] * x * y + coef[6]
+        * x + coef[7] * y - 1)
+        / coef[2];
+    double f = b_2a * b_2a - c_a;
+    if (f < 0)
+      return false;
+    f = Math.sqrt(f);
+    zroot[0] = (-b_2a - f);
+    zroot[1] = (-b_2a + f);
+    return true;
+  }
+
   private void setPlaneDerivatives() {
     planeShade = -1;
     for (int i = 0; i < 3; i ++) {

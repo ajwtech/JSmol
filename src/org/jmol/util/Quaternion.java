@@ -37,9 +37,7 @@ package org.jmol.util;
  * This ensures that the reported theta is always positive, and the normal
  * reported is always associated with a positive theta.  
  * 
- * By Bob Hanson, hansonr@stolaf.edu 6/2008
- * 
- * 
+ * @author Bob Hanson, hansonr@stolaf.edu 6/2008
  * 
  */
 
@@ -48,6 +46,7 @@ public class Quaternion {
   private Matrix3f mat;
 
   private final static P4 qZero = new P4();
+  private static final double RAD_PER_DEG = Math.PI / 180;
   
   public Quaternion() {
     q0 = 1;
@@ -136,9 +135,9 @@ public class Quaternion {
       q0 = 1;
       return;
     }
-    double fact = (Math.sin(theta / 2 * Math.PI / 180) / Math.sqrt(pt.x
+    double fact = (Math.sin(theta / 2 * RAD_PER_DEG) / Math.sqrt(pt.x
         * pt.x + pt.y * pt.y + pt.z * pt.z));
-    q0 = (float) (Math.cos(theta / 2 * Math.PI / 180));
+    q0 = (float) (Math.cos(theta / 2 * RAD_PER_DEG));
     q1 = (float) (pt.x * fact);
     q2 = (float) (pt.y * fact);
     q3 = (float) (pt.z * fact);
@@ -314,11 +313,23 @@ public class Quaternion {
     q3 *= -1;
   }
 
-  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x, Tuple3f xy) {
+  /**
+   * returns a quaternion frame based on three points (center, x, and any point in xy plane)
+   * or two vectors (vA, vB).
+   * 
+   * @param center  (null for vA/vB option)
+   * @param x
+   * @param xy
+   * @return quaternion for frame
+   */
+  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x,
+                                                    Tuple3f xy) {
     V3 vA = V3.newV(x);
-    vA.sub(center);
     V3 vB = V3.newV(xy);
-    vB.sub(center);
+    if (center != null) {
+      vA.sub(center);
+      vB.sub(center);
+    }
     return getQuaternionFrameV(vA, vB, null, false);
   }
   
@@ -801,5 +812,25 @@ public class Quaternion {
       sum2 = 0;
     return (float) Math.sqrt(sum2 / (n - 1));
   }
+
+  public float[] getEulerZYZ() {
+    // http://www.swarthmore.edu/NatSci/mzucker1/e27/diebel2006attitude.pdf
+    double rA, rB, rG;
+    rA = Math.atan2(2 * (q2 * q3 - q0 * q1), 2 * (q1 * q3 + q0 * q2 ));
+    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
+    rG = Math.atan2( 2 * (q2 * q3 + q0 * q1), 2 * (q0 * q2 - q1 * q3));
+    return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
+  } 
+
+  public float[] getEulerZXZ() {
+    // NOT http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    // http://www.swarthmore.edu/NatSci/mzucker1/e27/diebel2006attitude.pdf
+    double rA, rB, rG;
+    rA = Math.atan2(2 * (q1 * q3 + q0 * q2), 2 * (q0 * q1 - q2 * q3 ));
+    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
+    rG = Math.atan2( 2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1));
+    return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
+  }
+  
 
 }

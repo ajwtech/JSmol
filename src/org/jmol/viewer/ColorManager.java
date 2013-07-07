@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-07-05 17:59:05 +0100 (Fri, 05 Jul 2013) $
+ * $Revision: 18433 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -31,6 +31,7 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
 import org.jmol.modelset.Atom;
@@ -149,7 +150,12 @@ class ColorManager {
       id = atom.getAtomicAndIsotopeNumber();
       if (id < Elements.elementNumberMax)
         return g3d.getChangeableColix(id, argbsCpk[id]);
+      short id0 = id;
       id = (short) Elements.altElementIndexFromNumber(id);
+      if (id == 0) {
+        id = Elements.getElementNumber(id0);
+        return g3d.getChangeableColix(id, argbsCpk[id]);
+      }
       return g3d.getChangeableColix((short) (Elements.elementNumberMax + id),
           altArgbsCpk[id]);
     case StaticConstants.PALETTE_PARTIAL_CHARGE:
@@ -306,7 +312,7 @@ class ColorManager {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);
-    propertyColorEncoder.hi = Float.MIN_VALUE;
+    propertyColorEncoder.hi = Parser.FLOAT_MIN_SAFE;
     propertyColorEncoder.lo = Float.MAX_VALUE;
     if (data == null)
       return;

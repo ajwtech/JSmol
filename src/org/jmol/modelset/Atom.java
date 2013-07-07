@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-04 21:54:24 +0100 (Thu, 04 Jul 2013) $
+ * $Revision: 18426 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -39,7 +39,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Point3fi;
@@ -62,7 +62,7 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public char alternateLocationID = '\0';
   public byte atomID;
-  int atomSite;
+  public int atomSite;
   public Group group;
   private float userDefinedVanDerWaalRadius;
   byte valence;
@@ -291,12 +291,14 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getADPMinMax(boolean isMax) {
-    Quadric[] ellipsoid = getEllipsoid();
-    return (ellipsoid == null ? 0 : ellipsoid[0] == null ? 
-        ellipsoid[1].lengths[isMax ? 2 : 0] * ellipsoid[1].scale 
-        : ellipsoid[0].lengths[isMax ? 2 : 0] * ellipsoid[0].scale);
+    Tensor[] tensors = getTensors();
+    return (tensors == null || tensors[0] == null || tensors[0].iType != Tensor.TYPE_ADP? 0 : tensors[0].getFactoredValue(isMax ? 2 : 1)); 
   }
 
+  public Tensor[] getTensors() {
+    return group.chain.model.modelSet.getAtomTensorList(index);
+  }
+  
   public int getRasMolRadius() {
     return Math.abs(madAtom / 8); //  1000r = 1000d / 2; rr = (1000r / 4);
   }
@@ -645,17 +647,6 @@ final public class Atom extends Point3fi implements JmolNode {
    public float getPartialCharge() {
      float[] partialCharges = group.chain.model.modelSet.partialCharges;
      return partialCharges == null ? 0 : partialCharges[index];
-   }
-
-   public Quadric[] getEllipsoid() {
-     return group.chain.model.modelSet.getEllipsoid(index);
-   }
-
-   public void scaleEllipsoid(int size, int iSelect) {
-     Quadric[] ellipsoid = getEllipsoid();
-     if (ellipsoid == null || iSelect >= ellipsoid.length || ellipsoid[iSelect] == null)
-       return;
-     ellipsoid[iSelect].setSize(size);
    }
 
    /**
@@ -1053,7 +1044,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public V3 getVibrationVector() {
-    return group.chain.model.modelSet.getVibrationVector(index, false);
+    return group.chain.model.modelSet.getVibration(index, false);
   }
 
   public float getVibrationCoord(char ch) {
@@ -1372,7 +1363,10 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.vectorscale:
       V3 v = atom.getVibrationVector();
       return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
-
+    case T.magneticshielding:
+      return viewer.getNMRCalculation().getMagneticShielding(atom);
+    case T.chemicalshift:
+      return viewer.getNMRCalculation().getChemicalShift(atom);
     }
     return atomPropertyInt(atom, tokWhat);
   }
