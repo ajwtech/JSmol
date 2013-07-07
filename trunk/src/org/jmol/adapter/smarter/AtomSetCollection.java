@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-08 15:27:11 -0500 (Sat, 08 Jun 2013) $
- * $Revision: 18316 $
+ * $Date: 2013-07-03 23:30:23 +0100 (Wed, 03 Jul 2013) $
+ * $Revision: 18411 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -43,7 +43,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
@@ -375,8 +375,8 @@ public class AtomSetCollection {
     for (int i = atomSetCount; --i >= 0; )
       for (int j = lists[i].size(); --j >= 0;) {
         Atom a = atoms[--n] = lists[i].get(j);
-        newIndex[a.atomIndex] = n;
-        a.atomIndex = n;
+        newIndex[a.index] = n;
+        a.index = n;
       }
     for (int i = 0; i < bondCount; i++) {
       bonds[i].atomIndex1 = newIndex[bonds[i].atomIndex1];
@@ -606,7 +606,7 @@ public class AtomSetCollection {
     }
     if (atomSetCount == 0)
       newAtomSet();
-    atom.atomIndex = atomCount;
+    atom.index = atomCount;
     atoms[atomCount++] = atom;
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
@@ -1028,13 +1028,12 @@ public class AtomSetCollection {
   private int dtype = 3;
   private V3[] unitCellTranslations;
   
-  public void setEllipsoids() {
+  public void setTensors() {
     if (!haveAnisou)
       return;
     getSymmetry();
-    int iAtomFirst = getLastAtomSetAtomIndex();
-    for (int i = iAtomFirst; i < atomCount; i++)
-      atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
+    for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
+      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
   }
   
   private int baseSymmetryAtomCount;
@@ -1046,7 +1045,7 @@ public class AtomSetCollection {
   private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
     int iAtomFirst = getLastAtomSetAtomIndex();
-    setEllipsoids();
+    setTensors();
     bondCount0 = bondCount;
     finalizeSymmetry(iAtomFirst, noSymmetryCount);
     int operationCount = symmetry.getSpaceGroupOperationCount();
@@ -1330,7 +1329,7 @@ public class AtomSetCollection {
         int atomSite = atoms[i].atomSite;
         if (special != null) {
           if (addBonds)
-            atomMap[atomSite] = special.atomIndex;
+            atomMap[atomSite] = special.index;
           special.bsSymmetry.set(iCellOpPt + iSym);
           special.bsSymmetry.set(iSym);
         } else {
@@ -1343,25 +1342,28 @@ public class AtomSetCollection {
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
-          if (atoms[i].ellipsoid != null) {
-            for (int j = 0; j < atoms[i].ellipsoid.length; j++) {
-              Quadric e = atoms[i].ellipsoid[j];
-              if (e == null)
+          if (atoms[i].tensors != null) {
+            atom1.tensors = null;
+            for (int j = atoms[i].tensors.size(); --j >= 0;) {
+              Tensor t = atoms[i].tensors.get(j);
+              if (t == null)
                 continue;
-              V3[] axes = e.vectors;
-              float[] lengths = e.lengths;
-              if (axes != null) {
-                // note -- PDB reader specifically turns off cartesians
-                if (addCartesian) {
-                  ptTemp.setT(cartesians[i - iAtomFirst]);
-                } else {
-                  ptTemp.setT(atoms[i]);
-                  symmetry.toCartesian(ptTemp, false);
-                }
-                axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
-                    ptTemp2);
+              if (nOperations == 1) {
+                atom1.addTensor(Tensor.copyTensor(t), null);
+                continue;
               }
-              atom1.ellipsoid[j] = new Quadric().fromVectors(axes, lengths, e.isThermalEllipsoid);
+              V3[] eigenVectors = t.eigenVectors;
+              // note -- PDB reader specifically turns off cartesians
+              if (addCartesian) {
+                ptTemp.setT(cartesians[i - iAtomFirst]);
+              } else {
+                ptTemp.setT(atoms[i]);
+                symmetry.toCartesian(ptTemp, false);
+              }
+              eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp,
+                  eigenVectors, ptTemp1, ptTemp2);
+              atom1.addTensor(Tensor.getTensorFromEigenVectors(eigenVectors,
+                  t.eigenValues, t.type), null);
             }
           }
         }
@@ -1429,7 +1431,7 @@ public class AtomSetCollection {
             atomMap[atomSite] = atomCount;
             atom1 = newCloneAtom(atoms[iAtom]);
             if (bsAtoms != null)
-              bsAtoms.set(atom1.atomIndex);
+              bsAtoms.set(atom1.index);
             atom1.atomSite = atomSite;
           mat.transform(atom1);
           atom1.bsSymmetry = BSUtil.newAndSetBit(i);
@@ -1469,7 +1471,7 @@ public class AtomSetCollection {
     //TODO: need to clone bonds
   }
   
-  Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
+  private Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
   private void mapMostRecentAtomName() {
     if (atomCount > 0) {
@@ -1509,27 +1511,19 @@ public class AtomSetCollection {
     haveMappedSerials = true;
   }
 
-  void mapAtomName(String atomName, int atomIndex) {
-    atomSymbolicMap.put(atomName, Integer.valueOf(atomIndex));
-  }
-
   public int getAtomIndexFromName(String atomName) {
-    //for new Bond -- inconsistent with mmCIF altLoc
-    int index = -1;
-    Object value = atomSymbolicMap.get(atomName);
-    if (value != null)
-      index = ((Integer)value).intValue();
-    return index;
+    return getMapIndex(atomName);
   }
 
   public int getAtomIndexFromSerial(int serialNumber) {
-    int index = -1;
-    Object value = atomSymbolicMap.get(Integer.valueOf(serialNumber));
-    if (value != null)
-      index = ((Integer)value).intValue();
-    return index;
+    return getMapIndex(Integer.valueOf(serialNumber));
   }
   
+  private int getMapIndex(Object nameOrNum) {
+    Integer value = atomSymbolicMap.get(nameOrNum);
+    return (value == null ? -1 : value.intValue());
+  }
+
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
     if (value == null)
       atomSetCollectionAuxiliaryInfo.remove(key);
@@ -1647,6 +1641,11 @@ public class AtomSetCollection {
   }
  
   public void newAtomSet() {
+    newAtomSetClear(true);
+  }
+  
+  public void newAtomSetClear(boolean doClearMap) {
+    
     if (!allowMultiple && currentAtomSetIndex >= 0)
       discardPreviousAtoms();
     bondIndex0 = bondCount;
@@ -1669,7 +1668,8 @@ public class AtomSetCollection {
     } else {
       atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     }
-    atomSymbolicMap.clear();
+    if (doClearMap)
+      atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }
 
@@ -1695,6 +1695,7 @@ public class AtomSetCollection {
       setTrajectoryName(atomSetName);
       return;
     }
+    System.out.println(currentAtomSetIndex + " " + atomSetName);
     setAtomSetAuxiliaryInfoForSet("name", atomSetName, currentAtomSetIndex);
     // TODO -- trajectories could have different names. Need this for vibrations?
     if (!allowMultiple)
@@ -1719,10 +1720,12 @@ public class AtomSetCollection {
    *          The name
    * @param n
    *          The number of last AtomSets that needs these set
+   * @param namedSets 
    */
-  public void setAtomSetNames(String atomSetName, int n) {
-    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
-      setAtomSetAuxiliaryInfoForSet("name", atomSetName, idx);
+  public void setAtomSetNames(String atomSetName, int n, BS namedSets) {
+    for (int i = currentAtomSetIndex; --n >= 0 && i >= 0; --i)
+      if (namedSets == null || !namedSets.get(i))
+        setAtomSetAuxiliaryInfoForSet("name", atomSetName, i);
   }
 
   /**
@@ -1919,15 +1922,17 @@ public class AtomSetCollection {
     setAtomSetModelProperty("Energy", "" + value);
   }
 
-  public void setAtomSetFrequency(String pathKey, String label, String freq, String units) {
+  public String setAtomSetFrequency(String pathKey, String label, String freq, String units) {
     freq += " " + (units == null ? "cm^-1" : units);
-    setAtomSetName((label == null ? "" : label + " ") + freq);
+    String name = (label == null ? "" : label + " ") + freq;
+    setAtomSetName(name);
     setAtomSetModelProperty("Frequency", freq);
     if (label != null)
       setAtomSetModelProperty("FrequencyLabel", label);
     setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, (pathKey == null ? ""
         : pathKey + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies")
         + "Frequencies");
+    return name;
   }
 
   void toCartesian(SymmetryInterface symmetry) {

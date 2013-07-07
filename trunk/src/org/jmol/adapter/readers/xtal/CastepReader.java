@@ -47,10 +47,10 @@ import org.jmol.util.JmolList;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
@@ -59,14 +59,18 @@ import org.jmol.util.V3;
  * CASTEP (http://www.castep.org) .cell file format relevant section of .cell
  * file are included as comments below
  * 
- * preliminary .castep, .phonon frequency reader -- hansonr@stolaf.edu 9/2011 -- Many
- * thanks to Keith Refson for his assistance with this implementation -- atom's
- * mass is encoded as bfactor -- FILTER options include "q=n" where n is an
- * integer or "q={1/4 1/4 0}" -- for non-simple fractions, you must use the
- * exact form of the wavevector description: -- load "xxx.phonon" FILTER
- * "q=(-0.083333 0.083333 0.500000) -- for simple fractions, you can also just
- * specify SUPERCELL {a b c} where -- the number of cells matches a given
- * wavevector -- SUPERCELL {4 4 1}, for example 
+ * preliminary .castep, .phonon frequency reader 
+ * -- hansonr@stolaf.edu 9/2011 
+ * -- Many thanks to Keith Refson for his assistance with this implementation 
+ * -- atom's mass is encoded as bfactor 
+ * -- FILTER options include 
+ *      "q=n" where n is an integer 
+ *      "q={1/4 1/4 0}" 
+ *      "q=ALL"
+ * -- for non-simple fractions, you must use the exact form of the wavevector description: 
+ * -- load "xxx.phonon" FILTER "q=(-0.083333 0.083333 0.500000) 
+ * -- for simple fractions, you can also just specify SUPERCELL {a b c} where 
+ *    the number of cells matches a given wavevector  -- SUPERCELL {4 4 1}, for example 
  * 
  * note: following was never implemented?
  * 
@@ -88,7 +92,6 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean isPhonon;
   private boolean isOutput;
   private boolean isCell;
-  private boolean isDispersion;
 
   private float a, b, c, alpha, beta, gamma;
   private V3[] abc = new V3[3];
@@ -104,6 +107,10 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private String chargeType = "MULL";
 
+  private boolean isAllQ;
+
+  private boolean haveCharges;
+
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
@@ -114,7 +121,8 @@ public class CastepReader extends AtomSetCollectionReader {
       }
       filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
-      if (filter.indexOf("{") >= 0)
+      isAllQ = (filter.indexOf("Q=ALL") >= 0);
+      if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
       filter = TextFormat.simpleReplace(filter, "-PT", "");
     }
@@ -241,9 +249,7 @@ public class CastepReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     // only for .phonon, castep output, or other BEGIN HEADER type files
     if (isOutput) {
-      if (line.contains("DFT+D: Semi-empirical")){
-        isDispersion = true;
-      } else if (line.contains("Real Lattice(A)")) {
+      if (line.contains("Real Lattice(A)")) {
         readOutputUnitCell();
       } else if (line.contains("Fractional coordinates of atoms")) {
         if (doGetModel(++modelNumber, null)) {
@@ -255,8 +261,12 @@ public class CastepReader extends AtomSetCollectionReader {
         readOutputCharges();
       } else if (doProcessLines && line.contains("Born Effective Charges")) {
         readOutputBornChargeTensors();
-      } else if (line.contains("Final energy")) {
-        readEnergy();
+      } else if (line.contains("Final energy ")) { // not "Final energy, E"
+        readEnergy(3);
+      } else if (line.contains("Dispersion corrected final energy*")) {
+        readEnergy(5);
+      } else if (line.contains("Total energy corrected")) {
+        readEnergy(8);
       }
       return true;
     }
@@ -290,7 +300,6 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private void readOutputUnitCell() throws Exception {
     applySymmetryAndSetTrajectory();
-    //atomSetCollection.newAtomSet();
     setFractionalCoordinates(true);
     abc = read3Vectors(false);
     setLatticeVectors();
@@ -318,21 +327,16 @@ public class CastepReader extends AtomSetCollectionReader {
 
   }
 
-  private void readEnergy() throws Exception {
+  private void readEnergy(int pt) throws Exception {
     tokens = getTokens();
-    Double energy;
-
-    if (!isDispersion) {
-      energy = Double.valueOf(Double.parseDouble(tokens[3]));
-    } else {
-      discardLinesUntilContains("Dispersion corrected final energy*");
-      tokens = getTokens();
-      energy = Double.valueOf(Double.parseDouble(tokens[5]));
+    try {
+      Double energy = Double.valueOf(Double.parseDouble(tokens[pt]));
+      atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
+      atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
+      atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
+    } catch (Exception e) {
+      appendLoadNote("CASTEP Energy could not be read: " + line);
     }
-    
-    atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     /*    
     is better to do this also here
     in case the output is only a 
@@ -340,7 +344,7 @@ public class CastepReader extends AtomSetCollectionReader {
     both volume and geometry
      */
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    atomSetCollection.newAtomSetClear(false);
     setLatticeVectors();
   }
   
@@ -348,7 +352,7 @@ public class CastepReader extends AtomSetCollectionReader {
     isTrajectory = (desiredVibrationNumber <= 0);
     doApplySymmetry = true;
     while (line != null && line.contains("<-- E")) {
-      atomSetCollection.newAtomSet();
+      atomSetCollection.newAtomSetClear(false);
       discardLinesUntilContains("<-- h");
       setSpaceGroupName("P1");
       abc = read3Vectors(true);
@@ -547,17 +551,19 @@ public class CastepReader extends AtomSetCollectionReader {
     if (readLine().indexOf("--------") < 0)
       return;
     Atom[] atoms = atomSetCollection.getAtoms();
+    appendLoadNote("Ellipsoids: Born Charge Tensors");
     while (readLine().indexOf('=') < 0)
-      getOutputEllipsoid(atoms[readOutputAtomIndex()], line.substring(12));
+      getTensor(atoms[readOutputAtomIndex()], line.substring(12));
   }
 
 
   private int readOutputAtomIndex() {
     tokens = getTokensStr(line);
-    return atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
+    String name = tokens[0] + tokens[1];
+    return atomSetCollection.getAtomIndexFromName(name);
   }
 
-  private void getOutputEllipsoid(Atom atom, String line0) throws Exception {
+  private void getTensor(Atom atom, String line0) throws Exception {
     float[] data = new float[9];
     double[][] a = new double[3][3];
     fillFloatArray(line0, 0, data);
@@ -566,26 +572,10 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
-    // symmetrize matrix
-    // and encode plane normals as vibration vectors!
-    double x = 0, y = 0, z = 0;
-    if (a[0][1] != a[1][0]) {
-      // xy ---> z
-      z = (a[0][1] - a[1][0])/2;
-      a[0][1] = a[1][0] = (a[0][1] + a[1][0])/2;
-    }
-    if (a[1][2] != a[2][1]) {
-      // yz ---> x
-      x = (a[1][2] - a[2][1])/2;
-      a[1][2] = a[2][1] = (a[1][2] + a[2][1])/2;
-    }
-    if (a[0][2] != a[2][0]) {
-      // xz ---> -y
-      y = -(a[0][2] - a[2][0])/2;
-      a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
-    }
-    atom.setEllipsoid(Eigen.getEllipsoidDD(a));
-    atomSetCollection.addVibrationVector(atom.atomIndex, (float) x, (float) y, (float) z);
+    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge"), null);
+    if (!haveCharges)
+      appendLoadNote("Ellipsoids set \"charge\": Born Effective Charges");
+    haveCharges = true;
   }
 
   /*
@@ -717,13 +707,13 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       fcoord = qtoks;
     else
       fcoord = "{" + fcoord + "}";
-    boolean isOK = false;
+    boolean isOK = isAllQ;
     boolean isSecond = (tokens[1].equals(lastQPt));
     qpt2 = (isSecond ? qpt2 + 1 : 1);
 
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
-    if (filter != null && checkFilterKey("Q=")) {
+    if (!isOK && filter != null && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
         v.sub2(desiredQpt, qvec);
@@ -760,7 +750,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       return;
     if (!isOK && (ptSupercell == null) == !isGammaPoint)
       return;
-    if (havePhonons)
+    if (havePhonons && !isAllQ)
       return;
     havePhonons = true;
     String qname = "q=" + lastQPt + " " + fcoord;
