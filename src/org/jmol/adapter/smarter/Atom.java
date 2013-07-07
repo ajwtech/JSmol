@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-06-28 08:30:28 +0100 (Fri, 28 Jun 2013) $
+ * $Revision: 18379 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -25,12 +25,13 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
-  public int atomIndex;
+  public int index;
   public BS bsSymmetry;
   public int atomSite;
   public String elementSymbol;
@@ -52,16 +53,16 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public Quadric[] ellipsoid;  
-  public void setEllipsoid(Quadric e) {
-    if (e == null)
+  public JmolList<Tensor> tensors;
+  
+  public void addTensor(Tensor tensor, String type) {
+    if (tensor == null)
       return;
-    //if (atomIndex < 5)
-      //System.out.println("Atom: ellipsoid " + e);
-    if (ellipsoid != null && ellipsoid.length == 3)
-      ellipsoid[0] = e;
-    else
-      ellipsoid = new Quadric[] { e };
+    if (tensors == null)
+      tensors = new JmolList<Tensor>();
+    tensors.addLast(tensor);
+    if (type != null)
+      tensor.setType(type);
   }
 
   
@@ -117,7 +118,7 @@ public class Atom extends P3 implements Cloneable {
    * otherwise, bits 0-25 say whether or not is valid when followed
    * by the letters a-z.
    */
-  final static int[] elementCharMasks = {
+  private final static int[] elementCharMasks = {
     //   Ac Ag Al Am Ar As At Au
     1 << ('c' - 'a') |
     1 << ('g' - 'a') |

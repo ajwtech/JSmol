@@ -37,7 +37,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
@@ -60,6 +59,11 @@ import java.util.Map;
  * see http://repo.or.cz/w/gromacs.git/blob/HEAD:/src/gmxlib/pdbio.c line 244
  * see http://repo.or.cz/w/gromacs.git/blob/HEAD:/src/gmxlib/pdbio.c line 323
  * 
+ * TLS Motion Determination:
+ *  
+ *    J Painter & E A Merritt (2006) Acta Cryst. D62, 439-450 
+ *    http://skuld.bmsc.washington.edu/~tlsmd
+ *    
  * symmetry added by Bob Hanson:
  * 
  *  setFractionalCoordinates()
@@ -418,7 +422,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       entry.getKey().ellipsoid[1] = symmetry.getEllipsoid(anisou);
+       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R");
        
        // check for equal: 
        
@@ -770,7 +774,7 @@ REMARK 290 REMARK: NULL
         String name, 
         char altID, 
         String group3, 
-        char chain, 
+        int chain, 
         int seqNo,
         char insCode,
         boolean isHetero,
@@ -781,7 +785,7 @@ REMARK 290 REMARK: NULL
     if (ch != ' ')
       atom.alternateLocationID = ch;
     atom.group3 = group3;
-    ch = chain;
+    ch = chain < 256 ? (char) chain : 0;
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
@@ -1603,21 +1607,19 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
                   tensorType, ' ').replace(':', ' ');
           //System.out.println("Tensor data = " + s);
           tokens = getTokensStr(s);
-          float[][] tensor = new float[3][3];
-          tlsGroup.put("t" + tensorType, tensor);
+          float[][] data = new float[3][3];
+          tlsGroup.put("t" + tensorType, data);
           for (int i = 0; i < tokens.length; i++) {
             int ti = tokens[i].charAt(0) - '1';
             int tj = tokens[i].charAt(1) - '1';
-            tensor[ti][tj] = parseFloatStr(tokens[++i]);
+            data[ti][tj] = parseFloatStr(tokens[++i]);
             if (ti < tj)
-              tensor[tj][ti] = tensor[ti][tj];
+              data[tj][ti] = data[ti][tj];
           }
           for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
-              if (Float.isNaN(tensor[i][j])) {
-                tlsAddError("invalid tensor: " + Escape.escapeFloatAA(tensor, false));
-
-              }
+              if (Float.isNaN(data[i][j]))
+                tlsAddError("invalid tensor: " + Escape.escapeFloatAA(data, false));
           //System.out.println("Tensor t" + tensorType + " = " + Escape.escape(tensor));
           if (tensorType == 'S' && ++iGroup == nGroups) {
             Logger.info(nGroups + " TLS groups read");
@@ -1633,10 +1635,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       }
     }
     if (tlsGroups != null) {
-      Hashtable<String, Object> groups = new Hashtable<String, Object>();
-      groups.put("groupCount", Integer.valueOf(nGroups));
-      groups.put("groups", tlsGroups);
-      vTlsModels.addLast(groups);
+      Hashtable<String, Object> tlsModel = new Hashtable<String, Object>();
+      tlsModel.put("groupCount", Integer.valueOf(nGroups));
+      tlsModel.put("groups", tlsGroups);
+      vTlsModels.addLast(tlsModel);
     }
     return (nGroups < 1);
   }
@@ -1649,7 +1651,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   }
 
   /**
-   * sets the atom property property_tlsGroup based on TLS group ranges
+   * Sets the atom property property_tlsGroup based on TLS group ranges
+   * and adds "TLS" key to model's auxiliaryInfo.
    * 
    * @param iGroup
    * @param iModel
@@ -1657,6 +1660,26 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    */
   @SuppressWarnings("unchecked")
   private void setTlsGroups(int iGroup, int iModel, SymmetryInterface symmetry) {
+
+    // TLS.groupCount   Integer
+    // TLS.groups       JmolList of Map
+    //   .id            String
+    //   .ranges        JmolList of Map
+    //      .chains     String
+    //      .residues   int[2]
+    //   .origin        P3
+    //   .tT            float[3][3]
+    //   .tL            float[3][3]
+    //   .tS            float[3][3]
+    //
+    // ultimately, each atom gets an associated TLS-U and TLS-R org.jmol.util.Tensor
+    // that can be visualized using 
+    //
+    //  ellipsoid set "TLS-R"
+    //  ellipsoids ON
+    //
+    //
+    
     Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
     Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
     JmolList<Map<String, Object>> groups = ( JmolList<Map<String, Object>>) tlsGroupInfo
@@ -1697,7 +1720,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
               || atom.chainID == chain1 && atom.sequenceNumber <= res1
           ) {
               data[iAtom - index0] = tlsGroupID;
-              setTlsEllipsoid(atom, group, symmetry);
+              setTlsTensor(atom, group, symmetry);
             }
         }
       }
@@ -1708,7 +1731,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
     atomSetCollection.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
-    atomSetCollection.setEllipsoids();
+    atomSetCollection.setTensors();
   }
 
   private int findAtomForRange(int atom1, int atom2, char chain, int resno,
@@ -1737,7 +1760,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private static final float _8PI2_ = (float) (8 * Math.PI * Math.PI);
   private Map<Atom, float[]>tlsU;
   
-  private void setTlsEllipsoid(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
+  private void setTlsTensor(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
     P3 origin = (P3) group.get("origin");
     if (Float.isNaN(origin.x))
       return;
@@ -1801,9 +1824,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.ellipsoid = new Quadric[] { null, null, symmetry.getEllipsoid(dataT) };
-    //if (atom.atomIndex == 0)
-      //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 
+    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U");
   }
 
   private void tlsAddError(String error) {
