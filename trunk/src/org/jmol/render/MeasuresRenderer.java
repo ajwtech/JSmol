@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-25 22:39:10 -0500 (Sat, 25 May 2013) $
- * $Revision: 18250 $
+ * $Date: 2013-07-04 15:13:39 +0100 (Thu, 04 Jul 2013) $
+ * $Revision: 18421 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -66,7 +66,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       Measurement m = measures.measurements.get(i);
       if (dynamicMeasurements || m.isDynamic)
         m.refresh();
-      if (!m.isVisible)
+      if (!m.isVisible || !m.isValid)
         continue;
       colix = m.colix;
       if (colix == 0)
@@ -100,7 +100,7 @@ public class MeasuresRenderer extends LabelsRenderer {
                                  boolean renderLabel) {
     this.measurement = measurement;
     String s = (renderLabel ? measurement.getString() : null);
-    if (s != null & s.length() == 0)
+    if (s != null && s.length() == 0)
       s = null;
     if (s != null && measurement.text != null) {
       measurement.text.setText(s);

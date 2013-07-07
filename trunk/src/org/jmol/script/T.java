@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-07 14:15:26 -0500 (Fri, 07 Jun 2013) $
- * $Revision: 18305 $
+ * $Date: 2013-07-05 17:59:05 +0100 (Fri, 05 Jul 2013) $
+ * $Revision: 18433 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -450,6 +450,7 @@ public class T {
   public final static int specialposition = predefinedset | 44;
   final static int visible                = predefinedset | 46;
   final static int basemodel              = predefinedset | 48;
+  final static int nonequivalent          = predefinedset | 50;
 
   
   static int getPrecedence(int tokOperator) {
@@ -579,6 +580,7 @@ public class T {
   public final static int atomindex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
+  public final static int centroid      = intproperty | 6;
   public final static int configuration = intproperty | 6 | scriptCommand;
   //color: see xxx(a, b, c, d)
   public final static int elemisono     = intproperty | 7;
@@ -603,21 +605,24 @@ public class T {
   
   public final static int adpmax          = floatproperty | 1;
   public final static int adpmin          = floatproperty | 2;
-  public final static int covalent        = floatproperty | 3;
-  public final static int eta             = floatproperty | 4; // Jmol 12.0.RC23
-  public final static int mass            = floatproperty | 5;
-  public final static int omega           = floatproperty | 6;
-  public final static int phi             = floatproperty | 7;
-  public final static int psi             = floatproperty | 8;
-  public final static int screenx         = floatproperty | 9;
-  public final static int screeny         = floatproperty | 10;
-  public final static int screenz         = floatproperty | 11;
-  public final static int straightness    = floatproperty | 12;
-  public final static int surfacedistance = floatproperty | 13;
-  public final static int theta           = floatproperty | 14; // Jmol 12.0.RC23
-  public final static int unitx           = floatproperty | 15;
-  public final static int unity           = floatproperty | 16;
-  public final static int unitz           = floatproperty | 17;
+  public final static int chemicalshift   = floatproperty | 3; // Jmol 13.1.19
+  public final static int covalent        = floatproperty | 4;
+  public final static int eta             = floatproperty | 5; // Jmol 12.0.RC23
+  public final static int magneticshielding = floatproperty | 6;  // Jmol 13.1.19
+  public final static int mass            = floatproperty | 7;
+  public final static int omega           = floatproperty | 8;
+  public final static int phi             = floatproperty | 9;
+  public final static int psi             = floatproperty | 10;
+  public final static int screenx         = floatproperty | 11;
+  public final static int screeny         = floatproperty | 12;
+  public final static int screenz         = floatproperty | 13;
+  public final static int straightness    = floatproperty | 14;
+  public final static int surfacedistance = floatproperty | 15;
+  public final static int theta           = floatproperty | 16; // Jmol 12.0.RC23
+  public final static int unitx           = floatproperty | 17;
+  public final static int unity           = floatproperty | 18;
+  public final static int unitz           = floatproperty | 19;
+  public final static int vectorscale     = floatproperty | 1 | floatparam;
   public final static int atomx           = floatproperty | 1 | settable;
   public final static int atomy           = floatproperty | 2 | settable;
   public final static int atomz           = floatproperty | 3 | settable;
@@ -627,20 +632,19 @@ public class T {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int hydrophobic     = floatproperty | 10 | settable | predefinedset;
   public final static int ionic           = floatproperty | 11 | settable;
   public final static int partialcharge   = floatproperty | 12 | settable;
-  public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
-  public final static int selected        = floatproperty | 14 | settable | predefinedset;
   public final static int temperature     = floatproperty | 15 | settable;
-  public final static int vanderwaals     = floatproperty | 16 | settable | setparam;
-  public final static int vectorscale     = floatproperty | 17 | floatparam;
   public final static int vibx            = floatproperty | 18 | settable;
   public final static int viby            = floatproperty | 19 | settable;
   public final static int vibz            = floatproperty | 20 | settable;
   public final static int x               = floatproperty | 21 | settable;
   public final static int y               = floatproperty | 22 | settable;
   public final static int z               = floatproperty | 23 | settable;
+  public final static int vanderwaals     = floatproperty | 24 | settable | setparam;
+  public final static int property        = floatproperty | 25 | settable | setparam | mathproperty;
+  public final static int hydrophobic     = floatproperty | 26 | settable | predefinedset;
+  public final static int selected        = floatproperty | 27 | settable | predefinedset;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -695,6 +699,8 @@ public class T {
   public final static int within    = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
   final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
+  final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
+  
   // xxx(a)
   
   final static int acos         = 3 | 1 << 9 | mathfunc;
@@ -745,7 +751,6 @@ public class T {
   
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
-  final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
@@ -759,6 +764,7 @@ public class T {
   
   final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
   public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
+  final static int find         = 3 | 3 << 9 | mathfunc | mathproperty;
 
   // anything beyond 3 are set "unlimited"
 
@@ -957,10 +963,11 @@ public class T {
   public final static int dsspcalchydrogen               = booleanparam | 58;
   public final static int dynamicmeasurements            = booleanparam | 59;
   public final static int ellipsoidarcs                  = booleanparam | 60;  
-  public final static int ellipsoidaxes                  = booleanparam | 61;  
-  public final static int ellipsoidball                  = booleanparam | 62;  
-  public final static int ellipsoiddots                  = booleanparam | 63;  
-  public final static int ellipsoidfill                  = booleanparam | 64;  
+  public final static int ellipsoidarrows                = booleanparam | 61;  
+  public final static int ellipsoidaxes                  = booleanparam | 62;  
+  public final static int ellipsoidball                  = booleanparam | 63;  
+  public final static int ellipsoiddots                  = booleanparam | 64;  
+  public final static int ellipsoidfill                  = booleanparam | 65;  
   public final static int filecaching                    = booleanparam | 66;
   public final static int fontcaching                    = booleanparam | 68;
   public final static int fontscaling                    = booleanparam | 69;
@@ -984,26 +991,27 @@ public class T {
   public final static int justifymeasurements            = booleanparam | 96;
   public final static int languagetranslation            = booleanparam | 97;
   public final static int legacyautobonding              = booleanparam | 98;
-  public final static int logcommands                    = booleanparam | 99;
-  public final static int loggestures                    = booleanparam | 100;
-  public final static int measureallmodels               = booleanparam | 101;
-  public final static int measurementlabels              = booleanparam | 102;
-  public final static int messagestylechime              = booleanparam | 103;
-  public final static int minimizationrefresh            = booleanparam | 104;
-  public final static int minimizationsilent             = booleanparam | 105;
-  public final static int modelkitmode                   = booleanparam | 106;  // 12.0.RC15
-  public final static int monitorenergy                  = booleanparam | 107;
-  public final static int multiprocessor                 = booleanparam | 108;
-  public final static int navigatesurface                = booleanparam | 109;
-  public final static int navigationmode                 = booleanparam | 110;
-  public final static int navigationperiodic             = booleanparam | 111;
-  public final static int partialdots                    = booleanparam | 112; // 12.1.46
-  public final static int pdbaddhydrogens                = booleanparam | 113;
-  public final static int pdbgetheader                   = booleanparam | 114;
-  public final static int pdbsequential                  = booleanparam | 115;
-  public final static int perspectivedepth               = booleanparam | 116;
-  public final static int preservestate                  = booleanparam | 117;
-  public final static int rangeselected                  = booleanparam | 118;
+  public final static int legacyhaddition                = booleanparam | 99;
+  public final static int logcommands                    = booleanparam | 100;
+  public final static int loggestures                    = booleanparam | 101;
+  public final static int measureallmodels               = booleanparam | 102;
+  public final static int measurementlabels              = booleanparam | 103;
+  public final static int messagestylechime              = booleanparam | 104;
+  public final static int minimizationrefresh            = booleanparam | 105;
+  public final static int minimizationsilent             = booleanparam | 106;
+  public final static int modelkitmode                   = booleanparam | 107;  // 12.0.RC15
+  public final static int monitorenergy                  = booleanparam | 108;
+  public final static int multiprocessor                 = booleanparam | 109;
+  public final static int navigatesurface                = booleanparam | 110;
+  public final static int navigationmode                 = booleanparam | 111;
+  public final static int navigationperiodic             = booleanparam | 112;
+  public final static int partialdots                    = booleanparam | 113; // 12.1.46
+  public final static int pdbaddhydrogens                = booleanparam | 114;
+  public final static int pdbgetheader                   = booleanparam | 115;
+  public final static int pdbsequential                  = booleanparam | 116;
+  public final static int perspectivedepth               = booleanparam | 117;
+  public final static int preservestate                  = booleanparam | 118;
+  public final static int rangeselected                  = booleanparam | 119;
   public final static int refreshing                     = booleanparam | 120;
   public final static int ribbonborder                   = booleanparam | 122;
   public final static int rocketbarrels                  = booleanparam | 124;
@@ -1091,7 +1099,6 @@ public class T {
   final static int cancel        = misc  | 50;
   public final static int cap    = misc  | 51 | expression;
   final static int cavity        = misc  | 52;
-  final static int centroid      = misc  | 53;
   final static int check         = misc  | 54;
   final static int chemical      = misc  | 55;
   final static int circle        = misc  | 56;
@@ -1216,6 +1223,7 @@ public class T {
   final static int once           = misc  | 246;
   final static int only           = misc  | 248;
   final static int opaque         = misc  | 250;
+  final static int options        = misc  | 251;
   final static int orbital        = misc  | 252;
   final static int orientation    = misc  | 253;
   final static int origin         = misc  | 254; // 12.1.51
@@ -1791,6 +1799,8 @@ public class T {
       "cell",            T.t(cell),
       "chain",           T.t(chain),
       "chains",          null,
+      "chemicalShift",   T.t(chemicalshift),
+      "cs",              null,
       "clash",           T.t(clash),
       "clear",           T.t(clear),
       "clickable",       T.t(clickable),
@@ -1871,6 +1881,8 @@ public class T {
       "length",          T.t(length),
       "lines",           T.t(lines),
       "list",            T.t(list),
+      "magneticShielding", T.t(magneticshielding),
+      "ms",              null,
       "mass",            T.t(mass),
       "max",             T.t(max),
       "mep",             T.t(mep),
@@ -1898,6 +1910,7 @@ public class T {
       "inherit",         null,
       "normal",          T.t(normal),
       "noContourLines",  T.t(nocontourlines),
+      "nonequivalent",   T.t(nonequivalent),
       "notFrontOnly",    T.t(notfrontonly),
       "noTriangles",     T.t(notriangles),
       "now",             T.t(now),
@@ -1910,6 +1923,7 @@ public class T {
       "omega",           T.t(omega),
       "only",            T.t(only),
       "opaque",          T.t(opaque),
+      "options",         T.t(options),
       "partialCharge",   T.t(partialcharge),
       "phi",             T.t(phi),
       "plane",           T.t(plane),
@@ -1976,6 +1990,7 @@ public class T {
       "sxyz",            T.t(screenxyz),
       "temperature",     T.t(temperature),
       "relativeTemperature", null,
+      "tensor",          T.t(tensor),
       "theta",           T.t(theta),
       "thisModel",       T.t(thismodel),
       "ticks",           T.t(ticks),
@@ -2350,6 +2365,7 @@ public class T {
       "dsspCalculateHydrogenAlways",              T.t(dsspcalchydrogen),
       "dynamicMeasurements",                      T.t(dynamicmeasurements),
       "ellipsoidArcs",                            T.t(ellipsoidarcs),
+      "ellipsoidArrows",                          T.t(ellipsoidarrows),
       "ellipsoidAxes",                            T.t(ellipsoidaxes),
       "ellipsoidBall",                            T.t(ellipsoidball),
       "ellipsoidDots",                            T.t(ellipsoiddots),
@@ -2379,6 +2395,7 @@ public class T {
       "justifyMeasurements",                      T.t(justifymeasurements),
       "languageTranslation",                      T.t(languagetranslation),
       "legacyAutoBonding",                        T.t(legacyautobonding),
+      "legacyHAddition",                          T.t(legacyhaddition),
       "logCommands",                              T.t(logcommands),
       "logGestures",                              T.t(loggestures),
       "measureAllModels",                         T.t(measureallmodels),

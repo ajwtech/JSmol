@@ -30,9 +30,11 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tuple3f;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 /**
  * a class private to the org.jmol.symmetry package
@@ -226,8 +228,11 @@ class UnitCell extends SimpleUnitCell {
   }
   
   final private static double twoP2 = 2 * Math.PI * Math.PI;
+
+  private final static V3[] unitVectors = {
+    JC.axisX, JC.axisY, JC.axisZ};
   
-  Quadric getEllipsoid(float[] parBorU) {
+  Tensor getTensor(float[] parBorU) {
     if (parBorU == null)
       return null;
     /*
@@ -258,8 +263,10 @@ class UnitCell extends SimpleUnitCell {
      * The coefficients bij (i,j = 1,2,3) of the various types are defined with
      * the following constant settings.
      * 
-     * Type 0: Base = e, c = 2, D = 1 Type 1: Base = e, c = 1, D = l Type 2:
-     * Base = 2, c = 2, D = l Type 3: Base = 2, c = 1, D = l
+     * Type 0: Base = e, c = 2, D = 1 
+     * Type 1: Base = e, c = 1, D = l 
+     * Type 2: Base = 2, c = 2, D = l 
+     * Type 3: Base = 2, c = 1, D = l
      * 
      * Anisotropic temperature factor Types 4, 5, 8, and 9 use the following
      * formula for the complete temperature factor, in which a1* , a2*, a3* are
@@ -271,7 +278,9 @@ class UnitCell extends SimpleUnitCell {
      * The coefficients Uij (i,j = 1,2,3) of the various types are defined with
      * the following constant settings.
      * 
-     * Type 4: C = 2, D = 1/4 Type 5: C = 1, D = 1/4 Type 8: C = 2, D = 2pi2
+     * Type 4: C = 2, D = 1/4 
+     * Type 5: C = 1, D = 1/4 
+     * Type 8: C = 2, D = 2pi2
      * Type 9: C = 1, D = 2pi2
      * 
      * 
@@ -294,9 +303,11 @@ class UnitCell extends SimpleUnitCell {
      */
 
     if (parBorU[0] == 0) { // this is iso
-      float[] lengths = new float[3];
-      lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
-      return new Quadric().fromVectors(null, lengths, true);
+      float f = parBorU[7];
+      float[] eigenValues = new float[] {f, f, f};
+      // sqrt will be taken when converted to lengths later
+      // no factor of 0.5 pi^2
+      return Tensor.getTensorFromEigenVectors(unitVectors, eigenValues, "iso");
     }
 
     double[] Bcart = new double[6];
@@ -356,7 +367,7 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    return new Quadric().fromBCart(Bcart);
+    return Tensor.getTensorFromThermalEquation(Bcart);
   }
   
   P3[] getCanonicalCopy(float scale) {

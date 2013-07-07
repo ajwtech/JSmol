@@ -30,7 +30,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -239,7 +239,8 @@ public final class ModelLoader {
   
   private int currentModelIndex;
   private Model currentModel;
-  private int currentChainID = 0;
+  private int currentChainID;
+  private boolean isNewChain;
   private Chain currentChain;
   private int currentGroupSequenceNumber;
   private char currentGroupInsertionCode = '\0';
@@ -276,7 +277,7 @@ public final class ModelLoader {
     group3Of = new String[defaultGroupCount];
     seqcodes = new int[defaultGroupCount];
     firstAtomIndexes = new int[defaultGroupCount];
-    currentChainID = '\uFFFF';
+    currentChainID = Integer.MAX_VALUE;
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
     currentGroup3 = "xxxxx";
@@ -615,47 +616,47 @@ public final class ModelLoader {
    * Model numbers are considerably more complicated in Jmol 11.
    * 
    * int modelNumber
-   *  
-   *   The adapter gives us a modelNumber, but that is not necessarily
-   *   what the user accesses. If a single files is loaded this is:
-   *   
-   *   a) single file context:
-   *   
-   *     1) the sequential number of the model in the file , or
-   *     2) if a PDB file and "MODEL" record is present, that model number
-   *     
-   *   b) multifile context:
-   *   
-   *     always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
-   *   
-   *   
+   * 
+   * The adapter gives us a modelNumber, but that is not necessarily what the
+   * user accesses. If a single files is loaded this is:
+   * 
+   * a) single file context:
+   * 
+   * 1) the sequential number of the model in the file , or 2) if a PDB file and
+   * "MODEL" record is present, that model number
+   * 
+   * b) multifile context:
+   * 
+   * always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
+   * 
+   * 
    * int fileIndex
    * 
-   *   The 0-based reference to the file containing this model. Used
-   *   when doing   "_modelnumber3.2" in a multifile context
-   *   
+   * The 0-based reference to the file containing this model. Used when doing
+   * "_modelnumber3.2" in a multifile context
+   * 
    * int modelFileNumber
    * 
-   *   An integer coding both the file and the model:
-   *   
-   *     file * 1000000 + modelInFile (1-based)
-   *     
-   *   Used all over the place. Note that if there is only one file,
-   *   then modelFileNumber < 1000000.
+   * An integer coding both the file and the model:
+   * 
+   * file * 1000000 + modelInFile (1-based)
+   * 
+   * Used all over the place. Note that if there is only one file, then
+   * modelFileNumber < 1000000.
    * 
    * String modelNumberDotted
-   *   
-   *   A number the user can use "1.3"
-   *   
+   * 
+   * A number the user can use "1.3"
+   * 
    * String modelNumberForAtomLabel
    * 
-   *   Either the dotted number or the PDB MODEL number, if there is only one file
-   *   
+   * Either the dotted number or the PDB MODEL number, if there is only one file
+   * 
    * @param baseModelCount
-   *    
+   * 
    */
   private void finalizeModels(int baseModelCount) {
-    int modelCount= modelSet.modelCount;
+    int modelCount = modelSet.modelCount;
     if (modelCount == baseModelCount)
       return;
     String sNum;
@@ -713,18 +714,20 @@ public final class ModelLoader {
       modelSet.modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
       if (modelNames[i] == null || modelNames[i].length() == 0)
         modelNames[i] = sNum;
-   }
-    
+    }
     if (merging)
       for (int i = 0; i < baseModelCount; i++)
         models[i].modelSet = modelSet;
-    
+
     // this won't do in the case of trajectories
     for (int i = 0; i < modelCount; i++) {
       modelSet.setModelAuxiliaryInfo(i, "modelName", modelNames[i]);
-      modelSet.setModelAuxiliaryInfo(i, "modelNumber", Integer.valueOf(modelNumbers[i] % 1000000));
-      modelSet.setModelAuxiliaryInfo(i, "modelFileNumber", Integer.valueOf(modelSet.modelFileNumbers[i]));
-      modelSet.setModelAuxiliaryInfo(i, "modelNumberDotted", modelSet.getModelNumberDotted(i));
+      modelSet.setModelAuxiliaryInfo(i, "modelNumber", Integer
+          .valueOf(modelNumbers[i] % 1000000));
+      modelSet.setModelAuxiliaryInfo(i, "modelFileNumber", Integer
+          .valueOf(modelSet.modelFileNumbers[i]));
+      modelSet.setModelAuxiliaryInfo(i, "modelNumberDotted", modelSet
+          .getModelNumberDotted(i));
       String codes = (String) modelSet.getModelAuxiliaryInfoValue(i, "altLocs");
       if (codes != null) {
         Logger.info("model " + modelSet.getModelNumberDotted(i)
@@ -739,6 +742,7 @@ public final class ModelLoader {
     int iLast = -1;
     boolean isPdbThisModel = false;
     boolean addH = false;
+    boolean isLegacyHAddition = false;//viewer.getBoolean(T.legacyhaddition);
     JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
     int nRead = 0;
     Model[] models = modelSet.models;
@@ -751,7 +755,8 @@ public final class ModelLoader {
       if (modelIndex != iLast) {
         currentModelIndex = modelIndex;
         currentModel = models[modelIndex];
-        currentChainID = '\uFFFF';
+        currentChainID = Integer.MAX_VALUE;
+        isNewChain = true;
         models[modelIndex].bsAtoms.clearAll();
         isPdbThisModel = models[modelIndex].isBioModel;
         iLast = modelIndex;
@@ -760,8 +765,9 @@ public final class ModelLoader {
           jbr.setHaveHsAlready(false);
       }
       String group3 = iterAtom.getGroup3();
-      checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), 
-          iterAtom.getInsertionCode(), addH);
+      int chainID = iterAtom.getChainID();
+      checkNewGroup(adapter, chainID, group3, iterAtom.getSequenceNumber(), 
+          iterAtom.getInsertionCode(), addH, isLegacyHAddition);
       short isotope = iterAtom.getElementNumber();
       if (addH && Elements.getElementNumber(isotope) == 1)
         jbr.setHaveHsAlready(true);
@@ -774,7 +780,7 @@ public final class ModelLoader {
           name,
           charge, 
           iterAtom.getPartialCharge(),
-          iterAtom.getEllipsoid(), 
+          iterAtom.getTensors(), 
           iterAtom.getOccupancy(), 
           iterAtom.getBfactor(), 
           iterAtom.getX(),
@@ -790,8 +796,9 @@ public final class ModelLoader {
           iterAtom.getRadius()
           );
     }
-    if (groupCount > 0 && addH)
-      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1);    
+    if (groupCount > 0 && addH) {
+      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain && !isLegacyHAddition? 1 : 0);
+    }
     iLast = -1;
     EnumVdw vdwtypeLast = null;
     Atom[] atoms = modelSet.atoms;
@@ -821,7 +828,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       Quadric[] ellipsoid, int occupancy, float bfactor,
+                       JmolList<Tensor> tensors, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, String group3,
                        float vectorX, float vectorY, float vectorZ,
@@ -837,7 +844,7 @@ public final class ModelLoader {
     }
     Atom atom = modelSet.addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
-        vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
+        vectorZ, formalCharge, partialCharge, occupancy, bfactor, tensors,
         isHetero, specialAtomID, atomSymmetry);
     atom.setAltLoc(alternateLocationID);
     htAtomMap.put(atomUid, atom);
@@ -845,7 +852,7 @@ public final class ModelLoader {
 
   private void checkNewGroup(JmolAdapter adapter, int chainID,
                              String group3, int groupSequenceNumber,
-                             char groupInsertionCode, boolean addH) {
+                             char groupInsertionCode, boolean addH, boolean isLegacyHAddition) {
     String group3i = (group3 == null ? null : group3.intern());
     if (chainID != currentChainID) {
       currentChainID = chainID;
@@ -853,12 +860,13 @@ public final class ModelLoader {
       currentGroupInsertionCode = '\uFFFF';
       currentGroupSequenceNumber = -1;
       currentGroup3 = "xxxx";
+      isNewChain = true;
     }
     if (groupSequenceNumber != currentGroupSequenceNumber
         || groupInsertionCode != currentGroupInsertionCode
         || group3i != currentGroup3) {
       if (groupCount > 0 && addH) {
-        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1);
+        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain && !isLegacyHAddition? 1 : 0);
         jbr.setHaveHsAlready(false);
       }
       currentGroupSequenceNumber = groupSequenceNumber;

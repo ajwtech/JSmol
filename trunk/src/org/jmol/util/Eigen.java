@@ -24,9 +24,6 @@
 
 package org.jmol.util;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 
 //import org.jmol.util.Escape;
 
@@ -68,29 +65,30 @@ public class Eigen {
     e = new double[n];
   }
 
-  
+  /**
+   * 
+   * @param m may be 3 or 4 here
+   * @return  Eigen e
+   */
   public static Eigen newM(double[][] m) {
     Eigen e = new Eigen(m.length);
     e.calc(m);
     return e;
   }
 
-  public static void getUnitVectors(double[][] m, V3[] unitVectors, float[] lengths) {
-    newM(m).set(unitVectors, lengths);
-    sort(unitVectors, lengths);
+  public static void getUnitVectors(double[][] m, V3[] eigenVectors,
+                                    float[] eigenValues) {
+    newM(m).fillArrays(eigenVectors, eigenValues);
   }
 
-  private void set(V3[] unitVectors, float[] lengths) {
-    float[][] eigenVectors = getEigenvectorsFloatTransposed();
-    double[] eigenValues = getRealEigenvalues();
-
+  void fillArrays(V3[] eigenVectors, float[] eigenValues) {
+    float[][] vectors = getEigenvectorsFloatTransposed();
+    double[] lambdas = getRealEigenvalues();
     for (int i = 0; i < n; i++) {
-      if (unitVectors[i] == null)
-        unitVectors[i] = new V3();
-      unitVectors[i].setA(eigenVectors[i]);
-      lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
-      //if (eigenValues[i] < 0)
-        //unitVectors[i].scale(-1);
+      if (eigenVectors[i] == null)
+        eigenVectors[i] = new V3();
+      eigenVectors[i].setA(vectors[i]);
+      eigenValues[i] = (float) lambdas[i];
     }
   }
 
@@ -102,7 +100,7 @@ public class Eigen {
    */
 
   public void calc(double[][] A) {
-    
+
     /* Jmol only has need of symmetric solutions 
      * 
     issymmetric = true;
@@ -115,35 +113,35 @@ public class Eigen {
 
     if (issymmetric) {
      */
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          V[i][j] = A[i][j];
-        }
-      }
-
-      // Tridiagonalize.
-      tred2();
-
-      // Diagonalize.
-      tql2(); 
-  /*
-    } else {
-      H = new double[n][n];
-      ort = new double[n];
-
+    for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
-          H[i][j] = A[i][j];
-        }
+        V[i][j] = A[i][j];
       }
-
-      // Reduce to Hessenberg form.
-      orthes();
-
-      // Reduce Hessenberg to real Schur form.
-      hqr2();
     }
-  */
+
+    // Tridiagonalize.
+    tred2();
+
+    // Diagonalize.
+    tql2();
+    /*
+      } else {
+        H = new double[n][n];
+        ort = new double[n];
+
+        for (int j = 0; j < n; j++) {
+          for (int i = 0; i < n; i++) {
+            H[i][j] = A[i][j];
+          }
+        }
+
+        // Reduce to Hessenberg form.
+        orthes();
+
+        // Reduce Hessenberg to real Schur form.
+        hqr2();
+      }
+    */
 
   }
 
@@ -183,11 +181,11 @@ public class Eigen {
         f[j][i] = (float) V[i][j];
     return f;
   }
-  
+
   public V3[] getEigenVectors3() {
     V3[] v = new V3[3];
     for (int i = 0; i < 3; i++) {
-      v[i] = V3.new3((float)V[0][i], (float)V[1][i], (float)V[2][i]);
+      v[i] = V3.new3((float) V[0][i], (float) V[1][i], (float) V[2][i]);
     }
     return v;
   }
@@ -201,7 +199,7 @@ public class Eigen {
    * 
    * @serial matrix dimension.
    */
-  private int n;
+  private int n = 3;
 
   /**
    * Symmetry flag.
@@ -1056,80 +1054,6 @@ public class Eigen {
       r = 0.0;
     }
     return r;
-  }
-
-  public static Quadric getEllipsoidDD(double[][] a) {
-    Eigen eigen = new Eigen(3);      
-    eigen.calc(a);
-    Matrix3f m = new Matrix3f();
-    float[] mm = new float[9];
-    for (int i = 0, p=0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        mm[p++] = (float) a[i][j];
-    m.setA(mm);
-    
-    V3[] evec = eigen.getEigenVectors3();
-    V3 n = new V3();
-    V3 cross = new V3();
-    for (int i = 0; i < 3; i++) {
-      n.setT(evec[i]);
-      m.transform(n);
-      cross.cross(n, evec[i]);
-      Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
-      n.setT(evec[i]);
-      n.normalize();
-      cross.cross(evec[i], evec[(i + 1)%3]);
-      Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
-    }
-    Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
-        + "I) (" + eigen.d[1] + " + " + eigen.e[1] 
-        + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
-    
-    V3[] unitVectors = new V3[3];
-    float[] lengths = new float[3];
-    eigen.set(unitVectors, lengths);
-    sort(unitVectors, lengths);
-    return new Quadric().fromVectors(unitVectors, lengths, false);
-  }
-
-  public static Quadric getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
-    //[0] is shortest; [2] is longest
-    V3[] unitVectors = new V3[vectors.length];
-    for (int i = vectors.length; --i >= 0;)
-      unitVectors[i] = V3.newV(vectors[i]);
-    sort(unitVectors, lengths);
-    return new Quadric().fromVectors(unitVectors, lengths, isThermal);
-  }
-
-  /**
-   * sorts vectors by absolute value and normalizes them
-   * @param vectors
-   * @param lengths
-   */
-  private static void sort(V3[] vectors, float[] lengths) {
-    // for atoms, lengths need to have length 3 to allow for scaling
-    Object[][] o = new Object[][] {
-        new Object[] { vectors[0], Float.valueOf(Math.abs(lengths[0])) }, 
-        new Object[] { vectors[1], Float.valueOf(Math.abs(lengths[1])) },
-        new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])) } }; 
-    Arrays.sort(o, new EigenSort());
-    for (int i = 0; i < 3; i++) {
-      vectors[i] = V3.newV((V3) o[i][0]);
-      vectors[i].normalize();
-      lengths[i] = ((Float) o[i][1]).floatValue();
-    }
-  }
-  
-  /**
-   * sort from smallest to largest
-   * 
-   */
-  protected static class EigenSort implements Comparator<Object[]> { 
-    public int compare(Object[] o1, Object[] o2) {
-      float a = ((Float)o1[1]).floatValue();
-      float b = ((Float)o2[1]).floatValue();
-      return (a < b ? -1 : a > b ? 1 : 0);
-    }    
   }
 
 }

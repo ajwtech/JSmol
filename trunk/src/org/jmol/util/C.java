@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-08 15:27:11 -0500 (Sat, 08 Jun 2013) $
- * $Revision: 18316 $
+ * $Date: 2013-06-20 09:58:27 -0500 (Thu, 20 Jun 2013) $
+ * $Revision: 18353 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -365,9 +365,9 @@ public class C {
   public final static short getColixTranslucent3(short colix,
                                                  boolean isTranslucent,
                                                  float translucentLevel) {
+    colix &= ~TRANSLUCENT_MASK;
     if (colix == INHERIT_ALL)
       colix = INHERIT_COLOR;
-    colix &= ~TRANSLUCENT_MASK;
     return (isTranslucent ? (short) (colix | getTranslucentFlag(translucentLevel))
         : colix);
   }

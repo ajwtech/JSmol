@@ -559,7 +559,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
-        + ";legacyautobonding"
+        + ";legacyautobonding;legacyhaddition"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
@@ -677,6 +677,7 @@ public class StateManager {
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
         legacyAutoBonding = g.legacyAutoBonding;
+        legacyHAddition = g.legacyHAddition;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
@@ -852,6 +853,7 @@ public class StateManager {
       //setParameterValue("edsUrlOptions", edsUrlOptions);
       setS("edsUrlCutoff", edsUrlCutoff);
       setB("ellipsoidArcs", ellipsoidArcs);
+      setB("ellipsoidArrows", ellipsoidArrows);
       setB("ellipsoidAxes", ellipsoidAxes);
       setF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
       setB("ellipsoidBall", ellipsoidBall);
@@ -885,6 +887,7 @@ public class StateManager {
       setI("isosurfacePropertySmoothingPower", isosurfacePropertySmoothingPower);
       setB("justifyMeasurements", justifyMeasurements);
       setB("legacyAutoBonding", legacyAutoBonding);
+      setB("legacyHAddition", legacyHAddition);
       setF("loadAtomDataTolerance", loadAtomDataTolerance);
       setS("loadFormat", loadFormat);
       setS("loadLigandFormat", loadLigandFormat);
@@ -1048,6 +1051,7 @@ public class StateManager {
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
     boolean legacyAutoBonding = false;
+    boolean legacyHAddition = false;
 
     void setDefaultLattice(P3 ptLattice) {
       ptDefaultLattice.setT(ptLattice);
@@ -1238,6 +1242,7 @@ public class StateManager {
     boolean ellipsoidAxes = false;
     boolean ellipsoidDots = false;
     boolean ellipsoidArcs = false;
+    boolean ellipsoidArrows = false;
     boolean ellipsoidFill = false;
     boolean ellipsoidBall = true;
 
@@ -1268,6 +1273,8 @@ public class StateManager {
         measureDistanceUnits = "au";
       else if (units.equalsIgnoreCase("vanderwaals") || units.equalsIgnoreCase("vdw"))
         measureDistanceUnits = "vdw";
+      else if (units.toLowerCase().endsWith("hz") || units.toLowerCase().endsWith("khz"))
+        measureDistanceUnits = units.toLowerCase();
       else if (units.equalsIgnoreCase("kj"))
         energyUnits = "kJ";
       else if (units.equalsIgnoreCase("kcal"))

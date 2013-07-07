@@ -10,7 +10,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
@@ -80,7 +80,7 @@ public interface SymmetryInterface {
 
   public void toCartesian(P3 pt, boolean asAbsolue);
 
-  public Quadric getEllipsoid(float[] parBorU);
+  public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 
@@ -165,7 +165,9 @@ public interface SymmetryInterface {
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
                                 P3 pt, P3 pt2, String id, int type);
 
-  public void setCentroid(ModelSet modelSet, int iAtom0, int iAtom1,
+  public BS notInCentroid(ModelSet modelSet, BS bsAtoms,
                           int[] minmax);
+
+  public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp, boolean isAbsolute);
 
 }

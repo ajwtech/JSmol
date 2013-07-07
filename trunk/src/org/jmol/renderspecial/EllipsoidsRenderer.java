@@ -26,39 +26,57 @@
 package org.jmol.renderspecial;
 
 import java.util.Iterator;
-
+import java.util.Map;
 
 import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Normix;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Parser;
 import org.jmol.util.V3;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
-import org.jmol.shape.Shape;
+import org.jmol.shapespecial.Ellipsoid;
 import org.jmol.shapespecial.Ellipsoids;
-import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
 import org.jmol.viewer.JC;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
 
   private Ellipsoids ellipsoids;
-  private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall;
-  private boolean wireframeOnly;
-  private int dotCount;
+
+  private boolean[] bGlobals = new boolean[7];
+  private boolean[] bOptions = new boolean[7];
+  private final String[] OPTS = new String[] { "dots", "arcs", "axes", "fill", "ball", "arrows", "wireframe" };
+  private final static int OPT_DOTS = 0;
+  private final static int OPT_ARCS = 1;
+  private final static int OPT_AXES = 2;
+  private final static int OPT_FILL = 3;
+  private final static int OPT_BALL = 4;
+  private final static int OPT_ARROWS = 5;
+  private final static int OPT_WIREFRAME = 6;
+  private static final int OPT_COUNT = 7;
+  
+  private boolean fillArc;
+  private boolean isSet;
+  
+  private int diameter, diameter0;
+  private int dotCount, dotScale;
+  private int dx;
+  private int eigenSignMask = 7;  
+  private int iCutout = -1;  
+  private int selectedOctant = -1;
+
   private int[] coords;
   private V3[] axes;
-  private final float[] factoredLengths = new float[3];
-  private int diameter, diameter0;
-  private int selectedOctant = -1;
-  private P3i[] selectedPoints = new P3i[3];
-  private int iCutout = -1;
-
+  private P3 center;
+  private float perspectiveFactor;
+  private BS bsTemp = new BS();
+  
   private Matrix3f mat = new Matrix3f();
   private Matrix3f mTemp = new Matrix3f();
   private Matrix4f mDeriv = new Matrix4f();
@@ -66,8 +84,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private Matrix3f matScreenToEllipsoid = new Matrix3f();
   private Matrix3f matEllipsoidToScreen = new Matrix3f();
   
-  
-  private double[] coef = new double[10];
+  private final double[] coefs = new double[10];
+  private final float[] factoredLengths = new float[3];
+  private final P3i[] selectedPoints = new P3i[3];
   private final V3 v1 = new V3();
   private final V3 v2 = new V3();
   private final V3 v3 = new V3();  
@@ -76,86 +95,70 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final P3i s0 = new P3i();
   private final P3i s1 = new P3i();
   private final P3i s2 = new P3i();
-  private int dotScale;
-  
+
   private final static float toRadians = (float) Math.PI/180f;
   private final static float[] cossin = new float[36];
+
   static {
     for (int i = 5, pt = 0; i <= 90; i += 5) {
       cossin[pt++] = (float) Math.cos(i * toRadians);
       cossin[pt++] = (float) Math.sin(i * toRadians);
     }
   }
-  
-  private boolean isSet;
 
   @Override
   protected boolean render() {
     isSet = false;
     ellipsoids = (Ellipsoids) shape;
-    if (ellipsoids.madset == null && !ellipsoids.haveEllipsoids)
+    if (!ellipsoids.isActive())
       return false;
     boolean needTranslucent = false;
-    Atom[] atoms = modelSet.atoms;
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
-      Atom atom = atoms[i];
-      if (!atom.isVisible(myVisibilityFlag))
-        continue;
-      if (atom.screenZ <= 1)
-        continue;
-      Quadric[] ellipsoid2 = atom.getEllipsoid();
-      if (ellipsoid2 == null)
-        continue;
-      for (int j = 0; j < ellipsoid2.length; j++) {
-        if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
-          continue;
-        colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
-        if (g3d.setColix(colix))
-          render1(atom, ellipsoid2[j]);
-        else
-          needTranslucent = true;
-      }
-    }
-
-    if (ellipsoids.haveEllipsoids) {
-      Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
-      while (e.hasNext()) {
-        Ellipsoid ellipsoid = e.next();
-        if (ellipsoid.visible && ellipsoid.isValid) { 
-           if (g3d.setColix(colix = ellipsoid.colix))
-             renderEllipsoid(ellipsoid);
-           else
-             needTranslucent = true;
-        }
-      }
+    if (!isSet)
+      isSet = setGlobals();
+    if (!ellipsoids.atomEllipsoids.isEmpty())
+      needTranslucent |= renderEllipsoids(ellipsoids.atomEllipsoids, false);
+    if (!ellipsoids.simpleEllipsoids.isEmpty()) {
+      needTranslucent |= renderEllipsoids(ellipsoids.simpleEllipsoids, true);
     }
     coords = null;
     return needTranslucent;
   }
 
-  private void renderEllipsoid(Ellipsoid ellipsoid) {
-    if (!isSet)
-      isSet = setGlobals();
-    axes = ellipsoid.axes;
-    for (int i = 0; i < 3; i++)
-      factoredLengths[i] = ellipsoid.lengths[i];
-    viewer.transformPtScr(ellipsoid.center, s0);
-    setMatrices();
-    center = ellipsoid.center;
-    setAxes();
-    renderOne(s0.z, true);
-  }
- 
   private boolean setGlobals() {
-    wireframeOnly = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
-    drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
-    drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
-    drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
-    drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
-    drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
-    fillArc = drawFill && !drawBall;
+    bGlobals[OPT_ARCS] = viewer.getBooleanProperty("ellipsoidArcs");
+    bGlobals[OPT_ARROWS] = viewer.getBooleanProperty("ellipsoidArrows");
+    bGlobals[OPT_AXES] = viewer.getBooleanProperty("ellipsoidAxes");
+    bGlobals[OPT_BALL] = viewer.getBooleanProperty("ellipsoidBall");
+    bGlobals[OPT_DOTS] = viewer.getBooleanProperty("ellipsoidDots");
+    bGlobals[OPT_FILL] = viewer.getBooleanProperty("ellipsoidFill");
+    bGlobals[OPT_WIREFRAME] = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
     diameter0 = Math.round (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
-        .floatValue() * 1000);
+        .floatValue() * 1000);    
+    Matrix4f m4 = viewer.getMatrixtransform();
+    mat.setRow(0, m4.m00, m4.m01, m4.m02);
+    mat.setRow(1, m4.m10, m4.m11, m4.m12);
+    mat.setRow(2, m4.m20, m4.m21, m4.m22);
+    matScreenToCartesian.invertM(mat);
+    setLogic();
+    return true;
+  }
+
+  private void setOptions(String options) {
+    for (int i = 0; i < OPT_COUNT; i++)
+      bOptions[i] = bGlobals[i];
+    if (options != null) {
+      options = ";" + options + ";";
+      for (int i = 0; i < OPT_COUNT; i++) {
+        if (Parser.isOneOf(OPTS[i], options))
+        bOptions[i] = true;
+      else if (Parser.isOneOf("no" + OPTS[i], options))
+        bOptions[i] = false;
+      }
+    }
+    setLogic();    
+  }
+  
+  private void setLogic() {
     //perspectiveOn = viewer.getPerspectiveDepth();
     /* general logic:
      * 
@@ -168,33 +171,126 @@ public class EllipsoidsRenderer extends ShapeRenderer {
      * filling for ARCS
      */
 
-    if (drawBall)
-      drawDots = false;
-    if (!drawDots && !drawArcs && !drawBall)
-      drawAxes = true;
-    if (drawDots) {
-      drawArcs = false;
-      drawFill = false;
+    bOptions[OPT_DOTS] &= !bOptions[OPT_WIREFRAME];
+    bOptions[OPT_BALL] &= !bOptions[OPT_WIREFRAME];
+    bOptions[OPT_FILL] &= !bOptions[OPT_WIREFRAME];
+    fillArc = bOptions[OPT_FILL] && !bOptions[OPT_BALL];
+
+    if (bOptions[OPT_BALL])
+      bOptions[OPT_DOTS] = false;
+    if (!bOptions[OPT_DOTS] && !bOptions[OPT_ARCS] && !bOptions[OPT_BALL])
+      bOptions[OPT_AXES] = true;
+    if (bOptions[OPT_DOTS]) {
+      bOptions[OPT_ARCS] = false;
+      bOptions[OPT_FILL] = false;
       dotScale = viewer.getInt(T.dotscale);
     }
 
-    if (drawDots) {
+    if (bOptions[OPT_DOTS]) {
       dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount"))
           .intValue();
       if (coords == null || coords.length != dotCount * 3)
         coords = new int[dotCount * 3];
     }
-
-    Matrix4f m4 = viewer.getMatrixtransform();
-    mat.setRow(0, m4.m00, m4.m01, m4.m02);
-    mat.setRow(1, m4.m10, m4.m11, m4.m12);
-    mat.setRow(2, m4.m20, m4.m21, m4.m22);
-    matScreenToCartesian.invertM(mat);
-    return true;
+  }
+  private boolean renderEllipsoids(Map<?, Ellipsoid> ht, boolean isSimple) {
+    boolean needTranslucent = false;
+    Iterator<Ellipsoid> e = ht.values().iterator();
+    Atom atom = null;
+    while (e.hasNext()) {
+      Ellipsoid ellipsoid = e.next();
+      if (!ellipsoid.visible)
+        continue;
+      if (isSimple) {
+        colix = ellipsoid.colix;
+      } else {
+        atom = modelSet.atoms[ellipsoid.tensor.atomIndex1];
+        if (atom.screenZ <= 1 || !atom.isVisible(myVisibilityFlag))
+          continue;
+        colix = C.getColixInherited(ellipsoid.colix, atom.getColix());
+      }
+      if (!g3d.setColix(colix)) {
+        needTranslucent = true;
+        continue;
+      }
+      viewer.transformPtScr(ellipsoid.center, s0);
+      renderOne(ellipsoid);
+    }
+    return needTranslucent;
   }
 
-  private final P3i[] screens = new P3i[32];
-  //private final int[] intensities = new int[32];
+  private void renderOne(Ellipsoid e) {
+    center = e.center;
+    // for extremely flat ellipsoids, we need at least some length
+    int maxPt = 2;
+    float maxLen = 0;
+    for (int i = 3; --i >= 0;) {
+      float f = factoredLengths[i] = Math.max(e.getLength(i), 0.02f);
+      if (f > maxLen) {
+        maxLen = f;
+        maxPt = i;
+      }        
+    }
+    axes = e.tensor.eigenVectors;
+    setMatrices();
+    setAxes(maxPt);
+    if (g3d.isClippedXY(dx + dx, s0.x, s0.y))
+      return;
+    eigenSignMask = e.tensor.eigenSignMask;
+    setOptions(e.options);
+    diameter = (int) viewer.scaleToScreen(s0.z, bOptions[OPT_WIREFRAME] ? 1 : diameter0);
+    if (e.tensor.isIsotropic) {
+      renderBall();
+      return;
+    }
+    if (bOptions[OPT_BALL]) {
+      renderBall();
+      if (bOptions[OPT_ARCS] || bOptions[OPT_AXES]) {
+        g3d.setColix(viewer.getColixBackgroundContrast());
+        //setAxes(atom, 1.0f);
+        if (bOptions[OPT_AXES])
+          renderAxes();
+        if (bOptions[OPT_ARCS])
+          renderArcs();
+        g3d.setColix(colix);
+      }
+    } else {
+      if (bOptions[OPT_AXES])
+        renderAxes();
+      if (bOptions[OPT_ARCS])
+        renderArcs();      
+    }
+    if (bOptions[OPT_DOTS])
+      renderDots();
+    if (bOptions[OPT_ARROWS])
+      renderArrows();
+  }
+
+  private void setMatrices() {
+
+    // Create a matrix that transforms cartesian coordinates
+    // into ellipsoidal coordinates, where in that system we 
+    // are drawing a sphere. 
+    
+    for (int i = 0; i < 3; i++) {
+      v1.setT(axes[i]);
+      v1.scale(factoredLengths[i]);
+      mat.setColumnV(i, v1);
+    }
+    mat.invertM(mat);
+    // make this screen coordinates to ellisoidal coordinates
+    matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
+    matEllipsoidToScreen.invertM(matScreenToEllipsoid);
+    perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
+    matScreenToEllipsoid.mulf(1f/perspectiveFactor);
+  }
+  
+  private final static V3[] unitAxisVectors = {
+    JC.axisNX, JC.axisX, 
+    JC.axisNY, JC.axisY, 
+    JC.axisNZ, JC.axisZ };
+
+  private final P3i[] screens = new P3i[38];
   private final P3[] points = new P3[6];
   {
     for (int i = 0; i < points.length; i++)
@@ -219,79 +315,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     4, 1, 2  //arc
   };
 
-  private int dx;
-  private float perspectiveFactor;
-  private P3 center;
-  
-  private void render1(Atom atom, Quadric ellipsoid) {
-    if (!isSet)
-      isSet = setGlobals();
-    s0.set(atom.screenX, atom.screenY, atom.screenZ);
-    boolean isOK = true;
-    for (int i = 3; --i >= 0;) {
-      factoredLengths[i] = ellipsoid.lengths[i] * ellipsoid.scale;
-      if (Float.isNaN(factoredLengths[i]))
-        isOK = false;
-      else if (factoredLengths[i] < 0.02f)
-        factoredLengths[i] = 0.02f; // for extremely flat ellipsoids, we need at least some length    
-    }
-    axes = ellipsoid.vectors;
-    if (axes == null) { //isotropic
-      axes = unitVectors;
-    }
-    setMatrices();
-    //[0] is shortest; [2] is longest
-    center = atom;
-    setAxes();
-    if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
-      return;
-    renderOne(atom.screenZ, isOK);
-  }
-
-  private void renderOne(int screenZ, boolean isOK) {
-    diameter = (int) viewer.scaleToScreen(screenZ, wireframeOnly ? 1 : diameter0);
-    if (!isOK || drawBall) {
-      renderBall();
-      if (!isOK)
-        return;
-      if (drawArcs || drawAxes) {
-        g3d.setColix(viewer.getColixBackgroundContrast());
-        //setAxes(atom, 1.0f);
-        if (drawAxes)
-          renderAxes();
-        if (drawArcs)
-          renderArcs();
-        g3d.setColix(colix);
-      }
-    } else {
-      if (drawAxes)
-        renderAxes();
-      if (drawArcs)
-        renderArcs();      
-    }
-    if (drawDots)
-      renderDots();
-  }
-
-  private void setMatrices() {
-    Quadric.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
-    // make this screen coordinates to ellisoidal coordinates
-    matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
-    matEllipsoidToScreen.invertM(matScreenToEllipsoid);
-    perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
-    matScreenToEllipsoid.mulf(1f/perspectiveFactor);
-  }
-  
-  private final static V3[] unitVectors = {
-    JC.axisX, JC.axisY, JC.axisZ};
-  
-  private final static V3[] unitAxisVectors = {
-    JC.axisNX, JC.axisX, 
-    JC.axisNY, JC.axisY, 
-    JC.axisNZ, JC.axisZ };
-
-  
-  private void setAxes() {
+  private void setAxes(int maxPt) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
@@ -301,24 +325,67 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       //pt1.scale(f);
 
       matEllipsoidToScreen.transform(pt1);
-      screens[i].set(Math.round (s0.x + pt1.x * perspectiveFactor),
-          Math.round (s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
+      screens[i].set(Math.round(s0.x + pt1.x * perspectiveFactor), Math
+          .round(s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
+      screens[i + 32].set(Math.round(s0.x + pt1.x * perspectiveFactor * 1.05f),
+          Math.round(s0.y + pt1.y * perspectiveFactor * 1.05f), Math
+              .round(pt1.z * 1.05f + s0.z));
     }
-    dx = 2 + (int) viewer.scaleToScreen(s0.z, 
-        Math.round((Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
+    dx = 2 + (int) viewer.scaleToScreen(s0.z, Math
+        .round((Float.isNaN(factoredLengths[maxPt]) ? 1.0f
+            : factoredLengths[maxPt]) * 1000));
   }
 
   private void renderBall() {
     setSelectedOctant();
     // get equation and differential
-    Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
-        matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
+    Ellipsoid.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
+        matScreenToEllipsoid, v1, mTemp, coefs, mDeriv);
     g3d.fillEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
-        coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
+        coefs, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
+  }
+
+  private void renderArrows() {
+    for (int i = 0; i < 6; i += 2) {
+      int pt = (i == 0 ? 1 : i);
+      fillConeScreen(screens[i], screens[i + 1], (eigenSignMask & pt) != 0);
+    }
+  }
+  private void fillConeScreen(P3i p1, P3i p2, boolean isPositive) {
+    if (diameter == 0)
+      return;
+    float diam = (diameter == 0 ? 1 : diameter) * 8;
+    v1.set(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+    v1.normalize();
+    v1.scale(diam);
+    s1.setT(p1);
+    s2.setT(p1);
+    if (isPositive) {
+      s2.x -= (int) v1.x; 
+      s2.y -= (int) v1.y; 
+      s2.z -= (int) v1.z; 
+    } else {
+      s1.x -= (int) v1.x; 
+      s1.y -= (int) v1.y; 
+      s1.z -= (int) v1.z; 
+    }
+    g3d.fillConeScreen(GData.ENDCAPS_FLAT, (int) diam, s1, s2, false); 
+    s1.setT(p2);
+    s2.setT(p2);
+    if (isPositive) {
+      s2.x += (int) v1.x; 
+      s2.y += (int) v1.y; 
+      s2.z += (int) v1.z; 
+    } else {
+      s1.x += (int) v1.x; 
+      s1.y += (int) v1.y; 
+      s1.z += (int) v1.z; 
+    }
+    g3d.fillConeScreen(GData.ENDCAPS_FLAT, (int) diam, s1, s2, false); 
   }
 
   private void renderAxes() {
-    if (drawBall && drawFill) {
+    if (bOptions[OPT_BALL] && bOptions[OPT_FILL]) {
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s0,
           selectedPoints[0]);
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s0,
@@ -340,16 +407,24 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 //          screens[5]);
 //      g3d.setColix(colix);
 //    } else {
+    if (bOptions[OPT_BALL]) {
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[32],
+          screens[33]);
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[34],
+          screens[35]);
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[36],
+          screens[37]);
+//    }
+    } else {
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[0],
           screens[1]);
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[2],
           screens[3]);
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[4],
           screens[5]);
-//    }
+    }
 
   }
-  
   private void renderDots() {
     for (int i = 0; i < coords.length;) {
       float fx = (float) Math.random();
@@ -372,9 +447,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void renderArcs() {
-    if (g3d.drawEllipse(center, points[0], points[2], fillArc, wireframeOnly)) {
-      g3d.drawEllipse(center, points[2], points[5], fillArc, wireframeOnly);
-      g3d.drawEllipse(center, points[5], points[0], fillArc, wireframeOnly);
+    if (g3d.drawEllipse(center, points[0], points[2], fillArc, bOptions[OPT_WIREFRAME])) {
+      g3d.drawEllipse(center, points[2], points[5], fillArc, bOptions[OPT_WIREFRAME]);
+      g3d.drawEllipse(center, points[5], points[0], fillArc, bOptions[OPT_WIREFRAME]);
       return;
     }
     for (int i = 1; i < 8; i += 2) {
@@ -384,9 +459,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       renderArc(octants[pt + 2], octants[pt]);
     }
   }
-  
-  private boolean fillArc;
-  private BS bsTemp = new BS();
   
   private void renderArc(int ptA, int ptB) {
     v1.setT(points[ptA]);
@@ -401,7 +473,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     pt1.setT(points[ptA]);
     s1.setT(screens[ptA]);
     short normix = Normix.get2SidedNormix(v3, bsTemp);
-    if (!fillArc && !wireframeOnly)
+    if (!fillArc && !bOptions[OPT_WIREFRAME])
       screens[6].setT(s1);
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
       pt2.scaleAdd2(cossin[pt] * d1, v1, center);
@@ -410,14 +482,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       if (fillArc)
         g3d.fillTriangle3CN(s0, colix, normix, s1, colix, normix, s2, colix,
             normix);
-      else if (wireframeOnly)
+      else if (bOptions[OPT_WIREFRAME])
         g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s1, s2);
       else
         screens[i + 7].setT(s2);
       pt1.setT(pt2);
       s1.setT(s2);
     }
-    if (!fillArc && !wireframeOnly)
+    if (!fillArc && !bOptions[OPT_WIREFRAME])
       for (int i = 0; i < 18; i++) {
         g3d.fillHermite(5, diameter, diameter, diameter, 
             screens[i == 0 ? i + 6 : i + 5], 
@@ -432,7 +504,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     int zMin = Integer.MAX_VALUE;
     selectedOctant = -1;
     iCutout = -1;
-    if (drawFill) {
+    if (bOptions[OPT_FILL]) {
       for (int i = 0; i < 8; i++) {
         int ptA = octants[i * 3];
         int ptB = octants[i * 3 + 1];
@@ -450,7 +522,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       s1.scaleAdd(-3, s0, s1);
       pt1.set(s1.x, s1.y, s1.z);
       matScreenToEllipsoid.transform(pt1);
-      selectedOctant = Quadric.getOctant(pt1);
+      selectedOctant = GData.getScreenOctant(pt1);
     }
   }  
 }

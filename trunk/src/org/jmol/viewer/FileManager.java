@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-07 06:59:01 +0100 (Sun, 07 Jul 2013) $
+ * $Revision: 18437 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -1260,7 +1260,7 @@ public class FileManager {
     key = key.replace('\\', '/');
     if (Logger.debugging)
       Logger.debug("cachePut " + key);
-    if (data == null || data.equals(""))
+    if (data == null || "".equals(data)) // J2S error -- cannot implement Int32Array.equals
       cache.remove(key);
     else
       cache.put(key, data);

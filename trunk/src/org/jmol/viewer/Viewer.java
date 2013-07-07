@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-06 00:08:08 +0100 (Sat, 06 Jul 2013) $
+ * $Revision: 18436 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -49,6 +49,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
@@ -111,8 +112,10 @@ import org.jmol.util.P3i;
 import org.jmol.util.P4;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SB;
+//import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -1306,7 +1309,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.transformPoint(pointAngstroms);
   }
 
-  public P3i transformPtVib(P3 pointAngstroms, V3 vibrationVector) {
+  public P3i transformPtVib(P3 pointAngstroms, Vibration vibrationVector) {
     return transformManager.transformPointVib(pointAngstroms, vibrationVector);
   }
 
@@ -4446,6 +4449,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      *   return null;
      * }
      */
+    {}
     if (getScriptManager() == null)
       return null;
     return scriptManager.evalStringWaitStatusQueued(returnType, strScript,
@@ -5726,6 +5730,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // wrong bonds. 
       // reset after a state script is read
       return global.legacyAutoBonding;
+    case T.legacyhaddition:
+      // aargh -- Some atoms missed before Jmol 13.1.17
+      return global.legacyHAddition;
     case T.loggestures:
       return global.logGestures;
     case T.measureallmodels:
@@ -6485,6 +6492,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.ellipsoidarrows:
+      // 13.1.17 TRUE for little points on ellipsoids showing sign of 
+      // eigenvalues (in --> negative; out --> positive)
+      global.ellipsoidArrows = value;
+      break;
     case T.translucent:
       // 13.1.17 false -> translucent objects are opaque among themselves (Pymol transparency_mode 2)
       global.translucent = value;
@@ -8658,8 +8670,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBondAtom2(i);
   }
 
-  public V3 getVibrationVector(int atomIndex) {
-    return modelSet.getVibrationVector(atomIndex, false);
+  public Vibration getVibration(int atomIndex) {
+    return modelSet.getVibration(atomIndex, false);
   }
 
   public int getVanderwaalsMar(int i) {
@@ -9565,6 +9577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           stateScriptVersionInt = main * 10000 + sub * 100 + minor;
           // here's why:
           global.legacyAutoBonding = (stateScriptVersionInt < 110924);
+          global.legacyHAddition = (stateScriptVersionInt < 130117);
           return;
         }
       } catch (Exception e) {
@@ -9650,7 +9663,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String[][] info = htPdbBondInfo.get(group3);
     if (info != null)
       return info;
-    info = JC.getPdbBondInfo(Group.lookupGroupID(group3));
+    info = JC.getPdbBondInfo(Group.lookupGroupID(group3), global.legacyHAddition);
     htPdbBondInfo.put(group3, info);
     return info;
   }
@@ -9756,8 +9769,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet.setModelAuxiliaryInfo(modelIndex, "modelID", id);
   }
 
-  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
-    modelSet.setCentroid(iAtom0, iAtom1, minmax);
+  public void setCentroid(BS bs, int[] minmax) {
+    modelSet.setCentroid(bs, minmax);
   }
 
   public String getPathForAllFiles() {
@@ -10053,6 +10066,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBsBranches(dihedralList);
   }
 
+  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
+  public JmolList<String> chainList = new JmolList<String>();
+
   /**
    * Create a unique integer for any chain string. 
    * Note that if there are any chains that are more than
@@ -10083,6 +10099,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) chainMap.get(Integer.valueOf(id));
   }
   
-  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
-  public JmolList<String> chainList = new JmolList<String>();
+  public Boolean getScriptQueueInfo() {
+    return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE : Boolean.FALSE);
+  }
+
+  private JmolNMRInterface nmrCalculation;
+  
+  public JmolNMRInterface getNMRCalculation() {
+    return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface
+        .getOptionInterface("quantum.NMRCalculation")).setViewer(this) : nmrCalculation);
+  }
+
+  public String getDistanceUnits(String s) {
+    if (s == null)
+      s = getDefaultMeasurementLabel(2);
+    int pt = s.indexOf("//"); 
+    return (pt < 0 ? getMeasureDistanceUnits() : s.substring(pt + 2));
+  }
+
 }

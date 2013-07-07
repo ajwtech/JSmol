@@ -41,7 +41,6 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Rectangle;
@@ -212,6 +211,7 @@ public class ActionManager {
   public final static int PICKING_ASSIGN_BOND      = 33;
   public final static int PICKING_ROTATE_BOND      = 34;
   public final static int PICKING_IDENTIFY_BOND    = 35;
+  public final static int PICKING_DRAG_LIGAND      = 36;
   
 
 
@@ -224,7 +224,7 @@ public class ActionManager {
     "navigate", 
     "connect", "struts", 
     "dragselected", "dragmolecule", "dragatom", "dragminimize", "dragminimizemolecule",
-    "invertstereo", "assignatom", "assignbond", "rotatebond", "identifybond"
+    "invertstereo", "assignatom", "assignbond", "rotatebond", "identifybond", "dragligand"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -676,7 +676,6 @@ public class ActionManager {
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
                            long time, int mode) {
     int mods = Binding.getModifiers(action);
-    //System.out.println("checkAction " + x + " " + y + " mode " + mode + " action " + action + " mods " + mods);
     if (mods != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
           -pressedCount, mods), mode);
@@ -704,7 +703,7 @@ public class ActionManager {
       if (!isBound(action, ACTION_rotate))
         viewer.setRotateBondIndex(-1);
     }
-    BS bs;
+    BS bs = null;
     if (dragAtomIndex >= 0) {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
@@ -719,26 +718,27 @@ public class ActionManager {
               Integer.MIN_VALUE, Integer.MIN_VALUE, null, true, false);
         }
         return;
+      case PICKING_DRAG_LIGAND:
       case PICKING_DRAG_MOLECULE:
+      case PICKING_DRAG_MINIMIZE_MOLECULE:
+        bs = viewer.getAtomBits(T.molecule, BSUtil.newAndSetBit(dragAtomIndex));
+        if (atomPickingMode == PICKING_DRAG_LIGAND)
+          bs.and(viewer.getAtomBitSet("ligand"));
+        //$FALL-THROUGH$
       case PICKING_DRAG_ATOM:
       case PICKING_DRAG_MINIMIZE:
-      case PICKING_DRAG_MINIMIZE_MOLECULE:
         if (dragGesture.getPointCount() == 1)
           viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD,
               true);
         checkMotion(JC.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)) {
-          bs = viewer.getAtomBits(T.molecule, BSUtil
-              .newAndSetBit(dragAtomIndex));
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
         } else {
-          bs = null;
           switch (atomPickingMode) {
+          case PICKING_DRAG_LIGAND:
           case PICKING_DRAG_MOLECULE:
           case PICKING_DRAG_MINIMIZE_MOLECULE:
-            bs = viewer.getAtomBits(T.molecule, BSUtil
-                .newAndSetBit(dragAtomIndex));
             viewer.select(bs, false, 0, true);
             break;
           }
@@ -893,11 +893,19 @@ public class ActionManager {
 
   private boolean checkUserAction(int action, int x, int y, int deltaX,
                                   int deltaY, long time, int mode) {
+    if(mode == Binding.PRESSED) {
+      if (Binding.getClickCount(action) == 1)
+        action = (action & ~Binding.CLICK_MASK) + Binding.DOWN;
+    }else
+    if(mode == Binding.DRAGGED || mode == Binding.DRAGGED2) {
+      if (Binding.getClickCount(action) == 1)
+        action = (action & ~Binding.CLICK_MASK);
+    }
     if (!binding.isUserAction(action))
       return false;
     Map<String, Object> ht = binding.getBindings();
     Iterator<String> e = ht.keySet().iterator();
-    boolean ret = false;
+    boolean passThrough = false;
     Object obj;
     while (e.hasNext()) {
       String key = e.next();
@@ -940,10 +948,13 @@ public class ActionManager {
       script = TextFormat.simpleReplace(script, "_DELTAY", "" + deltaY);
       script = TextFormat.simpleReplace(script, "_TIME", "" + time);
       script = TextFormat.simpleReplace(script, "_MODE", "" + mode);
+      if (script.startsWith("+:")) {
+        passThrough = true;
+        script = script.substring(2);
+      }
       viewer.evalStringQuiet(script);
-      ret = true;
     }
-    return ret;
+    return !passThrough;
   }
 
   /**
@@ -1322,7 +1333,6 @@ public class ActionManager {
                           int modifiers) {
     if (!viewer.getMouseEnabled())
       return;
-      //System.out.println("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
     switch (action) {
     case Binding.MOVED:
       setCurrent(time, x, y, modifiers);
@@ -1410,6 +1420,7 @@ public class ActionManager {
             || isBound(action, ACTION_dragZ);
         break;
       case PICKING_DRAG_SELECTED:
+      case PICKING_DRAG_LIGAND:
       case PICKING_DRAG_MOLECULE:
         isBound = isBound(action, ACTION_dragAtom)
             || isBound(action, ACTION_rotateSelected)
