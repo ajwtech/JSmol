@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-06 00:08:08 +0100 (Sat, 06 Jul 2013) $
- * $Revision: 18436 $
+ * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
+ * $Revision: 18449 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -183,10 +183,14 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         defaultTickInfo = md.tickInfo;
         return;
       }
-      if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS 
-          && Measurement.nmrType(viewer.getDistanceUnits(md.strFormat)) 
-          == Measurement.NMR_JC)
+      if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS) {
+        int type = Measurement.nmrType(viewer.getDistanceUnits(md.strFormat));
+        switch (type) {
+          case Measurement.NMR_JC:
+          case Measurement.NMR_DC:
           md.htMin = viewer.getNMRCalculation().getMinDistances(md);
+        }
+      }
       tickInfo = md.tickInfo;
       radiusData = md.radiusData;
       htMin = md.htMin;

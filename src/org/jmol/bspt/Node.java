@@ -1,6 +1,6 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
+ * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,7 +23,7 @@
 package org.jmol.bspt;
 
 
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 
@@ -55,8 +55,10 @@ class Node extends Element {
     this.bspt = bspt;
     if (level == bspt.treeDepth) {
       bspt.treeDepth = level + 1;
-      if (bspt.treeDepth >= Bspt.MAX_TREE_DEPTH)
-        Logger.error("BSPT tree depth too great:" + bspt.treeDepth);
+      // no longer necessary  -- in a long unfolded protein,
+      // we can go over 100 here
+      //if (bspt.treeDepth >= Bspt.MAX_TREE_DEPTH)
+        //Logger.error("BSPT tree depth too great:" + bspt.treeDepth);
     }
     if (leafLeft.count != Bspt.leafCountMax)
       throw new NullPointerException();

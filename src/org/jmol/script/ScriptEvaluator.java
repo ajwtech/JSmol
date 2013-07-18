@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-06 00:08:08 +0100 (Sat, 06 Jul 2013) $
- * $Revision: 18436 $
+ * $Date: 2013-07-15 22:03:15 +0100 (Mon, 15 Jul 2013) $
+ * $Revision: 18448 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -12392,6 +12392,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // draw pointgroup [C2|C3|Cs|Ci|etc.] [n] [scale x]
     int pt = 2;
     String type = (tokAt(pt) == T.scale ? "" : optParameterAsString(pt));
+    if (type.equals("chemicalShift"))
+      type = "cs";
     float scale = 1;
     int index = 0;
     if (type.length() > 0) {

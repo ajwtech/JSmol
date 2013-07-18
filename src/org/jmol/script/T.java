@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-05 17:59:05 +0100 (Fri, 05 Jul 2013) $
- * $Revision: 18433 $
+ * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
+ * $Revision: 18449 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -843,7 +843,8 @@ public class T {
   public final static int defaultdrawarrowscale          = floatparam | 8;
   public final static int defaulttranslucent             = floatparam | 10;
   public final static int dipolescale                    = floatparam | 12;
-  public final static int ellipsoidaxisdiameter          = floatparam | 14;
+  public final static int ellipsoidaxisdiameter          = floatparam | 13;
+  public final static int exportscale                    = floatparam | 14;
   public final static int gestureswipefactor             = floatparam | 15;
   public final static int hbondsangleminimum             = floatparam | 16;
   public final static int hbondsdistancemaximum          = floatparam | 17;
@@ -1132,9 +1133,9 @@ public class T {
   final static int drawing        = misc  | 105;
   final static int eccentricity   = misc  | 106;
   final static int ed             = misc  | 108 | expression;
-  final static int edges          = misc  | 110;
-  final static int energy         = misc  | 111;
-  final static int error          = misc  | 112; 
+  final static int edges          = misc  | 109;
+  final static int energy         = misc  | 110;
+  final static int error          = misc  | 111;
   final static int facecenteroffset = misc  | 113;
   public final static int fill    = misc  | 114;
   final static int filter         = misc  | 116;
@@ -1826,6 +1827,7 @@ public class T {
       "elemno",          T.t(elemno),
       "_e",              T.t(elemisono),
       "error",           T.t(error),
+      "exportScale",     T.t(exportscale),
       "fill",            T.t(fill),
       "find",            T.t(find),
       "fixedTemperature",T.t(fixedtemp),

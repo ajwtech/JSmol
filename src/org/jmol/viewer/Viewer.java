@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-06 00:08:08 +0100 (Sat, 06 Jul 2013) $
- * $Revision: 18436 $
+ * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
+ * $Revision: 18449 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -5827,6 +5827,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.defaultDrawArrowScale;
     case T.dipolescale:
       return global.dipoleScale;
+    case T.exportscale:
+      return global.exportScale;
     case T.hbondsangleminimum:
       return global.hbondsAngleMinimum;
     case T.hbondsdistancemaximum:
@@ -6101,6 +6103,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
+    case T.exportscale:
+      // 13.1.19
+      global.exportScale = value;
+      break;
     case T.starscale:
       // 13.1.15
       global.starScale = value;
