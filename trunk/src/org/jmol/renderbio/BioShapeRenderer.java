@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-13 07:03:44 -0500 (Mon, 13 May 2013) $
- * $Revision: 18216 $
+ * $Date: 2013-07-15 07:01:42 +0100 (Mon, 15 Jul 2013) $
+ * $Revision: 18447 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -385,9 +385,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
         //System.out.println(e.getMessage());
       }
     }
-    g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
-        controlPointScreens[iPrev], controlPointScreens[i],
-        controlPointScreens[iNext], controlPointScreens[iNext2]);
+    if (diameterBeg == 0 && diameterEnd == 0)
+      g3d.drawLineAB(controlPointScreens[i], controlPointScreens[iNext]);
+    else
+      g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
+          controlPointScreens[iPrev], controlPointScreens[i],
+          controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
 
   /**
