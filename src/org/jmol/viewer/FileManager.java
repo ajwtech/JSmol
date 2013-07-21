@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-07 06:59:01 +0100 (Sun, 07 Jul 2013) $
- * $Revision: 18437 $
+ * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
+ * $Revision: 18481 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -149,7 +149,7 @@ public class FileManager {
     if (fileName.startsWith("="))
       return "pdb";
     Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, null,
-        true, false, true, true);
+        true, false, true, true, null);
     if (br instanceof BufferedReader)
       return viewer.getModelAdapter().getFileTypeName(br);
     if (br instanceof ZInputStream) {
@@ -423,7 +423,8 @@ public class FileManager {
         }
         boolean isApplet = (appletDocumentBaseURL != null);
         JmolFileAdapterInterface fai = viewer.getFileAdapter();
-
+        if (name.indexOf(".png") >= 0 && pngjCache == null && viewer.cachePngFiles())
+          JmolBinary.cachePngjFile(this, null);
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)
             name = appletProxy + "?url=" + urlEncode(name);
@@ -433,7 +434,7 @@ public class FileManager {
             return null;
           name = url.toString();
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
-            Logger.info("FileManager opening " + name);
+            Logger.info("FileManager opening 1 " + name);
           ret = fai.getBufferedURLInputStream(url, outputBytes, post);
           if (ret instanceof SB) {
             SB sb = (SB) ret;
@@ -445,7 +446,7 @@ public class FileManager {
           }
         } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
-            Logger.info("FileManager opening " + name);
+            Logger.info("FileManager opening 2 " + name);
           ret = fai.getBufferedFileInputStream(name);
         }
         if (ret instanceof String)
@@ -520,7 +521,7 @@ public class FileManager {
     if (fullPathNameReturn != null)
       fullPathNameReturn[0] = names[0].replace('\\', '/');
     return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], bytes,
-        false, isBinary, false, doSpecialLoad);
+        false, isBinary, false, doSpecialLoad, null);
   }
 
   public String getEmbeddedFileState(String fileName) {
@@ -546,7 +547,8 @@ public class FileManager {
                                                                 boolean allowZipStream,
                                                                 boolean asInputStream,
                                                                 boolean isTypeCheckOnly,
-                                                                boolean doSpecialLoad) {
+                                                                boolean doSpecialLoad, 
+                                                                Map<String, Object> htParams) {
     String[] subFileList = null;
     String[] info = (bytes == null && doSpecialLoad ? getSpartanFileList(name) : null);
     String name00 = name;
@@ -593,13 +595,16 @@ public class FileManager {
       // script or load command should be used)
     }
 
-    if (bytes == null && pngjCache != null )
+    if (bytes == null && pngjCache != null) {
       bytes = JmolBinary.getCachedPngjBytes(this, name);
+      if (bytes != null && htParams != null)
+        htParams.put("sourcePNGJ", Boolean.TRUE);
+    }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.splitChars(name, "|");
       if (bytes == null)
-        Logger.info("FileManager opening " + name);
+        Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
@@ -917,7 +922,7 @@ public class FileManager {
 
       } catch (Exception e) {
         System.out.println(e.toString());
-        fullPathName = e.toString() + " opening " + fullPathName;
+        fullPathName = e.toString() + " opening 4 " + fullPathName;
         image = null;
         break;
       }
@@ -1250,8 +1255,10 @@ public class FileManager {
   public Map<String, byte[]> spardirCache;
   
   public void clearPngjCache(String fileName) {
-    if (fileName == null || pngjCache != null && pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName))))
+    if (fileName != null && (pngjCache == null || !pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName)))))
+        return;
       pngjCache = null;
+      Logger.info("PNGJ cache cleared");
   }
 
 
@@ -1275,8 +1282,9 @@ public class FileManager {
   }
 
   void cacheClear() {
-    Logger.info("cachClear");
+    Logger.info("cache cleared");
     cache.clear();
+    clearPngjCache(null);
   }
 
   public int cacheFileByNameAdd(String fileName, boolean isAdd) {

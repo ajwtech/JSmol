@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
- * $Revision: 18449 $
+ * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
+ * $Revision: 18481 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1916,7 +1916,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (filter.length() > 0)
         htParams.put("filter", filter);
     }
-    if (isAppend && !global.appendNew && getAtomCount() > 0)
+    boolean merging = (isAppend && !global.appendNew && getAtomCount() > 0);
+    htParams.put("baseAtomIndex", Integer.valueOf(isAppend ? getAtomCount() : 0));
+    htParams.put("baseModelIndex", Integer.valueOf(getAtomCount() == 0 ? 0 : getModelCount() + (merging ? -1 : 0)));
+    if (merging)
       htParams.put("merging", Boolean.TRUE);
     return htParams;
   }
@@ -2784,6 +2787,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelManager.zap();
       if (scriptManager != null)
         scriptManager.clear(false);
+      if (nmrCalculation != null)
+        getNMRCalculation().setChemicalShiftReference(null, 0);
+
       if (haveDisplay) {
         mouse.clear();
         clearTimeouts();
@@ -2810,9 +2816,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelManager.zap();
     }
     initializeModel(false);
-    if (notify)
+    if (notify) {
       setFileLoadStatus(EnumFileStatus.ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null, null);
+    }
     if (Logger.debugging)
       Logger.checkMemory();
   }
@@ -5765,6 +5772,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.showMeasurements;
     case T.showmultiplebonds:
       return global.showMultipleBonds;
+    case T.showtiming:
+      return global.showTiming;
     case T.slabbyatom:
       return global.slabByAtom;
     case T.slabbymolecule:
@@ -7155,13 +7164,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getTestFlag(int i) {
     switch (i) {
     case 1:
+      // no PNGJ caching
       return global.testFlag1;
     case 2:
+      // passed to MOCalcuation, but not used
       // nciCalculation special params.testFlag = 2 "absolute" calc.
       return global.testFlag2;
     case 3:
+      // isosurface numbers
       return global.testFlag3;
     case 4:
+      // isosurface normals
       // contact -- true: do not edit Cp list
       return global.testFlag4;
     }
@@ -8686,7 +8699,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @SuppressWarnings("incomplete-switch")
-  public int getVanderwaalsMarType(int i, EnumVdw type) {
+  public int getVanderwaalsMarType(int atomicAndIsotopeNumber, EnumVdw type) {
     if (type == null)
       type = dataManager.defaultVdw;
     else
@@ -8695,7 +8708,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (dataManager.bsUserVdws == null)
           type = dataManager.defaultVdw;
         else
-          return dataManager.userVdwMars[i];
+          return dataManager.userVdwMars[atomicAndIsotopeNumber & 127];
         break;
       case AUTO:
       case JMOL:
@@ -8707,7 +8720,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           type = dataManager.defaultVdw;
         break;
       }
-    return (Elements.getVanderwaalsMar(i, type));
+    return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
   }
 
   void setDefaultVdw(String type) {
@@ -9756,6 +9769,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void cachePut(String key, Object data) {
     // PyMOL reader and isosurface only
+    Logger.info("Viewer cachePut " + key);
     fileManager.cachePut(key, data);
   }
 
@@ -9766,7 +9780,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void cacheClear() {
     // script: reset cache
     fileManager.cacheClear();
-    fileManager.clearPngjCache(null);
   }
 
   public void setCurrentModelID(String id) {
@@ -10109,7 +10122,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE : Boolean.FALSE);
   }
 
-  private JmolNMRInterface nmrCalculation;
+  JmolNMRInterface nmrCalculation;
   
   public JmolNMRInterface getNMRCalculation() {
     return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface
@@ -10121,6 +10134,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s = getDefaultMeasurementLabel(2);
     int pt = s.indexOf("//"); 
     return (pt < 0 ? getMeasureDistanceUnits() : s.substring(pt + 2));
+  }
+
+  public int calculateFormalCharges(BS bs) {
+    if (bs == null)
+      bs = getSelectionSet(false);
+    return modelSet.fixFormalCharges(bs);
+  }
+
+  public boolean cachePngFiles() {
+    return (!getTestFlag(1));
   }
 
 }

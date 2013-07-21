@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-04 21:59:37 +0100 (Thu, 04 Jul 2013) $
- * $Revision: 18427 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -47,6 +47,7 @@ import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -1287,9 +1288,8 @@ public class PropertyManager implements JmolPropertyManager {
     if (strColor != null)
       info.put("color", strColor);
     info.put("colix", Integer.valueOf(bond.colix));
-    boolean isTranslucent = bond.isTranslucent();
-    if (isTranslucent)
-      info.put("translucent", Boolean.valueOf(isTranslucent));
+    if (C.isColixTranslucent(bond.colix))
+      info.put("translucent", Boolean.TRUE);
     return info;
   }
 

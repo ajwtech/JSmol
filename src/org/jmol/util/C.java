@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-20 09:58:27 -0500 (Thu, 20 Jun 2013) $
- * $Revision: 18353 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -171,8 +171,7 @@ public class C {
     int c = colixHash.get(argb);
     if ((c & RAW_RGB_INT) == RAW_RGB_INT)
       translucentFlag = 0;
-    return (c > 0 ? (short) (c | translucentFlag)
-        : (short) (allocateColix(argb) | translucentFlag));
+    return (short) ((c > 0 ? c : allocateColix(argb)) | translucentFlag);
   }
 
   public synchronized static int allocateColix(int argb) {

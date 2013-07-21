@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-13 19:10:30 -0500 (Wed, 13 Mar 2013) $
- * $Revision: 17975 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -798,7 +798,7 @@ public class SmilesParser {
         name = pattern.substring(biopt + 1).toUpperCase();
         if ((biopt = name.indexOf("#")) >= 0) {
           getDigits(name, biopt + 1, ret);
-          newAtom.elementNumber = (short) ret[0];
+          newAtom.elementNumber = ret[0];
           name = name.substring(0, biopt);
         }
         if (name.length() == 0)
@@ -844,7 +844,7 @@ public class SmilesParser {
             break;
           case '#':
             index = getDigits(pattern, index + 1, ret);
-            newAtom.elementNumber = (short) ret[0];
+            newAtom.elementNumber = ret[0];
             break;
           case '-':
           case '+':

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-01 09:08:21 +0100 (Mon, 01 Jul 2013) $
- * $Revision: 18383 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -742,7 +742,7 @@ import java.util.Map;
       Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
-      Atom atom2 = addAtom(modelIndex, atom1.group, (short) 1, "H"
+      Atom atom2 = addAtom(modelIndex, atom1.group, 1, "H"
           + n, n, n, pts[i].x, pts[i].y, pts[i].z, Float.NaN, Float.NaN, Float.NaN,
           Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       

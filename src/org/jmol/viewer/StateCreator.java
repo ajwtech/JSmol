@@ -458,15 +458,15 @@ public class StateCreator implements JmolStateCreator {
       return;
     Iterator<String> e = dm.dataValues.keySet().iterator();
     SB sb = new SB();
-    int n = 0;
+    boolean haveData = false;
     if (atomProps.length() > 0) {
-      n = 1;
+      haveData = true;
       sb.append(atomProps);
     }
     while (e.hasNext()) {
       String name = e.next();
       if (name.indexOf("property_") == 0) {
-        n++;
+        haveData = true;
         Object[] obj = dm.dataValues.get(name);
         Object data = obj[1];
         if (data != null && ((Integer) obj[3]).intValue() == 1) {
@@ -480,14 +480,14 @@ public class StateCreator implements JmolStateCreator {
         Object[] obj = dm.dataValues.get(name);
         Object data = obj[1];
         if (data != null && ((Integer) obj[3]).intValue() == 2) {
-          n++;
+          haveData = true;
           sb.append("\n").append(Escape.encapsulateData(name, data, 2));
         }
       } else if (name.indexOf("data3d") == 0) {
         Object[] obj = dm.dataValues.get(name);
         Object data = obj[1];
         if (data != null && ((Integer) obj[3]).intValue() == 3) {
-          n++;
+          haveData = true;
           sb.append("\n").append(Escape.encapsulateData(name, data, 3));
         }
       }
@@ -496,12 +496,14 @@ public class StateCreator implements JmolStateCreator {
     if (dm.userVdws != null) {
       String info = dm.getDefaultVdwNameOrData(0, EnumVdw.USER, dm.bsUserVdws);
       if (info.length() > 0) {
-        n++;
+        haveData = true;
         sb.append(info);
       }
     }
 
-    if (n == 0)
+    if (viewer.nmrCalculation != null)
+      haveData |= viewer.getNMRCalculation().getState(sb);
+    if (!haveData)
       return;
     if (sfunc != null)
       state.append("function _setDataState() {\n");
@@ -753,7 +755,8 @@ public class StateCreator implements JmolStateCreator {
     if (!tm.isWindowCentered())
       appendCmd(commands, "set windowCentered false");
     appendCmd(commands, "set cameraDepth " + tm.cameraDepth);
-    if (tm.mode == TransformManager.MODE_NAVIGATION)
+    boolean navigating = (tm.mode == TransformManager.MODE_NAVIGATION);
+    if (navigating)
       appendCmd(commands, "set navigationMode true");
     appendCmd(commands, viewer.getBoundBoxCommand(false));
     appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
@@ -766,7 +769,7 @@ public class StateCreator implements JmolStateCreator {
               .escapeColor(tm.stereoColors[0])
               + " " + Escape.escapeColor(tm.stereoColors[1])) + " "
           + tm.stereoDegrees);
-    if (tm.mode != TransformManager.MODE_NAVIGATION && !tm.zoomEnabled)
+    if (!navigating && !tm.zoomEnabled)
       appendCmd(commands, "zoom off");
     commands
         .append("  slab ")
@@ -774,7 +777,7 @@ public class StateCreator implements JmolStateCreator {
         .append(";depth ")
         .appendI(tm.depthPercentSetting)
         .append(
-            tm.slabEnabled && tm.mode != TransformManager.MODE_NAVIGATION ? ";slab on"
+            tm.slabEnabled && !navigating ? ";slab on"
                 : "").append(";\n");
     commands.append("  set slabRange ").appendF(tm.slabRange).append(";\n");
     if (tm.zShadeEnabled)
@@ -796,7 +799,7 @@ public class StateCreator implements JmolStateCreator {
     if (viewer.modelSetHasVibrationVectors() && tm.vibrationOn)
       appendCmd(commands, "set vibrationPeriod " + tm.vibrationPeriod
           + ";vibration on");
-    if (tm.mode == TransformManager.MODE_NAVIGATION) {
+    if (navigating) {
       commands.append(tm.getNavigationState());
       if (tm.depthPlane != null || tm.slabPlane != null)
         commands.append("  slab on;\n");

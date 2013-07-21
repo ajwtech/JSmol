@@ -161,7 +161,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void newSg() {
     sg = new SurfaceGenerator(viewer, this, null, jvxlData = new JvxlData());
-    sg.getParams().showTiming = viewer.global.showTiming;
+    sg.getParams().showTiming = viewer.getBoolean(T.showtiming);
     sg.setVersion("Jmol " + Viewer.getJmolVersion());
   }
   
@@ -633,8 +633,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if (("nci" == propertyName || "orbital" == propertyName)
         && sg != null) {
       sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
-    } else if ("solvent" == propertyName) {
-      sg.getParams().testFlags = (viewer.getTestFlag(1) ? 1 : 0);
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)

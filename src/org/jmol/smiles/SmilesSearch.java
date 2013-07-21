@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-03-14 08:32:56 -0500 (Thu, 14 Mar 2013) $
- * $Revision: 17976 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -889,7 +889,7 @@ public class SmilesSearch extends JmolMolecule {
           break;
 
         // <n> Check isotope
-        if ((n = patternAtom.getAtomicMass()) != Short.MIN_VALUE) {
+        if ((n = patternAtom.getAtomicMass()) != Integer.MIN_VALUE) {
           int isotope = atom.getIsotopeNumber();
           if (n >= 0 && n != isotope || n < 0 && isotope != 0 && -n != isotope) {
             // smiles indicates [13C] or [12C]
@@ -1841,7 +1841,7 @@ public class SmilesSearch extends JmolMolecule {
       atom.setBonds(bonds);
       while (--n >= 0) {
         SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom().setAll(0, ptAtom, 0,
-            (short) 1, 0);
+            1, 0);
         //System.out.println(atomH);
         ptAtom++;
         atomH.setBonds(new SmilesBond[1]);
