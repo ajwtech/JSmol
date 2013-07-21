@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
+ * $Revision: 18481 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -92,7 +92,7 @@ public abstract class JmolAdapter {
     return Elements.elementSymbolFromNumber(elementNumber);
   }
   
-  public static short getElementNumber(String elementSymbol) {
+  public static int getElementNumber(String elementSymbol) {
     return Elements.elementNumberFromSymbol(elementSymbol, false);
   }
   
@@ -116,7 +116,7 @@ public abstract class JmolAdapter {
     return Group.lookupGroupID(group3);
   }
 
-  public static float getBondingRadiusFloat(short atomicNumberWithIsotope, int charge) {
+  public static float getBondingRadiusFloat(int atomicNumberWithIsotope, int charge) {
     return Elements.getBondingRadiusFloat(atomicNumberWithIsotope, charge);
   }
 
@@ -242,11 +242,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams);
 
   /**
-   * @param atomSetCollection  
-   * @param baseModelIndex 
-   * @param baseAtomIndex 
+   * @param atomSetCollection 
    */
-  abstract public void finish(Object atomSetCollection, int baseModelIndex, int baseAtomIndex);
+  abstract public void finish(Object atomSetCollection);
 
   /**
    * Get the type of this file or molecular model, if known.
@@ -440,5 +438,5 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   abstract public Object getAtomSetCollectionFromReader(String fname,
                                             Object reader,
                                             Map<String, Object> htParams) throws Exception;
-
+  
 }

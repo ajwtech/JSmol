@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
+ * $Revision: 18481 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -425,31 +425,6 @@ public class Model {
   }
 
   public void recalculateLeadMidpointsAndWingVectors() {
-  }
-
-  /**
-   * create a new structure, being careful to not overwrite existing structure.
-   * 
-   * @param type
-   * @param structureID
-   * @param serialID
-   * @param strandCount
-   * @param startChainID
-   * @param startSeqcode
-   * @param endChainID
-   * @param endSeqcode
-   * @param istart
-   *        starting atom index
-   * @param iend
-   *        ending atom index
-   * @param bsAssigned
-   *        already assigned
-   */
-  public void addSecondaryStructure(EnumStructure type, String structureID,
-                                    int serialID, int strandCount,
-                                    int startChainID, int startSeqcode,
-                                    int endChainID, int endSeqcode, int istart,
-                                    int iend, BS bsAssigned) {
   }
 
   /**
