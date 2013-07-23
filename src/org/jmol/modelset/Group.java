@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-18 01:26:20 -0500 (Tue, 18 Jun 2013) $
- * $Revision: 18344 $
+ * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
+ * $Revision: 18486 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -60,7 +60,7 @@ public class Group {
   public int leadAtomIndex = -1;
   public int lastAtomIndex;
 
-  int seqcode;
+  public int seqcode;
   
   protected short groupID;
   protected boolean isProtein;
@@ -280,14 +280,6 @@ public class Group {
 
   public final int getResno() {
     return (seqcode == Integer.MIN_VALUE ? 0 : seqcode >> SEQUENCE_NUMBER_SHIFT); 
-  }
-
-  public final int getSeqcode() {
-    return seqcode;
-  }
-
-  public final int getSeqNumber() {
-    return seqcode >> SEQUENCE_NUMBER_SHIFT;
   }
 
   public final static int getSeqNumberFor(int seqcode) {

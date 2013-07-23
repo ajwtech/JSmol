@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
+ * $Revision: 18486 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -971,7 +971,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   int getSeqcode() {
-    return group.getSeqcode();
+    return group.seqcode;
   }
 
   public int getResno() {
@@ -1132,10 +1132,6 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public String getSeqcodeString() {
     return group.getSeqcodeString();
-  }
-
-  public int getSeqNumber() {
-    return group.getSeqNumber();
   }
 
   public char getInsertionCode() {
