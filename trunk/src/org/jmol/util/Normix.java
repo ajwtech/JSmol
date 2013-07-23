@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-02-21 08:17:07 -0600 (Thu, 21 Feb 2013) $
- * $Revision: 17937 $
+ * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
+ * $Revision: 18486 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,8 +23,6 @@
  */
 
 package org.jmol.util;
-
-
 
 
 /**
@@ -99,8 +97,8 @@ public class Normix {
   }
 
   public static short get2SidedNormix(V3 v, BS bsTemp) {
-    // ellipsoid arc and polyhedra only
-    return (short)~getNormix(v.x, v.y, v.z, Normix.NORMIX_GEODESIC_LEVEL, bsTemp);
+    // ellipsoid arc and CGO and polyhedra only
+    return (short) ~getNormixV(v, bsTemp);
   }
 
   private static short getNormix(double x, double y, double z, int geodesicLevel, BS bsConsidered) {

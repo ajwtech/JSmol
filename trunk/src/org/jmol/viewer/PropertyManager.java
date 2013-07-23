@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
+ * $Revision: 18486 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1209,8 +1209,8 @@ public class PropertyManager implements JmolPropertyManager {
       info.put("surfaceDistance", Float.valueOf(d));
     if (ms.models[atom.modelIndex].isBioModel) {
       info.put("resname", atom.getGroup3(false));
-      int seqNum = atom.getSeqNumber();
       char insCode = atom.getInsertionCode();
+      int seqNum = atom.getResno();
       if (seqNum > 0)
         info.put("resno", Integer.valueOf(seqNum));
       if (insCode != 0)
