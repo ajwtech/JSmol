@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
- * $Revision: 18481 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -9437,8 +9437,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     clearModelDependentObjects();
     if (pt == null) {
+      int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
-      modelSet.setAtomNamesAndNumbers(atomIndex, -1, null);
+      if (!Parser.isOneOf(type,";Mi;Pl;X;"))
+        modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
       refresh(3, "assignAtom");
       return;
     }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -253,6 +253,7 @@ class ColorManager {
         chain = 0;
       else if (chain >= 256)
         chain -= 256;
+      chain &= 0x1F;
       chain = chain % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero : JC.argbsChainAtom)[chain];
       break;

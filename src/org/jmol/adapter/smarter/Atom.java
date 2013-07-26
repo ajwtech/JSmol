@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-28 08:30:28 +0100 (Fri, 28 Jun 2013) $
- * $Revision: 18379 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -47,7 +47,8 @@ public class Atom extends P3 implements Cloneable {
   public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;
-  public int chainID;
+  public int chainID; // not public -- set using AtomSetCollectionReader.setChainID
+  
   public char alternateLocationID = '\0';
   public String group3;
   public int sequenceNumber = Integer.MIN_VALUE;
