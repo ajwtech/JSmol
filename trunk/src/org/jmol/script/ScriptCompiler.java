@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -2348,7 +2348,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       ichT = ptLastChar + 1;
     else if (ptSpace > 0)
       ichT = ptSpace;
-    if (isVariable && ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1) {
+    if (isVariable && (!allowSpace || ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1)) {
       // if we have @xxx then this is not an implied string
       return false;
     }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
- * $Revision: 18351 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -30,7 +30,6 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.SB;

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
- * $Revision: 18486 $
+ * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -538,10 +538,11 @@ public class PropertyManager implements JmolPropertyManager {
     }
     String[] lines = TextFormat.split((String) objHeader, '\n');
     // this is meant to be for PDB files only
-   if (lines.length == 0 
-       || lines[0].length() < 6 
-       || lines[0].charAt(6) != ' ' 
-       || !lines[0].substring(0, 6).equals(lines[0].substring(0, 6).toUpperCase())) {
+    if (lines.length == 0
+        || lines[0].length() < 6
+        || lines[0].charAt(6) != ' '
+        || !lines[0].substring(0, 6).equals(
+            lines[0].substring(0, 6).toUpperCase())) {
       ht.put("fileHeader", (String) objHeader);
       return ht;
     }
@@ -569,7 +570,7 @@ public class PropertyManager implements JmolPropertyManager {
         keyLast = key;
       }
       if (!haveType || key.equals(type))
-        sb.append(line.substring(10).trim()).appendC('\n');
+        sb.append(line).appendC('\n');
     }
     if (!haveType) {
       ht.put(keyLast, sb.toString());
