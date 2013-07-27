@@ -773,6 +773,7 @@
  	<delete file="temp.js" />
  	<delete dir="site" /> 	
    	
+   	<echo>Now unzip dist/jsmol.zip into a local directory for testing</echo>
   </target>
   	
 </project>
