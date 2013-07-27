@@ -1,4 +1,7 @@
 <project name="JSmol" default="fromJmol" basedir=".">
+	
+	<property name="jmol.path" value="../Jmol" />
+
 	<!-- 
 
 	The overall process of creating JSmol starts here. 
@@ -7,7 +10,8 @@
 	   projects checked out. Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
 	   not even, such as 13.1.18, not 13.0.18.) 
 	   
-	   Here we just assume that Jmol source code is in ../Jmol/src.
+	   Be sure to set the above property jmol.path to where you have checked out the Jmol project
+	   both here and in buildtojs.xml
 
 		!!Never modify any file in JSmol/src/org!! - Only work in Jmol. 
 		
@@ -99,7 +103,7 @@
   	
 	<!-- pull Jmol.properties key info -->
 	<copy todir="" >
-	  <fileset dir="../Jmol/src/org/jmol/viewer/">
+	  <fileset dir="${jmol.path}/src/org/jmol/viewer/">
 	    <include name="Jmol.properties" />
 	  </fileset>
 	  <filterchain>
@@ -114,7 +118,7 @@
   	
 	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
     <copy overwrite="true" todir="src/org/jmol" >
-      <fileset dir="../Jmol/src/org/jmol">
+      <fileset dir="${jmol.path}/src/org/jmol">
         <include name="**/*.java" />
       	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
@@ -129,23 +133,23 @@
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/console" >
-      <fileset dir="../Jmol/src/org/jmol/console">
+      <fileset dir="${jmol.path}/src/org/jmol/console">
         <include name="Generic*.java" />
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/export/image" >
-      <fileset dir="../Jmol/src/org/jmol/export/image">
+      <fileset dir="${jmol.path}/src/org/jmol/export/image">
         <include name="Generic*.java" />
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/modelkit" >
-      <fileset dir="../Jmol/src/org/jmol/modelkit">
+      <fileset dir="${jmol.path}/src/org/jmol/modelkit">
         <include name="**/*" />
         <exclude name="ModelKitPopup.java"/>
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/popup" >
-      <fileset dir="../Jmol/src/org/jmol/popup">
+      <fileset dir="${jmol.path}/src/org/jmol/popup">
         <include name="**/*.java" />
         <exclude name="JmolPopup.java"/>
         <exclude name="SwingPopup.java"/>
