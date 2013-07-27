@@ -58,8 +58,7 @@
 		JSmol/src/com   - 	www.jcraft.com/jzlib/ files that I have specially optimized for 
 							Jmol and JavaScript.
 							
-	5) Run buildtojs.xml to copy all needed JS files to a local folder, jslocal. Note that
-	   this also copies all pre-compiled Java2Script classes from the j2s/java directory. This
+	5) Run buildtojs.xml, which creates dist/jsmol.zip. This
 	   Ant task does important renaming of classes:
 	   
 	       org.jmol      		J
@@ -71,32 +70,22 @@
 	
 	6) Do a REFRESH on the project (I use right-click on the project folder...refresh.)
 
-	7) Copy all files in jslocal to the j2s directory of your test site.
-	   I advise starting by unzipping the test site found in the dist folder here.
+	7) To test, unzip dist/jsmol.zip into a test directory.
 	   
-	8) The file test2.htm in the jsmol directory on your test site needs to be run
+	8) The file test2.htm in the jsmol directory on your test site can be run
 	   using the URL extended with
 	      
 	      ?debugcode
 	      
-	   This bypasses the j2s/core files and reads those from the actual J, JZ, and java
+	   to bypass the j2s/core files and read those from the actual J, JZ, and java
 	   directories. 
 	   
 	9) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
 	   will probably not allow you to read binary files locally.  
 	
-   10) To do the final compressions at least on windows you will need to run make.bat 
-       in the test site jsmol/make directory. This runs the Google closure compiler,
-       creating JSmol.min.js and the various core JavaScript files in jsmol/j2s/core
-       and also deposits the latest version of jsmol.zip in the dist directory here.
-       Note that there is a reference there to 7z.exe in both min.bat and zip.bat. 
-       I do not have Linyx equivalents to these batch files.
+   10) At some time go to SourceForge and create a release. It is just jsmol.zip.
        
-   11) Update the JSmol and Jmol projects again and check in dist/jsmol.zip.
-   
-   12) At some time go to SourceForge and create a release. It is just jsmol.zip.
-       
-            - Bob Hanson March 23, 2013.
+            - Bob Hanson March 23, 2013 (revised July 27, 2013).
 	 -->
 
   <target name="fromJmol" id="fromJmol">
@@ -160,6 +149,9 @@
   	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
   	
+  	
+   	<echo>Now refesh the project, build the project, and run buildtojs.xml</echo>
+
   </target>
 	
 </project>
