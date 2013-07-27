@@ -150,7 +150,7 @@
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
   	
   	
-   	<echo>Now refesh the project, build the project, and run buildtojs.xml</echo>
+   	<echo>Now run buildtojs.xml</echo>
 
   </target>
 	
