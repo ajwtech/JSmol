@@ -2,6 +2,7 @@
  
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
+	
    <property name="jmol.path" value="../Jmol" />
 
    <target name="toJs" id="toJs">
@@ -152,6 +153,9 @@
   	  </fileset>
     </copy>
 
+   	<!-- note: any changes in these next sections must be reflected also
+   	             in packages/package.js -->
+   	
    	<concat destfile="site/jsmol/jsfull/corescript.js"><filelist dir="jslocal" files="
    		J/viewer/ScriptManager.js
    		J/api/JmolScriptManager.js

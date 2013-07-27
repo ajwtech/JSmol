@@ -1,5 +1,8 @@
 // BH 12/15/2012 1:56:28 PM  adds corezip.z.js and corebio.z.js
 // later additions include coresym.z.js, coresurface.z.js, coremenu.z.js
+
+// NOTE: Any changes here must also be reflected in buildtojs.xml
+
 if (!window["java.registered"])
  window["java.registered"] = false;
 
