@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>org.jsmol.test.Test</title>
+<style text="text/css">
+div.powered {
+	position:absolute;
+	right:0;
+	top:0;
+	margin:1em;
+}
+a.alaa {
+	display:block;
+	white-space:nowrap;
+	width:1em;
+	overflow-x:visible;
+	text-decoration:none;
+	padding-left:32px;
+	margin:2em;
+	color:navy;
+	cursor:pointer;
+	cursor:hand;
+}
+span.alaa-icon {
+	display:block;
+	position:absolute;
+	width:16px;
+	height:16px;
+	margin:2px 8px 0 -24px;
+	background-color:rgb(57,61,254);
+}
+</style>
+</head>
+<body>
+<!-- A Link An Application (ALAA) -->
+<div class="powered">Powered by <a href="http://java2script.org/">Java2Script</a></div>
+<a class="alaa" title="Launch org.jsmol.test.Test" href="javascript:if(a='org.jsmol.test.Test@bin',window['ClazzLoader']!=null)$w$(a);else{var d=document,t='onreadystatechange',x=d.createElement('SCRIPT'),f=function(){var s=this.readyState;if(s==null||s=='loaded'||s=='complete'){$w$(a);}};x.src='../../eclipse/plugins/net.sf.j2s.lib_2.0.0/j2slib/j2slib.z.js';(typeof x[t]=='undefined')?x.onload=f:x[t]=f;d.getElementsByTagName('HEAD')[0].appendChild(x);void(0);}"><span class="alaa-icon"></span>org.jsmol.test.Test</a>
+
+<script type="text/javascript">
+window["j2s.lib"] = {
+	/*base : "http://archive.java2script.org/",*/
+	base : "../../eclipse/plugins/net.sf.j2s.lib_2.0.0/",
+	/*alias : "2.0.0",*/
+	alias : "j2slib",
+	version : "20081203",
+	/*forward : true,*/
+	mode : "dailybuild",
+	onload : function () {
+		var j2sBase = window["j2s.lib"].j2sBase;
+		ClazzLoader.packageClasspath ("java", j2sBase, true);
+		ClazzLoader.setPrimaryFolder ("bin");
+		ClazzLoader.packageClasspath (["org.jmol.renderspecial", "shapebio", "bin2.java.adapter.readers.more", "org.jmol.minimize.forcefield", "test", "java.net", "bin2.java.modelset", "org.jmol.awt", "multitouch", "bin2.java.constant", "export.history", "bin2.java.atomdata", "$.viewer", "org.jmol.applet", "$.appletjs", "multitouch.sparshui", "adapter.readers.xml", "bin2.java.minimize.forcefield", "java.awt.event", "bin2.java.api", "viewer.binding", "org.jmol.bspt", "$.modelkit", "modelkit", "jvxl.calc", "bin2.java.adapter.readers.cifpdb", "org.jmol.render", "org.jmol.export.history", "bin2.java.modelkit", "org.jmol.awtjs", "$.renderbio", "multitouch.jni", "bin2.java.bspt", "javax.util", "bin2.java.adapter.smarter", "bin2.java.export.history", "bin2.java.util", "adapter.readers.more", "bin2.java.jvxl.data", "org.jmol.multitouch", "org.jmol.jvxl.calc", "bin2.java.jvxl.readers", "bin2.java.adapter.readers.xtal", "vecmath", "org.jmol.multitouch.jni", "org.jmol.modelsetbio", "adapter.readers.simple", "org.jmol.shapespecial", "$.g3d", "bin2.java.renderbio", "org.jmol.popup", "geodesic", "jvxl.data", "export.dialog", "bin2.java.script", "adapter.smarter", "bin2.java.popup", "bin2.java.jvxl.api", "org.jmol.adapter.readers.simple", "bin2.java.test", "adapter.readers.molxyz", "bin2.java.i18n", "popup", "org.jmol.adapter.smarter", "org.jmol.api", "$.constant", "$.smiles", "api", "renderbio", "bin2.java.adapter.readers.simple", "bin2.java.export.dialog", "java.awt", "org.jmol.multitouch.sparshui", "bin2.java.adapter.readers.molxyz", "bin2.java.shapesurface", "org.jmol.jvxl.api", "bin2.java.shape", "$.applet", "org.jmol.adapter.readers.quantum", "org.jmol.console", "bin2.java.awt", "$.rendersurface", "smiles", "bin2.java.g3d", "org.jsmol", "modelset", "i18n", "bin2.java.quantum", "org.jmol.shapesurface", "org.jmol.export.dialog", "bin2.java.vecmath", "shapespecial", "bin2.java.geodesic", "org.jmol.jvxl.readers", "bin2.java.renderspecial", "org.jmol.quantum", "bin2.java.viewer.binding", "shapesurface", "bin2.java.multitouch", "$.export", "org.jmol.adapter.readers.molxyz", "org.jmol.symmetry", "bin2.java.render", "$.smiles", "org.jmol.adapter.readers.xtal", "org.jmol.viewer", "g3d", "org.jmol.atomdata", "renderspecial", "org.jsmol.test", "org.jmol.i18n", "shape", "script", "render", "org.jmol.modelset", "console", "awt", "adapter.readers.quantum", "bin2.java.console", "org.jmol.minimize", "bin2.java.adapter.readers.xml", "bin2.java.multitouch.sparshui", "javax.vecmath", "org.jmol.util", "symmetry", "modelsetbio", "util", "rendersurface", "org.jmol.exportjs", "$.thread", "adapter.readers.cifpdb", "java.util", "org.jmol.geodesic", "jvxl.readers", "bin2.java.export.image", "bin2.java.multitouch.jni", "export.image", "minimize.forcefield", "org.jmol.export", "quantum", "org.jmol.adapter.readers.xml", "jvxl.api", "org.jmol.adapter.readers.cifpdb", "applet", "bin2.java.shapespecial", "bin2.java.jvxl.calc", "adapter.readers.xtal", "export", "constant", "org.jmol.adapter.readers.more", "org.jmol.jvxl.data", "bin2.java.adapter.readers.quantum", "org.jmol.script", "minimize", "bspt", "bin2.java.minimize", "$.shapebio", "org.jmol.shape", "bin2.java.modelsetbio", "org.jmol.shapebio", "org.jmol.viewer.binding", "atomdata", "org.jmol.export.image", "viewer", "org.jmol.rendersurface", "bin2.java.symmetry"], "bin/");
+		ClazzLoader.loadClass ("org.jsmol.test.Test", function () {
+			org.jsmol.test.Test.main([]);
+		});
+	}
+};
+
+// mozilla.addon.js
+// Following script will make J2SLib compatiable with Java2Script addon
+function generateScriptCallback () {
+	return function () {
+		var s = this.readyState;
+		if (s == null || s == "loaded" || s == "complete") {
+			if (window["ClazzLoader"] != null) {
+				window["j2s.lib"].onload (this);
+			}
+			this.onreadystatechange = null;
+			this.onload = null;
+		}
+	};
+};
+function loadJ2SLibZJS (path, cb) {
+	var sxr = document.createElement ("SCRIPT");
+	sxr.src = path;
+	sxr.type = "text/javascript";
+	if (cb) {
+		var t = "onreadystatechange";
+		var xhrCallback = generateScriptCallback ();
+		if (typeof sxr[t] == "undefined") {
+			sxr.onload = xhrCallback;
+		} else {
+			sxr[t] = xhrCallback;
+		}
+	}
+	document.getElementsByTagName ("HEAD")[0].appendChild (sxr);
+};
+if (navigator.userAgent.toLowerCase ().indexOf ("gecko") != -1) {
+	loadJ2SLibZJS("chrome://java2script/content/j2slib.js");
+	window.setTimeout (function () {
+		if (window["j2s.addon.loaded"]) return; // Loaded by Firefox addon!
+		var o = window["j2s.lib"];
+		if (o.base == null) {
+			o.base = "http://archive.java2script.org/";
+		}
+		o.j2sBase = o.base + (o.alias ? o.alias : o.version) + "/";
+		loadJ2SLibZJS(o.j2sBase + "j2slib.z.js", o.onload);
+	}, 300); // with 0.3 second lag! 0.3 is enough for chrome://*.js to be loaded.
+} else {
+	var o = window["j2s.lib"];
+	if (o.base == null) {
+		o.base = "http://archive.java2script.org/";
+	}
+	o.j2sBase = o.base + (o.alias ? o.alias : o.version) + "/";
+	loadJ2SLibZJS(o.j2sBase + "j2slib.z.js", o.onload);
+}</script>
+</body>
+</html>
