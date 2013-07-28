@@ -773,6 +773,12 @@
    	<echo>cleaning up files; creating distribution jsmol.zip </echo>
   	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
+   	<copy overwrite="true" todir="${jmol.path}/appletweb" >
+	  <fileset dir="dist">
+	    <include name="jsmol.zip" />
+	  </fileset>
+	</copy>
+   	
   	<delete dir="jslocal" />
  	<delete file="temp.js" />
  	<delete dir="site" /> 	
