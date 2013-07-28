@@ -133,6 +133,12 @@
   	  </fileset>
     </copy>
 	   	
+   	<copy todir="site/jsmol/js">
+  	  <fileset dir="jsmoljs">
+  	    <include name="**/*" />
+  	  </fileset>
+    </copy> 
+   	
   	<copy todir="site/jsmol/php">
   	  <fileset dir="php">
   	    <include name="**/*" />
@@ -156,7 +162,7 @@
    	<!-- note: any changes in these next sections must be reflected also
    	             in packages/package.js -->
    	
-   	<concat destfile="site/jsmol/jsfull/corescript.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="jslocal" files="
    		J/viewer/ScriptManager.js
    		J/api/JmolScriptManager.js
    		J/thread/CommandWatcherThread.js
@@ -175,26 +181,26 @@
    		java/util/regex/MatchResult.js  	
    		" />
    	</concat>
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corescript.js --js_output_file ../j2s/core/corescript.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/corestate.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corestate.js"><filelist dir="jslocal" files="
    		J/api/JmolStateCreator.js
    		J/viewer/StateCreator.js
    		" />
    	</concat> 	   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corestate.js --js_output_file ../j2s/core/corestate.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/coreprop.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/coreprop.js"><filelist dir="jslocal" files="
    		J/api/JmolPropertyManager.js
    		J/viewer/PropertyManager.js   	   	
    	   	" />
     </concat>	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/coreconsole.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="jslocal" files="
    		../packages/coreconsoletop.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
@@ -202,10 +208,10 @@
    		J/consolejs/AppletConsole.js   	   	  	   	
    	   	" />
    	</concat>   	   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
-  	<concat destfile="site/jsmol/jsfull/coremenu.js"><filelist dir="jslocal" files="
+  	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="jslocal" files="
    		../packages/coremenutop.js
    		J/api/JmolPopupInterface.js
    		J/popup/JmolAbstractMenu.js
@@ -216,10 +222,10 @@
    		J/popup/MainPopupResourceBundle.js
    		" />
    	</concat> 		
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coremenu.js --js_output_file ../j2s/core/coremenu.z.js" />
     </java>
-	<concat destfile="site/jsmol/jsfull/coremin.js"><filelist dir="jslocal" files="
+	<concat destfile="site/jsmol/js/coremin.js"><filelist dir="jslocal" files="
    		J/api/MinimizerInterface.js
    		J/minimize/Minimizer.js
    		J/minimize/MinObject.js
@@ -240,10 +246,10 @@
    		J/thread/MinimizationThread.js
     	" />
    	</concat>   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coremin.js --js_output_file ../j2s/core/coremin.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/corezip.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corezip.js"><filelist dir="jslocal" files="
    		J/api/JmolZipUtility.js
    		J/io2/ZipUtil.js
    		java/io/ByteArrayOutputStream.js
@@ -288,10 +294,10 @@
    		J/exportjs/JSImageCreator.js
    	   	" />
    	</concat>   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corezip.js --js_output_file ../j2s/core/corezip.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/corebio.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corebio.js"><filelist dir="jslocal" files="
    		J/adapter/readers/cifpdb/PdbReader.js
    		J/adapter/smarter/Structure.js
    		J/api/JmolBioResolver.js
@@ -327,10 +333,10 @@
    		J/renderbio/TraceRenderer.js
    	   	" />
    	</concat>   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corebio.js --js_output_file ../j2s/core/corebio.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/coresurface.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/coresurface.js"><filelist dir="jslocal" files="
    		J/api/VolumeDataInterface.js
    		J/io/XmlReader.js
    		J/jvxl/api/VertexDataServer.js
@@ -355,10 +361,10 @@
    		J/rendersurface/IsosurfaceRenderer.js
    	   	" />
    	</concat>	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresurface.js --js_output_file ../j2s/core/coresurface.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/coresym.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/coresym.js"><filelist dir="jslocal" files="
    		J/api/SymmetryInterface.js
    		J/symmetry/Symmetry.js
    		J/symmetry/PointGroup.js
@@ -372,19 +378,19 @@
    		J/symmetry/UnitCell.js
    	" />
    	</concat>
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresym.js --js_output_file ../j2s/core/coresym.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/corebinary.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corebinary.js"><filelist dir="jslocal" files="
    		J/api/JmolDocument.js
    		java/io/DataInputStream.js
    		J/io2/BinaryDocument.js
    	   	" />
    	</concat>
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corebinary.js --js_output_file ../j2s/core/corebinary.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/corepymol.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/corepymol.js"><filelist dir="jslocal" files="
    		J/api/JmolSceneGenerator.js
    		J/adapter/readers/pymol/PickleReader.js
    		J/api/PymolAtomReader.js
@@ -395,10 +401,10 @@
    		J/adapter/readers/pymol/PyMOLReader.js
    		" />
    	</concat>
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corepymol.js --js_output_file ../j2s/core/corepymol.z.js" />
     </java>
-   	<concat destfile="site/jsmol/jsfull/coresmiles.js"><filelist dir="jslocal" files="
+   	<concat destfile="site/jsmol/js/coresmiles.js"><filelist dir="jslocal" files="
    		J/api/SmilesMatcherInterface.js
    		J/smiles/SmilesMatcher.js
    		J/smiles/InvalidSmilesException.js
@@ -411,10 +417,10 @@
    		J/smiles/SmilesParser.js
    		" />
    	</concat>   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresmiles.js --js_output_file ../j2s/core/coresmiles.z.js" />
     </java>
-	<concat destfile="site/jsmol/jsfull/core.js"><filelist dir="jslocal" files="
+	<concat destfile="site/jsmol/js/core.js"><filelist dir="jslocal" files="
    		../Jmol.properties
    		../packages/coretop.js
    		java/net/MalformedURLException.js
@@ -704,7 +710,7 @@
    		../packages/corebottom.js
    	   	" />
    	</concat>   	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jsfull" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js core.js --js_output_file ../j2s/core/core.z.js" />
     </java>
    	
@@ -712,7 +718,7 @@
    	<!-- minimize JSmol JavaScript -->
    	
    	<echo>JSmol.min.js is the standard set, including jQuery</echo>
-   	<concat destfile="site/jsmol/jsfull/jsmol.js"><filelist dir="jsmoljs" files="
+   	<concat destfile="site/jsmol/js/jsmol.js"><filelist dir="jsmoljs" files="
    		JSmoljQuery.js
    		JSmolCore.js
    		JSmol.js
@@ -723,11 +729,11 @@
    		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
-   		<arg line="--js site/jsmol/jsfull/jsmol.js --js_output_file site/jsmol/JSmol.min.js" />
+   		<arg line="--js site/jsmol/js/jsmol.js --js_output_file site/jsmol/JSmol.min.js" />
     </java>
 
    	<echo>JSmol.min.nojq.js is the standard set but does not include jQuery</echo>
-  	<concat destfile="site/jsmol/jsfull/jsmol.nojq.js"><filelist dir="jsmoljs" files="
+  	<concat destfile="site/jsmol/js/jsmol.nojq.js"><filelist dir="jsmoljs" files="
    		JSmolCore.js
    		JSmol.js
    		JSmolApplet.js
@@ -737,7 +743,7 @@
    		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
-   		<arg line="--js site/jsmol/jsfull/jsmol.nojq.js --js_output_file site/jsmol/JSmol.min.nojq.js" />
+   		<arg line="--js site/jsmol/js/jsmol.nojq.js --js_output_file site/jsmol/JSmol.min.nojq.js" />
     </java>
 
    	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
