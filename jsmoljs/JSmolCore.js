@@ -123,44 +123,64 @@ Jmol = (function(document) {
   // hooks to jQuery -- if you have a different AJAX tool, feel free to adapt.
   // There should be no other references to jQuery in all the JSmol libraries.
 
-  Jmol.$ = function(appletOrId, what) {
-		return $("#" + appletOrId._id + (what ? "_" + what : ""));
-	}	
+  Jmol.$ = function(objectOrId, appletDiv) {
+	  return $(appletDiv ? "#" + objectOrId._id + "_" + appletDiv : objectOrId);
+  }	
 
+  Jmol.$appendTo = function (what, s) {
+	  $(what).appendTo(s);
+  }
+	  
   Jmol.$ajax = function (info) {
-    return $.ajax(info);
+	  return $.ajax(info);
   }
 
   Jmol.$attr = function (id, a, val) {
-    return $("#" + id).attr(a, val);
+	  return $("#" + id).attr(a, val);
   }
   
-  Jmol.$bind = function(id, list, f) {
-    return (f ? $(id).bind(list, f) : $(id).unbind(list));
+  Jmol.$bind = function(what, list, f) {
+	  return (f ? $(what).bind(list, f) : $(what).unbind(list));
   }
 
+  Jmol.$focus = function(id) {
+	  return $("#" + id).focus();
+  }
+	   
+  Jmol.$get = function(what, i) {
+	return $(what).get(i);
+  }
+ 
   Jmol.$html = function(id, html) {
     return $("#" + id).html(html);
   }
    
-  Jmol.$offset = function (id) {
+  Jmol.$offset = function(id) {
     return $("#" + id).offset();
   }
   
-  Jmol.$on = function (evt, f) {
-    return $(window).on(evt, f);
+  Jmol.$off = function(what, evt, id) {
+	$(what).off(evt, "#" + id);
+  }
+  
+  Jmol.$on = function(what, evt, f) {
+    return $(what).on(evt, f);
   }
 
+  Jmol.$prop = function(id, p) {
+	return $("#" + id).prop(p);
+  }
+  
   Jmol.$resize = function (f) {
     return $(window).resize(f);
   }
   
-  Jmol.$submit = function(form) {
-    return $("#" + form).submit();
+  Jmol.$submit = function(id) {
+    return $("#" + id).submit();
   }
 
   Jmol.$val = function (id, v) {
-    return $("#" + id).val(v);
+    return (arguments.length == 1 ? $("#" + id).val() : $("#" + id).val(v));
   }
   
   /*
@@ -482,7 +502,20 @@ Jmol = (function(document) {
 			// do something local here;
 			return;
 		}
-		Jmol.$attr("__jsmolform__", "action", url + "?" + (new Date()).getMilliseconds());
+		if (!Jmol._formdiv) {
+	      var sform = '<div id="__jsmolformdiv__" style="display:none">\
+	 				<form id="__jsmolform__" method="post" target="_blank" action="">\
+	 				<input name="call" value="saveFile"/>\
+	 				<input id="__jsmolmimetype__" name="mimetype" value=""/>\
+	 				<input id="__jsmolencoding__" name="encoding" value=""/>\
+	 				<input id="__jsmolfilename__" name="filename" value=""/>\
+	 				<input id="__jsmoldata__" name="data" value=""/>\
+	 				</form>\
+	 				</div>'
+	 	  Jmol.$appendTo("body", sform);
+	 	  Jmol._formdiv = "__jsmolform__";
+		}
+		Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
 		Jmol.$val("__jsmoldata__", data);
 		Jmol.$val("__jsmolfilename__", filename);
 		Jmol.$val("__jsmolmimetype__", mimetype);
@@ -891,22 +924,11 @@ Jmol = (function(document) {
         img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:10000;width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
          + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
       }
-      var sform = (!isHeader && !Jmol._formdiv ? 
-			 '<div id="__jsmolformdiv__" style="display:none">\
-				<form id="__jsmolform__" method="post" target="_blank" action="">\
-				<input name="call" value="saveFile"/>\
-				<input id="__jsmolmimetype__" name="mimetype" value=""/>\
-				<input id="__jsmolencoding__" name="encoding" value=""/>\
-				<input id="__jsmolfilename__" name="filename" value=""/>\
-				<input id="__jsmoldata__" name="data" value=""/>\
-				</form>\
-				</div>': ""); 
-			if (sform)
-				Jmol._formdiv = "__jsmolform__";
+
 			var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative\">IMG<div id=\"ID_appletdiv\" style=\"z-index:9999;width:100%;height:100%;position:absolute:top:0px;left:0px;\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;position:absolute;top:0px;left:0px\">\
 			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow;display:none\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:95%;overflow:auto\"></div></div></div>"+sform);
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:95%;overflow:auto\"></div></div></div>");
 		return s.replace(/IMG/, img).replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 
@@ -1087,7 +1109,7 @@ Jmol = (function(document) {
     //MSIE bug responds to any link click even if it is just a JavaScript call
     
     if (Jmol.featureDetection.allowDestroy)
-      Jmol.$on('beforeunload', function () { Jmol._destroy(applet); } );
+      Jmol.$on(window, 'beforeunload', function () { Jmol._destroy(applet); } );
   }
   
   Jmol._destroy = function(applet) {

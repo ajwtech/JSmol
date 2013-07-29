@@ -94,7 +94,7 @@ try{
 	.ui-widget-overlay{background:#aaa;opacity:.3;filter:Alpha(Opacity=30)}\
 	.ui-widget-shadow{margin:-8px 0 0 -8px;padding:8px;background:#aaa;opacity:.3;filter:Alpha(Opacity=30);-moz-border-radius:8px;-khtml-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}\
 	</style>'
-	$(s).appendTo("head");
+	Jmol.$appendTo("head", s);
 })(jQuery);
 
 Jmol.Menu = {
@@ -117,8 +117,8 @@ M.PopupMenu = function(applet, name) {
 
 	applet._popups || (applet._popups = {});
 	applet._popups[name] = this;
-	$("body").after('<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
-	this.setContainer($('#' + this.id));
+	Jmol.$appendTo("body",'<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
+	this.setContainer(Jmol.$('#' + this.id));
 }
 
 M.PopupMenu.prototype.hide = function() {
@@ -216,13 +216,13 @@ M.setItemProto = function(proto){
 	
 	proto.bindActionCommands = function() {
 		var me = this;
-		$(document).off('click', '#' + this.id);
-		$(document).on('click', '#' + this.id, function() {
+		Jmol.$off(document, 'click', this.id);
+		Jmol.$on(document, 'click', this.id, function() {
 			if (me.actionListener) {
 				me.popupMenu.hide();
 				me.actionListener.checkMenuClick(me, me.script);
 			}	else if (me.itemListener) {
-				me.selected = (me.isCheckBox ? $("#" + me.id + "-cb").prop('checked') : true); 
+				me.selected = (me.isCheckBox ? Jmol.$prop(me.id + "-cb", "checked") : true); 
 				me.itemListener.checkBoxStateChanged(me);
 			}
 		});

@@ -34,15 +34,15 @@ Jmol.Console.JSConsole = function(appletConsole) {
 		return btn.html();
 	}
 	s = s.replace(/\$ID/g,id)
-	$("body").after(s);
+	Jmol.$append("body", s);
 	
-	console.setContainer($('#' + id));
+	console.setContainer(Jmol.$("#" + id));
 	console.setPosition();
 	console.dragBind(true);
 	s = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].setVisible(false)\">close</a>";
-	$("#" + id + "_label1").html(s);
-	$("#" + id + "_inputdiv").html('<textarea id="' + id + '_input" style="width:590px;height:100px"></textarea>');
-	$("#" + id + "_outputdiv").html('<textarea id="' + id + '_output" style="width:590px;height:200px"></textarea>');
+	Jmol.$html(id + "_label1", s);
+	Jmol.$html(id + "_inputdiv", '<textarea id="' + id + '_input" style="width:590px;height:100px"></textarea>');
+	Jmol.$html(id + "_outputdiv", '<textarea id="' + id + '_output" style="width:590px;height:200px"></textarea>');
 	
 	s = setBtn(console, appletConsole.runButton)
 		+ setBtn(console, appletConsole.loadButton)
@@ -50,11 +50,11 @@ Jmol.Console.JSConsole = function(appletConsole) {
 		+ setBtn(console, appletConsole.clearOutButton)
 		+ setBtn(console, appletConsole.historyButton)
 		+ setBtn(console, appletConsole.stateButton);
-	$("#" + id + "_buttondiv").html(s);
-	$("#" + id + "_input").bind("keypress", function(event) { console.input.keyPressed(event) });
-	$("#" + id + "_input").bind("keyup", function(event) { console.input.keyReleased(event) });
-	$("#" + id + "_input").bind("mousedown touchstart", function(event) { console.ignoreMouse=true });
-	$("#" + id + "_output").bind("mousedown touchstart", function(event) { console.ignoreMouse=true });
+	Jmol.$html(id + "_buttondiv", s);
+	Jmol.$bind("#" + id + "_input", "keypress", function(event) { console.input.keyPressed(event) });
+	Jmol.$bind("#" + id + "_input", "keyup", function(event) { console.input.keyReleased(event) });
+	Jmol.$bind("#" + id + "_input", "mousedown touchstart", function(event) { console.ignoreMouse=true });
+	Jmol.$bind("#" + id + "_output", "mousedown touchstart", function(event) { console.ignoreMouse=true });
 
 	console.setButton = function(text) {
 		return new Jmol.Console.Button(this, text);
@@ -69,7 +69,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	}
 	
 	console.setTitle = function(title) {
-		//$("#" + this.id + "_title").html(title);
+		//Jmol.$html(this.id + "_title", title);
 	}
 }
 
@@ -82,13 +82,13 @@ Jmol.Console.Input = function(console) {
 	// something like this....
 
 	this.getText = function() {
-		return $("#" + this.console.id + "_input").val();
+		return Jmol.$val(this.console.id + "_input");
 	}
 
 	this.setText = function(text) {
 		if (text == null)
 			text = "";
-		$("#" + this.console.id + "_input").val(text);
+		Jmol.$val(this.console.id + "_input", text);
 	}
 
 	this.keyPressed = function(ev) {
@@ -103,7 +103,7 @@ Jmol.Console.Input = function(console) {
       if (ev.keyCode == 9 || kcode == 9) {
       // tab         
         var me = this;
-        setTimeout(function(){me.setText(me.getText() + "\t"); $("#" + me.console.id + "_input").focus()},10);	
+        setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.console.id + "_input")},10);	
       }
         
     if ((mode & 1) == 1 || kcode == 0)
@@ -133,7 +133,7 @@ Jmol.Console.Input = function(console) {
 
 
   this.getCaretPosition = function() {
-    var el = $(this).get(0);
+    var el = Jmol.$get(this, 0);
     if('selectionStart' in el)
       return el.selectionStart;
 		if(!('selection' in document))
@@ -151,13 +151,13 @@ Jmol.Console.Output = function(console) {
 	this.console = console;
 		
 	this.getText = function() {
-		return $("#" + this.console.id + "_output").val();
+		return Jmol.$val(this.console.id + "_output");
 	}
 
 	this.setText = function(text) {
 		if (text == null)
 			text = "";
-		$("#" + this.console.id + "_output").val(text);
+		Jmol.$val(this.console.id + "_output", text);
 	}
 	
   this.append = function(message, att) {
