@@ -1,6 +1,9 @@
 developers:
 
-The starting point for building this project is buildfromjmol.xml. See the detailed notes there.
+The starting point for building this project is buildfromjmol.xml. 
+See the detailed notes there.
+
+Please make commit comments in Jmol/src/viewer/Jmol.properties
 
 You may have to right-click on buildtojs.xml and set its 
 external configuration to:
