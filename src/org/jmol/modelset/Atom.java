@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-23 06:01:37 -0500 (Tue, 23 Jul 2013) $
- * $Revision: 18486 $
+ * $Date: 2013-07-30 20:45:49 -0500 (Tue, 30 Jul 2013) $
+ * $Revision: 18512 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -112,9 +112,7 @@ final public class Atom extends Point3fi implements JmolNode {
    * 
    * @param modelIndex
    * @param atomIndex
-   * @param x
-   * @param y
-   * @param z
+   * @param xyz
    * @param radius
    * @param atomSymmetry
    * @param atomSite
@@ -123,7 +121,7 @@ final public class Atom extends Point3fi implements JmolNode {
    * @param isHetero
    */
   public Atom(int modelIndex, int atomIndex,
-        float x, float y, float z, float radius,
+        P3 xyz, float radius,
         BS atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
         boolean isHetero) {
@@ -137,7 +135,7 @@ final public class Atom extends Point3fi implements JmolNode {
     if (formalCharge != 0 && formalCharge != Integer.MIN_VALUE)
       setFormalCharge(formalCharge);
     userDefinedVanDerWaalRadius = radius;
-    set(x, y, z);
+    setT(xyz);
   }
 
   public void setAltLoc(char altLoc) {

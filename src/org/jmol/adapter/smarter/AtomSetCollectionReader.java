@@ -661,14 +661,16 @@ public abstract class AtomSetCollectionReader {
     Logger.info("Setting space group name to " + spaceGroup);
   }
 
-  public void setSymmetryOperator(String xyz) {
+  public int setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
-      return;
+      return -1;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
         doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
-    if (!atomSetCollection.addSpaceGroupOperation(xyz))
+    int isym = atomSetCollection.addSpaceGroupOperation(xyz);
+    if (isym < 0)
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
+    return isym;
   }
 
   private int nMatrixElements = 0;
@@ -885,7 +887,12 @@ public abstract class AtomSetCollectionReader {
 
   private String filter1, filter2;
 
-  public boolean checkFilterKey(String key) {
+  protected String getFilter(String key) {
+    int pt = (filter == null ? -1 : filter.indexOf(key));
+    return (pt < 0 ? null : filter.substring(pt + key.length(), filter.indexOf(";", pt)));
+  }
+
+  protected boolean checkFilterKey(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
 
@@ -1618,4 +1625,5 @@ public abstract class AtomSetCollectionReader {
   public void setChainID(Atom atom, char ch) {
     atom.chainID = viewer.getChainID("" + ch);    
   }
+
 }

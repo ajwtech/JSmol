@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
- * $Revision: 18481 $
+ * $Date: 2013-08-07 22:13:26 -0500 (Wed, 07 Aug 2013) $
+ * $Revision: 18518 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -813,10 +813,7 @@ public class AtomSetCollection {
   public void addVibrationVector(int iatom, float x, float y, float z) {
     if (!allowMultiple)
       iatom = iatom % atomCount;
-    Atom atom = atoms[iatom];
-    atom.vectorX = x;
-    atom.vectorY = y;
-    atom.vectorZ = z;
+    atoms[iatom].vib = V3.new3(x, y, z);
   }
 
   void setAtomSetSpaceGroupName(String spaceGroupName) {
@@ -921,9 +918,9 @@ public class AtomSetCollection {
     }
   }
 
-  boolean addSpaceGroupOperation(String xyz) {
+  int addSpaceGroupOperation(String xyz) {
     getSymmetry().setSpaceGroup(doNormalize);
-    return (symmetry.addSpaceGroupOperation(xyz, 0) >= 0);
+    return symmetry.addSpaceGroupOperation(xyz, 0);
   }
   
   public void setLatticeParameter(int latt) {
@@ -1071,7 +1068,7 @@ public class AtomSetCollection {
       atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
   }
   
-  private int baseSymmetryAtomCount;
+  public int baseSymmetryAtomCount;
   
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
@@ -1232,7 +1229,7 @@ public class AtomSetCollection {
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
-    symmetry.setSpaceGroupS(null);
+    //symmetry.setSpaceGroupS(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     // turn off global fractional conversion -- this will be model by model
@@ -1259,11 +1256,11 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }
 
-  P3[] cartesians;
-  int bondCount0;
-  int bondIndex0;
-  boolean applySymmetryToBonds = false;
-  boolean checkSpecial = true;
+  private P3[] cartesians;
+  private int bondCount0;
+  private int bondIndex0;
+  private boolean applySymmetryToBonds = false;
+  private boolean checkSpecial = true;
 
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
@@ -1306,7 +1303,7 @@ public class AtomSetCollection {
     int atomMax = iAtomFirst + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && symmetry.getSpaceGroupXyz(iSym, true).equals("x,y,z"))
+      if (isBaseCell && iSym == 0)
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -1597,7 +1594,7 @@ public class AtomSetCollection {
   
   private void addTrajectoryStep() {
     P3[] trajectoryStep = new P3[atomCount];
-    boolean haveVibrations = (atomCount > 0 && !Float.isNaN(atoms[0].vectorX));
+    boolean haveVibrations = (atomCount > 0 && atoms[0] != null && !Float.isNaN(atoms[0].z));
     V3[] vibrationStep = (haveVibrations ? new V3[atomCount] : null);
     P3[] prevSteps = (trajectoryStepCount == 0 ? null 
         : (P3[]) trajectorySteps.get(trajectoryStepCount - 1));
@@ -1607,7 +1604,7 @@ public class AtomSetCollection {
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
       if (haveVibrations) 
-        vibrationStep[i] = V3.new3(atoms[i].vectorX, atoms[i].vectorY, atoms[i].vectorZ);
+        vibrationStep[i] = atoms[i].vib;
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
@@ -1659,13 +1656,8 @@ public class AtomSetCollection {
       return;
     }
     for (int i = 0; i < atomCount; i++) {
-      if (vibrationSteps != null) {
-        if (vibrations != null)
-          v = vibrations[i];
-        atoms[i].vectorX = v.x;
-        atoms[i].vectorY = v.y;
-        atoms[i].vectorZ = v.z;
-      }
+      if (vibrationSteps != null)
+        atoms[i].vib = (vibrations == null ? v : vibrations[i]);
       if (trajectory[i] != null)
         atoms[i].setT(trajectory[i]);
     }
@@ -2010,5 +2002,5 @@ public class AtomSetCollection {
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
-
+  
 }

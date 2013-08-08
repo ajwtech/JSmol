@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
- * $Revision: 18492 $
+ * $Date: 2013-08-07 22:13:26 -0500 (Wed, 07 Aug 2013) $
+ * $Revision: 18518 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -2108,11 +2108,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Map<String, Object> ligandModels;
   Map<String, Boolean> ligandModelSet;
 
-  public void setLigandModel(String id, String data) {
-    id = id.toUpperCase();
+  public void setLigandModel(String key, String data) {
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
-    ligandModels.put(id + "_data", data);
+    ligandModels.put(key, data);
   }
 
   /**
@@ -2120,9 +2119,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * @param id
    *        if null, clear "bad" entries from the set.
-   * @return a ligand model or null
+   * @param prefix 
+   * @param suffix 
+   * @return a ligand model or a string if just file data or null
    */
-  public Object getLigandModel(String id) {
+  public Object getLigandModel(String id, String prefix, String suffix) {
     if (id == null) {
       if (ligandModelSet != null) {
         Iterator<Map.Entry<String, Object>> e = ligandModels.entrySet()
@@ -2135,7 +2136,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return null;
     }
-    id = id.toUpperCase();
+    boolean isLigand = prefix.equals("ligand_");
+    if (isLigand)
+      id = id.toUpperCase();
     if (ligandModelSet == null)
       ligandModelSet = new Hashtable<String, Boolean>();
     ligandModelSet.put(id, Boolean.TRUE);
@@ -2147,18 +2150,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (model instanceof Boolean)
       return null;
     if (model == null)
-      model = ligandModels.get(id + "_data");
+      model = ligandModels.get(id + suffix);
     boolean isError = false;
     if (model == null) {
-      fname = (String) setLoadFormat("#" + id, '#', false);
-      if (fname.length() == 0)
-        return null;
-      scriptEcho("fetching " + fname);
-      model = getFileAsString(fname);
-      isError = (((String) model).indexOf("java.") == 0);
+      if (isLigand) {
+        fname = (String) setLoadFormat("#" + id, '#', false);
+        if (fname.length() == 0)
+          return null;
+        scriptEcho("fetching " + fname);
+        model = getFileAsString(fname);
+        isError = (((String) model).indexOf("java.") == 0);
+      } else {
+        model = getFileAsString(prefix);
+      }
       if (!isError)
-        ligandModels.put(id + "_data", model);
+        ligandModels.put(id + suffix, model);
     }
+    if (!isLigand)
+      return model;
     if (!isError && model instanceof String) {
       data = (String) model;
       // TODO: check for errors in reading file
@@ -3473,7 +3482,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
     BS bs = (data == null ? null : (BS) (dataManager.getData(label))[2]);
-    if (bs != null && getBoolean(T.rangeselected))
+    if (bs != null && global.rangeSelected)
       bs.and(getSelectionSet(false));
     setCurrentColorRangeData(data, bs);
   }
@@ -3549,7 +3558,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public SymmetryInterface getCurrentUnitCell() {
-    return modelSet.getUnitCell(animationManager.currentModelIndex);
+    if (animationManager.currentModelIndex >= 0)
+      return modelSet.getUnitCell(animationManager.currentModelIndex);
+    BS models = getVisibleFramesBitSet();
+    SymmetryInterface ucLast = null;
+    for (int i = models.nextSetBit(0); i >= 0; i = models.nextSetBit(i + 1)) {
+      SymmetryInterface uc = modelSet.getUnitCell(i);
+      if (uc == null)
+        continue;
+      if (ucLast == null) {
+        ucLast = uc;
+        continue;
+      }
+      if (!ucLast.unitCellEquals(uc)) 
+        return null;
+    }
+  return ucLast;
   }
 
   public SymmetryInterface getModelUnitCell(int modelIndex) {
@@ -5920,7 +5944,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     case T.forcefield:
       // 12.3.25
-      global.forceField = value;
+      global.forceField = value = ("UFF".equalsIgnoreCase(value)? "UFF" : "MMFF");
       minimizer = null;
       break;
     case T.nmrurlformat:
@@ -9193,6 +9217,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           haveFixed, isSilent, ff);
     } catch (Exception e) {
       Logger.error("Minimization error: " + e.toString());
+      if (!isJS)
+        e.printStackTrace();
     }
   }
 

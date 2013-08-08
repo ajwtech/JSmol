@@ -35,11 +35,13 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
+import org.jmol.util.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
@@ -177,6 +179,18 @@ public class Symmetry implements SymmetryInterface {
   public Matrix4f getSpaceGroupOperation(int i) {
     return spaceGroup.finalOperations[i];
   }
+  
+
+  public V3 getOriginalTranslation(int iop) {
+    return spaceGroup.finalOperations[iop].originalTranslation;
+  }
+  
+  public float getModParam(int iop, int type) {
+    return spaceGroup.finalOperations[iop].getModParam(type);
+  }
+
+
+
 
   public String getSpaceGroupXyz(int i, boolean doNormalize) {
     return spaceGroup.finalOperations[i].getXyz(doNormalize);
@@ -212,7 +226,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public String getMatrixFromString(String xyz, float[] rotTransMatrix, boolean allowScaling) {
-    return SymmetryOperation.getMatrixFromString(xyz, rotTransMatrix, null, false, allowScaling);
+    return SymmetryOperation.getMatrixFromString(null, xyz, rotTransMatrix, allowScaling);
   }
 
   public P3 ijkToPoint3f(int nnn) {
@@ -280,11 +294,15 @@ public class Symmetry implements SymmetryInterface {
       unitCell.setOrientation(matUnitCellOrientation);
   }
 
+  public void unitize(P3 ptFrac) {
+    unitCell.unitize(ptFrac);
+  }
+
   public void toUnitCell(P3 pt, P3 offset) {
     unitCell.toUnitCell(pt, offset);
   }
 
-  public void toCartesian(P3 fpt, boolean isAbsolute) {
+  public void toCartesian(Tuple3f fpt, boolean isAbsolute) {
     unitCell.toCartesian(fpt, isAbsolute);    
   }
 
@@ -292,7 +310,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.toSupercell(fpt);    
   }
 
-  public void toFractional(P3 pt, boolean isAbsolute) {
+  public void toFractional(Tuple3f pt, boolean isAbsolute) {
     unitCell.toFractional(pt, isAbsolute);
   }
 
@@ -632,5 +650,13 @@ public class Symmetry implements SymmetryInterface {
        && ptTemp.y >= cell.y - 1f - slop && ptTemp.y <= cell.y + slop
        && ptTemp.z >= cell.z - 1f - slop && ptTemp.z <= cell.z + slop);
  }
+
+  public boolean unitCellEquals(SymmetryInterface uc2) {
+    return ((Symmetry) (uc2)).unitCell.isSameAs(unitCell);
+  }
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs) {
+    spaceGroup.addLatticeVectors(lattvecs);
+  }
 
 }  

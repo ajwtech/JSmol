@@ -298,7 +298,7 @@
    		<arg line="--js corezip.js --js_output_file ../j2s/core/corezip.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/corebio.js"><filelist dir="jslocal" files="
-   		J/adapter/readers/cifpdb/PdbReader.js
+   		J/adapter/readers/pdb/PdbReader.js
    		J/adapter/smarter/Structure.js
    		J/api/JmolBioResolver.js
    		J/modelsetbio/Resolver.js
