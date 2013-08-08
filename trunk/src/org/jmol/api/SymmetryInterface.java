@@ -6,10 +6,12 @@ import java.util.Map;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
+import org.jmol.util.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -65,6 +67,10 @@ public interface SymmetryInterface {
 
   public Matrix4f getSpaceGroupOperation(int i);
 
+  public V3 getOriginalTranslation(int iop);
+
+  public float getModParam(int iop, int type);
+
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
@@ -78,13 +84,13 @@ public interface SymmetryInterface {
   
   public void setUnitCell(float[] notionalUnitCell);
 
-  public void toCartesian(P3 pt, boolean asAbsolue);
+  public void toCartesian(Tuple3f pt, boolean asAbsolue);
 
   public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 
-  public void toFractional(P3 pt, boolean isAbsolute);
+  public void toFractional(Tuple3f pt, boolean isAbsolute);
 
   public P3[] getUnitCellVertices();
 
@@ -170,4 +176,10 @@ public interface SymmetryInterface {
 
   public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp, boolean isAbsolute);
 
+  public boolean unitCellEquals(SymmetryInterface uc2);
+
+  public void unitize(P3 ptFrac);
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs);
+  
 }

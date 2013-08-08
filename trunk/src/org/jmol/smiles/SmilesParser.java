@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-08-07 14:52:31 -0500 (Wed, 07 Aug 2013) $
+ * $Revision: 18516 $
  *
  * Copyright (C) 2005  The Jmol Development Team
  *
@@ -641,9 +641,9 @@ public class SmilesParser {
             isNot = true;
             s = s.substring(1);
           }
-          float min = (pt + 1 == pt2 ? 0 : Float.parseFloat(s));
+          float min = (pt + 1 == pt2 ? 0 : Parser.fVal(s));
           s = strMeasure.substring(pt2 + 1);
-          float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
+          float max = (s.length() == 0 ? Float.MAX_VALUE : Parser.fVal(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
           molecule.measures.addLast(m);
           if (index > 0)

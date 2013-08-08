@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-04 22:21:15 +0100 (Thu, 04 Jul 2013) $
- * $Revision: 18428 $
+ * $Date: 2013-07-30 20:45:49 -0500 (Tue, 30 Jul 2013) $
+ * $Revision: 18512 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolFont;
 

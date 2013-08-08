@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-05 21:55:48 -0500 (Sun, 05 May 2013) $
- * $Revision: 18202 $
+ * $Date: 2013-08-07 14:52:31 -0500 (Wed, 07 Aug 2013) $
+ * $Revision: 18516 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -76,18 +76,20 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
 
-    SymmetryInterface[] cellInfos = modelSet.unitCells;
-
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
     if (viewer.isJmolDataFrameForModel(modelIndex)
         && !viewer.getModelSet().getJmolFrameType(modelIndex).equals(
-            "plot data") || isUnitCell && modelIndex < 0)
+            "plot data"))
       return false;
+    if (isUnitCell && modelIndex < 0) {
+      if (viewer.getCurrentUnitCell() == null)
+        return false;
+    }
     int nPoints = 6;
     int labelPtr = 0;
-    if (isUnitCell && cellInfos != null) {
+    if (isUnitCell && modelSet.unitCells != null) {
       nPoints = 3;
       labelPtr = 6;
     } else if (isXY) {
