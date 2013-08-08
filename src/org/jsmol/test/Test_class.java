@@ -11,7 +11,7 @@ public class Test_class {
 
 	public Test_class() {
 		try {
-			LimitedLineReader x = new LimitedLineReader(null, 1000);
+			new LimitedLineReader(null, 1000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

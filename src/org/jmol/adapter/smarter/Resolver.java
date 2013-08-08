@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-07 22:13:26 -0500 (Wed, 07 Aug 2013) $
- * $Revision: 18518 $
+ * $Date: 2013-08-07 22:49:24 -0500 (Wed, 07 Aug 2013) $
+ * $Revision: 18523 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -39,7 +39,7 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;MMCIF_PDBX;",
+    "cif.", ";Cif;MMCIF_PDBX;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
