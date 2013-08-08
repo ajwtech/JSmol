@@ -21,7 +21,7 @@ public class Test_adapter {
   // Main application
   public static void main(String[] args) {
   	Logger.setLogLevel(Logger.LEVEL_DEBUG);
-    Test_adapter test = new Test_adapter();
+    //Test_adapter test = new Test_adapter();
     //test.viewer.loadInline(strXyzHOH);
   }
 
@@ -42,7 +42,7 @@ public class Test_adapter {
 			ret = adapter.getAtomSetCollection(ret);
 		if (!(ret instanceof String))
 			atomSetCollection = (AtomSetCollection) ret;
-		String commandOptions = "-ionj \"load 1crn.pdb\"";
+		//String commandOptions = "-ionj \"load 1crn.pdb\"";
 		//viewer = Viewer.allocateViewer(null, adapter, 
     //null, null, null, commandOptions, null);
 		/* JmolViewer.allocateViewer(this, adapter);
