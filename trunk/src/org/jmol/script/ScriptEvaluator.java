@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-11 16:03:48 -0500 (Sun, 11 Aug 2013) $
- * $Revision: 18546 $
+ * $Date: 2013-08-12 15:16:55 -0500 (Mon, 12 Aug 2013) $
+ * $Revision: 18552 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1388,7 +1388,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // preliminarty checks we only want to do once:
 
-    P3 zero = (minmaxtype == T.allfloat ? new P3() : null);
     P3 pt = (isPt || !isAtoms ? new P3() : null);
     if (isExplicitlyAll || isString && !haveIndex
         && minmaxtype != T.allfloat && minmaxtype != T.min)
@@ -1738,7 +1737,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = Parser.parseFloatStr((String) v);
             break;
           case 3:
-            fout[i] = ((P3) v).distance(zero);
+            fout[i] = ((P3) v).length();
             break;
           }
         }
@@ -11284,7 +11283,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.set:
       sm.loadShape(JC.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", stringParameter(2));
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", parameterAsString(2));
       i = iToken;
       checkMore = true;
       isSet = true;
