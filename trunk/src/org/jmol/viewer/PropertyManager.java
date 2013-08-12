@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
- * $Revision: 18492 $
+ * $Date: 2013-08-10 19:05:54 -0500 (Sat, 10 Aug 2013) $
+ * $Revision: 18535 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -642,8 +642,7 @@ public class PropertyManager implements JmolPropertyManager {
       s = (String) m.getModelAuxiliaryInfoValue(i, "modelID");
       if (s != null)
         model.put("id", s);
-      model.put("vibrationVectors", Boolean.valueOf(m
-          .modelHasVibrationVectors(i)));
+      model.put("vibrationVectors", Boolean.valueOf(viewer.modelHasVibrationVectors(i)));
       Model mi = m.models[i];
       model.put("atomCount", Integer.valueOf(mi.atomCount));
       model.put("bondCount", Integer.valueOf(mi.getBondCount()));
@@ -1220,8 +1219,8 @@ public class PropertyManager implements JmolPropertyManager {
       info.put("chain", atom.getChainIDStr());
       info.put("atomID", Integer.valueOf(atom.atomID));
       info.put("groupID", Integer.valueOf(atom.getGroupID()));
-      if (atom.alternateLocationID != '\0')
-        info.put("altLocation", "" + atom.alternateLocationID);
+      if (atom.altloc != '\0')
+        info.put("altLocation", "" + atom.altloc);
       info.put("structure", Integer.valueOf(atom.getProteinStructureType()
           .getId()));
       info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));

@@ -94,7 +94,7 @@ try{
 	.ui-widget-overlay{background:#aaa;opacity:.3;filter:Alpha(Opacity=30)}\
 	.ui-widget-shadow{margin:-8px 0 0 -8px;padding:8px;background:#aaa;opacity:.3;filter:Alpha(Opacity=30);-moz-border-radius:8px;-khtml-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}\
 	</style>'
-	Jmol.$appendTo("head", s);
+	Jmol.$after("head", s);
 })(jQuery);
 
 Jmol.Menu = {
@@ -117,7 +117,7 @@ M.PopupMenu = function(applet, name) {
 
 	applet._popups || (applet._popups = {});
 	applet._popups[name] = this;
-	Jmol.$appendTo("body",'<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
+	Jmol.$after("body",'<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
 	this.setContainer(Jmol.$('#' + this.id));
 }
 
@@ -216,8 +216,8 @@ M.setItemProto = function(proto){
 	
 	proto.bindActionCommands = function() {
 		var me = this;
-		Jmol.$off(document, 'click', this.id);
-		Jmol.$on(document, 'click', this.id, function() {
+		Jmol.$documentOff('click', this.id);
+		Jmol.$documentOn('click', this.id, function() {
 			if (me.actionListener) {
 				me.popupMenu.hide();
 				me.actionListener.checkMenuClick(me, me.script);

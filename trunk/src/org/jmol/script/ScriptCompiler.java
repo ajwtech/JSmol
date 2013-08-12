@@ -1,5 +1,5 @@
 /* $Author: hansonr $
- * $Date: 2013-07-26 07:46:53 -0400 (Fri, 26 Jul 2013) $
+ * $Date: 2013-07-26 06:46:53 -0500 (Fri, 26 Jul 2013) $
  * $Revision: 18492 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team

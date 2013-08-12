@@ -718,7 +718,7 @@
    	<!-- minimize JSmol JavaScript -->
    	
    	<echo>JSmol.min.js is the standard set, including jQuery</echo>
-   	<concat destfile="site/jsmol/js/jsmol.js"><filelist dir="jsmoljs" files="
+   	<concat destfile="site/jsmol/js/JSmol.full.js"><filelist dir="jsmoljs" files="
    		JSmoljQuery.js
    		JSmolCore.js
    		JSmol.js
@@ -729,7 +729,7 @@
    		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
-   		<arg line="--js site/jsmol/js/jsmol.js --js_output_file site/jsmol/JSmol.min.js" />
+   		<arg line="--js site/jsmol/js/JSmol.full.js --js_output_file site/jsmol/JSmol.min.js" />
     </java>
 
    	<echo>JSmol.min.nojq.js is the standard set but does not include jQuery</echo>

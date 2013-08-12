@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-30 20:45:49 -0500 (Tue, 30 Jul 2013) $
- * $Revision: 18512 $
+ * $Date: 2013-08-10 09:03:58 -0500 (Sat, 10 Aug 2013) $
+ * $Revision: 18534 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -821,8 +821,7 @@ import java.util.Map;
       if (vNot.size() == 0)
         return;
       pt = Measure.getCenterAndPoints(vNot)[0];
-      V3 v = V3.newV(thisAtom);
-      v.sub(pt);
+      V3 v = V3.newVsub(thisAtom, pt);
       Quaternion q = Quaternion.newVA(v, 180);
       moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true);
     }
@@ -841,9 +840,7 @@ import java.util.Map;
       if (bs == null || bs.isEmpty())
         continue;
       Atom a1 = atoms[(int) dihedralList[pt + 1]];
-      Atom a2 = atoms[(int) dihedralList[pt + 2]];
-      V3 v = V3.newV(a2);
-      v.sub(a1);
+      V3 v = V3.newVsub(atoms[(int) dihedralList[pt + 2]], a1);
       float angle = (dihedralList[pt + 5] - dihedralList[pt + 4]) * f;
       AxisAngle4f aa = AxisAngle4f.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
       matTemp.setAA(aa);
