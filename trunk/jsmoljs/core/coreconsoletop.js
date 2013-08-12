@@ -34,7 +34,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 		return btn.html();
 	}
 	s = s.replace(/\$ID/g,id)
-	Jmol.$append("body", s);
+	Jmol.$after("body", s);
 	
 	console.setContainer(Jmol.$("#" + id));
 	console.setPosition();
