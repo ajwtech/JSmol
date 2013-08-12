@@ -163,10 +163,11 @@
    	             in jsmoljs/core/package.js -->
    	
    	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="jslocal" files="
-   		J/viewer/ScriptManager.js
+   		J/script/ScriptManager.js
    		J/api/JmolScriptManager.js
-   		J/thread/CommandWatcherThread.js
-   		J/thread/ScriptQueueThread.js
+   		J/script/CommandWatcherThread.js
+   		J/script/ScriptQueueThread.js
+   		J/script/ScriptDelayThread.js
    		J/script/ScriptEvaluator.js
    		J/api/JmolScriptEvaluator.js
    		J/script/ScriptCompiler.js
@@ -244,7 +245,7 @@
    		J/minimize/forcefield/CalculationsMMFF.js
    		J/minimize/forcefield/CalculationsUFF.js
    		J/minimize/forcefield/FFParam.js
-   		J/thread/MinimizationThread.js
+   		J/minimize/MinimizationThread.js
     	" />
    	</concat>   	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
@@ -545,7 +546,6 @@
    		java/util/StringTokenizer.js
    		J/adapter/smarter/AtomSetCollectionReader.js
    		J/thread/JmolThread.js
-   		J/thread/ScriptDelayThread.js
    		J/io/LimitedLineReader.js
    		J/constant/EnumStereoMode.js
    		J/io/Base64.js
@@ -613,7 +613,6 @@
    		J/viewer/AnimationManager.js
    		J/viewer/ColorManager.js
    		J/viewer/ShapeManager.js
-   		J/thread/AnimationThread.js
    		J/viewer/ModelManager.js
    		J/viewer/SelectionManager.js
    		J/viewer/StatusManager.js
@@ -624,10 +623,6 @@
    		J/modelset/Model.js
    		J/modelset/ModelSet.js
    		J/util/Hermite.js
-   		J/thread/MoveThread.js
-   		J/thread/MoveToThread.js
-   		J/thread/SpinThread.js
-   		J/thread/VibrationThread.js
    		J/api/ApiPlatform.js
    		J/awtjs2d/Platform.js
    		J/awtjs2d/AjaxURLStreamHandlerFactory.js

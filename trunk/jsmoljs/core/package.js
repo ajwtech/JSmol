@@ -65,9 +65,10 @@ var	basefile = base + "core.z.js";
     "$.ScriptFunction", 
     "$.ScriptInterruption", 
     "$.ScriptMathProcessor", 
-    "J.thread.CommandWatcherThread", 
+    "$.CommandWatcherThread", 
     "$.ScriptQueueThread", 
-    "J.viewer.ScriptManager" 
+    "$.ScriptDelayThread", 
+    "$.ScriptManager" 
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
