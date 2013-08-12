@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-30 20:45:49 -0500 (Tue, 30 Jul 2013) $
- * $Revision: 18512 $
+ * $Date: 2013-08-10 09:03:58 -0500 (Sat, 10 Aug 2013) $
+ * $Revision: 18534 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -60,7 +60,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  public char alternateLocationID = '\0';
+  public char altloc = '\0';
   public byte atomID;
   public int atomSite;
   public Group group;
@@ -139,7 +139,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public void setAltLoc(char altLoc) {
-    alternateLocationID = altLoc;
+    this.altloc = altLoc;
   }
   
   public final void setShapeVisibilityFlags(int flag) {
@@ -375,18 +375,18 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public char getAlternateLocationID() {
-    return alternateLocationID;
+    return altloc;
   }
   
   boolean isAlternateLocationMatch(String strPattern) {
     if (strPattern == null)
-      return (alternateLocationID == '\0');
+      return (altloc == '\0');
     if (strPattern.length() != 1)
       return false;
     char ch = strPattern.charAt(0);
     return (ch == '*' 
-        || ch == '?' && alternateLocationID != '\0' 
-        || alternateLocationID == ch);
+        || ch == '?' && altloc != '\0' 
+        || altloc == ch);
   }
 
   public boolean isHetero() {
@@ -915,9 +915,9 @@ final public class Atom extends Point3fi implements JmolNode {
       info.append(" ");
       info.appendI(getAtomNumber());
     }
-    if (alternateLocationID != 0) {
+    if (altloc != 0) {
       info.append("%");
-      info.appendC(alternateLocationID);
+      info.appendC(altloc);
     }
     if (group.chain.model.modelSet.modelCount > 1) {
       info.append("/");

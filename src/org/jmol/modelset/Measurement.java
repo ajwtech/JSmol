@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-28 19:31:59 -0500 (Sun, 28 Jul 2013) $
- * $Revision: 18507 $
+ * $Date: 2013-08-11 17:01:22 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18548 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -534,15 +534,15 @@ public class Measurement {
     return true;
   }
 
-  public boolean isMin(Map<String, Float> htMin) {
+  public boolean isMin(Map<String, Integer> htMin) {
     Atom a1 = (Atom) getAtom(1);
     Atom a2 = (Atom) getAtom(2);
-    float d = a2.distanceSquared(a1);
+    int d = (int) (a2.distanceSquared(a1)*100);
     String n1 = a1.getAtomName();
     String n2 = a2.getAtomName();
     String key = (n1.compareTo(n2) < 0 ? n1 + n2 : n2 + n1);
-    Float min = htMin.get(key);
-    return (min != null && d == min.floatValue());
+    Integer min = htMin.get(key);
+    return (min != null && d == min.intValue());
   }
 
 }

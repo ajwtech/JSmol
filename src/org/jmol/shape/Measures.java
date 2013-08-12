@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-17 01:07:15 +0200 (Wed, 17 Jul 2013) $
- * $Revision: 18449 $
+ * $Date: 2013-08-11 17:01:22 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18548 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -67,7 +67,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
   public JmolFont font3d;
-  private Map<String, Float> htMin;
+  private Map<String, Integer> htMin;
   
   @Override
   protected void initModelSet() {

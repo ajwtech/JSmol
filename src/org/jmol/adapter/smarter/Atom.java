@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-30 20:45:49 -0500 (Tue, 30 Jul 2013) $
- * $Revision: 18512 $
+ * $Date: 2013-08-11 16:03:48 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18546 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -55,10 +55,10 @@ public class Atom extends P3 implements Cloneable {
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public JmolList<Tensor> tensors;
   
-  public void addTensor(Tensor tensor, String type) {
+  public void addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
       return;
-    if (tensors == null)
+    if (reset || tensors == null)
       tensors = new JmolList<Tensor>();
     tensors.addLast(tensor);
     if (type != null)

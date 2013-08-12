@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: hansonr $
- * $Date: 2013-08-07 22:49:24 -0500 (Wed, 07 Aug 2013) $
- * $Revision: 18523 $
+ * $Author: pierocanepa $
+ * $Date: 2013-08-11 05:22:05 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18537 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -48,7 +48,8 @@ public class Resolver {
     "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
+    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
+             "VaspPoscar;Wien2k;Xcrysden;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -873,6 +874,9 @@ public class Resolver {
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };
   
+  private final static String[] abinitContainsRecords = { "Abinit",
+    "http://www.abinit.org", "Catholique", "Louvain" };
+  
   
   
   
@@ -883,7 +887,7 @@ public class Resolver {
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
     dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
-    mopacArchiveContainsRecords
+    mopacArchiveContainsRecords,abinitContainsRecords
   };
 }
 

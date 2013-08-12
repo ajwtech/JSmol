@@ -127,8 +127,8 @@ Jmol = (function(document) {
 	  return $(appletDiv ? "#" + objectOrId._id + "_" + appletDiv : objectOrId);
   }	
 
-  Jmol.$appendTo = function (what, s) {
-	  $(what).appendTo(s);
+  Jmol.$after = function (what, s) {
+	  $(what).after(s);
   }
 	  
   Jmol.$ajax = function (info) {
@@ -159,12 +159,16 @@ Jmol = (function(document) {
     return $("#" + id).offset();
   }
   
-  Jmol.$off = function(what, evt, id) {
-	$(what).off(evt, "#" + id);
+  Jmol.$documentOff = function(evt, id) {
+	$(document).off(evt, "#" + id);
   }
   
-  Jmol.$on = function(what, evt, f) {
-    return $(what).on(evt, f);
+  Jmol.$documentOn = function(evt, id, f) {
+		$(document).on(evt, "#" + id, f);
+	  }
+	  
+  Jmol.$windowOn = function(evt, f) {
+    return $(window).on(evt, f);
   }
 
   Jmol.$prop = function(id, p) {
@@ -512,7 +516,7 @@ Jmol = (function(document) {
 	 				<input id="__jsmoldata__" name="data" value=""/>\
 	 				</form>\
 	 				</div>'
-	 	  Jmol.$appendTo("body", sform);
+	 	  Jmol.$after("body", sform);
 	 	  Jmol._formdiv = "__jsmolform__";
 		}
 		Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
@@ -1109,7 +1113,7 @@ Jmol = (function(document) {
     //MSIE bug responds to any link click even if it is just a JavaScript call
     
     if (Jmol.featureDetection.allowDestroy)
-      Jmol.$on(window, 'beforeunload', function () { Jmol._destroy(applet); } );
+      Jmol.$windowOn('beforeunload', function () { Jmol._destroy(applet); } );
   }
   
   Jmol._destroy = function(applet) {

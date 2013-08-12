@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-08 09:09:49 -0500 (Thu, 08 Aug 2013) $
- * $Revision: 18528 $
+ * $Date: 2013-08-11 16:03:48 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18546 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -819,13 +819,11 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName+"");
   }
     
-  public void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
-    this.coordinatesAreFractional = coordinatesAreFractional;
-    setAtomSetAuxiliaryInfo(
-        "coordinatesAreFractional",
-        Boolean.valueOf(coordinatesAreFractional));
-    if (coordinatesAreFractional)
-      setGlobalBoolean(GLOBAL_FRACTCOORD);    
+  public void setCoordinatesAreFractional(boolean tf) {
+    coordinatesAreFractional = tf;
+    setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.valueOf(tf));
+    if (tf)
+      setGlobalBoolean(GLOBAL_FRACTCOORD);
   }
   
   float symmetryRange;
@@ -885,12 +883,13 @@ public class AtomSetCollection {
     Logger.info("Using supercell \n" + Matrix4f.newA(fmatSupercell));
   }
  
-  SymmetryInterface symmetry;
+  public SymmetryInterface symmetry;
   public SymmetryInterface getSymmetry() {
     if (symmetry == null)
       symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
+  
   
   
   
@@ -941,7 +940,8 @@ public class AtomSetCollection {
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
    
-  private void applySymmetryLattice(int maxX, int maxY, int maxZ) throws Exception {
+  private void applySymmetryLattice(int maxX, int maxY, int maxZ)
+      throws Exception {
     if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
       return;
     if (fmatSupercell != null) {
@@ -976,8 +976,7 @@ public class AtomSetCollection {
       symmetry = null;
       setNotionalUnitCell(new float[] { 0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z,
           pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z }, null,
-          (P3) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex,
-              "unitCellOffset"));
+          (P3) getAtomSetAuxiliaryInfoValue(-1, "unitCellOffset"));
       setAtomSetSpaceGroupName("P1");
       getSymmetry().setSpaceGroup(doNormalize);
       symmetry.addSpaceGroupOperation("x,y,z", 0);
@@ -988,11 +987,12 @@ public class AtomSetCollection {
         symmetry.toFractional(atoms[i], true);
 
       // 5) apply the full lattice symmetry now
-      
+
       haveAnisou = false;
-      
+
       // ?? TODO
-      atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
+      atomSetAuxiliaryInfo[currentAtomSetIndex]
+          .remove("matUnitCellOrientation");
       doPackUnitCell = false; // already done that.
     }
 
@@ -1064,7 +1064,7 @@ public class AtomSetCollection {
       return;
     getSymmetry();
     for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
-      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
+      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null, false); // getTensor will return correct type 
   }
   
   public int baseSymmetryAtomCount;
@@ -1239,7 +1239,7 @@ public class AtomSetCollection {
   
   private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
     symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
-    String name = (String) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "spaceGroup");
+    String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1264,9 +1264,8 @@ public class AtomSetCollection {
     checkSpecial = TF;
   }
   
-  private final P3 ptTemp = new P3();
-  private final P3 ptTemp1 = new P3();
-  private final P3 ptTemp2 = new P3();
+  private P3 ptTemp;
+  private Matrix3f mTemp;
   
   private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
@@ -1378,22 +1377,10 @@ public class AtomSetCollection {
               Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
-              if (nOperations == 1) {
-                atom1.addTensor(Tensor.copyTensor(t), null);
-                continue;
-              }
-              V3[] eigenVectors = t.eigenVectors;
-              // note -- PDB reader specifically turns off cartesians
-              if (addCartesian) {
-                ptTemp.setT(cartesians[i - iAtomFirst]);
-              } else {
-                ptTemp.setT(atoms[i]);
-                symmetry.toCartesian(ptTemp, false);
-              }
-              eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp,
-                  eigenVectors, ptTemp1, ptTemp2);
-              atom1.addTensor(Tensor.getTensorFromEigenVectors(eigenVectors,
-                  t.eigenValues, t.type), null);
+              if (nOperations == 1)
+                atom1.addTensor(Tensor.copyTensor(t), null, false);
+              else
+                addRotatedTensor(atom1, t, iSym, false);
             }
           }
         }
@@ -1416,6 +1403,16 @@ public class AtomSetCollection {
     return pt;
   }
   
+  public void addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
+    if (ptTemp == null) {
+      ptTemp = new P3();
+      mTemp = new Matrix3f();
+    }
+    a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
+        .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
+        t.eigenValues, t.type), null, reset);
+  }
+
   public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
@@ -1808,7 +1805,7 @@ public class AtomSetCollection {
   }
 
   private void appendAtomProperties(int nTimes) {
-    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(-1, "atomProperties");
     if (p == null) {
       return;
     }
@@ -1842,7 +1839,7 @@ public class AtomSetCollection {
   }
   
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return  atomSetAuxiliaryInfo[index].get(key);
+    return  atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex].get(key);
   }
   
   /**

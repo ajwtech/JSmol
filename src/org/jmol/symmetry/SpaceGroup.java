@@ -39,7 +39,6 @@ import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.V3;
 
 /*
  * 
@@ -202,13 +201,6 @@ class SpaceGroup {
     finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     
-  Object rotateEllipsoid(int i, P3 ptTemp, V3[] axes,
-                                UnitCell unitCell, P3 ptTemp1,
-                                P3 ptTemp2) {
-    return finalOperations[i].rotateEllipsoid(ptTemp, axes, unitCell, ptTemp1,
-        ptTemp2);
-  }
-
   static String getInfo(String spaceGroup, SymmetryInterface cellInfo) {
     SpaceGroup sg;
     if (cellInfo != null) {
@@ -1385,13 +1377,14 @@ class SpaceGroup {
     int nOps = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
-      if (data.length != modulationDimension + 3)
+      if (data.length > modulationDimension + 3)
         return;
       for (int i = 0; i < nOps; i++) {
         SymmetryOperation op = operations[i];
         float[] rotTrans = op.rotTransMatrix;
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
+        newOp.modDim = modulationDimension;
         newOp.rotTransMatrix = ArrayUtil.arrayCopyF(rotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
