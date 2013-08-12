@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-11 16:03:48 -0500 (Sun, 11 Aug 2013) $
- * $Revision: 18546 $
+ * $Date: 2013-08-12 15:16:55 -0500 (Mon, 12 Aug 2013) $
+ * $Revision: 18552 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
@@ -55,14 +56,15 @@ public class Atom extends P3 implements Cloneable {
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public JmolList<Tensor> tensors;
   
-  public void addTensor(Tensor tensor, String type, boolean reset) {
+  public Tensor addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
-      return;
+      return null;
     if (reset || tensors == null)
       tensors = new JmolList<Tensor>();
     tensors.addLast(tensor);
     if (type != null)
       tensor.setType(type);
+    return tensor;
   }
 
   
@@ -80,7 +82,14 @@ public class Atom extends P3 implements Cloneable {
   public Atom getClone() throws CloneNotSupportedException {
     // note that anisoBorU and ellipsoid are not copied
     // we consider them "final" in a sense
-    return (Atom)clone();
+    Atom a = (Atom)clone();
+    if (vib != null)
+      a.vib = V3.newV(a.vib);
+    if (anisoBorU != null)
+      a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
+
+    
+    return a;
   }
 
   public String getElementSymbol() {
