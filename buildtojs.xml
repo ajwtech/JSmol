@@ -154,13 +154,13 @@
     </copy>
    	
    	<copy todir="site/jsmol/j2s/core">
-  	  <fileset dir="packages">
+  	  <fileset dir="jsmoljs/core">
   	    <include name="package.js" />
   	  </fileset>
     </copy>
 
    	<!-- note: any changes in these next sections must be reflected also
-   	             in packages/package.js -->
+   	             in jsmoljs/core/package.js -->
    	
    	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="jslocal" files="
    		J/viewer/ScriptManager.js
@@ -201,7 +201,7 @@
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="jslocal" files="
-   		../packages/coreconsoletop.js
+   		../jsmoljs/core/coreconsoletop.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
    		J/console/GenericConsole.js
@@ -212,7 +212,7 @@
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="jslocal" files="
-   		../packages/coremenutop.js
+   		../jsmoljs/core/coremenutop.js
    		J/api/JmolPopupInterface.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
@@ -422,7 +422,7 @@
     </java>
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="jslocal" files="
    		../Jmol.properties
-   		../packages/coretop.js
+   		../jsmoljs/core/coretop.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
    		java/net/URLDecoder.js
@@ -707,7 +707,7 @@
    		J/awtjs/Font.js
    		J/awtjs/Image.js
    		J/util/Tensor.js  
-   		../packages/corebottom.js
+   		../jsmoljs/core/corebottom.js
    	   	" />
    	</concat>   	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
@@ -749,7 +749,7 @@
    	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
    	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
    		JSmol.min.js
-   		../../packages/coretop2.js
+   		../../jsmoljs/core/coretop2.js
    		j2s/core/core.z.js 
    		" />
    	</concat>
