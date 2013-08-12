@@ -1,7 +1,0 @@
-<project name="JSmol" default="ref" basedir=".">
-
-   <target name="ref" id="ref">
-   	<eclipse.refreshLocal resource="src" depth="infinite"/>
-  </target>
-  	
-</project>
