@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-10 19:05:54 -0500 (Sat, 10 Aug 2013) $
- * $Revision: 18535 $
+ * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
+ * $Revision: 18558 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import java.util.Map;
 import java.util.Properties;
@@ -339,17 +338,14 @@ public class PropertyManager implements JmolPropertyManager {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
           JmolList<Object> keys = new  JmolList<Object>();
-          Iterator<String> e = h.keySet().iterator();
-          while (e.hasNext())
-            keys.addLast(e.next());
+          for (String k: h.keySet())
+            keys.addLast(k);
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
-          Iterator<String> e = h.keySet().iterator();
-          String newKey = "";
-          while (e.hasNext())
-            if ((newKey = e.next()).equalsIgnoreCase(key)) {
-              key = newKey;
+          for (String k: h.keySet())
+            if (k.equalsIgnoreCase(key)) {
+              key = k;
               break;
             }
         }

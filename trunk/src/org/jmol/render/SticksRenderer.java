@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
- * $Revision: 18282 $
+ * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
+ * $Revision: 18558 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -75,6 +75,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
   
   @Override
   protected boolean render() {
+    Bond[] bonds = modelSet.bonds;
+    if (bonds == null)
+      return false;
     isPass2 = g3d.isPass2();
     if (!isPass2)
       bsForPass2.clearAll();
@@ -99,7 +102,6 @@ public class SticksRenderer extends FontLineShapeRenderer {
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
-    Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
     if (!isExport && isPass2)
       for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2

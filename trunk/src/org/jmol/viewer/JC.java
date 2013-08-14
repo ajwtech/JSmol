@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
+ * $Revision: 18558 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $"
+        // "$Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -121,6 +121,7 @@ public class JC {
   public final static String NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
  
   public final static String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
+  public final static String REPAINT_IGNORE = "\1## REPAINT_IGNORE ##";
 
   public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
 
@@ -1296,7 +1297,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
   };
   
-  public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
+  public final static String MODELKIT_ZAP_STRING = "5\n\nC 0 0 0\nH .63 .63 .63\nH -.63 -.63 .63\nH -.63 .63 -.63\nH .63 -.63 -.63";
   public final static String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
   public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state
 
