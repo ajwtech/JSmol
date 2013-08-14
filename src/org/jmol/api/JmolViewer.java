@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-10 19:05:54 -0500 (Sat, 10 Aug 2013) $
- * $Revision: 18535 $
+ * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
+ * $Revision: 18558 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -215,7 +215,7 @@ abstract public class JmolViewer {
   abstract public boolean haveFrame();
 
   abstract public void pushHoldRepaint();
-  abstract public void popHoldRepaint();
+  abstract public void popHoldRepaint(String why);
 
   // for example: getData("selected","XYZ");
   abstract public String getData(String atomExpression, String type);
