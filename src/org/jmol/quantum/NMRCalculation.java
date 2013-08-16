@@ -393,6 +393,7 @@ public class NMRCalculation implements JmolNMRInterface {
                                         BS bs) {
     if ("".equals(tensorType))
       tensorType = null;
+    infoType = (infoType == null ? ";all." : ";" + infoType + ".");
     JmolList<Object> data = new JmolList<Object>();
     JmolList<Object> list1;
     if (";dc.".equals(infoType)) {
@@ -430,12 +431,14 @@ public class NMRCalculation implements JmolNMRInterface {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (tensorType == null) {
         Tensor[] a = viewer.modelSet.getAtomTensorList(i);
-        for (int j = 0; j < a.length; j++)
-          data.addLast(a[j].getInfo(infoType));
+        if (a != null)
+          for (int j = 0; j < a.length; j++)
+            data.addLast(a[j].getInfo(infoType));
       } else {
         Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
-        data.addLast(t == null ? null : isChi ? Float
-            .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));
+        if (t != null)
+          data.addLast(isChi ? Float.valueOf(getQuadrupolarConstant(t)) : t
+              .getInfo(infoType));
       }
     }
     return data;

@@ -213,13 +213,14 @@ var	basefile = base + "core.z.js";
 		"$.BioShapeCollection",
 		"$.Rockets",
 		"$.Cartoon",
-    "$.Backbone",
-    "$.Trace",
+	    "$.Backbone",
+	    "$.Trace",
 		"J.renderbio.BioShapeRenderer",
+		"$.StrandsRenderer",
 		"$.RocketsRenderer",
 		"$.CartoonRenderer",
-    "$.BackboneRenderer",
-    "$.TraceRenderer"
+	    "$.BackboneRenderer",
+	    "$.TraceRenderer"
 	]);
 
 
