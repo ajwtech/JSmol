@@ -1,6 +1,9 @@
-// JSmolCore.js -- Jmol core capability  3/22/2013 5:52:54 PM 
+// JSmolCore.js -- Jmol core capability  8/16/2013 12:03:14 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
+
+// BH 8/16/2013 12:02:20 PM: JSmoljQueryExt.js pulled out
+// BH 8/16/2013 12:02:20 PM: Jmol._touching used properly
 
 // BH 3/22/2013 5:53:02 PM: Adds noscript option, JSmol.min.core.js
 // BH 1/17/2013 5:20:44 PM: Fixed problem with console not getting initial position if no first click
@@ -1220,7 +1223,7 @@ Jmol = (function(document) {
 	}
 
 	Jmol._jsGetXY = function(canvas, ev) {
-    if (!canvas.applet._ready)
+    if (!canvas.applet._ready || Jmol._touching && ev.type.indexOf("touch") < 0)
       return false;
 		ev.preventDefault();
 		var offsets = Jmol.$offset(canvas.id);
@@ -1245,7 +1248,6 @@ Jmol = (function(document) {
    	ev.stopPropagation();
   	ev.preventDefault();
     var oe = ev.originalEvent;
-    
     switch (ev.type) {
     case "touchstart":
       Jmol._touching = true;
@@ -1302,7 +1304,7 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
      	ev.stopPropagation();
 	  	ev.preventDefault();
-      var isTouch = (ev.type == "touchmove") || Jmol._touching;
+      var isTouch = (ev.type == "touchmove");
 	    if (isTouch && Jmol._gestureUpdate(canvas, ev))
         return false;
 			var xym = Jmol._jsGetXY(canvas, ev);
