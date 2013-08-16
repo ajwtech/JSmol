@@ -1263,16 +1263,23 @@ Jmol = (function(document) {
       break;
     case "touchmove":
 			var offsets = Jmol.$offset(canvas.id);
-	    canvas._touches[0].push([oe.touches[0].pageX - offsets.left, oe.touches[0].pageY - offsets.top]);
-	    canvas._touches[1].push([oe.touches[1].pageX - offsets.left, oe.touches[1].pageY - offsets.top]);
-	    if (canvas._touches[0].length >= 2)
+      var t0 = canvas._touches[0];
+	    var t1 = canvas._touches[1];
+      t0.push([oe.touches[0].pageX - offsets.left, oe.touches[0].pageY - offsets.top]);
+      t1.push([oe.touches[1].pageX - offsets.left, oe.touches[1].pageY - offsets.top]);
+      var n = t0.length;
+      if (n > 3) {
+        t0.shift();
+        t1.shift();
+      }
+	    if (n >= 2)
 				canvas.applet._processGesture(canvas._touches);
       break;
     }
     return true;
   }
   
-	Jmol._jsSetMouse = function(canvas) {
+  Jmol._jsSetMouse = function(canvas) {
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
 	   	ev.stopPropagation();
 	  	ev.preventDefault();

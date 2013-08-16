@@ -33,7 +33,7 @@
     });
   } else {
     $.ajaxSetup({
-      accepts: { binary: "text/plain; charset=x-user-defined" },
+      accepts: { binary: "text/plain; charset=x-user-defined" }
     })
     $.ajaxTransport('binary', function(s) {
       return {
