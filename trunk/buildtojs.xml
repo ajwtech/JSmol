@@ -329,6 +329,7 @@
    		J/shapebio/Backbone.js
    		J/shapebio/Trace.js
    		J/renderbio/BioShapeRenderer.js
+   		J/renderbio/StrandsRenderer.js
    		J/renderbio/RocketsRenderer.js
    		J/renderbio/CartoonRenderer.js
    		J/renderbio/BackboneRenderer.js
@@ -715,7 +716,8 @@
    	
    	<echo>JSmol.min.js is the standard set, including jQuery</echo>
    	<concat destfile="site/jsmol/js/JSmol.full.js"><filelist dir="jsmoljs" files="
-   		JSmoljQuery.js
+   		../jquery/jQuery.js
+   		JSmoljQueryExt.js
    		JSmolCore.js
    		JSmol.js
    		JSmolApplet.js
@@ -730,6 +732,7 @@
 
    	<echo>JSmol.min.nojq.js is the standard set but does not include jQuery</echo>
   	<concat destfile="site/jsmol/js/jsmol.nojq.js"><filelist dir="jsmoljs" files="
+   		JSmoljQueryExt.js
    		JSmolCore.js
    		JSmol.js
    		JSmolApplet.js
@@ -752,7 +755,8 @@
 
    	<echo>JSmol.lite.js is a very minimal non-Jmol viewer; includes jQuery</echo>
   	<concat destfile="temp.js"><filelist dir="jsmoljs" files="
-		JSmoljQuery.js
+   		../jquery/jQuery.js
+   		JSmoljQueryExt.js
   		JSmolCore.js
   		JSmolTM.js
    		" />
@@ -763,6 +767,7 @@
 
    	<echo>JSmol.lite.nojq.js is a very minimal non-Jmol viewer, without jQuery</echo>
   	<concat destfile="temp.js"><filelist dir="jsmoljs" files="
+   		JSmoljQueryExt.js
   		JSmolCore.js
   		JSmolTM.js
    		" />

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-14 06:48:10 -0500 (Wed, 14 Aug 2013) $
- * $Revision: 18567 $
+ * $Date: 2013-08-14 08:27:57 -0500 (Wed, 14 Aug 2013) $
+ * $Revision: 18568 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -108,7 +108,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    boolean TF = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
+    boolean TF = (!isExport && !viewer.checkMotionRendering(T.cartoon));
     
     if (TF != wireframeOnly)
       invalidateMesh = true;
