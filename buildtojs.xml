@@ -327,9 +327,14 @@
    		J/shapebio/Rockets.js
    		J/shapebio/Cartoon.js
    		J/shapebio/Backbone.js
+   		J/shapebio/Strands.js
+   		J/shapebio/Ribbons.js
+   		J/shapebio/MeshRibbon.js
    		J/shapebio/Trace.js
    		J/renderbio/BioShapeRenderer.js
    		J/renderbio/StrandsRenderer.js
+   		J/renderbio/RibbonsRenderer.js
+   		J/renderbio/MeshRibbonRenderer.js
    		J/renderbio/RocketsRenderer.js
    		J/renderbio/CartoonRenderer.js
    		J/renderbio/BackboneRenderer.js
@@ -716,7 +721,7 @@
    	
    	<echo>JSmol.min.js is the standard set, including jQuery</echo>
    	<concat destfile="site/jsmol/js/JSmol.full.js"><filelist dir="jsmoljs" files="
-   		../jquery/jQuery.js
+   		../lib/jquery/jquery.js
    		JSmoljQueryExt.js
    		JSmolCore.js
    		JSmol.js
@@ -726,6 +731,7 @@
    		j2sjmol.js
    		" />
    	</concat>
+   
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
    		<arg line="--js site/jsmol/js/JSmol.full.js --js_output_file site/jsmol/JSmol.min.js" />
     </java>
@@ -755,7 +761,7 @@
 
    	<echo>JSmol.lite.js is a very minimal non-Jmol viewer; includes jQuery</echo>
   	<concat destfile="temp.js"><filelist dir="jsmoljs" files="
-   		../jquery/jQuery.js
+   		../lib/jquery/jquery.js
    		JSmoljQueryExt.js
   		JSmolCore.js
   		JSmolTM.js
@@ -781,8 +787,8 @@
   	<delete dir="jslocal" />
  	<delete file="temp.js" />
    	<echo>creating distribution zip file jsmol.zip</echo>
-  	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
+  	<delete file="dist/*" />
  	<delete dir="site" /> 	
    	<copy overwrite="true" todir="${jmol.path}/appletweb" >
 	  <fileset dir="dist">
