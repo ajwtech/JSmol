@@ -1,7 +1,7 @@
 @source http://chemapps.stolaf.edu/jmol/jsmol
 @author hansonr@stolaf.edu project started 8/26/2012
 
-last revision, 7/28/3013 
+last revision, 8/17/13
 
 JSmol -- Java(Script) web-based molecular viewer
 
@@ -63,6 +63,21 @@ jquery/     original jQuery files adapted to make js/JSmoljQuery.js
             (modifications primarily allow binary AJAX)
 js/         JSmolXXXX.js JavaScript files that are included in JSmol.min.js 
             as well as uncompressed coreXXX.js files; useful for debugging
+            These include:
+            
+				j2sjmol.js
+				JSmol.js
+				JSmolApi.js
+				JSmolApplet.js
+				JSmolControls.js
+				JSmolCore.js
+				JSmolGLmol.js
+				JSmolJME.js
+				JSmoljQueryExt.js
+				JSmolJSV.js
+				JSmolThree.js
+				JSmolTM.js
+            
 php/        contains jsmol.php, which is necessary on a server for some browsers
             to access binary files via AJAX.
 
@@ -72,32 +87,51 @@ JSmol.min.js
 ============
 
 All of the necessary files to start JSmol, minimized with the 
-Google Closure Compiler (see the make/ directory)
+Google Closure Compiler, including:
+
+   		jquery.js
+   		JSmoljQueryExt.js
+   		JSmolCore.js
+   		JSmol.js
+   		JSmolApplet.js
+   		JSmolControls.js
+   		JSmolApi.js
+   		j2sjmol.js
 
 JSmol.min.nojq.js
 ============
 
-All of the necessary files to start JSmol, minimized with the 
-Google Closure Compiler (see the make/ directory), but not inluding jQuery
-(You must include jQuery separately; if not from this site, then binary file reading will probably not work.)
+All of the above, but without jquery.js. 
+(You must include jQuery separately.)
 
 JSmol.min.core.js
 ============
 
-All of the necessary files to start JSmol plus core files for HTML5, minimized with the 
-Google Closure Compiler (see the make/ directory)
+All of the above, plus core Java files:
+
+   		JSmol.min.js
+   		coretop2.js
+   		j2s/core/core.z.js 
 
 JSmol.lite.js
 ============
 
 A very light-weight non-Jmol model viewer. Just balls and sticks. 
 
-JSmol.lite.nojq.js
+  		jquery.js
+   		JSmoljQueryExt.js
+  		JSmolCore.js
+  		JSmolTM.js
+ 
+ JSmol.lite.nojq.js
 ============
 
 A super light-weight non-Jmol model viewer. Just balls and sticks; no jQuery. 
 (You must include jQuery separately.)
 
+   		JSmoljQueryExt.js
+  		JSmolCore.js
+  		JSmolTM.js
 
 jsmol.htm
 =========
@@ -128,27 +162,51 @@ lite4.htm
 
 A demo of JSmol.lite.js using site-based structure file
 
+resize.htm
+==========
+
+A test of applet resizing
+
+
 simple.htm
 ==========
 
 A JavaScript equivalent of http://chemapps.stolaf.edu/jmol/simple.htm
 
 simple2.htm
-==========
+===========
 
-A JavaScript equivalent of http://chemapps.stolaf.edu/jmol/simple2.htm
+An early JavaScript equivalent of http://chemapps.stolaf.edu/jmol/simple2.htm
+
+
+sync2.htm
+=========
+
+Illustrating applet synchronization in JSmol/HTML5
+
+
+vibrate.htm
+===========
+
+A page quickly made from the original Java version in http://chemapps.stolaf.edu/jmol/examples-12
 
 test2.htm
 =========
 
-A test page that does not use JSmol.min.js and instead uses the files in js/
+Bob's main test page that does not use JSmol.min.js and instead uses the files in js/
 This Jmol page will automatically switch to different modes
 depending upon browser capabilities. It is set to use HTML5, but you can change that.
 Read the information in the file for details.
 
 It uses the unminimized set of JSmolXXXX.js files
-If you add ?debugcode to the URL, it will bypasss j2s/core files and read from j2s/J, j2s/com, and j2s/java
-It uses the signed Jmol applet, the unsigned Jmol applet
+If you add 
+
+  ?debugcode 
+
+to the URL, it will bypasss j2s/core files and read files
+directly from j2s/J, j2s/com, and j2s/java. Note that in this mode
+the popup menu and the Jmol console are not available.
+It can uses the signed Jmol applet, the unsigned Jmol applet
 with server-side help, or <a href="jsmol.sourceforge.net">JSmol</a> using 
 HTML5 when WebGL is not available (iPad/iPhone/Android).
 JSmol implements <a href="java2script.sourceforge.net">Java2Script</a> 
@@ -178,9 +236,11 @@ Testing assistance by Duncan Blue, St. Olaf '17
 
 Developer notes:
 
-The creation of the files in j2s is not trivial. 
+The creation of the files in j2s is now very easy. 
+See README-DEVELOPER.TXT in the main directory.
+
 We start with two Sourceforge projects in Eclipse: Jmol and JSmol.
-Eclipse must include the Java2Script plug-in.
+Eclipse (must be 3.5 or 3.6) needs to include the Java2Script plug-in.
 
 All the PROGRAMMING is done in the Jmol project.
 JavaDoc @j2sNative sections allow indicating specific JavaScript/Java-only segments 
@@ -188,6 +248,9 @@ JavaDoc @j2sNative sections allow indicating specific JavaScript/Java-only segme
 See development notes in JSmol project ANT task file buildfromjmol.xml
 
 =======================================================
+
+revision 8/17/2013 -- better description of compiled JavaScript files.
+                   -- addition of JSmoljQueryExt.js
 
 revision 7/28/2013 -- reorganization of directories
 
