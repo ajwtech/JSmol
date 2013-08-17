@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-16 10:01:49 -0500 (Fri, 16 Aug 2013) $
- * $Revision: 18577 $
+ * $Date: 2013-08-17 13:32:23 -0500 (Sat, 17 Aug 2013) $
+ * $Revision: 18590 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -1436,9 +1436,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getOrientationText(int type, String name) {
-    return (name == null && type != T.state ? transformManager.getOrientationText(type)
-        : stateManager.getSavedOrientationText(name));
-  }
+    switch (type) {
+    case T.volume:
+    case T.best:
+    case T.x:
+    case T.y:
+    case T.z:
+    case T.quaternion:
+      return modelSet.getBoundBoxOrientation(type, getSelectionSet(false));
+    case T.name:
+      return stateManager.getSavedOrientationText(name);
+    default:     
+      return transformManager.getOrientationText(type);
+    }
+   }
 
   Map<String, Object> getOrientationInfo() {
     return transformManager.getOrientationInfo();
@@ -10288,25 +10299,47 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
+  /**
+   * check motion for rendering during mouse movement, 
+   * spin, vibration, and animation
+   * 
+   * @param tok
+   * @return TRUE if allowed
+   */
   public boolean checkMotionRendering(int tok) {
-    if (!getInMotion(true))
+    if (!getInMotion(true) && 
+        !transformManager.spinOn && 
+        !transformManager.vibrationOn && 
+        !animationManager.animationOn)
       return true;
     if (global.wireframeRotation)
       return false;
+    int n = 0;
     switch (tok) {
-    case T.balls:
     case T.bonds:
+    case T.atoms:
+      n = 2;
+      break;
     case T.ellipsoid:
-      return global.platformSpeed >= 3;
-    case T.cartoon:
+      n = 3;
+      break;
     case T.geosurface:
-      return global.platformSpeed >= 5;
+      n = 4;
+      break;
+    case T.cartoon:
+      n = 5;
+      break;
     case T.mesh:
+      n = 6;
+      break;
     case T.translucent:
+      n = 7;
+      break;
     case T.antialiasdisplay:
-      return global.platformSpeed >= 8;
+      n = 8;
+      break;
     }
-    return false;
+    return global.platformSpeed >= n;
   }
 
 }

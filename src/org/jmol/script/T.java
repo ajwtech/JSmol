@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-16 10:01:49 -0500 (Fri, 16 Aug 2013) $
- * $Revision: 18577 $
+ * $Date: 2013-08-17 12:13:40 -0500 (Sat, 17 Aug 2013) $
+ * $Revision: 18588 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1092,7 +1092,8 @@ public class T {
   public final static int back          = misc  | 35;
   public final static int balls         = misc  | 36;
   public final static int barb          = misc  | 37;
-  public final static int backlit = misc  | 38;
+  public final static int backlit       = misc  | 38;
+  public final static int best          = misc  | 39;
   public final static int basepair      = misc  | 40;
   public final static int binary        = misc  | 42;
   public final static int blockdata     = misc  | 44;
@@ -1791,6 +1792,7 @@ public class T {
       "backlit",         T.t(backlit),
       "balls",           T.t(balls),
       "baseModel",       T.t(basemodel), // Jmol 12.3.19
+      "best",            T.t(best), // rotate BEST
       "bin",             T.t(bin),
       "bondCount",       T.t(bondcount),
       "bottom",          T.t(bottom),

@@ -395,7 +395,25 @@ public class Parser {
       ++ich;
       negative = true;
     }
-    char ch = 0;
+    // looks crazy, but if we don't do this, Google Closure Compiler will 
+    // write code that Safari will misinterpret in a VERY nasty way -- 
+    // getting totally confused as to long integers and double values
+    
+    // This is Safari figuring out the values of the numbers on the line (x, y, then z):
+
+    //  ATOM 1241 CD1 LEU A 64 -2.206 36.532 31.576 1.00 60.60 C
+    //  e=1408749273
+    //  -e =-1408749273
+    //  ATOM 1241 CD1 LEU A 64 -2.206 36.532 31.576 1.00 60.60 C
+    //  e=-1821066134
+    //  e=36.532
+    //  ATOM 1241 CD1 LEU A 64 -2.206 36.532 31.576 1.00 60.60 C
+    //  e=-1133871366
+    //  e=31.576
+    //
+    //  "e" values are just before and after the "value = -value" statement.
+    
+    int ch = 0;
     float ival = 0f;
     float ival2 = 0f;
     while (ich < ichMax && (ch = str.charAt(ich)) >= 48 && ch <= 57) {
@@ -745,12 +763,4 @@ public class Parser {
     }
   }
   
-  static {
-    long x = System.currentTimeMillis();
-    int j;
-    for(int i = 0; i < 1000000; i++)
-      j = 35 * 3;
-    System.out.println(System.currentTimeMillis() - x);
-    System.out.println("OK");
-  }
 }
