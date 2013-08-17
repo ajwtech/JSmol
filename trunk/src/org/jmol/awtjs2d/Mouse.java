@@ -140,7 +140,7 @@ public class Mouse implements JmolMouseInterface {
     V3 v2 = V3.new3(dx2, dy2, 0);    
     float d2 = v2.length();
     // rooted finger --> zoom (at this position, perhaps?)
-    if (d1 < 3 || d2 < 3)
+    if (d1 < 1 || d2 < 1)
       return;
     v1.normalize();
     v2.normalize();
@@ -148,7 +148,7 @@ public class Mouse implements JmolMouseInterface {
     // cos12 > 0.8 (same direction) will be required to indicate drag
     // cos12 < -0.8 (opposite directions) will be required to indicate zoom or rotate
     if (cos12 > 0.8) {
-      // two  co-aligned motions -- translate
+      // two co-aligned motions -- translate
       // just use finger 1, last move
       int deltaX = (int) (x1last - t1[t1.length - 2][0]); 
       int deltaY = (int) (y1last - t1[t1.length - 2][1]); 
