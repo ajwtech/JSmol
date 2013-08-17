@@ -25,7 +25,7 @@ J2S options in Eclipse. (Our j2sjmol.js file is different from that used by Java
 BUILDING THE PROJECT
 
 
-All the code in src/org/jmol is derived from the Jmol project.
+Almost all of the code in src/org/jmol is derived from the Jmol project.
 The starting point for building this project is buildfromjmol.xml. 
 When buildfromjmol.xml runs, it overwrites all the files in src/org/jmol.
 See the detailed notes there.
@@ -42,5 +42,5 @@ Also, you should turn off "project -- build Automatically", because it
 seems to slow things down.
 
 
-hansonr@stolaf.edu
+hansonr@stolaf.edu 8/17/2013
 

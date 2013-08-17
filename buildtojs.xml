@@ -127,6 +127,10 @@
   	  </fileset>
     </copy>
 
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jquery" failonerror="false">
+   		<arg line="--js jquery.js --js_output_file jquery.min.js" />
+    </java>
+
   	<copy todir="site/jsmol/jsme">
   	  <fileset dir="lib/jsme">
   	    <include name="**/*" />
