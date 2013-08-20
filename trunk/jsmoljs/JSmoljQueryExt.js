@@ -129,7 +129,7 @@
         var elem = $(this);
         if ( this !== event.target && !elem.has(event.target).length ) {
         	//BH: adds event to pass that along to our handler as well.
-          elem.triggerHandler( outside_event_name, [ event.target ], event );
+          elem.triggerHandler( outside_event_name, [ event.target, event ] );
         }
       });
     };
