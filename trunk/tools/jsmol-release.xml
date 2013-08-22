@@ -14,7 +14,7 @@
 
   <property name="dist.dir"        value="dist" />
   <property name="src.dir"         value="src" />
-  <property name="temp.dir"        value="build/release" />
+  <property name="temp.dir"        value="build" />
   <property name="web.dir"         value="/home/frs/project/j/js/jsmol" />
   <property name="web.host"        value="frs.sourceforge.net" />
   <property name="path.release"    value="release" />
