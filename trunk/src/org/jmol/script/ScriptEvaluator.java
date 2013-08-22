@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-17 12:13:40 -0500 (Sat, 17 Aug 2013) $
- * $Revision: 18588 $
+ * $Date: 2013-08-20 12:19:24 -0500 (Tue, 20 Aug 2013) $
+ * $Revision: 18605 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -248,11 +248,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                      boolean allowThreads) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
-    executionStopped = executionPaused = false;
-    executionStepping = false;
-    executing = true;
     chk = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
-    timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
     currentThread = Thread.currentThread();
@@ -268,6 +264,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
   
   private void startEval() {
+    timeBeginExecution = System.currentTimeMillis();
+    executionStopped = executionPaused = false;
+    executionStepping = false;
+    executing = true;
     viewer.pushHoldRepaint("runEval");
     setScriptExtensions();
     executeCommands(false);
@@ -313,7 +313,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && executionStopped)
       setErrorMessage("execution interrupted");
-    else if (!tQuiet && !chk)
+    else if (!tQuiet && !chk) 
       viewer.scriptStatus(JC.SCRIPT_COMPLETED);
     executing = chk = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
     String msg = getErrorMessageUntranslated();
@@ -771,7 +771,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    *        variable name for debugging reference only -- null indicates return
    *        Boolean -- "" indicates return String
    * @param ignoreComma
-   *        TODO
+   *        
    * @param asVector
    *        a flag passed on to RPN;
    * @param ptAtom
@@ -2210,7 +2210,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Map<String, SV> cv = contextVariables;
       executeCommands(true);
       //JavaScript will not return here after DELAY
-      while (thisContext.tryPt != tryPt)
+      while (thisContext.tryPt > tryPt)
         popContext(false, false);
       processTry(cv);
       return null;
@@ -2767,6 +2767,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                     boolean isPopContext,
                                     boolean isFlowCommand, boolean statementOnly) {
 
+    executing = !chk;
     if (context == null)
       return;
     if (debugScript || isCmdLine_c_or_C_Option)
@@ -3821,7 +3822,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spec_seqcode_range:
         if (isInMath) {
           rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
-          // TODO -- in 13.0 had addXObj this adds a "-" to the X stack. 
           rpn.addOp(T.tokenMinus);
           rpn.addXNum(SV.newScriptVariableInt(code[++pc].intValue));
           break;
@@ -5365,7 +5365,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   /**
    * 
    * @param isSpt
-   * @param fromFunc TODO
+   * @param fromFunc 
    * @return false only when still working through resumeEval
    * @throws ScriptException
    */
@@ -6559,7 +6559,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         q = (chk ? new Quaternion() : viewer.getAtomQuaternion(bsCenter
             .nextSetBit(0)));
       } else {
-        q = getQuaternionParameter(i, null);
+        q = getQuaternionParameter(i);
       }
       i = iToken + 1;
       if (q == null)
@@ -10101,8 +10101,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tok == T.quaternion)
           i++;
         haveRotation = true;
-        q = getQuaternionParameter(i, isSelected || tok != T.best ? null : viewer.getRotationQuaternion().mul(-1));
+        q = getQuaternionParameter(i);
         if (q != null) {
+          if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
+            q = q.mulQ(viewer.getRotationQuaternion().mul(-1));
           rotAxis.setT(q.getNormal());
           endDegrees = q.getTheta();
         }
@@ -10336,26 +10338,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private Quaternion getQuaternionParameter(int i, Quaternion q0)
+  private Quaternion getQuaternionParameter(int i)
       throws ScriptException {
-    Quaternion q;
     switch (tokAt(i)) {
     case T.varray:
       JmolList<SV> sv = ((SV) getToken(i)).getList();
       P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         invArg();
-      q = Quaternion.newP4(p4);
-      break;
+      return Quaternion.newP4(p4);
     case T.best:
-      if (chk)
-        return null;
-      q = Quaternion.newP4((P4) Escape.uP(viewer.getOrientationText(T.best, null)));
-      break;
+      return (chk ? null : Quaternion.newP4((P4) Escape.uP(viewer.getOrientationText(T.best, null))));
     default:
-      q = Quaternion.newP4(getPoint4f(i));
+      return Quaternion.newP4(getPoint4f(i));
     }
-    return (q0 == null ? q : q.mulQ(q0));
   }
 
   JmolList<P3> getPointVector(T t, int i) throws ScriptException {
@@ -11999,11 +11995,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       //$FALL-THROUGH$
     case T.off:
       if (!chk)
-        viewer.setModulation(mod, Integer.MAX_VALUE, Integer.MAX_VALUE, false);
+        viewer.setModulation(mod, null, Integer.MAX_VALUE, false);
       break;
     case T.integer:
       if (!chk)
-        viewer.setModulation(true, intParameter(1), Integer.MAX_VALUE, false);
+        viewer.setModulation(true, new int[] {intParameter(1)}, Integer.MAX_VALUE, false);
       break;
     case T.fps:
       if (!chk)
@@ -12011,7 +12007,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.play:
       if (!chk)
-        viewer.setModulation(true, intParameter(2), intParameter(3), false);
+        viewer.setModulation(true, new int[] {intParameter(2)}, intParameter(3), false);
       break;
     } 
   }
@@ -15154,7 +15150,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * Checks color, translucent, opaque parameters.
    * 
    * @param i
-   * @param allowNone TODO
+   * @param allowNone
    * @return translucentLevel and sets iToken and colorArgb[0]
    * 
    * @throws ScriptException

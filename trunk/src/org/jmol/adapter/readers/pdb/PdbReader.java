@@ -201,7 +201,7 @@ public class PdbReader extends AtomSetCollectionReader {
      atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
      int pt = tokens[1].indexOf("=");
      if (pt >= 0) {
-       filterAtomTypeStr = tokens[1].substring(pt + 1).toUpperCase();
+       setFilterAtomTypeStr(tokens[1].substring(pt + 1).toUpperCase());
      } else {
        pt = tokens[1].length();
      }
@@ -955,8 +955,7 @@ REMARK 290 REMARK: NULL
         
     }
     
-    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
-        : (int) (floatOccupancy * 100));
+    atom.foccupancy = (Float.isNaN(floatOccupancy) ? 1 : floatOccupancy);
     
   }
 

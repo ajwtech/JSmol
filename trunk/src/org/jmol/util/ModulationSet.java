@@ -13,52 +13,94 @@ import java.util.Map;
 
 public class ModulationSet extends Vibration {
 
-  public JmolList<Modulation> mods;
-  public float epsilon;
-  public float delta;
-  public P3 r;
-  public Matrix3f rot;
-  public float v0;
-  public float v = Float.NaN;
-  public int t;
-  public Map<String, Float> htValues;
+  public float vOcc = Float.NaN;
+  public Map<String, Float> htUij;
   public boolean enabled = false;
   public String id;
+  public V3 prevSetting;
+
+  public float vOcc0;
+
+  private JmolList<Modulation> mods;
+  private Matrix3f gammaE;
+  private int t = Integer.MAX_VALUE;  
+  private double[] qlen;
   
-  public ModulationSet(String id, JmolList<Modulation> list) {
-    this.id = id;
-    mods = list;
-  }
+  int modDim;
+  V3 x456;
 
   /**
-   * Determine the overall modulation.
+   * A collection of modulations for a specific atom.
+   * 
+   * @param id 
+   * @param r 
+   * @param vocc0 
+   * @param modDim 
+   * @param mods 
+   * @param gammaE 
+   * @param gammaIS 
+   * @param q123 
+   * @param qlen 
+   * 
    * 
    */
-  public void calculate() {
-    set(0, 0, 0);
-    htValues = null;
-    v = Float.NaN;
-    for (int i = mods.size(); --i >= 0;)
-      mods.get(i).apply(this);
-    rot.transform(this);
+
+  public ModulationSet(String id, P3 r, int modDim, 
+                       JmolList<Modulation> mods, Matrix3f gammaE, 
+                       Matrix4f gammaIS, Matrix4f q123w, double[] qlen) {
+    this.id = id;
+    this.modDim = modDim;
+    this.mods = mods;
+    
+    // set up x456
+    
+    this.gammaE = gammaE;
+    Matrix3f gammaIinv = new Matrix3f();
+    gammaIS.getRotationScale(gammaIinv);
+    V3 sI = new V3();
+    
+    gammaIS.get(sI);
+    gammaIinv.invert();
+    x456 = V3.newV(r);
+    Matrix3f m = new Matrix3f();
+    q123w.transform(x456);
+    x456.sub(sI);
+    gammaIinv.transform(x456);
+    if (Logger.debuggingHigh)
+      Logger.debug("MODSET create r=" + Escape.eP(r)
+        + " si=" + Escape.eP(sI) + " ginv=" + gammaIinv.toString().replace('\n',' ') + " x4=" + x456.x);
+
+    // temporary only - only for d=1:
+    this.qlen = qlen;
+    
   }
 
-  public void addUTens(String utens, float v, int n) {
-    if (htValues == null)
-      htValues = new Hashtable<String, Float>();
-    Float f = htValues.get(utens);
+  public void calculate() {
+    x = y = z = 0;
+    htUij = null;
+    vOcc = Float.NaN;
+    double offset = (t == Integer.MAX_VALUE ? 0 : qlen[0] * t);
+    for (int i = mods.size(); --i >= 0;)
+      mods.get(i).apply(this, offset);
+    gammaE.transform(this);
+  }
+
+  public void addUTens(String utens, float v) {
+    if (htUij == null)
+      htUij = new Hashtable<String, Float>();
+    Float f = htUij.get(utens);
     if (Logger.debuggingHigh)
-      Logger.debug("MODSET " + id + " n=" + n + " utens=" + utens + " f=" + f + " v="+ v);
+      Logger.debug("MODSET " + id + " utens=" + utens + " f=" + f + " v="+ v);
     if(f != null)
       v += f.floatValue();
-    htValues.put(utens, Float.valueOf(v));
+    htUij.put(utens, Float.valueOf(v));
 
   }
 
-  public V3 prevSetting;
   
   /**
-   * Set modulation "t" value, which sets which unit cell in sequence we are looking at.
+   * Set modulation "t" value, which sets which unit cell 
+   * in sequence we are looking at; d=1 only.
    * 
    * @param isOn
    * @param t
@@ -73,7 +115,7 @@ public class ModulationSet extends Vibration {
       scale(-1);
       return (enabled ? 2 : 1);
     }
-    if (t == this.t)
+    if (modDim > 1 || t == this.t)
       return 4;
     if (prevSetting == null)
       prevSetting = new V3(); 
@@ -82,6 +124,10 @@ public class ModulationSet extends Vibration {
     calculate();
     enabled = false;
     return 3;
+  }
+
+  public String getState() {
+    return "modulation " + (!enabled ? "OFF" : t == Integer.MAX_VALUE ? "ON" : "" + t);
   }
 
 }

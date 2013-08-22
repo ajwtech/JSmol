@@ -47,6 +47,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.V3;
 
 
 /**
@@ -79,6 +80,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   
   private CifDataReader tokenizer = new CifDataReader(this);
 
+  private boolean isMolecular;
+  private boolean filterAssembly;
+  private int configurationPtr = Integer.MIN_VALUE;
+
   private String thisDataSetName = "";
   private String chemicalName = "";
   private String thisStructuralFormula = "";
@@ -86,12 +91,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private boolean iHaveDesiredModel;
   private boolean isPDB = false;
   private Map<String, String> htHetero;
-  private boolean isMolecular;
   private String molecularType = "GEOM_BOND default";
   private char lastAltLoc = '\0';
-  private int configurationPtr = Integer.MIN_VALUE;
+  private boolean haveAromatic;
   private int conformationIndex;
-  private boolean filterAssembly;
   private int nMolecular = 0;
   
 
@@ -122,6 +125,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       configurationPtr = parseIntStr(conf);
     isMolecular = checkFilterKey("MOLECUL");
     filterAssembly = checkFilterKey("$");
+
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -131,7 +135,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       }
       molecularType = "filter \"MOLECULAR\"";
     }
-    initializeMod();
+    initializeModulation();
     readCifData();
     continuing = false;
   }
@@ -281,6 +285,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       atomSetCollection.removeCurrentAtomSet();
     else
       applySymmetryAndSetTrajectory();
+    finalizeModulation();
     if (htSites != null)
       addSites(htSites);
     int n = atomSetCollection.getAtomSetCount();
@@ -300,6 +305,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     if (header.length() > 0)
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
           header);
+    if (haveAromatic)
+      addJmolScript("calculate aromatic");
   }
 
   private void setBiomolecules() {
@@ -343,7 +350,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     // no atom-centered rotation axes, and no mirror or glide planes.
     if (isPDB)
       atomSetCollection.setCheckSpecial(false);
-
     boolean doCheck = doCheckUnitCell && !isPDB;
     SymmetryInterface sym = applySymTrajASCR();
     if (auditBlockCode != null && auditBlockCode.contains("REFRNCE") && sym != null) {
@@ -560,9 +566,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       if (!doApplySymmetry) {
         isMolecular = true;
         doApplySymmetry = true;
-        latticeCells[0] = 1;
-        latticeCells[1] = 1;
-        latticeCells[2] = 1;
+        latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
       }
       if (isMolecular)
         processGeomBondLoopBlock();
@@ -611,6 +615,85 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     }
     skipLoop();
   }
+
+  private int fieldProperty(int i) {
+    return ((field = tokenizer.loopData[i]).length() > 0 
+        && (firstChar = field.charAt(0)) != '\0' ? 
+            propertyOf[i] : NONE);
+  }
+
+  private String field;
+  private char firstChar = '\0';
+  private int[] propertyOf = new int[100]; // should be enough
+  private byte[] fieldOf = new byte[100];
+  private String[] fields;
+  private int propertyCount;
+  
+  
+  /**
+   * sets up arrays and variables for tokenizer.getData()
+   * 
+   * @param fields
+   * @throws Exception
+   */
+  private void parseLoopParameters(String[] fields) throws Exception {
+    if (fields == null)
+      fields = this.fields = new String[100];
+    tokenizer.fieldCount = 0;
+    for (int i = fields.length; --i >= 0; )
+      fieldOf[i] = NONE;
+
+    propertyCount = fields.length;
+    while (true) {
+      String str = tokenizer.peekToken();
+      if (str == null) {
+        tokenizer.fieldCount = 0;
+        break;
+      }
+      if (str.charAt(0) != '_')
+        break;
+      tokenizer.getTokenPeeked();
+      propertyOf[tokenizer.fieldCount] = NONE;
+      str = fixKey(str);
+      for (int i = fields.length; --i >= 0;)
+        if (fields[i] == null || str.equals(fields[i])) {
+          propertyOf[tokenizer.fieldCount] = i;
+          fieldOf[i] = (byte) tokenizer.fieldCount;
+          if (fields[i] == null)
+            fields[i] = str;
+          break;
+        }
+      tokenizer.fieldCount++;
+    }
+    if (tokenizer.fieldCount > 0)
+      tokenizer.loopData = new String[tokenizer.fieldCount];
+  }
+
+  /**
+   * 
+   * used for turning off fractional or nonfractional coord.
+   * 
+   * @param fieldIndex
+   */
+  private void disableField(int fieldIndex) {
+    int i = fieldOf[fieldIndex];
+    if (i != NONE)
+        propertyOf[i] = NONE;
+  }
+
+  /**
+   * 
+   * skips all associated loop data
+   * 
+   * @throws Exception
+   */
+  private void skipLoop() throws Exception {
+    String str;
+    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
+      str  = tokenizer.getTokenPeeked();
+    while (tokenizer.getNextDataToken() != null) {
+    }
+  }  
 
   ////////////////////////////////////////////////////////////////
   // atom type data
@@ -736,6 +819,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   final private static byte DISORDER_ASSEMBLY = 58;
   final private static byte ASYM_ID = 59;
   final private static byte SUBSYS_ID = 60;
+  final private static byte SITE_MULT = 61;
 
 
   final private static String[] atomFields = { 
@@ -799,7 +883,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       "_chem_comp_atom_pdbx_model_cartn_z_ideal", 
       "_atom_site_disorder_assembly",
       "_atom_site_label_asym_id",
-      "_atom_site_subsystem_code"
+      "_atom_site_subsystem_code",
+      "_atom_site_symmetry_multiplicity"
   };
 
   /* to: hansonr@stolaf.edu
@@ -851,6 +936,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     int iAtom = -1;
     int modelField = -1;
     String subid = null;
+    int siteMult = 0;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       assemblyId = '\0';
@@ -955,7 +1041,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         case OCCUPANCY:
           float floatOccupancy = parseFloatStr(field);
           if (!Float.isNaN(floatOccupancy))
-            atom.occupancy = (int) (floatOccupancy * 100);
+            atom.foccupancy = floatOccupancy;
           break;
         case B_ISO:
           atom.bfactor = parseFloatStr(field) * (isPDB ? 1 : 100f);
@@ -1059,6 +1145,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         case SUBSYS_ID:
           subid = field;
           break;
+        case SITE_MULT:
+          if (incommensurate)
+            siteMult = parseIntStr(field); 
         }
       }
       if (isAnisoData)
@@ -1093,9 +1182,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
             htHetero);
         htHetero = null;
       }
-      if (subid != null) {
+      if (subid != null)
         addSubsystem(subid, null, atom.atomName);
-      }
+      if (siteMult != 0)
+        atom.vib = V3.new3(siteMult, 0, Float.NaN);
         
     }
     if (isPDB)
@@ -1294,159 +1384,6 @@ _pdbx_struct_oper_list.vector[3]
     }
   }
 
-
-  ////////////////////////////////////////////////////////////////
-  // bond data
-  ////////////////////////////////////////////////////////////////
-
-  final private static byte CHEM_COMP_BOND_ATOM_ID_1 = 0;
-  final private static byte CHEM_COMP_BOND_ATOM_ID_2 = 1;
-  final private static byte CHEM_COMP_BOND_VALUE_ORDER = 2;
-  final private static byte CHEM_COMP_BOND_AROMATIC_FLAG = 3;
-  final private static String[] chemCompBondFields = {
-    "_chem_comp_bond_atom_id_1",
-    "_chem_comp_bond_atom_id_2",
-    "_chem_comp_bond_value_order",
-    "_chem_comp_bond_pdbx_aromatic_flag", 
-  };
-  
-  private void processLigandBondLoopBlock() throws Exception {
-    parseLoopParameters(chemCompBondFields);
-    for (int i = propertyCount; --i >= 0;)
-      if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _chem_comp_bond property:" + i);
-        skipLoop();
-        return;
-      }
-    int order = 0;
-    boolean isAromatic = false;
-    while (tokenizer.getData()) {
-      int atomIndex1 = -1;
-      int atomIndex2 = -1;
-      order = 0;
-      isAromatic = false;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case CHEM_COMP_BOND_ATOM_ID_1:
-          atomIndex1 = atomSetCollection.getAtomIndexFromName(field);
-          break;
-        case CHEM_COMP_BOND_ATOM_ID_2:
-          atomIndex2 = atomSetCollection.getAtomIndexFromName(field);
-          break;
-        case CHEM_COMP_BOND_AROMATIC_FLAG:
-          isAromatic = (field.charAt(0) == 'Y');
-          break;
-        case CHEM_COMP_BOND_VALUE_ORDER:
-          order = JmolAdapter.ORDER_COVALENT_SINGLE;
-          if (field.equals("SING"))
-            order = JmolAdapter.ORDER_COVALENT_SINGLE;
-          else if (field.equals("DOUB"))
-            order = JmolAdapter.ORDER_COVALENT_DOUBLE;
-          else if (field.equals("TRIP"))
-            order = JmolAdapter.ORDER_COVALENT_TRIPLE;
-          else
-            Logger.warn("unknown CIF bond order: " + field);
-          break;
-        }
-      }
-      if (atomIndex1 < 0 || atomIndex2 < 0)
-        continue;
-      if (isAromatic)
-        switch (order) {
-        case JmolAdapter.ORDER_COVALENT_SINGLE:
-          order = JmolAdapter.ORDER_AROMATIC_SINGLE;
-          break;
-        case JmolAdapter.ORDER_COVALENT_DOUBLE:
-          order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
-          break;
-        }
-      atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
-    }
-  }
-
-  final private static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
-  final private static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
-  final private static byte GEOM_BOND_DISTANCE = 2;
-  //final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
-
-  final private static String[] geomBondFields = { 
-      "_geom_bond_atom_site_label_1",
-      "_geom_bond_atom_site_label_2",
-      "_geom_bond_distance",
-    //  "_geom_bond_site_symmetry_2",
-  };
-
-  /**
-   * 
-   * reads bond data -- N_ijk symmetry business is ignored,
-   * so we only indicate bonds within the unit cell to just the
-   * original set of atoms. "connect" script or "set forceAutoBond"
-   * will override these values.
-   * 
-   * @throws Exception
-   */
-  private void processGeomBondLoopBlock() throws Exception {
-    parseLoopParameters(geomBondFields);
-    for (int i = propertyCount; --i >= 0;)
-      if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _geom_bond property:" + i);
-        skipLoop();
-        return;
-      }
-
-    String name1 = null;
-    String name2 = null;
-    while (tokenizer.getData()) {
-      int atomIndex1 = -1;
-      int atomIndex2 = -1;
-      float distance = 0;
-      float dx = 0;
-      //String siteSym2 = null;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case NONE:
-          break;
-        case GEOM_BOND_ATOM_SITE_LABEL_1:
-          atomIndex1 = atomSetCollection.getAtomIndexFromName(name1 = field);
-          break;
-        case GEOM_BOND_ATOM_SITE_LABEL_2:
-          atomIndex2 = atomSetCollection.getAtomIndexFromName(name2 = field);
-          break;
-        case GEOM_BOND_DISTANCE:
-          distance = parseFloatStr(field);
-          int pt = field.indexOf('('); 
-          if (pt >= 0) {
-            char[] data = field.toCharArray();
-            // 3.567(12) --> 0.012
-            String sdx = field.substring(pt + 1, field.length() - 1);
-            int n = sdx.length();
-            for (int j = pt; --j >= 0;) {
-              if (data[j] == '.')
-                --j;
-               data[j] = (--n < 0 ? '0' : sdx.charAt(n));
-            }
-            dx = parseFloatStr(String.valueOf(data));
-            if (Float.isNaN(dx)) {
-              Logger.info("error reading uncertainty for " + line);
-              dx = 0.015f;
-            }
-            // TODO -- this is the full +/- (dx) in x.xxx(dx) -- is that too large?
-          } else {
-            dx = 0.015f;
-          }
-          break;
-        //case GEOM_BOND_SITE_SYMMETRY_2:
-          //siteSym2 = field;
-          //break;
-        }
-      }
-      if (atomIndex1 < 0 || atomIndex2 < 0)
-        continue;
-      if (distance > 0) 
-        bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx) });
-    }
-  }
-  
   ////////////////////////////////////////////////////////////////
   // HETATM identity
   ////////////////////////////////////////////////////////////////
@@ -1467,6 +1404,7 @@ _pdbx_struct_oper_list.vector[3]
    * 
    */
   private String[] hetatmData;
+
   private void processNonpolyData() {
     if (hetatmData == null)
       hetatmData = new String[3];
@@ -1884,86 +1822,175 @@ _pdbx_struct_oper_list.vector[3]
     }
   }
   
-  private int fieldProperty(int i) {
-    return ((field = tokenizer.loopData[i]).length() > 0 
-        && (firstChar = field.charAt(0)) != '\0' ? 
-            propertyOf[i] : NONE);
-  }
 
-  String field;
-  
-  private char firstChar = '\0';
-  private int[] propertyOf = new int[100]; // should be enough
-  private byte[] fieldOf = new byte[100];
-  private String[] fields;
-  private int propertyCount;
-  
-  
-  /**
-   * sets up arrays and variables for tokenizer.getData()
-   * 
-   * @param fields
-   * @throws Exception
-   */
-  private void parseLoopParameters(String[] fields) throws Exception {
-    if (fields == null)
-      fields = this.fields = new String[100];
-    tokenizer.fieldCount = 0;
-    for (int i = fields.length; --i >= 0; )
-      fieldOf[i] = NONE;
+  ////////////////////////////////////////////////////////////////
+  // bond data
+  ////////////////////////////////////////////////////////////////
 
-    propertyCount = fields.length;
-    while (true) {
-      String str = tokenizer.peekToken();
-      if (str == null) {
-        tokenizer.fieldCount = 0;
-        break;
+  final private static byte CHEM_COMP_BOND_ATOM_ID_1 = 0;
+  final private static byte CHEM_COMP_BOND_ATOM_ID_2 = 1;
+  final private static byte CHEM_COMP_BOND_VALUE_ORDER = 2;
+  final private static byte CHEM_COMP_BOND_AROMATIC_FLAG = 3;
+  final private static String[] chemCompBondFields = {
+    "_chem_comp_bond_atom_id_1",
+    "_chem_comp_bond_atom_id_2",
+    "_chem_comp_bond_value_order",
+    "_chem_comp_bond_pdbx_aromatic_flag", 
+  };
+  
+  private void processLigandBondLoopBlock() throws Exception {
+    parseLoopParameters(chemCompBondFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _chem_comp_bond property:" + i);
+        skipLoop();
+        return;
       }
-      if (str.charAt(0) != '_')
-        break;
-      tokenizer.getTokenPeeked();
-      propertyOf[tokenizer.fieldCount] = NONE;
-      str = fixKey(str);
-      for (int i = fields.length; --i >= 0;)
-        if (fields[i] == null || str.equals(fields[i])) {
-          propertyOf[tokenizer.fieldCount] = i;
-          fieldOf[i] = (byte) tokenizer.fieldCount;
-          if (fields[i] == null)
-            fields[i] = str;
+    int order = 0;
+    boolean isAromatic = false;
+    while (tokenizer.getData()) {
+      int atomIndex1 = -1;
+      int atomIndex2 = -1;
+      order = 0;
+      isAromatic = false;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case CHEM_COMP_BOND_ATOM_ID_1:
+          atomIndex1 = atomSetCollection.getAtomIndexFromName(field);
+          break;
+        case CHEM_COMP_BOND_ATOM_ID_2:
+          atomIndex2 = atomSetCollection.getAtomIndexFromName(field);
+          break;
+        case CHEM_COMP_BOND_AROMATIC_FLAG:
+          isAromatic = (field.charAt(0) == 'Y');
+          break;
+        case CHEM_COMP_BOND_VALUE_ORDER:
+          order = getBondOrder(field);
           break;
         }
-      tokenizer.fieldCount++;
+      }
+      if (atomIndex1 < 0 || atomIndex2 < 0)
+        continue;
+      if (isAromatic)
+        switch (order) {
+        case JmolAdapter.ORDER_COVALENT_SINGLE:
+          order = JmolAdapter.ORDER_AROMATIC_SINGLE;
+          break;
+        case JmolAdapter.ORDER_COVALENT_DOUBLE:
+          order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
+          break;
+        }
+      atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
     }
-    if (tokenizer.fieldCount > 0)
-      tokenizer.loopData = new String[tokenizer.fieldCount];
   }
+
+  private int getBondOrder(String field) {
+    switch (field.charAt(0)) {
+    default:
+      Logger.warn("unknown CIF bond order: " + field);
+      //$FALL-THROUGH$
+    case 'S':
+      return JmolAdapter.ORDER_COVALENT_SINGLE;
+    case 'D':
+      return JmolAdapter.ORDER_COVALENT_DOUBLE;
+    case 'T':
+      return JmolAdapter.ORDER_COVALENT_TRIPLE;
+    case 'A':
+      haveAromatic = true;
+      return JmolAdapter.ORDER_AROMATIC;
+    }
+  }
+
+  final private static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
+  final private static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
+  final private static byte GEOM_BOND_DISTANCE = 2;
+  final private static byte CCDC_GEOM_BOND_TYPE = 3;
+  
+  //final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
+
+  final private static String[] geomBondFields = { 
+      "_geom_bond_atom_site_label_1",
+      "_geom_bond_atom_site_label_2",
+      "_geom_bond_distance",
+      "_ccdc_geom_bond_type"
+    //  "_geom_bond_site_symmetry_2",
+  };
 
   /**
    * 
-   * used for turning off fractional or nonfractional coord.
-   * 
-   * @param fieldIndex
-   */
-  private void disableField(int fieldIndex) {
-    int i = fieldOf[fieldIndex];
-    if (i != NONE)
-        propertyOf[i] = NONE;
-  }
-
-  /**
-   * 
-   * skips all associated loop data
+   * reads bond data -- N_ijk symmetry business is ignored,
+   * so we only indicate bonds within the unit cell to just the
+   * original set of atoms. "connect" script or "set forceAutoBond"
+   * will override these values, but see below.
    * 
    * @throws Exception
    */
-  private void skipLoop() throws Exception {
-    String str;
-    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
-      str  = tokenizer.getTokenPeeked();
-    while (tokenizer.getNextDataToken() != null) {
-    }
-  }  
+  private void processGeomBondLoopBlock() throws Exception {
+    parseLoopParameters(geomBondFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (propertyOf[i] != CCDC_GEOM_BOND_TYPE && fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _geom_bond property:" + i);
+        skipLoop();
+        return;
+      }
 
+    String name1 = null;
+    String name2 = null;
+    Integer order = Integer.valueOf(1);
+    while (tokenizer.getData()) {
+      int atomIndex1 = -1;
+      int atomIndex2 = -1;
+      float distance = 0;
+      float dx = 0;
+      //String siteSym2 = null;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case NONE:
+          break;
+        case GEOM_BOND_ATOM_SITE_LABEL_1:
+          atomIndex1 = atomSetCollection.getAtomIndexFromName(name1 = field);
+          break;
+        case GEOM_BOND_ATOM_SITE_LABEL_2:
+          atomIndex2 = atomSetCollection.getAtomIndexFromName(name2 = field);
+          break;
+        case GEOM_BOND_DISTANCE:
+          distance = parseFloatStr(field);
+          int pt = field.indexOf('('); 
+          if (pt >= 0) {
+            char[] data = field.toCharArray();
+            // 3.567(12) --> 0.012
+            String sdx = field.substring(pt + 1, field.length() - 1);
+            int n = sdx.length();
+            for (int j = pt; --j >= 0;) {
+              if (data[j] == '.')
+                --j;
+               data[j] = (--n < 0 ? '0' : sdx.charAt(n));
+            }
+            dx = parseFloatStr(String.valueOf(data));
+            if (Float.isNaN(dx)) {
+              Logger.info("error reading uncertainty for " + line);
+              dx = 0.015f;
+            }
+            // TODO -- this is the full +/- (dx) in x.xxx(dx) -- is that too large?
+          } else {
+            dx = 0.015f;
+          }
+          break;
+        case CCDC_GEOM_BOND_TYPE:
+          order = Integer.valueOf(getBondOrder(field));
+          break;
+        //case GEOM_BOND_SITE_SYMMETRY_2:
+          //siteSym2 = field;
+          //break;
+        }
+      }
+      if (atomIndex1 < 0 || atomIndex2 < 0)
+        continue;
+      if (distance > 0) 
+        bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx), order });
+    }
+  }
+  
   /////////////////////////////////////
   //  bonding and molecular 
   /////////////////////////////////////
@@ -2111,6 +2138,7 @@ _pdbx_struct_oper_list.vector[3]
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
       float dx = ((Float) o[3]).floatValue();
+      int order = ((Integer) o[4]).intValue();
       int iatom1 = atomSetCollection.getAtomIndexFromName((String) o[0]);
       int iatom2 = atomSetCollection.getAtomIndexFromName((String) o[1]);
       BS bs1 = bsSets[iatom1 - firstAtom];
@@ -2122,7 +2150,7 @@ _pdbx_struct_oper_list.vector[3]
           if ((!isMolecular || !bsConnected[j + firstAtom].get(k))
               && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
                   + firstAtom], distance, dx, 0, 0, 0, ptOffset))
-            addNewBond(j + firstAtom, k + firstAtom);
+            addNewBond(j + firstAtom, k + firstAtom, order);
         }
     }
     
@@ -2140,7 +2168,7 @@ _pdbx_struct_oper_list.vector[3]
               if (!bsConnected[i].get(k)
                   && symmetry.checkDistance(atoms[i], atoms[k], 1.1f, 0, 0, 0,
                       0, ptOffset))
-                addNewBond(i, k);
+                addNewBond(i, k, 1);
             }
         }
     if (!isMolecular)
@@ -2204,9 +2232,10 @@ _pdbx_struct_oper_list.vector[3]
    * 
    * @param i
    * @param j
+   * @param order 
    */
-  private void addNewBond(int i, int j) {
-    atomSetCollection.addNewBond(i, j);
+  private void addNewBond(int i, int j, int order) {
+    atomSetCollection.addNewBondWithOrder(i, j, order);
     if (!isMolecular)
       return;
     bsConnected[i].set(j);
@@ -2300,6 +2329,9 @@ _pdbx_struct_oper_list.vector[3]
   private final static int FP_DISP_ID = 43;
   private final static int FP_OCC_ID = 44;
   private final static int FP_U_ID = 45;
+  
+  private final static int JANA_OCC_ABS_LABEL = 46;
+  private final static int JANA_OCC_ABS_O_0 = 47;
 
   final private static String[] modulationFields = {
       "_cell_wave_vector_seq_id", 
@@ -2351,17 +2383,20 @@ _pdbx_struct_oper_list.vector[3]
       "_atom_site_displace_fourier_param_id",
       "_atom_site_occ_fourier_param_id",
       "_atom_site_u_fourier_param_id",
+      
+      "_jana_atom_site_occ_fourier_absolute_site_label",
+      "_jana_atom_site_occ_fourier_absolute"
   };
   
   /**
    * creates entries in htModulation with a key of the form:
    * 
-   * type_id_axis;atomLabel 
+   * type_id_axis;atomLabel
    * 
-   * where type = W|F|D|O (wave vector, Fourier index,
-   * displacement, occupancy); id = 1|2|3|0|S (Fourier index, Crenel(0),
-   * sawtooth); axis (optional) = 0|x|y|z (0 indicates irrelevant -- occupancy);
-   * and ;atomLabel is only for D and O.
+   * where type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
+   * id = 1|2|3|0|S (Fourier index, Crenel(0), sawtooth); axis (optional) =
+   * 0|x|y|z (0 indicates irrelevant -- occupancy); and ;atomLabel is only for D
+   * and O.
    * 
    * @throws Exception
    */
@@ -2384,7 +2419,8 @@ _pdbx_struct_oper_list.vector[3]
         case FA_ID:
         case FO_ID:
         case FU_ID:
-          fid = "#=P" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_" + field;
+          fid = "#=P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+              + "_" + field;
           pt.x = pt.y = pt.z = 0;
           break;
         case WV_ID:
@@ -2407,28 +2443,32 @@ _pdbx_struct_oper_list.vector[3]
           case FWV_DISP_ID:
           case FWV_OCC_ID:
           case FWV_U_ID:
-            id = "" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_";
+            id = "" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
             break;
           case FP_DISP_ID:
           case FP_OCC_ID:
           case FP_U_ID:
-            id = "P" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_";
+            id = "P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
           }
           id += field;
           break;
+        case JANA_OCC_ABS_LABEL:
+          id = "J_O";
+          pt.x = pt.z = 1;
+          //$FALL-THROUGH$
         case DISP_SPEC_LABEL:
+          if (id == null)
           id = "D_S";
-          atomLabel = field;
-          axis = "0";
-          break;
+          //$FALL-THROUGH$
         case OCC_SPECIAL_LABEL:
-          id = "O_0";
+          if (id == null)
+            id = "O_0";
           axis = "0";
           //$FALL-THROUGH$
         case FWV_DISP_LABEL:
         case FWV_OCC_LABEL:
-          atomLabel = field;
-          break;
         case FWV_U_LABEL:
           atomLabel = field;
           break;
@@ -2482,6 +2522,7 @@ _pdbx_struct_oper_list.vector[3]
         case FWV_U_PHASE:
         case OCC_CRENEL_W:
         case DISP_SAW_AY:
+        case JANA_OCC_ABS_O_0:
           pt.y = parseFloatStr(field);
           break;
         case WV_Z:
@@ -2497,7 +2538,9 @@ _pdbx_struct_oper_list.vector[3]
           w = parseFloatStr(field);
           break;
         }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0 && pt.z == 0 || id == null)
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0
+            && pt.z == 0 || id == null || atomLabel != null
+            && rejectAtomName(atomLabel))
           continue;
         switch (id.charAt(0)) {
         case 'W':
@@ -2506,6 +2549,7 @@ _pdbx_struct_oper_list.vector[3]
         case 'D':
         case 'O':
         case 'U':
+        case 'J':
           if (atomLabel == null || axis == null)
             continue;
           if (id.equals("D_S")) {
@@ -2527,8 +2571,7 @@ _pdbx_struct_oper_list.vector[3]
       }
     }
   }
-  
-  
+    
   private void addMod(String id, String fid, P3 params) {
     if (fid != null)
       id += fid;

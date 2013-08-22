@@ -40,6 +40,17 @@ abstract public class GamessReader extends MOReader {
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
+  protected void readEnergy() {
+    //  ... ENERGY IS   or    ... ENERGY = 
+    String[] tokens = getTokensStr(line.substring(line.indexOf("ENERGY")));
+    if (tokens.length < 3)
+      return;
+    String strEnergy = tokens[2];
+    float e = parseFloatStr(strEnergy);
+    if (!Float.isNaN(e))
+      atomSetCollection.setAtomSetEnergy(strEnergy, e);
+  }
+
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
     JmolList<String[]> gdata = new  JmolList<String[]>();
     gaussianCount = 0;
