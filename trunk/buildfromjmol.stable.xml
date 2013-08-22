@@ -1,4 +1,4 @@
-<project name="JSmol" default="fromJmol" basedir=".">
+<project name="JSmol" default="fromJmolStable" basedir=".">
 	
 	<property name="jmol.path" value="../Jmol-13_2" />
 
@@ -88,7 +88,7 @@
             - Bob Hanson March 23, 2013 (revised July 27, 2013).
 	 -->
 
-  <target name="fromJmol" id="fromJmol">
+  <target name="fromJmolStable" id="fromJmolStable">
   	
 	<!-- pull Jmol.properties key info -->
   	<echo>copying Jmol.properties</echo>

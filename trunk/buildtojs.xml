@@ -802,5 +802,5 @@
    	<echo>dist/jsmol.zip and ${jmol.path}/appletweb/jsmol.zip have been updated. 
    		Now unzip dist/jsmol.zip into a local directory for testing</echo>
   </target>
-  	
+
 </project>
