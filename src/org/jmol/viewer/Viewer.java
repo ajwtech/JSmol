@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-17 13:32:23 -0500 (Sat, 17 Aug 2013) $
- * $Revision: 18590 $
+ * $Date: 2013-08-20 09:41:52 -0500 (Tue, 20 Aug 2013) $
+ * $Revision: 18604 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -9196,9 +9196,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       if (path != null)
         Logger.info(GT._("Setting log file to {0}", path));
-      logFile = path;
+      global.setS("_logFile", logFile = path);
     }
-    return value;
+      return value;
   }
 
   public void log(String data) {
@@ -10267,16 +10267,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (!getTestFlag(1));
   }
 
-  public void setModulation(boolean isOn, int t1, int t2, boolean isThread) {
+  public void setModulation(boolean isOn, int[] t1, int t2, boolean isThread) {
+    int t = (t1 == null ? Integer.MAX_VALUE : t1[0]);
     if (t2 == Integer.MAX_VALUE) {
       if (!isThread)
         animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
-      if (t1 != Integer.MAX_VALUE)
-        global.setI("_modt", t1);
-      modelSet.setModulation(getSelectionSet(false), isOn, t1);
+      if (t1 != null)
+        global.setI("_modt", t1[0]);
+      modelSet.setModulation(getSelectionSet(false), isOn, t);
     } else {
-      animationManager.setModulationPlay(t1, t2);
+      animationManager.setModulationPlay(t, t2);
     }
+    refreshMeasures(true);
   }
 
   public void setModulationFps(float fps) {

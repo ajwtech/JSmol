@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-12 15:16:55 -0500 (Mon, 12 Aug 2013) $
- * $Revision: 18552 $
+ * $Date: 2013-08-21 09:46:32 -0500 (Wed, 21 Aug 2013) $
+ * $Revision: 18611 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -55,6 +55,8 @@ import org.jmol.util.V3;
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
+  public BS bsAtoms; // required for CIF reader
+    
   private String fileTypeName;
   
   public String getFileTypeName() {
@@ -79,8 +81,6 @@ public class AtomSetCollection {
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfoMap() {
     return atomSetCollectionAuxiliaryInfo;
   }
-  
-  public BS bsAtoms; // required for CIF reader
   
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
@@ -644,14 +644,6 @@ public class AtomSetCollection {
     mapMostRecentAtomSerialNumber();
   }
 
-  public Bond addNewBond(int atomIndex1, int atomIndex2) {
-    return addNewBondWithOrder(atomIndex1, atomIndex2, 1);
-  }
-
-  Bond addNewSingleBondFromNames(String atomName1, String atomName2) {
-    return addNewBondFromNames(atomName1, atomName2, 1);
-  }
-
   public Bond addNewBondWithOrder(int atomIndex1, int atomIndex2, int order) {
     if (atomIndex1 < 0 || atomIndex1 >= atomCount ||
         atomIndex2 < 0 || atomIndex2 >= atomCount)
@@ -926,13 +918,9 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry() throws Exception {
-    //parameters are counts of unit cells as [a b c]
-    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
-  }
-
-  void applySymmetryUsing(SymmetryInterface symmetry) throws Exception {
-    getSymmetry().setSpaceGroupS(symmetry);
+  void applySymmetry(SymmetryInterface symmetry) throws Exception {
+    if (symmetry != null)
+      getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
     applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }
@@ -1521,7 +1509,7 @@ public class AtomSetCollection {
     haveMappedSerials = false;
   }
 
-  boolean haveMappedSerials;
+  private boolean haveMappedSerials;
 
   private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)
@@ -1944,6 +1932,7 @@ public class AtomSetCollection {
   public void setAtomSetEnergy(String energyString, float value) {
     if (currentAtomSetIndex < 0)
       return;
+    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = " + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);

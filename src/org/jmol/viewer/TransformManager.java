@@ -1708,21 +1708,38 @@ public class TransformManager {
         matrixEnd.setAA(aaMoveTo);
       }
     }
+    if (cameraX == cameraSetting.x)
+      cameraX = Float.NaN;
+    if (cameraY == cameraSetting.y)
+      cameraY = Float.NaN;
+    if (cameraDepth == this.cameraDepth)
+      cameraDepth = Float.NaN;
     if (!Float.isNaN(cameraX))
       xTrans = cameraX * 50 / newRotationRadius / width * screenPixelCount;
     if (!Float.isNaN(cameraY))
       yTrans = cameraY * 50 / newRotationRadius / height * screenPixelCount;
+    float pixelScale = (center == null ? scaleDefaultPixelsPerAngstrom
+        : defaultScaleToScreen(newRotationRadius));
+    if (floatSecondsTotal <= 0) {
+      setAll(center, matrixEnd, navCenter, zoom, xTrans, yTrans,
+          newRotationRadius, pixelScale, navDepth, xNav, yNav, cameraDepth,
+          cameraX, cameraY);
+      viewer.moveUpdate(floatSecondsTotal);
+      viewer.finalizeTransformParameters();
+      return;
+    }
+
     try {
       if (motion == null)
         motion = (JmolThread) Interface
             .getOptionInterface("thread.MoveToThread");
-      int[] ret = new int[1];
-      motion.setManager(this, viewer, new Object[] {
-          center, matrixEnd, navCenter,
+      int nSteps = motion.setManager(this, viewer, new Object[] {
+          center,
+          matrixEnd,
+          navCenter,
           new float[] { floatSecondsTotal, zoom, xTrans, yTrans,
-              newRotationRadius, xNav, yNav, navDepth, cameraDepth, cameraX,
-              cameraY }, ret });
-      int nSteps = ret[0];
+              newRotationRadius, pixelScale, navDepth, xNav, yNav, cameraDepth,
+              cameraX, cameraY } });
       if (nSteps <= 0 || viewer.global.waitForMoveTo) {
         if (nSteps > 0)
           motion.setEval(eval);
@@ -2732,6 +2749,35 @@ public class TransformManager {
   public void setZoomHeight(boolean zoomHeight, boolean zoomLarge) {
     this.zoomHeight = zoomHeight;
     scaleFitToScreen(false, zoomLarge, false, true);
+  }
+
+  public void setAll(P3 center, Matrix3f m, P3 navCenter, float zoom,
+                     float xTrans, float yTrans, float rotationRadius,
+                     float pixelScale, float navDepth, float xNav,
+                     float yNav, float cameraDepth, float cameraX, float cameraY) {
+    setRotation(m);
+    if (center != null)
+      moveRotationCenter(center, !windowCentered);
+    if (navCenter != null && mode == MODE_NAVIGATION)
+      navigationCenter.setT(navCenter);
+    if (!Float.isNaN(cameraDepth))
+      setCameraDepthPercent(cameraDepth, false);
+    if (!Float.isNaN(cameraX) && !Float.isNaN(cameraY))
+      setCamera(cameraX, cameraY);
+    if (!Float.isNaN(zoom))
+      zoomToPercent(zoom);
+    if (!Float.isNaN(rotationRadius))
+      modelRadius = rotationRadius;
+    if (!Float.isNaN(pixelScale))
+      scaleDefaultPixelsPerAngstrom = pixelScale;
+    if (!Float.isNaN(xTrans) && !Float.isNaN(yTrans)) {
+      translateToPercent('x', xTrans);
+      translateToPercent('y', yTrans);
+    }
+    if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+      navTranslatePercentOrTo(0, xNav, yNav);
+    if (!Float.isNaN(navDepth))
+      setNavigationDepthPercent(navDepth);
   }
 
 }

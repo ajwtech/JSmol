@@ -125,7 +125,8 @@ public class Tensor {
   + ";isotropy....." + ";anisotropy..." + ";asymmetry...." 
   + ";eulerzyz....." + ";eulerzxz....." + ";quaternion..." 
   + ";indices......" + ";string......." + ";type........."
-  + ";id...........";
+  + ";id..........." + ";span........." + ";skew.........";
+  
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -179,13 +180,13 @@ public class Tensor {
     case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
-      return Float.valueOf(getIso());
+      return Float.valueOf(isotropy());
     case 7: // anisotropy
       // Anisotropy, defined as Vzz-(Vxx+Vyy)/2
-      return Float.valueOf(getAnisotropy()); 
+      return Float.valueOf(anisotropy()); 
     case 8: // asymmetry
       // Asymmetry, defined as (Vyy-Vxx)/(Vzz - Viso)
-      return Float.valueOf(getAsymmetry());
+      return Float.valueOf(asymmetry());
  
       
     case 9: // eulerzyz
@@ -206,20 +207,125 @@ public class Tensor {
       
     case 15:
       return id;
+    
+    case 16:
+      return Float.valueOf(span());
+    case 17:
+      return Float.valueOf(skew());
+    
     }
   }
 
-  public float getIso() {
+  //  isotropy = (e2 + e1 + e0)/3
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //               e2                 e1       e0
+  //                               |
+  //                              iso
+    
+  /**
+   * isotropy = average of eigenvalues
+   * 
+   * @return isotropy
+   */
+  public float isotropy() {
     return (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
   }
 
-  public float getAnisotropy() {
+  // span = |e2 - e0|
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //                e2                 e1       e0
+  //                |---------------------------|
+  //                            span      
+  //
+    
+  /**
+   * width of the signal; |e2 - e0|
+   * 
+   * @return unitless; >= 0
+   */
+  public float span() {
+    return Math.abs(eigenValues[2] - eigenValues[0]);  
+  }
+
+  // skew = 3 (e1 - iso) / span
+  //
+  //                |                  |        |
+  //                |              iso |        |
+  //                e2              |  e1       e0
+  //                      e1 - iso  |->          
+  //                                     
+  //                |---------------------------|
+  //                            span      
+  //
+  //  or 0 if 0/0
+    
+  /**
+   * a measure of asymmetry.
+   * 
+   * @return range [-1, 1]
+   */
+  public float skew() {
+    return (span() == 0 ? 0 : 3 * (eigenValues[1] - isotropy()) / span());
+  }
+
+
+  // anistropy = e2 - (e1 + e0)/2
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //               e2                 e1       e0
+  //                <----------------------|              
+  //                        anisotropy
+    
+  /**
+   * anisotropy = directed distance from (center of two closest) to (the furthest)
+   * @return unitless number
+   */
+  public float anisotropy() {
     return eigenValues[2] - (eigenValues[0] + eigenValues[1]) / 2;
   }
 
-  public float getAsymmetry() {
-    return eigenValues[0] == eigenValues[2] ? 0 : (eigenValues[1] - eigenValues[0])
-        / (eigenValues[2] - getIso());
+  //  reduced anisotropy = e2 - iso = anisotropy * 2/3
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //                e2            iso  e1       e0
+  //                <----------------------|              
+  //                        anisotropy
+  //                <--------------|
+  //                  reduced anisotropy
+    
+  /**
+   * reduced anisotropy = largest difference from isotropy
+   * (may be negative)
+   * 
+   * @return unitless number
+   * 
+   */
+  public float reducedAnisotropy() {
+    return anisotropy() * 2 / 3;  // = eigenValues[2]-iso();
+  }
+
+  // asymmetry = (e1 - e0)/(e2 - iso)
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //                e2            iso  e1       e0
+  //                <--------------|   <--------|
+  //                   (e2 - iso)       (e1 - e0)
+  //  or 0 when 0/0
+
+  /**
+   * asymmetry = deviation from a symmetric tensor
+   * 
+   * @return range [0,1]
+   */
+  public float asymmetry() {
+    return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / reducedAnisotropy();
   }
 
   public static Tensor copyTensor(Tensor t0) {

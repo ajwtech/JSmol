@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-11 17:01:22 -0500 (Sun, 11 Aug 2013) $
- * $Revision: 18548 $
+ * $Date: 2013-08-22 00:32:34 -0500 (Thu, 22 Aug 2013) $
+ * $Revision: 18615 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -313,7 +313,7 @@ public class Measurement {
               / (a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
               + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO))
               : isDC ? viewer.getNMRCalculation().getDipolarConstantHz(a1, a2)
-                  : viewer.getNMRCalculation().getJCouplingHz(a1, a2, units,
+                  : viewer.getNMRCalculation().getIsoOrAnisoHz(true, a1, a2, units,
                       null));
           isValid = !Float.isNaN(dist);
           if (isPercent)

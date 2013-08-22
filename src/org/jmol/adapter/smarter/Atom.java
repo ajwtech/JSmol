@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-12 15:16:55 -0500 (Mon, 12 Aug 2013) $
- * $Revision: 18552 $
+ * $Date: 2013-08-22 10:12:02 -0500 (Thu, 22 Aug 2013) $
+ * $Revision: 18620 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -41,9 +41,9 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  public V3 vib;
+  public V3 vib; // .x and .y can be used for in-reader purposes as long as vib.z is left Float.NaN
   public float bfactor = Float.NaN;
-  public int occupancy = 100;
+  public float foccupancy = 1;
   public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;

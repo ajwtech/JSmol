@@ -73,7 +73,7 @@ class SymmetryOperation extends Matrix4f {
   private String[] myLabels;
   int modDim;
   float[] rotTransMatrix;
-  public Matrix4f mod456;
+  Matrix4f gammaIS;
 
 
   /**
@@ -113,7 +113,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   private void setMod456() {
-    (mod456 = new Matrix4f()).setA(rotTransMatrix, 16);
+    (gammaIS = new Matrix4f()).setA(rotTransMatrix, 16);
   }
 
   void doFinalize() {
@@ -121,9 +121,9 @@ class SymmetryOperation extends Matrix4f {
     m13 /= 12;
     m23 /= 12;
     if (modDim > 0) {
-      mod456.m03 /= 12;
-      mod456.m13 /= 12;
-      mod456.m23 /= 12;
+      gammaIS.m03 /= 12;
+      gammaIS.m13 /= 12;
+      gammaIS.m23 /= 12;
     }
     isFinalized = true;
   }
@@ -178,13 +178,7 @@ class SymmetryOperation extends Matrix4f {
     this.modDim = modDim;
     if (modDim > 0) {
       n = 32; // x4, x5, x6, and twelfths
-      if (modDim == 1) {
-        myLabels = labelsX1_6;
-      } else {
-        myLabels = new String[modDim + 3];
-        for (int i = modDim + 3; --i >= 0;)
-          myLabels[i] = "x" + (i + 1);
-      }
+      myLabels = labelsX1_6;
     }
     rotTransMatrix = new float[n];
     boolean isReverse = (xyz.startsWith("!"));
@@ -272,7 +266,7 @@ class SymmetryOperation extends Matrix4f {
     setA(rotTransMatrix, 0);
     if (rotTransMatrix.length == 32) {
       rotTransMatrix[31] = 1;
-      (mod456 = new Matrix4f()).setA(rotTransMatrix, 16);
+      (gammaIS = new Matrix4f()).setA(rotTransMatrix, 16);
     }
     isFinalized = true;
     if (isReverse)
@@ -1319,12 +1313,6 @@ class SymmetryOperation extends Matrix4f {
     operation.m03 = ((int)operation.m03 + 12) % 12;
     operation.m13 = ((int)operation.m13 + 12) % 12;
     operation.m23 = ((int)operation.m23 + 12) % 12;    
-  }
-
-  public void getMod456Row(int rowPt, float[] f4) {
-    for (int i = 0, pt = 16 + rowPt * 4; i < 4; i++, pt++)
-      f4[i] = rotTransMatrix[pt];
-    f4[3] /= 12;
   }
 
 }
