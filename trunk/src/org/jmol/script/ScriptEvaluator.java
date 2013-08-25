@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-20 12:19:24 -0500 (Tue, 20 Aug 2013) $
- * $Revision: 18605 $
+ * $Date: 2013-08-23 11:52:44 -0500 (Fri, 23 Aug 2013) $
+ * $Revision: 18622 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -14643,6 +14643,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         msg = viewer.getPathForAllFiles();
       break;
     case T.nmr:
+      if (optParameterAsString(2).equalsIgnoreCase("1H")) {
+        len = 3;
+        if (!chk)
+          msg = viewer.getNMRPredict(viewer.getModelExtract("selected", true, false, "V2000"));
+      }
+      break;
     case T.smiles:
     case T.drawing:
     case T.chemical:

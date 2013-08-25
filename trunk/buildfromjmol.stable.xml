@@ -156,7 +156,7 @@
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
   	
   	
-   	<echo>Now run buildtojs.xml to compile ${jmol.path} as JSmol</echo>
+   	<echo>Now run buildtojs.stable.xml to compile ${jmol.path} as JSmol</echo>
 
   </target>
 	
