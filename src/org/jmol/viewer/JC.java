@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
- * $Revision: 18558 $
+ * $Date: 2013-08-23 11:52:44 -0500 (Fri, 23 Aug 2013) $
+ * $Revision: 18622 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $"
+        // "$Date: 2013-08-23 11:52:44 -0500 (Fri, 23 Aug 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -1293,6 +1293,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
     "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
     "nmr", "http://www.nmrdb.org/predictor?smiles=",
+    "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
     "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
     "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
   };
