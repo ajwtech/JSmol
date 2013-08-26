@@ -64,7 +64,7 @@
     <move file="${temp.dir}/${prefix.release}${version}/jsmol.zip" tofile="${temp.dir}/${prefix.release}${version}/jsmol-${version}.zip" />
 
     <!-- Do the copy using scp -->
-    <echo message="Copying release files to Jmol website" level="info"/>
+    <echo message="Copying release files to http://sourceforge.net/projects/jsmol/files/" level="info"/>
     <scp todir="${ssh.user},jmol:${ssh.password}@${web.host}:${web.dir}"
          trust="yes" failonerror="true">
       <fileset dir="${temp.dir}">
