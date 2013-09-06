@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-12 17:46:17 -0500 (Mon, 12 Aug 2013) $
- * $Revision: 18554 $
+ * $Date: 2013-08-30 18:41:40 +0200 (Fri, 30 Aug 2013) $
+ * $Revision: 18633 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -600,6 +600,12 @@ public class StatusManager {
     if (port != 0 || notifyEnabled(EnumCallback.SYNC))
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
+  }
+ 
+  void modifySend(int atomIndex, int modelIndex, int mode) {
+    if (notifyEnabled(EnumCallback.STRUCTUREMODIFIED))
+      jmolCallbackListener.notifyCallback(EnumCallback.STRUCTUREMODIFIED,
+          new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex) });
   }
   
   int getSyncMode() {

@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-07-26 06:46:53 -0500 (Fri, 26 Jul 2013) $
- * $Revision: 18492 $
+ * $Date: 2013-09-02 07:40:40 +0200 (Mon, 02 Sep 2013) $
+ * $Revision: 18637 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -1209,6 +1209,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         && flowContext.var != null && theTok != T.casecmd
         && theTok != T.defaultcmd && lastToken.tok != T.switchcmd)
       return ERROR(ERROR_badContext, ident);
+    if (lastToken.tok == T.define && theTok != T.leftbrace && nTokens != 1) {
+      addTokenToPrefix(T.o(T.string, ident));
+      return CONTINUE;
+    }
     switch (theTok) {
     case T.identifier:
       if (nTokens == 0 && !checkImpliedScriptCmd) {
@@ -2330,12 +2334,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           ptLastChar = ichT;
         }
         break;
-      }
-      if (Character.isWhitespace(ch)) {
-        if (ptSpace < 0)
-          ptSpace = ichT;
-      } else {
-        ptLastChar = ichT;
       }
       ++ichT;
     }

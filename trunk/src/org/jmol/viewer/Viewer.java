@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-23 11:52:44 -0500 (Fri, 23 Aug 2013) $
- * $Revision: 18622 $
+ * $Date: 2013-08-30 18:41:40 +0200 (Fri, 30 Aug 2013) $
+ * $Revision: 18633 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -515,7 +515,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager = new FileManager(this);
     definedAtomSets = new Hashtable<String, Object>();
     setJmolStatusListener(statusListener);
-
     if (isApplet) {
       Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
       jsDocumentBase = appletDocumentBase;
@@ -3185,15 +3184,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getModelNumber(int modelIndex) {
-    if (modelIndex < 0)
-      return modelIndex;
-    return modelSet.getModelNumber(modelIndex);
+    return (modelIndex < 0 ? modelIndex : modelSet.getModelNumber(modelIndex));
   }
 
   public int getModelFileNumber(int modelIndex) {
-    if (modelIndex < 0)
-      return 0;
-    return modelSet.getModelFileNumber(modelIndex);
+    return (modelIndex < 0 ? 0 : modelSet.getModelFileNumber(modelIndex));
   }
 
   @Override
@@ -5183,7 +5178,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setS("_modelTitle",
         (modelIndex < 0 ? "" : getModelTitle(modelIndex)));
     global.setS("_modelFile", (modelIndex < 0 ? ""
-        : getModelFileName(modelIndex)));
+        : modelSet.getModelFileName(modelIndex)));
+    global.setS("_modelType", (modelIndex < 0 ? ""
+        : modelSet.getModelFileType(modelIndex)));
 
     if (currentFrame == prevFrame)
       return;
@@ -5793,6 +5790,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public boolean getBoolean(int tok) {
     switch (tok) {
+    case T.pdb:
+      return modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     case T.allowgestures:
       return global.allowGestures;
     case T.allowmultitouch:
@@ -8574,18 +8573,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return xyzdata;
   }
 
-  public String getNMRPredict(String molFile) {
-    // nmrdb cannot handle "." separator and cannot handle c=c
+  @Override
+  public String extractMolData(String what) {
+  	if (what == null) {
+  		int i = getCurrentModelIndex();
+  		if (i < 0)
+  			return null;
+  		what = getModelNumberDotted(i);
+  	}
+    return getModelExtract(what, true, false, "V2000");
+  }
+  public String getNMRPredict(boolean openURL) {
+    String molFile = getModelExtract("selected", true, false, "V2000");
     int pt = molFile.indexOf("\n");
     molFile = "Jmol " + version_date + molFile.substring(pt);
+    if (openURL) {
+      if (isApplet) {
+        //TODO -- can do this if connected
+        showUrl(global.nmrUrlFormat + molFile);
+      } else {
+        syncScript("true", "*", 0);
+        syncScript("JSpecView:", ".", 0);
+      }
+      return null; 
+    }
     String url = global.nmrPredictFormat + molFile;
     return getFileAsString(url);
-  }
-
-  public void showNMR(String smiles) {
-    // nmrdb cannot handle "." separator and cannot handle c=c
-    showUrl(global.nmrUrlFormat
-        + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));
   }
 
   public void getHelp(String what) {
@@ -8781,6 +8794,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getModelIndexFromId(String id) {
+    // from JSpecView peak pick and model "ID"
     return modelSet.getModelIndexFromId(id);
   }
 
@@ -8882,16 +8896,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int deleteAtoms(BS bs, boolean fullModels) {
+    int atomIndex = (bs == null ? -1 : bs.nextSetBit(0));
+    if (atomIndex < 0)
+      return 0;
     clearModelDependentObjects();
     if (!fullModels) {
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, 4);
       modelSet.deleteAtoms(bs);
       int n = selectionManager.deleteAtoms(bs);
       setTainted(true);
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, -4);
       return n;
     }
-    if (bs.cardinality() == 0)
-      return 0;
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
+    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, 5);
     setCurrentModelIndexClear(0, false);
     animationManager.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
@@ -8909,6 +8927,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
+    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, -5);
     return BSUtil.cardinalityOf(bsDeleted);
   }
 
@@ -9584,10 +9603,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     clearModelDependentObjects();
     if (pt == null) {
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, 1);
       int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
       if (!Parser.isOneOf(type,";Mi;Pl;X;"))
         modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, -1);
       refresh(3, "assignAtom");
       return;
     }
@@ -9596,6 +9617,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     P3[] pts = new P3[] { pt };
     JmolList<Atom> vConnections = new JmolList<Atom>();
     vConnections.addLast(atom);
+    int modelIndex = atom.modelIndex;
+    statusManager.modifySend(atomIndex, modelIndex, 3);
     try {
       bs = addHydrogensInline(bs, vConnections, pts);
       atomIndex = bs.nextSetBit(0);
@@ -9604,15 +9627,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //
     }
     modelSet.setAtomNamesAndNumbers(atomIndex, -1, null);
+    statusManager.modifySend(atomIndex, modelIndex,-3);
   }
 
   public void assignConnect(int index, int index2) {
     clearModelDependentObjects();
     float[][] connections = ArrayUtil.newFloat2(1);
     connections[0] = new float[] { index, index2 };
+    int modelIndex = modelSet.atoms[index].modelIndex;
+    statusManager.modifySend(index, modelIndex, 2);
     modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
     modelSet.assignAtom(index2, ".", true);
+    statusManager.modifySend(index, modelIndex, -2);
     refresh(3, "assignConnect");
   }
 

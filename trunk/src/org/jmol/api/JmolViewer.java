@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
- * $Revision: 18558 $
+ * $Date: 2013-08-29 12:32:22 +0200 (Thu, 29 Aug 2013) $
+ * $Revision: 18627 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -618,6 +618,7 @@ abstract public class JmolViewer {
    */
   abstract public String runScript(String script);
   abstract public int modelGetLastVibrationIndex(int i, int tok);
+  abstract public String extractMolData(String what);
 
 }
 

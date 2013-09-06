@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-22 10:12:02 -0500 (Thu, 22 Aug 2013) $
- * $Revision: 18620 $
+ * $Date: 2013-09-06 12:25:32 -0500 (Fri, 06 Sep 2013) $
+ * $Revision: 18645 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -80,15 +80,16 @@ public class Atom extends P3 implements Cloneable {
   }
 
   public Atom getClone() throws CloneNotSupportedException {
-    // note that anisoBorU and ellipsoid are not copied
-    // we consider them "final" in a sense
     Atom a = (Atom)clone();
     if (vib != null)
       a.vib = V3.newV(a.vib);
     if (anisoBorU != null)
       a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
-
-    
+    if (tensors != null) {
+      a.tensors = new JmolList<Tensor>();
+      for (int i = tensors.size(); --i >= 0;)
+        a.tensors.addLast(Tensor.copyTensor(tensors.get(i)));
+    }
     return a;
   }
 

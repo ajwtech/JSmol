@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
- * $Revision: 18558 $
+ * $Date: 2013-08-29 12:32:22 +0200 (Thu, 29 Aug 2013) $
+ * $Revision: 18627 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -1156,6 +1156,7 @@ public class PropertyManager implements JmolPropertyManager {
         sb.append("\nid").append(s).append(Escape.eS(id));
       sb.append("\ntitle").append(s).append(Escape.eS(ms.getModelTitle(i)));
       sb.append("\nname").append(s).append(Escape.eS(ms.getModelName(i)));
+      sb.append("\ntype").append(s).append(Escape.eS(ms.getModelFileType(i)));
     }
     return sb.toString();
   }
