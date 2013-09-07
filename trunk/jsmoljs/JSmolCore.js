@@ -682,6 +682,12 @@ Jmol = (function(document) {
   	// use host-server PHP relay if not from this host
     var type = (Jmol._isBinaryUrl(fileName) ? "binary" : "text");
     var asBase64 = ((type == "binary") && !Jmol._canSyncBinary());
+    if (asBase64 && fileName.indexOf("pdb.gz") >= 0) {
+      // avoid unnecessary binary transfer
+      fileName = fileName.replace(/pdb\.gz/,"pdb");
+      asBase64 = false;
+      type = "text";
+    }
     var isPost = (fileName.indexOf("?POST?") >= 0);
     if (fileName.indexOf("file:/") == 0 && fileName.indexOf("file:///") != 0)
       fileName = "file://" + fileName.substring(5);      /// fixes IE problem
@@ -699,8 +705,8 @@ Jmol = (function(document) {
 		} else {
 			info.url = fileName;
 		}
-		var xhr = Jmol.$ajax(info);
-		if (self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
+		var xhr = Jmol.$ajax(info); 
+		if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
 		  // Safari
 		  return xhr.response;
 		} 
