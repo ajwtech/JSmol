@@ -3,6 +3,8 @@
 // jsmol.php
 // Bob Hanson hansonr@stolaf.edu 1/11/2013
 //
+// last modified: 6 Sep 2013 -- adding PHP error handling
+//
 // Server-side Jmol delivers:
 //   simple relay for cross-domain files
 //
@@ -42,6 +44,15 @@
 // http://foo.wherever/jsmol.php?call=getRawDataFromDatabase&database=_&query=http://chemapps.stolaf.edu/jmol/data/t.pdb.gz
 // http://goo.wherever/jsmol.php?call=getRawDataFromDatabase&database=_&query=http://chemapps.stolaf.edu/jmol/data/t.pdb.gz&encoding=base64
 
+
+$myerror = "";
+
+function handleError($severity, $msg, $filename, $linenum) {
+  global $myerror;
+  $myerror = "PHP error:$severity $msg $filename $linenum";
+}
+
+set_error_handler("handleError");
 
 $cmd = '/home/mscs/common/bin32/java -Djava.awt.headless=true -jar JmolData.jar -iRJ ';
 
@@ -191,28 +202,33 @@ if ($call == "getInfoFromDatabase") {
 
 }
 
-ob_start(); 
- if ($imagedata != "") {
-	$output = $imagedata;
-	header('Content-Type: '.$contentType);
-	if ($filename != "") {
-	  header('Content-Description: File Transfer');
-		header("Content-Disposition: attachment; filename=\"$filename\"");
-    header('Content-Transfer-Encoding: binary');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-	}
- } else {
-	header('Access-Control-Allow-Origin: *');
-	if ($isBinary) {
-		header('Content-Type: text/plain; charset=x-user-defined');
-	} else {
-		header('Content-Type: application/json');
-	}
- }
- if ($encoding == "base64") {
-	 $output = ";base64,".base64_encode($output);
+ob_start();
+
+ if ($myerror != "") {
+   $output = $myerror;
+ } else { 
+   if ($imagedata != "") {
+  	$output = $imagedata;
+  	header('Content-Type: '.$contentType);
+  	if ($filename != "") {
+  	  header('Content-Description: File Transfer');
+  		header("Content-Disposition: attachment; filename=\"$filename\"");
+      header('Content-Transfer-Encoding: binary');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+  	}
+   } else {
+  	header('Access-Control-Allow-Origin: *');
+  	if ($isBinary) {
+  		header('Content-Type: text/plain; charset=x-user-defined');
+  	} else {
+  		header('Content-Type: application/json');
+  	}
+   }
+   if ($encoding == "base64") {
+  	 $output = ";base64,".base64_encode($output);
+   }
  } 
  header('Last-Modified: '.date('r'));
  header('Accept-Ranges: bytes');
