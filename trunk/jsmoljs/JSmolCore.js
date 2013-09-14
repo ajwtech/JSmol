@@ -146,6 +146,17 @@ Jmol = (function(document) {
 	  return (f ? $(what).bind(list, f) : $(what).unbind(list));
   }
 
+  Jmol.$appStyle = function(app, div, style) {
+	  return Jmol.$(app, div).css(style);
+  }
+	 
+  Jmol.$appEvent = function(app, div, evt, f) {
+	if (f)
+  	  Jmol.$(app, div).on(evt, f);
+	else
+	  Jmol.$(app, div).off(evt);
+  }	  
+
   Jmol.$focus = function(id) {
 	  return $("#" + id).focus();
   }
@@ -161,7 +172,7 @@ Jmol = (function(document) {
   Jmol.$offset = function(id) {
     return $("#" + id).offset();
   }
-  
+
   Jmol.$documentOff = function(evt, id) {
 	$(document).off(evt, "#" + id);
   }
@@ -262,91 +273,92 @@ Jmol = (function(document) {
 		features.os = function(){
 			var osList = ["linux","unix","mac","win"]
 			var i = osList.length;
-			
+
 			while (i--){
 				if (features.ua.indexOf(osList[i])!=-1) return osList[i]
 			}
 			return "unknown";
 		}
-		
+
 		features.browser = function(){
 			var ua = features.ua;
 			var browserList = ["konqueror","webkit","omniweb","opera","webtv","icab","msie","mozilla"];
 			for (var i = 0; i < browserList.length; i++)
-				if (ua.indexOf(browserList[i])>=0) 
-					return browserList[i];
+			if (ua.indexOf(browserList[i])>=0) 
+				return browserList[i];
 			return "unknown";
 		}
 		features.browserName = features.browser();
-	  features.browserVersion= parseFloat(features.ua.substring(features.ua.indexOf(features.browserName)+features.browserName.length+1));
-	  
+		features.browserVersion= parseFloat(features.ua.substring(features.ua.indexOf(features.browserName)+features.browserName.length+1));
 		features.supportsXhr2 = function() {return ($.support.cors || $.support.iecors)}
-    features.allowDestroy = (features.browserName != "msie");
-    features.allowHTML5 = (features.browserName != "msie" || navigator.appVersion.indexOf("MSIE 8") < 0);
-    
-    //alert(features.allowHTML5 + " " + features.browserName + " " +  navigator.appVersion)
-    
-    features.getDefaultLanguage = function() {
-      return navigator.language || navigator.userLanguage || "en-US";
-    };
-    
-		features._webGLtest = 0;
-		
-		features.supportsWebGL = function() {
-			if (!Jmol.featureDetection._webGLtest) { 
-				var canvas;
-				Jmol.featureDetection._webGLtest = ( 
-					window.WebGLRenderingContext 
-						&& ((canvas = document.createElement("canvas")).getContext("webgl") 
-							|| canvas.getContext("experimental-webgl")) ? 1 : -1);
-			}
-			return (Jmol.featureDetection._webGLtest > 0);
+		features.allowDestroy = (features.browserName != "msie");
+		features.allowHTML5 = (features.browserName != "msie" || navigator.appVersion.indexOf("MSIE 8") < 0);
+
+//alert(features.allowHTML5 + " " + features.browserName + " " +  navigator.appVersion)
+
+		features.getDefaultLanguage = function() {
+			return navigator.language || navigator.userLanguage || "en-US";
 		};
-		
-    features.supportsLocalization = function() {
-     //<meta charset="utf-8">                                     
-      var metas = document.getElementsByTagName('meta'); 
-      for (var i= metas.length; --i >= 0;) 
-        if (metas[i].outerHTML.toLowerCase().indexOf("utf-8") >= 0) return true;
-      return false;
+
+		features._webGLtest = 0;
+	
+		features.supportsWebGL = function() {
+		if (!Jmol.featureDetection._webGLtest) { 
+			var canvas;
+			Jmol.featureDetection._webGLtest = ( 
+				window.WebGLRenderingContext 
+					&& ((canvas = document.createElement("canvas")).getContext("webgl") 
+				|| canvas.getContext("experimental-webgl")) ? 1 : -1);
+		}
+		return (Jmol.featureDetection._webGLtest > 0);
+	};
+	
+	features.supportsLocalization = function() {
+		//<meta charset="utf-8">                                     
+		var metas = document.getElementsByTagName('meta'); 
+		for (var i= metas.length; --i >= 0;) 
+			if (metas[i].outerHTML.toLowerCase().indexOf("utf-8") >= 0) return true;
+		return false;
     };
-   
-		features.supportsJava = function() {
-			if (!Jmol.featureDetection._javaEnabled) {
-				if (Jmol._isMsie) {
-				  return true;
+    
+	features.supportsJava = function() {
+		if (!Jmol.featureDetection._javaEnabled) {
+			if (Jmol._isMsie) {
+			  return true;
 				  // sorry just can't deal with intentionally turning off Java in MSIE
-				} else {
-				  Jmol.featureDetection._javaEnabled = (navigator.javaEnabled() ? 1 : -1);
-				}
+			} else {
+			  Jmol.featureDetection._javaEnabled = (navigator.javaEnabled() ? 1 : -1);
 			}
-			return (Jmol.featureDetection._javaEnabled > 0);
-    };
-			
-		features.compliantBrowser = function() {
-			var a = !!document.getElementById;
-			var os = features.os()
-			// known exceptions (old browsers):
-	  		if (features.browserName == "opera" && features.browserVersion <= 7.54 && os == "mac"
-			      || features.browserName == "webkit" && features.browserVersion < 125.12
-			      || features.browserName == "msie" && os == "mac"
-			      || features.browserName == "konqueror" && features.browserVersion <= 3.3
-			    ) a = false;
-			return a;
 		}
+		return (Jmol.featureDetection._javaEnabled > 0);
+	};
 		
-		features.isFullyCompliant = function() {
-			return features.compliantBrowser() && features.supportsJava();
-		}
-	  	
-	  features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
-	  features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
-	   		(features.browserName == "opera" && features.browserVersion >= 8) ||
-	   		(features.browserName == "webkit" && features.browserVersion >= 412.2);
-        
-		return features;
-		
-	})(document, window);
+	features.compliantBrowser = function() {
+		var a = !!document.getElementById;
+		var os = features.os()
+		// known exceptions (old browsers):
+		if (features.browserName == "opera" && features.browserVersion <= 7.54 && os == "mac"
+			|| features.browserName == "webkit" && features.browserVersion < 125.12
+			|| features.browserName == "msie" && os == "mac"
+			|| features.browserName == "konqueror" && features.browserVersion <= 3.3
+		) a = false;
+		return a;
+	}
+	
+	features.isFullyCompliant = function() {
+		return features.compliantBrowser() && features.supportsJava();
+	}
+  	
+	features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
+	features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
+		(features.browserName == "opera" && features.browserVersion >= 8) ||
+		(features.browserName == "webkit" && features.browserVersion >= 412.2);
+	
+	features.hasFileReader = (window.File && window.FileReader);
+	
+	return features;
+	
+})(document, window);
 
     
   	////////////// AJAX-related core functionality //////////////
@@ -756,6 +768,43 @@ Jmol = (function(document) {
     return true;
   }
 
+  Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName) {
+	  // we actually cannot suggest a fileName, I believe.
+  	if (!Jmol.featureDetection.hasFileReader)
+  		  return fileLoadThread.setData("Local file reading is not enabled in your browser");
+  	if (!applet._localReader) {
+  		var div = '<div id="ID" style="z-index:30000;position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
+  		Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
+  		applet._localReader = Jmol.$(applet, "localReader");
+  	}
+  	Jmol.$appEvent(applet, "localReader_loadfile", "click");
+  	Jmol.$appEvent(applet, "localReader_loadfile", "click", function(evt) {
+  		var reader = new FileReader();
+  		reader.onloadend = function(evt) {
+  			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+  			    Jmol.$appStyle(applet, "localReader", {display : "none"});
+  				fileLoadThread.setData(Jmol._toBytes(evt.target.result));
+  			}
+  		};
+  		var f = Jmol.$(applet, "localReader_files")[0].files[0];	  
+  		reader.readAsArrayBuffer(f);
+  	});
+  	Jmol.$appEvent(applet, "localReader_cancel", "click");
+  	Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
+      Jmol.$appStyle(applet, "localReader", {display: "none"});
+  		fileLoadThread.setData("#CANCELED#");
+  	});  	     
+    Jmol.$appStyle(applet, "localReader", {display : "block"});
+  }
+
+  Jmol._toBytes = function(data) {
+	data = new Uint8Array(data);
+	b = Clazz.newByteArray(data.length, 0);
+    for (var i = data.length; --i >= 0;)
+	    b[i] = data[i];
+	return b;
+  }
+					
 	////////////// applet start-up functionality //////////////
 
   Jmol._setConsoleDiv = function (d) {

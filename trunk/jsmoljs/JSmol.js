@@ -472,16 +472,8 @@
     if (!isBinary)
   		return J.util.SB.newS(data);
   	var b;
-		if (Clazz.instanceOf(data, self.ArrayBuffer)) {
-			data = new Uint8Array(data);
-    	b = Clazz.newByteArray(data.length, 0);
-	    for (var i = data.length; --i >= 0;)
-  	    b[i] = data[i];
-    // alert("Jmol._processData len=" + b.length + " b[0-5]=" + b[0] + " " +
-	// b[1]+ " " + b[2] + " " + b[3]+ " " + b[4] + " " + b[5])
-    	return b;
-						
-		}
+	if (Clazz.instanceOf(data, self.ArrayBuffer))
+		return Jmol._toBytes(data);
     b = Clazz.newByteArray(data.length, 0);
     for (var i = data.length; --i >= 0;)
       b[i] = data.charCodeAt(i) & 0xFF;
