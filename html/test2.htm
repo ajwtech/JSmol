@@ -96,11 +96,10 @@ Info = {
 <table width=1000 cellpadding=10>
 <tr><td colspan=2 style="font-size:8pt">
 For a zip file containing all the files in this directory, 
-see <a href=http://chemapps.stolaf.edu/jmol/jsmol.zip>http://chemapps.stolaf.edu/jmol/jsmol.zip</a>. 
+see <a href=http://chemapps.stolaf.edu/jmol/zip/Jmol.zip>http://chemapps.stolaf.edu/jmol/zip/Jmol.zip</a>. 
 
-This page can use the signed Jmol applet, the unsigned Jmol applet
-with server-side help, or <a href="http://jsmol.sourceforge.net">JSmol</a> 
-using HTML5 with or without WebGL. It is under active development at this time. 
+This test page uses unminified files and can implement the signed Jmol applet, the unsigned Jmol applet, or just JavaScript and HTML5 with or without WebGL. 
+
 Credits: 
 WebGL interface written by <b>Takanori Nakane</b>. 
 Java2Script written by <b>Zhou Renjian, et al.</b>
@@ -130,6 +129,16 @@ var lastPrompt=0;
 display
 <a href="javascript:Jmol.script(jmolApplet0,'set antialiasDisplay false')">faster</a>
 <a href="javascript:Jmol.script(jmolApplet0,'set antialiasDisplay true')">sharper</a>
+<br>
+platformSpeed:
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 8')" title='all features'>8</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 7')" title='no antialiasing'>7</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 6')" title='no translucency'>6</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 5')" title='surfaces dotted'>5</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 4')" title='cartoons as trace'>4</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 3')" title='geosurfaces as dots'>3</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 2')" title='ellipsoids as dots'>2</a>
+<a href="javascript:Jmol.script(jmolApplet0,'set platformSpeed 1')" title='wireframe only'>1</a>
 <br>
 info <a href="javascript:Jmol.showInfo(jmolApplet0, true)">show</a>
 <a href="javascript:Jmol.clearConsole(jmolApplet0)">clear</a>
@@ -166,13 +175,15 @@ labels <a href="javascript:Jmol.script(jmolApplet0,'if (_fileType == &quot;Pdb&q
 <br /><br /> 
 
 <span style="font-size:8pt">
-Current status: 12/23/12 - 
+Current status: 7 SEP 2013 - 
 <b>Jmol is working completely Java-free, requiring only HTML5.</b>
+The <b>platformSpeed</b> option (set 1 to 10) allows for rapid rotation of models for platforms that have limited JavaScript capability (iPad/iPhone, tablets). 
+
 Popup menu, script queuing, animation, spin, vibration, move, moveto, hover, and (guided) navigation, pause/resume are all working;
 echos/labels working; antialiasDisplay working;
 synchronous binary and XML file reading working; 
-cartoons, translucency, surfaces -- all are working in a simple HTML5 2D canvas. WebGL is less developed. We are very interested in 
-developing the WebGL option further, as the rendering is faster, but to date it is somewhat limited, with just basic shapes and no text. 
+cartoons, translucency, surfaces -- all are working in a simple HTML5 2D canvas. WebGL is less developed, with just basic shapes and no text. 
+
 
 Enter "!" and a command into the search box and press ENTER to execute a <a target=_blank href=http://chemapps.stolaf.edu/jmol/docs>script command</a>.
    </span>
@@ -201,6 +212,8 @@ Enter "!" and a command into the search box and press ENTER to execute a <a targ
 </td><td valign=top>
 	<b>this-domain calls</b>
  <br />
+ <a href="javascript:Jmol.script(jmolApplet0,'load ?')">local file reading</a>
+<br />
  <a href="javascript:Jmol.script(jmolApplet0,'minimize')">minimize</a> 
  <a href="javascript:Jmol.script(jmolApplet0,'set modelkitmode;set picking dragMinimize')">drag-minimize</a>
  <a href="javascript:Jmol.script(jmolApplet0,'!quit;set modelkitmode false;set picking ident;')">!quit</a>
