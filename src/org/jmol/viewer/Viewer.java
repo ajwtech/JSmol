@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-30 18:41:40 +0200 (Fri, 30 Aug 2013) $
- * $Revision: 18633 $
+ * $Date: 2013-09-09 10:36:50 -0400 (Mon, 09 Sep 2013) $
+ * $Revision: 18649 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -4634,7 +4634,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void haltScriptExecution() {
     if (eval != null) {
       eval.haltExecution();
-      eval.stopScriptDelayThread();
+      eval.stopScriptThreads();
     }
     setStringPropertyTok("pathForAllFiles", T.pathforallfiles, "");
     clearTimeouts();
@@ -5969,6 +5969,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.defaultDrawArrowScale;
     case T.dipolescale:
       return global.dipoleScale;
+    case T.drawfontsize:
+      return global.drawFontSize; 
     case T.exportscale:
       return global.exportScale;
     case T.hbondsangleminimum:
@@ -6249,6 +6251,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
+    case T.drawfontsize:
+      // 13.3.6
+      global.drawFontSize = value;
+      break;
     case T.exportscale:
       // 13.1.19
       global.exportScale = value;
@@ -9015,6 +9021,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String setErrorMessage(String errMsg, String errMsgUntranslated) {
     errorMessageUntranslated = errMsgUntranslated;
+    if (errMsg != null)
+      eval.stopScriptThreads();
     return (errorMessage = errMsg);
   }
 
@@ -9943,21 +9951,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         modelSet.bondCount, modelSet.atoms, bsSelected);
   }
 
-  public void cachePut(String key, Object data) {
-    // PyMOL reader and isosurface only
-    Logger.info("Viewer cachePut " + key);
-    fileManager.cachePut(key, data);
-  }
-
-  public Object cacheGet(String key) {
-    return fileManager.cacheGet(key, false);
-  }
-
-  public void cacheClear() {
-    // script: reset cache
-    fileManager.cacheClear();
-  }
-
   public void setCurrentModelID(String id) {
     int modelIndex = getCurrentModelIndex();
     if (modelIndex >= 0)
@@ -9972,15 +9965,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getPathForAllFiles();
   }
 
+  public Object cacheGet(String key) {
+    return fileManager.cacheGet(key, false);
+  }
+
+  public void cacheClear() {
+    // script: reset cache
+    fileManager.cacheClear();
+  }
+
   /**
    * JmolViewer interface -- allows saving files in memory for later retrieval
+   * @param key 
+   * @param data 
    * 
-   * @param fileName
    */
+
   @Override
-  public void cacheFile(String fileName, byte[] bytes) {
-    // PyMOL reader only
-    fileManager.cachePut(fileName, bytes);
+  public void cachePut(String key, Object data) {
+    // PyMOL reader and isosurface
+    // HTML5/JavaScript load ?  and  script ? 
+    Logger.info("Viewer cachePut " + key);
+    fileManager.cachePut(key, data);
   }
 
   public int cacheFileByName(String fileName, boolean isAdd) {
@@ -9994,7 +10000,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void clearThreads() {
     if (eval != null)
-      eval.stopScriptDelayThread();
+      eval.stopScriptThreads();
     stopMinimization();
     setVibrationOff();
     setSpinOn(false);
@@ -10005,7 +10011,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public ScriptContext getEvalContextAndHoldQueue(JmolScriptEvaluator jse) {
     if (jse == null || !isJS)
       return null;
-    jse.pushContextDown();
+    jse.pushContextDown("getEvalContextAndHoldQueue");
     ScriptContext sc = jse.getThisContext();
     ScriptContext sc0 = sc;
     while (sc0 != null) {
@@ -10176,8 +10182,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return eval.getContextVariables();
   }
 
-  public ScriptContext getScriptContext() {
-    return (getScriptManager() == null ? null : eval.getScriptContext());
+  public ScriptContext getScriptContext(String why) {
+    return (getScriptManager() == null ? null : eval.getScriptContext(why));
   }
 
   @Override
