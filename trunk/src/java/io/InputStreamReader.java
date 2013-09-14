@@ -174,7 +174,9 @@ public class InputStreamReader extends Reader {
     
   /**
    * Reads characters into a portion of an array. Adapted by Bob Hanson to be
-   * more flexible, allowing char codes 128-255 as simple characters.
+   * more flexible, allowing char codes 128-255 as simple characters and avoid
+   * the use of string decoders. Will gracefully turn off isUTF if rules are not
+   * followed.
    * 
    * @param cbuf
    *        Destination buffer
@@ -196,54 +198,63 @@ public class InputStreamReader extends Reader {
     if (bytearr == null || bytearr.length < length)
       bytearr = new byte[length];
     int c, char2, char3;
-    int count = 0;
-    int chararr_count = 0;
-    int len = in.read(bytearr, pos, length - pos);
-    if (len < 0)
+    int byteCount = 0;
+    int charCount = offset;
+    int byteLen = in.read(bytearr, pos, length - pos);
+    int nAvail = in.available();
+    if (byteLen < 0)
       return -1;
-    pos = 0;
-    while (count < len) {
-      c = bytearr[count] & 0xff;
+    int nMax = byteLen;
+    while (byteCount < nMax) {
+      c = bytearr[byteCount] & 0xff;
       if (isUTF8)
         switch (c >> 4) {
         case 0xC:
         case 0xD:
           /* 110x xxxx   10xx xxxx*/
-          if (count > len - 2)
+          if (byteCount + 1 >= byteLen) {
+            if (nAvail >= 1) {
+              // truncate at this point and 
+              // check in the next round
+              nMax = byteCount;
+              continue;
+            }
+          } else if (((char2 = bytearr[byteCount + 1]) & 0xC0) == 0x80) {
+            cbuf[charCount++] = (char) (((c & 0x1F) << 6) | (char2 & 0x3F));
+            byteCount += 2;
             continue;
-          count += 2;
-          char2 = bytearr[count - 1];
-          if ((char2 & 0xC0) != 0x80) {
-            count -= 2;
-            break;
           }
-          cbuf[chararr_count++] = (char) (((c & 0x1F) << 6) | (char2 & 0x3F));
-          continue;
+          isUTF8 = false;
+          break;
         case 0xE:
           /* 1110 xxxx  10xx xxxx  10xx xxxx */
-          if (count > len - 3)
+          if (byteCount + 2 >= byteLen) {
+            if (nAvail >= 2) {
+              // truncate at this point and 
+              // check in the next round
+              nMax = byteCount;
+              continue;
+            }
+          } else if (((char2 = bytearr[byteCount + 1]) & 0xC0) == 0x80
+              && ((char3 = bytearr[byteCount + 2]) & 0xC0) == 0x80) {
+            cbuf[charCount++] = (char) (((c & 0x0F) << 12)
+                | ((char2 & 0x3F) << 6) | (char3 & 0x3F));
+            byteCount += 3;
             continue;
-          count += 3;
-          char2 = bytearr[count - 2];
-          char3 = bytearr[count - 1];
-          if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80)) {
-            count -= 3;
-            break;
           }
-          cbuf[chararr_count++] = (char) (((c & 0x0F) << 12)
-              | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
-          continue;
+          isUTF8 = false;
+          break;
         }
       /* 0xxxxxxx or otherwise unreadable -- just take it to be a character and don't worry about it.*/
-      count++;
-      cbuf[chararr_count++] = (char) c;
+      byteCount++;
+      cbuf[charCount++] = (char) c;
     }
     // The number of chars produced may be less than utflen
-    pos = len - count;
+    pos = byteLen - byteCount;
     for (int i = 0; i < pos; i++) {
-      bytearr[i] = bytearr[count++];
+      bytearr[i] = bytearr[byteCount++];
     }
-    return len - pos;
+    return charCount - offset;
   }
 
     /**
