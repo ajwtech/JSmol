@@ -372,4 +372,10 @@ public abstract class InputStream {
         return false;
     }
 
+    /**
+     * BH: Allows resetting of the underlying stream (buffered only)
+     */
+    public void resetStream() {
+    }
+
 }

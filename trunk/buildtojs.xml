@@ -11,6 +11,8 @@
 
   	<!-- create a NON svn local directory only containing JS files  -->
   	
+  	<echo>creating site/jsmol/j2s</echo>
+
    	<copy todir="site/jsmol/j2s/java" >
       <fileset dir="j2s/java">
         <include name="**/*.js" />
@@ -791,6 +793,8 @@
 	</copy>
    	<echo>dist/jsmol.zip and ${jmol.path}/appletweb/jsmol.zip have been updated. 
    		Now unzip dist/jsmol.zip into a local directory for testing</echo>
+   	<echo>or run tools/jsmol-release.xml to release ${jmol.path}</echo>
+   	<echo>If incorporating into a ${jmol.path} build, now run ${jmol.path}/build or run tools/jsmol-release.xml to release ${jmol.path}</echo>
   </target>
 
 </project>

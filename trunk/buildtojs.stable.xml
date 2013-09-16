@@ -11,10 +11,8 @@
 
   	<!-- create a NON svn local directory only containing JS files  -->
   	
-  	<delete dir="site/jsmol/j2s" />
-
   	<echo>creating site/jsmol/j2s</echo>
-  	
+
    	<copy todir="site/jsmol/j2s/java" >
       <fileset dir="j2s/java">
         <include name="**/*.js" />
@@ -202,7 +200,7 @@
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="site/jsmol/j2s" files="
-   		../jsmoljs/core/coreconsoletop.js
+   		../../../jsmoljs/core/coreconsoletop.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
    		J/console/GenericConsole.js
@@ -213,7 +211,7 @@
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="site/jsmol/j2s" files="
-   		../jsmoljs/core/coremenutop.js
+   		../../../jsmoljs/core/coremenutop.js
    		J/api/JmolPopupInterface.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
@@ -428,8 +426,8 @@
    		<arg line="--js coresmiles.js --js_output_file ../j2s/core/coresmiles.z.js" />
     </java>
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/j2s" files="
-   		../Jmol.properties
-   		../jsmoljs/core/coretop.js
+   		../../../Jmol.properties
+   		../../../jsmoljs/core/coretop.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
    		java/net/URLDecoder.js
@@ -708,7 +706,7 @@
    		J/awtjs/Font.js
    		J/awtjs/Image.js
    		J/util/Tensor.js  
-   		../jsmoljs/core/corebottom.js
+   		../../../jsmoljs/core/corebottom.js
    	   	" />
    	</concat>   	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
@@ -796,7 +794,7 @@
    	<echo>dist/jsmol.zip and ${jmol.path}/appletweb/jsmol.zip have been updated. 
    		Now unzip dist/jsmol.zip into a local directory for testing</echo>
    	<echo>or run tools/jsmol-release.xml to release ${jmol.path}</echo>
-   	<echo>If incorporating into a ${jmol.path} build, now run ${jmol.path}/buildor run tools/jsmol-release.xml to release ${jmol.path}</echo>
+   	<echo>If incorporating into a ${jmol.path} build, now run ${jmol.path}/build or run tools/jsmol-release.xml to release ${jmol.path}</echo>
   </target>
 
 </project>
