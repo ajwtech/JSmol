@@ -1183,7 +1183,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (sb == null)
-      sb = new OutputStringBuilder(null);
+      sb = new OutputStringBuilder(null, false);
     int iModel = atoms[bs.nextSetBit(0)].modelIndex;
     int iModelLast = -1;
     boolean isPQR = "PQR".equals(sb.type);
@@ -1296,7 +1296,7 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     Model model = models[modelIndex];
     if (sb == null)
-      sb = new OutputStringBuilder(null);
+      sb = new OutputStringBuilder(null, false);
     SB pdbCONECT = new SB();
     boolean isDraw = (type.indexOf("draw") >= 0);
     BS bsAtoms = null;

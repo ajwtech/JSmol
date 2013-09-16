@@ -97,6 +97,7 @@ public class InputStreamReader extends Reader {
         this.charsetName = charsetName;
         if (!(isUTF8 = "UTF-8".equals(charsetName)) && !"ISO-8859-1".equals(charsetName))
             throw new NullPointerException("charsetName");
+        //in.resetStream();
         //sd = StreamDecoder.forInputStreamReader(in, this, charsetName);
     }
 

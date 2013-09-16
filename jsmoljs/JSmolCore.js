@@ -151,10 +151,9 @@ Jmol = (function(document) {
   }
 	 
   Jmol.$appEvent = function(app, div, evt, f) {
+	Jmol.$(app, div).off(evt);
 	if (f)
   	  Jmol.$(app, div).on(evt, f);
-	else
-	  Jmol.$(app, div).off(evt);
   }	  
 
   Jmol.$focus = function(id) {
@@ -779,27 +778,27 @@ Jmol = (function(document) {
   	}
   	Jmol.$appEvent(applet, "localReader_loadfile", "click");
   	Jmol.$appEvent(applet, "localReader_loadfile", "click", function(evt) {
+  		var file = Jmol.$(applet, "localReader_files")[0].files[0];	  
   		var reader = new FileReader();
   		reader.onloadend = function(evt) {
   			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-  			    Jmol.$appStyle(applet, "localReader", {display : "none"});
-  				fileLoadThread.setData(Jmol._toBytes(evt.target.result));
+  			  Jmol.$appStyle(applet, "localReader", {display : "none"});
+  			  fileLoadThread.setData(file.name, Jmol._toBytes(evt.target.result));
   			}
   		};
-  		var f = Jmol.$(applet, "localReader_files")[0].files[0];	  
-  		reader.readAsArrayBuffer(f);
+  		reader.readAsArrayBuffer(file);
   	});
   	Jmol.$appEvent(applet, "localReader_cancel", "click");
   	Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
       Jmol.$appStyle(applet, "localReader", {display: "none"});
-  		fileLoadThread.setData("#CANCELED#");
+  		fileLoadThread.setData(null, "#CANCELED#");
   	});  	     
     Jmol.$appStyle(applet, "localReader", {display : "block"});
   }
 
   Jmol._toBytes = function(data) {
 	data = new Uint8Array(data);
-	b = Clazz.newByteArray(data.length, 0);
+	var b = Clazz.newByteArray(data.length, 0);
     for (var i = data.length; --i >= 0;)
 	    b[i] = data[i];
 	return b;
