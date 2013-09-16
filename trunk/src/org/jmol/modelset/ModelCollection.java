@@ -1956,8 +1956,8 @@ abstract public class ModelCollection extends BondCollection {
       int chainID = info[2];
       bs = new BS();
       boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
-      if (chainID >= 0 && !caseSensitive)
-        chainID = Character.toUpperCase(chainID);
+      if (chainID >= 0 && chainID < 256 && !caseSensitive)
+        chainID = chainToUpper(chainID);
       for (int i = modelCount; --i >= 0;)
         if (models[i].isBioModel)
           models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs,
