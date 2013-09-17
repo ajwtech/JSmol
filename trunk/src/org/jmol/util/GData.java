@@ -527,9 +527,8 @@ public class GData implements JmolGraphicsInterface {
    * @param stereoRotationMatrix  
    * @param translucentMode
    * @param isImageWrite 
-   * @param renderLow TODO
    */
-  public void beginRendering(Matrix3f stereoRotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
+  public void beginRendering(Matrix3f stereoRotationMatrix, boolean translucentMode, boolean isImageWrite) {
   }
 
   public void endRendering() {

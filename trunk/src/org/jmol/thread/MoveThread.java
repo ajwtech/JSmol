@@ -32,7 +32,7 @@ import org.jmol.viewer.Viewer;
 
 public class MoveThread extends JmolThread {
 
-  private TransformManager transformManager;
+  private final TransformManager transformManager;
   private float floatSecondsTotal;
   private int iStep;
   private int timePerStep;
@@ -50,21 +50,24 @@ public class MoveThread extends JmolThread {
   private float transY;
   private float transZ;
 
-  public MoveThread() {}
-  
-  @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
-    Object[] options = (Object[]) params;
+  /**
+   * @param transformManager
+   * @param viewer 
+   */
+  public MoveThread(TransformManager transformManager, Viewer viewer) {
+    super();
     setViewer(viewer, "MoveThread");
-    transformManager = (TransformManager) manager;
-    dRot = (V3) options[0];
-    dTrans = (V3) options[1];
-    float[] f = (float[]) options[2];
-    dZoom = f[0];
-    dSlab = f[1];
-    floatSecondsTotal = f[2];
-    int fps = (int) f[3];
+    this.transformManager = transformManager;
+  }
 
+  
+  public void set(V3 dRot, float dZoom, V3 dTrans, float dSlab,
+                 float floatSecondsTotal, int fps) {
+    this.dRot = dRot;
+    this.dTrans = dTrans;
+    this.dZoom = dZoom;
+    this.dSlab = dSlab;
+    this.floatSecondsTotal = floatSecondsTotal;
     slab = transformManager.getSlabPercentSetting();
     transX = transformManager.getTranslationXPercent();
     transY = transformManager.getTranslationYPercent();
@@ -80,7 +83,6 @@ public class MoveThread extends JmolThread {
     radiansZStep = radiansPerDegreePerStep * dRot.z;
     zoomPercent0 = transformManager.zoomPercent;
     iStep = 0;
-    return totalSteps;
   }
   
 
@@ -117,7 +119,7 @@ public class MoveThread extends JmolThread {
         int timeSpent = (int) (System.currentTimeMillis() - startTime);
         int timeAllowed = iStep * timePerStep;
         if (timeSpent < timeAllowed) {
-          viewer.requestRepaintAndWait("moveThread");
+          viewer.requestRepaintAndWait("move thread");
           if (!isJS && !viewer.isScriptExecuting()) {
             mode = FINISH;
             break;

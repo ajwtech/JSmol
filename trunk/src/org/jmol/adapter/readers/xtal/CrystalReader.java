@@ -1092,7 +1092,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        atoms[index].addTensor(Tensor.getTensorFromEigenVectors(directLatticeVectors, 
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
-           parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null, false);
+           parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null);
        readLine();
      }
      appendLoadNote("Ellipsoids set \"quadrupole\": Quadrupole tensors");
@@ -1123,7 +1123,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         for (int j = 0; j < 3; j++)
           a[i][j] = parseFloatStr(tokens[j + 1]);
       }
-      atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.elementSymbol + (index + 1)), null, false);
+      atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.elementSymbol + (index + 1)), null);
       readLine();
     }
     appendLoadNote("Ellipsoids set \"charge\": Born charge tensors");

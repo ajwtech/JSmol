@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-09-14 13:11:44 -0500 (Sat, 14 Sep 2013) $
- * $Revision: 18650 $
+ * $Date: 2013-09-14 13:12:15 -0500 (Sat, 14 Sep 2013) $
+ * $Revision: 18651 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *

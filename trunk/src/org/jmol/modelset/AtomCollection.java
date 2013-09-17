@@ -55,7 +55,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
-import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.util.Vibration;
 
@@ -106,7 +105,6 @@ abstract public class AtomCollection {
     partialCharges = mergeModelSet.partialCharges;
     atomTensors = mergeModelSet.atomTensors;
     atomTensorList = mergeModelSet.atomTensorList;
-    bsModulated = mergeModelSet.bsModulated;
     setHaveStraightness(false);
     surfaceDistance100s = null;
   }
@@ -484,14 +482,14 @@ abstract public class AtomCollection {
           taintAtom(i, TAINT_COORD);
           break;
         case T.vibxyz:
-          setAtomVibrationVector(i, xyz);
+          setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
           break;
         }
       }
   }
 
-  private void setAtomVibrationVector(int atomIndex, Tuple3f vib) {
-    setVibrationVector(atomIndex, vib);  
+  private void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
+    setVibrationVector(atomIndex, x, y, z);  
     taintAtom(atomIndex, TAINT_VIBRATION);
   }
   
@@ -685,22 +683,18 @@ abstract public class AtomCollection {
   }
 
   public Vibration getVibration(int atomIndex, boolean forceNew) {
-    Vibration v = (vibrations == null  ? null : vibrations[atomIndex]);
+    Vibration v = (vibrations == null ? null : vibrations[atomIndex]);
     return (v == null && forceNew ? new Vibration() : v);
   }
 
-  protected void setVibrationVector(int atomIndex, Tuple3f vib) {
-    if (Float.isNaN(vib.x) || Float.isNaN(vib.y) || Float.isNaN(vib.z))
+  protected void setVibrationVector(int atomIndex, float x, float y, float z) {
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return;
     if (vibrations == null || vibrations.length < atomIndex)
       vibrations = new Vibration[atoms.length];
-    if (vib instanceof Vibration) {
-      vibrations[atomIndex] = (Vibration) vib;
-    } else {
-      if (vibrations[atomIndex] == null)
-        vibrations[atomIndex] = new Vibration();
-      vibrations[atomIndex].setT(vib);
-    }
+    if (vibrations[atomIndex] == null)
+      vibrations[atomIndex] = new Vibration();
+    vibrations[atomIndex].set(x, y, z);
     atoms[atomIndex].setVibrationVector();
   }
 
@@ -717,7 +711,7 @@ abstract public class AtomCollection {
       v.z = fValue;
       break;
     }
-    setAtomVibrationVector(atomIndex, v);
+    setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
   }
 
   public void setAtomName(int atomIndex, String name) {
@@ -888,7 +882,6 @@ abstract public class AtomCollection {
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
     int[] lines = Parser.markLines(data, ';');
-    V3 v = (isVibrationVectors ? new V3() : null);
     try {
       int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
@@ -899,8 +892,7 @@ abstract public class AtomCollection {
         float y = Parser.parseFloatStr(tokens[4]);
         float z = Parser.parseFloatStr(tokens[5]);
         if (isVibrationVectors) {
-          v.set(x, y, z);
-          setAtomVibrationVector(atomIndex, v);
+          setAtomVibrationVector(atomIndex, x, y, z);
         } else {
           setAtomCoord(atomIndex, x, y, z);
           if (!doTaint)
@@ -1440,7 +1432,8 @@ abstract public class AtomCollection {
     x.set(0, 0, 0);
     V3[] v = new V3[4];
     for (int i = 0; i < nAttached; i++) {
-      v[i] = V3.newVsub(atom, attached[i]);
+      v[i] = V3.newV(atom);
+      v[i].sub(attached[i]);
       v[i].normalize();
       z.add(v[i]);
     }
@@ -2431,7 +2424,7 @@ abstract public class AtomCollection {
     }
     return (!isEmpty || returnEmpty ? bs : null);
   }
-  
+
   protected BS getChainBits(int chainID) {
     boolean caseSensitive = chainID < 256 && viewer.getBoolean(T.chaincasesensitive);
     if (!caseSensitive)
@@ -2518,12 +2511,6 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  BS bsModulated;
-  
-  public boolean isModulated(int i) {
-    return bsModulated != null && bsModulated.get(i);
-  }
-
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsAtoms) {
     // all atoms in the model are being deleted here
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
@@ -2532,10 +2519,6 @@ abstract public class AtomCollection {
       atoms[j].index = j;
       atoms[j].modelIndex--;
     }
-    // fix modulation and tensors    
-    if (bsModulated != null)
-      BSUtil.deleteBits(bsModulated, bsAtoms);
-
     deleteAtomTensors(bsAtoms);
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
         nAtoms);
@@ -2651,14 +2634,12 @@ abstract public class AtomCollection {
 
   public Tensor getAtomTensor(int i, String type) {
     Tensor[] tensors = getAtomTensorList(i);
-    if (tensors != null && type != null) {
-      type = type.toLowerCase();
-      for (int j = 0; j < tensors.length; j++) {
-        Tensor t = tensors[j];
-        if (t != null && (type.equals(t.type) || type.equals(t.altType)))
-          return t;
-      }
-    }
+    if (tensors == null || type == null)
+      return null;
+    type = type.toLowerCase();
+    for (int j = 0; j < tensors.length; j++)
+      if (tensors[j] != null && type.equals(tensors[j].type))
+        return tensors[j];
     return null;
   }
 
@@ -2681,6 +2662,7 @@ abstract public class AtomCollection {
     return list;
   }
   
+
 
 }
 

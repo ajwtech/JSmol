@@ -381,7 +381,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     isPDB = checkBoolean(modelSetInfo, "isPDB");
     isMultiFrame = (modelCount > 1);
     isSymmetry = checkBoolean(modelInfo, "hasSymmetry");
-    isUnitCell = modelInfo.containsKey("notionalUnitcell");
+    isUnitCell = checkBoolean(modelInfo, "notionalUnitcell");
     fileHasUnitCell = (isPDB && isUnitCell || checkBoolean(modelInfo,
         "fileHasUnitCell"));
     isLastFrame = (modelIndex == modelCount - 1);
@@ -920,11 +920,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      String sym = (String) infolist[i][1]; // XYZoriginal
-      if (sym.indexOf("x1") < 0)
-        sym = (String) infolist[i][0]; // normalized XYZ
-      String entryName = (i + 1) + " " + infolist[i][2] + " (" + 
-      sym
+      String entryName = (i + 1) + " " + infolist[i][2] + " (" + infolist[i][0]
           + ")";
       menuEnableItem(menuCreateItem(subMenu, entryName,
           "draw SYMOP " + (i + 1), null), true);

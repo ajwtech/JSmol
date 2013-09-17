@@ -30,17 +30,14 @@ import org.jmol.viewer.Viewer;
 
 public class VibrationThread extends JmolThread {
 
-  private TransformManager transformManager;
+  private final TransformManager transformManager;
 
-  public VibrationThread() {}
-  
-  @Override
-  public int setManager(Object manager, Viewer viewer, Object options) {
-    transformManager = (TransformManager) manager;
+  public VibrationThread(TransformManager transformManager, Viewer viewer) {
+    super();
     setViewer(viewer, "VibrationThread");
-    return 0;
+    this.transformManager = transformManager;
   }
-  
+
   @Override
   protected void run1(int mode) throws InterruptedException {
     int elapsed;
@@ -73,4 +70,4 @@ public class VibrationThread extends JmolThread {
       }
   }
 
- }
+}

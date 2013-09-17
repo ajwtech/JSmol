@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18653 $
+ * $Date: 2013-09-17 09:29:00 -0500 (Tue, 17 Sep 2013) $
+ * $Revision: 18659 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -560,7 +560,7 @@ abstract public class JmolViewer {
    */
   public void renderScreenImage(Object g, Object currentSize,
                                 Object rectClip) {
-    apiPlatform.renderScreenImage(this, g, currentSize);
+    apiPlatform.renderScreenImage(g, currentSize);
   }
 
   public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
@@ -617,8 +617,6 @@ abstract public class JmolViewer {
    * @return string from ScriptEvaluator#outputBuffer
    */
   abstract public String runScript(String script);
-  abstract public int modelGetLastVibrationIndex(int i, int tok);
-  abstract public String extractMolData(String what);
   
   /**
    * used in JSmolApplet.js for drag-drop behavior.
@@ -628,6 +626,7 @@ abstract public class JmolViewer {
    * @return number of bytes cached
    */
   abstract public int cacheFileByName(String fileName, boolean isAdd);
+
 
 }
 

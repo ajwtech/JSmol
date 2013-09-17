@@ -183,7 +183,6 @@ public abstract class AtomSetCollectionReader {
   protected String strSupercell;
   protected P3 ptSupercell;
   protected boolean mustFinalizeModelSet;
-  protected boolean forcePacked;
 
   // private state variables
 
@@ -515,7 +514,27 @@ public abstract class AtomSetCollectionReader {
 
     symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
         .get("symmetryRange")).floatValue() : 0);
-    initializeSymmetryOptions();
+    latticeCells = new int[3];
+    if (htParams.containsKey("lattice")) {
+      P3 pt = ((P3) htParams.get("lattice"));
+      latticeCells[0] = (int) pt.x;
+      latticeCells[1] = (int) pt.y;
+      latticeCells[2] = (int) pt.z;
+      doCentroidUnitCell = (htParams.containsKey("centroid"));
+      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
+        latticeCells[2] = 1;
+      centroidPacked = doCentroidUnitCell && htParams.containsKey("packed");
+      doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
+      
+    }
+    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
+    //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
+    if (!doApplySymmetry) {
+      latticeCells[0] = 0;
+      latticeCells[1] = 0;
+      latticeCells[2] = 0;
+    }
+
     //this flag FORCES symmetry -- generally if coordinates are not fractional,
     //we may note the unit cell, but we do not apply symmetry
     //with this flag, we convert any nonfractional coordinates to fractional
@@ -559,31 +578,6 @@ public abstract class AtomSetCollectionReader {
       if (merging && !iHaveUnitCell)
         setFractionalCoordinates(false);
       // with appendNew == false and UNITCELL parameter, we assume fractional coordinates
-    }
-  }
-
-  protected void initializeSymmetryOptions() {
-    latticeCells = new int[3];
-    P3 pt = ((P3) htParams.get("lattice"));
-    if (forcePacked && pt == null)
-      pt = P3.new3(1, 1, 1);
-    if (pt != null) {
-      latticeCells[0] = (int) pt.x;
-      latticeCells[1] = (int) pt.y;
-      latticeCells[2] = (int) pt.z;
-      doCentroidUnitCell = (htParams.containsKey("centroid"));
-      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
-        latticeCells[2] = 1;
-      boolean isPacked = forcePacked || htParams.containsKey("packed");
-      centroidPacked = doCentroidUnitCell && isPacked;
-      doPackUnitCell = !doCentroidUnitCell && (isPacked || latticeCells[2] < 0);      
-    }
-    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
-    //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
-    if (!doApplySymmetry) {
-      latticeCells[0] = 0;
-      latticeCells[1] = 0;
-      latticeCells[2] = 0;
     }
   }
 
@@ -667,15 +661,14 @@ public abstract class AtomSetCollectionReader {
     Logger.info("Setting space group name to " + spaceGroup);
   }
 
-  public int setSymmetryOperator(String xyz) {
+  public void setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
-      return -1;
-    setLatticeCells(false);
-    int isym = atomSetCollection.addSpaceGroupOperation(xyz);
-    if (isym < 0)
+      return;
+    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
+        doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
+    if (!atomSetCollection.addSpaceGroupOperation(xyz))
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
-    return isym;
   }
 
   private int nMatrixElements = 0;
@@ -796,8 +789,7 @@ public abstract class AtomSetCollectionReader {
   private boolean filterChain;
   private boolean filterAtomName;
   private boolean filterAtomType;
-  private String filterAtomTypeStr;
-  private String filterAtomNameTerminator = ";";  
+  protected String filterAtomTypeStr;
   private boolean filterElement;
   protected boolean filterHetero;
   private boolean filterEveryNth;
@@ -830,12 +822,6 @@ public abstract class AtomSetCollectionReader {
   // Spartan: "INPUT", "ESPCHARGES"
   // 
 
-  protected void setFilterAtomTypeStr(String s) {
-    // PDB reader TYPE=...
-    filterAtomTypeStr = s;
-    filterAtomNameTerminator = "\0";
-  }
-  
   protected void setFilter(String filter0) {
     if (filter0 == null) {
       filter0 = (String) htParams.get("filter");
@@ -899,12 +885,7 @@ public abstract class AtomSetCollectionReader {
 
   private String filter1, filter2;
 
-  protected String getFilter(String key) {
-    int pt = (filter == null ? -1 : filter.indexOf(key));
-    return (pt < 0 ? null : filter.substring(pt + key.length(), filter.indexOf(";", pt)));
-  }
-
-  protected boolean checkFilterKey(String key) {
+  public boolean checkFilterKey(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
 
@@ -935,7 +916,8 @@ public abstract class AtomSetCollectionReader {
   private boolean checkFilter(Atom atom, String f) {
     return (!filterGroup3 || atom.group3 == null || !filterReject(f, "[",
         atom.group3.toUpperCase() + "]"))
-        && (!filterAtomName || allowAtomName(atom.atomName, f))
+        && (!filterAtomName || atom.atomName == null || !filterReject(f, ".",
+            atom.atomName.toUpperCase() + (filterAtomTypeStr == null ? ";" : "\0")))
         && (filterAtomTypeStr == null || atom.atomName == null 
             || atom.atomName.toUpperCase().indexOf("\0" + filterAtomTypeStr) >= 0)
         && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
@@ -946,15 +928,6 @@ public abstract class AtomSetCollectionReader {
             f, "%", "" + atom.alternateLocationID))
         && (!filterHetero || !filterReject(f, "HETATM",
             atom.isHetero ? "HETATM" : "ATOM"));
-  }
-
-  protected boolean rejectAtomName(String name) {
-    return filterAtomName && !allowAtomName(name, filter);
-  }
-
-  private boolean allowAtomName(String atomName, String f) {
-    return (atomName == null || !filterReject(f, ".",
-        atomName.toUpperCase() + filterAtomNameTerminator));
   }
 
   protected boolean filterReject(String f, String code, String atomCode) {
@@ -1056,19 +1029,16 @@ public abstract class AtomSetCollectionReader {
     applySymTrajASCR();
   }
   
-  public SymmetryInterface applySymTrajASCR() throws Exception {
-    if (forcePacked)
-      initializeSymmetryOptions();
-    SymmetryInterface sym = null;
+  public void applySymTrajASCR() throws Exception {
     if (iHaveUnitCell && doCheckUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell,
           matUnitCellOrientation, unitCellOffset);
-      sym = atomSetCollection.symmetry;
       atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
-        setLatticeCells(false);
+        atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
+            doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (!merging || symmetry == null)
             getSymmetry();
@@ -1076,10 +1046,10 @@ public abstract class AtomSetCollectionReader {
               (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetry(symmetry);
+            atomSetCollection.applySymmetryUsing(symmetry);
           }
         } else {
-          atomSetCollection.applySymmetry(null);
+          atomSetCollection.applySymmetry();
         }
       }
       if (iHaveFractionalCoordinates && merging && symmetry != null) {
@@ -1094,7 +1064,6 @@ public abstract class AtomSetCollectionReader {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
-    return sym;
   }
 
   @SuppressWarnings("unchecked")
@@ -1348,7 +1317,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        setLatticeCells(true);
+        atomSetCollection.setLatticeCells(latticeCells, true, false, false, false, null, null);
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
@@ -1391,16 +1360,6 @@ public abstract class AtomSetCollectionReader {
       line = line.substring(0, pt).trim();
     }
   }
-
-  private void setLatticeCells(boolean isReset) {
-    if (isReset)
-      atomSetCollection.setLatticeCells(latticeCells, true, false, false,
-          false, null, null);
-    else
-      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-          doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell,
-          ptSupercell);
- }
 
   private String previousScript;
 
@@ -1659,5 +1618,4 @@ public abstract class AtomSetCollectionReader {
   public void setChainID(Atom atom, char ch) {
     atom.chainID = viewer.getChainID("" + ch);    
   }
-
 }

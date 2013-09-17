@@ -29,8 +29,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -400,7 +398,8 @@ public class ZipUtil implements JmolZipUtility {
     return newName;
   }
 
-  public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
+  public Object writeZipFile(double privateKey, FileManager fm, Viewer viewer,
+                             String outFileName,
                              JmolList<Object> fileNamesAndByteArrays, String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
@@ -414,7 +413,8 @@ public class ZipUtil implements JmolZipUtility {
           || outFileName.startsWith("http://") ? new ByteArrayOutputStream()
           : null);
       ZipOutputStream os = new ZipOutputStream(
-          bos == null ? (OutputStream) new FileOutputStream(outFileName) : bos);
+          bos == null ? (OutputStream) viewer.openOutputChannel(privateKey,
+              outFileName, false) : bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
@@ -446,7 +446,7 @@ public class ZipUtil implements JmolZipUtility {
         int nOut = 0;
         if (bytes == null) {
           // get data from disk
-          FileInputStream in = new FileInputStream(fname);
+          InputStream in = viewer.openFileInputStream(privateKey, fname);
           int len;
           while ((len = in.read(buf, 0, 1024)) > 0) {
             os.write(buf, 0, len);
@@ -464,7 +464,10 @@ public class ZipUtil implements JmolZipUtility {
       }
       os.close();
       Logger.info(nBytesOut + " bytes prior to compression");
-      if (bos != null) {
+      if (bos == null) {
+        fullFilePath = viewer.getAbsolutePath(privateKey, outFileName).replace('\\', '/');
+        nBytes = viewer.getFileLength(privateKey, outFileName);
+      } else {
         byte[] bytes = bos.toByteArray();
         if (outFileName == null)
           return bytes;
@@ -474,10 +477,6 @@ public class ZipUtil implements JmolZipUtility {
         if (ret.indexOf("Exception") >= 0)
           return ret;
         msg += " " + ret;
-      } else {
-        JmolFileInterface f = viewer.apiPlatform.newFile(outFileName);
-        fullFilePath = f.getAbsolutePath().replace('\\', '/');
-        nBytes = f.length();
       }
     } catch (IOException e) {
       Logger.info(e.toString());
@@ -560,7 +559,7 @@ public class ZipUtil implements JmolZipUtility {
         + "\n}\n";
   }
 
-  public Object createZipSet(FileManager fm, Viewer viewer, String fileName,
+  public Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName,
                              String script, String[] scripts,
                              boolean includeRemoteFiles) {
     JmolList<Object> v = new  JmolList<Object>();
@@ -660,7 +659,7 @@ public class ZipUtil implements JmolZipUtility {
         v.addLast(bytes);
       }
     }
-    return JmolBinary.writeZipFile(fm, viewer, fileName, v, "OK JMOL");
+    return JmolBinary.writeZipFile(privateKey, fm, viewer, fileName, v, "OK JMOL");
   }
 
   public Object getAtomSetCollectionOrBufferedReaderFromZip(

@@ -29,52 +29,101 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
 
-public interface JmolAdapterAtomIterator {
-  
+public abstract class JmolAdapterAtomIterator {
 	public abstract boolean hasNext();
 
-	abstract public int getAtomSetIndex();
+	public int getAtomSetIndex() {
+		return 0;
+	}
 
-	abstract public BS getAtomSymmetry();
+	public BS getAtomSymmetry() {
+		return null;
+	}
 
-	abstract public int getAtomSite();
+	public int getAtomSite() {
+		return Integer.MIN_VALUE;
+	}
 
 	abstract public Object getUniqueID();
 
-	abstract public int getElementNumber(); // may be atomicNumber + isotopeNumber*128
+	public int getElementNumber() {
+		return -1;
+	} // may be atomicNumber + isotopeNumber*128
 
-	abstract public String getAtomName();
+	public String getAtomName() {
+		return null;
+	}
 
-	abstract public int getFormalCharge();
+	public int getFormalCharge() {
+		return 0;
+	}
 
-	abstract public float getPartialCharge();
+	public float getPartialCharge() {
+		return Float.NaN;
+	}
 
-	abstract public JmolList<Tensor> getTensors();
+	public JmolList<Tensor> getTensors() {
+		return null;
+	}
 
-	abstract public float getRadius();
+	public float getRadius() {
+		return Float.NaN;
+	}
 
-  abstract public V3 getVib();
+	abstract public float getX();
+
+	abstract public float getY();
+
+	abstract public float getZ();
 
 	abstract public P3 getXYZ();
 
-  abstract public float getBfactor();
-	
-	abstract public int getOccupancy();
+	public float getVectorX() {
+		return Float.NaN;
+	}
 
-	abstract public boolean getIsHetero();
+	public float getVectorY() {
+		return Float.NaN;
+	}
 
-	abstract public int getAtomSerial();
+	public float getVectorZ() {
+		return Float.NaN;
+	}
 
-	abstract public int getChainID();
+	public float getBfactor() {
+		return Float.NaN;
+	}
 
-	abstract public char getAlternateLocationID();
-	
-	abstract public String getGroup3();
+	public int getOccupancy() {
+		return 100;
+	}
 
-	abstract public int getSequenceNumber();
+	public boolean getIsHetero() {
+		return false;
+	}
 
-	abstract public char getInsertionCode();
+	public int getAtomSerial() {
+		return Integer.MIN_VALUE;
+	}
 
+	public int getChainID() {
+		return 0;
+	}
+
+	public char getAlternateLocationID() {
+		return '\0';
+	}
+
+	public String getGroup3() {
+		return null;
+	}
+
+	public int getSequenceNumber() {
+		return Integer.MIN_VALUE;
+	}
+
+	public char getInsertionCode() {
+		return '\0';
+	}
 }

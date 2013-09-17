@@ -30,13 +30,11 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
-
 
 /* **************************************************************
  * the frame iterators
  * **************************************************************/
-class AtomIterator implements JmolAdapterAtomIterator {
+class AtomIterator extends JmolAdapterAtomIterator {
 	private int iatom;
 	private Atom atom;
 	private int atomCount;
@@ -50,6 +48,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 		iatom = 0;
 	}
 
+	@Override
 	public boolean hasNext() {
 		if (iatom == atomCount)
 			return false;
@@ -61,107 +60,134 @@ class AtomIterator implements JmolAdapterAtomIterator {
 		return true;
 	}
 
+	@Override
 	public int getAtomSetIndex() {
 		return atom.atomSetIndex;
 	}
 
-	
+	@Override
 	public BS getAtomSymmetry() {
 		return atom.bsSymmetry;
 	}
 
-	
+	@Override
 	public int getAtomSite() {
 		return atom.atomSite + 1;
 	}
 
-	
+	@Override
 	public Object getUniqueID() {
 		return Integer.valueOf(atom.index);
 	}
 
-	
+	@Override
 	public int getElementNumber() {
 		return (atom.elementNumber > 0 ? atom.elementNumber : JmolAdapter
 				.getElementNumber(atom.getElementSymbol()));
 	}
 
-	
+	@Override
 	public String getAtomName() {
 		return atom.atomName;
 	}
 
-	
+	@Override
 	public int getFormalCharge() {
 		return atom.formalCharge;
 	}
 
-	
+	@Override
 	public float getPartialCharge() {
 		return atom.partialCharge;
 	}
 
-	
+	@Override
 	public JmolList<Tensor> getTensors() {
 		return atom.tensors;
 	}
 
-	
+	@Override
 	public float getRadius() {
 		return atom.radius;
 	}
-	
-	public V3 getVib() {
-	  return (atom.vib == null || Float.isNaN(atom.vib.z) ? null : atom.vib);
+
+	@Override
+	public float getX() {
+		return atom.x;
 	}
 
-	
+	@Override
+	public float getY() {
+		return atom.y;
+	}
+
+	@Override
+	public float getZ() {
+		return atom.z;
+	}
+
+	@Override
+	public float getVectorX() {
+		return atom.vectorX;
+	}
+
+	@Override
+	public float getVectorY() {
+		return atom.vectorY;
+	}
+
+	@Override
+	public float getVectorZ() {
+		return atom.vectorZ;
+	}
+
+	@Override
 	public float getBfactor() {
 		return Float.isNaN(atom.bfactor) && atom.anisoBorU != null ? atom.anisoBorU[7] * 100f
 				: atom.bfactor;
 	}
 
-	
+	@Override
 	public int getOccupancy() {
-		return (int) (atom.foccupancy * 100);
+		return atom.occupancy;
 	}
 
-	
+	@Override
 	public boolean getIsHetero() {
 		return atom.isHetero;
 	}
 
-	
+	@Override
 	public int getAtomSerial() {
 		return atom.atomSerial;
 	}
 
-	
+	@Override
 	public int getChainID() {
 		return atom.chainID;
 	}
 
-	
+	@Override
 	public char getAlternateLocationID() {
 		return JmolAdapter.canonizeAlternateLocationID(atom.alternateLocationID);
 	}
 
-	
+	@Override
 	public String getGroup3() {
 		return atom.group3;
 	}
 
-	
+	@Override
 	public int getSequenceNumber() {
 		return atom.sequenceNumber;
 	}
 
-	
+	@Override
 	public char getInsertionCode() {
 		return JmolAdapter.canonizeInsertionCode(atom.insertionCode);
 	}
 
-	
+	@Override
 	public P3 getXYZ() {
 		return atom;
 	}

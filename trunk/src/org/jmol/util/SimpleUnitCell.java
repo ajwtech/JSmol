@@ -238,13 +238,13 @@ public class SimpleUnitCell {
     return fpt;
   }
 
-  public final void toCartesian(Tuple3f pt, boolean isAbsolute) {
+  public final void toCartesian(P3 pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
       (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
           .transform(pt);
   }
 
-  public final void toFractional(Tuple3f pt, boolean isAbsolute) {
+  public final void toFractional(P3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
     (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
@@ -306,5 +306,6 @@ public class SimpleUnitCell {
     cell.y = (nnn % 100) / 10 + c;
     cell.z = (nnn % 10) + c;
   }
+  
 
 }

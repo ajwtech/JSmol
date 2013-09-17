@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
@@ -73,10 +72,7 @@ import org.jmol.util.TextFormat;
 
 class SpaceGroup {
 
-  private static String[] canonicalSeitzList;
-  
   int index;
-  
   String name = "unknown!";
   String hallSymbol;
   //String schoenfliesSymbol; //parsed but not read
@@ -99,17 +95,8 @@ class SpaceGroup {
   int latticeParameter;
   char latticeCode = '\0';
   SymmetryOperation[] operations;
-  SymmetryOperation[] finalOperations;
   int operationCount;
-  boolean hasLatticeCentering;
-  Map<String, Integer> xyzList = new Hashtable<String, Integer>();
-
-  private int modulationDimension;
-
   boolean doNormalize = true;
-
-  
-  
 
   static SpaceGroup getNull() {
     getSpaceGroups();
@@ -154,6 +141,8 @@ class SpaceGroup {
     return addOperation(xyz, opId);
   }
    
+  SymmetryOperation[] finalOperations;
+  
   void setFinalOperations(P3[] atoms, int atomIndex, int count,
                           boolean doNormalize) {
     //from AtomSetCollection.applySymmetry only
@@ -163,7 +152,6 @@ class SpaceGroup {
       generateAllOperators(h);
       //doNormalize = false;  // why this here?
     }
-    finalOperations = null;
     if (index >= getSpaceGroups().length) {
       SpaceGroup sg = getDerivedSpaceGroup();
       if (sg != null)
@@ -295,7 +283,9 @@ class SpaceGroup {
   }
 
   ///// private methods /////
-    
+  
+  private static String[] canonicalSeitzList;
+  
   /**
    * 
    * @return either a String or a SpaceGroup, depending on index.
@@ -398,43 +388,37 @@ class SpaceGroup {
     return sg;
   }
   
+  Map<String, Integer> xyzList = new Hashtable<String, Integer>();
+  private int modulationDimension;
+  
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
       return -1;
     }
-    boolean isSpecial = (xyz0.charAt(0) == '=');
-    if (isSpecial)
-      xyz0 = xyz0.substring(1);
-    if (xyzList.containsKey(xyz0))
-      return xyzList.get(xyz0).intValue();
-    if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
+    if (xyz0.startsWith("x1,x2,x3,x4")) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = Parser.parseInt(xyz0.substring(xyz0
-          .lastIndexOf("x") + 1)) - 3;
+      modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)) - 1; 
     }
+    boolean isSpecial = (xyz0.charAt(0) == '=');
+    if (isSpecial) xyz0 = xyz0.substring(1);
+    if (xyzList.containsKey(xyz0))
+      return xyzList.get(xyz0).intValue();
 
-    SymmetryOperation op = new SymmetryOperation(null, null, 0, opId,
-        doNormalize);
-    if (!op.setMatrixFromXYZ(xyz0, modulationDimension)) {
-      Logger.error("couldn't interpret symmetry operation: " + xyz0);
+    SymmetryOperation symmetryOperation = new SymmetryOperation(null, null, 0, opId, doNormalize);
+    if (!symmetryOperation.setMatrixFromXYZ(xyz0, modulationDimension)) {
+      Logger.error("couldn't interpret symmetry operation: " + xyz0);      
       return -1;
     }
-    return addOp(op, xyz0, isSpecial);
-  }
-
-  private int addOp(SymmetryOperation op, String xyz0, boolean isSpecial) {
-    String xyz = op.xyz;
+    String xyz = symmetryOperation.xyz;
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (!hasLatticeCentering && xyzList.containsKey(TextFormat.simpleReplace(TextFormat.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
-        hasLatticeCentering = true;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
-    if (xyz != null && !xyz.equals(xyz0))
+    if (!xyz.equals(xyz0))
       xyzList.put(xyz0, Integer.valueOf(operationCount));
     if (operations == null) {
       operations = new SymmetryOperation[4];
@@ -443,10 +427,10 @@ class SpaceGroup {
     if (operationCount == operations.length)
       operations = (SymmetryOperation[]) ArrayUtil.arrayCopyObject(operations,
           operationCount * 2);
-    operations[operationCount++] = op;
+    operations[operationCount++] = symmetryOperation;
     if (Logger.debugging)
         Logger.debug("\naddOperation " + operationCount
-        + op.dumpInfo());
+        + symmetryOperation.dumpInfo());
     return operationCount - 1;
   }
 
@@ -1379,50 +1363,6 @@ class SpaceGroup {
       , new SpaceGroup("230;oh^10;i a -3 d;-i 4bd 2c 3")
     } : spaceGroupDefinitions);
   }
-
-  public void addLatticeVectors(JmolList<float[]> lattvecs) {
-    hasLatticeCentering = true; 
-    int nOps = operationCount;
-    for (int j = 0; j < lattvecs.size(); j++) {
-      float[] data = lattvecs.get(j);
-      if (data.length > modulationDimension + 3)
-        return;
-      for (int i = 0; i < nOps; i++) {
-        SymmetryOperation op = operations[i];
-        float[] rotTrans = op.rotTransMatrix;
-        SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
-            doNormalize);
-        newOp.modDim = modulationDimension;
-        newOp.rotTransMatrix = ArrayUtil.arrayCopyF(rotTrans, -1);
-        newOp.setFromMatrix(data, false);
-        newOp.xyzOriginal = newOp.xyz;
-        addOp(newOp, newOp.xyz, true);
-      }
-    }
-  }
-
-  public int getSiteMultiplicity(P3 pt, UnitCell unitCell) {
-    int n = finalOperations.length;
-    JmolList<P3> pts = new JmolList<P3>();
-    for (int i = n; --i >= 0;) {
-      P3 pt1 = P3.newP(pt);
-      finalOperations[i].transform(pt1);
-      unitCell.unitize(pt1);
-      for (int j = pts.size(); --j >= 0;) {
-        P3 pt0 = pts.get(j);
-        if (pt1.distanceSquared(pt0) < 0.000001f) {
-          pt1 = null;
-          break;
-        }      
-      }
-      if (pt1 != null) {
-        //System.out.println(pt + " to " + pt1 + " by " + i + ": " + finalOperations[i].xyz);
-        pts.addLast(pt1);
-      }
-    }
-    return n / pts.size();
-  }
-
 
   /*  see http://cci.lbl.gov/sginfo/itvb_2001_table_a1427_hall_symbols.html
 

@@ -149,7 +149,9 @@ public class ShelxReader extends AtomSetCollectionReader {
   }
 
   private void parseLattRecord() throws Exception {
-    atomSetCollection.setLatticeParameter(parseIntStr(tokens[1]));
+    parseTokenStr(line);
+    int latt = parseInt();
+    atomSetCollection.setLatticeParameter(latt);
   }
 
   private void parseSymmRecord() throws Exception {

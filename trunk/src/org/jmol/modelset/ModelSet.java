@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-10 09:03:58 -0500 (Sat, 10 Aug 2013) $
- * $Revision: 18534 $
+ * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
+ * $Revision: 18479 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -234,7 +234,7 @@ import java.util.Map;
         if (vibrationSteps != null) {
           if (vibs != null && vibs[pt] != null)
             vib = vibs[pt];
-          setVibrationVector(i, vib);
+          setVibrationVector(i, vib.x, vib.y, vib.z);
         }
         bs.set(i);
       }
@@ -743,7 +743,8 @@ import java.util.Map;
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
       Atom atom2 = addAtom(modelIndex, atom1.group, 1, "H"
-          + n, n, n, pts[i], Float.NaN, null, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
+          + n, n, n, pts[i].x, pts[i].y, pts[i].z, Float.NaN, Float.NaN, Float.NaN,
+          Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       
       atom2.setMadAtom(viewer, rd);
       bs.set(atom2.index);
@@ -821,7 +822,8 @@ import java.util.Map;
       if (vNot.size() == 0)
         return;
       pt = Measure.getCenterAndPoints(vNot)[0];
-      V3 v = V3.newVsub(thisAtom, pt);
+      V3 v = V3.newV(thisAtom);
+      v.sub(pt);
       Quaternion q = Quaternion.newVA(v, 180);
       moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true);
     }
@@ -840,7 +842,9 @@ import java.util.Map;
       if (bs == null || bs.isEmpty())
         continue;
       Atom a1 = atoms[(int) dihedralList[pt + 1]];
-      V3 v = V3.newVsub(atoms[(int) dihedralList[pt + 2]], a1);
+      Atom a2 = atoms[(int) dihedralList[pt + 2]];
+      V3 v = V3.newV(a2);
+      v.sub(a1);
       float angle = (dihedralList[pt + 5] - dihedralList[pt + 4]) * f;
       AxisAngle4f aa = AxisAngle4f.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
       matTemp.setAA(aa);

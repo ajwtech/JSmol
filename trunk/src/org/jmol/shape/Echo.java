@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-13 17:21:44 -0500 (Tue, 13 Aug 2013) $
- * $Revision: 18558 $
+ * $Date: 2013-07-04 16:54:56 -0500 (Thu, 04 Jul 2013) $
+ * $Revision: 18430 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -31,6 +31,9 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
+
+import java.util.Iterator;
+
 
 public class Echo extends TextShape {
 
@@ -69,7 +72,7 @@ public class Echo extends TextShape {
       if (currentObject == null)
         return;
       Text t = (Text) currentObject;
-      t.pointerPt = (value == null ? null : (P3) value); // could be an atom.
+      t.pointerPt = (value == null ? null : (P3)value); // could be an atom.
       t.pointer = (value == null ? Object2d.POINTER_NONE : Object2d.POINTER_ON);
       return;
     }
@@ -82,9 +85,12 @@ public class Echo extends TextShape {
 
     if ("scale" == propertyName) {
       if (currentObject == null) {
-        if (isAll)
-          for (Text t : objects.values())
-            t.setScale(((Float) value).floatValue());
+        if (isAll) {
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setScale(((Float) value).floatValue());
+          }
+        }
         return;
       }
       ((Text) currentObject).setScale(((Float) value).floatValue());
@@ -92,9 +98,12 @@ public class Echo extends TextShape {
     }
     if ("image" == propertyName) {
       if (currentObject == null) {
-        if (isAll)
-          for (Text t : objects.values())
-            t.setImage(value);
+        if (isAll) {
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setImage(value);
+          }
+        }
         return;
       }
       ((Text) currentObject).setImage(value);
@@ -111,12 +120,16 @@ public class Echo extends TextShape {
     if ("hidden" == propertyName) {
       boolean isHidden = ((Boolean) value).booleanValue();
       if (currentObject == null) {
-        if (isAll || thisID != null)
-          for (Text t : objects.values())
+        if (isAll || thisID != null) {
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            Text text = e.next();
             if (isAll
-                || TextFormat.isMatch(t.target.toUpperCase(), thisID, true,
+                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
                     true))
-              t.hidden = isHidden;
+              text.hidden = isHidden;
+          }
+        }
         return;
       }
       ((Text) currentObject).hidden = isHidden;
@@ -146,8 +159,8 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Object2d.VALIGN_BOTTOM;
           }
-          text = Text.newEcho(viewer, gdata, gdata.getFont3DFS(FONTFACE,
-              FONTSIZE), target, COLOR, valign, halign, 0);
+          text = Text.newEcho(viewer, gdata, gdata.getFont3DFS(FONTFACE, FONTSIZE),
+              target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);
           if (currentFont != null)
@@ -176,8 +189,9 @@ public class Echo extends TextShape {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
-      for (Text t: objects.values()) {
-        String id = t.target;
+      Iterator<Text> e = objects.values().iterator();
+      while (e.hasNext()) {
+        String id = e.next().target;
         if (id.equalsIgnoreCase(key) || isWild
             && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;

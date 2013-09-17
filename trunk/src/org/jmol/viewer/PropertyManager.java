@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-29 12:32:22 +0200 (Thu, 29 Aug 2013) $
- * $Revision: 18627 $
+ * $Date: 2013-07-26 06:46:53 -0500 (Fri, 26 Jul 2013) $
+ * $Revision: 18492 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import java.util.Map;
 import java.util.Properties;
@@ -338,14 +339,17 @@ public class PropertyManager implements JmolPropertyManager {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
           JmolList<Object> keys = new  JmolList<Object>();
-          for (String k: h.keySet())
-            keys.addLast(k);
+          Iterator<String> e = h.keySet().iterator();
+          while (e.hasNext())
+            keys.addLast(e.next());
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
-          for (String k: h.keySet())
-            if (k.equalsIgnoreCase(key)) {
-              key = k;
+          Iterator<String> e = h.keySet().iterator();
+          String newKey = "";
+          while (e.hasNext())
+            if ((newKey = e.next()).equalsIgnoreCase(key)) {
+              key = newKey;
               break;
             }
         }
@@ -638,7 +642,8 @@ public class PropertyManager implements JmolPropertyManager {
       s = (String) m.getModelAuxiliaryInfoValue(i, "modelID");
       if (s != null)
         model.put("id", s);
-      model.put("vibrationVectors", Boolean.valueOf(viewer.modelHasVibrationVectors(i)));
+      model.put("vibrationVectors", Boolean.valueOf(m
+          .modelHasVibrationVectors(i)));
       Model mi = m.models[i];
       model.put("atomCount", Integer.valueOf(mi.atomCount));
       model.put("bondCount", Integer.valueOf(mi.getBondCount()));
@@ -1156,7 +1161,6 @@ public class PropertyManager implements JmolPropertyManager {
         sb.append("\nid").append(s).append(Escape.eS(id));
       sb.append("\ntitle").append(s).append(Escape.eS(ms.getModelTitle(i)));
       sb.append("\nname").append(s).append(Escape.eS(ms.getModelName(i)));
-      sb.append("\ntype").append(s).append(Escape.eS(ms.getModelFileType(i)));
     }
     return sb.toString();
   }
@@ -1216,8 +1220,8 @@ public class PropertyManager implements JmolPropertyManager {
       info.put("chain", atom.getChainIDStr());
       info.put("atomID", Integer.valueOf(atom.atomID));
       info.put("groupID", Integer.valueOf(atom.getGroupID()));
-      if (atom.altloc != '\0')
-        info.put("altLocation", "" + atom.altloc);
+      if (atom.alternateLocationID != '\0')
+        info.put("altLocation", "" + atom.alternateLocationID);
       info.put("structure", Integer.valueOf(atom.getProteinStructureType()
           .getId()));
       info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-17 13:32:23 -0500 (Sat, 17 Aug 2013) $
- * $Revision: 18590 $
+ * $Date: 2013-06-05 21:53:58 -0500 (Wed, 05 Jun 2013) $
+ * $Revision: 18283 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -37,7 +37,7 @@ public class BallsRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     boolean needTranslucent = false;
-    if (isExport || viewer.checkMotionRendering(T.atoms)) {
+    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion(true)) {
       Atom[] atoms = modelSet.atoms;
       short[] colixes = ((Balls) shape).colixes;
       BS bsOK = viewer.getRenderableBitSet();

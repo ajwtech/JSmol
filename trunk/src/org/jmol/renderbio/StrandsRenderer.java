@@ -29,9 +29,9 @@ import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;
 import org.jmol.util.P3i;
 
-public class StrandsRenderer extends BioShapeRenderer {
+public class StrandsRenderer extends TraceRenderer {
 
-  protected int strandCount = 1;
+  protected int strandCount;
   protected float strandSeparation;
   protected float baseStrandOffset;
 

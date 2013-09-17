@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-06 12:25:32 -0500 (Fri, 06 Sep 2013) $
- * $Revision: 18645 $
+ * $Date: 2013-09-06 12:26:07 -0500 (Fri, 06 Sep 2013) $
+ * $Revision: 18646 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -29,10 +29,13 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
 
 public class Atom extends P3 implements Cloneable {
-  public int atomSetIndex;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public int atomSetIndex;
   public int index;
   public BS bsSymmetry;
   public int atomSite;
@@ -41,9 +44,11 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  public V3 vib; // .x and .y can be used for in-reader purposes as long as vib.z is left Float.NaN
+  public float vectorX = Float.NaN;
+  public float vectorY = Float.NaN;
+  public float vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
-  public float foccupancy = 1;
+  public int occupancy = 100;
   public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;
@@ -56,15 +61,14 @@ public class Atom extends P3 implements Cloneable {
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public JmolList<Tensor> tensors;
   
-  public Tensor addTensor(Tensor tensor, String type, boolean reset) {
+  public void addTensor(Tensor tensor, String type) {
     if (tensor == null)
-      return null;
-    if (reset || tensors == null)
+      return;
+    if (tensors == null)
       tensors = new JmolList<Tensor>();
     tensors.addLast(tensor);
     if (type != null)
       tensor.setType(type);
-    return tensor;
   }
 
   
@@ -81,8 +85,6 @@ public class Atom extends P3 implements Cloneable {
 
   public Atom getClone() throws CloneNotSupportedException {
     Atom a = (Atom)clone();
-    if (vib != null)
-      a.vib = V3.newV(a.vib);
     if (anisoBorU != null)
       a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {
@@ -310,8 +312,10 @@ public class Atom extends P3 implements Cloneable {
   }
 
   public void scaleVector(float vibScale) {
-    if (vib == null || Float.isNaN(vib.z))
+    if (Float.isNaN(vectorX))
       return;
-    vib.scale(vibScale);
+    vectorX *= vibScale;
+    vectorY *= vibScale;
+    vectorZ *= vibScale;    
   }
 }

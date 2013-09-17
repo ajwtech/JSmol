@@ -37,6 +37,7 @@ import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.thread.MinimizationThread;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -213,6 +214,7 @@ public class Minimizer implements MinimizerInterface {
 
     if (minimizationOn)
       return false;
+
     ForceField pFF0 = pFF;
     getForceField(ff);
     if (pFF == null) {
@@ -479,8 +481,6 @@ public class Minimizer implements MinimizerInterface {
   ///////////////////////////// minimize //////////////////////
 
   public ForceField getForceField(String ff) {
-    if (ff.startsWith("MMFF"))
-      ff = "MMFF";
     if (pFF == null || !ff.equals(this.ff)) {
       if (ff.equals("UFF")) {
         pFF = new ForceFieldUFF(this);
@@ -521,8 +521,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (minimizationThread == null) {
-      minimizationThread = new MinimizationThread();
-      minimizationThread.setManager(this, viewer, null);
+      minimizationThread = new MinimizationThread(this, viewer);
       minimizationThread.start();
     }
   }

@@ -879,8 +879,10 @@ public class SmilesGenerator {
 
   private void dumpRingKeys(SB sb, Map<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
-    for (String key: ht.keySet())
-      Logger.info("unmatched ring key: " + key);
+    Iterator<String> e = ht.keySet().iterator();
+    while (e.hasNext()) {
+      Logger.info("unmatched ring key: " + e.next());
+    }
   }
 
   protected static String getRingKey(int i0, int i1) {

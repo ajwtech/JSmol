@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-16 10:01:49 -0500 (Fri, 16 Aug 2013) $
- * $Revision: 18577 $
+ * $Date: 2013-06-04 22:55:27 -0500 (Tue, 04 Jun 2013) $
+ * $Revision: 18282 $
 
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
@@ -60,7 +60,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   private int dx, dy;
   private int mag2d;
   private int bondOrder;
-  private boolean wireframeOnly;
+  private boolean renderWireframe;
   private boolean isAntialiased;
   private boolean slabbing;
   private boolean slabByAtom;
@@ -75,9 +75,6 @@ public class SticksRenderer extends FontLineShapeRenderer {
   
   @Override
   protected boolean render() {
-    Bond[] bonds = modelSet.bonds;
-    if (bonds == null)
-      return false;
     isPass2 = g3d.isPass2();
     if (!isPass2)
       bsForPass2.clearAll();
@@ -95,12 +92,14 @@ public class SticksRenderer extends FontLineShapeRenderer {
         && modeMultipleBond != JC.MULTIBOND_NEVER
         && viewer.getBoolean(T.showmultiplebonds));
 
-    wireframeOnly = !viewer.checkMotionRendering(T.bonds);
+    renderWireframe = viewer.getInMotion(true)
+        && viewer.getBoolean(T.wireframerotation);
     ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
     hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
+    Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
     if (!isExport && isPass2)
       for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2
@@ -249,7 +248,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     dx = xB - xA;
     dy = yB - yA;
     width = (int) viewer.scaleToScreen((zA + zB) / 2, mad);
-    if (wireframeOnly && width > 0)
+    if (renderWireframe && width > 0)
       width = 1;
     if (!isCartesianExport) {
       asLineOnly = (width <= 1);

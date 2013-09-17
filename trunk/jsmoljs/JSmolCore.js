@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  8/16/2013 12:03:14 PM
+// JSmolCore.js -- Jmol core capability  9/17/2013 10:17:44 AM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 9/17/2013 10:17:51 AM: asynchronous file reading and saving
 // BH 8/16/2013 12:02:20 PM: JSmoljQueryExt.js pulled out
 // BH 8/16/2013 12:02:20 PM: Jmol._touching used properly
 
@@ -35,7 +36,8 @@
 
 // required/optional libraries (preferably in the following order):
 
-//		JSmoljQuery.js      -- required for binary file transfer; otherwise standard jQuery should be OK
+//    jQuery            -- at least jQuery.1.9
+//		JSmoljQueryext.js -- required for binary file transfer; otherwise standard jQuery should be OK
 //		JSmolCore.js      -- required;
 //		JSmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JmolCore
 //		JSmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JmolCore
@@ -402,34 +404,6 @@ Jmol = (function(document) {
 		return '<br />' + s;
 	}
 
-	Jmol._saveFile = function(filename, mimetype, data, encoding) {
-		var url = Jmol._serverUrl;
-		if (!url) {
-			// do something local here;
-			return;
-		}
-		if (!Jmol._formdiv) {
-	      var sform = '<div id="__jsmolformdiv__" style="display:none">\
-	 				<form id="__jsmolform__" method="post" target="_blank" action="">\
-	 				<input name="call" value="saveFile"/>\
-	 				<input id="__jsmolmimetype__" name="mimetype" value=""/>\
-	 				<input id="__jsmolencoding__" name="encoding" value=""/>\
-	 				<input id="__jsmolfilename__" name="filename" value=""/>\
-	 				<input id="__jsmoldata__" name="data" value=""/>\
-	 				</form>\
-	 				</div>'
-	 	  Jmol.$after("body", sform);
-	 	  Jmol._formdiv = "__jsmolform__";
-		}
-		Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
-		Jmol.$val("__jsmoldata__", data);
-		Jmol.$val("__jsmolfilename__", filename);
-		Jmol.$val("__jsmolmimetype__", mimetype);
-		Jmol.$val("__jsmolencoding__", encoding);
-		Jmol.$submit("__jsmolform__");
-		Jmol.$val("__jsmoldata__", "");
-	}
-	
 	Jmol._getScriptForDatabase = function(database) {
 		return (database == "$" ? Jmol.db._nciLoadScript : database == ":" ? Jmol.db._pubChemLoadScript : Jmol.db._fileLoadScript);
 	}
@@ -804,6 +778,78 @@ Jmol = (function(document) {
 	return b;
   }
 					
+	Jmol._doAjax = function(url, postOut, dataOut) {
+    // called by org.jmol.awtjs2d.JmolURLConnection.doAjax()
+    url = url.toString();
+    
+    if (dataOut != null) 
+      return Jmol._saveFile(url, dataOut);
+    if (postOut)
+      url += "?POST?" + postOut;
+    var data = Jmol._getFileData(url)
+    return Jmol._processData(data, Jmol._isBinaryUrl(url));
+	}
+
+  // Jmol._localFileSaveFunction --  // do something local here; Maybe try the FileSave interface? return true if successful
+   
+	Jmol._saveFile = function(filename, data) {
+		var url = Jmol._serverUrl;
+		if (Jmol._localFileSaveFunction && Jmol._localFileSaveFunction(filename, data))
+      return "OK";
+		if (!url)
+			return "Jmol._serverUrl is not defined";
+      
+    var isString = (typeof data == "string");
+    var encoding = (isString ? "" : "base64");
+    if (!isString)
+    	data = J.io.Base64.getBase64(data).toString();
+  	var filename = filename.substring(filename.lastIndexOf("/") + 1);
+  	var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
+    // Asynchronous output - to be reflected as a download
+		if (!Jmol._formdiv) {
+	      var sform = '<div id="__jsmolformdiv__" style="display:none">\
+	 				<form id="__jsmolform__" method="post" target="_blank" action="">\
+	 				<input name="call" value="saveFile"/>\
+	 				<input id="__jsmolmimetype__" name="mimetype" value=""/>\
+	 				<input id="__jsmolencoding__" name="encoding" value=""/>\
+	 				<input id="__jsmolfilename__" name="filename" value=""/>\
+	 				<textarea id="__jsmoldata__" name="data"></textarea>\
+	 				</form>\
+	 				</div>'
+	 	  Jmol.$after("body", sform);
+	 	  Jmol._formdiv = "__jsmolform__";
+		}
+		Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
+		Jmol.$val("__jsmoldata__", data);
+		Jmol.$val("__jsmolfilename__", filename);
+		Jmol.$val("__jsmolmimetype__", mimetype);
+		Jmol.$val("__jsmolencoding__", encoding);
+		Jmol.$submit("__jsmolform__");
+		Jmol.$val("__jsmoldata__", "");
+		Jmol.$val("__jsmolfilename__", "");
+    return "OK";
+	}
+	
+  Jmol._processData = function(data, isBinary) {
+    if (typeof data == "undefined") {
+      data = "";
+      isBinary = false;
+    }
+    isBinary &= Jmol._canSyncBinary();
+    if (!isBinary)
+  		return J.util.SB.newS(data);
+  	var b;
+	if (Clazz.instanceOf(data, self.ArrayBuffer))
+		return Jmol._toBytes(data);
+    b = Clazz.newByteArray(data.length, 0);
+    for (var i = data.length; --i >= 0;)
+      b[i] = data.charCodeAt(i) & 0xFF;
+    // alert("Jmol._processData len=" + b.length + " b[0-5]=" + b[0] + " " +
+	// b[1]+ " " + b[2] + " " + b[3]+ " " + b[4] + " " + b[5])
+    return b;
+  };
+
+
 	////////////// applet start-up functionality //////////////
 
   Jmol._setConsoleDiv = function (d) {

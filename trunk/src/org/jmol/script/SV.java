@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,7 +89,7 @@ public class SV extends T {
     return sv;
   }
 
-  public static SV newScriptVariableToken(T x) {
+  static SV newScriptVariableToken(T x) {
     return newScriptVariableIntValue(x.tok, x.intValue, x.value);
   }
 
@@ -246,20 +247,22 @@ public class SV extends T {
   @SuppressWarnings("unchecked")
   static SV getVariableMap(Map<String, ?> x) {
     Map<String, Object> ht = (Map<String, Object>) x;
-    Object o = null;
-    for (Object oo : ht.values()) {
-      o = oo;
-      break;
-    }
-    if (!(o instanceof SV)) {
-      Map<String, SV> x2 = new Hashtable<String, SV>();
-      for (Map.Entry<String, Object> entry : ht.entrySet()) {
-        String key = entry.getKey();
-        o = entry.getValue();
-        x2.put(key, isVariableType(o) ? getVariable(o) : newVariable(string,
-            Escape.toReadable(null, o)));
+    Iterator<String> e = ht.keySet().iterator();
+    while (e.hasNext()) {
+      if (!(ht.get(e.next()) instanceof SV)) {
+        Map<String, SV> x2 = new Hashtable<String, SV>();
+        for (Map.Entry<String, Object> entry : ht.entrySet()) {
+          String key = entry.getKey();
+          Object o = entry.getValue();
+          if (isVariableType(o))
+            x2.put(key, getVariable(o));
+          else
+            x2.put(key, newVariable(string, Escape.toReadable(null,
+                o)));
+        }
+        x = x2;
       }
-      x = x2;
+      break; // just need to check the first one
     }
     return newVariable(hash, x);
   }
@@ -281,7 +284,7 @@ public class SV extends T {
     return newVariable(varray, objects);
   }
 
-  public static SV getVariableAD(double[] f) {
+  static SV getVariableAD(double[] f) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newVariable(decimal, Float.valueOf((float) f[i])));
@@ -525,7 +528,7 @@ public class SV extends T {
     }
   }
 
-  public static float fValue(T x) {
+  static float fValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -545,23 +548,23 @@ public class SV extends T {
     case bitset:
       return iValue(x);
     case point3f:
-      return ((P3) x.value).length();
+      return ((P3) x.value).distance(pt0);
     case point4f:
       return Measure.distanceToPlane((P4) x.value, pt0);
     case matrix3f:
       P3 pt = new P3();
       ((Matrix3f) x.value).transform(pt);
-      return pt.length();
+      return pt.distance(pt0);
     case matrix4f:
       P3 pt1 = new P3();
       ((Matrix4f) x.value).transform(pt1);
-      return pt1.length();
+      return pt1.distance(pt0);
     default:
       return 0;
     }
   }
 
-  public static String sValue(T x) {
+  static String sValue(T x) {
     if (x == null)
       return "";
     int i;
@@ -1241,7 +1244,7 @@ public class SV extends T {
     return bs;
   }
 
-  public static String[] listValue(T x) {
+  static String[] listValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
     JmolList<SV> sv = ((SV) x).getList();
@@ -1269,7 +1272,7 @@ public class SV extends T {
     }
     return list;    
   }
-  public static float[] flistValue(T x, int nMin) {
+  static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
     JmolList<SV> sv = ((SV) x).getList();
@@ -1282,7 +1285,7 @@ public class SV extends T {
     return list;
   }
 
-  public void toArray() {
+  void toArray() {
     int dim;
     Matrix3f m3 = null;
     Matrix4f m4 = null;

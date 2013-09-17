@@ -199,7 +199,7 @@ final public class Measure {
   }
   
   public static void getPlaneThroughPoint(P3 pt, V3 normal, P4 plane) {
-    plane.set(normal.x, normal.y, normal.z, -normal.dot(pt));
+    plane.set(normal.x, normal.y, normal.z, -normal.dot(V3.newV(pt)));
   }
   
   public static float distanceToPlane(P4 plane, P3 pt) {
@@ -577,7 +577,8 @@ final public class Measure {
     for (int i = n + 1; --i >= 1;) {
       ptAnew.setT(ptsA[i]);
       ptAnew.sub(cA);
-      q.transformP2(ptAnew, ptAnew).add(cB);
+      q.transformP2(ptAnew, ptAnew);
+      ptAnew.add(cB);
       sum2 += ptAnew.distanceSquared(ptsB[i]);
     }
     return (float) Math.sqrt(sum2 / n);

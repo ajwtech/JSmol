@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-17 12:13:40 -0500 (Sat, 17 Aug 2013) $
- * $Revision: 18588 $
+ * $Date: 2013-06-19 07:49:01 -0500 (Wed, 19 Jun 2013) $
+ * $Revision: 18351 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -90,7 +90,7 @@ public class MainPopupResourceBundle extends PopupResource {
               + "Ligand exceptWater nonWaterSolvent" },
 
       {   "viewMenu",
-          "best front left right top bottom back" },
+          "front left right top bottom back" },
 
       {   "renderMenu",
           "perspectiveDepthCB showBoundBoxCB showUNITCELLCB showAxesCB stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
@@ -305,7 +305,6 @@ public class MainPopupResourceBundle extends PopupResource {
       // not implemented    { "Lipid", "SELECT lipid" },
       { "PDBnoneOfTheAbove", "SELECT not(hetero,protein,nucleic,carbohydrate)" },
 
-      { "best", "rotate best -1.0" },
       { "front", Box( "moveto 2.0 front;delay 1" ) },
       { "left", Box( "moveto 1.0 front;moveto 2.0 left;delay 1"  ) },
       { "right", Box( "moveto 1.0 front;moveto 2.0 right;delay 1"  ) },
@@ -593,7 +592,6 @@ public class MainPopupResourceBundle extends PopupResource {
         "invertSelection", GT._("Invert Selection"),
 
         "viewMenu", GT._("View"),
-        "best", GT._("Best"),
         "front", GT._("Front"),
         "left", GT._("Left"),
         "right", GT._("Right"),
