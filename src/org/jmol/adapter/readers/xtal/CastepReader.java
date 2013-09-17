@@ -114,12 +114,14 @@ public class CastepReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
-      chargeType = getFilter("CHARGE=");
-      if (chargeType != null && chargeType.length() > 4)
-        chargeType = chargeType.substring(0, 4);
+      if (checkFilterKey("CHARGE=")) {
+        chargeType = filter.substring(filter.indexOf("CHARGE=") + 7);
+        if (chargeType.length() > 4)
+          chargeType = chargeType.substring(0, 4);
+      }
       filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
-      isAllQ = checkFilterKey("Q=ALL");
+      isAllQ = (filter.indexOf("Q=ALL") >= 0);
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
       filter = TextFormat.simpleReplace(filter, "-PT", "");
@@ -570,7 +572,7 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
-    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.atomName + " " + line0), null, false);
+    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.atomName + " " + line0), null);
     if (!haveCharges)
       appendLoadNote("Ellipsoids set \"charge\": Born Effective Charges");
     haveCharges = true;
@@ -711,7 +713,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
-    if (!isOK && checkFilterKey("Q=")) {
+    if (!isOK && filter != null && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
         v.sub2(desiredQpt, qvec);

@@ -26,31 +26,28 @@
 package org.jmol.thread;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.Viewer;
 import org.jmol.viewer.AnimationManager;
+import org.jmol.viewer.Viewer;
 
 public class AnimationThread extends JmolThread {
   /**
    * 
    */
-  private AnimationManager animationManager;
-  private int framePointer1;
-  private int framePointer2;
+  private final AnimationManager animationManager;
+  private final int framePointer1;
+  private final int framePointer2;
   private int intThread;
   private boolean isFirst;
   
-  public AnimationThread() {}
-  
-  @Override
-  public int setManager(Object manager, Viewer viewer, Object params) {
-    int[] options = (int[]) params;
-    framePointer1 = options[0];
-    framePointer2 = options[1];
-    intThread = options[2];
-    animationManager = (AnimationManager) manager;
+
+  public AnimationThread(AnimationManager animationManager, Viewer viewer, int framePointer1, int framePointer2, int intAnimThread) {
+    super();
     setViewer(viewer, "AnimationThread");
+    this.animationManager = animationManager;
+    this.framePointer1 = framePointer1;
+    this.framePointer2 = framePointer2;
+    intThread = intAnimThread;
     viewer.startHoverWatcher(false);
-    return 0;
   }
 
   @Override
@@ -76,7 +73,7 @@ public class AnimationThread extends JmolThread {
       case INIT:
         if (Logger.debugging)
           Logger.debug("animation thread " + intThread + " running");
-        viewer.requestRepaintAndWait("animationThread");
+        viewer.requestRepaintAndWait("animation thread");
         viewer.startHoverWatcher(false);
         isFirst = true;
         mode = MAIN;

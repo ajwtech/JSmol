@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18653 $
+ * $Date: 2013-09-16 17:24:27 -0500 (Mon, 16 Sep 2013) $
+ * $Revision: 18655 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -423,17 +423,20 @@ public class SmarterJmolAdapter extends JmolAdapter {
   ////////////////////////////////////////////////////////////////
 
   @Override
-  public JmolAdapterAtomIterator getAtomIterator(Object atomSetCollection) {
+  public JmolAdapterAtomIterator
+    getAtomIterator(Object atomSetCollection) {
     return new AtomIterator((AtomSetCollection)atomSetCollection);
   }
 
   @Override
-  public JmolAdapterBondIterator getBondIterator(Object atomSetCollection) {
+  public JmolAdapterBondIterator
+    getBondIterator(Object atomSetCollection) {
     return new BondIterator((AtomSetCollection)atomSetCollection);
   }
 
   @Override
-  public JmolAdapterStructureIterator getStructureIterator(Object atomSetCollection) {
+  public JmolAdapterStructureIterator
+    getStructureIterator(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
         null : new StructureIterator((AtomSetCollection)atomSetCollection);
   }

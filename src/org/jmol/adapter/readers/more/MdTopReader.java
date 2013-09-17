@@ -209,7 +209,7 @@ public class MdTopReader extends ForceFieldReader {
         atomSetCollection.addAtom(new Atom());
     }
 
-  private String[] atomTypes;
+  String[] atomTypes;
   private void getAtomTypes() throws Exception {
     atomTypes = getDataBlock();
   }

@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumVdw;
@@ -65,8 +66,7 @@ class DataManager {
   private final static int DATA_VALUE = 1;
   private final static int DATA_SELECTION_MAP = 2;
   private final static int DATA_TYPE = 3;
-  final static int DATA_SAVE_IN_STATE = 4;
-    
+  
   void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
@@ -76,7 +76,6 @@ class DataManager {
      * data[1] -- string or float[] or float[][] or float[][][]
      * data[2] -- selection bitset or int[] atomMap when field > 0
      * data[3] -- arrayDepth 0(String),1(float[]),2,3(float[][][])
-     * data[4] -- Boolean.TRUE == saveInState
      * 
      * matchField = data must match atomNo in this column, >= 1
      * field = column containing the data, >= 1:
@@ -185,15 +184,17 @@ class DataManager {
   Object[] getData(String type) {
     if (dataValues == null || type == null)
       return null;
-    if (!type.equalsIgnoreCase("types"))
-      return dataValues.get(type);
-    String[] info = new String[2];
-    info[0] = "types";
-    info[1] = "";
-    int n = 0;
-    for (String name : dataValues.keySet())
-      info[1] += (n++ > 0 ? "\n" : "") + name;
-    return info;
+    if (type.equalsIgnoreCase("types")) {
+      String[] info = new String[2];
+      info[0] = "types";
+      info[1] = "";
+      int n = 0;
+      Iterator<String> e = dataValues.keySet().iterator();
+      while (e.hasNext())
+        info[1] += (n++ > 0 ? "\n" : "") + e.next();
+      return info;
+    }
+    return dataValues.get(type);
   }
 
   float[] getDataFloatA(String label) {
@@ -238,7 +239,9 @@ class DataManager {
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
     if (dataValues == null)
       return;
-    for (String name: dataValues.keySet()) {
+    Iterator<String> e = dataValues.keySet().iterator();
+    while (e.hasNext()) {
+      String name = e.next();
       if (name.indexOf("property_") == 0) {
         Object[] obj = dataValues.get(name);
         BSUtil.deleteBits((BS) obj[2], bsDeleted);

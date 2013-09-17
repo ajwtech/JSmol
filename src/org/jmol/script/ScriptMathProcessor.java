@@ -843,10 +843,10 @@ class ScriptMathProcessor {
       return false;
     BS bs = SV.getBitSet(getX(), false);
     String tensorType = (args.length == 0 ? null : SV.sValue(args[0]).toLowerCase());
+    String infoType = (args.length < 2 ? "all" : SV.sValue(args[1]).toLowerCase());
     JmolNMRInterface calc = viewer.getNMRCalculation();      
     if ("unique".equals(tensorType))
       return addXBs(calc.getUniqueTensorSet(bs));
-    String infoType = (args.length < 2 ? null : SV.sValue(args[1]).toLowerCase());
     return addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 
@@ -1392,7 +1392,6 @@ class ScriptMathProcessor {
       RadiusData rd = null;
       int nBitSets = 0;
       float vdw = Float.MAX_VALUE;
-      boolean asMinArray = false;
       boolean asArray = false;
       for (int i = 0; i < args.length; i++) {
         switch (args[i].tok) {
@@ -1426,8 +1425,6 @@ class ScriptMathProcessor {
           else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
           else if (s.equalsIgnoreCase("minArray"))
-            asMinArray = (nBitSets >= 1);
-          else if (s.equalsIgnoreCase("asArray"))
             asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
               ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
@@ -1449,7 +1446,7 @@ class ScriptMathProcessor {
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
       return addXObj((new MeasurementData(null, viewer, points)).set(0, null, rd, strFormat, units, null, isAllConnected,
-          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray, asMinArray));
+          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray));
     case T.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;
@@ -2148,7 +2145,6 @@ class ScriptMathProcessor {
     // quaternion(vector, theta)
     // quaternion(q0, q1, q2, q3)
     // quaternion("{x, y, z, w"})
-    // quaternion("best")
     // quaternion(center, X, XY)
     // quaternion(mcol1, mcol2)
     // quaternion(q, "id", center) // draw code
@@ -2225,8 +2221,7 @@ class ScriptMathProcessor {
       } else if (args[0].tok == T.point4f) {
         p4 = (P4) args[0].value;
       } else {
-        String s = SV.sValue(args[0]);
-        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer.getOrientationText(T.best, null) : s);
+        Object v = Escape.uP(SV.sValue(args[0]));
         if (!(v instanceof P4))
           return false;
         p4 = (P4) v;

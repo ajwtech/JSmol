@@ -49,6 +49,24 @@ public class V3 extends Tuple3f {
   }
 
   /**
+   * Returns the squared length of this vector.
+   * 
+   * @return the squared length of this vector
+   */
+  public final float lengthSquared() {
+    return x * x + y * y + z * z;
+  }
+
+  /**
+   * Returns the length of this vector.
+   * 
+   * @return the length of this vector
+   */
+  public final float length() {
+    return (float) Math.sqrt(lengthSquared());
+  }
+
+  /**
    * Sets this vector to be the vector cross product of vectors v1 and v2.
    * 
    * @param v1
@@ -59,6 +77,29 @@ public class V3 extends Tuple3f {
   public final void cross(V3 v1, V3 v2) {
     set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
         - v1.y * v2.x);
+  }
+
+  /**
+   * Computes the dot product of the this vector and vector v.
+   * 
+   * @param v
+   *        the other vector
+   * @return this.dot.v
+   */
+  public final float dot(V3 v) {
+    return x * v.x + y * v.y + z * v.z;
+  }
+
+  /**
+   * Normalizes this vector in place.
+   */
+  public final void normalize() {
+    double d = length();
+
+    // zero-div may occur.
+    x /= d;
+    y /= d;
+    z /= d;
   }
 
   /**

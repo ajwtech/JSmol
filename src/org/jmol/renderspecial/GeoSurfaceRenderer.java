@@ -24,7 +24,6 @@
 
 package org.jmol.renderspecial;
 
-import org.jmol.script.T;
 import org.jmol.shapespecial.GeoSurface;
 import org.jmol.util.BS;
 import org.jmol.util.C;
@@ -46,7 +45,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   @Override
   protected boolean render() {
     GeoSurface gs = (GeoSurface) shape;
-    iShowSolid = !(!viewer.checkMotionRendering(T.geosurface) && gs.ec.getDotsConvexMax() > 100);
+    iShowSolid = !(viewer.getInMotion(true) && gs.ec.getDotsConvexMax() > 100);
     if (!iShowSolid)
       return false;
     if (!g3d.setColix(C.BLACK))

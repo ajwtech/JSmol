@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18653 $
+ * $Date: 2013-09-16 17:24:27 -0500 (Mon, 16 Sep 2013) $
+ * $Revision: 18655 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -951,7 +951,7 @@ public class FileManager {
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
     if (name.startsWith("?")) {
-       if ((name = viewer.dialogAsk("load", name.substring(1))) == null)
+       if ((name = viewer.dialogAsk("Load", name.substring(1))) == null)
          return new String[] { isFullLoad ? "#CANCELED#" : null };
        doSetPathForAllFiles = false;
     }

@@ -98,30 +98,35 @@ class UnitCell extends SimpleUnitCell {
     if (offset == null) {
       // used redefined unitcell 
       matrixCartesianToFractional.transform(pt);
-      unitize(pt);
+      switch (dimension) {
+      case 3:
+        pt.z = toFractionalX(pt.z);  
+        //$FALL-THROUGH$
+      case 2:
+        pt.y = toFractionalX(pt.y);
+        //$FALL-THROUGH$
+      case 1:
+        pt.x = toFractionalX(pt.x);
+      }
       matrixFractionalToCartesian.transform(pt);
     } else {
       // use original unit cell
       matrixCtoFAbsolute.transform(pt);
-      unitize(pt);
+      switch (dimension) {
+      case 3:
+        pt.z = toFractionalX(pt.z);  
+        //$FALL-THROUGH$
+      case 2:
+        pt.y = toFractionalX(pt.y);
+        //$FALL-THROUGH$
+      case 1:
+        pt.x = toFractionalX(pt.x);
+      }
       pt.add(offset);      
       matrixFtoCAbsolute.transform(pt);
     }
   }
   
-  public void unitize(P3 pt) {
-    switch (dimension) {
-    case 3:
-      pt.z = toFractionalX(pt.z);  
-      //$FALL-THROUGH$
-    case 2:
-      pt.y = toFractionalX(pt.y);
-      //$FALL-THROUGH$
-    case 1:
-      pt.x = toFractionalX(pt.x);
-    }
-  }
-
   private boolean allFractionalRelative = false;
   private P3 unitCellMultiplier = null;
   
@@ -363,7 +368,6 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-
     return Tensor.getTensorFromThermalEquation(Bcart, Escape.eAF(parBorU));
   }
   
@@ -443,19 +447,5 @@ class UnitCell extends SimpleUnitCell {
         P3.new3(m.m01, m.m11, m.m21), 
         P3.new3(m.m02, m.m12, m.m22) };
   }
-
-  public boolean isSameAs(UnitCell uc) {
-    if (uc.notionalUnitcell.length != notionalUnitcell.length)
-      return false;
-    for (int i = notionalUnitcell.length; --i >= 0;)
-      if (notionalUnitcell[i] != uc.notionalUnitcell[i]
-          && !(Float.isNaN(notionalUnitcell[i]) && Float
-              .isNaN(uc.notionalUnitcell[i])))
-        return false;
-    if (fractionalOffset.distanceSquared(uc.fractionalOffset) != 0)
-      return false;
-    return true;
-  }
-  
 
 }

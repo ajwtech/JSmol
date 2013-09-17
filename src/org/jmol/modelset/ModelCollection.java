@@ -53,7 +53,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
-import org.jmol.util.ModulationSet;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Tensor;
@@ -197,10 +196,6 @@ abstract public class ModelCollection extends BondCollection {
     return (String) getModelAuxiliaryInfoValue(modelIndex, "fileName");
   }
 
-  public String getModelFileType(int modelIndex) {
-    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
-  }
-
   public void setFrameTitle(BS bsFrames, Object title) {
     if (title instanceof String) {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
@@ -321,7 +316,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Point3fi[] getBboxVertices() {
-    return boxInfo.getBoundBoxVertices();
+    return boxInfo.getBboxVertices();
   }
 
   public Map<String, Object> getBoundBoxInfo() {
@@ -460,19 +455,15 @@ abstract public class ModelCollection extends BondCollection {
    * @return array of two lists of points, centers first if desired
    */
 
-  public P3[][] getCenterAndPoints(JmolList<Object[]> vAtomSets,
-                                   boolean addCenters) {
+  public P3[][] getCenterAndPoints(JmolList<BS[]> vAtomSets,
+                                        boolean addCenters) {
     BS bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      Object[] bss = vAtomSets.get(ii);
-      bsAtoms1 = (BS) bss[0];
-      if (bss[1] instanceof BS) {
-        bsAtoms2 = (BS) bss[1];
-        n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
-      } else {
-        n += Math.min(bsAtoms1.cardinality(), ((P3[]) bss[1]).length);
-      }
+      BS[] bss = vAtomSets.get(ii);
+      bsAtoms1 = bss[0];
+      bsAtoms2 = bss[1];
+      n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
     }
     P3[][] points = new P3[2][n];
     if (addCenters) {
@@ -480,30 +471,17 @@ abstract public class ModelCollection extends BondCollection {
       points[1][0] = new P3();
     }
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      Object[] bss = vAtomSets.get(ii);
-      bsAtoms1 = (BS) bss[0];
-      if (bss[1] instanceof BS) {
-        bsAtoms2 = (BS) bss[1];
-        for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0
-            && j >= 0; i = bsAtoms1.nextSetBit(i + 1), j = bsAtoms2
-            .nextSetBit(j + 1)) {
-          points[0][--n] = atoms[i];
-          points[1][n] = atoms[j];
-          if (addCenters) {
-            points[0][0].add(atoms[i]);
-            points[1][0].add(atoms[j]);
-          }
-        }
-      } else {
-        P3[] coords = (P3[]) bss[1];
-        for (int i = bsAtoms1.nextSetBit(0), j = 0; i >= 0 && j < coords.length; i = bsAtoms1
-            .nextSetBit(i + 1), j++) {
-          points[0][--n] = atoms[i];
-          points[1][n] = coords[j];
-          if (addCenters) {
-            points[0][0].add(atoms[i]);
-            points[1][0].add(coords[j]);
-          }
+      BS[] bss = vAtomSets.get(ii);
+      bsAtoms1 = bss[0];
+      bsAtoms2 = bss[1];
+      for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0
+          && j >= 0; i = bsAtoms1.nextSetBit(i + 1), j = bsAtoms2
+          .nextSetBit(j + 1)) {
+        points[0][--n] = atoms[i];
+        points[1][n] = atoms[j];
+        if (addCenters) {
+          points[0][0].add(atoms[i]);
+          points[1][0].add(atoms[j]);
         }
       }
     }
@@ -1014,6 +992,10 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].nInsertions;
   }
 
+  public String getModelFileType(int modelIndex) {
+    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
+  }
+
   public static int modelFileNumberFromFloat(float fDotM) {
     //only used in the case of select model = someVariable
     //2.1 and 2.10 will be ambiguous and reduce to 2.1  
@@ -1517,15 +1499,13 @@ abstract public class ModelCollection extends BondCollection {
     return unitCells[modelIndex].getCellRange();
   }
 
-  public int getLastVibrationVector(int modelIndex, int tok) {
+  public boolean modelHasVibrationVectors(int modelIndex) {
     if (vibrations != null)
       for (int i = atomCount; --i >= 0;)
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-            && vibrations[i] != null
-            && vibrations[i].length() > 0
-            && (tok == 0 || (tok == T.modulation) == (vibrations[i] instanceof ModulationSet)))
-          return i;
-    return -1;
+            && vibrations[i] != null && vibrations[i].length() > 0)
+          return true;
+    return false;
   }
 
   public BS getElementsPresentBitSet(int modelIndex) {
@@ -2247,9 +2227,9 @@ abstract public class ModelCollection extends BondCollection {
           atomB = atoms[iB];
           if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
             continue;
-          if (atomA.altloc != atomB.altloc
-              && atomA.altloc != '\0'
-              && atomB.altloc != '\0')
+          if (atomA.alternateLocationID != atomB.alternateLocationID
+              && atomA.alternateLocationID != '\0'
+              && atomB.alternateLocationID != '\0')
             continue;
           bondAB = atomA.getBond(atomB);
         }
@@ -2725,7 +2705,8 @@ abstract public class ModelCollection extends BondCollection {
           sb.append(" name=").append(Escape.eS(getModelName(i)))
           .append(" title=").append(Escape.eS(
               getModelTitle(i)))
-           .append(" hasVibrationVectors=\"").appendB(viewer.modelHasVibrationVectors(i)).append("\" />");
+           .append(" hasVibrationVectors=\"").appendB(
+              modelHasVibrationVectors(i)).append("\" />");
     }
     sb.append("\n</models>");
     return sb.toString();
@@ -2876,7 +2857,7 @@ abstract public class ModelCollection extends BondCollection {
       unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells,
           modelIndex, 1);
     }
-    
+
     // correct stateScripts, particularly CONNECT scripts
     for (int i = stateScripts.size(); --i >= 0;) {
       if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsAtoms)) {
@@ -2990,7 +2971,8 @@ abstract public class ModelCollection extends BondCollection {
         dx = 1.0f;
       }
     if (dx != 0) {
-      V3 v = V3.newVsub(atom,atoms[atom.getBondedAtomIndex(0)]);
+      V3 v = V3.newV(atom);
+      v.sub(atoms[atom.getBondedAtomIndex(0)]);
       float d = v.length();
       v.normalize();
       v.scale(dx - d);
@@ -3164,11 +3146,12 @@ abstract public class ModelCollection extends BondCollection {
 
   public Atom addAtom(int modelIndex, Group group,
                       int atomicAndIsotopeNumber, String atomName,
-                      int atomSerial, int atomSite, P3 xyz,
-                      float radius, V3 vib, int formalCharge, float partialCharge,
+                      int atomSerial, int atomSite, float x, float y, float z,
+                      float radius, float vectorX, float vectorY,
+                      float vectorZ, int formalCharge, float partialCharge,
                       int occupancy, float bfactor, JmolList<Tensor> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
-    Atom atom = new Atom(modelIndex, atomCount, xyz, radius, atomSymmetry,
+    Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
         atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
@@ -3205,8 +3188,8 @@ abstract public class ModelCollection extends BondCollection {
         atomSerials = new int[atoms.length];
       atomSerials[atomCount] = atomSerial;
     }
-    if (vib != null)
-      setVibrationVector(atomCount, vib);
+    if (!Float.isNaN(vectorZ))
+      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
     atomCount++;
     return atom;
   }
@@ -3397,14 +3380,13 @@ abstract public class ModelCollection extends BondCollection {
     String fname = null;
     for (int i = 0; i < modelCount; i++) {
       String mid = (String) getModelAuxiliaryInfoValue(i, "modelID");
-      String mnum = (id.startsWith("~") ? "~" + getModelNumberDotted(i) : null);
-      if (mnum == null && mid == null && (mid = getModelTitle(i)) == null)
+      if (mid == null && (mid = getModelTitle(i)) == null)
         continue;
       if (haveFile) {
         fname = getModelFileName(i) + "#";
         mid = fname + mid;
       }
-      if (id.equalsIgnoreCase(mid) || id.equalsIgnoreCase(mnum))
+      if (id.equalsIgnoreCase(mid))
         return (isBaseModel ? viewer.getJDXBaseModelIndex(i) : i);
       if (fname != null && id.startsWith(fname))
         errCode = -2;
@@ -3458,140 +3440,4 @@ abstract public class ModelCollection extends BondCollection {
     return ilist;
   }
 
-  public void setModulation(BS bs, boolean isOn, int t) {
-    if (bsModulated == null)
-      bsModulated = new BS();    
-    //System.out.println("setModulation " + isOn + " " + t);
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      Vibration v = getVibration(i, false);
-      if (!(v instanceof ModulationSet))
-        continue;
-      ModulationSet ms = (ModulationSet) v;
-      Atom a = atoms[i];
-      boolean wasEnabled = ms.enabled;
-      //System.out.println(a.x + " " + a.y + " " + a.z + " ms was " + ms + " " + wasEnabled + " " + ms.t);
-      switch (ms.setModT(isOn, t)) {
-      case 0:
-        continue;
-      case 1: // now off
-      case 2: // now on
-        a.sub(ms);
-        break;
-      case 3: // new t
-        // will turn on modulation
-        // must convert to Cartesians
-        getUnitCell(a.modelIndex).toCartesian(ms, true);
-        //System.out.println("ms now1 " + ms + " " + ms.enabled + " " + ms.t);
-        if (wasEnabled)
-          a.add(ms.prevSetting);
-        ms.setModT(true, Integer.MAX_VALUE);
-        a.sub(ms);
-        //System.out.println(a.x + " " + a.y + " " + a.z + " ms now " + ms + " " + ms.enabled + " " + ms.t);
-        break;
-      case 4: // unchanged t
-        ms.setModT(true, Integer.MAX_VALUE);
-        if (!wasEnabled)
-          a.sub(ms);
-        break;
-      }
-      bsModulated.setBitTo(i, ms.enabled);
-      //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
-    }
-  }
-  
-  private Quaternion[] vOrientations;
-  
-  public String getBoundBoxOrientation(int type, BS bsAtoms) {
-    int j0 = bsAtoms.nextSetBit(0);
-    if (j0 < 0)
-      return "{0 0 0 1}";
-    int n = (vOrientations == null ? 0 : vOrientations.length);
-    if (n == 0) {
-      V3[] av = new V3[15*15*15];
-      n = 0;
-      P4 p4 = new P4();
-      for (int i = -7; i <= 7; i++)
-        for (int j = -7; j <= 7; j++)
-          for (int k = 0; k <= 14; k++, n++)
-            if ((av[n] = V3.new3(i / 7f, j / 7f, k / 14f)).length() > 1)
-              --n;
-      vOrientations = new Quaternion[n];
-      for (int i = n; --i >= 0;) {
-        float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
-        if (Float.isNaN(cos))
-          cos = 0;
-        p4.set(av[i].x, av[i].y, av[i].z, cos);
-        vOrientations[i] = Quaternion.newP4(p4);
-      }
-    }
-    P3 pt = new P3();
-    float vMin = Float.MAX_VALUE;
-    Quaternion q, qBest = null;
-    BoxInfo bBest = null;
-    float v;
-    for (int i = 0; i < n; i++) {
-      q = vOrientations[i];
-      BoxInfo b = new BoxInfo();
-      b.setMargin(0);
-      for (int j = j0; j >= 0; j = bsAtoms.nextSetBit(j + 1))
-        b.addBoundBoxPoint((P3) q.transformP2(atoms[j],
-            pt));
-      switch (type) {
-      default:
-      case T.volume:
-      case T.best:
-        v = (b.bbCorner1.x - b.bbCorner0.x) * (b.bbCorner1.y - b.bbCorner0.y)
-            * (b.bbCorner1.z - b.bbCorner0.z);
-        break;
-      case T.x:
-        v = b.bbCorner1.x - b.bbCorner0.x;
-        break;
-      case T.y:
-        v = b.bbCorner1.y - b.bbCorner0.y;
-        break;
-      case T.z:
-        v = b.bbCorner1.z - b.bbCorner0.z;
-        break;
-      }
-      if (v < vMin) {
-        qBest = q;
-        bBest = b;
-        vMin = v;
-      }
-    }
-    if (type != T.volume && type != T.best)
-      return qBest.toString();
-    // we want dz < dy < dx
-    q = Quaternion.newQ(qBest);
-    float dx = bBest.bbCorner1.x - bBest.bbCorner0.x;
-    float dy = bBest.bbCorner1.y - bBest.bbCorner0.y;
-    float dz = bBest.bbCorner1.z - bBest.bbCorner0.z;
-    if (dx < dy) {
-      pt.set(0, 0, 1);
-      q = Quaternion.newVA(pt, 90).mulQ(q);
-      float f = dx;
-      dx = dy;
-      dy = f;
-    }
-    if (dy < dz) {
-      if (dz > dx) {
-        // is dy < dx < dz
-        pt.set(0, 1, 0);
-        q = Quaternion.newVA(pt, 90).mulQ(q);
-        float f = dx;
-        dx = dz;
-        dz = f;
-      }
-      // is dy < dz < dx
-      pt.set(1, 0, 0);
-      q = Quaternion.newVA(pt, 90).mulQ(q);
-      float f = dy;
-      dy = dz;
-      dz = f;
-    }
-    return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}"
-        : q.getTheta() == 0 ? "{0 0 0 1}" : q.toString());
-  }
-
 }
-  

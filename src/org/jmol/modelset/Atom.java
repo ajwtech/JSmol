@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-12 15:16:55 -0500 (Mon, 12 Aug 2013) $
- * $Revision: 18552 $
+ * $Date: 2013-08-12 15:17:37 -0500 (Mon, 12 Aug 2013) $
+ * $Revision: 18553 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -60,7 +60,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  public char altloc = '\0';
+  public char alternateLocationID = '\0';
   public byte atomID;
   public int atomSite;
   public Group group;
@@ -112,7 +112,9 @@ final public class Atom extends Point3fi implements JmolNode {
    * 
    * @param modelIndex
    * @param atomIndex
-   * @param xyz
+   * @param x
+   * @param y
+   * @param z
    * @param radius
    * @param atomSymmetry
    * @param atomSite
@@ -121,7 +123,7 @@ final public class Atom extends Point3fi implements JmolNode {
    * @param isHetero
    */
   public Atom(int modelIndex, int atomIndex,
-        P3 xyz, float radius,
+        float x, float y, float z, float radius,
         BS atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
         boolean isHetero) {
@@ -135,11 +137,11 @@ final public class Atom extends Point3fi implements JmolNode {
     if (formalCharge != 0 && formalCharge != Integer.MIN_VALUE)
       setFormalCharge(formalCharge);
     userDefinedVanDerWaalRadius = radius;
-    setT(xyz);
+    set(x, y, z);
   }
 
   public void setAltLoc(char altLoc) {
-    this.altloc = altLoc;
+    alternateLocationID = altLoc;
   }
   
   public final void setShapeVisibilityFlags(int flag) {
@@ -291,14 +293,9 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public float getADPMinMax(boolean isMax) {
     Tensor[] tensors = getTensors();
-    if (tensors == null)
-      return 0;
-    Tensor t = tensors[0];
-    if (t == null || t.iType != Tensor.TYPE_ADP)
-      return 0;
-    if (group.chain.model.modelSet.isModulated(index) && t.isUnmodulated)
-      t = tensors[1];
-    return t.getFactoredValue(isMax ? 2 : 1); 
+    Tensor t;
+    return (tensors == null || (t = tensors[0]) == null
+        || t.iType != Tensor.TYPE_ADP ? 0 : t.getFactoredValue(isMax ? 2 : 1));
   }
 
   public Tensor[] getTensors() {
@@ -382,18 +379,18 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public char getAlternateLocationID() {
-    return altloc;
+    return alternateLocationID;
   }
   
   boolean isAlternateLocationMatch(String strPattern) {
     if (strPattern == null)
-      return (altloc == '\0');
+      return (alternateLocationID == '\0');
     if (strPattern.length() != 1)
       return false;
     char ch = strPattern.charAt(0);
     return (ch == '*' 
-        || ch == '?' && altloc != '\0' 
-        || altloc == ch);
+        || ch == '?' && alternateLocationID != '\0' 
+        || alternateLocationID == ch);
   }
 
   public boolean isHetero() {
@@ -922,9 +919,9 @@ final public class Atom extends Point3fi implements JmolNode {
       info.append(" ");
       info.appendI(getAtomNumber());
     }
-    if (altloc != 0) {
+    if (alternateLocationID != 0) {
       info.append("%");
-      info.appendC(altloc);
+      info.appendC(alternateLocationID);
     }
     if (group.chain.model.modelSet.modelCount > 1) {
       info.append("/");

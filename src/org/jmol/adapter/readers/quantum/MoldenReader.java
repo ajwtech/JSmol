@@ -47,8 +47,10 @@ public class MoldenReader extends MopacSlaterReader {
       filter = "alpha";
     else if (checkFilterKey("BETA"))
       filter = "beta";
-    else 
-      filter = getFilter("SYM=");
+    else if (checkFilterKey("SYM="))
+      filter = filter.substring(filter.indexOf("SYM=") + 4);
+    else
+      filter = null;
   }
 
   @Override
@@ -213,9 +215,7 @@ public class MoldenReader extends MopacSlaterReader {
         slater[1] = type;
         slater[2] = gaussianPtr;
         slater[3] = nPrimitives;
-        int n = getDfCoefMaps()[type].length;
-        System.out.println("adding " + n + " coefficients type " + JmolAdapter.getQuantumShellTag(type) + " for atom " + atomIndex);
-        nCoef += n;
+        nCoef += getDfCoefMaps()[type].length;
         for (int ip = nPrimitives; --ip >= 0;) {
           // Read ip primitives, each containing an exponent and one (s,p,d,f)
           // or two (sp) contraction coefficient(s)
@@ -357,7 +357,7 @@ public class MoldenReader extends MopacSlaterReader {
   }
 
   private boolean checkOrbitalType(String line) {
-    if (line.length() > 3 && "5D 6D 7F 10 9G 15 11 21".indexOf(line.substring(1,3)) >= 0) {
+    if (line.length() > 3 && "5D 6D 7F 10 9G 15".indexOf(line.substring(1,3)) >= 0) {
       if (orbitalType.indexOf(line) >= 0)
         return true;
       orbitalType += line;
@@ -373,16 +373,13 @@ public class MoldenReader extends MopacSlaterReader {
       fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
       fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
       fixSlaterTypes(JmolAdapter.SHELL_G_CARTESIAN, JmolAdapter.SHELL_G_SPHERICAL);
-      fixSlaterTypes(JmolAdapter.SHELL_H_CARTESIAN, JmolAdapter.SHELL_H_SPHERICAL);
     } 
     if (orbitalType.contains("10F")) {
       fixSlaterTypes(JmolAdapter.SHELL_F_SPHERICAL, JmolAdapter.SHELL_F_CARTESIAN);
       fixSlaterTypes(JmolAdapter.SHELL_G_SPHERICAL, JmolAdapter.SHELL_G_CARTESIAN);
-      fixSlaterTypes(JmolAdapter.SHELL_H_SPHERICAL, JmolAdapter.SHELL_H_CARTESIAN);
     } 
     if (orbitalType.contains("15G")) {
       fixSlaterTypes(JmolAdapter.SHELL_G_SPHERICAL, JmolAdapter.SHELL_G_CARTESIAN);
-      fixSlaterTypes(JmolAdapter.SHELL_H_SPHERICAL, JmolAdapter.SHELL_H_CARTESIAN);
     } 
   }
 
@@ -461,7 +458,7 @@ max-force
     boolean haveModel = false;
     if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
       desiredModelNumber = nGeom; 
-    else if (atomSetCollection.getAtomSetCount() > 0)
+    else
       finalizeMOData(null);
     for (int i = 0; i < nGeom; i++) {
       readLines(2);

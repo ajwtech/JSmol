@@ -21,7 +21,7 @@ public interface JmolScriptEvaluator {
 
   ScriptContext getThisContext();
 
-  void pushContextDown(String why);
+  void pushContextDown();
 
   void resumeEval(ScriptContext sc);
 
@@ -67,7 +67,7 @@ public interface JmolScriptEvaluator {
 
   boolean isStepping();
 
-  ScriptContext getScriptContext(String why);
+  ScriptContext getScriptContext();
 
   Object evaluateExpression(Object stringOrTokens, boolean asVariable);
 

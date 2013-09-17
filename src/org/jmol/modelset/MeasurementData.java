@@ -46,7 +46,6 @@ public class MeasurementData implements JmolMeasurementClient {
   
   private JmolMeasurementClient client;
   private JmolList<String> measurementStrings;
-  private JmolList<Float> measurements;
 
   public JmolList<Object> points;
   public boolean mustBeConnected;
@@ -125,7 +124,7 @@ public class MeasurementData implements JmolMeasurementClient {
     // here's where we check vdw
     if (htMin != null && !m.isMin(htMin) || radiusData != null && !m.isInRange(radiusData, value))
       return;
-    if (measurementStrings == null && measurements == null) {
+    if (measurementStrings == null) {
       float f = minArray[iFirstAtom];
       m.value = value;
       value = m.fixValue(units, false);
@@ -133,23 +132,19 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     
-    if (measurementStrings != null)
-      measurementStrings.addLast(m.getStringUsing(viewer, strFormat, units));
-    else
-      measurements.addLast(Float.valueOf(m.getMeasurement()));   
+    measurementStrings.addLast(m.getStringUsing(viewer, strFormat, units));
+   
   }
 
   /**
    * if this is the client, then this method
-   * can be called to get the result vector, either as a string
-   * or as an array.
+   * can be called to get the result vector
    * 
-   * @param asArray 
-   * @param asMinArray array of minimum of a given atom type 
+   * @param asMinArray 
    * @return Vector of formatted Strings or array of minimum-distance values
    * 
    */
-  public Object getMeasurements(boolean asArray, boolean asMinArray) {
+  public Object getMeasurements(boolean asMinArray) {
     if (asMinArray) {
       minArray = new float[((BS) points.get(0)).cardinality()];
       for (int i = 0; i < minArray.length; i++)
@@ -157,11 +152,7 @@ public class MeasurementData implements JmolMeasurementClient {
       define(null, modelSet);
       return minArray;      
     }
-    if (asArray) {
-      measurements = new JmolList<Float>();
-      define(null, modelSet);
-      return measurements;
-    }
+      
     measurementStrings = new  JmolList<String>();
     define(null, modelSet);
     return measurementStrings;
