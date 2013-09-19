@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-19 13:01:27 -0500 (Fri, 19 Jul 2013) $
- * $Revision: 18479 $
+ * $Date: 2013-09-18 14:37:04 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18662 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -647,7 +647,7 @@ public class Labels extends AtomShape {
   
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
-                                                 int y, int modifiers,
+                                                 int y, int dragAction,
                                                  BS bsVisible) {
     if (viewer.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
       return false;

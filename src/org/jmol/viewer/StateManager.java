@@ -196,9 +196,8 @@ public class StateManager {
 
   String listSavedStates() {
     String names = "";
-    Iterator<String> e = saved.keySet().iterator();
-    while (e.hasNext())
-      names += "\n" + e.next();
+    for (String name: saved.keySet())
+      names += "\n" + name;
     return names;
   }
 
@@ -563,7 +562,8 @@ public class StateManager {
         + ";legacyautobonding;legacyhaddition"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
-        + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
+        + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
+        + ";preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;celshading;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
@@ -679,10 +679,12 @@ public class StateManager {
         allowKeyStrokes = g.allowKeyStrokes;
         legacyAutoBonding = g.legacyAutoBonding;
         legacyHAddition = g.legacyHAddition;
+        platformSpeed = g.platformSpeed;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
         showTiming = g.showTiming;
+        wireframeRotation = g.wireframeRotation;
       }
       if (databases == null) {
         databases = new Hashtable<String, String>();
@@ -692,6 +694,7 @@ public class StateManager {
       loadFormat = databases.get("pdb");
       loadLigandFormat = databases.get("ligand");
       nmrUrlFormat = databases.get("nmr");
+      nmrPredictFormat = databases.get("nmrdb");
       smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
       nihResolverFormat = databases.get("nci");
       pubChemFormat = databases.get("pubchem");
@@ -848,6 +851,7 @@ public class StateManager {
       setB("dotSurface", dotSurface);
       setB("dragSelected", dragSelected);
       setB("drawHover", drawHover);
+      setF("drawFontSize", drawFontSize);
       setB("drawPicking", drawPicking);
       setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
       setB("dynamicMeasurements", dynamicMeasurements);
@@ -916,6 +920,7 @@ public class StateManager {
       //setParamB("navigateSurface", navigateSurface);
       setB("navigationPeriodic", navigationPeriodic);
       setF("navigationSpeed", navigationSpeed);
+      setS("nmrPredictFormat", nmrPredictFormat);
       setS("nmrUrlFormat", nmrUrlFormat);
       setB("partialDots", partialDots);
       setB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
@@ -926,6 +931,7 @@ public class StateManager {
       setI("phongExponent", phongExponent);
       setI("pickingSpinRate", pickingSpinRate);
       setS("pickLabel", pickLabel);
+      setI("platformSpeed", platformSpeed);
       setF("pointGroupLinearTolerance", pointGroupLinearTolerance);
       setF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
       setB("preserveState", preserveState);
@@ -1039,7 +1045,7 @@ public class StateManager {
     boolean forceAutoBond = false;
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat, loadLigandFormat, nmrUrlFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
+    String loadFormat, loadLigandFormat, nmrUrlFormat, nmrPredictFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
 
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
@@ -1107,6 +1113,7 @@ public class StateManager {
     boolean isosurfaceKey = false;
     boolean isosurfacePropertySmoothing = true;
     int isosurfacePropertySmoothingPower = 7;
+    int platformSpeed = 10; // 1 (slow) to 10 (fast)
     public int repaintWaitMs = 1000;
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;
@@ -1175,6 +1182,7 @@ public class StateManager {
     float defaultTranslucent = 0.5f;
     int delayMaximumMs = 0;
     float dipoleScale = 1f;
+    float drawFontSize = 14f;
     boolean disablePopupMenu = false;
     boolean dragSelected = false;
     boolean drawHover = false;

@@ -36,6 +36,13 @@ abstract public class JmolThread extends Thread {
 
   private boolean useTimeout = true;
 
+  /**
+   * @param manager  
+   * @param viewer 
+   * @param params 
+   * @return TODO
+   */
+  public int setManager(Object manager, Viewer viewer, Object params){return 0;}
  
   public void setViewer(Viewer viewer, String name) {
     setName(name);
@@ -131,8 +138,13 @@ abstract public class JmolThread extends Thread {
     *  
     */
     {
-      if (millis > 0)
+      if (millis > 0) {
+        try {
         Thread.sleep(millis);
+        } catch (Exception e) {
+          // ignore interruption
+        }
+      }
       return true;
     }
   }
@@ -160,4 +172,5 @@ abstract public class JmolThread extends Thread {
     isReset = true;
     interrupt();
   }
+
 }

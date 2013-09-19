@@ -21,14 +21,14 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.adapter.readers.cifpdb;
+package org.jmol.adapter.readers.cif;
 
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.CifDataReader;
 
@@ -47,6 +47,8 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.V3;
+
 
 /**
  * A true line-free CIF file reader for CIF and mmCIF files.
@@ -72,11 +74,15 @@ import org.jmol.util.TextFormat;
  *  applySymmetryAndSetTrajectory()
  *  
  */
-public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
+public class CifReader extends ModulationReader implements JmolLineReader {
 
   protected boolean isPDBX;
   
   private CifDataReader tokenizer = new CifDataReader(this);
+
+  private boolean isMolecular;
+  private boolean filterAssembly;
+  private int configurationPtr = Integer.MIN_VALUE;
 
   private String thisDataSetName = "";
   private String chemicalName = "";
@@ -85,19 +91,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean iHaveDesiredModel;
   private boolean isPDB = false;
   private Map<String, String> htHetero;
-  private boolean isMolecular;
   private String molecularType = "GEOM_BOND default";
   private char lastAltLoc = '\0';
-  private int configurationPtr = Integer.MIN_VALUE;
-  private int conformationIndex;
-  private boolean filterAssembly;
   private boolean haveAromatic;
-
+  private int conformationIndex;
+  private int nMolecular = 0;
   
 
   private  JmolList<Matrix4f> vBiomts;
   private  JmolList<Map<String, Object>> vBiomolecules;
   private Map<String,Matrix4f> htBiomts;
+  private Map<String, Map<String, Object>> htSites;
 
   private Map<String, BS> assemblyIdAtoms;
   
@@ -105,6 +109,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean skipping;
   private boolean haveChainsLC;
   private int nAtoms;
+
+  private String auditBlockCode;
+  private String lastSpaceGroupName;
   
   @Override
   public void initializeReader() throws Exception {
@@ -112,11 +119,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   }
 
   protected void initializeReaderCif() throws Exception {
-    if (checkFilterKey("CONF "))
-      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
     appendedData = (String) htParams.get("appendedData");
-    isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
-    filterAssembly = (filter != null && filter.indexOf("$") >= 0);
+    String conf = getFilter("CONF ");
+    if (conf != null)
+      configurationPtr = parseIntStr(conf);
+    isMolecular = checkFilterKey("MOLECUL");
+    filterAssembly = checkFilterKey("$");
+
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -126,8 +135,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
       molecularType = "filter \"MOLECULAR\"";
     }
+    initializeModulation();
+    readCifData();
+    continuing = false;
+  }
 
-    nAtoms = 0;
+  private void readCifData() throws Exception {
+    
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
      * of line dependence. a loop could now go:
@@ -140,26 +154,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
      * report if it finds data where a key is supposed to be.
      */
     line = "";
-    skipping = false;
     while ((key = tokenizer.peekToken()) != null)
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = new CifDataReader(new BufferedReader(new StringReader(appendedData)));
+      tokenizer = new CifDataReader(new BufferedReader(new StringReader(
+          appendedData)));
       while ((key = tokenizer.peekToken()) != null)
         if (!readAllData())
           break;
-    }    
-    if (atomSetCollection.getAtomCount() == nAtoms)
-      atomSetCollection.removeCurrentAtomSet();
-    else
-      applySymmetryAndSetTrajectory();
-    if (htSites != null)
-      addSites(htSites);
-    atomSetCollection.setCollectionName("<collection of "
-        + atomSetCollection.getAtomSetCount() + " models>");
-    continuing = false;
-   }
+    }
+  }
 
   public String readNextLine() throws Exception {
     // from CifDataReader
@@ -209,18 +214,20 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return true;
     }
     if (!skipping) {
-      key = key.replace('.', '_');
+      key = fixKey(key);
       if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
         processChemicalInfo("name");
       } else if (key.startsWith("_chemical_formula_structural")) {
         processChemicalInfo("structuralFormula");
       } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
+      } else if (key.equals("_cell_modulation_dimension") && !modAverage) {
+        setModDim(parseIntStr(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_h-m")
           || key.startsWith("_symmetry_space_group_name_hall")
-          || key.startsWith("_space_group_ssg_name")) {
+          || key.contains("_ssg_name")) {
         processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
@@ -228,11 +235,31 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         processNonpolyData();
       } else if (key.startsWith("_pdbx_struct_assembly_gen")) {
         processAssemblyGen();
+      } else if (key.equals("_audit_block_code")) {
+        auditBlockCode = tokenizer.fullTrim(data).toUpperCase();
+        appendLoadNote(auditBlockCode);
+        if (htAudit != null && auditBlockCode.contains("_MOD_")) {
+          String key = TextFormat.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
+          if ((atomSetCollection.symmetry = (SymmetryInterface) htAudit.get(key)) != null) {
+            notionalUnitCell = atomSetCollection.symmetry.getNotionalUnitCell();
+            iHaveUnitCell = true;
+          }
+        } else if (htAudit != null && symops != null) {
+          for (int i = 0; i < symops.size(); i++)
+            setSymmetryOperator(symops.get(i));
+        }
+          
+        if (lastSpaceGroupName != null)
+          setSpaceGroupName(lastSpaceGroupName);
       }
     }
     return true;
   }
   
+  private String fixKey(String key) {
+    return TextFormat.simpleReplace(key, ".", "_").toLowerCase();
+  }
+
   protected void newModel(int modelNo) throws Exception {    
     if (isPDB)
       setIsPDB();
@@ -254,6 +281,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   @Override
   protected void finalizeReader() throws Exception {
+    if (atomSetCollection.getAtomCount() == nAtoms)
+      atomSetCollection.removeCurrentAtomSet();
+    else
+      applySymmetryAndSetTrajectory();
+    finalizeModulation();
+    if (htSites != null)
+      addSites(htSites);
+    int n = atomSetCollection.getAtomSetCount();
+    if (n > 1)
+      atomSetCollection.setCollectionName("<collection of "
+          + n + " models>");
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -304,27 +342,34 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     }
   }
 
-  private int nMolecular = 0;
-
-  private boolean incommensurate;
-
   @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
     // be no center of symmetry, no rotation-inversions, 
-    // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(!isPDB);
+    // no atom-centered rotation axes, and no mirror or glide planes.
+    if (isPDB)
+      atomSetCollection.setCheckSpecial(false);
     boolean doCheck = doCheckUnitCell && !isPDB;
-    applySymTrajASCR();
+    SymmetryInterface sym = applySymTrajASCR();
+    if (auditBlockCode != null && auditBlockCode.contains("REFRNCE") && sym != null) {
+      if (htAudit == null)
+        htAudit = new Hashtable<String, Object>();
+      htAudit.put(auditBlockCode, sym);
+    }
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
+    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
+    setModulation();
+    atomSetCollection.symmetry = null;
   }
 
   ////////////////////////////////////////////////////////////////
   // processing methods
   ////////////////////////////////////////////////////////////////
 
+  private Hashtable<String, Object> htAudit;
+  private JmolList<String> symops;
   /**
    *  initialize a new atom set
    *  
@@ -382,8 +427,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    * @throws Exception
    */
   private void processSymmetrySpaceGroupName() throws Exception {
-    incommensurate = (key.indexOf("_ssg_") >= 0);
-    setSpaceGroupName((key.indexOf("h-m") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
+    if(key.indexOf("_ssg_name") >= 0)
+      incommensurate = true;
+    else if (incommensurate)
+      return;
+    setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
   }
 
   /**
@@ -393,7 +441,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    */
   private void processCellParameter() throws Exception {
     for (int i = JmolAdapter.cellParamNames.length; --i >= 0;)
-      if (isMatch(key, JmolAdapter.cellParamNames[i])) {
+      if (key.equals(JmolAdapter.cellParamNames[i])) {
         setUnitCellItem(i, parseFloatStr(data));
         return;
       }
@@ -482,8 +530,16 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (str == null)
       return;
     boolean isLigand = false;
-    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.") 
-        || (isLigand = str.equals("_chem_comp_atom.comp_id"))) {
+    str = fixKey(str);
+    if (incommensurate && (str.startsWith("_cell_wave") || str.contains("fourier")
+        || str.contains("_special_func"))) {
+      if (modAverage)
+        skipLoop();
+      else
+        processModulationLoopBlock();
+      return;
+    }
+    if (str.startsWith("_atom_site_") || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);
@@ -501,18 +557,20 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       processLigandBondLoopBlock();
       return;
     }
-    
+    if (str.equals("_cell_subsystem_code")) {
+      processSubsystemLoopBlock();
+      return;
+    }
+
     if (str.startsWith("_geom_bond")) {
       if (!doApplySymmetry) {
         isMolecular = true;
         doApplySymmetry = true;
-        latticeCells[0] = 1;
-        latticeCells[1] = 1;
-        latticeCells[2] = 1;
+        latticeCells[0] = latticeCells[1] = latticeCells[2] = 1;
       }
       if (isMolecular)
         processGeomBondLoopBlock();
-      else 
+      else
         skipLoop();
       return;
     }
@@ -557,6 +615,85 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     }
     skipLoop();
   }
+
+  private int fieldProperty(int i) {
+    return ((field = tokenizer.loopData[i]).length() > 0 
+        && (firstChar = field.charAt(0)) != '\0' ? 
+            propertyOf[i] : NONE);
+  }
+
+  private String field;
+  private char firstChar = '\0';
+  private int[] propertyOf = new int[100]; // should be enough
+  private byte[] fieldOf = new byte[100];
+  private String[] fields;
+  private int propertyCount;
+  
+  
+  /**
+   * sets up arrays and variables for tokenizer.getData()
+   * 
+   * @param fields
+   * @throws Exception
+   */
+  private void parseLoopParameters(String[] fields) throws Exception {
+    if (fields == null)
+      fields = this.fields = new String[100];
+    tokenizer.fieldCount = 0;
+    for (int i = fields.length; --i >= 0; )
+      fieldOf[i] = NONE;
+
+    propertyCount = fields.length;
+    while (true) {
+      String str = tokenizer.peekToken();
+      if (str == null) {
+        tokenizer.fieldCount = 0;
+        break;
+      }
+      if (str.charAt(0) != '_')
+        break;
+      tokenizer.getTokenPeeked();
+      propertyOf[tokenizer.fieldCount] = NONE;
+      str = fixKey(str);
+      for (int i = fields.length; --i >= 0;)
+        if (fields[i] == null || str.equals(fields[i])) {
+          propertyOf[tokenizer.fieldCount] = i;
+          fieldOf[i] = (byte) tokenizer.fieldCount;
+          if (fields[i] == null)
+            fields[i] = str;
+          break;
+        }
+      tokenizer.fieldCount++;
+    }
+    if (tokenizer.fieldCount > 0)
+      tokenizer.loopData = new String[tokenizer.fieldCount];
+  }
+
+  /**
+   * 
+   * used for turning off fractional or nonfractional coord.
+   * 
+   * @param fieldIndex
+   */
+  private void disableField(int fieldIndex) {
+    int i = fieldOf[fieldIndex];
+    if (i != NONE)
+        propertyOf[i] = NONE;
+  }
+
+  /**
+   * 
+   * skips all associated loop data
+   * 
+   * @throws Exception
+   */
+  private void skipLoop() throws Exception {
+    String str;
+    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
+      str  = tokenizer.getTokenPeeked();
+    while (tokenizer.getNextDataToken() != null) {
+    }
+  }  
 
   ////////////////////////////////////////////////////////////////
   // atom type data
@@ -662,12 +799,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte ANISO_B12 = 38;
   final private static byte ANISO_B13 = 39;
   final private static byte ANISO_B23 = 40;
-  final private static byte ANISO_Beta_11 = 41;
-  final private static byte ANISO_Beta_22 = 42;
-  final private static byte ANISO_Beta_33 = 43;
-  final private static byte ANISO_Beta_12 = 44;
-  final private static byte ANISO_Beta_13 = 45;
-  final private static byte ANISO_Beta_23 = 46;
+  final private static byte ANISO_BETA_11 = 41;
+  final private static byte ANISO_BETA_22 = 42;
+  final private static byte ANISO_BETA_33 = 43;
+  final private static byte ANISO_BETA_12 = 44;
+  final private static byte ANISO_BETA_13 = 45;
+  final private static byte ANISO_BETA_23 = 46;
   final private static byte ADP_TYPE = 47;
   final private static byte CHEM_COMP_AC_ID = 48;
   final private static byte CHEM_COMP_AC_NAME = 49;
@@ -681,6 +818,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte CHEM_COMP_AC_Z_IDEAL = 57;
   final private static byte DISORDER_ASSEMBLY = 58;
   final private static byte ASYM_ID = 59;
+  final private static byte SUBSYS_ID = 60;
+  final private static byte SITE_MULT = 61;
 
 
   final private static String[] atomFields = { 
@@ -690,60 +829,62 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_atom_site_fract_x",
       "_atom_site_fract_y", 
       "_atom_site_fract_z", 
-      "_atom_site_Cartn_x",
-      "_atom_site_Cartn_y", 
-      "_atom_site_Cartn_z", 
+      "_atom_site_cartn_x",
+      "_atom_site_cartn_y", 
+      "_atom_site_cartn_z", 
       "_atom_site_occupancy",
       "_atom_site_b_iso_or_equiv", 
       "_atom_site_auth_comp_id",
       "_atom_site_auth_asym_id", 
       "_atom_site_auth_seq_id",
-      "_atom_site_pdbx_PDB_ins_code", 
+      "_atom_site_pdbx_pdb_ins_code", 
       "_atom_site_label_alt_id",
-      "_atom_site_group_PDB", 
-      "_atom_site_pdbx_PDB_model_num",
+      "_atom_site_group_pdb", 
+      "_atom_site_pdbx_pdb_model_num",
       "_atom_site_calc_flag", 
       "_atom_site_disorder_group",
       "_atom_site_aniso_label", 
       "_atom_site_anisotrop_id",
-      "_atom_site_aniso_U_11",
-      "_atom_site_aniso_U_22",
-      "_atom_site_aniso_U_33",
-      "_atom_site_aniso_U_12",
-      "_atom_site_aniso_U_13",
-      "_atom_site_aniso_U_23",
-      "_atom_site_anisotrop_U[1][1]",
-      "_atom_site_anisotrop_U[2][2]",
-      "_atom_site_anisotrop_U[3][3]",
-      "_atom_site_anisotrop_U[1][2]",
-      "_atom_site_anisotrop_U[1][3]",
-      "_atom_site_anisotrop_U[2][3]",
-      "_atom_site_U_iso_or_equiv",
-      "_atom_site_aniso_B_11",
-      "_atom_site_aniso_B_22",
-      "_atom_site_aniso_B_33",
-      "_atom_site_aniso_B_12",
-      "_atom_site_aniso_B_13",
-      "_atom_site_aniso_B_23",
-      "_atom_site_aniso_Beta_11",
-      "_atom_site_aniso_Beta_22",
-      "_atom_site_aniso_Beta_33",
-      "_atom_site_aniso_Beta_12",
-      "_atom_site_aniso_Beta_13",
-      "_atom_site_aniso_Beta_23",
+      "_atom_site_aniso_u_11",
+      "_atom_site_aniso_u_22",
+      "_atom_site_aniso_u_33",
+      "_atom_site_aniso_u_12",
+      "_atom_site_aniso_u_13",
+      "_atom_site_aniso_u_23",
+      "_atom_site_anisotrop_u[1][1]",
+      "_atom_site_anisotrop_u[2][2]",
+      "_atom_site_anisotrop_u[3][3]",
+      "_atom_site_anisotrop_u[1][2]",
+      "_atom_site_anisotrop_u[1][3]",
+      "_atom_site_anisotrop_u[2][3]",
+      "_atom_site_u_iso_or_equiv",
+      "_atom_site_aniso_b_11",
+      "_atom_site_aniso_b_22",
+      "_atom_site_aniso_b_33",
+      "_atom_site_aniso_b_12",
+      "_atom_site_aniso_b_13",
+      "_atom_site_aniso_b_23",
+      "_atom_site_aniso_beta_11",
+      "_atom_site_aniso_beta_22",
+      "_atom_site_aniso_beta_33",
+      "_atom_site_aniso_beta_12",
+      "_atom_site_aniso_beta_13",
+      "_atom_site_aniso_beta_23",
       "_atom_site_adp_type",
       "_chem_comp_atom_comp_id",
       "_chem_comp_atom_atom_id", 
       "_chem_comp_atom_type_symbol", 
       "_chem_comp_atom_charge",
-      "_chem_comp_atom_model_Cartn_x", 
-      "_chem_comp_atom_model_Cartn_y", 
-      "_chem_comp_atom_model_Cartn_z", 
-      "_chem_comp_atom_pdbx_model_Cartn_x_ideal", 
-      "_chem_comp_atom_pdbx_model_Cartn_y_ideal", 
-      "_chem_comp_atom_pdbx_model_Cartn_z_ideal", 
+      "_chem_comp_atom_model_cartn_x", 
+      "_chem_comp_atom_model_cartn_y", 
+      "_chem_comp_atom_model_cartn_z", 
+      "_chem_comp_atom_pdbx_model_cartn_x_ideal", 
+      "_chem_comp_atom_pdbx_model_cartn_y_ideal", 
+      "_chem_comp_atom_pdbx_model_cartn_z_ideal", 
       "_atom_site_disorder_assembly",
-      "_atom_site_label_asym_id"
+      "_atom_site_label_asym_id",
+      "_atom_site_subsystem_code",
+      "_atom_site_symmetry_multiplicity"
   };
 
   /* to: hansonr@stolaf.edu
@@ -793,8 +934,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return false;
     }
     int iAtom = -1;
-    float[] data;
     int modelField = -1;
+    String subid = null;
+    int siteMult = 0;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       assemblyId = '\0';
@@ -829,7 +971,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         }
       }
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
+        int tok = fieldProperty(i);
+        switch (tok) {
         case NONE:
         case MODEL_NO:
           break;
@@ -898,7 +1041,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case OCCUPANCY:
           float floatOccupancy = parseFloatStr(field);
           if (!Float.isNaN(floatOccupancy))
-            atom.occupancy = (int) (floatOccupancy * 100);
+            atom.foccupancy = floatOccupancy;
           break;
         case B_ISO:
           atom.bfactor = parseFloatStr(field) * (isPDB ? 1 : 100f);
@@ -951,13 +1094,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ADP_TYPE:
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
-            if (j != NONE) {
-              data = atomSetCollection.getAnisoBorU(atom);
-              if (data == null)
-                atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
-              data[7] = parseFloatStr(tokenizer.loopData[j]);
-              // Ortep Type 8: D = 2pi^2, C = 2, a*b*
-            }
+            if (j != NONE)
+              setU(atom, 7, parseFloatStr(tokenizer.loopData[j]));
           }
           break;
         case ANISO_LABEL:
@@ -981,13 +1119,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_MMCIF_U12:
         case ANISO_MMCIF_U13:
         case ANISO_MMCIF_U23:
-          data = atomSetCollection.getAnisoBorU(atom);
-          if (data == null) {
-            atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
-            // Ortep type 8: D = 2pi^2, C = 2, a*b*
-          }
-          int iType = (propertyOf[i] - ANISO_U11) % 6;
-          data[iType] = parseFloatStr(field);
+          // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+          setU(atom, (propertyOf[i] - ANISO_U11) % 6, parseFloatStr(field));
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -995,60 +1128,65 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_B12:
         case ANISO_B13:
         case ANISO_B23:
-          data = atomSetCollection.getAnisoBorU(atom);
-          if (data == null) {
-            atomSetCollection.setAnisoBorU(atom, data = new float[8], 4);
-            // Ortep Type 4: D = 1/4, C = 2, a*b*
-          }
-          int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
-          data[iTypeB] = parseFloatStr(field);
+          // Ortep Type 4: D = 1/4, C = 2, a*b*
+          setU(atom, 6, 4);
+          setU(atom, (propertyOf[i] - ANISO_B11) % 6, parseFloatStr(field));
           break;
-        case ANISO_Beta_11:
-        case ANISO_Beta_22:
-        case ANISO_Beta_33:
-        case ANISO_Beta_12:
-        case ANISO_Beta_13:
-        case ANISO_Beta_23:
-          data = atomSetCollection.getAnisoBorU(atom);
-          if (data == null) {
-            atomSetCollection.setAnisoBorU(atom, data = new float[8], 0);
-            //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
-          }
-          int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
-          data[iTypeBeta] = parseFloatStr(field);
+        case ANISO_BETA_11:
+        case ANISO_BETA_22:
+        case ANISO_BETA_33:
+        case ANISO_BETA_12:
+        case ANISO_BETA_13:
+        case ANISO_BETA_23:
+          //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
+          setU(atom, 6, 0);
+          setU(atom, (propertyOf[i] - ANISO_BETA_11) % 6, parseFloatStr(field));
           break;
+        case SUBSYS_ID:
+          subid = field;
+          break;
+        case SITE_MULT:
+          if (incommensurate)
+            siteMult = parseIntStr(field); 
         }
       }
+      if (isAnisoData)
+        continue;
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
-      } else {
-        if (isAnisoData || !filterCIFAtom(atom, iAtom, assemblyId))
-          continue;
-        setAtomCoord(atom);
-        if (atom.elementSymbol == null && atom.atomName != null) {
-          String sym = atom.atomName;
-          int pt = 0;
-          while (pt < sym.length() && Character.isLetter(sym.charAt(pt)))
-            pt++;
-          atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
-        }
-        atomSetCollection.addAtomWithMappedName(atom);
-        if (assemblyId != '\0') {
-          if (assemblyIdAtoms == null)
-            assemblyIdAtoms = new Hashtable<String, BS>();
-          BS bs = assemblyIdAtoms.get("" + assemblyId);
-          if (bs == null)
-            assemblyIdAtoms.put("" + assemblyId, bs = new BS());
-          bs.set(atom.index);
-        }
-        if (atom.isHetero && htHetero != null) {
-          atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
-              htHetero);
-          htHetero = null;
-        }
+        continue;
       }
+      if (!filterCIFAtom(atom, iAtom, assemblyId))
+        continue;
+      setAtomCoord(atom);
+      if (atom.elementSymbol == null && atom.atomName != null) {
+        String sym = atom.atomName;
+        int pt = 0;
+        while (pt < sym.length() && Character.isLetter(sym.charAt(pt)))
+          pt++;
+        atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
+      }
+      atomSetCollection.addAtomWithMappedName(atom);
+      if (assemblyId != '\0') {
+        if (assemblyIdAtoms == null)
+          assemblyIdAtoms = new Hashtable<String, BS>();
+        BS bs = assemblyIdAtoms.get("" + assemblyId);
+        if (bs == null)
+          assemblyIdAtoms.put("" + assemblyId, bs = new BS());
+        bs.set(atom.index);
+      }
+      if (atom.isHetero && htHetero != null) {
+        atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
+            htHetero);
+        htHetero = null;
+      }
+      if (subid != null)
+        addSubsystem(subid, null, atom.atomName);
+      if (siteMult != 0)
+        atom.vib = V3.new3(siteMult, 0, Float.NaN);
+        
     }
     if (isPDB)
       setIsPDB();
@@ -1058,7 +1196,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     return true;
   }
      
-  
   protected boolean filterCIFAtom(Atom atom, int iAtom, char assemblyId) {
     if (!filterAtom(atom, iAtom))
       return false;
@@ -1239,7 +1376,7 @@ _pdbx_struct_oper_list.vector[3]
           m[7] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B) / 12;
           m[11] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
-        m4.setA(m);
+        m4.setA(m, 0);
         if (htBiomts == null)
           htBiomts = new Hashtable<String, Matrix4f>();
         htBiomts.put(id, m4);
@@ -1247,6 +1384,444 @@ _pdbx_struct_oper_list.vector[3]
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // HETATM identity
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte NONPOLY_ENTITY_ID = 0;
+  final private static byte NONPOLY_NAME = 1;
+  final private static byte NONPOLY_COMP_ID = 2;
+
+  final private static String[] nonpolyFields = { 
+      "_pdbx_entity_nonpoly_entity_id",
+      "_pdbx_entity_nonpoly_name", 
+      "_pdbx_entity_nonpoly_comp_id", 
+  };
+  
+  /**
+   * 
+   * optional nonloop format -- see 1jsa.cif
+   * 
+   */
+  private String[] hetatmData;
+
+  private void processNonpolyData() {
+    if (hetatmData == null)
+      hetatmData = new String[3];
+    for (int i = nonpolyFields.length; --i >= 0;)
+      if (key.equals(nonpolyFields[i])) {
+        hetatmData[i] = data;
+        break;
+      }
+    if (hetatmData[NONPOLY_NAME] == null || hetatmData[NONPOLY_COMP_ID] == null)
+      return;
+    addHetero(hetatmData[NONPOLY_COMP_ID], hetatmData[NONPOLY_NAME]);
+    hetatmData = null;
+  }
+
+  final private static byte CHEM_COMP_ID = 0;
+  final private static byte CHEM_COMP_NAME = 1;
+
+  final private static String[] chemCompFields = { 
+      "_chem_comp_id",
+      "_chem_comp_name",
+  };
+  
+
+  /**
+   * 
+   * a general name definition field. Not all hetero
+   * 
+   * @throws Exception
+   */
+  private void processChemCompLoopBlock() throws Exception {
+    parseLoopParameters(chemCompFields);
+    while (tokenizer.getData()) {
+      String groupName = null;
+      String hetName = null;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case NONE:
+          break;
+        case CHEM_COMP_ID:
+          groupName = field;
+          break;
+        case CHEM_COMP_NAME:
+          hetName = field;
+          break;
+        }
+      }
+      if (groupName != null && hetName != null)
+        addHetero(groupName, hetName);
+    }
+  }
+
+  /**
+   * 
+   * a HETERO name definition field. Maybe not all hetero? nonpoly?
+   * 
+   * @throws Exception
+   */
+  private void processNonpolyLoopBlock() throws Exception {
+    parseLoopParameters(nonpolyFields);
+    while (tokenizer.getData()) {
+      String groupName = null;
+      String hetName = null;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case NONE:
+        case NONPOLY_ENTITY_ID:
+          break;
+        case NONPOLY_COMP_ID:
+          groupName = field;
+          break;
+        case NONPOLY_NAME:
+          hetName = field;
+          break;
+        }
+      }
+      if (groupName == null || hetName == null)
+        return;
+      addHetero(groupName, hetName);
+    }
+  }
+
+  private void addHetero(String groupName, String hetName) {
+    if (!JmolAdapter.isHetero(groupName))
+      return;
+    if (htHetero == null)
+      htHetero = new Hashtable<String, String>();
+    htHetero.put(groupName, hetName);
+    if (Logger.debugging) {
+      Logger.debug("hetero: " + groupName + " = " + hetName);
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // helix and turn structure data
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte CONF_TYPE_ID = 0;
+  final private static byte BEG_ASYM_ID = 1;
+  final private static byte BEG_SEQ_ID = 2;
+  final private static byte BEG_INS_CODE = 3;
+  final private static byte END_ASYM_ID = 4;
+  final private static byte END_SEQ_ID = 5;
+  final private static byte END_INS_CODE = 6;
+  final private static byte STRUCT_ID = 7;
+  final private static byte SERIAL_NO = 8;
+  final private static byte HELIX_CLASS = 9;
+
+
+  final private static String[] structConfFields = { 
+      "_struct_conf_conf_type_id",
+      "_struct_conf_beg_auth_asym_id", 
+      "_struct_conf_beg_auth_seq_id",
+      "_struct_conf_pdbx_beg_pdb_ins_code",
+      "_struct_conf_end_auth_asym_id", 
+      "_struct_conf_end_auth_seq_id",
+      "_struct_conf_pdbx_end_pdb_ins_code",
+      "_struct_conf_id", 
+      "_struct_conf_pdbx_pdb_helix_id", 
+      "_struct_conf_pdbx_pdb_helix_class"
+  };
+
+  /**
+   * identifies ranges for HELIX and TURN
+   * 
+   * @throws Exception
+   */
+  private void processStructConfLoopBlock() throws Exception {
+    parseLoopParameters(structConfFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _struct_conf property:" + i);
+        skipLoop();
+        return;
+      }
+    while (tokenizer.getData()) {
+      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case NONE:
+          break;
+        case CONF_TYPE_ID:
+          if (field.startsWith("TURN"))
+            structure.structureType = structure.substructureType = EnumStructure.TURN;
+          else if (!field.startsWith("HELX"))
+            structure.structureType = structure.substructureType = EnumStructure.NONE;
+          break;
+        case BEG_ASYM_ID:
+          structure.startChainStr = field;
+          structure.startChainID = viewer.getChainID(field);
+          break;
+        case BEG_SEQ_ID:
+          structure.startSequenceNumber = parseIntStr(field);
+          break;
+        case BEG_INS_CODE:
+          structure.startInsertionCode = firstChar;
+          break;
+        case END_ASYM_ID:
+          structure.endChainStr = field;
+          structure.endChainID = viewer.getChainID(field);
+          break;
+        case END_SEQ_ID:
+          structure.endSequenceNumber = parseIntStr(field);
+          break;
+        case HELIX_CLASS:
+          structure.substructureType = Structure.getHelixType(parseIntStr(field));
+          break;
+        case END_INS_CODE:
+          structure.endInsertionCode = firstChar;
+          break;
+        case STRUCT_ID:
+          structure.structureID = field;
+          break;
+        case SERIAL_NO:
+          structure.serialID = parseIntStr(field);
+          break;
+        }
+      }
+      atomSetCollection.addStructure(structure);
+    }
+  }
+  ////////////////////////////////////////////////////////////////
+  // sheet structure data
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte SHEET_ID = 0;
+  final private static byte STRAND_ID = 7;
+
+  final private static String[] structSheetRangeFields = {
+    "_struct_sheet_range_sheet_id",  //unused placeholder
+    "_struct_sheet_range_beg_auth_asym_id",
+    "_struct_sheet_range_beg_auth_seq_id",
+    "_struct_sheet_range_pdbx_beg_pdb_ins_code",
+    "_struct_sheet_range_end_auth_asym_id",
+    "_struct_sheet_range_end_auth_seq_id",
+    "_struct_sheet_range_pdbx_end_pdb_ins_code", 
+    "_struct_sheet_range_id",
+  };
+
+  /**
+   * 
+   * identifies sheet ranges
+   * 
+   * @throws Exception
+   */
+  private void processStructSheetRangeLoopBlock() throws Exception {
+    parseLoopParameters(structSheetRangeFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _struct_conf property:" + i);
+        skipLoop();
+        return;
+      }
+    while (tokenizer.getData()) {
+      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case BEG_ASYM_ID:
+          structure.startChainID = viewer.getChainID(field);
+          break;
+        case BEG_SEQ_ID:
+          structure.startSequenceNumber = parseIntStr(field);
+          break;
+        case BEG_INS_CODE:
+          structure.startInsertionCode = firstChar;
+          break;
+        case END_ASYM_ID:
+          structure.endChainID = viewer.getChainID(field);
+          break;
+        case END_SEQ_ID:
+          structure.endSequenceNumber = parseIntStr(field);
+          break;
+        case END_INS_CODE:
+          structure.endInsertionCode = firstChar;
+          break;
+        case SHEET_ID:
+          structure.strandCount = 1;
+          structure.structureID = field;
+          break;
+        case STRAND_ID:
+          structure.serialID = parseIntStr(field);
+          break;
+        }
+      }
+      atomSetCollection.addStructure(structure);
+    }
+  }
+
+  final private static byte SITE_ID = 0;
+  final private static byte SITE_COMP_ID = 1;
+  final private static byte SITE_ASYM_ID = 2;
+  final private static byte SITE_SEQ_ID = 3;
+  final private static byte SITE_INS_CODE = 4; //???
+
+  final private static String[] structSiteRangeFields = {
+    "_struct_site_gen_site_id",  
+    "_struct_site_gen_auth_comp_id", 
+    "_struct_site_gen_auth_asym_id", 
+    "_struct_site_gen_auth_seq_id",  
+    "_struct_site_gen_label_alt_id",  //should be an insertion code, not an alt ID? 
+  };
+
+  
+//  loop_
+//  _struct_site_gen.id 
+//  _struct_site_gen.site_id 
+//  _struct_site_gen.pdbx_num_res 
+//  _struct_site_gen.label_comp_id 
+//  _struct_site_gen.label_asym_id 
+//  _struct_site_gen.label_seq_id 
+//  _struct_site_gen.auth_comp_id 
+//  _struct_site_gen.auth_asym_id 
+//  _struct_site_gen.auth_seq_id 
+//  _struct_site_gen.label_atom_id 
+//  _struct_site_gen.label_alt_id 
+//  _struct_site_gen.symmetry 
+//  _struct_site_gen.details 
+//  1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
+//  2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
+//  3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
+//  4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
+//  5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
+//  # 
+
+
+  /**
+   * 
+   * identifies structure sites
+   * 
+   * @throws Exception
+   */
+  private void processStructSiteBlock() throws Exception {
+    parseLoopParameters(structSiteRangeFields);
+    for (int i = 3; --i >= 0;)
+      if (fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _struct_site property:" + i);
+        skipLoop();
+        return;
+      }
+    String siteID = "";
+    String seqNum = "";
+    String insCode = "";
+    String chainID = "";
+    String resID = "";
+    String group = "";
+    Map<String, Object> htSite = null;
+    htSites = new Hashtable<String, Map<String, Object>>();
+    while (tokenizer.getData()) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case SITE_ID:
+          if (group != "") {
+            String groups = (String) htSite.get("groups");
+            groups += (groups.length() == 0 ? "" : ",") + group;
+            group = "";
+            htSite.put("groups", groups);
+          }
+          siteID = field;
+          htSite = htSites.get(siteID);
+          if (htSite == null) {
+            htSite = new Hashtable<String, Object>();
+            //htSite.put("seqNum", "site_" + (++siteNum));
+            htSite.put("groups", "");
+            htSites.put(siteID, htSite);
+          }
+          seqNum = "";
+          insCode = "";
+          chainID = "";
+          resID = "";
+          break;
+        case SITE_COMP_ID:
+          resID = field;
+          break;
+        case SITE_ASYM_ID:
+          chainID = field;
+          break;
+        case SITE_SEQ_ID:
+          seqNum = field;
+          break;
+        case SITE_INS_CODE: //optional
+          insCode = field;
+          break;
+        }
+        if (seqNum != "" && resID != "")
+          group = "[" + resID + "]" + seqNum
+            + (insCode.length() > 0 ?  "^" + insCode : "")
+            + (chainID.length() > 0 ? ":" + chainID : "");
+      }      
+    }
+    if (group != "") {
+      String groups = (String) htSite.get("groups");
+      groups += (groups.length() == 0 ? "" : ",") + group;
+      group = "";
+      htSite.put("groups", groups);
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // symmetry operations
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte SYMOP_XYZ = 0;
+  final private static byte SYM_EQUIV_XYZ = 1;
+  final private static byte SYM_SSG_XYZ = 2;
+  final private static byte SYM_SSG_OP = 3;
+
+  final private static String[] symmetryOperationsFields = {
+      "_space_group_symop_operation_xyz", 
+      "_symmetry_equiv_pos_as_xyz", 
+      "_symmetry_ssg_equiv_pos_as_xyz",
+      "_space_group_symop_ssg_operation_algebraic"
+  };
+
+  /**
+   * retrieves symmetry operations
+   * 
+   * @throws Exception
+   */
+  private void processSymmetryOperationsLoopBlock() throws Exception {
+    parseLoopParameters(symmetryOperationsFields);
+    int nRefs = 0;
+    symops = new JmolList<String>();
+    for (int i = propertyCount; --i >= 0;)
+      if (fieldOf[i] != NONE)
+        nRefs++;
+    if (nRefs != 1) {
+      Logger
+          .warn("?que? _symmetry_equiv or _space_group_symop property not found");
+      skipLoop();
+      return;
+    }
+    int n = 0;
+    while (tokenizer.getData()) {
+      boolean ssgop = false;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case SYM_SSG_XYZ:
+          // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
+          if (field.indexOf('~') >= 0)
+            field = TextFormat.simpleReplace(field, "~", "");
+          //$FALL-THROUGH$
+        case SYM_SSG_OP:
+          incommensurate = true;
+          ssgop = true;
+          //$FALL-THROUGH$
+        case SYMOP_XYZ:
+        case SYM_EQUIV_XYZ:
+          if (allowRotations || ++n == 1)
+            if (!incommensurate || ssgop) {
+              symops.addLast(field);
+              setSymmetryOperator(field);
+            }
+          break;
+        }
+      }
+    }
+  }
+  
 
   ////////////////////////////////////////////////////////////////
   // bond data
@@ -1416,535 +1991,6 @@ _pdbx_struct_oper_list.vector[3]
     }
   }
   
-  ////////////////////////////////////////////////////////////////
-  // HETATM identity
-  ////////////////////////////////////////////////////////////////
-
-  final private static byte NONPOLY_ENTITY_ID = 0;
-  final private static byte NONPOLY_NAME = 1;
-  final private static byte NONPOLY_COMP_ID = 2;
-
-  final private static String[] nonpolyFields = { 
-      "_pdbx_entity_nonpoly_entity_id",
-      "_pdbx_entity_nonpoly_name", 
-      "_pdbx_entity_nonpoly_comp_id", 
-  };
-  
-  /**
-   * 
-   * optional nonloop format -- see 1jsa.cif
-   * 
-   */
-  private String[] hetatmData;
-  private void processNonpolyData() {
-    if (hetatmData == null)
-      hetatmData = new String[3];
-    for (int i = nonpolyFields.length; --i >= 0;)
-      if (isMatch(key, nonpolyFields[i])) {
-        hetatmData[i] = data;
-        break;
-      }
-    if (hetatmData[NONPOLY_NAME] == null || hetatmData[NONPOLY_COMP_ID] == null)
-      return;
-    addHetero(hetatmData[NONPOLY_COMP_ID], hetatmData[NONPOLY_NAME]);
-    hetatmData = null;
-  }
-
-  final private static byte CHEM_COMP_ID = 0;
-  final private static byte CHEM_COMP_NAME = 1;
-
-  final private static String[] chemCompFields = { 
-      "_chem_comp_id",
-      "_chem_comp_name",
-  };
-  
-
-  /**
-   * 
-   * a general name definition field. Not all hetero
-   * 
-   * @throws Exception
-   */
-  private void processChemCompLoopBlock() throws Exception {
-    parseLoopParameters(chemCompFields);
-    while (tokenizer.getData()) {
-      String groupName = null;
-      String hetName = null;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case NONE:
-          break;
-        case CHEM_COMP_ID:
-          groupName = field;
-          break;
-        case CHEM_COMP_NAME:
-          hetName = field;
-          break;
-        }
-      }
-      if (groupName != null && hetName != null)
-        addHetero(groupName, hetName);
-    }
-  }
-
-  /**
-   * 
-   * a HETERO name definition field. Maybe not all hetero? nonpoly?
-   * 
-   * @throws Exception
-   */
-  private void processNonpolyLoopBlock() throws Exception {
-    parseLoopParameters(nonpolyFields);
-    while (tokenizer.getData()) {
-      String groupName = null;
-      String hetName = null;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case NONE:
-        case NONPOLY_ENTITY_ID:
-          break;
-        case NONPOLY_COMP_ID:
-          groupName = field;
-          break;
-        case NONPOLY_NAME:
-          hetName = field;
-          break;
-        }
-      }
-      if (groupName == null || hetName == null)
-        return;
-      addHetero(groupName, hetName);
-    }
-  }
-
-  private void addHetero(String groupName, String hetName) {
-    if (!JmolAdapter.isHetero(groupName))
-      return;
-    if (htHetero == null)
-      htHetero = new Hashtable<String, String>();
-    htHetero.put(groupName, hetName);
-    if (Logger.debugging) {
-      Logger.debug("hetero: " + groupName + " = " + hetName);
-    }
-  }
-  
-  ////////////////////////////////////////////////////////////////
-  // helix and turn structure data
-  ////////////////////////////////////////////////////////////////
-
-  final private static byte CONF_TYPE_ID = 0;
-  final private static byte BEG_ASYM_ID = 1;
-  final private static byte BEG_SEQ_ID = 2;
-  final private static byte BEG_INS_CODE = 3;
-  final private static byte END_ASYM_ID = 4;
-  final private static byte END_SEQ_ID = 5;
-  final private static byte END_INS_CODE = 6;
-  final private static byte STRUCT_ID = 7;
-  final private static byte SERIAL_NO = 8;
-  final private static byte HELIX_CLASS = 9;
-
-
-  final private static String[] structConfFields = { 
-      "_struct_conf_conf_type_id",
-      "_struct_conf_beg_auth_asym_id", 
-      "_struct_conf_beg_auth_seq_id",
-      "_struct_conf_pdbx_beg_PDB_ins_code",
-      "_struct_conf_end_auth_asym_id", 
-      "_struct_conf_end_auth_seq_id",
-      "_struct_conf_pdbx_end_PDB_ins_code",
-      "_struct_conf_id", 
-      "_struct_conf_pdbx_PDB_helix_id", 
-      "_struct_conf_pdbx_PDB_helix_class"
-  };
-
-  /**
-   * identifies ranges for HELIX and TURN
-   * 
-   * @throws Exception
-   */
-  private void processStructConfLoopBlock() throws Exception {
-    parseLoopParameters(structConfFields);
-    for (int i = propertyCount; --i >= 0;)
-      if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_conf property:" + i);
-        skipLoop();
-        return;
-      }
-    while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case NONE:
-          break;
-        case CONF_TYPE_ID:
-          if (field.startsWith("TURN"))
-            structure.structureType = structure.substructureType = EnumStructure.TURN;
-          else if (!field.startsWith("HELX"))
-            structure.structureType = structure.substructureType = EnumStructure.NONE;
-          break;
-        case BEG_ASYM_ID:
-          structure.startChainStr = field;
-          structure.startChainID = viewer.getChainID(field);
-          break;
-        case BEG_SEQ_ID:
-          structure.startSequenceNumber = parseIntStr(field);
-          break;
-        case BEG_INS_CODE:
-          structure.startInsertionCode = firstChar;
-          break;
-        case END_ASYM_ID:
-          structure.endChainStr = field;
-          structure.endChainID = viewer.getChainID(field);
-          break;
-        case END_SEQ_ID:
-          structure.endSequenceNumber = parseIntStr(field);
-          break;
-        case HELIX_CLASS:
-          structure.substructureType = Structure.getHelixType(parseIntStr(field));
-          break;
-        case END_INS_CODE:
-          structure.endInsertionCode = firstChar;
-          break;
-        case STRUCT_ID:
-          structure.structureID = field;
-          break;
-        case SERIAL_NO:
-          structure.serialID = parseIntStr(field);
-          break;
-        }
-      }
-      atomSetCollection.addStructure(structure);
-    }
-  }
-  ////////////////////////////////////////////////////////////////
-  // sheet structure data
-  ////////////////////////////////////////////////////////////////
-
-  final private static byte SHEET_ID = 0;
-  final private static byte STRAND_ID = 7;
-
-  final private static String[] structSheetRangeFields = {
-    "_struct_sheet_range_sheet_id",  //unused placeholder
-    "_struct_sheet_range_beg_auth_asym_id",
-    "_struct_sheet_range_beg_auth_seq_id",
-    "_struct_sheet_range_pdbx_beg_PDB_ins_code",
-    "_struct_sheet_range_end_auth_asym_id",
-    "_struct_sheet_range_end_auth_seq_id",
-    "_struct_sheet_range_pdbx_end_PDB_ins_code", 
-    "_struct_sheet_range_id",
-  };
-
-  /**
-   * 
-   * identifies sheet ranges
-   * 
-   * @throws Exception
-   */
-  private void processStructSheetRangeLoopBlock() throws Exception {
-    parseLoopParameters(structSheetRangeFields);
-    for (int i = propertyCount; --i >= 0;)
-      if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_conf property:" + i);
-        skipLoop();
-        return;
-      }
-    while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case BEG_ASYM_ID:
-          structure.startChainID = viewer.getChainID(field);
-          break;
-        case BEG_SEQ_ID:
-          structure.startSequenceNumber = parseIntStr(field);
-          break;
-        case BEG_INS_CODE:
-          structure.startInsertionCode = firstChar;
-          break;
-        case END_ASYM_ID:
-          structure.endChainID = viewer.getChainID(field);
-          break;
-        case END_SEQ_ID:
-          structure.endSequenceNumber = parseIntStr(field);
-          break;
-        case END_INS_CODE:
-          structure.endInsertionCode = firstChar;
-          break;
-        case SHEET_ID:
-          structure.strandCount = 1;
-          structure.structureID = field;
-          break;
-        case STRAND_ID:
-          structure.serialID = parseIntStr(field);
-          break;
-        }
-      }
-      atomSetCollection.addStructure(structure);
-    }
-  }
-
-  final private static byte SITE_ID = 0;
-  final private static byte SITE_COMP_ID = 1;
-  final private static byte SITE_ASYM_ID = 2;
-  final private static byte SITE_SEQ_ID = 3;
-  final private static byte SITE_INS_CODE = 4; //???
-
-  final private static String[] structSiteRangeFields = {
-    "_struct_site_gen_site_id",  
-    "_struct_site_gen_auth_comp_id", 
-    "_struct_site_gen_auth_asym_id", 
-    "_struct_site_gen_auth_seq_id",  
-    "_struct_site_gen_label_alt_id",  //should be an insertion code, not an alt ID? 
-  };
-
-  
-//  loop_
-//  _struct_site_gen.id 
-//  _struct_site_gen.site_id 
-//  _struct_site_gen.pdbx_num_res 
-//  _struct_site_gen.label_comp_id 
-//  _struct_site_gen.label_asym_id 
-//  _struct_site_gen.label_seq_id 
-//  _struct_site_gen.auth_comp_id 
-//  _struct_site_gen.auth_asym_id 
-//  _struct_site_gen.auth_seq_id 
-//  _struct_site_gen.label_atom_id 
-//  _struct_site_gen.label_alt_id 
-//  _struct_site_gen.symmetry 
-//  _struct_site_gen.details 
-//  1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
-//  2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
-//  3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
-//  4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
-//  5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
-//  # 
-
-  //private int siteNum;
-  private Map<String, Map<String, Object>> htSites;
-  
-  /**
-   * 
-   * identifies structure sites
-   * 
-   * @throws Exception
-   */
-  private void processStructSiteBlock() throws Exception {
-    parseLoopParameters(structSiteRangeFields);
-    for (int i = 3; --i >= 0;)
-      if (fieldOf[i] == NONE) {
-        Logger.warn("?que? missing _struct_site property:" + i);
-        skipLoop();
-        return;
-      }
-    String siteID = "";
-    String seqNum = "";
-    String insCode = "";
-    String chainID = "";
-    String resID = "";
-    String group = "";
-    Map<String, Object> htSite = null;
-    htSites = new Hashtable<String, Map<String, Object>>();
-    while (tokenizer.getData()) {
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case SITE_ID:
-          if (group != "") {
-            String groups = (String) htSite.get("groups");
-            groups += (groups.length() == 0 ? "" : ",") + group;
-            group = "";
-            htSite.put("groups", groups);
-          }
-          siteID = field;
-          htSite = htSites.get(siteID);
-          if (htSite == null) {
-            htSite = new Hashtable<String, Object>();
-            //htSite.put("seqNum", "site_" + (++siteNum));
-            htSite.put("groups", "");
-            htSites.put(siteID, htSite);
-          }
-          seqNum = "";
-          insCode = "";
-          chainID = "";
-          resID = "";
-          break;
-        case SITE_COMP_ID:
-          resID = field;
-          break;
-        case SITE_ASYM_ID:
-          chainID = field;
-          break;
-        case SITE_SEQ_ID:
-          seqNum = field;
-          break;
-        case SITE_INS_CODE: //optional
-          insCode = field;
-          break;
-        }
-        if (seqNum != "" && resID != "")
-          group = "[" + resID + "]" + seqNum
-            + (insCode.length() > 0 ?  "^" + insCode : "")
-            + (chainID.length() > 0 ? ":" + chainID : "");
-      }      
-    }
-    if (group != "") {
-      String groups = (String) htSite.get("groups");
-      groups += (groups.length() == 0 ? "" : ",") + group;
-      group = "";
-      htSite.put("groups", groups);
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // symmetry operations
-  ////////////////////////////////////////////////////////////////
-
-  final private static byte SYMOP_XYZ = 0;
-  final private static byte SYM_EQUIV_XYZ = 1;
-  final private static byte SYM_SSG_XYZ = 2;
-  final private static byte SYM_SSG_OP = 3;
-
-  final private static String[] symmetryOperationsFields = {
-      "_space_group_symop_operation_xyz", 
-      "_symmetry_equiv_pos_as_xyz", 
-      "_symmetry_ssg_equiv_pos_as_xyz",
-      "_space_group_symop_ssg_operation_algebraic"
-  };
-
-  /**
-   * retrieves symmetry operations
-   * 
-   * @throws Exception
-   */
-  private void processSymmetryOperationsLoopBlock() throws Exception {
-    parseLoopParameters(symmetryOperationsFields);
-    int nRefs = 0;
-    for (int i = propertyCount; --i >= 0;)
-      if (fieldOf[i] != NONE)
-        nRefs++;
-    if (nRefs != 1) {
-      Logger.warn("?que? _symmetry_equiv or _space_group_symop property not found");
-      skipLoop();
-      return;
-    }
-    while (tokenizer.getData()) {
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
-        case SYM_SSG_XYZ:
-          // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
-          if (field.indexOf('~') >= 0)
-            field = TextFormat.simpleReplace(field, "~", "");
-          //$FALL-THROUGH$
-        case SYMOP_XYZ:
-        case SYM_EQUIV_XYZ:
-        case SYM_SSG_OP:
-          setSymmetryOperator(field);
-          break;
-        }
-      }
-    }
-  }
-  
-  private int fieldProperty(int i) {
-    return ((field = tokenizer.loopData[i]).length() > 0 
-        && (firstChar = field.charAt(0)) != '\0' ? 
-            propertyOf[i] : NONE);
-  }
-
-  String field;
-  
-  private char firstChar = '\0';
-  private int[] propertyOf = new int[100]; // should be enough
-  private byte[] fieldOf = new byte[atomFields.length];
-  private int propertyCount;
-  
-  
-  /**
-   * sets up arrays and variables for tokenizer.getData()
-   * 
-   * @param fields
-   * @throws Exception
-   */
-  private void parseLoopParameters(String[] fields) throws Exception {
-    tokenizer.fieldCount = 0;
-    for (int i = fields.length; --i >= 0; )
-      fieldOf[i] = NONE;
-
-    propertyCount = fields.length;
-    while (true) {
-      String str = tokenizer.peekToken();
-      if (str == null) {
-        tokenizer.fieldCount = 0;
-        break;
-      }
-      if (str.charAt(0) != '_')
-        break;
-      tokenizer.getTokenPeeked();
-      propertyOf[tokenizer.fieldCount] = NONE;
-      for (int i = fields.length; --i >= 0;)
-        if (isMatch(str, fields[i])) {
-          propertyOf[tokenizer.fieldCount] = i;
-          fieldOf[i] = (byte) tokenizer.fieldCount;
-          break;
-        }
-      tokenizer.fieldCount++;
-    }
-    if (tokenizer.fieldCount > 0)
-      tokenizer.loopData = new String[tokenizer.fieldCount];
-  }
-
-  /**
-   * 
-   * used for turning off fractional or nonfractional coord.
-   * 
-   * @param fieldIndex
-   */
-  private void disableField(int fieldIndex) {
-    int i = fieldOf[fieldIndex];
-    if (i != NONE)
-        propertyOf[i] = NONE;
-  }
-
-  /**
-   * 
-   * skips all associated loop data
-   * 
-   * @throws Exception
-   */
-  private void skipLoop() throws Exception {
-    String str;
-    while ((str = tokenizer.peekToken()) != null && str.charAt(0) == '_')
-      str  = tokenizer.getTokenPeeked();
-    while (tokenizer.getNextDataToken() != null) {
-    }
-  }  
-  
-  /**
-   * 
-   * @param str1
-   * @param str2
-   * @return TRUE if a match
-   */
-  private static boolean isMatch(String str1, String str2) {
-    int cch = str1.length();
-    if (str2.length() != cch)
-      return false;
-    for (int i = cch; --i >= 0;) {
-      char ch1 = str1.charAt(i);
-      char ch2 = str2.charAt(i);
-      if (ch1 == ch2)
-        continue;
-      if ((ch1 == '_' || ch1 == '.') && (ch2 == '_' || ch2 == '.'))
-        continue;
-      if (ch1 <= 'Z' && ch1 >= 'A')
-        ch1 += 'a' - 'A';
-      else if (ch2 <= 'Z' && ch2 >= 'A')
-        ch2 += 'a' - 'A';
-      if (ch1 != ch2)
-        return false;
-    }
-    return true;
-  }
-  
   /////////////////////////////////////
   //  bonding and molecular 
   /////////////////////////////////////
@@ -1957,18 +2003,23 @@ _pdbx_struct_oper_list.vector[3]
   private BS bsExclude;
   private int firstAtom;
   private int atomCount;
-  private Atom[] atoms;
-  
+
   /**
-   * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
-   * add H atoms to bonds if necessary (c) turn off autoBonding ("hasBonds") (2)
-   * If MOLECULAR, then we (a) use {1 1 1} if lattice is not defined (b) use
-   * atomSetCollection.bonds[] to construct a preliminary molecule and connect
-   * as we go (c) check symmetry for connections to molecule in any one of the
-   * 27 3x3 adjacent cells (d) move those atoms and their connected branch set
-   * (e) iterate as necessary to get all atoms desired (f) delete unselected
-   * atoms (g) set all coordinates as Cartesians (h) remove all unit cell
-   * information
+   * (1) If GEOM_BOND records are present, we
+   *     (a) use them to generate bonds
+   *     (b) add H atoms to bonds if necessary
+   *     (c) turn off autoBonding ("hasBonds")
+   * (2) If MOLECULAR, then we
+   *     (a) use {1 1 1} if lattice is not defined
+   *     (b) use atomSetCollection.bonds[] to construct 
+   *         a preliminary molecule and connect as we go
+   *     (c) check symmetry for connections to molecule in any
+   *         one of the 27 3x3 adjacent cells
+   *     (d) move those atoms and their connected branch set
+   *     (e) iterate as necessary to get all atoms desired
+   *     (f) delete unselected atoms
+   *     (g) set all coordinates as Cartesians
+   *     (h) remove all unit cell information
    */
   private void setBondingAndMolecules() {
     Logger.info("CIF creating molecule "
@@ -2060,7 +2111,6 @@ _pdbx_struct_oper_list.vector[3]
 
     if (bondTypes.size() > 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
 
     // Clear temporary fields.
 
@@ -2214,4 +2264,370 @@ _pdbx_struct_oper_list.vector[3]
         setBs(atoms, i, bsBonds, bs);
     }
   }
+  
+  ////////////////////////////////////////////////////////////////
+  // incommensurate modulation
+  ////////////////////////////////////////////////////////////////
+ 
+//  The occupational distortion of a given atom or rigid group is
+//  usually parameterized by Fourier series. Each term of the series
+//  commonly adopts two different representations: the sine-cosine
+//  form,
+//           Pc cos(2\p k r)+Ps sin(2\p k r),
+//  and the modulus-argument form,
+//           |P| cos(2\p k r+\d),
+//  where k is the wave vector of the term and r is the atomic
+//  average position. _atom_site_occ_Fourier_param_phase is the phase
+//  (\d/2\p) in cycles corresponding to the Fourier term defined by
+//  _atom_site_occ_Fourier_atom_site_label and
+//  _atom_site_occ_Fourier_wave_vector_seq_id.
+
+  private final static int WV_ID = 0;
+  private final static int WV_X = 1;
+  private final static int WV_Y = 2;
+  private final static int WV_Z = 3;
+  private final static int FWV_ID = 4;
+  private final static int FWV_X = 5;
+  private final static int FWV_Y = 6;
+  private final static int FWV_Z = 7;
+  private final static int FWV_Q1_COEF = 8;
+  private final static int FWV_Q2_COEF = 9;
+  private final static int FWV_Q3_COEF = 10;
+  
+  private final static int FWV_DISP_LABEL = 11;
+  private final static int FWV_DISP_AXIS = 12;
+  private final static int FWV_DISP_ID = 13;
+  private final static int FWV_DISP_COS = 14;
+  private final static int FWV_DISP_SIN = 15;
+  private final static int FWV_DISP_MODULUS = 16;
+  private final static int FWV_DISP_PHASE = 17;
+  
+  private final static int FWV_OCC_LABEL = 18;
+  private final static int FWV_OCC_ID = 19;
+  private final static int FWV_OCC_COS = 20;
+  private final static int FWV_OCC_SIN = 21;
+  private final static int FWV_OCC_MODULUS = 22;
+  private final static int FWV_OCC_PHASE = 23;
+  
+  private final static int DISP_SPEC_LABEL = 24;
+  private final static int DISP_SAW_AX = 25; 
+  private final static int DISP_SAW_AY = 26;
+  private final static int DISP_SAW_AZ = 27;
+  private final static int DISP_SAW_C = 28;
+  private final static int DISP_SAW_W = 29;
+  
+  private final static int OCC_SPECIAL_LABEL = 30;
+  private final static int OCC_CRENEL_C = 31;
+  private final static int OCC_CRENEL_W = 32;
+
+  private final static int FWV_U_LABEL = 33;
+  private final static int FWV_U_TENS = 34;
+  private final static int FWV_U_ID = 35;
+  private final static int FWV_U_COS = 36;
+  private final static int FWV_U_SIN = 37;  
+  private final static int FWV_U_MODULUS = 38;
+  private final static int FWV_U_PHASE = 39;
+
+  private final static int FA_ID = 40;
+  private final static int FO_ID = 41;
+  private final static int FU_ID = 42;
+
+  private final static int FP_DISP_ID = 43;
+  private final static int FP_OCC_ID = 44;
+  private final static int FP_U_ID = 45;
+  
+  private final static int JANA_OCC_ABS_LABEL = 46;
+  private final static int JANA_OCC_ABS_O_0 = 47;
+
+  final private static String[] modulationFields = {
+      "_cell_wave_vector_seq_id", 
+      "_cell_wave_vector_x", 
+      "_cell_wave_vector_y", 
+      "_cell_wave_vector_z", 
+      "_atom_site_fourier_wave_vector_seq_id", 
+      "_atom_site_fourier_wave_vector_x", 
+      "_atom_site_fourier_wave_vector_y", 
+      "_atom_site_fourier_wave_vector_z",
+      "_jana_atom_site_fourier_wave_vector_q1_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q2_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q3_coeff", 
+      "_atom_site_displace_fourier_atom_site_label", 
+      "_atom_site_displace_fourier_axis", 
+      "_atom_site_displace_fourier_wave_vector_seq_id", 
+      "_atom_site_displace_fourier_param_cos", 
+      "_atom_site_displace_fourier_param_sin", 
+      "_atom_site_displace_fourier_param_modulus", 
+      "_atom_site_displace_fourier_param_phase", 
+      "_atom_site_occ_fourier_atom_site_label", 
+      "_atom_site_occ_fourier_wave_vector_seq_id", 
+      "_atom_site_occ_fourier_param_cos", 
+      "_atom_site_occ_fourier_param_sin",
+      "_atom_site_occ_fourier_param_modulus", 
+      "_atom_site_occ_fourier_param_phase", 
+      "_atom_site_displace_special_func_atom_site_label", 
+      "_atom_site_displace_special_func_sawtooth_ax", 
+      "_atom_site_displace_special_func_sawtooth_ay", 
+      "_atom_site_displace_special_func_sawtooth_az", 
+      "_atom_site_displace_special_func_sawtooth_c", 
+      "_atom_site_displace_special_func_sawtooth_w", 
+      "_atom_site_occ_special_func_atom_site_label",
+      "_atom_site_occ_special_func_crenel_c",
+      "_atom_site_occ_special_func_crenel_w",
+
+      "_atom_site_u_fourier_atom_site_label",
+      "_atom_site_u_fourier_tens_elem",
+      "_atom_site_u_fourier_wave_vector_seq_id",
+      "_atom_site_u_fourier_param_cos",
+      "_atom_site_u_fourier_param_sin",
+      "_atom_site_u_fourier_param_modulus",
+      "_atom_site_u_fourier_param_phase",
+      
+      "_atom_site_displace_fourier_id",
+      "_atom_site_occ_fourier_id",
+      "_atom_site_u_fourier_id",
+
+      "_atom_site_displace_fourier_param_id",
+      "_atom_site_occ_fourier_param_id",
+      "_atom_site_u_fourier_param_id",
+      
+      "_jana_atom_site_occ_fourier_absolute_site_label",
+      "_jana_atom_site_occ_fourier_absolute"
+  };
+  
+  /**
+   * creates entries in htModulation with a key of the form:
+   * 
+   * type_id_axis;atomLabel
+   * 
+   * where type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
+   * id = 1|2|3|0|S (Fourier index, Crenel(0), sawtooth); axis (optional) =
+   * 0|x|y|z (0 indicates irrelevant -- occupancy); and ;atomLabel is only for D
+   * and O.
+   * 
+   * @throws Exception
+   */
+  private void processModulationLoopBlock() throws Exception {
+    if (atomSetCollection.getCurrentAtomSetIndex() < 0)
+      atomSetCollection.newAtomSet();
+    parseLoopParameters(modulationFields);
+    int tok;
+    while (tokenizer.getData()) {
+      boolean ignore = false;
+      String id = null;
+      String atomLabel = null;
+      String axis = null;
+      P3 pt = P3.new3(Float.NaN, Float.NaN, Float.NaN);
+      float c = Float.NaN;
+      float w = Float.NaN;
+      String fid = null;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (tok = fieldProperty(i)) {
+        case FA_ID:
+        case FO_ID:
+        case FU_ID:
+          fid = "#=P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+              + "_" + field;
+          pt.x = pt.y = pt.z = 0;
+          break;
+        case WV_ID:
+        case FWV_ID:
+          pt.x = pt.y = pt.z = 0;
+          //$FALL-THROUGH$
+        case FWV_DISP_ID:
+        case FWV_OCC_ID:
+        case FWV_U_ID:
+        case FP_DISP_ID:
+        case FP_OCC_ID:
+        case FP_U_ID:
+          switch (tok) {
+          case WV_ID:
+            id = "W_";
+            break;
+          case FWV_ID:
+            id = "F_";
+            break;
+          case FWV_DISP_ID:
+          case FWV_OCC_ID:
+          case FWV_U_ID:
+            id = "" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
+            break;
+          case FP_DISP_ID:
+          case FP_OCC_ID:
+          case FP_U_ID:
+            id = "P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
+          }
+          id += field;
+          break;
+        case JANA_OCC_ABS_LABEL:
+          id = "J_O";
+          pt.x = pt.z = 1;
+          //$FALL-THROUGH$
+        case DISP_SPEC_LABEL:
+          if (id == null)
+          id = "D_S";
+          //$FALL-THROUGH$
+        case OCC_SPECIAL_LABEL:
+          if (id == null)
+            id = "O_0";
+          axis = "0";
+          //$FALL-THROUGH$
+        case FWV_DISP_LABEL:
+        case FWV_OCC_LABEL:
+        case FWV_U_LABEL:
+          atomLabel = field;
+          break;
+        case FWV_DISP_AXIS:
+          if (modAxes != null && modAxes.indexOf(axis.toUpperCase()) < 0)
+            ignore = true;
+          axis = field;
+          break;
+        case FWV_U_TENS:
+          axis = field.toUpperCase();
+          break;
+        case FWV_OCC_COS:
+        case FWV_DISP_COS:
+        case FWV_U_COS:
+        case OCC_CRENEL_C:
+          pt.z = 0;
+          //$FALL-THROUGH$
+        case WV_X:
+        case FWV_X:
+        case DISP_SAW_AX:
+          pt.x = parseFloatStr(field);
+          break;
+        case FWV_Q1_COEF:
+          id += "_q_";
+          pt.x = parseFloatStr(field);
+          switch (modDim) {
+          case 1:
+            pt.y = 0;
+            //$FALL-THROUGH$
+          case 2:
+            pt.z = 0;
+          }
+          break;
+        case FWV_DISP_MODULUS:
+        case FWV_OCC_MODULUS:
+        case FWV_U_MODULUS:
+          pt.x = parseFloatStr(field);
+          pt.z = 1;
+          break;
+        case FWV_OCC_SIN:
+          pt.y = parseFloatStr(field);
+          axis = "0";
+          break;
+        case WV_Y:
+        case FWV_Y:
+        case FWV_Q2_COEF:
+        case FWV_DISP_SIN:
+        case FWV_DISP_PHASE:
+        case FWV_OCC_PHASE:
+        case FWV_U_SIN:
+        case FWV_U_PHASE:
+        case OCC_CRENEL_W:
+        case DISP_SAW_AY:
+        case JANA_OCC_ABS_O_0:
+          pt.y = parseFloatStr(field);
+          break;
+        case WV_Z:
+        case FWV_Z:
+        case FWV_Q3_COEF:
+        case DISP_SAW_AZ:
+          pt.z = parseFloatStr(field);
+          break;
+        case DISP_SAW_C:
+          c = parseFloatStr(field);
+          break;
+        case DISP_SAW_W:
+          w = parseFloatStr(field);
+          break;
+        }
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0
+            && pt.z == 0 || id == null || atomLabel != null
+            && rejectAtomName(atomLabel))
+          continue;
+        switch (id.charAt(0)) {
+        case 'W':
+        case 'F':
+          break;
+        case 'D':
+        case 'O':
+        case 'U':
+        case 'J':
+          if (atomLabel == null || axis == null)
+            continue;
+          if (id.equals("D_S")) {
+            // saw tooth displacement  center/width/Axyz
+            if (Float.isNaN(c) || Float.isNaN(w))
+              continue;
+            if (pt.x != 0)
+              addMod("D_S#x;" + atomLabel, fid, P3.new3(c, w, pt.x));
+            if (pt.y != 0)
+              addMod("D_S#y;" + atomLabel, fid, P3.new3(c, w, pt.y));
+            if (pt.z != 0)
+              addMod("D_S#z;" + atomLabel, fid, P3.new3(c, w, pt.z));
+            continue;
+          }
+          id += "#" + axis + ";" + atomLabel;
+          break;
+        }
+        addMod(id, fid, pt);
+      }
+    }
+  }
+    
+  private void addMod(String id, String fid, P3 params) {
+    if (fid != null)
+      id += fid;
+    addModulation(null, id, params, -1);
+  }
+
+  //loop_
+  //_cell_subsystem_code
+  //_cell_subsystem_description
+  //_cell_subsystem_matrix_W_1_1
+  //_cell_subsystem_matrix_W_1_2
+  //_cell_subsystem_matrix_W_1_3
+  //_cell_subsystem_matrix_W_1_4
+  //_cell_subsystem_matrix_W_2_1
+  //_cell_subsystem_matrix_W_2_2
+  //_cell_subsystem_matrix_W_2_3
+  //_cell_subsystem_matrix_W_2_4
+  //_cell_subsystem_matrix_W_3_1
+  //_cell_subsystem_matrix_W_3_2
+  //_cell_subsystem_matrix_W_3_3
+  //_cell_subsystem_matrix_W_3_4
+  //_cell_subsystem_matrix_W_4_1
+  //_cell_subsystem_matrix_W_4_2
+  //_cell_subsystem_matrix_W_4_3
+  //_cell_subsystem_matrix_W_4_4
+  //1 '1-st subsystem' 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+  //2 '2-nd subsystem' 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1
+  //
+  
+  private void processSubsystemLoopBlock() throws Exception {
+    parseLoopParameters(null);
+    while (tokenizer.getData()) {
+      fieldProperty(0);
+      addSubsystem(field, getMatrix4(1), null);
+    }
+  }
+
+  private Matrix4f getMatrix4(int i) {
+    Matrix4f m4 = new Matrix4f();
+    float[] a = new float[16];
+    for (; i < tokenizer.fieldCount; ++i) {
+      String key = fields[fieldProperty(i)];
+      if (!key.contains("_w_"))
+        continue;
+      int r = key.charAt(key.length() - 3) - '1';
+      int c = key.charAt(key.length() - 1) - '1';
+      a[r * 4 + c] = parseFloatStr(field);
+    }
+    m4.setA(a, 0);
+    return m4;
+  }
+
 }

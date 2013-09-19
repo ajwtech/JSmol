@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
- * $Revision: 18245 $
+ * $Date: 2013-09-18 14:37:04 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18662 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -309,12 +309,12 @@ public abstract class Shape {
    * @param prevY
    * @param x
    * @param y
-   * @param modifiers
+   * @param dragAction
    * @param bsVisible
    * @return T/F
    */
   public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                             int modifiers, BS bsVisible) {
+                             int dragAction, BS bsVisible) {
     return false;
   }
 

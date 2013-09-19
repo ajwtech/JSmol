@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-17 09:29:00 -0500 (Tue, 17 Sep 2013) $
- * $Revision: 18659 $
+ * $Date: 2013-09-18 14:37:04 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18662 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -531,7 +531,7 @@ abstract public class JmolViewer {
   
   public String menuStructure;
 
-  abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
+  abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 
   abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
@@ -617,6 +617,8 @@ abstract public class JmolViewer {
    * @return string from ScriptEvaluator#outputBuffer
    */
   abstract public String runScript(String script);
+  abstract public int modelGetLastVibrationIndex(int i, int tok);
+  abstract public String extractMolData(String what);
   
   /**
    * used in JSmolApplet.js for drag-drop behavior.
@@ -626,7 +628,6 @@ abstract public class JmolViewer {
    * @return number of bytes cached
    */
   abstract public int cacheFileByName(String fileName, boolean isAdd);
-
 
 }
 

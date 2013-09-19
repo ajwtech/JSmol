@@ -1,7 +1,7 @@
 /* $RCSfile$
  *  * $Author: hansonr $
- * $Date: 2013-06-07 14:15:26 -0500 (Fri, 07 Jun 2013) $
- * $Revision: 18305 $
+ * $Date: 2013-08-16 10:01:49 -0500 (Fri, 16 Aug 2013) $
+ * $Revision: 18577 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -203,6 +203,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   protected int[] zbuf;
   protected int[] zbufT;
   protected int translucencyMask;
+  private boolean renderLow;
 
   //int clipX;
   //int clipY;
@@ -259,9 +260,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void beginRendering(Matrix3f rotationMatrix, boolean translucentMode, boolean isImageWrite) {
+  public void beginRendering(Matrix3f rotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
     if (currentlyRendering)
       endRendering();
+    this.renderLow = renderLow;
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
         || newAntialiasing != isFullSceneAntialiasingEnabled) {
       windowWidth = newWindowWidth;
@@ -611,7 +613,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     int mask = colix & C.TRANSLUCENT_MASK;
     if (mask == C.TRANSPARENT)
       return false;
-    boolean isTranslucent = mask != 0;
+    if (renderLow)
+      mask = 0;
+    boolean isTranslucent = (mask != 0);
     isScreened = isTranslucent && mask == C.TRANSLUCENT_SCREENED;
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;

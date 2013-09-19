@@ -548,7 +548,7 @@ public class Escape {
           if (Character.isDigit(ch)) {
             if (iThis < 0)
               iThis = 0;
-            iThis = (iThis << 3) + (iThis << 1) + (ch - '0');
+            iThis = (iThis * 10) + (ch - 48);
           }
         }
       }
@@ -665,7 +665,8 @@ public class Escape {
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
-    if (info instanceof Integer || info instanceof Float || info instanceof Double)
+    if (info instanceof Integer || info instanceof Float
+        || info instanceof Double)
       return packageJSON(infoType, info.toString());
     if (info instanceof String)
       return packageJSON(infoType, fixString((String) info));
@@ -801,28 +802,24 @@ public class Escape {
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof AxisAngle4f) {
-      sb.append("[")
-      .appendF(((AxisAngle4f) info).x).append(",")
-      .appendF(((AxisAngle4f) info).y).append(",")
-      .appendF(((AxisAngle4f) info).z).append(",")
-      .appendF((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
-    return packageJSONSb(infoType, sb);
+      sb.append("[").appendF(((AxisAngle4f) info).x).append(",").appendF(
+          ((AxisAngle4f) info).y).append(",").appendF(((AxisAngle4f) info).z)
+          .append(",").appendF(
+              (float) (((AxisAngle4f) info).angle * 180d / Math.PI))
+          .append("]");
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof P4) {
-      sb.append("[")
-        .appendF(((P4) info).x).append(",")
-        .appendF(((P4) info).y).append(",")
-        .appendF(((P4) info).z).append(",")
-        .appendF(((P4) info).w).append("]");
+      sb.append("[").appendF(((P4) info).x).append(",").appendF(((P4) info).y)
+          .append(",").appendF(((P4) info).z).append(",")
+          .appendF(((P4) info).w).append("]");
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
       sb.append("{ ");
-      Iterator<String> e = ((Map<String, ?>) info).keySet().iterator();
-      while (e.hasNext()) {
-        String key = e.next();
-        sb.append(sep)
-            .append(packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
+      for (String key : ((Map<String, ?>) info).keySet()) {
+        sb.append(sep).append(
+            packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
         sep = ",";
       }
       sb.append(" }");
@@ -1017,20 +1014,23 @@ public class Escape {
   }
   
   public static int getHexitValue(char ch) {
-    if (ch >= '0' && ch <= '9')
-      return ch - '0';
-    else if (ch >= 'a' && ch <= 'f')
-      return 10 + ch - 'a';
-    else if (ch >= 'A' && ch <= 'F')
-      return 10 + ch - 'A';
+    if (ch >= 48 && ch <= 57)
+      return ch - 48;
+    else if (ch >= 97 && ch <= 102)
+      return 10 + ch - 97;
+    else if (ch >= 65 && ch <= 70)
+      return 10 + ch - 65;
     else
       return -1;
   }
 
   public static String[] unescapeStringArray(String data) {
+    // was only used for  LOAD "[\"...\",\"....\",...]" (coming from implicit string)
+    // now also used for simulation peaks array from JSpecView,
+    // which double-escapes strings, I guess
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
-      return null;
+      return null; 
     JmolList<String> v = new  JmolList<String>();
     int[] next = new int[1];
     next[0] = 1;
@@ -1038,7 +1038,7 @@ public class Escape {
       String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.addLast(TextFormat.simpleReplace(s, "\\\"", "\""));
+      v.addLast(TextFormat.simpleReplace(s, "\\\"", "\""));      
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    

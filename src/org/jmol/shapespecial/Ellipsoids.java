@@ -216,9 +216,13 @@ public class Ellipsoids extends Shape {
         bs = selectedAtoms;
       if (isOn)
         setSize(Integer.MAX_VALUE, bs);
-      for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1))
+      for (Ellipsoid e : atomEllipsoids.values()) {
+        Tensor t = e.tensor;
+        if ((t.type.equals(typeSelected) || typeSelected.equals(t.altType))
+            && t.isSelected(bs, -1)) {
           e.isOn = isOn;
+        }
+      }
       return;
     }
 
@@ -235,7 +239,7 @@ public class Ellipsoids extends Shape {
           e.options = options;
       return;
     }
-    
+
     if ("color" == propertyName) {
       short colix = C.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
@@ -317,10 +321,8 @@ private boolean initEllipsoids(Object value) {
   }
 
   private void getStateID(SB sb) {
-    Iterator<Ellipsoid> e = simpleEllipsoids.values().iterator();
     V3 v1 = new V3();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
+    for (Ellipsoid ellipsoid:simpleEllipsoids.values()) {
       Tensor t = ellipsoid.tensor;
       if (!ellipsoid.isValid || t == null)
         continue;
@@ -386,14 +388,20 @@ private boolean initEllipsoids(Object value) {
   }
 
   private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs, Atom[] atoms) {
-    Iterator<Ellipsoid> e = ellipsoids.values().iterator();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
-      ellipsoid.visible = ellipsoid.isValid && ellipsoid.isOn
-          && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
-      if (ellipsoid.tensor.atomIndex1 >= 0)
-        atoms[ellipsoid.tensor.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
-
+    for (Ellipsoid e: ellipsoids.values()) {
+      Tensor t = e.tensor; 
+      boolean isOK = true;
+      if (t.atomIndex1 >= 0) {
+        if (t.iType == Tensor.TYPE_ADP) {
+          boolean isModTensor = t.isModulated;
+          boolean isUnmodTensor = t.isUnmodulated;
+          boolean isModAtom = modelSet.isModulated(t.atomIndex1);
+          isOK =(!isModTensor && !isUnmodTensor || isModTensor == isModAtom);
+        }
+        atoms[t.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
+      }
+      e.visible = isOK && e.isValid && e.isOn
+      && (e.modelIndex < 0 || bs.get(e.modelIndex));
     }
   }
 
@@ -401,10 +409,8 @@ private boolean initEllipsoids(Object value) {
   public void setModelClickability() {
     if (atomEllipsoids.isEmpty())
       return;
-    Iterator<Ellipsoid> e = atomEllipsoids.values().iterator();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
-      int i = ellipsoid.tensor.atomIndex1;
+    for (Ellipsoid e: atomEllipsoids.values()) {
+      int i = e.tensor.atomIndex1;
       Atom atom = modelSet.atoms[i];
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))

@@ -22,6 +22,6 @@ public interface JmolFileAdapterInterface {
 
   public long getFileLength(double privateKey, String fileName) throws IOException;
 
-  public BufferedWriter openLogFile(double privateKey, String logFileName, boolean asAppend) throws IOException ;
+  public Object openLogFile(double privateKey, String logFileName, boolean asAppend) throws IOException ;
 
 }
