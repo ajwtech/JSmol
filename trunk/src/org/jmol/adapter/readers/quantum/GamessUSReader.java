@@ -90,6 +90,8 @@ public class GamessUSReader extends GamessReader {
    */
   @Override
   protected boolean checkLine() throws Exception {
+    if (line.indexOf("***************") >= 0)
+      Logger.info(readLine());
     boolean isBohr;
     if (line.indexOf("FINAL ENERGY IS") >= 0 || line.indexOf("TOTAL ENERGY = ") >= 0
         || line.indexOf("FINAL RHF ENERGY IS") >= 0)

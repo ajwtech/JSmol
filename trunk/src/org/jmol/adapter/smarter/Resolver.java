@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:24:27 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18655 $
+ * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
+ * $Revision: 18653 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -40,15 +40,17 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;MMCIF_PDBX;",
+    "cif.", ";Cif;MMCIF_PDBX;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
+    "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Magres;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
+    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
+             "VaspPoscar;Wien2k;Xcrysden;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -705,7 +707,7 @@ public class Resolver {
   private final static int LEADER_CHAR_MAX = 64;
   
   private final static String[] sptContainsRecords = 
-  { "spt", "# Jmol state", "# Jmol script" };
+  { "spt", "# Jmol state", "# Jmol script", "JmolManifest" };
   
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};
@@ -734,10 +736,13 @@ public class Resolver {
   private final static String[] pymolStartRecords =
   {"PyMOL", "}q" };
 
+  private final static String[] janaStartRecords = 
+  { "Jana", "Version Jana" };
+
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords };
+    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords, janaStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
@@ -874,6 +879,9 @@ public class Resolver {
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };
   
+  private final static String[] abinitContainsRecords = { "Abinit",
+    "http://www.abinit.org", "Catholique", "Louvain" };
+  
   
   
   
@@ -884,7 +892,7 @@ public class Resolver {
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
     dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
-    mopacArchiveContainsRecords
+    mopacArchiveContainsRecords,abinitContainsRecords
   };
 }
 

@@ -119,28 +119,28 @@ public class Mouse implements JmolMouseInterface {
       return;
     float[][] t1 = touches[0];
     float[][] t2 = touches[1];
-    float[] t10 = t1[0];
-    float[] t11 = t1[t2.length - 1];
-    float x10 = t10[0];
-    float x11 = t11[0]; 
-    float dx1 = x11 - x10;
-    float y10 = t10[1];
-    float y11 = t11[1]; 
-    float dy1 = y11 - y10;
+    float[] t1first = t1[0];
+    float[] t1last = t1[t2.length - 1];
+    float x1first = t1first[0];
+    float x1last = t1last[0]; 
+    float dx1 = x1last - x1first;
+    float y1first = t1first[1];
+    float y1last = t1last[1]; 
+    float dy1 = y1last - y1first;
     V3 v1 = V3.new3(dx1, dy1, 0);
     float d1 = v1.length();
-    float[] t20 = t2[0];
-    float[] t21 = t2[t2.length - 1];
-    float x20 = t20[0];
-    float x21 = t21[0]; 
-    float dx2 = x21 - x20;
-    float y20 = t20[1];
-    float y21 = t21[1]; 
-    float dy2 = y21 - y20;
+    float[] t2first = t2[0];
+    float[] t2last = t2[t2.length - 1];
+    float x2first = t2first[0];
+    float x2last = t2last[0]; 
+    float dx2 = x2last - x2first;
+    float y2first = t2first[1];
+    float y2last = t2last[1]; 
+    float dy2 = y2last - y2first;
     V3 v2 = V3.new3(dx2, dy2, 0);    
     float d2 = v2.length();
     // rooted finger --> zoom (at this position, perhaps?)
-    if (d1 < 3 || d2 < 3)
+    if (d1 < 1 || d2 < 1)
       return;
     v1.normalize();
     v2.normalize();
@@ -150,13 +150,13 @@ public class Mouse implements JmolMouseInterface {
     if (cos12 > 0.8) {
       // two co-aligned motions -- translate
       // just use finger 1, last move
-      int deltaX = (int) (x11 - t1[t1.length - 2][0]); 
-      int deltaY = (int) (y11 - t1[t1.length - 2][1]); 
+      int deltaX = (int) (x1last - t1[t1.length - 2][0]); 
+      int deltaY = (int) (y1last - t1[t1.length - 2][1]); 
       viewer.translateXYBy(deltaX, deltaY);
     } else if (cos12 < -0.8) {
       // two classic zoom motions -- zoom
-      v1 = V3.new3(x20 - x10, y20 - y10, 0);
-      v2 = V3.new3(x21 - x11, y21 - y11, 0);
+      v1 = V3.new3(x2first - x1first, y2first - y1first, 0);
+      v2 = V3.new3(x2last - x1last, y2last - y1last, 0);
       float dx = v2.length() - v1.length();
       wheeled(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
     }
@@ -190,7 +190,7 @@ public class Mouse implements JmolMouseInterface {
      * Netscape 4.* Win32 has a problem with mouseDragged if you left-drag then
      * none of the modifiers are selected we will try to fix that here
      ****************************************************************/
-    if ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0)
+    if ((modifiers & Binding.BUTTON_MASK) == 0)
       modifiers |= Binding.LEFT;
     /****************************************************************/
     dragged(e.getWhen(), e.getX(), e.getY(), modifiers);
@@ -383,7 +383,7 @@ public class Mouse implements JmolMouseInterface {
 
   private static int applyLeftMouse(int modifiers) {
     // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0) ? (modifiers | Binding.LEFT)
+    return ((modifiers & Binding.BUTTON_MASK) == 0) ? (modifiers | Binding.LEFT)
         : modifiers;
   }
 

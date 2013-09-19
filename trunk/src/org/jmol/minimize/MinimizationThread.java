@@ -23,20 +23,24 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.thread;
+package org.jmol.minimize;
 
 import org.jmol.api.MinimizerInterface;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
 public class MinimizationThread extends JmolThread {
   
-  private final MinimizerInterface minimizer;
+  private MinimizerInterface minimizer;
 
-  public MinimizationThread(MinimizerInterface minimizer, Viewer viewer) {
-    super();
+  public MinimizationThread() {}
+  
+  @Override
+  public int setManager(Object manager, Viewer viewer, Object options) {
+    minimizer = (Minimizer) manager;
     setViewer(viewer, "MinimizationThread");
-    this.minimizer = minimizer;
+    return 0;
   }
   
   @Override

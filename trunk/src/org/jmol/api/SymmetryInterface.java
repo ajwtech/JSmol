@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
@@ -70,21 +71,19 @@ public interface SymmetryInterface {
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
                                           int transX, int transY, int transZ);
 
-  public V3[] rotateEllipsoid(int i, P3 ptTemp,
-                                         V3[] axes, P3 ptTemp1,
-                                         P3 ptTemp2);
+  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, Matrix3f mTemp);
 
   public void setUnitCellAllFractionalRelative(boolean TF);
   
   public void setUnitCell(float[] notionalUnitCell);
 
-  public void toCartesian(P3 pt, boolean asAbsolue);
+  public void toCartesian(Tuple3f pt, boolean asAbsolue);
 
   public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 
-  public void toFractional(P3 pt, boolean isAbsolute);
+  public void toFractional(Tuple3f pt, boolean isAbsolute);
 
   public P3[] getUnitCellVertices();
 
@@ -170,4 +169,16 @@ public interface SymmetryInterface {
 
   public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp, boolean isAbsolute);
 
+  public boolean unitCellEquals(SymmetryInterface uc2);
+
+  public void unitize(P3 ptFrac);
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs);
+
+  public boolean hasLatticeCentering();
+
+  public Matrix4f getOperationGammaIS(int iop);
+
+  public int getSiteMultiplicity(P3 a);
+  
 }

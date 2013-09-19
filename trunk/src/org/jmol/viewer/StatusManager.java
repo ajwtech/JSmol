@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-04-14 18:18:39 -0500 (Sun, 14 Apr 2013) $
- * $Revision: 18110 $
+ * $Date: 2013-09-17 15:35:38 -0500 (Tue, 17 Sep 2013) $
+ * $Revision: 18660 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -80,7 +80,7 @@ viewerRefreshed
  * 
  */
 
-class StatusManager {
+public class StatusManager {
 
   protected Viewer viewer;
   private JmolStatusListener jmolStatusListener;
@@ -97,7 +97,7 @@ class StatusManager {
      allowStatusReporting = TF;
   }
   
-  String getStatusList() {
+  public String getStatusList() {
     return statusList;
   }
   
@@ -510,7 +510,7 @@ class StatusManager {
           viewer.scriptEditor.notifyScriptStart();
       } else if (viewer.scriptEditor.isVisible()
           && ((String) data[2]).length() > 0) {
-        viewer.scriptEditor.notifyContext(viewer.getScriptContext(), data);
+        viewer.scriptEditor.notifyContext(viewer.getScriptContext("SE notify"), data);
       }
     }
 
@@ -524,7 +524,7 @@ class StatusManager {
   }
   
   private int minSyncRepeatMs = 100;
-  boolean syncingScripts = false;
+  public boolean syncingScripts = false;
   boolean syncingMouse = false;
   boolean doSync() {
     return (isSynced && drivingSync && !syncDisabled);
@@ -543,12 +543,12 @@ class StatusManager {
   boolean syncDisabled = false;
   boolean stereoSync = false;
   
-  final static int SYNC_OFF = 0;
-  final static int SYNC_DRIVER = 1;
-  final static int SYNC_SLAVE = 2;
-  final static int SYNC_DISABLE = 3;
-  final static int SYNC_ENABLE = 4;
-  final static int SYNC_STEREO = 5;
+  public final static int SYNC_OFF = 0;
+  public final static int SYNC_DRIVER = 1;
+  public final static int SYNC_SLAVE = 2;
+  public final static int SYNC_DISABLE = 3;
+  public final static int SYNC_ENABLE = 4;
+  public final static int SYNC_STEREO = 5;
   
   void setSyncDriver(int syncMode) {
  
@@ -600,6 +600,12 @@ class StatusManager {
     if (port != 0 || notifyEnabled(EnumCallback.SYNC))
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
+  }
+ 
+  void modifySend(int atomIndex, int modelIndex, int mode) {
+    if (notifyEnabled(EnumCallback.STRUCTUREMODIFIED))
+      jmolCallbackListener.notifyCallback(EnumCallback.STRUCTUREMODIFIED,
+          new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex) });
   }
   
   int getSyncMode() {
@@ -674,7 +680,7 @@ class StatusManager {
   private String imageType;
 
   String dialogAsk(String type, String fileName) {
-    boolean isImage = (type.equals("Save Image"));
+    boolean isImage = type.equals("Save Image");
     JmolDialogInterface sd = (JmolDialogInterface) Interface
     .getOptionInterface("export.dialog.Dialog");
     if (sd == null)

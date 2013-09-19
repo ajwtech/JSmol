@@ -23,26 +23,26 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.thread;
+package org.jmol.script;
 
+import org.jmol.thread.JmolThread;
 import org.jmol.util.Logger;
-import org.jmol.viewer.ScriptManager;
 import org.jmol.viewer.Viewer;
 
 public class CommandWatcherThread extends JmolThread {
   /**
    * 
    */
-  private final ScriptManager scriptManager;
+  private ScriptManager scriptManager;
 
-  /**
-   * @param viewer 
-   * @param scriptManager
-   */
-  public CommandWatcherThread(Viewer viewer, ScriptManager scriptManager) {
-    super();
+  public CommandWatcherThread() {}
+  
+  
+  @Override
+  public int setManager(Object manager, Viewer viewer, Object params) {
+    scriptManager = (ScriptManager) manager;
     setViewer(viewer, "CommmandWatcherThread"); 
-    this.scriptManager = scriptManager;
+    return 0;
   }
 
   private final static int commandDelay = 50; // was 200

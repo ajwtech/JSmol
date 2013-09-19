@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.cifpdb;
+package org.jmol.adapter.readers.pdb;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
@@ -194,21 +194,22 @@ public class PdbReader extends AtomSetCollectionReader {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( JmolList<Map<String, Object>>) htParams.remove("vTlsModels");
    }
-   if (checkFilterKey("TYPE ")) {
+   String s = getFilter("TYPE ");
+   if (s != null) {
      // first column, nColumns;
-     String s = filter.substring(filter.indexOf("TYPE ") + 5).replace(',', ' ').replace(';', ' ');
-     String[] tokens = Parser.getTokens(s);
+     String[] tokens = Parser.getTokens(s.replace(',', ' '));
      atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
      int pt = tokens[1].indexOf("=");
      if (pt >= 0) {
-       filterAtomTypeStr = tokens[1].substring(pt + 1).toUpperCase();
+       setFilterAtomTypeStr(tokens[1].substring(pt + 1).toUpperCase());
      } else {
        pt = tokens[1].length();
      }
      atomTypeLen = Integer.parseInt(tokens[1].substring(0, pt));
    }
-   if (checkFilterKey("CONF ")) {
-     configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
+   String conf = getFilter("CONF ");
+   if (conf != null) {
+     configurationPtr = parseIntStr(conf);
      sbIgnored = new SB();
      sbSelected = new SB();
    }
@@ -420,7 +421,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R");
+       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R", false);
        
        // check for equal: 
        
@@ -640,7 +641,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           }
           mat[15] = 1;
           Matrix4f m4 = new Matrix4f();
-          m4.setA(mat);
+          m4.setA(mat, 0);
           if (m4.equals(mIdent))
             biomts.add(0, m4);
           else
@@ -954,8 +955,7 @@ REMARK 290 REMARK: NULL
         
     }
     
-    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
-        : (int) (floatOccupancy * 100));
+    atom.foccupancy = (Float.isNaN(floatOccupancy) ? 1 : floatOccupancy);
     
   }
 
@@ -1822,7 +1822,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U");
+    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U", false);
   }
 
   private void tlsAddError(String error) {

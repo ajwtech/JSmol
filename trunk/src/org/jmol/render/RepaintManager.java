@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:24:27 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18655 $
+ * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
+ * $Revision: 18653 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -106,10 +106,8 @@ public class RepaintManager implements JmolRepaintManager {
     if (repaintPending)
       return false;
     repaintPending = true;
-    if (holdRepaint == 0) {
-      //System.out.println("RM refresh() " + (test++));
+    if (holdRepaint == 0)
       repaintNow(why);
-    }
     return true;
   }
 
@@ -137,6 +135,7 @@ public class RepaintManager implements JmolRepaintManager {
      * 
      */
     {
+      //System.out.println("RepaintMan repaintNow " + why);
       viewer.apiPlatform.repaint(viewer.getDisplay());
     }
      

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-20 18:14:00 -0500 (Tue, 20 Aug 2013) $
- * $Revision: 18609 $
+ * $Date: 2013-08-21 09:46:32 -0500 (Wed, 21 Aug 2013) $
+ * $Revision: 18611 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -55,6 +55,8 @@ import org.jmol.util.V3;
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
+  public BS bsAtoms; // required for CIF reader
+    
   private String fileTypeName;
   
   public String getFileTypeName() {
@@ -79,8 +81,6 @@ public class AtomSetCollection {
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfoMap() {
     return atomSetCollectionAuxiliaryInfo;
   }
-  
-  public BS bsAtoms; // required for CIF reader
   
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
@@ -473,7 +473,6 @@ public class AtomSetCollection {
     atomSetNumbers = new int[16];
     atomSymbolicMap = new Hashtable<Object, Integer>();
     bonds = null;
-    cartesians = null;
     connectLast = null;
     currentAtomSetIndex = -1;
     latticeCells = null;
@@ -805,23 +804,18 @@ public class AtomSetCollection {
   public void addVibrationVector(int iatom, float x, float y, float z) {
     if (!allowMultiple)
       iatom = iatom % atomCount;
-    Atom atom = atoms[iatom];
-    atom.vectorX = x;
-    atom.vectorY = y;
-    atom.vectorZ = z;
+    atoms[iatom].vib = V3.new3(x, y, z);
   }
 
   void setAtomSetSpaceGroupName(String spaceGroupName) {
     setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName+"");
   }
     
-  public void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
-    this.coordinatesAreFractional = coordinatesAreFractional;
-    setAtomSetAuxiliaryInfo(
-        "coordinatesAreFractional",
-        Boolean.valueOf(coordinatesAreFractional));
-    if (coordinatesAreFractional)
-      setGlobalBoolean(GLOBAL_FRACTCOORD);    
+  public void setCoordinatesAreFractional(boolean tf) {
+    coordinatesAreFractional = tf;
+    setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.valueOf(tf));
+    if (tf)
+      setGlobalBoolean(GLOBAL_FRACTCOORD);
   }
   
   float symmetryRange;
@@ -881,12 +875,13 @@ public class AtomSetCollection {
     Logger.info("Using supercell \n" + Matrix4f.newA(fmatSupercell));
   }
  
-  SymmetryInterface symmetry;
+  public SymmetryInterface symmetry;
   public SymmetryInterface getSymmetry() {
     if (symmetry == null)
       symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
+  
   
   
   
@@ -913,9 +908,9 @@ public class AtomSetCollection {
     }
   }
 
-  boolean addSpaceGroupOperation(String xyz) {
+  int addSpaceGroupOperation(String xyz) {
     getSymmetry().setSpaceGroup(doNormalize);
-    return (symmetry.addSpaceGroupOperation(xyz, 0) >= 0);
+    return symmetry.addSpaceGroupOperation(xyz, 0);
   }
   
   public void setLatticeParameter(int latt) {
@@ -923,13 +918,9 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry() throws Exception {
-    //parameters are counts of unit cells as [a b c]
-    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
-  }
-
-  void applySymmetryUsing(SymmetryInterface symmetry) throws Exception {
-    getSymmetry().setSpaceGroupS(symmetry);
+  void applySymmetry(SymmetryInterface symmetry) throws Exception {
+    if (symmetry != null)
+      getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
     applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }
@@ -937,7 +928,8 @@ public class AtomSetCollection {
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
    
-  private void applySymmetryLattice(int maxX, int maxY, int maxZ) throws Exception {
+  private void applySymmetryLattice(int maxX, int maxY, int maxZ)
+      throws Exception {
     if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
       return;
     if (fmatSupercell != null) {
@@ -972,8 +964,7 @@ public class AtomSetCollection {
       symmetry = null;
       setNotionalUnitCell(new float[] { 0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z,
           pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z }, null,
-          (P3) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex,
-              "unitCellOffset"));
+          (P3) getAtomSetAuxiliaryInfoValue(-1, "unitCellOffset"));
       setAtomSetSpaceGroupName("P1");
       getSymmetry().setSpaceGroup(doNormalize);
       symmetry.addSpaceGroupOperation("x,y,z", 0);
@@ -984,11 +975,12 @@ public class AtomSetCollection {
         symmetry.toFractional(atoms[i], true);
 
       // 5) apply the full lattice symmetry now
-      
+
       haveAnisou = false;
-      
+
       // ?? TODO
-      atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
+      atomSetAuxiliaryInfo[currentAtomSetIndex]
+          .remove("matUnitCellOrientation");
       doPackUnitCell = false; // already done that.
     }
 
@@ -1060,10 +1052,10 @@ public class AtomSetCollection {
       return;
     getSymmetry();
     for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
-      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
+      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null, false); // getTensor will return correct type 
   }
   
-  private int baseSymmetryAtomCount;
+  public int baseSymmetryAtomCount;
   
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
@@ -1134,7 +1126,7 @@ public class AtomSetCollection {
         : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
             : 1 // not checking
     );
-    cartesians = new P3[cartesianCount];
+    P3[] cartesians = new P3[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
       atoms[i + iAtomFirst].bsSymmetry = BSUtil.newBitSet(operationCount
           * (nCells + 1));
@@ -1156,6 +1148,10 @@ public class AtomSetCollection {
       rmaxz = -Float.MAX_VALUE;
     }
     // always do the 555 cell first
+    
+    // incommensurate symmetry can have lattice centering, reulting in 
+    // duplication of operators.
+    checkAll = checkSpecial && symmetry.hasLatticeCentering();
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -1192,7 +1188,7 @@ public class AtomSetCollection {
             rmaxz += absRange;
           }
           cell555Count = pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, 0,
-              0, 0, 0, pt, iCell * operationCount);
+              0, 0, 0, pt, iCell * operationCount, cartesians);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -1204,7 +1200,6 @@ public class AtomSetCollection {
     }
     
     // now apply all the translations
-    
     iCell = 0;
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
@@ -1212,7 +1207,7 @@ public class AtomSetCollection {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
-                cell555Count, pt, iCell * operationCount);
+                cell555Count, pt, iCell * operationCount, cartesians);
         }
     if (iCell * noSymmetryCount == atomCount - iAtomFirst)
       appendAtomProperties(iCell);
@@ -1224,7 +1219,7 @@ public class AtomSetCollection {
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
-    symmetry.setSpaceGroupS(null);
+    //symmetry.setSpaceGroupS(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     // turn off global fractional conversion -- this will be model by model
@@ -1235,7 +1230,7 @@ public class AtomSetCollection {
   
   private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
     symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
-    String name = (String) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "spaceGroup");
+    String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1251,23 +1246,23 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }
 
-  P3[] cartesians;
-  int bondCount0;
-  int bondIndex0;
-  boolean applySymmetryToBonds = false;
-  boolean checkSpecial = true;
+  private int bondCount0;
+  private int bondIndex0;
+  private boolean applySymmetryToBonds = false;
+  private boolean checkSpecial = true;
+  private boolean checkAll = false;
 
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
   }
   
-  private final P3 ptTemp = new P3();
-  private final P3 ptTemp1 = new P3();
-  private final P3 ptTemp2 = new P3();
+  private P3 ptTemp;
+  private Matrix3f mTemp;
   
-  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
-                               int transY, int transZ, int baseCount, int pt,
-                               int iCellOpPt) throws Exception {
+  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, 
+                               int transX, int transY, int transZ, 
+                               int baseCount, int pt,
+                               int iCellOpPt, P3[] cartesians) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
@@ -1298,7 +1293,7 @@ public class AtomSetCollection {
     int atomMax = iAtomFirst + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && symmetry.getSpaceGroupXyz(iSym, true).equals("x,y,z"))
+      if (isBaseCell && iSym == 0)
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -1322,7 +1317,7 @@ public class AtomSetCollection {
             transZ);
         Atom special = null;
         P3 cartesian = P3.newP(ptAtom);
-        symmetry.toCartesian(cartesian, false);
+        symmetry. toCartesian(cartesian, false);
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.setT(cartesian);
@@ -1341,7 +1336,8 @@ public class AtomSetCollection {
           float minDist2 = Float.MAX_VALUE;
           if (checkSymmetryRange && !isInSymmetryRange(cartesian))
             continue;
-          for (int j = pt0; --j >= 0;) {
+          int j0 = (checkAll ? atomCount : pt0);
+          for (int j = j0; --j >= 0;) {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];
@@ -1377,22 +1373,10 @@ public class AtomSetCollection {
               Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
-              if (nOperations == 1) {
-                atom1.addTensor(Tensor.copyTensor(t), null);
-                continue;
-              }
-              V3[] eigenVectors = t.eigenVectors;
-              // note -- PDB reader specifically turns off cartesians
-              if (addCartesian) {
-                ptTemp.setT(cartesians[i - iAtomFirst]);
-              } else {
-                ptTemp.setT(atoms[i]);
-                symmetry.toCartesian(ptTemp, false);
-              }
-              eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp,
-                  eigenVectors, ptTemp1, ptTemp2);
-              atom1.addTensor(Tensor.getTensorFromEigenVectors(eigenVectors,
-                  t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null);
+              if (nOperations == 1)
+                atom1.addTensor(Tensor.copyTensor(t), null, false);
+              else
+                addRotatedTensor(atom1, t, iSym, false);
             }
           }
         }
@@ -1415,6 +1399,16 @@ public class AtomSetCollection {
     return pt;
   }
   
+  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
+    if (ptTemp == null) {
+      ptTemp = new P3();
+      mTemp = new Matrix3f();
+    }
+    return a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
+        .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
+        t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
+  }
+
   public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
@@ -1483,7 +1477,6 @@ public class AtomSetCollection {
       mat.m23 /= notionalUnitCell[2];
       if (symmetry != null && i > 0)
         symmetry.addSpaceGroupOperationM(mat);
-      //System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
@@ -1516,7 +1509,7 @@ public class AtomSetCollection {
     haveMappedSerials = false;
   }
 
-  boolean haveMappedSerials;
+  private boolean haveMappedSerials;
 
   private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)
@@ -1591,7 +1584,7 @@ public class AtomSetCollection {
   
   private void addTrajectoryStep() {
     P3[] trajectoryStep = new P3[atomCount];
-    boolean haveVibrations = (atomCount > 0 && !Float.isNaN(atoms[0].vectorX));
+    boolean haveVibrations = (atomCount > 0 && atoms[0] != null && !Float.isNaN(atoms[0].z));
     V3[] vibrationStep = (haveVibrations ? new V3[atomCount] : null);
     P3[] prevSteps = (trajectoryStepCount == 0 ? null 
         : (P3[]) trajectorySteps.get(trajectoryStepCount - 1));
@@ -1601,7 +1594,7 @@ public class AtomSetCollection {
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
       if (haveVibrations) 
-        vibrationStep[i] = V3.new3(atoms[i].vectorX, atoms[i].vectorY, atoms[i].vectorZ);
+        vibrationStep[i] = atoms[i].vib;
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
@@ -1653,13 +1646,8 @@ public class AtomSetCollection {
       return;
     }
     for (int i = 0; i < atomCount; i++) {
-      if (vibrationSteps != null) {
-        if (vibrations != null)
-          v = vibrations[i];
-        atoms[i].vectorX = v.x;
-        atoms[i].vectorY = v.y;
-        atoms[i].vectorZ = v.z;
-      }
+      if (vibrationSteps != null)
+        atoms[i].vib = (vibrations == null ? v : vibrations[i]);
       if (trajectory[i] != null)
         atoms[i].setT(trajectory[i]);
     }
@@ -1812,7 +1800,7 @@ public class AtomSetCollection {
   }
 
   private void appendAtomProperties(int nTimes) {
-    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(-1, "atomProperties");
     if (p == null) {
       return;
     }
@@ -1846,7 +1834,7 @@ public class AtomSetCollection {
   }
   
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return  atomSetAuxiliaryInfo[index].get(key);
+    return  atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex].get(key);
   }
   
   /**
@@ -1944,6 +1932,7 @@ public class AtomSetCollection {
   public void setAtomSetEnergy(String energyString, float value) {
     if (currentAtomSetIndex < 0)
       return;
+    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = " + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);
@@ -1972,7 +1961,6 @@ public class AtomSetCollection {
     for (int i = 0; i < bondCount; i++) {
       info[i] = new String[] { atoms[bonds[i].atomIndex1].atomName, 
         atoms[bonds[i].atomIndex2].atomName, "" + bonds[i].order };
-      //System.out.println("testing asc getBondList  " + info[i][0] + " " + info[i][1] + " " + info[i][2]);
     }
     return info;
   }
@@ -2004,5 +1992,5 @@ public class AtomSetCollection {
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
-
+  
 }

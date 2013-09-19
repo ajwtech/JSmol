@@ -26,18 +26,20 @@ package org.jmol.viewer;
 
 import java.util.Map;
 
-import org.jmol.thread.AnimationThread;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 //import org.jmol.util.JmolList;
 
+import org.jmol.api.Interface;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
 
 public class AnimationManager {
 
-  private AnimationThread animationThread;
-  private Viewer viewer;
+  private JmolThread animationThread;
+  private JmolThread modulationThread;
+  public Viewer viewer;
   
   AnimationManager(Viewer viewer) {
     this.viewer = viewer;
@@ -51,26 +53,33 @@ public class AnimationManager {
   public int lastFrameDelayMs;
 
   public void setAnimationOn(boolean animationOn) {
+    if (animationOn == this.animationOn)
+      return;
+    
     if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
       stopThread(false);
       return;
     }
     if (!viewer.getSpinOn())
-      viewer.refresh(3, "Viewer:setAnimationOn");
+      viewer.refresh(3, "Anim:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
 
   public void stopThread(boolean isPaused) {
+    boolean stopped = false;
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
+      stopped = true;
     }
     animationPaused = isPaused;
-    if (!viewer.getSpinOn())
+    if (stopped && !viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
     animation(false);
+    stopModulationThread();
     viewer.setStatusFrameChanged(false);
+    
   }
 
   public boolean setAnimationNext() {
@@ -109,7 +118,6 @@ public class AnimationManager {
 
   boolean isMovie;
   boolean animationPaused;
-  boolean inMotion;
   
   int currentModelIndex;
   int currentAnimationFrame;
@@ -300,6 +308,19 @@ public class AnimationManager {
     lastFramePainted = currentAnimationFrame;
   }
   
+  public void setModulationPlay(int modT1, int modT2) {
+    if (modT1 == Integer.MAX_VALUE || !viewer.haveModelSet() || viewer.isHeadless()) {
+      stopThread(false);
+      return;
+    }
+    if (modulationThread == null) {
+      modulationPlay = true;
+      modulationThread = (JmolThread) Interface.getOptionInterface("thread.ModulationThread");
+      modulationThread.setManager(this, viewer, new int[] {modT1, modT2} );
+      modulationThread.start();
+    }
+  }
+  
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstFrameIndex, lastFrameIndex);
@@ -311,7 +332,8 @@ public class AnimationManager {
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = new AnimationThread(this, viewer, firstFrameIndex, lastFrameIndex, intAnimThread);
+      animationThread = (JmolThread) Interface.getOptionInterface("thread.AnimationThread");
+      animationThread.setManager(this, viewer, new int[] {firstFrameIndex, lastFrameIndex, intAnimThread} );
       animationThread.start();
     }
   }
@@ -411,6 +433,16 @@ public class AnimationManager {
   private int lastFramePainted;
   private int lastModelPainted;
   private int intAnimThread;
+  public boolean modulationPlay;
+  public float modulationFps = 1;
+  public BS bsModulating;
+  
+  public void setModulationFps(float fps) {
+    if (fps > 0)
+      modulationFps = fps;
+    else
+      stopModulationThread();
+  }
   
   private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
@@ -509,6 +541,14 @@ public class AnimationManager {
 
   private int getFrameStep(int direction) {
     return frameStep * direction * currentDirection;
+  }
+
+  public void stopModulationThread() {
+    if (modulationThread != null) {
+      modulationThread.interrupt();
+      modulationThread = null;
+    }
+    modulationPlay = false;
   }
 
 
