@@ -86,8 +86,8 @@ public class Platform implements ApiPlatform {
     return new JmolFile(name);
   }
 
-  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
-    return new Mouse(viewer, actionManager);
+  public JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager) {
+    return new Mouse(privateKey, viewer, actionManager);
   }
 
   // /// Display
@@ -230,15 +230,11 @@ public class Platform implements ApiPlatform {
 	}
 
   public int getImageHeight(Object canvas) {
-		return Image.getHeight(canvas);
+		return (canvas == null ? -1 : Image.getHeight(canvas));
 	}
 
 	public int getImageWidth(Object canvas) {
-		return Image.getWidth(canvas);
-	}
-
-	public Object getJpgImage(Viewer viewer, int quality, String comment) {
-		return Image.getJpgImage(this, viewer, quality, comment);
+		return (canvas == null ? -1 : Image.getWidth(canvas));
 	}
 
 	public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
@@ -322,9 +318,9 @@ public class Platform implements ApiPlatform {
      * 
      * Mon Jan 07 2013 19:54:39 GMT-0600 (Central Standard Time)
      * 
-     * j2sNative
+     * @j2sNative
      * 
-     * return (new Date()).split(" (")[0];
+     * return ("" + (new Date())).split(" (")[0];
      */
     {
       return null;

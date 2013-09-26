@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-29 12:32:22 +0200 (Thu, 29 Aug 2013) $
- * $Revision: 18627 $
+ * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18711 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-08-29 12:32:22 +0200 (Thu, 29 Aug 2013) $"
+        // "$Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -124,7 +124,7 @@ public class JC {
   public final static String REPAINT_IGNORE = "\1## REPAINT_IGNORE ##";
 
   public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
-
+      
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
   public final static String allowedQuaternionFrames = "RC;RP;a;b;c;n;p;q;x;";
@@ -156,6 +156,33 @@ public class JC {
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
   public final static int MINIMIZATION_ATOM_MAX = 200;
   public final static float MINIMIZE_FIXED_RANGE = 5.0f;
+
+  public final static float ENC_CALC_MAX_DIST = 3f;
+  public final static int ENV_CALC_MAX_LEVEL = 3;//Geodesic.standardLevel;
+
+
+  public final static int LABEL_FRONT_FLAG    = 0x20;
+  public final static int LABEL_GROUP_FLAG    = 0x10;
+  public final static int LABEL_POINTER_FLAGS = 0x03;
+  public final static int LABEL_ALIGN_FLAGS   = 0x0C;
+  public final static int LABEL_ZPOS_FLAGS    = 0x30;
+  public final static int LABEL_SCALE_FLAG    = 0x40;
+  public final static int LABEL_EXACT_OFFSET_FLAG = 0x80;
+  public final static int LABEL_FLAGS         = 0xFF;
+  public final static int LABEL_FLAG_OFFSET   = 8;
+
+  //entry is just xxxxxxxxyyyyyyyy
+  //  3         2         1        
+  // 10987654321098765432109876543210
+  //         xxxxxxxxyyyyyyyytsfgaabp
+  //          x-align y-align||||| ||_pointer on
+  //                         ||||| |_background pointer color
+  //                         |||||_text alignment 0xC 
+  //                         ||||_labels group 0x10
+  //                         |||_labels front  0x20
+  //                         ||_scaled
+  //                         |_exact offset
+
 
   public final static int MOUSE_NONE = -1;
 
@@ -1564,4 +1591,59 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
+  public static int getOffset(int xOffset, int yOffset) {
+    xOffset = Math.min(Math.max(xOffset, -127), 127);
+    yOffset = Math.min(Math.max(yOffset, -127), 127);
+    return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+  }
+
+  public static int getXOffset(int offset) {
+    // ----48------FF--
+    switch (offset) {
+    case 0:
+      return LABEL_DEFAULT_X_OFFSET;
+    case Short.MAX_VALUE:
+      return 0;
+    default:
+      return (int) (((long) offset << 48) >> 56);
+    }
+  }
+
+  public static int getYOffset(int offset) {
+    // ----56--------FF
+    switch (offset) {
+    case 0:
+      return -LABEL_DEFAULT_Y_OFFSET;
+    case Short.MAX_VALUE:
+      return 0;
+    default:
+      return -(int) (((long) offset << 56) >> 56);
+    }
+  }
+
+  public static String getAlignmentName(int align) {
+    return JC.hAlignNames[align & 3];
+  }
+
+  public final static String[] hAlignNames = { "", "left", "center", "right",
+  "" };
+  public final static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
+
+  public static String getPointer(int pointer) {
+    return ((pointer & JC.POINTER_ON) == 0 ? ""
+        : (pointer & JC.POINTER_BACKGROUND) > 0 ? "background" : "on");
+  }
+
+  public final static int POINTER_NONE = 0;
+  public final static int POINTER_ON = 1;
+  public final static int POINTER_BACKGROUND = 2;
+  final public static int VALIGN_XY = 0;
+  final public static int VALIGN_TOP = 1;
+  final public static int VALIGN_BOTTOM = 2;
+  final public static int VALIGN_MIDDLE = 3;
+  final public static int VALIGN_XYZ = 4;
+  public final static int ALIGN_NONE = 0;
+  public final static int ALIGN_LEFT = 1;
+  public final static int ALIGN_CENTER = 2;
+  public final static int ALIGN_RIGHT = 3;
 }

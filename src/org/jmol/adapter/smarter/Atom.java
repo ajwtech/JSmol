@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-06 12:25:32 -0500 (Fri, 06 Sep 2013) $
- * $Revision: 18645 $
+ * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18711 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -54,13 +54,13 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public JmolList<Tensor> tensors;
+  public JmolList<Object> tensors;
   
   public Tensor addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
       return null;
     if (reset || tensors == null)
-      tensors = new JmolList<Tensor>();
+      tensors = new JmolList<Object>();
     tensors.addLast(tensor);
     if (type != null)
       tensor.setType(type);
@@ -86,9 +86,9 @@ public class Atom extends P3 implements Cloneable {
     if (anisoBorU != null)
       a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {
-      a.tensors = new JmolList<Tensor>();
+      a.tensors = new JmolList<Object>();
       for (int i = tensors.size(); --i >= 0;)
-        a.tensors.addLast(Tensor.copyTensor(tensors.get(i)));
+        a.tensors.addLast(((Tensor)tensors.get(i)).copyTensor());
     }
     return a;
   }

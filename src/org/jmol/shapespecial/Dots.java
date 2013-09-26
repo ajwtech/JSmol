@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-26 06:46:53 -0500 (Fri, 26 Jul 2013) $
- * $Revision: 18492 $
+ * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18711 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -33,8 +33,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.SB;
+import org.jmol.viewer.JC;
 
-import org.jmol.api.JmolStateCreator;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -56,7 +56,7 @@ public class Dots extends AtomShape {
   BS bsOn = new BS();
   private BS bsSelected, bsIgnore;
 
-  public static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
+  public static int MAX_LEVEL = JC.ENV_CALC_MAX_LEVEL;
 
   int thisAtom;
   float thisRadius;
@@ -68,7 +68,7 @@ public class Dots extends AtomShape {
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
-    ec = new EnvelopeCalculation(viewer, atomCount, mads);
+    ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
   }
 
   @Override
@@ -176,7 +176,7 @@ public class Dots extends AtomShape {
     bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation(viewer, atomCount, mads);
+      ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
   }
 
   @Override
@@ -296,9 +296,6 @@ public class Dots extends AtomShape {
     BS[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
-    JmolStateCreator sc = viewer.getStateCreator();
-    if (sc == null)
-      return "";
     SB s = new SB();
     Map<String, BS> temp = new Hashtable<String, BS>();
     int atomCount = viewer.getAtomCount();
@@ -315,7 +312,7 @@ public class Dots extends AtomShape {
             + Escape.eBS(bs));
       }
     }
-    return s.append(sc.getCommands(temp, null, "select")).toString();
+    return s.append(viewer.getCommands(temp, null, "select")).toString();
   }
 
 }

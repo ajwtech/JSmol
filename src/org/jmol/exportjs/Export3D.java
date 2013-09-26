@@ -24,11 +24,13 @@
 package org.jmol.exportjs;
 
 import java.awt.Image;
+import java.util.Map;
 
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
@@ -61,8 +63,6 @@ final public class Export3D implements JmolRendererInterface {
   String exportName;
 
   public Export3D() {
-    hermite3d = new HermiteRenderer(this);
-
   }
 
   public int getExportType() {
@@ -73,11 +73,11 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public Object initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
-                                    Object output) {
-    exportName = type;
+  public Object initializeExporter(Viewer viewer, double privateKey, GData gdata,
+                                    Map<String, Object> params) {
+    exportName = (String) params.get("type");
     try {
-      String name = "org.jmol.exportjs." + type + "Exporter";
+      String name = "org.jmol.exportjs." + exportName + "Exporter";
       Class<?> exporterClass = Class.forName(name);
       exporter = (Exporter) exporterClass.newInstance();
     } catch (Exception e) {
@@ -90,12 +90,12 @@ final public class Export3D implements JmolRendererInterface {
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
     this.privateKey = privateKey;
-    return (exporter.initializeOutput(viewer, privateKey, g3d, output) ? exporter : null);
+    return (exporter.initializeOutput(viewer, privateKey, g3d, params) ? exporter : null);
   }
 
-  public boolean initializeOutput(String type, Viewer viewer,
-                                  double privateKey, GData gdata, Object output) {
-    return exporter.initializeOutput(viewer, privateKey, g3d, output);
+  public boolean initializeOutput(Viewer viewer,
+                                  double privateKey, GData gdata, Map<String, Object> params) {
+    return exporter.initializeOutput(viewer, privateKey, g3d, params);
   }
 
   public String finalizeOutput() {
@@ -902,6 +902,11 @@ final public class Export3D implements JmolRendererInterface {
 
   public boolean getTranslucentCoverOnly() {
     return g3d.getTranslucentCoverOnly();
+  }
+
+  public void addRenderer(int tok) {
+    if (tok == T.hermitelevel)
+      hermite3d = (HermiteRenderer) new HermiteRenderer().set(this);
   }
 
 

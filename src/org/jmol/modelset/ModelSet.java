@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-10 09:03:58 -0500 (Sat, 10 Aug 2013) $
- * $Revision: 18534 $
+ * $Date: 2013-09-24 14:34:28 -0500 (Tue, 24 Sep 2013) $
+ * $Revision: 18692 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -835,6 +835,8 @@ import java.util.Map;
 
   public void setDihedrals(float[] dihedralList, BS[] bsBranches, float f) {
     int n = dihedralList.length / 6;
+    if (f > 1)
+      f = 1;
     for (int j = 0, pt = 0; j < n; j++, pt += 6) {
       BS bs = bsBranches[j];
       if (bs == null || bs.isEmpty())
