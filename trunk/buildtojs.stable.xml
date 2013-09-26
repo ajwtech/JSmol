@@ -251,7 +251,6 @@
    	<concat destfile="site/jsmol/js/corezip.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/JmolZipUtility.js
    		J/io2/ZipUtil.js
-   		java/io/ByteArrayOutputStream.js
    		java/io/FileInputStream.js
    		JZ/Checksum.js
    		JZ/CRC32.js
@@ -556,6 +555,7 @@
    		J/io/JmolBinary.js
    		J/io/OutputStringBuilder.js
    		J/shape/Shape.js
+   		java/io/ByteArrayOutputStream.js
    		java/io/ByteArrayInputStream.js
    		java/io/InputStreamReader.js
    		J/viewer/FileManager.js

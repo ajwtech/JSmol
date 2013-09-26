@@ -118,22 +118,18 @@
       	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
-      	<!-- selective - see next block -->
-        <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/popup/*"/>
       	<!-- unused -->
+        <exclude name="**/dialog/*"/>
+        <exclude name="**/export/**/*"/>
         <exclude name="**/multitouch/**/*"/>
+        <exclude name="**/viewer/*Awt*"/>
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/console" >
       <fileset dir="${jmol.path}/src/org/jmol/console">
-        <include name="Generic*.java" />
-      </fileset>
-    </copy>
-  	<copy overwrite="true" todir="src/org/jmol/export/image" >
-      <fileset dir="${jmol.path}/src/org/jmol/export/image">
         <include name="Generic*.java" />
       </fileset>
     </copy>
