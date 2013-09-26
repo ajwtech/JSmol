@@ -2,11 +2,10 @@ package org.jmol.api;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.OutputStream;
 import java.util.Map;
 
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.SB;
-import org.jmol.viewer.Viewer;
 
 public interface JmolDocument {
 
@@ -48,6 +47,6 @@ public interface JmolDocument {
 
   void close();
 
-  void setOutputStream(OutputStream os, Viewer viewer, double privateKey);
+  void setOutputChannel(JmolOutputChannel out);
 
 }

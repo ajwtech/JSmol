@@ -26,14 +26,12 @@ package org.jmol.io2;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.viewer.Viewer;
 
 
 //import java.io.RandomAccessFile;
@@ -69,14 +67,8 @@ public class BinaryDocument implements JmolDocument {
       } catch (Exception e) {
         // ignore
       }
-    if (os != null) {
-      try {
-        os.flush();
-        os.close();
-      } catch (IOException e) {
-        // ignore
-      }
-    }
+    if (out != null)
+       out.closeChannel();
   }
   
   public void setStream(BufferedInputStream bis, boolean isBigEndian) {
@@ -103,17 +95,8 @@ public class BinaryDocument implements JmolDocument {
 
   private byte ioReadByte() throws Exception {
     byte b = stream.readByte();
-    if (os != null) {
-      /**
-       * @j2sNative
-       * 
-       *  this.os.writeByteAsInt(b);
-       * 
-       */
-      {
-      os.write(b);
-      }
-    }
+    if (out != null)
+      out.writeByteAsInt(b);
     return b;
   }
 
@@ -138,13 +121,13 @@ public class BinaryDocument implements JmolDocument {
 
   private int ioRead(byte[] b, int off, int len) throws Exception {
     int n = stream.read(b, off, len);
-    if (n > 0 && os != null)
+    if (n > 0 && out != null)
       writeBytes(b, off, n);
     return n;
   }
 
   public void writeBytes(byte[] b, int off, int n) throws Exception {
-    os.write(b, off, n);
+    out.writeBytes(b, off, n);
   }
 
   public String readString(int nChar) throws Exception {
@@ -162,25 +145,15 @@ public class BinaryDocument implements JmolDocument {
 
   private short ioReadShort() throws Exception {
     short b = stream.readShort();
-    if (os != null)
+    if (out != null)
       writeShort(b);
     return b;
   }
 
 
   public void writeShort(short i) throws Exception {
-    /**
-     * @j2sNative
-     * 
-     *    this.os.writeByteAsInt(i >> 8);
-     *    this.os.writeByteAsInt(i);
-
-     * 
-     */
-    {
-      os.write(i >> 8);
-      os.write(i);
-    }
+    out.writeByteAsInt(i >> 8);
+    out.writeByteAsInt(i);
   }
 
   public int readIntLE() throws Exception {
@@ -195,29 +168,16 @@ public class BinaryDocument implements JmolDocument {
   
   private int ioReadInt() throws Exception {
     int i = stream.readInt();
-    if (os != null)
+    if (out != null)
       writeInt(i);
     return i;
   }
 
   public void writeInt(int i) throws Exception {
-    /**
-     * @j2sNative
-     * 
-     *    this.os.writeByteAsInt(i >> 24);
-     *    this.os.writeByteAsInt(i >> 16);
-     *    this.os.writeByteAsInt(i >> 8);
-     *    this.os.writeByteAsInt(i);
-
-     * 
-     */
-    {
-      os.write(i >> 24);
-      os.write(i >> 16);
-      os.write(i >> 8);
-      os.write(i);
-    }
-
+    out.writeByteAsInt(i >> 24);
+    out.writeByteAsInt(i >> 16);
+    out.writeByteAsInt(i >> 8);
+    out.writeByteAsInt(i);
   }
 
   public int swapBytesI(int n) {
@@ -255,7 +215,7 @@ public class BinaryDocument implements JmolDocument {
 
   private long ioReadLong() throws Exception {
     long b = stream.readLong();
-    if (os != null)
+    if (out != null)
       writeLong(b);
     return b;
   }
@@ -428,7 +388,7 @@ public class BinaryDocument implements JmolDocument {
 
   private double ioReadDouble() throws Exception {
     double d = stream.readDouble();
-    if (os != null)
+    if (out != null)
       writeLong(Double.doubleToRawLongBits(d));
     return d;
   }
@@ -468,10 +428,9 @@ public class BinaryDocument implements JmolDocument {
     return nBytes;
   }
 
-  OutputStream os;
-  public void setOutputStream(OutputStream os, Viewer viewer, double privateKey) {
-    if (viewer.checkPrivateKey(privateKey))
-      this.os = os;
+  JmolOutputChannel out;
+  public void setOutputChannel(JmolOutputChannel out) {
+      this.out = out;
   }
 
   public SB getAllDataFiles(String binaryFileList, String firstFile) {

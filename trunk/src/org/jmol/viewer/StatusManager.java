@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-17 15:35:38 -0500 (Tue, 17 Sep 2013) $
- * $Revision: 18660 $
+ * $Date: 2013-09-25 16:19:19 -0500 (Wed, 25 Sep 2013) $
+ * $Revision: 18704 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -682,7 +682,7 @@ public class StatusManager {
   String dialogAsk(String type, String fileName) {
     boolean isImage = type.equals("Save Image");
     JmolDialogInterface sd = (JmolDialogInterface) Interface
-    .getOptionInterface("export.dialog.Dialog");
+    .getOptionInterface("dialog.Dialog");
     if (sd == null)
       return null;
     sd.setupUI(false);

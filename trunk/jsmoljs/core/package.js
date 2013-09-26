@@ -52,9 +52,6 @@ var	basefile = base + "core.z.js";
     return;
 
 	ClazzLoader.jarClasspath (base + "corescript.z.js",	[  
-    "java.util.regex.Pattern", 
-    "$.Matcher", 
-    "$.MatchResult",     
     "J.api.JmolScriptManager", 
     "$.JmolScriptEvaluator",
     "$.JmolScriptFunction",
@@ -68,7 +65,8 @@ var	basefile = base + "core.z.js";
     "$.CommandWatcherThread", 
     "$.ScriptQueueThread", 
     "$.ScriptDelayThread", 
-    "$.ScriptManager" 
+    "$.ScriptManager",
+    "$.FileLoadThread"
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
@@ -157,8 +155,6 @@ var	basefile = base + "core.z.js";
 		"$.GZIPInputStream",
 		"$.Deflater",
 		"$.DeflaterOutputStream",
-
-		"java.io.ByteArrayOutputStream",
 		"$.PushbackInputStream",
 		"java.util.zip.CRC32",
 		"$.CheckedInputStream",
@@ -176,14 +172,15 @@ var	basefile = base + "core.z.js";
 
 		"J.api.JmolZipUtility",
 		"$.ZInputStream",
-		"$.JmolImageCreatorInterface",
-		"J.export.image.GenericCRCEncoder",
-		"$.GenericPngEncoder",
-		"$.GenericImageCreator",
-		"J.exportjs.JSImageCreator",
+		"J.image.CRCEncoder",
+		"$.PngEncoder",
+		"$.JpgEncoder",
+		"$.ImageEncoder",
 		"J.io2.ZipUtil",
-		"$.JpegEncoder",
-		"$.JmolZipInputStream"		
+		"$.JmolZipInputStream",
+    "J.viewer.OutputManager",
+    "J.viewer.OutputManagerAll",
+    "J.viewer.OutputManagerJS"
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[

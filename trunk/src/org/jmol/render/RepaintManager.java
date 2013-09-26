@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-16 17:23:39 -0500 (Mon, 16 Sep 2013) $
- * $Revision: 18653 $
+ * $Date: 2013-09-24 23:31:04 -0500 (Tue, 24 Sep 2013) $
+ * $Revision: 18694 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -22,6 +22,8 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.render;
+
+import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
@@ -224,17 +226,16 @@ public class RepaintManager implements JmolRepaintManager {
     }
   }
   
-  public String renderExport(String type, GData gdata, ModelSet modelSet,
-                      String fileName) {
+  public String renderExport(GData gdata, ModelSet modelSet, Map<String, Object> params) {
     boolean isOK;
     boolean logTime = viewer.getBoolean(T.showtiming);
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
     shapeManager.transformAtoms();
-    JmolRendererInterface g3dExport = viewer.initializeExporter(type, fileName);
+    JmolRendererInterface g3dExport = viewer.initializeExporter(params);
     isOK = (g3dExport != null);
     if (!isOK) {
-      Logger.error("Cannot export " + type);
+      Logger.error("Cannot export " + params.get("type"));
       return null;
     }
     g3dExport.renderBackground(g3dExport);

@@ -1,5 +1,7 @@
 /* 
 
+BH 9/23/2013 10:07:16 PM adds set of loadInline functions
+ 
 Jmol2.js   (JSmol version)
 author: Bob Hanson hansonr@stolaf.edu 5/24/2013 12:06:25 PM
 
@@ -151,6 +153,30 @@ function jmolDebugAlert(enableAlerts) {
   // n/a
 }
 
+
+function jmolLoadInline(model, targetSuffix) {
+  return jmolLoadInlineScript(model, null, targetSuffix, false)
+}
+
+function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
+  return jmolLoadInlineScript(ModelArray.join("\n"), script, targetSuffix, false)
+}
+
+function jmolAppendInlineArray(ModelArray, script, targetSuffix) {
+  return jmolLoadInlineScript(ModelArray.join("\n"), script, targetSuffix, true)
+}
+
+function jmolAppendInlineScript(model, script, targetSuffix) {
+  return jmolLoadInlineScript(model, script, targetSuffix, true)
+}
+
+function jmolLoadInlineScript(model, script, targetSuffix, isAppend) {
+  Jmol.script(jmolFindTarget(targetSuffix),
+     "load " 
+     + (isAppend ? "APPEND " : "") 
+     + "DATA 'mydata'\n" + model.replace(/\"/g,'\\"') + "\nEND 'mydata'\n")
+}
+
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
  alert("jmolAppletInline not implemented")
 }
@@ -166,28 +192,6 @@ function jmolFindTarget(targetSuffix) {
 
 function jmolScript(script, targetSuffix) {
   Jmol.script(jmolFindTarget(targetSuffix), script)
-}
-
-function jmolLoadInline(model, targetSuffix) {
-  alert("jmolLoadInline not implemented")
-}
-
-
-function jmolLoadInlineScript(model, script, targetSuffix) {
-  alert("jmolLoadInlineScript not implemented - use DATA command")
-}
-
-
-function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
-  alert("jmolLoadInlineArray not implemented - use DATA command")
-}
-
-function jmolAppendInlineArray(ModelArray, script, targetSuffix) {
-  alert("jmolAppendInlineArray not implemented - use DATA command")
-}
-
-function jmolAppendInlineScript(model, script, targetSuffix) {
-  alert("jmolAppendInlineScript not implemented - use DATA command")
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {

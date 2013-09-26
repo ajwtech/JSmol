@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-17 12:13:40 -0500 (Sat, 17 Aug 2013) $
- * $Revision: 18588 $
+ * $Date: 2013-09-22 20:12:27 -0500 (Sun, 22 Sep 2013) $
+ * $Revision: 18689 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -208,8 +208,11 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "fileMenu",
           "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload SIGNEDloadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDJAVAwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
+              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface " +
+              		"- SIGNEDJAVAcaptureMenuSPECIAL " +
+              		"- SIGNEDJAVAwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
               + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d SIGNEDJAVAwriteIdtf SIGNEDJAVAwriteMaya" },
+      {    "SIGNEDJAVAcaptureMenuSPECIAL", "SIGNEDJAVAcaptureRock SIGNEDJAVAcaptureSpin - SIGNEDJAVAcaptureBegin SIGNEDJAVAcaptureEnd SIGNEDJAVAcaptureOff SIGNEDJAVAcaptureOn SIGNEDJAVAcaptureFpsSPECIAL SIGNEDJAVAcaptureLoopingSPECIAL" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -488,7 +491,17 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDloadFileOrUrl", "load ?" },      
       { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
       { "SIGNEDloadScript", "script ?.spt" },      
-
+      
+      { "SIGNEDJAVAcaptureRock", "animation mode loop;capture '?Jmol.gif' rock y 5"},      
+      { "SIGNEDJAVAcaptureSpin", "animation mode loop;capture '?Jmol.gif' spin y"},      
+      { "SIGNEDJAVAcaptureBegin", "capture '?Jmol.gif'" },      
+      { "SIGNEDJAVAcaptureEnd", "capture ''"},      
+      { "SIGNEDJAVAcaptureOff", "capture off"},      
+      { "SIGNEDJAVAcaptureOn", "capture on"},      
+      { "SIGNEDJAVAcaptureFpsSPECIAL", "animation fps @{0+prompt('Capture replay frames per second?', animationFPS)};prompt 'animation FPS ' + animationFPS"},      
+      { "SIGNEDJAVAcaptureLoopingSPECIAL", "animation mode @{(animationMode=='ONCE' ? 'LOOP':'ONCE')};prompt 'animation MODE ' + animationMode"},
+      
+      
       { "writeFileTextVARIABLE", "if (_applet && !_signedApplet) { console;show file } else { write file \"?FILE?\"}" },      
       { "writeState", "if (_applet && !_signedApplet) { console;show state } else { write state \"?FILEROOT?.spt\"}" },      
       { "writeHistory", "if (_applet && !_signedApplet) { console;show history } else { write history \"?FILEROOT?.his\"}" },     
@@ -896,20 +909,30 @@ public class MainPopupResourceBundle extends PopupResource {
         "SIGNEDloadFileUnitCell", GT._("Load full unit cell"),      
         "SIGNEDloadScript", GT._("Open script"),      
 
+        "SIGNEDJAVAcaptureMenuSPECIAL", GT._("Capture"),
+        "SIGNEDJAVAcaptureRock", GT._("Capture rock"),
+        "SIGNEDJAVAcaptureSpin", GT._("Capture spin"),
+        "SIGNEDJAVAcaptureBegin", GT._("Start capturing"),
+        "SIGNEDJAVAcaptureEnd", GT._("End capturing"),
+        "SIGNEDJAVAcaptureOff", GT._("Disable capturing"),
+        "SIGNEDJAVAcaptureOn", GT._("Re-enable capturing"),
+        "SIGNEDJAVAcaptureFpsSPECIAL", GT._("Set capture replay rate"),
+        "SIGNEDJAVAcaptureLoopingSPECIAL", GT._("Toggle capture looping"),
+        
         "writeFileTextVARIABLE", GT._("Save a copy of {0}"),
         "writeState", GT._("Save script with state"),      
         "writeHistory", GT._("Save script with history"),      
-        "SIGNEDwriteJpg", GT._("Export {0} image", "JPG"),      
-        "SIGNEDwritePng", GT._("Export {0} image", "PNG"),      
-        "SIGNEDwritePngJmol", GT._("Export {0} image", "PNG+JMOL"),      
-        "SIGNEDwriteGif", GT._("Export {0} image", "GIF"),    
-        "SIGNEDwritePovray", GT._("Export {0} image", "POV-Ray"),      
+        "SIGNEDNOGLwriteJpg", GT._("Export {0} image", "JPG"),      
+        "SIGNEDNOGLwritePng", GT._("Export {0} image", "PNG"),      
+        "SIGNEDNOGLwritePngJmol", GT._("Export {0} image", "PNG+JMOL"),      
+        "SIGNEDJAVAwriteGif", GT._("Export {0} image", "GIF"),    
+        "SIGNEDJAVAwritePovray", GT._("Export {0} image", "POV-Ray"),      
         "SIGNEDwriteJmol", GT._("Save all as JMOL file (zip)"),      
         "SIGNEDwriteIsosurface", GT._("Save JVXL isosurface"),      
-        "SIGNEDwriteVrml", GT._("Export {0} 3D model", "VRML"),      
-        "SIGNEDwriteX3d", GT._("Export {0} 3D model", "X3D"),      
-        "SIGNEDwriteIdtf", GT._("Export {0} 3D model", "IDTF"),      
-        "SIGNEDwriteMaya", GT._("Export {0} 3D model", "Maya"),      
+        "SIGNEDJAVAwriteVrml", GT._("Export {0} 3D model", "VRML"),      
+        "SIGNEDJAVAwriteX3d", GT._("Export {0} 3D model", "X3D"),      
+        "SIGNEDJAVAwriteIdtf", GT._("Export {0} 3D model", "IDTF"),      
+        "SIGNEDJAVAwriteMaya", GT._("Export {0} 3D model", "Maya"),      
 
         "computationMenu", GT._("Computation"),      
         "minimize", GT._("Optimize structure"),      

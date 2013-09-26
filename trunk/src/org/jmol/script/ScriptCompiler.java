@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-09-14 13:11:44 -0500 (Sat, 14 Sep 2013) $
- * $Revision: 18650 $
+ * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18711 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -49,7 +49,7 @@ import java.util.Map;
 
 
 
-class ScriptCompiler extends ScriptCompilationTokenParser {
+public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /*
    * The Compiler class is really two parts -- 
@@ -67,7 +67,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
    * 
    */
   
-  ScriptCompiler(Viewer viewer) {
+  public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   
@@ -498,12 +498,17 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
      * to be used as input. These lines start with $ and have a [...] phrase
      * after them. Their presence switches us to this new mode where we use
      * those statements as our commands and any line WITHOUT those as comments.
+     * 
+     * adjusted to only do this if $ starts the FIRST line of a script
+     * and to accept standard $ ... entries clipped from the console  Jmol 13.3.6
+     * 
      */
-    if (ichToken == ichCurrentCommand && ch == '$') {
+    if (ichToken == ichCurrentCommand && ch == '$' && (isShowScriptOutput || ichToken == 0)) {
       isShowScriptOutput = true;
       isShowCommand = true;
-      while (ch != ']' && !eol(ch = charAt(ichT)))
-        ++ichT;
+      if (charAt(++ichT) == '[')
+        while (ch != ']' && !eol(ch = charAt(ichT)))
+          ++ichT;
       cchToken = ichT - ichToken;
       return CONTINUE;
     } else if (isShowScriptOutput && !isShowCommand) {

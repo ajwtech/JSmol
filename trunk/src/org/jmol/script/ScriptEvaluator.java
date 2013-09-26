@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-18 14:37:04 -0500 (Wed, 18 Sep 2013) $
- * $Revision: 18662 $
+ * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18711 $
  *
  * Copyright (C) 2003-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,8 +23,6 @@
  */
 package org.jmol.script;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
@@ -34,7 +32,6 @@ import java.util.Map;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptFunction;
-import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -45,20 +42,19 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.thread.JmolThread;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -91,7 +87,6 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.Viewer.ACCESS;
 
 public class ScriptEvaluator implements JmolScriptEvaluator {
 
@@ -196,14 +191,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * Bob Hanson, 6/2009 hansonr@stolaf.edu
    */
 
-  private boolean allowJSThreads = true;
+  public boolean allowJSThreads = true;
 
   public boolean getAllowJSThreads() {
     return allowJSThreads;
   }
 
   private boolean listCommands;
-  private boolean isJS;
+  public boolean isJS;
 
   public JmolScriptEvaluator setViewer(Viewer viewer) {
     this.viewer = viewer;
@@ -258,7 +253,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setStateScriptVersion(null); // set by compiler
   }
 
-  private boolean useThreads() {
+  public boolean useThreads() {
     return (!viewer.autoExit && viewer.haveDisplay && outputBuffer == null && allowJSThreads);
   }
 
@@ -387,6 +382,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executeCommands(sc.isTryCatch);
   }
 
+  public void runScript(String script) throws ScriptException {
+    if (!viewer.isPreviewOnly())
+      runScriptBuffer(script, outputBuffer);
+  }
+
   /**
    * runs a script and sends selected output to a provided StringXBuilder
    * 
@@ -451,7 +451,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public boolean chk;
   private boolean isCmdLine_C_Option;
   protected boolean isCmdLine_c_or_C_Option;
-  private boolean historyDisabled;
+  public boolean historyDisabled;
   public boolean logMessages;
   private boolean debugScript;
 
@@ -659,39 +659,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   public ShapeManager sm;
-
-  /**
-   * used for TRY command
-   * 
-   * @param context
-   * @param shapeManager
-   * @return true if successful; false if not
-   */
-  public boolean evaluateParallel(ScriptContext context,
-                                  ShapeManager shapeManager) {
-    ScriptEvaluator e = new ScriptEvaluator();
-    e.setViewer(viewer);
-    e.historyDisabled = true;
-    e.compiler = new ScriptCompiler(viewer);
-    e.sm = shapeManager;
-    try {
-      e.restoreScriptContext(context, true, false, false);
-      // TODO: This will disallow some motion commands
-      //       within a TRY/CATCH block in JavaScript, and
-      //       the code will block. 
-      e.allowJSThreads = false;
-      e.dispatchCommands(false, false);
-    } catch (Exception ex) {
-      viewer.setStringProperty("_errormessage", "" + ex);
-      if (e.thisContext == null) {
-        Logger.error("Error evaluating context " + ex);
-        if (!viewer.isJS)
-          ex.printStackTrace();
-      }
-      return false;
-    }
-    return true;
-  }
 
   /**
    * a general method to evaluate a string representing an atom set.
@@ -1233,61 +1200,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return resx;
   }
 
-  Object getBitsetIdent(BS bs, String label, Object tokenValue,
-                        boolean useAtomMap, int index, boolean isExplicitlyAll) {
-    boolean isAtoms = !(tokenValue instanceof BondSet);
-    if (isAtoms) {
-      if (label == null)
-        label = viewer.getStandardLabelFormat(0);
-      else if (label.length() == 0)
-        label = "%[label]";
-    }
-    int pt = (label == null ? -1 : label.indexOf("%"));
-    boolean haveIndex = (index != Integer.MAX_VALUE);
-    if (bs == null || chk || isAtoms && pt < 0) {
-      if (label == null)
-        label = "";
-      return isExplicitlyAll ? new String[] { label } : (Object) label;
-    }
-    ModelSet modelSet = viewer.modelSet;
-    int n = 0;
-    int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet) tokenValue)
-        .getAssociatedAtoms());
-    if (indices == null && label != null && label.indexOf("%D") > 0)
-      indices = viewer.getAtomIndices(bs);
-    boolean asIdentity = (label == null || label.length() == 0);
-    Map<String, Object> htValues = (isAtoms || asIdentity ? null : LabelToken
-        .getBondLabelValues());
-    LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
-        viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
-        htValues));
-    int nmax = (haveIndex ? 1 : BSUtil.cardinalityOf(bs));
-    String[] sout = new String[nmax];
-    for (int j = (haveIndex ? index : bs.nextSetBit(0)); j >= 0; j = bs
-        .nextSetBit(j + 1)) {
-      String str;
-      if (isAtoms) {
-        if (asIdentity)
-          str = modelSet.atoms[j].getInfo();
-        else
-          str = LabelToken.formatLabelAtomArray(viewer, modelSet.atoms[j],
-              tokens, '\0', indices);
-      } else {
-        Bond bond = modelSet.getBondAt(j);
-        if (asIdentity)
-          str = bond.getIdentity();
-        else
-          str = LabelToken.formatLabelBond(viewer, bond, tokens, htValues,
-              indices);
-      }
-      str = TextFormat.formatStringI(str, "#", (n + 1));
-      sout[n++] = str;
-      if (haveIndex)
-        break;
-    }
-    return nmax == 1 && !isExplicitlyAll ? sout[0] : (Object) sout;
-  }
-
   private SV getBitsetPropertySelector(int i, boolean mustBeSettable)
       throws ScriptException {
     int tok = getToken(i).tok;
@@ -1432,7 +1344,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       switch (minmaxtype) {
       case 0:
       case T.all:
-        return getBitsetIdent(bs, null, tokenValue, useAtomMap, index,
+        return getExtension().getBitsetIdent(bs, null, tokenValue, useAtomMap, index,
             isExplicitlyAll);
       }
       return "";
@@ -1919,8 +1831,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private Thread currentThread;
   public Viewer viewer;
-  protected ScriptCompiler compiler;
-  private Map<String, Object> definedAtomSets;
+  public ScriptCompiler compiler;
+  public Map<String, Object> definedAtomSets;
 
   public Map<String, Object> getDefinedAtomSets() {
     return definedAtomSets;
@@ -1929,19 +1841,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private SB outputBuffer;
 
   private String contextPath = "";
-  private String scriptFileName;
-  private String functionName;
+  public String scriptFileName;
+  public String functionName;
   private boolean isStateScript;
-  private int scriptLevel;
+  public int scriptLevel;
 
   private int scriptReportingLevel = 0;
-  private int commandHistoryLevelMax = 0;
+  public int commandHistoryLevelMax = 0;
 
   // created by Compiler:
   public T[][] aatoken;
   private short[] lineNumbers;
   private int[][] lineIndices;
-  private Map<String, SV> contextVariables;
+  public Map<String, SV> contextVariables;
 
   public Map<String, SV> getContextVariables() {
     return contextVariables;
@@ -2021,11 +1933,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return pc;
   }
 
-  public void runScript(String script) throws ScriptException {
-    if (!viewer.isPreviewOnly())
-      runScriptBuffer(script, outputBuffer);
-  }
-
   private boolean compileScriptFileInternal(String filename, String localPath,
                                             String remotePath, String scriptPath) {
     // from "script" command, with push/pop surrounding or viewer
@@ -2096,11 +2003,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (v instanceof SV ? SV.oValue((SV) v) : v);
   }
 
-  private String getParameterEscaped(String var) {
-    SV v = getContextVariableAsVariable(var);
-    return (v == null ? "" + viewer.getParameterEscaped(var) : v.escape());
-  }
-
   private String getStringParameter(String var, boolean orReturnName) {
     SV v = getContextVariableAsVariable(var);
     if (v != null)
@@ -2125,7 +2027,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return SV.nValue(v);
   }
 
-  private SV getContextVariableAsVariable(String var) {
+  public SV getContextVariableAsVariable(String var) {
     if (var.equals("expressionBegin"))
       return null;
     var = var.toLowerCase();
@@ -2283,7 +2185,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       contextVariables.put("_x", tokenAtom);
   }
 
-  private void clearDefinedVariableAtomSets() {
+  public void clearDefinedVariableAtomSets() {
     definedAtomSets.remove("# variable");
   }
 
@@ -2650,7 +2552,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  private ScriptContext thisContext;
+  public ScriptContext thisContext;
 
   public ScriptContext getThisContext() {
     return thisContext;
@@ -2751,7 +2653,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + (thisContext == null ? "" : "" + thisContext.id));
   }
 
-  private void restoreScriptContext(ScriptContext context,
+  public void restoreScriptContext(ScriptContext context,
                                     boolean isPopContext,
                                     boolean isFlowCommand, boolean statementOnly) {
 
@@ -2805,48 +2707,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private String getContext(boolean withVariables) {
-    SB sb = new SB();
-    ScriptContext context = thisContext;
-    while (context != null) {
-      if (withVariables) {
-        if (context.contextVariables != null) {
-          sb.append(getScriptID(context));
-          sb.append(StateManager.getVariableList(context.contextVariables, 80,
-              true, false));
-        }
-      } else {
-        sb.append(getErrorLineMessage(context.functionName,
-            context.scriptFileName, getLinenumber(context), context.pc,
-            statementAsString(viewer, context.statement, -9999, logMessages)));
-      }
-      context = context.parentContext;
-    }
-    if (withVariables) {
-      if (contextVariables != null) {
-        sb.append(getScriptID(null));
-        sb.append(StateManager.getVariableList(contextVariables, 80, true,
-            false));
-      }
-    } else {
-      sb.append(getErrorLineMessage(functionName, scriptFileName,
-          getLinenumber(null), pc, statementAsString(viewer, st, -9999,
-              logMessages)));
-    }
-
-    return sb.toString();
-  }
-
-  private int getLinenumber(ScriptContext c) {
+  public int getLinenumber(ScriptContext c) {
     return (c == null ? lineNumbers[pc] : c.lineNumbers[c.pc]);
-  }
-
-  private String getScriptID(ScriptContext context) {
-    String fuName = (context == null ? functionName : "function "
-        + context.functionName);
-    String fiName = (context == null ? scriptFileName : context.scriptFileName);
-    return "\n# " + fuName + " (file " + fiName
-        + (context == null ? "" : " context " + context.id) + ")\n";
   }
 
   // /////////////// error message support /////////////////
@@ -2937,7 +2799,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     errorOrWarn(iError, value, null, null, false);
   }
 
-  void errorStr2(int iError, String value, String more) throws ScriptException {
+  public void errorStr2(int iError, String value, String more) throws ScriptException {
     errorOrWarn(iError, value, more, null, false);
   }
 
@@ -3008,7 +2870,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   public final static int ERROR_moOccupancy = 28;
   public final static int ERROR_moOnlyOne = 29;
   public final static int ERROR_multipleModelsDisplayedNotOK = 30;
-  final static int ERROR_noData = 31;
+  public final static int ERROR_noData = 31;
   public final static int ERROR_noPartialCharges = 32;
   final static int ERROR_noUnitCell = 33;
   public final static int ERROR_numberExpected = 34;
@@ -3031,7 +2893,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   final static int ERROR_unrecognizedParameterWarning = 51;
   final static int ERROR_unrecognizedShowParameter = 52;
   public final static int ERROR_what = 53;
-  final static int ERROR_writeWhat = 54;
+  public final static int ERROR_writeWhat = 54;
   final static int ERROR_multipleModelsNotOK = 55;
   final static int ERROR_cannotSet = 56;
 
@@ -3246,7 +3108,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return msg;
   }
 
-  static String getErrorLineMessage(String functionName, String filename,
+  public static String getErrorLineMessage(String functionName, String filename,
                                     int lineCurrent, int pcCurrent,
                                     String lineInfo) {
     String err = "\n----";
@@ -3284,7 +3146,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return str.toString();
   }
 
-  static String statementAsString(Viewer viewer, T[] statement, int iTok,
+  public static String statementAsString(Viewer viewer, T[] statement, int iTok,
                                   boolean doLogMessages) {
     if (statement.length == 0)
       return "";
@@ -3479,12 +3341,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return sm.getShapePropertyData(shapeType, propertyName, data);
   }
 
-  private Object getShapePropertyIndex(int shapeType, String propertyName,
-                                       int index) {
-    return sm.getShapePropertyIndex(shapeType, propertyName, index);
-  }
-
-  private void setObjectMad(int iShape, String name, int mad) {
+  public void setObjectMad(int iShape, String name, int mad) {
     if (chk)
       return;
     viewer.setObjectMad(iShape, name, mad);
@@ -3502,7 +3359,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
   }
 
-  private void setShapePropertyBs(int iShape, String propertyName,
+  public void setShapePropertyBs(int iShape, String propertyName,
                                   Object propertyValue, BS bs) {
     if (!chk)
       sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
@@ -3523,7 +3380,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   ////////////////////  setting properties ////////////////////////
 
-  private void setBooleanProperty(String key, boolean value) {
+  public void setBooleanProperty(String key, boolean value) {
     if (!chk)
       viewer.setBooleanProperty(key, value);
   }
@@ -3551,7 +3408,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     showStringPrint(str, false);
   }
 
-  private void showStringPrint(String str, boolean isPrint) {
+  public void showStringPrint(String str, boolean isPrint) {
     if (chk || str == null)
       return;
     if (outputBuffer != null)
@@ -3560,7 +3417,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.showString(str, isPrint);
   }
 
-  private void scriptStatusOrBuffer(String s) {
+  public void scriptStatusOrBuffer(String s) {
     if (chk)
       return;
     if (outputBuffer != null) {
@@ -4335,7 +4192,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return checkLength(i + 1) - 1;
   }
 
-  private int checkLength(int length) throws ScriptException {
+  public int checkLength(int length) throws ScriptException {
     if (length >= 0)
       return checkLengthErrorPt(length, 0);
     // max
@@ -4384,14 +4241,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (i < slen && st[i] != null ? st[i].tok : T.nada);
   }
 
-  public static int tokAtArray(int i, T[] args) {
-    return (i < args.length && args[i] != null ? args[i].tok : T.nada);
-  }
-
-  private T tokenAt(int i, T[] args) {
-    return (i < args.length ? args[i] : null);
-  }
-
   private boolean checkToken(int i) {
     return (iToken = i) < slen;
   }
@@ -4437,7 +4286,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return 0;
   }
 
-  private int intParameterRange(int i, int min, int max) throws ScriptException {
+  public int intParameterRange(int i, int min, int max) throws ScriptException {
     int val = intParameter(i);
     if (val < min || val > max)
       integerOutOfRange(min, max);
@@ -4646,7 +4495,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) theToken.value;
   }
 
-  private String[] stringParameterSet(int i) throws ScriptException {
+  public String[] stringParameterSet(int i) throws ScriptException {
     switch (tokAt(i)) {
     case T.string:
       String s = stringParameter(i);
@@ -5353,7 +5202,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return false only when still working through resumeEval
    * @throws ScriptException
    */
-  private boolean dispatchCommands(boolean isSpt, boolean fromFunc)
+  public boolean dispatchCommands(boolean isSpt, boolean fromFunc)
       throws ScriptException {
     long timeBegin = 0;
     if (sm == null)
@@ -5530,11 +5379,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.bondorder:
           bondorder();
           break;
-        case T.calculate:
-          calculate();
-          break;
         case T.cache:
           cache();
+          break;
+        case T.capture:
+          capture();
           break;
         case T.cd:
           cd();
@@ -5548,20 +5397,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.color:
           color();
           break;
-        case T.compare:
-          compare();
-          break;
-        case T.configuration:
-          configuration();
-          break;
         case T.connect:
           connect(1);
           break;
         case T.console:
           console();
-          break;
-        case T.data:
-          data();
           break;
         case T.define:
           define();
@@ -5635,7 +5475,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           invertSelected();
           break;
         case T.javascript:
-          script(T.javascript, null);
+          script(T.javascript, null, null);
           break;
         case T.load:
           load();
@@ -5643,26 +5483,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.log:
           log();
           break;
-        case T.mapProperty:
-          mapProperty();
-          break;
         case T.message:
           message();
-          break;
-        case T.minimize:
-          minimize();
-          break;
-        case T.modulation:
-          modulation();
           break;
         case T.move:
           move();
           break;
         case T.moveto:
           moveto();
-          break;
-        case T.navigate:
-          navigate();
           break;
         case T.pause: // resume is done differently
           pause();
@@ -5714,16 +5542,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           set();
           break;
         case T.script:
-          script(T.script, null);
+          script(T.script, null, null);
           break;
         case T.select:
           select(1);
           break;
         case T.selectionhalos:
           selectionHalo(1);
-          break;
-        case T.show:
-          show();
           break;
         case T.slab:
           slab(false);
@@ -5768,9 +5593,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.vibration:
           vibration();
           break;
-        case T.write:
-          write(null);
-          break;
         case T.zap:
           zap(true);
           break;
@@ -5780,10 +5602,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.zoomTo:
           zoom(true);
           break;
+        case T.calculate:
+        case T.compare:
+        case T.configuration:
+        case T.mapProperty:
+        case T.minimize:
+        case T.modulation:
         case T.plot:
         case T.quaternion:
         case T.ramachandran:
-          getExtension().plot(st);
+        case T.data:
+        case T.navigate:
+        case T.show:
+        case T.write:
+          getExtension().dispatch(theToken.tok, false, st);
           break;
         default:
           error(ERROR_unrecognizedCommand);
@@ -5818,6 +5650,102 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     default:
       invArg();
     }
+  }
+
+  private void capture() throws ScriptException {
+    // capture "filename"
+    // capture "filename" ROTATE axis degrees // y 5 assumed; axis and degrees optional
+    // capture "filename" SPIN axis  // y assumed; axis optional
+    // capture off/on
+    // capture "" or just capture   -- end
+    if (!chk && !viewer.allowCapture()) {
+      showString("Cannot capture on this platform");
+      return;
+    }
+    int fps = viewer.getInt(T.animationfps);
+    int mode = 0;
+    String fileName = "";
+    Map<String, Object> params = viewer.captureParams;
+    boolean looping = !viewer.getAnimationReplayMode().name().equals("ONCE");
+    int tok = tokAt(1);
+    String sfps = "";
+    switch (tok) {
+    case T.nada:
+      mode = T.end;
+      break;
+    case T.string:
+      fileName = optParameterAsString(1);
+      if (fileName.length() == 0) {
+        mode = T.end;
+        break;
+      }
+      if (!fileName.endsWith(".gif"))
+        fileName += ".gif";
+      String s = null;
+      String axis = "y";
+      int i = 2;
+      switch (tokAt(i)) {
+      case T.rock:
+        looping = true;
+        i = 3;
+        axis = (tokAt(3) == T.integer ? "y" : optParameterAsString(i++)
+            .toLowerCase());
+        int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
+        s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
+        s = TextFormat.simpleReplace(s, "10", "" + n);
+        break;
+      case T.spin:
+        looping = true;
+        i = 3;
+        axis = optParameterAsString(i).toLowerCase();
+        if (axis.length() > 0)
+          i++;
+        s = "; rotate Y 360 30;delay 15.0;";
+        if (tokAt(i) == T.integer)
+          sfps = " " + (fps = intParameter(i++));
+        break;
+      case T.integer:
+        fps = intParameter(2);
+        break;
+      }
+      if (s != null) {
+        if (!chk)
+          viewer.setNavigationMode(false);
+        if (axis == "" || "xyz".indexOf(axis) < 0)
+          axis = "y";
+        s = TextFormat.simpleReplace(s, "Y", axis);
+        s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
+        script(0, null, s);
+        return;
+      }
+      if (params != null)
+        params = new Hashtable<String, Object>();
+      mode = T.movie;
+      params = new Hashtable<String, Object>();
+      if (!looping)
+        showString(GT._("Note: Enable looping using {0}",
+            new Object[] { "ANIMATION MODE LOOP" }));
+      showString(GT._("Animation delay based on: {0}",
+          new Object[] { "ANIMATION FPS " + fps }));
+      params.put("captureFps", Integer.valueOf(fps));
+      break;
+    case T.cancel:
+    case T.on:
+    case T.off:
+      checkLength(2);
+      mode = tok;
+      break;
+    default:
+      invArg();
+    }
+    if (chk || params == null)
+      return;
+    params.put("type", "GIF");
+    params.put("fileName", fileName);
+    params.put("quality", Integer.valueOf(-1));
+    params.put("captureMode", Integer.valueOf(mode));
+    params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
+    Logger.info(viewer.processWriteOrCapture(params));
   }
 
   public void setCursorWait(boolean TF) {
@@ -6707,207 +6635,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       throw new ScriptInterruption(this, "moveTo", 1);
   }
 
-  private void navigate() throws ScriptException {
-    /*
-     * navigation on/off navigation depth p # would be as a depth value, like
-     * slab, in percent, but could be negative navigation nSec translate X Y #
-     * could be percentages navigation nSec translate $object # could be a draw
-     * object navigation nSec translate (atom selection) #average of values
-     * navigation nSec center {x y z} navigation nSec center $object navigation
-     * nSec center (atom selection) navigation nSec path $object navigation nSec
-     * path {x y z theta} {x y z theta}{x y z theta}{x y z theta}... navigation
-     * nSec trace (atom selection)
-     */
-    if (slen == 1) {
-      setBooleanProperty("navigationMode", true);
-      return;
-    }
-    V3 rotAxis = V3.new3(0, 1, 0);
-    JmolList<Object[]> list = new JmolList<Object[]>();
-    P3 pt;
-    if (slen == 2) {
-      switch (getToken(1).tok) {
-      case T.on:
-      case T.off:
-        if (chk)
-          return;
-        setObjectMad(JC.SHAPE_AXES, "axes", 1);
-        setShapeProperty(JC.SHAPE_AXES, "position", P3.new3(50, 50,
-            Float.MAX_VALUE));
-        setBooleanProperty("navigationMode", true);
-        viewer.setNavOn(theTok == T.on);
-        return;
-      case T.stop:
-        if (!chk)
-          viewer.setNavXYZ(0, 0, 0);
-        return;
-      case T.point3f:
-        break;
-      default:
-        invArg();
-      }
-    }
-    if (!chk && !viewer.getBoolean(T.navigationmode))
-      setBooleanProperty("navigationMode", true);
-    for (int i = 1; i < slen; i++) {
-      float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
-      if (timeSec < 0)
-        invArg();
-      if (!chk && timeSec > 0)
-        refresh();
-      switch (getToken(i).tok) {
-      case T.point3f:
-      case T.leftbrace:
-        // navigate {x y z}
-        pt = getPoint3f(i, true);
-        iToken++;
-        if (iToken != slen)
-          invArg();
-        if (!chk)
-          viewer.setNavXYZ(pt.x, pt.y, pt.z);
-        return;
-      case T.depth:
-        float depth = floatParameter(++i);
-        if (!chk)
-          list.addLast(new Object[] { Integer.valueOf(T.depth),
-              Float.valueOf(timeSec), Float.valueOf(depth) });
-        //viewer.setNavigationDepthPercent(timeSec, depth);
-        continue;
-      case T.center:
-        pt = centerParameter(++i);
-        i = iToken;
-        if (!chk)
-          list.addLast(new Object[] { Integer.valueOf(T.point),
-              Float.valueOf(timeSec), pt });
-        //viewer.navigatePt(timeSec, pt);
-        continue;
-      case T.rotate:
-        switch (getToken(++i).tok) {
-        case T.x:
-          rotAxis.set(1, 0, 0);
-          i++;
-          break;
-        case T.y:
-          rotAxis.set(0, 1, 0);
-          i++;
-          break;
-        case T.z:
-          rotAxis.set(0, 0, 1);
-          i++;
-          break;
-        case T.point3f:
-        case T.leftbrace:
-          rotAxis.setT(getPoint3f(i, true));
-          i = iToken + 1;
-          break;
-        case T.identifier:
-          invArg(); // for now
-          break;
-        }
-        float degrees = floatParameter(i);
-        if (!chk)
-          list.addLast(new Object[] { Integer.valueOf(T.rotate),
-              Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees) });
-        //          viewer.navigateAxis(timeSec, rotAxis, degrees);
-        continue;
-      case T.translate:
-        float x = Float.NaN;
-        float y = Float.NaN;
-        if (isFloatParameter(++i)) {
-          x = floatParameter(i);
-          y = floatParameter(++i);
-        } else {
-          switch (tokAt(i)) {
-          case T.x:
-            x = floatParameter(++i);
-            break;
-          case T.y:
-            y = floatParameter(++i);
-            break;
-          default:
-            pt = centerParameter(i);
-            i = iToken;
-            if (!chk)
-              list.addLast(new Object[] { Integer.valueOf(T.translate),
-                  Float.valueOf(timeSec), pt });
-            //viewer.navTranslate(timeSec, pt);
-            continue;
-          }
-        }
-        if (!chk)
-          list.addLast(new Object[] { Integer.valueOf(T.percent),
-              Float.valueOf(timeSec), Float.valueOf(x), Float.valueOf(y) });
-        //viewer.navTranslatePercent(timeSec, x, y);
-        continue;
-      case T.divide:
-        continue;
-      case T.trace:
-        P3[][] pathGuide;
-        JmolList<P3[]> vp = new JmolList<P3[]>();
-        BS bs = atomExpressionAt(++i);
-        i = iToken;
-        if (chk)
-          return;
-        viewer.getPolymerPointsAndVectors(bs, vp);
-        int n;
-        if ((n = vp.size()) > 0) {
-          pathGuide = new P3[n][];
-          for (int j = 0; j < n; j++) {
-            pathGuide[j] = vp.get(j);
-          }
-          list.addLast(new Object[] { Integer.valueOf(T.trace),
-              Float.valueOf(timeSec), pathGuide });
-          //viewer.navigateGuide(timeSec, pathGuide);
-          continue;
-        }
-        break;
-      case T.path:
-        P3[] path;
-        float[] theta = null; // orientation; null for now
-        if (getToken(i + 1).tok == T.dollarsign) {
-          i++;
-          // navigate timeSeconds path $id indexStart indexEnd
-          String pathID = objectNameParameter(++i);
-          if (chk)
-            return;
-          setShapeProperty(JC.SHAPE_DRAW, "thisID", pathID);
-          path = (P3[]) getShapeProperty(JC.SHAPE_DRAW, "vertices");
-          refresh();
-          if (path == null)
-            invArg();
-          int indexStart = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
-              : 0);
-          int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
-              : Integer.MAX_VALUE);
-          list.addLast(new Object[] { Integer.valueOf(T.path),
-              Float.valueOf(timeSec), path, theta,
-              new int[] { indexStart, indexEnd } });
-          //viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
-          continue;
-        }
-        JmolList<P3> v = new JmolList<P3>();
-        while (isCenterParameter(i + 1)) {
-          v.addLast(centerParameter(++i));
-          i = iToken;
-        }
-        if (v.size() > 0) {
-          path = v.toArray(new P3[v.size()]);
-          if (!chk)
-            list.addLast(new Object[] { Integer.valueOf(T.path),
-                Float.valueOf(timeSec), path, theta,
-                new int[] { 0, Integer.MAX_VALUE } });
-          //viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
-          continue;
-        }
-        //$FALL-THROUGH$
-      default:
-        invArg();
-      }
-    }
-    if (!chk)
-      viewer.navigateList(this, list);
-  }
-
   private void bondorder() throws ScriptException {
     checkLength(-3);
     int order = 0;
@@ -7036,291 +6763,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setStereoMode(colors, stereoMode, degrees);
   }
 
-  private void compare() throws ScriptException {
-    // compare {model1} {model2} 
-    // compare {model1} {model2} ATOMS {bsAtoms1} {bsAtoms2}
-    // compare {model1} {model2} ORIENTATIONS
-    // compare {model1} {model2} ORIENTATIONS {bsAtoms1} {bsAtoms2}
-    // compare {model1} {model2} ORIENTATIONS [quaternionList1] [quaternionList2]
-    // compare {model1} {model2} SMILES "....."
-    // compare {model1} {model2} SMARTS "....."
-    // compare {model1} {model2} FRAMES
-    // compare {model1} ATOMS {bsAtoms1} [coords]
-    // compare {model1} [coords] ATOMS {bsAtoms1} [coords]
-
-    boolean isQuaternion = false;
-    boolean doRotate = false;
-    boolean doTranslate = false;
-    boolean doAnimate = false;
-    Quaternion[] data1 = null, data2 = null;
-    BS bsAtoms1 = null, bsAtoms2 = null;
-    JmolList<Object[]> vAtomSets = null;
-    JmolList<Object[]> vQuatSets = null;
-    iToken = 0;
-    float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken)
-        : Float.NaN);
-    ///BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
-    //BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
-    //if (bsFrom == null || bsTo == null)
-    ///invArg();
-    BS bsFrom = atomExpressionAt(++iToken);
-    P3[] coordTo = null;
-    BS bsTo = null;
-    if (isArrayParameter(++iToken)) {
-      coordTo = getPointArray(iToken, -1);
-    } else if (tokAt(iToken) != T.atoms) {
-      bsTo = atomExpressionAt(iToken);
-    }
-    BS bsSubset = null;
-    boolean isSmiles = false;
-    String strSmiles = null;
-    BS bs = BSUtil.copy(bsFrom);
-    if (bsTo != null)
-      bs.or(bsTo);
-    boolean isToSubsetOfFrom = (coordTo == null && bsTo != null && bs
-        .equals(bsFrom));
-    boolean isFrames = isToSubsetOfFrom;
-    for (int i = iToken + 1; i < slen; ++i) {
-      switch (getToken(i).tok) {
-      case T.frame:
-        isFrames = true;
-        break;
-      case T.smiles:
-        isSmiles = true;
-        //$FALL-THROUGH$
-      case T.search:
-        strSmiles = stringParameter(++i);
-        break;
-      case T.decimal:
-      case T.integer:
-        nSeconds = Math.abs(floatParameter(i));
-        if (nSeconds > 0)
-          doAnimate = true;
-        break;
-      case T.comma:
-        break;
-      case T.subset:
-        bsSubset = atomExpressionAt(++i);
-        i = iToken;
-        break;
-      case T.bitset:
-      case T.expressionBegin:
-        if (vQuatSets != null)
-          invArg();
-        bsAtoms1 = atomExpressionAt(iToken);
-        int tok = (isToSubsetOfFrom ? 0 : tokAt(iToken + 1));
-        bsAtoms2 = (coordTo == null && isArrayParameter(iToken + 1) ? null
-            : (tok == T.bitset || tok == T.expressionBegin ? atomExpressionAt(++iToken)
-                : BSUtil.copy(bsAtoms1)));
-        if (bsSubset != null) {
-          bsAtoms1.and(bsSubset);
-          if (bsAtoms2 != null)
-            bsAtoms2.and(bsSubset);
-        }
-
-        if (bsAtoms2 == null)
-          coordTo = getPointArray(++iToken, -1);
-        else
-          bsAtoms2.and(bsTo);
-        if (vAtomSets == null)
-          vAtomSets = new JmolList<Object[]>();
-        vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
-        i = iToken;
-        break;
-      case T.varray:
-        if (vAtomSets != null)
-          invArg();
-        isQuaternion = true;
-        data1 = ScriptMathProcessor.getQuaternionArray(((SV) theToken)
-            .getList(), T.list);
-        getToken(++i);
-        data2 = ScriptMathProcessor.getQuaternionArray(((SV) theToken)
-            .getList(), T.list);
-        if (vQuatSets == null)
-          vQuatSets = new JmolList<Object[]>();
-        vQuatSets.addLast(new Object[] { data1, data2 });
-        break;
-      case T.orientation:
-        isQuaternion = true;
-        break;
-      case T.point:
-      case T.atoms:
-        isQuaternion = false;
-        break;
-      case T.rotate:
-        doRotate = true;
-        break;
-      case T.translate:
-        doTranslate = true;
-        break;
-      default:
-        invArg();
-      }
-    }
-    if (chk)
-      return;
-
-    if (isFrames)
-      nSeconds = 0;
-    if (Float.isNaN(nSeconds) || nSeconds < 0)
-      nSeconds = 1;
-    else if (!doRotate && !doTranslate)
-      doRotate = doTranslate = true;
-    doAnimate = (nSeconds != 0);
-
-    boolean isAtoms = (!isQuaternion && strSmiles == null || coordTo != null);
-    if (vAtomSets == null && vQuatSets == null) {
-      if (bsSubset == null) {
-        bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BS());
-        if (bsAtoms1.nextSetBit(0) < 0) {
-          bsAtoms1 = bsFrom;
-          bsAtoms2 = bsTo;
-        } else {
-          bsAtoms2 = BSUtil.copy(bsAtoms1);
-          bsAtoms1.and(bsFrom);
-          bsAtoms2.and(bsTo);
-        }
-      } else {
-        bsAtoms1 = BSUtil.copy(bsFrom);
-        bsAtoms2 = BSUtil.copy(bsTo);
-        bsAtoms1.and(bsSubset);
-        bsAtoms2.and(bsSubset);
-        bsAtoms1.and(bsFrom);
-        bsAtoms2.and(bsTo);
-      }
-      vAtomSets = new JmolList<Object[]>();
-      vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
-    }
-
-    BS[] bsFrames;
-    if (isFrames) {
-      BS bsModels = viewer.getModelBitSet(bsFrom, false);
-      bsFrames = new BS[bsModels.cardinality()];
-      for (int i = 0, iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels
-          .nextSetBit(iModel + 1), i++)
-        bsFrames[i] = viewer.getModelUndeletedAtomsBitSet(iModel);
-    } else {
-      bsFrames = new BS[] { bsFrom };
-    }
-    for (int iFrame = 0; iFrame < bsFrames.length; iFrame++) {
-      bsFrom = bsFrames[iFrame];
-      float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
-      Quaternion q = null;
-      JmolList<Quaternion> vQ = new JmolList<Quaternion>();
-      P3[][] centerAndPoints = null;
-      JmolList<Object[]> vAtomSets2 = (isFrames ? new JmolList<Object[]>()
-          : vAtomSets);
-      for (int i = 0; i < vAtomSets.size(); ++i) {
-        BS[] bss = (BS[]) vAtomSets.get(i);
-        if (isFrames)
-          vAtomSets2.addLast(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
-        bss[0].and(bsFrom);
-      }
-      P3 center = null;
-      V3 translation = null;
-      if (isAtoms) {
-        if (coordTo != null) {
-          vAtomSets2.clear();
-          vAtomSets2.addLast(new Object[] { bsAtoms1, coordTo });
-        }
-        try {
-          centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
-        } catch (Exception e) {
-          invArg();
-        }
-        q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev,
-            true);
-        float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN : Math
-            .round(retStddev[0] * 100) / 100f);
-        float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN : Math
-            .round(retStddev[1] * 100) / 100f);
-        showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
-      } else if (isQuaternion) {
-        if (vQuatSets == null) {
-          for (int i = 0; i < vAtomSets2.size(); i++) {
-            BS[] bss = (BS[]) vAtomSets2.get(i);
-            data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
-            data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
-            for (int j = 0; j < data1.length && j < data2.length; j++) {
-              vQ.addLast(data2[j].div(data1[j]));
-            }
-          }
-        } else {
-          for (int j = 0; j < data1.length && j < data2.length; j++) {
-            vQ.addLast(data2[j].div(data1[j]));
-          }
-        }
-        retStddev[0] = 0;
-        data1 = vQ.toArray(new Quaternion[vQ.size()]);
-        q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
-        showString("RMSD = " + retStddev[0] + " degrees");
-      } else {
-        // SMILES
-        /* not sure why this was like this:
-        if (vAtomSets == null) {
-          vAtomSets = new  JmolList<BitSet[]>();
-        }
-        bsAtoms1 = BitSetUtil.copy(bsFrom);
-        bsAtoms2 = BitSetUtil.copy(bsTo);
-        vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
-        */
-
-        Matrix4f m4 = new Matrix4f();
-        center = new P3();
-        float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
-            null, m4, null, !isSmiles, false, null, center);
-        if (Float.isNaN(stddev))
-          invArg();
-        if (doTranslate) {
-          translation = new V3();
-          m4.get(translation);
-        }
-        if (doRotate) {
-          Matrix3f m3 = new Matrix3f();
-          m4.getRotationScale(m3);
-          q = Quaternion.newM(m3);
-        }
-        showString("RMSD = " + stddev + " Angstroms");
-      }
-      if (centerAndPoints != null)
-        center = centerAndPoints[0][0];
-      if (center == null) {
-        centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
-        center = centerAndPoints[0][0];
-      }
-      P3 pt1 = new P3();
-      float endDegrees = Float.NaN;
-      if (doTranslate) {
-        if (translation == null)
-          translation = V3.newVsub(centerAndPoints[1][0], center);
-        endDegrees = 0;
-      }
-      if (doRotate) {
-        if (q == null)
-          evalError("option not implemented", null);
-        pt1.setT(center);
-        pt1.add(q.getNormal());
-        endDegrees = q.getTheta();
-      }
-      if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
-        continue;
-      JmolList<P3> ptsB = null;
-      if (doRotate && doTranslate && nSeconds != 0) {
-        JmolList<P3> ptsA = viewer.getAtomPointVector(bsFrom);
-        Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
-            translation);
-        ptsB = Measure.transformPoints(ptsA, m4, center);
-      }
-      if (!useThreads())
-        doAnimate = false;
-      if (viewer.rotateAboutPointsInternal(this, center, pt1, endDegrees
-          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB, null)
-          && doAnimate && isJS)
-        throw new ScriptInterruption(this, "compare", 1);
-    }
-  }
-
-  float getSmilesCorrelation(BS bsA, BS bsB, String smiles, JmolList<P3> ptsA,
+  public float getSmilesCorrelation(BS bsA, BS bsB, String smiles, JmolList<P3> ptsA,
                              JmolList<P3> ptsB, Matrix4f m4,
                              JmolList<BS> vReturn, boolean isSmarts,
                              boolean asMap, int[][] mapSet, P3 center)
@@ -7819,7 +7262,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setNewRotationCenter(center);
   }
 
-  private String setObjectProperty() throws ScriptException {
+  public String setObjectProperty() throws ScriptException {
     String id = getShapeNameParameter(2);
     if (chk)
       return "";
@@ -8359,267 +7802,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     showString(viewer.cd(dir));
   }
 
-  private Object[] data;
-
-  private void mapProperty() throws ScriptException {
-    // map {1.1}.straightness  {2.1}.property_x resno
-    BS bsFrom, bsTo;
-    String property1, property2, mapKey;
-    int tokProp1 = 0;
-    int tokProp2 = 0;
-    int tokKey = 0;
-    while (true) {
-      if (tokAt(1) == T.selected) {
-        bsFrom = viewer.getSelectionSet(false);
-        bsTo = atomExpressionAt(2);
-        property1 = property2 = "selected";
-      } else {
-        bsFrom = atomExpressionAt(1);
-        if (tokAt(++iToken) != T.per
-            || !T.tokAttr(tokProp1 = tokAt(++iToken), T.atomproperty))
-          break;
-        property1 = parameterAsString(iToken);
-        bsTo = atomExpressionAt(++iToken);
-        if (tokAt(++iToken) != T.per
-            || !T.tokAttr(tokProp2 = tokAt(++iToken), T.settable))
-          break;
-        property2 = parameterAsString(iToken);
-      }
-      if (T.tokAttr(tokKey = tokAt(iToken + 1), T.atomproperty))
-        mapKey = parameterAsString(++iToken);
-      else
-        mapKey = T.nameOf(tokKey = T.atomno);
-      checkLast(iToken);
-      if (chk)
-        return;
-      BS bsOut = null;
-      showString("mapping " + property1.toUpperCase() + " for "
-          + bsFrom.cardinality() + " atoms to " + property2.toUpperCase()
-          + " for " + bsTo.cardinality() + " atoms using "
-          + mapKey.toUpperCase());
-      if (T.tokAttrOr(tokProp1, T.intproperty, T.floatproperty)
-          && T.tokAttrOr(tokProp2, T.intproperty, T.floatproperty)
-          && T.tokAttrOr(tokKey, T.intproperty, T.floatproperty)) {
-        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1
-            | T.selectedfloat, Float.NaN, Float.NaN);
-        float[] data2 = getBitsetPropertyFloat(bsFrom,
-            tokKey | T.selectedfloat, Float.NaN, Float.NaN);
-        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey | T.selectedfloat,
-            Float.NaN, Float.NaN);
-        boolean isProperty = (tokProp2 == T.property);
-        float[] dataOut = new float[isProperty ? viewer.getAtomCount()
-            : data3.length];
-        bsOut = new BS();
-        if (data1.length == data2.length) {
-          Map<Float, Float> ht = new Hashtable<Float, Float>();
-          for (int i = 0; i < data1.length; i++) {
-            ht.put(Float.valueOf(data2[i]), Float.valueOf(data1[i]));
-          }
-          int pt = -1;
-          int nOut = 0;
-          for (int i = 0; i < data3.length; i++) {
-            pt = bsTo.nextSetBit(pt + 1);
-            Float F = ht.get(Float.valueOf(data3[i]));
-            if (F == null)
-              continue;
-            bsOut.set(pt);
-            dataOut[(isProperty ? pt : nOut)] = F.floatValue();
-            nOut++;
-          }
-          if (isProperty)
-            viewer.setData(property2, new Object[] { property2, dataOut, bsOut,
-                Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
-                Integer.MAX_VALUE, 0);
-          else
-            viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
-        }
-      }
-      if (bsOut == null) {
-        String format = "{" + mapKey + "=%[" + mapKey + "]}." + property2
-            + " = %[" + property1 + "]";
-        String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
-            Integer.MAX_VALUE, false);
-        SB sb = new SB();
-        for (int i = 0; i < data.length; i++)
-          if (data[i].indexOf("null") < 0)
-            sb.append(data[i]).appendC('\n');
-        if (Logger.debugging)
-          Logger.debug(sb.toString());
-        BS bsSubset = BSUtil.copy(viewer.getSelectionSubset());
-        viewer.setSelectionSubset(bsTo);
-        try {
-          runScript(sb.toString());
-        } catch (Exception e) {
-          viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + e.toString());
-        } catch (Error er) {
-          viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + er.toString());
-        }
-        viewer.setSelectionSubset(bsSubset);
-      }
-      showString("DONE");
-      return;
-    }
-    invArg();
-  }
-
-  private void data() throws ScriptException {
-    String dataString = null;
-    String dataLabel = null;
-    boolean isOneValue = false;
-    int i;
-    switch (iToken = slen) {
-    case 5:
-      // parameters 3 and 4 are just for the ride: [end] and ["key"]
-      dataString = parameterAsString(2);
-      //$FALL-THROUGH$
-    case 4:
-    case 2:
-      dataLabel = parameterAsString(1);
-      if (dataLabel.equalsIgnoreCase("clear")) {
-        if (!chk)
-          viewer.setData(null, null, 0, 0, 0, 0, 0);
-        return;
-      }
-      if ((i = dataLabel.indexOf("@")) >= 0) {
-        dataString = "" + getParameter(dataLabel.substring(i + 1), T.string);
-        dataLabel = dataLabel.substring(0, i).trim();
-      } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
-        dataString = dataLabel.substring(i + 1).trim();
-        dataLabel = dataLabel.substring(0, i).trim();
-        isOneValue = true;
-      }
-      break;
-    default:
-      error(ERROR_badArgumentCount);
-    }
-    String dataType = dataLabel + " ";
-    dataType = dataType.substring(0, dataType.indexOf(" ")).toLowerCase();
-    if (dataType.equals("model") || dataType.equals("append")) {
-      load();
-      return;
-    }
-    if (chk)
-      return;
-    boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
-    data = new Object[4];
-    if (dataType.equals("element_vdw")) {
-      // vdw for now
-      data[0] = dataType;
-      data[1] = dataString.replace(';', '\n');
-      int n = Elements.elementNumberMax;
-      int[] eArray = new int[n + 1];
-      for (int ie = 1; ie <= n; ie++)
-        eArray[ie] = ie;
-      data[2] = eArray;
-      data[3] = Integer.valueOf(0);
-      viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
-      return;
-    }
-    if (dataType.equals("connect_atoms")) {
-      viewer.connect(Parser.parseFloatArray2d(dataString));
-      return;
-    }
-    if (dataType.indexOf("ligand_") == 0) {
-      // ligand structure for pdbAddHydrogen
-      viewer.setLigandModel(dataLabel.substring(7).toUpperCase() + "_data",
-          dataString.trim());
-      return;
-    }
-    if (dataType.indexOf("file_") == 0) {
-      // ligand structure for pdbAddHydrogen
-      viewer.setLigandModel(dataLabel.substring(5).toUpperCase() + "_file",
-          dataString.trim());
-      return;
-    }
-    if (dataType.indexOf("data2d_") == 0) {
-      // data2d_someName
-      data[0] = dataLabel;
-      data[1] = Parser.parseFloatArray2d(dataString);
-      data[3] = Integer.valueOf(2);
-      viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
-      return;
-    }
-    if (dataType.indexOf("data3d_") == 0) {
-      // data3d_someName
-      data[0] = dataLabel;
-      data[1] = Parser.parseFloatArray3d(dataString);
-      data[3] = Integer.valueOf(3);
-      viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
-      return;
-    }
-    String[] tokens = Parser.getTokens(dataLabel);
-    if (dataType.indexOf("property_") == 0
-        && !(tokens.length == 2 && tokens[1].equals("set"))) {
-      BS bs = viewer.getSelectionSet(false);
-      data[0] = dataType;
-      int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
-          .getParameter("propertyAtomNumberField")).intValue());
-      int atomNumberFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
-          .getParameter("propertyAtomNumberColumnCount")).intValue());
-      int propertyField = (isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
-          .getParameter("propertyDataField")).intValue());
-      int propertyFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
-          .getParameter("propertyDataColumnCount")).intValue());
-      if (!isOneValue && dataLabel.indexOf(" ") >= 0) {
-        if (tokens.length == 3) {
-          // DATA "property_whatever [atomField] [propertyField]"
-          dataLabel = tokens[0];
-          atomNumberField = Parser.parseInt(tokens[1]);
-          propertyField = Parser.parseInt(tokens[2]);
-        }
-        if (tokens.length == 5) {
-          // DATA
-          // "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
-          dataLabel = tokens[0];
-          atomNumberField = Parser.parseInt(tokens[1]);
-          atomNumberFieldColumnCount = Parser.parseInt(tokens[2]);
-          propertyField = Parser.parseInt(tokens[3]);
-          propertyFieldColumnCount = Parser.parseInt(tokens[4]);
-        }
-      }
-      if (atomNumberField < 0)
-        atomNumberField = 0;
-      if (propertyField < 0)
-        propertyField = 0;
-      int atomCount = viewer.getAtomCount();
-      int[] atomMap = null;
-      BS bsTemp = BSUtil.newBitSet(atomCount);
-      if (atomNumberField > 0) {
-        atomMap = new int[atomCount + 2];
-        for (int j = 0; j <= atomCount; j++)
-          atomMap[j] = -1;
-        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
-          int atomNo = viewer.getAtomNumber(j);
-          if (atomNo > atomCount + 1 || atomNo < 0 || bsTemp.get(atomNo))
-            continue;
-          bsTemp.set(atomNo);
-          atomMap[atomNo] = j;
-        }
-        data[2] = atomMap;
-      } else {
-        data[2] = BSUtil.copy(bs);
-      }
-      data[1] = dataString;
-      data[3] = Integer.valueOf(0);
-      viewer.setData(dataType, data, atomCount, atomNumberField,
-          atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
-      return;
-    }
-    int userType = AtomCollection.getUserSettableType(dataType);
-    if (userType >= 0) {
-      // this is a known settable type or "property_xxxx"
-      viewer.setAtomData(userType, dataType, dataString, isDefault);
-      return;
-    }
-    // this is just information to be stored.
-    data[0] = dataLabel;
-    data[1] = dataString;
-    data[3] = Integer.valueOf(0);
-    viewer.setData(dataType, data, 0, 0, 0, 0, 0);
-  }
-
   private void define() throws ScriptException {
     // note that the standard definition depends upon the
     // current state. Once defined, a setName is the set
@@ -8740,7 +7922,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setHoverLabel(strLabel);
   }
 
-  private void load() throws ScriptException {
+  public void load() throws ScriptException {
     boolean doLoadFiles = (!chk || isCmdLine_C_Option);
     boolean isAppend = false;
     boolean isInline = false;
@@ -8786,7 +7968,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // do not contain a full state script
         if (modelName.endsWith(".spt") || modelName.endsWith(".png")
             || modelName.endsWith(".pngj")) {
-          script(0, modelName);
+          script(0, modelName, null);
           return;
         }
       }
@@ -9353,7 +8535,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             ";\n    ").appendSB(loadScript);
       } else if (filename.startsWith("?") && viewer.isJS) {
         localName = null;
-        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"), filename, i, !isAppend);
+        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
+            filename, i, !isAppend);
         // on first pass, a ScriptInterruption will be thrown; 
         // on the second pass, we will have the file name, which will be cache://localLoad_n__m
       }
@@ -9361,7 +8544,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // set up the output stream from AS keyword
 
-    OutputStream os = null;
+    JmolOutputChannel out = null;
     if (localName != null) {
       if (localName.equals("."))
         localName = viewer.getFilePath(filename, true);
@@ -9370,11 +8553,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               viewer.getFilePath(filename, false)))
         invArg();
       String[] fullPath = new String[] { localName };
-      os = viewer.getOutputStream(localName, fullPath);
-      if (os == null)
+      out = viewer.getOutputChannel(localName, fullPath);
+      if (out == null)
         Logger.error("Could not create output stream for " + fullPath[0]);
       else
-        htParams.put("OutputStream", os);
+        htParams.put("outputChannel", out);
     }
 
     if (filenames == null && tokType == 0) {
@@ -9402,15 +8585,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
-    if (os != null)
-      try {
-        viewer.setFileInfo(new String[] { localName, localName, localName });
-        Logger.info(GT._("file {0} created", localName));
-        showString(viewer.getFilePath(localName, false) + " created");
-        os.close();
-      } catch (IOException e) {
-        Logger.error("error closing file " + e.toString());
-      }
+    if (out != null) {
+      viewer.setFileInfo(new String[] { localName, localName, localName });
+      Logger.info(GT._("file {0} created", localName));
+      showString(viewer.getFilePath(localName, false) + " created");
+      out.closeChannel();
+    }
     if (tokType > 0) {
       // we are just loading an atom property
       // reset the file info in FileManager, check for errors, and return
@@ -9422,7 +8602,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
         filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
-        script(0, filename);
+        script(0, filename, null);
         return;
       }
       evalError(errMsg, null);
@@ -9561,6 +8741,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return filename;
   }
 
+  @SuppressWarnings("static-access")
   private void measure() throws ScriptException {
     String id = null;
     int pt = 1;
@@ -9831,7 +9012,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tokAction = T.define;
       Text text = null;
       if (font != null)
-        text = Text.newLabel(viewer.getGraphicsData(), font, "", colix,
+        text = ((Text) Interface.getOptionInterface("modelset.Text")).newLabel(viewer.getGraphicsData(), font, "", colix,
             (short) 0, 0, 0, null);
       if (text != null)
         text.pymolOffset = offset;
@@ -9902,7 +9083,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.prompt(msg, "OK", null, true);
   }
 
-  private void refresh() {
+  public void refresh() {
     if (chk)
       return;
     viewer.setTainted(true);
@@ -10183,7 +9364,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isArrayParameter(++i)) {
           dihedralList = floatParameterSet(i, 6, Integer.MAX_VALUE);
           i = iToken;
-          isSpin = true;
         } else {
           int iAtom1 = atomExpressionAt(i).nextSetBit(0);
           int iAtom2 = atomExpressionAt(++iToken).nextSetBit(0);
@@ -10282,6 +9462,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (chk)
       return;
+
+    // process
+    if (dihedralList != null) {
+      if (endDegrees != Float.MAX_VALUE) {
+        isSpin = true;
+        degreesPerSecond = endDegrees;
+      }
+    }
+
     if (isSelected && bsAtoms == null)
       bsAtoms = viewer.getSelectionSet(false);
     if (bsCompare != null) {
@@ -10295,6 +9484,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             // -n means number of seconds, not degreesPerSecond
             -endDegrees / degreesPerSecond
                 : degreesPerSecond);
+
+    if (dihedralList != null) {
+      if (!isSpin) {
+        viewer.setDihedrals(dihedralList, null, 1);
+        return;
+      }
+      translation = null;
+    }
+
     if (q != null) {
       // only when there is a translation (4x4 matrix or TRANSLATE)
       // do we set the rotation to be the center of the selected atoms or model
@@ -10456,7 +9654,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         : null);
   }
 
-  private void script(int tok, String filename) throws ScriptException {
+  private void script(int tok, String filename, String theScript) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -10465,7 +9663,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
-    String theScript = null;
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
@@ -10477,7 +9674,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.jsEval(parameterAsString(1));
       return;
     }
-    if (filename == null) {
+    if (filename == null && theScript == null) {
       tok = tokAt(1);
       if (tok != T.string)
         error(ERROR_filenameExpected);
@@ -10755,92 +9952,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
   }
 
-  private void minimize() throws ScriptException {
-    BS bsSelected = null;
-    int steps = Integer.MAX_VALUE;
-    float crit = 0;
-    boolean addHydrogen = false;
-    boolean isSilent = false;
-    BS bsFixed = null;
-    MinimizerInterface minimizer = viewer.getMinimizer(false);
-    // may be null
-    for (int i = 1; i < slen; i++)
-      switch (getToken(i).tok) {
-      case T.addhydrogens:
-        addHydrogen = true;
-        continue;
-      case T.cancel:
-      case T.stop:
-        checkLength(2);
-        if (chk || minimizer == null)
-          return;
-        minimizer.setProperty(parameterAsString(i), null);
-        return;
-      case T.clear:
-        checkLength(2);
-        if (chk || minimizer == null)
-          return;
-        minimizer.setProperty("clear", null);
-        return;
-      case T.constraint:
-        if (i != 1)
-          invArg();
-        int n = 0;
-        float targetValue = 0;
-        int[] aList = new int[5];
-        if (tokAt(++i) == T.clear) {
-          checkLength(3);
-        } else {
-          while (n < 4 && !isFloatParameter(i)) {
-            aList[++n] = atomExpressionAt(i).nextSetBit(0);
-            i = iToken + 1;
-          }
-          aList[0] = n;
-          if (n == 1)
-            invArg();
-          targetValue = floatParameter(checkLast(i));
-        }
-        if (!chk)
-          viewer.getMinimizer(true).setProperty("constraint",
-              new Object[] { aList, new int[n], Float.valueOf(targetValue) });
-        return;
-      case T.criterion:
-        crit = floatParameter(++i);
-        continue;
-      case T.energy:
-        steps = 0;
-        continue;
-      case T.fixed:
-        if (i != 1)
-          invArg();
-        bsFixed = atomExpressionAt(++i);
-        if (bsFixed.nextSetBit(0) < 0)
-          bsFixed = null;
-        i = iToken;
-        if (!chk)
-          viewer.getMinimizer(true).setProperty("fixed", bsFixed);
-        if (i + 1 == slen)
-          return;
-        continue;
-      case T.select:
-        bsSelected = atomExpressionAt(++i);
-        i = iToken;
-        continue;
-      case T.silent:
-        isSilent = true;
-        break;
-      case T.step:
-        steps = intParameter(++i);
-        continue;
-      default:
-        invArg();
-        break;
-      }
-    if (!chk)
-      viewer.minimize(steps, crit, bsSelected, bsFixed, 0, addHydrogen,
-          isSilent, false);
-  }
-
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (slen == 1) {
@@ -10982,7 +10093,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setAtomCoordsRelative(pt, bs);
       return;
     }
-    char xyz = parameterAsString(i).toLowerCase().charAt(0);
+    char xyz = (parameterAsString(i).toLowerCase()+" ").charAt(0);
     if ("xyz".indexOf(xyz) < 0)
       error(ERROR_axisExpected);
     float amount = floatParameter(++i);
@@ -11686,31 +10797,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
-  private void configuration() throws ScriptException {
-    // if (!chk && viewer.getDisplayModelIndex() <= -2)
-    // error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
-    BS bsAtoms;
-    if (slen == 1) {
-      bsAtoms = viewer.setConformation();
-      viewer.addStateScriptRet("select", null, viewer.getSelectionSet(false),
-          null, "configuration", true, false);
-    } else {
-      int n = intParameter(checkLast(1));
-      if (chk)
-        return;
-      bsAtoms = viewer.getConformation(viewer.getCurrentModelIndex(), n - 1,
-          true);
-      viewer.addStateScript("configuration " + n + ";", true, false);
-    }
-    if (chk)
-      return;
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
-    setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
-    viewer.autoHbond(bsAtoms, bsAtoms, true);
-    viewer.select(bsAtoms, false, 0, tQuiet);
-  }
-
   private void vector() throws ScriptException {
     EnumType type = EnumType.SCREEN;
     float value = 1;
@@ -11785,172 +10871,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     viewer.setVibrationPeriod(-period);
-  }
-
-  private void calculate() throws ScriptException {
-    boolean isSurface = false;
-    boolean asDSSP = false;
-    BS bs1 = null;
-    BS bs2 = null;
-    int n = Integer.MIN_VALUE;
-    if ((iToken = slen) >= 2) {
-      clearDefinedVariableAtomSets();
-      switch (getToken(1).tok) {
-      case T.identifier:
-        checkLength(2);
-        break;
-      case T.formalcharge:
-        checkLength(2);
-        if (chk)
-          return;
-        n = viewer.calculateFormalCharges(null);
-        showString(GT._("{0} charges modified", n));
-        return;
-      case T.aromatic:
-        checkLength(2);
-        if (!chk)
-          viewer.assignAromaticBonds();
-        return;
-      case T.hbond:
-        if (slen != 2) {
-          // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
-          asDSSP = (tokAt(++iToken) == T.structure);
-          if (asDSSP)
-            bs1 = viewer.getSelectionSet(false);
-          else
-            bs1 = atomExpressionAt(iToken);
-          if (!asDSSP && !(asDSSP = (tokAt(++iToken) == T.structure)))
-            bs2 = atomExpressionAt(iToken);
-        }
-        if (chk)
-          return;
-        n = viewer.autoHbond(bs1, bs2, false);
-        if (n != Integer.MIN_VALUE)
-          scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
-        return;
-      case T.hydrogen:
-        bs1 = (slen == 2 ? null : atomExpressionAt(2));
-        checkLast(iToken);
-        if (!chk)
-          viewer.addHydrogens(bs1, false, false);
-        return;
-      case T.partialcharge:
-        iToken = 1;
-        bs1 = (slen == 2 ? null : atomExpressionAt(2));
-        checkLast(iToken);
-        if (!chk)
-          viewer.calculatePartialCharges(bs1);
-        return;
-      case T.pointgroup:
-        pointGroup();
-        return;
-      case T.straightness:
-        checkLength(2);
-        if (!chk) {
-          viewer.calculateStraightness();
-          viewer.addStateScript("set quaternionFrame '"
-              + viewer.getQuaternionFrame() + "'; calculate straightness",
-              false, true);
-        }
-        return;
-      case T.structure:
-        bs1 = (slen < 4 ? null : atomExpressionAt(2));
-        switch (tokAt(++iToken)) {
-        case T.ramachandran:
-          break;
-        case T.dssp:
-          asDSSP = true;
-          break;
-        case T.nada:
-          asDSSP = viewer.getBoolean(T.defaultstructuredssp);
-          break;
-        default:
-          invArg();
-        }
-        if (!chk)
-          showString(viewer.calculateStructures(bs1, asDSSP, true));
-        return;
-      case T.struts:
-        bs1 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
-        bs2 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
-        checkLength(++iToken);
-        if (!chk) {
-          n = viewer.calculateStruts(bs1, bs2);
-          if (n > 0) {
-            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-                .valueOf(JmolEdge.BOND_STRUT));
-            setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
-                .valueOf(0x0FFFFFF), null);
-            setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent", 0.5f, null);
-            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-                .valueOf(JmolEdge.BOND_COVALENT_MASK));
-          }
-          showString(GT._("{0} struts added", n));
-        }
-        return;
-      case T.surface:
-        isSurface = true;
-        // deprecated
-        //$FALL-THROUGH$
-      case T.surfacedistance:
-        // preferred
-        // calculate surfaceDistance FROM {...}
-        // calculate surfaceDistance WITHIN {...}
-        boolean isFrom = false;
-        switch (tokAt(2)) {
-        case T.within:
-          iToken++;
-          break;
-        case T.nada:
-          isFrom = !isSurface;
-          break;
-        case T.from:
-          isFrom = true;
-          iToken++;
-          break;
-        default:
-          isFrom = true;
-        }
-        bs1 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : viewer
-            .getSelectionSet(false));
-        checkLength(++iToken);
-        if (!chk)
-          viewer.calculateSurface(bs1, (isFrom ? Float.MAX_VALUE : -1));
-        return;
-      }
-    }
-    errorStr2(
-        ERROR_what,
-        "CALCULATE",
-        "aromatic? hbonds? hydrogen? formalCharge? partialCharge? pointgroup? straightness? structure? struts? surfaceDistance FROM? surfaceDistance WITHIN?");
-  }
-
-  public void pointGroup() throws ScriptException {
-    switch (tokAt(0)) {
-    case T.calculate:
-      if (!chk)
-        showString(viewer.calculatePointGroup());
-      return;
-    case T.show:
-      if (!chk)
-        showString(viewer.getPointGroupAsString(false, null, 0, 0));
-      return;
-    }
-    // draw pointgroup [C2|C3|Cs|Ci|etc.] [n] [scale x]
-    int pt = 2;
-    String type = (tokAt(pt) == T.scale ? "" : optParameterAsString(pt));
-    if (type.equals("chemicalShift"))
-      type = "cs";
-    float scale = 1;
-    int index = 0;
-    if (type.length() > 0) {
-      if (isFloatParameter(++pt))
-        index = intParameter(pt++);
-    }
-    if (tokAt(pt) == T.scale)
-      scale = floatParameter(++pt);
-    if (!chk)
-      runScript(viewer.getPointGroupAsString(true, type, index, scale));
   }
 
   private void dots(int iShape) throws ScriptException {
@@ -12050,33 +10970,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setShapeSizeBs(shapeType, mad, null);
   }
 
-  private void modulation() throws ScriptException {
-    boolean mod = false;
-    switch (getToken(1).tok) {
-    case T.on:
-      mod = true;
-      //$FALL-THROUGH$
-    case T.off:
-      if (!chk)
-        viewer.setModulation(mod, null, Integer.MAX_VALUE, false);
-      break;
-    case T.integer:
-      if (!chk)
-        viewer.setModulation(true, new int[] { intParameter(1) },
-            Integer.MAX_VALUE, false);
-      break;
-    case T.fps:
-      if (!chk)
-        viewer.setModulationFps(floatParameter(2));
-      break;
-    case T.play:
-      if (!chk)
-        viewer.setModulation(true, new int[] { intParameter(2) },
-            intParameter(3), false);
-      break;
-    }
-  }
-
   private void animation() throws ScriptException {
     boolean animate = false;
     switch (getToken(1).tok) {
@@ -12122,7 +11015,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (slen > 5)
         error(ERROR_badArgumentCount);
       EnumAnimationMode animationMode = null;
-      switch (getToken(2).tok) {
+      switch (T.getTokFromName(parameterAsString(2))) {
       case T.once:
         animationMode = EnumAnimationMode.ONCE;
         startDelay = endDelay = 0;
@@ -12156,8 +11049,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.integer:
         direction = intParameter(i);
-        if (direction > 0)
-          direction = 0;
         break;
       default:
         invArg();
@@ -13283,7 +12174,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           int xOffset = intParameterRange(2, -127, 127);
           int yOffset = intParameterRange(3, -127, 127);
-          propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+          propertyValue = Integer.valueOf(JC.getOffset(xOffset, yOffset));
         }
         break;
       }
@@ -13301,16 +12192,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (str.equals("pointer")) {
-        int flags = Object2d.POINTER_NONE;
+        int flags = JC.POINTER_NONE;
         switch (getToken(2).tok) {
         case T.off:
         case T.none:
           break;
         case T.background:
-          flags |= Object2d.POINTER_BACKGROUND;
+          flags |= JC.POINTER_BACKGROUND;
           //$FALL-THROUGH$
         case T.on:
-          flags |= Object2d.POINTER_ON;
+          flags |= JC.POINTER_ON;
           break;
         default:
           invArg();
@@ -14185,1037 +13076,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         "bonds? coords? orientation? rotation? scene? selection? state? structure?");
   }
 
-  String write(T[] args) throws ScriptException {
-    int pt = 0, pt0 = 0;
-    boolean isCommand, isShow;
-    if (args == null) {
-      args = st;
-      pt = pt0 = 1;
-      isCommand = true;
-      isShow = (viewer.isApplet() && !viewer.isSignedApplet()
-          || !viewer.isRestricted(ACCESS.ALL) || viewer.getPathForAllFiles()
-          .length() > 0);
-    } else {
-      isCommand = false;
-      isShow = true;
-    }
-    int argCount = (isCommand ? slen : args.length);
-    int len = 0;
-    int nVibes = 0;
-    int width = -1;
-    int height = -1;
-    int quality = Integer.MIN_VALUE;
-    boolean timeMsg = viewer.getBoolean(T.showtiming);
-    String driverList = viewer.getExportDriverList();
-    String sceneType = "PNGJ";
-    String data = null;
-    String type2 = "";
-    String fileName = null;
-    String localPath = null;
-    String remotePath = null;
-    String val = null;
-    String msg = null;
-    String[] fullPath = new String[1];
-    boolean isCoord = false;
-    boolean isExport = false;
-    boolean isImage = false;
-    BS bsFrames = null;
-    String[] scripts = null;
-    String type = "SPT";
-    int tok = (isCommand && args.length == 1 ? T.clipboard : tokAtArray(pt,
-        args));
-    switch (tok) {
-    case T.nada:
-      break;
-    case T.script:
-      if (isArrayParameter(pt + 1)) {
-        scripts = stringParameterSet(++pt);
-        localPath = ".";
-        remotePath = ".";
-        pt0 = pt = iToken + 1;
-        tok = tokAt(pt);
-      }
-      break;
-    default:
-      type = SV.sValue(tokenAt(pt, args)).toUpperCase();
-    }
-    switch (tok) {
-    case T.nada:
-      break;
-    case T.quaternion:
-    case T.ramachandran:
-    case T.property:
-      msg = getExtension().plot(args);
-      if (!isCommand)
-        return msg;
-      break;
-    case T.inline:
-      type = "INLINE";
-      data = SV.sValue(tokenAt(++pt, args));
-      pt++;
-      break;
-    case T.pointgroup:
-      type = "PGRP";
-      pt++;
-      type2 = SV.sValue(tokenAt(pt, args)).toLowerCase();
-      if (type2.equals("draw"))
-        pt++;
-      break;
-    case T.coord:
-      pt++;
-      isCoord = true;
-      break;
-    case T.state:
-    case T.script:
-      val = SV.sValue(tokenAt(++pt, args)).toLowerCase();
-      while (val.equals("localpath") || val.equals("remotepath")) {
-        if (val.equals("localpath"))
-          localPath = SV.sValue(tokenAt(++pt, args));
-        else
-          remotePath = SV.sValue(tokenAt(++pt, args));
-        val = SV.sValue(tokenAt(++pt, args)).toLowerCase();
-      }
-      type = "SPT";
-      break;
-    case T.file:
-    case T.function:
-    case T.history:
-    case T.isosurface:
-    case T.menu:
-    case T.mesh:
-    case T.mo:
-    case T.pmesh:
-      pt++;
-      break;
-    case T.jmol:
-      type = "ZIPALL";
-      pt++;
-      break;
-    case T.var:
-      type = "VAR";
-      pt += 2;
-      break;
-    case T.frame:
-    case T.identifier:
-    case T.image:
-    case T.scene:
-    case T.string:
-    case T.vibration:
-      switch (tok) {
-      case T.image:
-        pt++;
-        break;
-      case T.vibration:
-        nVibes = intParameterRange(++pt, 1, 10);
-        if (!chk) {
-          viewer.setVibrationOff();
-          if (!isJS)
-            delayScript(100);
-        }
-        pt++;
-        break;
-      case T.frame:
-        BS bsAtoms;
-        if (pt + 1 < argCount && args[++pt].tok == T.expressionBegin
-            || args[pt].tok == T.bitset) {
-          bsAtoms = atomExpression(args, pt, 0, true, false, true, true);
-          pt = iToken + 1;
-        } else {
-          bsAtoms = viewer.getModelUndeletedAtomsBitSet(-1);
-        }
-        if (!chk)
-          bsFrames = viewer.getModelBitSet(bsAtoms, true);
-        break;
-      case T.scene:
-        val = SV.sValue(tokenAt(++pt, args)).toUpperCase();
-        if (Parser.isOneOf(val, ";PNG;PNGJ;")) {
-          sceneType = val;
-          pt++;
-        }
-        break;
-      default:
-        tok = T.image;
-        break;
-      }
-      if (tok == T.image) {
-        T t = T.getTokenFromName(SV.sValue(args[pt]).toLowerCase());
-        if (t != null)
-          type = SV.sValue(t).toUpperCase();
-        if (Parser.isOneOf(type, driverList.toUpperCase())) {
-          // povray, maya, vrml, idtf
-          pt++;
-          type = type.substring(0, 1).toUpperCase()
-              + type.substring(1).toLowerCase();
-          // Povray, Maya, Vrml, Idtf
-          isExport = true;
-          if (isCommand)
-            fileName = "Jmol." + type.toLowerCase();
-          break;
-        } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
-          pt++;
-          break;
-        } else {
-          type = "(image)";
-        }
-      }
-      if (tokAtArray(pt, args) == T.integer) {
-        width = SV.iValue(tokenAt(pt++, args));
-        height = SV.iValue(tokenAt(pt++, args));
-      }
-      break;
-    }
-
-    if (msg == null) {
-      val = SV.sValue(tokenAt(pt, args));
-      if (val.equalsIgnoreCase("clipboard")) {
-        if (chk)
-          return "";
-        // if (isApplet)
-        // evalError(GT._("The {0} command is not available for the applet.",
-        // "WRITE CLIPBOARD"));
-      } else if (Parser.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
-        if (tokAtArray(pt + 1, args) == T.integer
-            && tokAtArray(pt + 2, args) == T.integer) {
-          width = SV.iValue(tokenAt(++pt, args));
-          height = SV.iValue(tokenAt(++pt, args));
-        }
-        if (tokAtArray(pt + 1, args) == T.integer)
-          quality = SV.iValue(tokenAt(++pt, args));
-      } else if (Parser.isOneOf(val.toLowerCase(),
-          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml;")) {
-        type = val.toUpperCase();
-        if (pt + 1 == argCount)
-          pt++;
-      }
-
-      // write [image|history|state] clipboard
-
-      // write [optional image|history|state] [JPG quality|JPEG quality|JPG64
-      // quality|PNG|PPM|SPT] "filename"
-      // write script "filename"
-      // write isosurface t.jvxl
-
-      if (type.equals("(image)")
-          && Parser.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
-        type = val.toUpperCase();
-        pt++;
-      }
-
-      if (pt + 2 == argCount) {
-        data = SV.sValue(tokenAt(++pt, args));
-        if (data.length() > 0 && data.charAt(0) != '.')
-          type = val.toUpperCase();
-      }
-      switch (tokAtArray(pt, args)) {
-      case T.nada:
-        isShow = true;
-        break;
-      case T.clipboard:
-        break;
-      case T.identifier:
-      case T.string:
-        fileName = SV.sValue(tokenAt(pt, args));
-        if (pt == argCount - 3 && tokAtArray(pt + 1, args) == T.per) {
-          // write filename.xxx gets separated as filename .spt
-          // write isosurface filename.xxx also
-          fileName += "." + SV.sValue(tokenAt(pt + 2, args));
-        }
-        if (type != "VAR" && pt == pt0)
-          type = "IMAGE";
-        else if (fileName.length() > 0 && fileName.charAt(0) == '.'
-            && (pt == pt0 + 1 || pt == pt0 + 2)) {
-          fileName = SV.sValue(tokenAt(pt - 1, args)) + fileName;
-          if (type != "VAR" && pt == pt0 + 1)
-            type = "IMAGE";
-        }
-        if (fileName.equalsIgnoreCase("clipboard")
-            || !viewer.isRestricted(ACCESS.ALL))
-          fileName = null;
-        break;
-      default:
-        invArg();
-      }
-      if (type.equals("IMAGE") || type.equals("FRAME")
-          || type.equals("VIBRATION")) {
-        type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
-            .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JPG");
-      }
-      if (type.equals("MNU")) {
-        type = "MENU";
-      } else if (type.equals("WRL") || type.equals("VRML")) {
-        type = "Vrml";
-        isExport = true;
-      } else if (type.equals("X3D")) {
-        type = "X3d";
-        isExport = true;
-      } else if (type.equals("IDTF")) {
-        type = "Idtf";
-        isExport = true;
-      } else if (type.equals("MA")) {
-        type = "Maya";
-        isExport = true;
-      } else if (type.equals("JS")) {
-        type = "Js";
-        isExport = true;
-      } else if (type.equals("OBJ")) {
-        type = "Obj";
-        isExport = true;
-      } else if (type.equals("JVXL")) {
-        type = "ISOSURFACE";
-      } else if (type.equals("XJVXL")) {
-        type = "ISOSURFACE";
-      } else if (type.equals("JMOL")) {
-        type = "ZIPALL";
-      } else if (type.equals("HIS")) {
-        type = "HISTORY";
-      }
-      if (type.equals("COORD"))
-        type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
-            .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "XYZ");
-      isImage = Parser.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);
-      if (scripts != null) {
-        if (type.equals("PNG"))
-          type = "PNGJ";
-        if (!type.equals("PNGJ") && !type.equals("ZIPALL"))
-          invArg();
-      }
-      if (isImage && isShow)
-        type = "JPG64";
-      else if (!isImage
-          && !isExport
-          && !Parser
-              .isOneOf(
-                  type,
-                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
-        errorStr2(
-            ERROR_writeWhat,
-            "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
-                + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
-                + driverList.toUpperCase().replace(';', '|'));
-      if (chk)
-        return "";
-      Object bytes = null;
-      boolean doDefer = false;
-      if (data == null || isExport) {
-        data = type.intern();
-        if (isExport) {
-          // POV-Ray uses a BufferedWriter instead of a StringXBuilder.
-          // todo -- there's no reason this data has to be done this way. 
-          // we could send all of them out to file directly
-          fullPath[0] = fileName;
-          if (timeMsg)
-            Logger.startTimer("export");
-          data = viewer.generateOutputForExport(data, isCommand
-              || fileName != null ? fullPath : null, width, height);
-          if (data == null || data.length() == 0)
-            return "";
-          if (!isCommand)
-            return data;
-          if ((type.equals("Povray") || type.equals("Idtf"))
-              && fullPath[0] != null) {
-            String ext = (type.equals("Idtf") ? ".tex" : ".ini");
-            fileName = fullPath[0] + ext;
-            msg = viewer.createImageSet(fileName, ext, data, null, null,
-                Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
-            if (type.equals("Idtf"))
-              data = data.substring(0, data.indexOf("\\begin{comment}"));
-            data = "Created " + fullPath[0] + ":\n\n" + data;
-            if (timeMsg)
-              showString(Logger.getTimerMsg("export", 0));
-          } else {
-            msg = data;
-          }
-          if (msg != null) {
-            if (!msg.startsWith("OK"))
-              evalError(msg, null);
-            scriptStatusOrBuffer(data);
-          }
-          return "";
-        } else if (data == "MENU") {
-          data = viewer.getMenu("");
-        } else if (data == "PGRP") {
-          data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0,
-              1.0f);
-        } else if (data == "PDB" || data == "PQR") {
-          if (isShow) {
-            data = viewer.getPdbAtomData(null, null);
-          } else {
-            doDefer = true;
-            /*
-             * OutputStream os = viewer.getOutputStream(fileName, fullPath); msg =
-             * viewer.getPdbData(null, new BufferedOutputStream(os)); if (msg !=
-             * null) msg = "OK " + msg + " " + fullPath[0]; try { os.close(); }
-             * catch (IOException e) { // TODO }
-             */
-          }
-        } else if (data == "FILE") {
-          if (isShow)
-            data = viewer.getCurrentFileAsString();
-          else
-            doDefer = true;
-          if ("?".equals(fileName))
-            fileName = "?Jmol." + viewer.getParameter("_fileType");
-        } else if ((data == "SDF" || data == "MOL" || data == "V2000"
-            || data == "V3000" || data == "CD")
-            && isCoord) {
-          data = viewer.getModelExtract("selected", true, false, data);
-          if (data.startsWith("ERROR:"))
-            bytes = data;
-        } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
-            || data == "MOL" || data == "SDF" || data == "V2000"
-            || data == "V3000" || data == "CML" || data == "CD") {
-          data = viewer.getData("selected", data);
-          if (data.startsWith("ERROR:"))
-            bytes = data;
-        } else if (data == "FUNCTION") {
-          data = viewer.getFunctionCalls(null);
-          type = "TXT";
-        } else if (data == "VAR") {
-          data = ((SV) getParameter(
-              SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable))
-              .asString();
-          type = "TXT";
-        } else if (data == "SPT") {
-          if (isCoord) {
-            BS tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-            viewer.setAtomCoordsRelative(P3.new3(0, 0, 0), null);
-            data = viewer.getStateInfo();
-            viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
-          } else {
-            data = viewer.getStateInfo();
-            if (localPath != null || remotePath != null)
-              data = FileManager.setScriptFileReferences(data, localPath,
-                  remotePath, null);
-          }
-        } else if (data == "ZIP" || data == "ZIPALL") {
-          data = viewer.getStateInfo();
-          bytes = viewer.createZip(fileName, type, data, scripts);
-        } else if (data == "HISTORY") {
-          data = viewer.getSetHistory(Integer.MAX_VALUE);
-          type = "SPT";
-        } else if (data == "MO") {
-          data = getMoJvxl(Integer.MAX_VALUE);
-          type = "XJVXL";
-        } else if (data == "PMESH") {
-          if ((data = getIsosurfaceJvxl(true, JC.SHAPE_PMESH)) == null)
-            error(ERROR_noData);
-          type = "XJVXL";
-        } else if (data == "ISOSURFACE" || data == "MESH") {
-          if ((data = getIsosurfaceJvxl(data == "MESH", JC.SHAPE_ISOSURFACE)) == null)
-            error(ERROR_noData);
-          type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
-          if (!isShow)
-            showString((String) getShapeProperty(JC.SHAPE_ISOSURFACE,
-                "jvxlFileInfo"));
-        } else {
-          // image
-          len = -1;
-          if (quality < 0)
-            quality = -1;
-        }
-        if (data == null && !doDefer)
-          data = "";
-        if (len == 0 && !doDefer)
-          len = (bytes == null ? data.length()
-              : bytes instanceof String ? ((String) bytes).length()
-                  : ((byte[]) bytes).length);
-        if (isImage) {
-          refresh();
-          if (width < 0)
-            width = viewer.getScreenWidth();
-          if (height < 0)
-            height = viewer.getScreenHeight();
-        }
-      }
-      if (!isCommand)
-        return data;
-      if (isShow) {
-        showStringPrint(data, true);
-        return "";
-      }
-      if (bytes != null && bytes instanceof String) {
-        // load error or completion message here
-        /**
-         * @j2sNative
-         * 
-         * if (bytes.indexOf("OK") != 0)alert(bytes);
-         * 
-         */
-        {
-        }
-        scriptStatusOrBuffer((String) bytes);
-        return (String) bytes;
-      }
-      if (type.equals("SCENE"))
-        bytes = sceneType;
-      else if (bytes == null && (!isImage || fileName != null))
-        bytes = data;
-      if (timeMsg)
-        Logger.startTimer("write");
-      if (doDefer)
-        msg = viewer.writeFileData(fileName, type, 0, null);
-      else
-        msg = viewer.createImageSet(fileName, type,
-            (bytes instanceof String ? (String) bytes : null),
-            (bytes instanceof byte[] ? (byte[]) bytes : null), scripts,
-            quality, width, height, bsFrames, nVibes, fullPath);
-      if (timeMsg)
-        showString(Logger.getTimerMsg("write", 0));
-    }
-    if (!chk && msg != null) {
-      if (!msg.startsWith("OK")) {
-        evalError(msg, null);
-        /**
-         * @j2sNative
-         * 
-         * alert(msg);
-         */
-        {
-        }
-      }
-      scriptStatusOrBuffer(msg
-          + (isImage ? "; width=" + width + "; height=" + height : ""));
-      return msg;
-    }
-    return "";
-  }
-
-  private void show() throws ScriptException {
-    String value = null;
-    String str = parameterAsString(1);
-    String msg = null;
-    String name = null;
-    int len = 2;
-    T token = getToken(1);
-    int tok = (token instanceof SV ? T.nada : token.tok);
-    if (tok == T.string) {
-      token = T.getTokenFromName(str.toLowerCase());
-      if (token != null)
-        tok = token.tok;
-    }
-    if (tok != T.symop && tok != T.state)
-      checkLength(-3);
-    if (slen == 2 && str.indexOf("?") >= 0) {
-      showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
-      return;
-    }
-    switch (tok) {
-    case T.nada:
-      if (!chk)
-        msg = ((SV) theToken).escape();
-      break;
-    case T.cache:
-      if (!chk)
-        msg = Escape.e(viewer.cacheList());
-      break;
-    case T.dssp:
-      checkLength(2);
-      if (!chk)
-        msg = viewer.calculateStructures(null, true, false);
-      break;
-    case T.pathforallfiles:
-      checkLength(2);
-      if (!chk)
-        msg = viewer.getPathForAllFiles();
-      break;
-    case T.nmr:
-      if (optParameterAsString(2).equalsIgnoreCase("1H")) {
-        len = 3;
-        if (!chk)
-          msg = viewer.getNMRPredict(false);
-        break;
-      }
-      if (!chk)
-        viewer.getNMRPredict(true);
-      return;
-    case T.smiles:
-    case T.drawing:
-    case T.chemical:
-      checkLength(tok == T.chemical ? 3 : 2);
-      if (chk)
-        return;
-      msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false, true,
-          false, false);
-      switch (tok) {
-      case T.drawing:
-        if (msg.length() > 0) {
-          viewer.show2D(msg);
-          return;
-        }
-        msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
-        break;
-      case T.chemical:
-        len = 3;
-        String info = null;
-        if (msg.length() > 0) {
-          char type = '/';
-          switch (getToken(2).tok) {
-          case T.inchi:
-            type = 'I';
-            break;
-          case T.inchikey:
-            type = 'K';
-            break;
-          case T.name:
-            type = 'N';
-            break;
-          default:
-            info = parameterAsString(2);
-          }
-          msg = viewer.getChemicalInfo(msg, type, info);
-          if (msg.indexOf("FileNotFound") >= 0)
-            msg = "?";
-        } else {
-          msg = "Could not show name -- Either insufficient atoms are selected or the model is a PDB file.";
-        }
-      }
-      break;
-    case T.symop:
-      if (slen > 3) {
-        P3 pt1 = centerParameter(2);
-        P3 pt2 = centerParameter(++iToken);
-        if (!chk)
-          msg = viewer.getSymmetryOperation(null, 0, pt1, pt2, false);
-        len = ++iToken;
-      } else {
-        int iop = (checkLength23() == 2 ? 0 : intParameter(2));
-        if (!chk)
-          msg = viewer.getSymmetryOperation(null, iop, null, null, false);
-        len = -3;
-      }
-      break;
-    case T.vanderwaals:
-      EnumVdw vdwType = null;
-      if (slen > 2) {
-        vdwType = EnumVdw.getVdwType(parameterAsString(2));
-        if (vdwType == null)
-          invArg();
-      }
-      if (!chk)
-        showString(viewer.getDefaultVdwTypeNameOrData(0, vdwType));
-      return;
-    case T.function:
-      checkLength23();
-      if (!chk)
-        showString(viewer.getFunctionCalls(optParameterAsString(2)));
-      return;
-    case T.set:
-      checkLength(2);
-      if (!chk)
-        showString(viewer.getAllSettings(null));
-      return;
-    case T.url:
-      // in a new window
-      if ((len = slen) == 2) {
-        if (!chk)
-          viewer.showUrl(getFullPathName());
-        return;
-      }
-      name = parameterAsString(2);
-      if (!chk)
-        viewer.showUrl(name);
-      return;
-    case T.color:
-      str = "defaultColorScheme";
-      break;
-    case T.scale3d:
-      str = "scaleAngstromsPerInch";
-      break;
-    case T.quaternion:
-    case T.ramachandran:
-      if (chk)
-        return;
-      int modelIndex = viewer.getCurrentModelIndex();
-      if (modelIndex < 0)
-        errorStr(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
-      msg = getExtension().plot(st);
-      len = slen;
-      break;
-    case T.trace:
-      if (!chk)
-        msg = getContext(false);
-      break;
-    case T.colorscheme:
-      name = optParameterAsString(2);
-      if (name.length() > 0)
-        len = 3;
-      if (!chk)
-        value = viewer.getColorSchemeList(name);
-      break;
-    case T.variables:
-      if (!chk)
-        msg = viewer.getAtomDefs(definedAtomSets) + viewer.getVariableList()
-            + getContext(true);
-      break;
-    case T.trajectory:
-      if (!chk)
-        msg = viewer.getTrajectoryState();
-      break;
-    case T.historylevel:
-      value = "" + commandHistoryLevelMax;
-      break;
-    case T.loglevel:
-      value = "" + Logger.getLogLevel();
-      break;
-    case T.debugscript:
-      value = "" + viewer.getBoolean(T.debugscript);
-      break;
-    case T.strandcount:
-      msg = "set strandCountForStrands "
-          + viewer.getStrandCount(JC.SHAPE_STRANDS)
-          + "; set strandCountForMeshRibbon "
-          + viewer.getStrandCount(JC.SHAPE_MESHRIBBON);
-      break;
-    case T.timeout:
-      msg = viewer.showTimeout((len = slen) == 2 ? null : parameterAsString(2));
-      break;
-    case T.defaultlattice:
-      value = Escape.eP(viewer.getDefaultLattice());
-      break;
-    case T.minimize:
-      if (!chk)
-        msg = viewer.getMinimizationInfo();
-      break;
-    case T.axes:
-      switch (viewer.getAxesMode()) {
-      case UNITCELL:
-        msg = "set axesUnitcell";
-        break;
-      case BOUNDBOX:
-        msg = "set axesWindow";
-        break;
-      default:
-        msg = "set axesMolecular";
-      }
-      break;
-    case T.bondmode:
-      msg = "set bondMode " + (viewer.getBoolean(T.bondmodeor) ? "OR" : "AND");
-      break;
-    case T.strands:
-      if (!chk)
-        msg = "set strandCountForStrands "
-            + viewer.getStrandCount(JC.SHAPE_STRANDS)
-            + "; set strandCountForMeshRibbon "
-            + viewer.getStrandCount(JC.SHAPE_MESHRIBBON);
-      break;
-    case T.hbond:
-      msg = "set hbondsBackbone " + viewer.getBoolean(T.hbondsbackbone)
-          + ";set hbondsSolid " + viewer.getBoolean(T.hbondssolid);
-      break;
-    case T.spin:
-      if (!chk)
-        msg = viewer.getSpinState();
-      break;
-    case T.ssbond:
-      msg = "set ssbondsBackbone " + viewer.getBoolean(T.ssbondsbackbone);
-      break;
-    case T.display:// deprecated
-    case T.selectionhalos:
-      msg = "selectionHalos "
-          + (viewer.getSelectionHaloEnabled(false) ? "ON" : "OFF");
-      break;
-    case T.hetero:
-      msg = "set selectHetero " + viewer.getBoolean(T.hetero);
-      break;
-    case T.addhydrogens:
-      msg = Escape.eAP(viewer.getAdditionalHydrogens(null, true, true, null));
-      break;
-    case T.hydrogen:
-      msg = "set selectHydrogens " + viewer.getBoolean(T.hydrogen);
-      break;
-    case T.ambientpercent:
-    case T.diffusepercent:
-    case T.specular:
-    case T.specularpower:
-    case T.specularexponent:
-    case T.lighting:
-      if (!chk)
-        msg = viewer.getSpecularState();
-      break;
-    case T.save:
-      if (!chk)
-        msg = viewer.listSavedStates();
-      break;
-    case T.unitcell:
-      if (!chk)
-        msg = viewer.getUnitCellInfoText();
-      break;
-    case T.coord:
-      if ((len = slen) == 2) {
-        if (!chk)
-          msg = viewer.getCoordinateState(viewer.getSelectionSet(false));
-        break;
-      }
-      String nameC = parameterAsString(2);
-      if (!chk)
-        msg = viewer.getSavedCoordinates(nameC);
-      break;
-    case T.state:
-      if (!chk)
-        viewer.clearConsole();
-      if ((len = slen) == 2) {
-        if (!chk)
-          msg = viewer.getStateInfo();
-        break;
-      }
-      name = parameterAsString(2);
-      if (name.equals("/") && (len = slen) == 4) {
-        name = parameterAsString(3).toLowerCase();
-        if (!chk) {
-          String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
-          SB sb = new SB();
-          for (int i = 0; i < info.length; i++)
-            if (info[i].toLowerCase().indexOf(name) >= 0)
-              sb.append(info[i]).appendC('\n');
-          msg = sb.toString();
-        }
-        break;
-      } else if (tokAt(2) == T.file && (len = slen) == 4) {
-        if (!chk)
-          msg = viewer.getEmbeddedFileState(parameterAsString(3));
-        break;
-      }
-      len = 3;
-      if (!chk)
-        msg = viewer.getSavedState(name);
-      break;
-    case T.structure:
-      if ((len = slen) == 2) {
-        if (!chk)
-          msg = viewer.getProteinStructureState();
-        break;
-      }
-      String shape = parameterAsString(2);
-      if (!chk)
-        msg = viewer.getSavedStructure(shape);
-      break;
-    case T.data:
-      String type = ((len = slen) == 3 ? parameterAsString(2) : null);
-      if (!chk) {
-        Object[] data = (type == null ? this.data : viewer.getData(type));
-        msg = (data == null ? "no data" : Escape.encapsulateData(
-            (String) data[0], data[1], ((Integer) data[3]).intValue()));
-      }
-      break;
-    case T.spacegroup:
-      Map<String, Object> info = null;
-      if ((len = slen) == 2) {
-        if (!chk) {
-          info = viewer.getSpaceGroupInfo(null);
-        }
-      } else {
-        String sg = parameterAsString(2);
-        if (!chk)
-          info = viewer.getSpaceGroupInfo(TextFormat.simpleReplace(sg, "''",
-              "\""));
-      }
-      if (info != null)
-        msg = "" + info.get("spaceGroupInfo") + info.get("symmetryInfo");
-      break;
-    case T.dollarsign:
-      len = 3;
-      msg = setObjectProperty();
-      break;
-    case T.boundbox:
-      if (!chk) {
-        msg = viewer.getBoundBoxCommand(true);
-      }
-      break;
-    case T.center:
-      if (!chk)
-        msg = "center " + Escape.eP(viewer.getRotationCenter());
-      break;
-    case T.draw:
-      if (!chk)
-        msg = (String) getShapeProperty(JC.SHAPE_DRAW, "command");
-      break;
-    case T.file:
-      // as a string
-      if (!chk)
-        viewer.clearConsole();
-      if (slen == 2) {
-        if (!chk)
-          msg = viewer.getCurrentFileAsString();
-        if (msg == null)
-          msg = "<unavailable>";
-        break;
-      }
-      len = 3;
-      value = parameterAsString(2);
-      if (!chk)
-        msg = viewer.getFileAsString(value);
-      break;
-    case T.frame:
-      if (tokAt(2) == T.all && (len = 3) > 0)
-        msg = viewer.getModelFileInfoAll();
-      else
-        msg = viewer.getModelFileInfo();
-      break;
-    case T.history:
-      int n = ((len = slen) == 2 ? Integer.MAX_VALUE : intParameter(2));
-      if (n < 1)
-        invArg();
-      if (!chk) {
-        viewer.clearConsole();
-        if (scriptLevel == 0)
-          viewer.removeCommand();
-        msg = viewer.getSetHistory(n);
-      }
-      break;
-    case T.isosurface:
-      if (!chk)
-        msg = (String) getShapeProperty(JC.SHAPE_ISOSURFACE, "jvxlDataXml");
-      break;
-    case T.mo:
-      if (optParameterAsString(2).equalsIgnoreCase("list")) {
-        msg = viewer.getMoInfo(-1);
-        len = 3;
-      } else {
-        int ptMO = ((len = slen) == 2 ? Integer.MIN_VALUE : intParameter(2));
-        if (!chk)
-          msg = getMoJvxl(ptMO);
-      }
-      break;
-    case T.model:
-      if (!chk)
-        msg = viewer.getModelInfoAsString();
-      break;
-    case T.measurements:
-      if (!chk)
-        msg = viewer.getMeasurementInfoAsString();
-      break;
-    case T.rotation:
-      tok = tokAt(2);
-      if (tok == T.nada)
-        tok = T.rotation;
-      else
-        len = 3;
-      //$FALL-THROUGH$
-    case T.translation:
-    case T.moveto:
-      if (!chk)
-        msg = viewer.getOrientationText(tok, null);
-      break;
-    case T.orientation:
-      len = 2;
-      if (slen > 3)
-        break;
-      switch (tok = tokAt(2)) {
-      case T.translation:
-      case T.rotation:
-      case T.moveto:
-      case T.nada:
-        if (!chk)
-          msg = viewer.getOrientationText(tok, null);
-        break;
-      default:
-        name = optParameterAsString(2);
-        msg = viewer.getOrientationText(T.name, name);
-      }
-      len = slen;
-      break;
-    case T.pdbheader:
-      if (!chk)
-        msg = viewer.getPDBHeader();
-      break;
-    case T.pointgroup:
-      pointGroup();
-      return;
-    case T.symmetry:
-      if (!chk)
-        msg = viewer.getSymmetryInfoAsString();
-      break;
-    case T.transform:
-      if (!chk)
-        msg = "transform:\n" + viewer.getTransformText();
-      break;
-    case T.zoom:
-      msg = "zoom "
-          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomSetting()) : "off");
-      break;
-    case T.frank:
-      msg = (viewer.getShowFrank() ? "frank ON" : "frank OFF");
-      break;
-    case T.radius:
-      str = "solventProbeRadius";
-      break;
-    // Chime related
-    case T.basepair:
-    case T.chain:
-    case T.sequence:
-    case T.residue:
-    case T.selected:
-    case T.group:
-    case T.atoms:
-    case T.info:
-      //case T.bonds: // ?? was this ever implemented? in Chime?
-      msg = viewer.getChimeInfo(tok);
-      break;
-    // not implemented
-    case T.echo:
-    case T.fontsize:
-    case T.property: // huh? why?
-    case T.help:
-    case T.solvent:
-      value = "?";
-      break;
-    case T.identifier:
-      if (str.equalsIgnoreCase("fileHeader")) {
-        if (!chk)
-          msg = viewer.getPDBHeader();
-      } else if (str.equalsIgnoreCase("menu")) {
-        if (!chk)
-          value = viewer.getMenu("");
-      } else if (str.equalsIgnoreCase("mouse")) {
-        String qualifiers = ((len = slen) == 2 ? null : parameterAsString(2));
-        if (!chk)
-          msg = viewer.getBindingInfo(qualifiers);
-      }
-      break;
-    }
-    checkLength(len);
-    if (chk)
-      return;
-    if (msg != null)
-      showString(msg);
-    else if (value != null)
-      showString(str + " = " + value);
-    else if (str != null) {
-      if (str.indexOf(" ") >= 0)
-        showString(str);
-      else
-        showString(str + " = " + getParameterEscaped(str));
-    }
-  }
-
-  private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
-    if (chk)
-      return "";
-    return (String) getShapeProperty(iShape, asMesh ? "jvxlMeshX"
-        : "jvxlDataXml");
-  }
-
-  @SuppressWarnings("unchecked")
-  private String getMoJvxl(int ptMO) throws ScriptException {
-    // 0: all; Integer.MAX_VALUE: current;
-    sm.loadShape(JC.SHAPE_MO);
-    int modelIndex = viewer.getCurrentModelIndex();
-    if (modelIndex < 0)
-      errorStr(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
-    Map<String, Object> moData = (Map<String, Object>) viewer
-        .getModelAuxiliaryInfoValue(modelIndex, "moData");
-    if (moData == null)
-      error(ERROR_moModelError);
-    Integer n = (Integer) getShapeProperty(JC.SHAPE_MO, "moNumber");
-    if (n == null || n.intValue() == 0) {
-      setShapeProperty(JC.SHAPE_MO, "init", Integer.valueOf(modelIndex));
-      //} else if (ptMO == Integer.MAX_VALUE) {
-    }
-    setShapeProperty(JC.SHAPE_MO, "moData", moData);
-    return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
-  }
-
   public int[] colorArgb = new int[] { Integer.MIN_VALUE };
 
   /**
@@ -15275,60 +13135,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!setMeshDisplayProperty(shapeID, iptDisplayProperty, 0))
         invArg();
     }
-  }
-
-  public BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
-                              float distance, RadiusData rd,
-                              boolean warnMultiModel) {
-    boolean withinAllModels;
-    BS bs;
-    if (bsB == null) {
-      // default is within just one model when {B} is missing
-      bsB = BSUtil.setAll(viewer.getAtomCount());
-      BSUtil.andNot(bsB, viewer.getDeletedAtoms());
-      bsB.andNot(bsA);
-      withinAllModels = false;
-    } else {
-      // two atom sets specified; within ALL MODELS here
-      bs = BSUtil.copy(bsA);
-      bs.or(bsB);
-      int nModels = viewer.getModelBitSet(bs, false).cardinality();
-      withinAllModels = (nModels > 1);
-      if (warnMultiModel && nModels > 1 && !tQuiet)
-        showString(GT
-            ._("Note: More than one model is involved in this contact!"));
-    }
-    // B always within some possibly extended VDW of A or just A itself
-    if (!bsA.equals(bsB)) {
-      boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
-      if (setBfirst) {
-        bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels, (Float
-            .isNaN(distance) ? rd : null));
-        bsB.and(bs);
-      }
-      if (localOnly) {
-        // we can just get the near atoms for A as well.
-        bs = viewer.getAtomsWithinRadius(distance, bsB, withinAllModels, (Float
-            .isNaN(distance) ? rd : null));
-        bsA.and(bs);
-        if (!setBfirst) {
-          bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels,
-              (Float.isNaN(distance) ? rd : null));
-          bsB.and(bs);
-        }
-        // If the two sets are not the same,
-        // we AND them and see if that is A. 
-        // If so, then the smaller set is
-        // removed from the larger set.
-        bs = BSUtil.copy(bsB);
-        bs.and(bsA);
-        if (bs.equals(bsA))
-          bsB.andNot(bsA);
-        else if (bs.equals(bsB))
-          bsA.andNot(bsB);
-      }
-    }
-    return bsB;
   }
 
   public String getColorRange(int i) throws ScriptException {
@@ -15624,5 +13430,75 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     scriptDelayThread = new ScriptDelayThread(this, viewer, millis);
     scriptDelayThread.run();
   }
+
+  public float[] getFlexFitList(BS bs1, BS bs2, String smiles1)
+      throws ScriptException {
+    int[][] mapSet = ArrayUtil.newInt2(2);
+    getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, true,
+        false, mapSet, null);
+    int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
+    int[][] bondMap2 = (bondMap1 == null ? null : viewer
+        .getDihedralMap(mapSet[1]));
+    if (bondMap2 == null || bondMap2.length != bondMap1.length)
+      return null;
+    float[][] angles = new float[bondMap1.length][3];
+    Atom[] atoms = viewer.modelSet.atoms;
+    getTorsions(atoms, bondMap2, angles, 0);
+    getTorsions(atoms, bondMap1, angles, 1);
+    float[] data = new float[bondMap1.length * 6];
+    for (int i = 0, pt = 0; i < bondMap1.length; i++) {
+      int[] map = bondMap1[i];
+      data[pt++] = map[0];
+      data[pt++] = map[1];
+      data[pt++] = map[2];
+      data[pt++] = map[3];
+      data[pt++] = angles[i][0];
+      data[pt++] = angles[i][1];
+    }
+    return data;
+  }
+  
+  private static void getTorsions(Atom[] atoms, int[][] bondMap,
+                                  float[][] diff, int pt) {
+    for (int i = bondMap.length; --i >= 0;) {
+      int[] map = bondMap[i];
+      float v = Measure.computeTorsion(atoms[map[0]], atoms[map[1]],
+          atoms[map[2]], atoms[map[3]], true);
+      if (pt == 1) {
+        if (v - diff[i][0] > 180)
+          v -= 360;
+        else if (v - diff[i][0] <= -180)
+          v += 360;
+      }
+      diff[i][pt] = v;
+    }
+  }
+
+  public String getErrorLineMessage2() {
+    return getErrorLineMessage(functionName, scriptFileName,
+        getLinenumber(null), pc, statementAsString(viewer, st, -9999,
+            logMessages));
+  }
+
+  public boolean evaluateParallel(ScriptContext context,
+                                  ShapeManager shapeManager) {
+    return getExtension().evaluateParallel(context, shapeManager);
+  }
+
+  public String write(SV[] args) throws ScriptException {
+    return getExtension().write(args);
+  }
+
+  public Object getBitsetIdent(BS bs, String label, Object tokenValue,
+                               boolean useAtomMap, int index, boolean isExplicitlyAll) {
+    return getExtension().getBitsetIdent(bs, label, tokenValue, useAtomMap, index, isExplicitlyAll);
+  }
+
+  public BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
+                              float distance, RadiusData rd,
+                              boolean warnMultiModel) {
+    return getExtension().setContactBitSets(bsA, bsB, localOnly, distance, rd, warnMultiModel);
+  }
+  
 
 }

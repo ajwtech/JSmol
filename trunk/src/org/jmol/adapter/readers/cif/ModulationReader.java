@@ -30,8 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jmol.util.BS;
-import org.jmol.util.BSUtil;
+//import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
@@ -75,7 +74,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected int modDim;
   protected boolean incommensurate;
   protected Atom[] atoms;
-  private BS bsAtoms;
+  //private BS bsAtoms;
   
   private P3 q1;  
   private V3 q1Norm;  
@@ -405,20 +404,20 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
         Logger.debug("setModulation tensor="
-            + Escape.e(a.tensors.get(0).getInfo("all")));
+            + Escape.e(((Tensor) a.tensors.get(0)).getInfo("all")));
       }
       for (Entry<String, Float> e : ms.htUij.entrySet())
         addUStr(a, e.getKey(), e.getValue().floatValue());
 
       if (a.tensors != null)
-        a.tensors.get(0).isUnmodulated = true;
+        ((Tensor)a.tensors.get(0)).isUnmodulated = true;
       Tensor t = atomSetCollection.addRotatedTensor(a, symmetry
           .getTensor(a.anisoBorU), iop, false);
       t.isModulated = true;
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
             + "\n");
-        Logger.debug("setModulation tensor=" + a.tensors.get(0).getInfo("all"));
+        Logger.debug("setModulation tensor=" + ((Tensor) a.tensors.get(0)).getInfo("all"));
       }
     }
 
