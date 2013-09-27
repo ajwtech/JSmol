@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18711 $
+ * $Date: 2013-09-27 17:07:55 -0500 (Fri, 27 Sep 2013) $
+ * $Revision: 18724 $
 
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
@@ -77,7 +77,7 @@ public class JC {
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $"
+        // "$Date: 2013-09-27 17:07:55 -0500 (Fri, 27 Sep 2013) $"
         // 0         1         2
         // 012345678901234567890123456789
         tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
@@ -1556,7 +1556,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public static final String SCRIPT_COMPLETED = "Script completed";
   public static final String JPEG_EXTENSIONS = ";jpg;jpeg;jpg64;jpeg64;";
-  public final static String IMAGE_TYPES = JPEG_EXTENSIONS + "gif;ppm;png;pngj;pngt;";
+  public final static String IMAGE_TYPES = JPEG_EXTENSIONS + "gif;ppm;png;pngj;pngt;pdf;";
   public static final String IMAGE_OR_SCENE = IMAGE_TYPES + "scene;";
 
   public final static int getShapeVisibilityFlag(int shapeID) {

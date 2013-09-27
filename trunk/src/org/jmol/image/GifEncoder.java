@@ -224,7 +224,7 @@ public class GifEncoder extends ImageEncoder {
   protected int transparentIndex = -1;
 
   @Override
-  protected void createImage() throws IOException {
+  protected void generate() throws IOException {
     if (addHeader)
       writeHeader();
     addHeader = false; // only one header
@@ -780,7 +780,7 @@ public class GifEncoder extends ImageEncoder {
   protected void flushBytes() {
     if (bufPt > 0) {
       putByte(bufPt);
-      out.writeBytes(buf, 0, bufPt);
+      out.write(buf, 0, bufPt);
       byteCount += bufPt;
       bufPt = 0;
     }

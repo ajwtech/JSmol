@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18711 $
+ * $Date: 2013-09-27 12:06:32 -0500 (Fri, 27 Sep 2013) $
+ * $Revision: 18719 $
  *
  * Copyright (C) 2002-2006  Miguel, Jmol Development, www.jmol.org
  *
@@ -543,7 +543,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           logFilePath = null;
         else
           isSignedAppletLocal = true;
-      } else {
+      } else if (!isJS){
         logFilePath = null;
       }
     } else {
@@ -3563,10 +3563,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return sc;
   }
 
-  public Object getWrappedState(String fileName, String[] scripts,
-                                Object image, boolean asJmolZip) {
-    return getOutputManager().getWrappedState(fileName, scripts, apiPlatform.getImageWidth(image),
-        apiPlatform.getImageHeight(image), asJmolZip);
+  public Object getWrappedStateScript() {
+    return getOutputManager().getWrappedState(null, null, null, false);
   }
 
   @Override
@@ -6079,7 +6077,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.defaultLoadFilter = value;
       break;
     case T.logfile:
-      value = getOutputManager().setLogFile(value);
+      value = setLogFile(value);
       if (value == null)
         return;
       break;
@@ -10372,7 +10370,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public JmolOutputChannel openOutputChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
     return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
-        .openOutputChannel(privateKey, fileManager, fileName, asWriter));
+        .openOutputChannel(privateKey, fileManager, fileName, asWriter, false));
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)
@@ -10384,9 +10382,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getFileAdapter().getAbsolutePath(privateKey, fileName);
   }
 
-  public Object openLogFile(double privateKey, String logFileName,
-                            boolean asAppend) throws IOException {
-    return getFileAdapter().openLogFile(privateKey, logFileName, asAppend);
+  public JmolOutputChannel openLogFile(double privateKey, boolean asAppend)
+      throws IOException {
+    return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
+        .openOutputChannel(privateKey, fileManager, logFileName, true, asAppend));
+  }
+  
+  /*default*/ String logFileName;
+  
+  private String setLogFile(String value) {
+    return getOutputManager().setLogFile(value);
   }
 
   public void log(String data) {
@@ -10394,8 +10399,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       getOutputManager().logToFile(data);
   }
 
-  /*default*/ String logFileName;
-  
   public String getLogFileName() {
     return (logFileName == null ? "" : logFileName);
   }

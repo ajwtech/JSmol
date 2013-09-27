@@ -149,7 +149,7 @@ public class DeflaterOutputStream extends FilterOutputStream {
     }
     int len = deflater.next_out_index;
     if (len > 0) {
-      out.write(buffer, 0, len);
+        out.write(buffer, 0, len);
     }
     return err;
   }

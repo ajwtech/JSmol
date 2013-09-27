@@ -330,7 +330,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements
       if (written - locoff > entry.size) {
         throw new ZipException("attempt to write past end of STORED entry");
       }
-      out.write(b, off, len);
+      out.write(buffer, 0, len);
       break;
     default:
       throw new ZipException("invalid compression method");
