@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18711 $
+ * $Date: 2013-09-26 23:08:38 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18715 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -2644,7 +2644,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if ((ch = charAt(ichToken)) == '"' || ch == '@' || ch == '\0')
       return false;
     int ichT = ichToken;
-    while (!isSpaceOrTab(ch = script.charAt(ichT)) 
+    while (!isSpaceOrTab(ch = charAt(ichT)) 
         && ch != '#' && ch != '}' && !eol(ch))
         ++ichT;
     cchToken = ichT - ichToken;

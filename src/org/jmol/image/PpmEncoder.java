@@ -30,7 +30,6 @@ package org.jmol.image;
 
 import java.util.Map;
 
-
 /**
  * see http://netpbm.sourceforge.net/doc/ppm.html
  */
@@ -42,7 +41,7 @@ public class PpmEncoder extends ImageEncoder {
   }
 
   @Override
-  protected void createImage() {
+  protected void generate() {
     putString("P6\n");
     putString(width + " " + height + "\n");
     putString("255\n");
@@ -54,7 +53,7 @@ public class PpmEncoder extends ImageEncoder {
         ppmPixels[j++] = (byte) ((p >> 8) & 0xff);
         ppmPixels[j++] = (byte) (p & 0xff);
       }
-      out.writeBytes(ppmPixels, 0, ppmPixels.length);
+      out.write(ppmPixels, 0, ppmPixels.length);
     }
   }
 }

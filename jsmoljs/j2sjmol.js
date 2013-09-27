@@ -2052,7 +2052,7 @@ Clazz.exceptionOf=function(e, clazz) {
 	}
   if(clazz == Error) {
     if (("" + e).indexOf("Error") >= 0) {
-    	System.out.println(Clazz.getStackTrace(arguments.callee));
+    	System.out.println(Clazz.getStackTrace());
     }
     return (("" + e).indexOf("Error") >= 0);
     // everything here is a Java Exception, not a Java Error
@@ -2061,8 +2061,9 @@ Clazz.exceptionOf=function(e, clazz) {
     || clazz == NullPointerException && Clazz._isNPEExceptionPredicate(e));
 };
 
-Clazz.getStackTrace = function(c) {
+Clazz.getStackTrace = function() {
 	var s = "";
+  var c = arguments.callee.caller;
     for (var i = 0; i < 50; i++) {
       if (!c)break;
       s += (i + " " + (c.exName ? (c.claxxOwner ? c.claxxOwner.__CLASS_NAME__ + "."  : "") + c.exName 

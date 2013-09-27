@@ -28,9 +28,11 @@ import org.jmol.viewer.FileManager;
  *  using os==FileOutputStream, writeBytes(), writeByteAsInt(), append(), and closeChannel()
  * 
  * post characters or bytes to a remote server
- *  using filename=="http://..." or "https://...",
+ *  using fileName=="http://..." or "https://...",
  *    writeBytes(), writeByteAsInt(), append(), and closeChannel()
- *  
+ *    
+ * send characters or bytes to a JavaScript function
+ *  when JavaScript and (typeof fileName == "function")
  *  
  */
 
@@ -47,12 +49,14 @@ public class JmolOutputChannel extends OutputStream {
   private SB sb;
   private String type;
   
-  public JmolOutputChannel setParams(FileManager fm, String fileName, boolean asWriter, OutputStream os) {
+  public JmolOutputChannel setParams(FileManager fm, String fileName,
+                                     boolean asWriter, OutputStream os) {
     this.fm = fm;
     this.fileName = fileName;
     this.os = os;
-    isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName.startsWith("https://")));
-    if (asWriter)
+    isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName
+        .startsWith("https://")));
+    if (asWriter && os != null)
       bw = new BufferedWriter(new OutputStreamWriter(os));
     return this;
   }
@@ -105,7 +109,11 @@ public class JmolOutputChannel extends OutputStream {
     return this;
   }
 
-  public void writeBytes(byte[] buf, int i, int len) {
+  /**
+   * @j2sOverride
+   */
+  @Override
+  public void write(byte[] buf, int i, int len) {
     if (os == null)
       os = new ByteArrayOutputStream();
     /**
@@ -122,7 +130,7 @@ public class JmolOutputChannel extends OutputStream {
     }
     byteCount += len;
   }
-
+  
   /**
    * @param b  
    */
@@ -145,6 +153,8 @@ public class JmolOutputChannel extends OutputStream {
   }
   
   /**
+   * Will break JavaScript if used.
+   * 
    * @j2sIgnore
    * 
    * @param b
@@ -152,7 +162,7 @@ public class JmolOutputChannel extends OutputStream {
   @Override
   @Deprecated
   public void write(int b) {
-    // required by ZipOutputStream -- do not use, as it will break JavaScript methods
+    // required by standard ZipOutputStream -- do not use, as it will break JavaScript methods
     if (os == null)
       os = new ByteArrayOutputStream();
     try {
@@ -162,6 +172,20 @@ public class JmolOutputChannel extends OutputStream {
     byteCount++;
   }
 
+//  /**
+//   * Will break if used; no equivalent in JavaScript.
+//   * 
+//   * @j2sIgnore
+//   * 
+//   * @param b
+//   */
+//  @Override
+//  @Deprecated
+//  public void write(byte[] b) {
+//    // not used in JavaScript due to overloading problem there
+//    write(b, 0, b.length);
+//  }
+
   public void cancel() {
     isCanceled = true;
     closeChannel();
@@ -170,7 +194,6 @@ public class JmolOutputChannel extends OutputStream {
   public String closeChannel() {
     if (closed)
       return null;
-    closed = true;
     // can't cancel file writers
     try {
       if (bw != null) {
@@ -183,6 +206,7 @@ public class JmolOutputChannel extends OutputStream {
     } catch (Exception e) {
       // ignore closing issues
     }
+    closed = true;
     if (isCanceled)
       return null;
     if (fileName == null)
@@ -190,8 +214,10 @@ public class JmolOutputChannel extends OutputStream {
     /**
      * @j2sNative
      * 
-     *            Jmol._doAjax(this.fileName, null, (this.sb == null ?
-     *            this.toByteArray() : this.sb.toString()));
+     *            var data = (this.sb == null ? this.toByteArray() :
+     *            this.sb.toString()); if (typeof this.fileName == "function") {
+     *            this.fileName(data); } else { Jmol._doAjax(this.fileName,
+     *            null, data); }
      * 
      */
     {
@@ -206,6 +232,11 @@ public class JmolOutputChannel extends OutputStream {
     return (os instanceof ByteArrayOutputStream ? ((ByteArrayOutputStream)os).toByteArray() : null);
   }
 
+  @Override
+  @Deprecated
+  public void close() {
+    closeChannel();
+  }
 
   @Override
   public String toString() {

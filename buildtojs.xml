@@ -438,7 +438,6 @@
    		java/io/BufferedWriter.js
    		java/io/OutputStream.js
    		java/io/FilterOutputStream.js
-   		java/io/BufferedOutputStream.js
 		java/io/ByteArrayOutputStream.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
