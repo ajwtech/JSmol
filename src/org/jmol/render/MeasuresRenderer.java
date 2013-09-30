@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-07-04 09:13:39 -0500 (Thu, 04 Jul 2013) $
- * $Revision: 18421 $
+ * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18730 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -282,8 +282,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     int count = measurementPending.getCount();
     if (count == 0)
       return;
-    g3d.setColix(measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
-        : count == 2 ? C.MAGENTA : C.GOLD);
+    g3d.setColix(labelColix = (measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
+        : count == 2 ? C.MAGENTA : C.GOLD));
     measurementPending.refresh();
     if (measurementPending.haveTarget())
       renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);

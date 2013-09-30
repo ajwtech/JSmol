@@ -25,6 +25,7 @@
 
 package java.util.zip;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 /**
@@ -38,7 +39,15 @@ import java.io.OutputStream;
 public
 class DeflaterOutputStream extends com.jcraft.jzlib.DeflaterOutputStream {
 
-  public DeflaterOutputStream(OutputStream out, Deflater deflater) {
-    super(out, deflater, 0, true);
+  public DeflaterOutputStream() {
+    // for JavaScript
+  }
+
+  public DeflaterOutputStream(ByteArrayOutputStream bos, Deflater deflater) {
+    setDOS(bos, deflater);
+  }
+
+  protected void setDOS(OutputStream out, Deflater deflater) {
+    jzSetDOS(out, deflater, 0, true);
   }
 }

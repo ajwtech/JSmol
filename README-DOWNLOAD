@@ -1,12 +1,8 @@
-Versions of JSmol with an EVEN main version -- JSmol-13.2.x, for instance --
-are the STABLE RELEASE version of JSmol, to which only periodic bug fixes
-are being provided.
+All JSmol distribution is now through the Jmol project.
 
-Versions of JSmol with an ODD main version -- JSmol-13.3.x, for instance --
-are the DEVELOPMENT RELEASE version of JSmol, which includes new features.
+See http://sourceforge.net/projects/jmol/files/
 
---------------------
+After unzipping a Jmol distribution file, 
+look for JSmol.zip and unzip that. 
 
-A detailed list of bug fixes and new features can be found in
-http://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol/src/org/jmol/viewer/Jmol.properties
 

@@ -51,6 +51,20 @@ var	basefile = base + "core.z.js";
   if (Jmol.debugCode)
     return;
 
+	ClazzLoader.jarClasspath (base + "coretext.z.js",	[    
+	"J.modelset.Object2d",
+	"$.Text",
+	"J.shape.Object2dShape",
+	"$.TextShape",
+	"$.Labels",
+	"$.Echo",
+	"$.Hover",
+	"J.render.TextRenderer",
+	"$.LabelsRenderer",
+	"$.EchoRenderer",
+	"$.HoverRenderer"
+	]);
+
 	ClazzLoader.jarClasspath (base + "corescript.z.js",	[  
     "J.api.JmolScriptManager", 
     "$.JmolScriptEvaluator",
@@ -69,6 +83,11 @@ var	basefile = base + "core.z.js";
     "$.FileLoadThread"
 	]);
 	
+	ClazzLoader.jarClasspath (base + "corescript2.z.js",	[  
+	"J.script.JmolScriptExtension", 
+	"J.scriptext.ScriptExt"
+	]);
+	                                                 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
     "J.api.JmolStateCreator", 
     "J.viewer.StateCreator" 
@@ -166,21 +185,10 @@ var	basefile = base + "core.z.js";
 		"$.ZipEntry",
 		"$.ZipConstants64",
 		"$.ZipInputStream",
-		"$.Deflater",
-		"$.DeflaterOutputStream",
-		"$.ZipOutputStream",
-
 		"J.api.JmolZipUtility",
 		"$.ZInputStream",
-		"J.image.CRCEncoder",
-		"$.PngEncoder",
-		"$.JpgEncoder",
-		"$.ImageEncoder",
 		"J.io2.ZipUtil",
-		"$.JmolZipInputStream",
-    "J.viewer.OutputManager",
-    "J.viewer.OutputManagerAll",
-    "J.viewer.OutputManagerJS"
+		"$.JmolZipInputStream"
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[

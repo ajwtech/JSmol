@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18711 $
+ * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18730 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1404,7 +1404,7 @@ public class AtomSetCollection {
       ptTemp = new P3();
       mTemp = new Matrix3f();
     }
-    return a.addTensor(t.getTensorFromEigenVectors(symmetry
+    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor")).setFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }

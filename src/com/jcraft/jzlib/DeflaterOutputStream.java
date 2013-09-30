@@ -71,9 +71,9 @@ public class DeflaterOutputStream extends FilterOutputStream {
    * @param close_out
    *        throws IOException
    */
-  public DeflaterOutputStream(OutputStream out, Deflater deflater, int size,
+  protected void jzSetDOS(OutputStream out, Deflater deflater, int size,
       boolean close_out) {
-    super(out);
+    jzSetFOS(out);
     //    if (out == null || deflater == null) {
     //      throw new NullPointerException();
     //    }

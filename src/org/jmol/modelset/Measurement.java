@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-08-22 00:32:34 -0500 (Thu, 22 Aug 2013) $
- * $Revision: 18615 $
+ * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18730 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -263,12 +263,15 @@ public class Measurement {
     String label = getLabelString();
     if (label == null)
       return "";
+    System.out.println("strformat=" + strFormat + " units=" + units);
     if (units == null) {
       int pt = strFormat.indexOf("//");
       units = (pt >= 0 ? strFormat.substring(pt + 2) : null);
       if (units == null) {
         units = viewer.getMeasureDistanceUnits();
         strFormat += "//" + units;
+        if (count == 3)
+          System.out.println("measu");
       }
     }
     units = fixUnits(units);

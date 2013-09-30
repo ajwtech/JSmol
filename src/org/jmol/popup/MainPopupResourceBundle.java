@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-22 20:12:27 -0500 (Sun, 22 Sep 2013) $
- * $Revision: 18689 $
+ * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18730 $
  *
  * Copyright (C) 2000-2005  The Jmol Development Team
  *
@@ -492,7 +492,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
       { "SIGNEDloadScript", "script ?.spt" },      
       
-      { "SIGNEDJAVAcaptureRock", "animation mode loop;capture '?Jmol.gif' rock y 5"},      
+      { "SIGNEDJAVAcaptureRock", "animation mode loop;capture '?Jmol.gif' rock y 10"},      
       { "SIGNEDJAVAcaptureSpin", "animation mode loop;capture '?Jmol.gif' spin y"},      
       { "SIGNEDJAVAcaptureBegin", "capture '?Jmol.gif'" },      
       { "SIGNEDJAVAcaptureEnd", "capture ''"},      
