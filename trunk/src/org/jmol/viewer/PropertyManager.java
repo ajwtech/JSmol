@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-24 23:31:04 -0500 (Tue, 24 Sep 2013) $
- * $Revision: 18694 $
+ * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18730 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -460,17 +460,13 @@ public class PropertyManager implements JmolPropertyManager {
         height = width;
       if (params.indexOf("g64") >= 0 || params.indexOf("base64") >= 0)
         returnType = "string";
-      Map<String, Object> imageParams = new Hashtable<String, Object>();
       String type = "JPG";
       if (params.indexOf("type=") >= 0)
         type = Parser.getTokens(TextFormat.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
-      imageParams.put("type", type.toUpperCase());
-      imageParams.put("width", Integer.valueOf(width));
-      imageParams.put("height", Integer.valueOf(height));
-      imageParams.put("quality", Integer.valueOf(-1));
-      Object bytes = viewer.getImageAsBytes(imageParams);
-      return (returnType == null || bytes instanceof String ? bytes : Base64
-          .getBase64((byte[]) bytes).toString());
+      String[] errMsg = new String[1];
+      byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
+      return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
+          .getBase64(bytes).toString());
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:

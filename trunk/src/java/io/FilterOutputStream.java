@@ -57,9 +57,10 @@ class FilterOutputStream extends OutputStream {
      *                <code>null</code> if this instance is to be
      *                created without an underlying stream.
      */
-    public FilterOutputStream(OutputStream out) {
+    protected void jzSetFOS(OutputStream out) {
         this.out = out;
     }
+    
 
     /**
      * Writes the specified <code>byte</code> to this output stream.

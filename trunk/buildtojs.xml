@@ -160,25 +160,34 @@
    	             in jsmoljs/core/package.js -->
    	
    	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="site/jsmol/j2s" files="
-   		J/script/FileLoadThread.js
-   		J/script/ScriptManager.js
    		J/api/JmolScriptManager.js
-   		J/script/CommandWatcherThread.js
+   		J/api/JmolScriptEvaluator.js
+   		J/api/JmolScriptFunction.js
+   		J/script/FileLoadThread.js
    		J/script/ScriptQueueThread.js
    		J/script/ScriptDelayThread.js
+   		J/script/CommandWatcherThread.js
+   		J/script/ScriptManager.js
    		J/script/ScriptEvaluator.js
-   		J/api/JmolScriptEvaluator.js
    		J/script/ScriptCompiler.js
    		J/script/ScriptCompilationTokenParser.js
    		J/script/ScriptFlowContext.js
    		J/script/ScriptFunction.js
-   		J/api/JmolScriptFunction.js
    		J/script/ScriptInterruption.js
    		J/script/ScriptMathProcessor.js
    		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corescript.js --js_output_file ../j2s/core/corescript.z.js" />
+    </java>
+
+   	<concat destfile="site/jsmol/js/corescript2.js"><filelist dir="site/jsmol/j2s" files="
+   		J/script/JmolScriptExtension.js
+   		J/scriptext/ScriptExt.js
+   		" />
+   	</concat> 	   	
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
+   		<arg line="--js corescript2.js --js_output_file ../j2s/core/corescript2.z.js" />
     </java>
 
    	<concat destfile="site/jsmol/js/corestate.js"><filelist dir="site/jsmol/j2s" files="
@@ -189,6 +198,7 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corestate.js --js_output_file ../j2s/core/corestate.z.js" />
     </java>
+
    	<concat destfile="site/jsmol/js/coreprop.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/JmolPropertyManager.js
    		J/viewer/PropertyManager.js   	   	
@@ -278,17 +288,6 @@
    		java/io/PushbackInputStream.js
    		J/api/ZInputStream.js
    		J/io2/JmolZipInputStream.js
-   		JZ/DeflaterOutputStream.js
-   		java/util/zip/Deflater.js
-   		java/util/zip/DeflaterOutputStream.js
-   		java/util/zip/ZipOutputStream.js
-   		J/image/ImageEncoder.js
-   		J/image/CRCEncoder.js
-   		J/image/PngEncoder.js
-   		J/image/JpgEncoder.js
-		J/viewer/OutputManager.js
-   		J/viewer/OutputManagerAll.js
-   		J/viewer/OutputManagerJS.js
    	   	" />
    	</concat>   	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
@@ -393,6 +392,8 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corebinary.js --js_output_file ../j2s/core/corebinary.z.js" />
     </java>
+   	
+   	
    	<concat destfile="site/jsmol/js/corepymol.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/JmolSceneGenerator.js
    		J/adapter/readers/pymol/PickleReader.js
@@ -407,6 +408,28 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corepymol.js --js_output_file ../j2s/core/corepymol.z.js" />
     </java>
+
+   	
+   	<concat destfile="site/jsmol/js/coretext.js"><filelist dir="site/jsmol/j2s" files="
+   		J/modelset/Object2d.js
+   		J/modelset/Text.js
+   		J/shape/Object2dShape.js
+   		J/shape/TextShape.js
+   		J/shape/Labels.js
+   		J/shape/Echo.js
+   		J/shape/Hover.js
+   		J/render/TextRenderer.js
+   		J/render/LabelsRenderer.js
+   		J/render/EchoRenderer.js
+   		J/render/HoverRenderer.js
+   		" />
+   	</concat>
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
+   		<arg line="--js coretext.js --js_output_file ../j2s/core/coretext.z.js" />
+    </java>
+
+   	
+   	
    	<concat destfile="site/jsmol/js/coresmiles.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/SmilesMatcherInterface.js
    		J/smiles/SmilesMatcher.js
@@ -434,10 +457,7 @@
    		java/io/InputStreamReader.js
    		java/io/BufferedReader.js
    		java/io/StringReader.js
-   		java/io/Writer.js
-   		java/io/BufferedWriter.js
    		java/io/OutputStream.js
-   		java/io/FilterOutputStream.js
 		java/io/ByteArrayOutputStream.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
@@ -462,7 +482,7 @@
    		java/util/Hashtable.js
    		java/net/URL.js
    		java/net/URLConnection.js
-   		J/awtjs2d/JmolURLConnection.js
+   		J/awtjs2d/JSURLConnection.js
    		java/text/MessageFormat.js
    		java/util/Random.js
    		J/util/JmolList.js
@@ -473,7 +493,6 @@
    		J/i18n/Resource.js
    		J/i18n/Language.js
    		J/i18n/GT.js
-		J/awtjs2d/JmolURLConnection.js
    		J/api/JmolCallbackListener.js
    		J/api/JmolStatusListener.js
    		J/api/JmolSyncInterface.js
@@ -551,8 +570,7 @@
    		J/io/Base64.js
    		J/io/CifDataReader.js
    		J/io/JmolBinary.js
-   		J/io/JmolOutputChannel.js
-   		J/shape/Shape.js
+  		J/shape/Shape.js
    		J/viewer/FileManager.js
    		J/script/ContextToken.js
    		J/script/ScriptContext.js
@@ -625,9 +643,7 @@
    		J/awtjs2d/Font.js
    		J/awtjs2d/Image.js
    		J/api/JmolFileInterface.js
-   		J/awtjs2d/JmolFile.js
-   		J/api/JmolFileAdapterInterface.js
-   		J/awtjs2d/JmolFileAdapter.js
+   		J/awtjs2d/JSFile.js
    		J/api/JmolMouseInterface.js
    		J/api/Event.js
    		J/awtjs2d/Mouse.js
@@ -656,6 +672,7 @@
    		J/shape/Frank.js
    		J/render/ShapeRenderer.js
    		J/render/BallsRenderer.js
+   		J/render/FontLineShapeRenderer.js
    		J/render/SticksRenderer.js
    		J/util/SimpleUnitCell.js
    		J/render/FrankRenderer.js

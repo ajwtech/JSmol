@@ -25,6 +25,7 @@ package org.jsmol.test;
 
 import org.jmol.util.BS;
 import org.jmol.util.P3;
+import org.jsmol.test.EnumTest;
 
 public class JSmol {
 
@@ -54,7 +55,7 @@ public class JSmol {
   // THIS DOES NOT WORK:  
 	private enum TT {A, B, C, D} // -- bug in Java2JavaScript compiler
   private void testEnum() {  	
-		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE + "; TT.A = " + TT.A);
+		sayHello(" EnumTest.ONCE = " + EnumTest.ONCE + "; TT.A = " + TT.A); 
 	}
 
 	void sayHello(String s) {

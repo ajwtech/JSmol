@@ -89,6 +89,10 @@ public class ZipOutputStream extends DeflaterOutputStream implements
    */
   public static final int DEFLATED = ZipEntry.DEFLATED;
 
+  public ZipOutputStream() {
+    // for JavaScript
+  }
+  
   /**
    * Creates a new ZIP output stream.
    * 
@@ -96,29 +100,21 @@ public class ZipOutputStream extends DeflaterOutputStream implements
    * The UTF-8 {@link java.nio.charset.Charset charset} is used to encode the
    * entry names and comments.
    * 
+   * @j2sIgnore
+   * 
    * @param out
    *        the actual output stream
    */
   public ZipOutputStream(OutputStream out) {
-    //        this(out, StandardCharsets.UTF_8);
-    //    }
-    //
-    //    /**
-    //     * Creates a new ZIP output stream.
-    //     *
-    //     * @param out the actual output stream
-    //     *
-    //     * @param charset the {@linkplain java.nio.charset.Charset charset}
-    //     *                to be used to encode the entry names and comments
-    //     *
-    //     * @since 1.7
-    //     */
-    //    public ZipOutputStream(OutputStream out, Charset charset) {
-    super(out, newDeflater());
-    //charSet = "UTF8";
-    //usesDefaultDeflater = true;
+    super();
+    setDOS(out, newDeflater());
   }
 
+  public ZipOutputStream setZOS(OutputStream out) {
+    setDOS(out, newDeflater());
+    return this;
+  }
+  
   private static Deflater newDeflater() {
     return (Deflater) (new Deflater(Integer.MAX_VALUE)).init(Deflater.DEFAULT_COMPRESSION, 0, true);
   }
