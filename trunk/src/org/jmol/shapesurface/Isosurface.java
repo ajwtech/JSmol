@@ -95,12 +95,12 @@ package org.jmol.shapesurface;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -477,6 +477,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("privateKey" == propertyName) {
+      this.privateKey = ((Double) value).doubleValue();
+      return;
+    }
+
     if ("connections" == propertyName) {
       if (currentMesh != null) {
         connections = (int[]) value;
@@ -587,8 +592,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.calculatedArea = null;
       }
     } else if ("localName" == propertyName) {
-      value = viewer.getOutputChannel((String) value, null);
-      propertyName = "outputChannel";
+      value = viewer.getOutputStream((String) value, null);
+      propertyName = "outputStream";
     } else if ("molecularOrbital" == propertyName) {
       if (value instanceof Integer) {
         moNumber = ((Integer) value).intValue();
@@ -1301,8 +1306,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.invalidatePolygons();
   }
 
-  public void setOutputChannel(JmolDocument binaryDoc, JmolOutputChannel out) {
-    binaryDoc.setOutputChannel(out);
+  private double privateKey;
+  
+  public void setOutputStream(JmolDocument binaryDoc, OutputStream os) {
+    binaryDoc.setOutputStream(os, viewer, privateKey);
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

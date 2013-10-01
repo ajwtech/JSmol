@@ -336,33 +336,27 @@ public class Tensor {
     return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / reducedAnisotropy();
   }
 
-  public Tensor copyTensor() {
+  public static Tensor copyTensor(Tensor t0) {
     Tensor t = new Tensor();
-    t.setType(type);
-    t.eigenValues = eigenValues;
-    t.eigenVectors = eigenVectors;
-    t.asymMatrix = asymMatrix;
-    t.symMatrix = symMatrix;
-    t.eigenSignMask = eigenSignMask;
-    t.modelIndex = modelIndex;
-    t.atomIndex1 = atomIndex1;
-    t.atomIndex2 = atomIndex2;
-    t.id = id;
+    t.setType(t0.type);
+    t.eigenValues = t0.eigenValues;
+    t.eigenVectors = t0.eigenVectors;
+    t.asymMatrix = t0.asymMatrix;
+    t.symMatrix = t0.symMatrix;
+    t.eigenSignMask = t0.eigenSignMask;
+    t.modelIndex = t0.modelIndex;
+    t.atomIndex1 = t0.atomIndex1;
+    t.atomIndex2 = t0.atomIndex2;
+    t.id = t0.id;
     return t;
   }
 
   /**
-   * Although this constructor is public, to be a valid tensor, one must invoke one of the
-   * "setFrom" methods. These had been static, but it turns out when that is the case, then
-   * JavaScript versions cannot be modularized to omit this class along with Eigen. So the
-   * general full constructor would look something like:
-   * 
-   *   new Tensor().setFrom...(....)
-   *   
-   *   
+   * private constructor so that all instantiation must go through one 
+   * of the static getTensor... methods to set fields properly.
    * 
    */
-  public Tensor() {}
+  private Tensor() {}
   
   /**
    * Standard constructor for QM tensors
@@ -370,9 +364,9 @@ public class Tensor {
    * @param asymmetricTensor
    * @param type
    * @param id 
-   * @return this
+   * @return Tensor
    */
-  public Tensor setFromAsymmetricTensor(double[][] asymmetricTensor, String type, String id) {
+  public static Tensor getTensorFromAsymmetricTensor(double[][] asymmetricTensor, String type, String id) {
     double[][] a = new double[3][3];    
     for (int i = 3; --i >= 0;)
       for (int j = 3; --j >= 0;)
@@ -388,7 +382,7 @@ public class Tensor {
     if (a[0][2] != a[2][0]) {
       a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
     }
-    Eigen eigen = new Eigen().set(3);
+    Eigen eigen = new Eigen(3);
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
     float[] mm = new float[9];
@@ -417,23 +411,23 @@ public class Tensor {
     V3[] vectors = new V3[3];
     float[] values = new float[3];
     eigen.fillArrays(vectors, values);
-    newTensorType(vectors, values, type, id);
-    asymMatrix = asymmetricTensor;
-    symMatrix = a;
-    this.id = id;
-    return this;
+    Tensor t = newTensorType(vectors, values, type, id);
+    t.asymMatrix = asymmetricTensor;
+    t.symMatrix = a;
+    t.id = id;
+    return t;
   }
 
   /**
-   * Standard constructor for charge and iso.
+   * Standard constructor for charge and iso 
    * 
    * @param eigenVectors
    * @param eigenValues
    * @param type
    * @param id 
-   * @return this
+   * @return Tensor
    */
-  public Tensor setFromEigenVectors(V3[] eigenVectors,
+  public static Tensor getTensorFromEigenVectors(V3[] eigenVectors,
                                             float[] eigenValues, String type, String id) {
     float[] values = new float[3];
     V3[] vectors = new V3[3];
@@ -441,8 +435,7 @@ public class Tensor {
       vectors[i] = V3.newV(eigenVectors[i]);
       values[i] = eigenValues[i];
     }    
-    newTensorType(vectors, values, type, id);
-    return this;
+    return newTensorType(vectors, values, type, id);
   }
 
   /**
@@ -451,23 +444,24 @@ public class Tensor {
    * @param axes
    * @return Tensor
    */
-  public Tensor setFromAxes(V3[] axes) {
-    eigenValues = new float[3];
-    eigenVectors = new V3[3];
+  public static Tensor getTensorFromAxes(V3[] axes) {
+    Tensor t = new Tensor();
+    t.eigenValues = new float[3];
+    t.eigenVectors = new V3[3];
     for (int i = 0; i < 3; i++) {
-      eigenVectors[i] = V3.newV(axes[i]);
-      eigenValues[i] = axes[i].length();
-      if (eigenValues[i] == 0)
+      t.eigenVectors[i] = V3.newV(axes[i]);
+      t.eigenValues[i] = axes[i].length();
+      if (t.eigenValues[i] == 0)
         return null;
-      eigenVectors[i].normalize();
+      t.eigenVectors[i].normalize();
     }
-    if (Math.abs(eigenVectors[0].dot(eigenVectors[1])) > 0.0001f
-        || Math.abs(eigenVectors[1].dot(eigenVectors[2])) > 0.0001f 
-        || Math.abs(eigenVectors[2].dot(eigenVectors[0])) > 0.0001f)
+    if (Math.abs(t.eigenVectors[0].dot(t.eigenVectors[1])) > 0.0001f
+        || Math.abs(t.eigenVectors[1].dot(t.eigenVectors[2])) > 0.0001f 
+        || Math.abs(t.eigenVectors[2].dot(t.eigenVectors[0])) > 0.0001f)
       return null;
-    setType("other");
-    sortAndNormalize();
-    return this;
+    t.setType("other");
+    t.sortAndNormalize();
+    return t;
   }
 
   /**
@@ -476,12 +470,13 @@ public class Tensor {
    * 
    * @param coefs
    * @param id  
-   * @return this
+   * @return Tensor
    */
-  public Tensor setFromThermalEquation(double[] coefs, String id) {
-    eigenValues = new float[3];
-    eigenVectors = new V3[3];
-    this.id = (id == null ? "coefs=" + Escape.eAD(coefs) : id);
+  public static Tensor getTensorFromThermalEquation(double[] coefs, String id) {
+    Tensor t = new Tensor();
+    t.eigenValues = new float[3];
+    t.eigenVectors = new V3[3];
+    t.id = (id == null ? "coefs=" + Escape.eAD(coefs) : id);
     // assumes an ellipsoid centered on 0,0,0
     // called by UnitCell for the initial creation from PDB/CIF ADP data    
     double[][] mat = new double[3][3];
@@ -491,10 +486,10 @@ public class Tensor {
     mat[0][1] = mat[1][0] = coefs[3] / 2; //XY
     mat[0][2] = mat[2][0] = coefs[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coefs[5] / 2; //YZ
-    Eigen.getUnitVectors(mat, eigenVectors, eigenValues);
-    setType("adp");
-    sortAndNormalize();
-    return this;
+    Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
+    t.setType("adp");
+    t.sortAndNormalize();
+    return t;
   }
 
   /**
@@ -543,17 +538,20 @@ public class Tensor {
    * @param values
    * @param type
    * @param id 
+   * @return Tensor
    */
-  private void newTensorType(V3[] vectors, float[] values, String type, String id) {
-    eigenValues = values;
-    eigenVectors = vectors;
+  private static Tensor newTensorType(V3[] vectors, float[] values, String type, String id) {
+    Tensor t = new Tensor();
+    t.eigenValues = values;
+    t.eigenVectors = vectors;
     for (int i = 0; i < 3; i++)
-      eigenVectors[i].normalize();
-    setType(type);
-    this.id = id;
-    sortAndNormalize();
-    eigenSignMask = (eigenValues[0] >= 0 ? 1 : 0)
-        + (eigenValues[1] >= 0 ? 2 : 0) + (eigenValues[2] >= 0 ? 4 : 0);
+      t.eigenVectors[i].normalize();
+    t.setType(type);
+    t.id = id;
+    t.sortAndNormalize();
+    t.eigenSignMask = (t.eigenValues[0] >= 0 ? 1 : 0)
+        + (t.eigenValues[1] >= 0 ? 2 : 0) + (t.eigenValues[2] >= 0 ? 4 : 0);
+    return t;
   }
 
   /**

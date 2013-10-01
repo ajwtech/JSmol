@@ -25,7 +25,6 @@
 
 package org.jmol.symmetry;
 
-import org.jmol.api.Interface;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
@@ -299,14 +298,12 @@ class UnitCell extends SimpleUnitCell {
      * and the betaij should be entered as Type 0.
      */
 
-    Tensor t = ((Tensor) Interface.getOptionInterface("util.Tensor"));
     if (parBorU[0] == 0) { // this is iso
       float f = parBorU[7];
       float[] eigenValues = new float[] {f, f, f};
       // sqrt will be taken when converted to lengths later
       // no factor of 0.5 pi^2
-       
-      return t.setFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f);
+      return Tensor.getTensorFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f);
     }
 
     double[] Bcart = new double[6];
@@ -367,7 +364,7 @@ class UnitCell extends SimpleUnitCell {
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
 
-    return t.setFromThermalEquation(Bcart, Escape.eAF(parBorU));
+    return Tensor.getTensorFromThermalEquation(Bcart, Escape.eAF(parBorU));
   }
   
   P3[] getCanonicalCopy(float scale) {

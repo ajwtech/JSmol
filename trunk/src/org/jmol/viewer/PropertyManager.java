@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -34,7 +34,6 @@ import java.util.Properties;
 
 import org.jmol.api.JmolPropertyManager;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.Base64;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -136,7 +135,7 @@ public class PropertyManager implements JmolPropertyManager {
     
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
-    "image"           , "<width=www,height=hhh>", "",
+    "image"           , "", "",
     "evaluate"        , "<expression>", "",
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
@@ -444,7 +443,7 @@ public class PropertyManager implements JmolPropertyManager {
         return viewer.getFileAsString(myParam.toString());
       return viewer.getCurrentFileAsString();
     case PROP_IMAGE:
-      String params = myParam.toString().toLowerCase();
+      String params = myParam.toString();
       int height = -1,
       width = -1;
       int pt;
@@ -458,15 +457,8 @@ public class PropertyManager implements JmolPropertyManager {
         width = height;
       else
         height = width;
-      if (params.indexOf("g64") >= 0 || params.indexOf("base64") >= 0)
-        returnType = "string";
-      String type = "JPG";
-      if (params.indexOf("type=") >= 0)
-        type = Parser.getTokens(TextFormat.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
-      String[] errMsg = new String[1];
-      byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
-      return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
-          .getBase64(bytes).toString());
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1,
+          width, height, null, null);
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:

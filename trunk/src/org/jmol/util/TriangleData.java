@@ -1,8 +1,10 @@
 package org.jmol.util;
 
-import org.jmol.api.Triangulator;
 
-public class TriangleData implements Triangulator {
+
+
+
+public class TriangleData {
 
   /*
    * the triangle data from Marching Cubes
@@ -294,9 +296,6 @@ public class TriangleData implements Triangulator {
 
   /**
    * a generic cell - plane intersector -- used for finding the plane through a
-   * 
-   * not static so as to allow JavaScript to not load it as core.
-   * 
    * unit cell
    * 
    * @param plane
@@ -307,7 +306,7 @@ public class TriangleData implements Triangulator {
    */
 
 
-  public JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags) {
+  public static JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags) {
     if (plane == null) {
       v.addLast(fullCubePolygon);
       return v;

@@ -200,11 +200,11 @@ public class Symmetry implements SymmetryInterface {
     return (iop == 0 ? axes : spaceGroup.finalOperations[iop].rotateAxes(axes, unitCell, ptTemp, mTemp));
   }
 
-  public Object[] getSymmetryOperationDescription(ModelSet modelSet,
-                                                  int isym,
-                                                  SymmetryInterface cellInfo, P3 pt1,
-                                                  P3 pt2, String id) {
-    return spaceGroup.operations[isym].getDescription(modelSet, cellInfo, pt1, pt2, id);
+  public Object[] getSymmetryOperationDescription(int isym,
+                                                  SymmetryInterface cellInfo,
+                                                  P3 pt1, P3 pt2,
+                                                  String id) {
+    return spaceGroup.operations[isym].getDescription(cellInfo, pt1, pt2, id);
   }
     
   public String fcoord(Tuple3f p) {
@@ -447,7 +447,6 @@ public class Symmetry implements SymmetryInterface {
         modelSet.setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       spaceGroup = cellInfo.getSpaceGroupName();
       String[] list = cellInfo.getSymmetryOperations();
-      String jf = "";
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
@@ -458,18 +457,14 @@ public class Symmetry implements SymmetryInterface {
           int iSym = addSpaceGroupOperation("=" + list[i], i + 1);
           if (iSym < 0)
             continue;
-          jf += ";" + list[i];
           infolist[i] = (symOp > 0 && symOp - 1 != iSym ? null
-              : getSymmetryOperationDescription(modelSet, iSym, cellInfo,
-                  pt1, pt2, drawID));
+              : getSymmetryOperationDescription(iSym, cellInfo, pt1,
+                  pt2, drawID));
           if (infolist[i] != null)
             strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
                 + infolist[i][2];
         }
       }
-      jf = jf.substring(jf.indexOf(";") + 1);
-      if (spaceGroup.indexOf("[--]") >= 0)
-        spaceGroup = jf;
     } else {
       info = new Hashtable<String, Object>();
     }
@@ -479,7 +474,7 @@ public class Symmetry implements SymmetryInterface {
       info.put("operations", infolist);
       info.put("symmetryInfo", strOperations);
     }
-    if (data == null || data.equals("?"))
+    if (data == null)
       data = "could not identify space group from name: " + spaceGroup
           + "\nformat: show spacegroup \"2\" or \"P 2c\" "
           + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
@@ -523,8 +518,8 @@ public class Symmetry implements SymmetryInterface {
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands
-    info = symTemp.getSymmetryOperationDescription(modelSet, iSym, uc, pt,
-        pt2, (id == null ? "sym" : id));
+    info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, pt2,
+        (id == null ? "sym" : id));
     int ang = ((Integer) info[9]).intValue();
     /*
      *  xyz (Jones-Faithful calculated from matrix)

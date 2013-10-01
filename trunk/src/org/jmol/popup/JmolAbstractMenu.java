@@ -34,7 +34,4 @@ interface JmolAbstractMenu {
   void   menuSetListeners();
   void   menuShowPopup(Object popup, int x, int y);
  
-  void updateSpecialMenuItem(Object menu);
-
-
 }

@@ -24,15 +24,10 @@
 
 package org.jmol.adapter.smarter;
 
-
-import java.io.BufferedReader;
-import java.util.Map;
-
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -42,7 +37,14 @@ import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
+
+import java.io.BufferedReader;
+import java.io.OutputStream;
+
+import java.util.Map;
 import org.jmol.util.JmolList;
+
+
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
@@ -175,7 +177,7 @@ public abstract class AtomSetCollectionReader {
   protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   protected int desiredModelNumber = Integer.MIN_VALUE;
   protected SymmetryInterface symmetry;
-  protected JmolOutputChannel out;
+  protected OutputStream os;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
   protected String strSupercell;
@@ -240,7 +242,6 @@ public abstract class AtomSetCollectionReader {
           if (checkLine())
             readLine();
       } else {
-        doc.setOutputChannel(out);
         processBinaryDocument(doc);
       }
       finalizeReader(); // upstairs
@@ -460,8 +461,8 @@ public abstract class AtomSetCollectionReader {
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
-    if (htParams.containsKey("outputChannel"))
-      out = (JmolOutputChannel) htParams.get("outputChannel");
+    if (htParams.containsKey("OutputStream"))
+      os = (OutputStream) htParams.get("OutputStream");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))
@@ -1433,10 +1434,18 @@ public abstract class AtomSetCollectionReader {
   public String RL() throws Exception {
     prevline = line;
     line = reader.readLine();
-    if (out != null && line != null) {
+    if (os != null && line != null) {
       byte[] b = line.getBytes();
-      out.write(b, 0, b.length);
-      out.writeByteAsInt(0x0A);
+      os.write(b, 0, b.length);
+      /**
+       * @j2sNative
+       * 
+       *  this.os.writeByteAsInt(0x0A);
+       * 
+       */
+      {
+      os.write('\n');
+      }
     }
     ptLine++;
     if (Logger.debugging)

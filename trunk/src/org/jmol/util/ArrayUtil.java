@@ -25,8 +25,6 @@ package org.jmol.util;
 
 
 import java.lang.reflect.Array;
-
-import org.jmol.script.T;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -363,14 +361,14 @@ final public class ArrayUtil {
   }
 
   /**
-   * Helper method for creating a JmolList<Tx>[] without warnings.
+   * Helper method for creating a JmolList<T>[] without warnings.
    * 
-   * @param <type> Type of objects in the list.
+   * @param <T> Type of objects in the list.
    * @param size Array size.
-   * @return Array of JmolList<type>
+   * @return Array of JmolList<T>
    */
   @SuppressWarnings("unchecked")
-  public static <type> JmolList<type>[] createArrayOfArrayList(int size) {
+  public static <T> JmolList<T>[] createArrayOfArrayList(int size) {
     return new JmolList[size];
   }
 
@@ -503,15 +501,6 @@ final public class ArrayUtil {
     for (int i = list.size(); --i >= 0;)
       map.remove(list.get(i));
     return list.size();
-  }
-
-  public static Object[] getSlabObject(int tok, Object data, boolean isCap, Object colorData) {
-    return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap), colorData };
-  }
-
-  public static Object[] getSlabWithinRange(float min, float max) {
-    return new Object[] { Integer.valueOf(T.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
   }
 
 

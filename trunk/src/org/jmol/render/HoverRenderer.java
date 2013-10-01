@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,14 +24,11 @@
 package org.jmol.render;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
 import org.jmol.shape.Hover;
 
-public class HoverRenderer extends ShapeRenderer {
-  
-  private float[] tempXY = new float[3];
-
-  @SuppressWarnings("static-access")
+public class HoverRenderer extends LabelsRenderer {
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
@@ -45,8 +42,8 @@ public class HoverRenderer extends ShapeRenderer {
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              viewer.modelSet.getLabeler().formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? viewer.modelSet.getLabeler().formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
+              LabelToken.formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
+          : hover.labelFormat != null ? LabelToken.formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return false;
@@ -58,7 +55,7 @@ public class HoverRenderer extends ShapeRenderer {
     } else {
       return true;
     }
-    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, tempXY );
+    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, xy);
     return true;
   }
   

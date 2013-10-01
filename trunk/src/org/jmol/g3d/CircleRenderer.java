@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 21:28:36 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18731 $
+ * $Date: 2012-10-24 00:54:59 -0500 (Wed, 24 Oct 2012) $
+ * $Revision: 17678 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,8 +23,6 @@
  */
 package org.jmol.g3d;
 
-import org.jmol.api.JmolRendererInterface;
-
 /**
  *<p>
  * Implements flat circle drawing/filling routines.
@@ -32,21 +30,12 @@ import org.jmol.api.JmolRendererInterface;
  *
  * @author Miguel, miguel@jmol.org
  */
-public final class CircleRenderer implements G3DRenderer {
+final class CircleRenderer {
 
   private Graphics3D g3d;
 
-  public CircleRenderer() {
-    // for reflection
-  }
-  
-  public G3DRenderer set(JmolRendererInterface g3d) {
-    try {
-      this.g3d = (Graphics3D) g3d;
-    } catch (Exception e) {
-      // must be export; not a problem
-    }
-    return this;
+  CircleRenderer(Graphics3D g3d) {
+    this.g3d = g3d;
   }
 
   private int xCenter, yCenter, zCenter;

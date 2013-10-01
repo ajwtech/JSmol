@@ -1,8 +1,6 @@
 package org.jmol.api;
 
 
-import java.net.URL;
-
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
@@ -34,7 +32,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager);
+  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager);
 
   ///// Font
   
@@ -91,6 +89,16 @@ public interface ApiPlatform {
   Object createImage(Object ret);
 
   /**
+   * used for JPG writing only; can be ignored
+   * 
+   * @param viewer
+   * @param quality
+   * @param comment
+   * @return    null only if this platform cannot save images
+   */
+  Object getJpgImage(Viewer viewer, int quality, String comment);
+
+  /**
    * 
    * @param image
    * @param width
@@ -117,16 +125,14 @@ public interface ApiPlatform {
 
   Object getJsObjectInfo(Object[] jsObject, String method, Object[] args);
 
+  JmolFileAdapterInterface getFileAdapter();
+
+  JmolFileInterface newFile(String name);
+
   boolean isSingleThreaded();
 
   void notifyEndOfRendering();
 
-  String getDateFormat();
-  
-  JmolFileInterface newFile(String name);
-  
-  Object getBufferedFileInputStream(String name);
-  
-  Object getBufferedURLInputStream(URL url, byte[] outputBytes, String post);
+  public String getDateFormat();
 
 }

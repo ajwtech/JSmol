@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-08-11 17:01:22 -0500 (Sun, 11 Aug 2013) $
+ * $Revision: 18548 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -476,7 +476,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
-    define((new MeasurementData().init(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
+    define((new MeasurementData(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0, null),
         (isDelete ? T.delete : T.define));
   }

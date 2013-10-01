@@ -70,14 +70,10 @@ public class MeasurementData implements JmolMeasurementClient {
   
   
   
-  public MeasurementData() {
-    // by reflection
-  }
-  public MeasurementData init(String id, Viewer viewer, JmolList<Object> points) {
+  public MeasurementData(String id, Viewer viewer, JmolList<Object> points) {
     this.viewer = viewer;
     this.points = points;
     thisID = id;
-    return this;
   }
   
   public MeasurementData setModelSet(ModelSet m) {

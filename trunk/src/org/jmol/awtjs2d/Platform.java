@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
@@ -75,8 +76,18 @@ public class Platform implements ApiPlatform {
     return false;
   }
 
-  public JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager) {
-    return new Mouse(privateKey, viewer, actionManager);
+  private JmolFileAdapter fileAdapter;
+
+  public JmolFileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
+  }
+
+  public JmolFileInterface newFile(String name) {
+    return new JmolFile(name);
+  }
+
+  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+    return new Mouse(viewer, actionManager);
   }
 
   // /// Display
@@ -219,11 +230,15 @@ public class Platform implements ApiPlatform {
 	}
 
   public int getImageHeight(Object canvas) {
-		return (canvas == null ? -1 : Image.getHeight(canvas));
+		return Image.getHeight(canvas);
 	}
 
 	public int getImageWidth(Object canvas) {
-		return (canvas == null ? -1 : Image.getWidth(canvas));
+		return Image.getWidth(canvas);
+	}
+
+	public Object getJpgImage(Viewer viewer, int quality, String comment) {
+		return Image.getJpgImage(this, viewer, quality, comment);
 	}
 
 	public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
@@ -307,28 +322,13 @@ public class Platform implements ApiPlatform {
      * 
      * Mon Jan 07 2013 19:54:39 GMT-0600 (Central Standard Time)
      * 
-     * @j2sNative
+     * j2sNative
      * 
-     * return ("" + (new Date())).split(" (")[0];
+     * return (new Date()).split(" (")[0];
      */
     {
       return null;
     }
   }
-
-  public JmolFileInterface newFile(String name) {
-    return new JSFile(name);
-  }
-
-  public Object getBufferedFileInputStream(String name) {
-    // n/a for any applet
-    return null; 
-  }
-
-  public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
-                                          String post) {
-    return JSFile.getBufferedURLInputStream(url, outputBytes, post);
-  }
-
 
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-09-17 15:35:38 -0500 (Tue, 17 Sep 2013) $
+ * $Revision: 18660 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development Team
  *
@@ -23,6 +23,23 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.T;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.SB;
+import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer.ACCESS;
+
+import org.jmol.api.JmolDocument;
+import org.jmol.api.JmolDomReaderInterface;
+import org.jmol.api.JmolFileAdapterInterface;
+import org.jmol.api.JmolFileInterface;
+import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.api.JmolViewer;
+import org.jmol.api.ApiPlatform;
+import org.jmol.api.ZInputStream;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -31,30 +48,22 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolDocument;
-import org.jmol.api.JmolDomReaderInterface;
-import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.api.ApiPlatform;
 import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
-import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.Logger;
-import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
-import org.jmol.viewer.Viewer.ACCESS;
+import org.jmol.io.OutputStringBuilder;
 
+
+// updated 
 
 public class FileManager {
 
@@ -136,6 +145,34 @@ public class FileManager {
         : appletProxy);
   }
 
+  String getFileTypeName(String fileName) {
+    int pt = fileName.indexOf("::");
+    if (pt >= 0)
+      return fileName.substring(0, pt);
+    if (fileName.startsWith("="))
+      return "pdb";
+    Object br = getUnzippedReaderOrStreamFromName(fileName, null,
+        true, false, true, true, null);
+    if (br instanceof BufferedReader)
+      return viewer.getModelAdapter().getFileTypeName(br);
+    if (br instanceof ZInputStream) {
+      String zipDirectory = getZipDirectoryAsString(fileName);
+      if (zipDirectory.indexOf("JmolManifest") >= 0)
+        return "Jmol";
+      return viewer.getModelAdapter().getFileTypeName(
+          JmolBinary.getBufferedReaderForString(zipDirectory));
+    }
+    if (Escape.isAS(br)) {
+      return ((String[]) br)[0];
+    }
+    return null;
+  }
+
+  private String getZipDirectoryAsString(String fileName) {
+    Object t = getBufferedInputStreamOrErrorMessageFromName(
+        fileName, fileName, false, false, null, false);
+    return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
+  }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
 
@@ -373,16 +410,16 @@ public class FileManager {
         boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
         boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
         if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
-          String[] errMsg = new String[1];
-          byte[] bytes = viewer.getImageAsBytes(isPngjPost ? "PNGJ" : "PNG", 0, 0, -1, errMsg);
-          if (errMsg[0] != null)
-            return errMsg[0];
+          Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0,
+              null, null);
+          if (!Escape.isAB(o))
+            return o;
           if (isPngjBinaryPost) {
-            outputBytes = bytes;
+            outputBytes = (byte[]) o;
             name = TextFormat.simpleReplace(name, "?_", "=_");
           } else {
             name = new SB().append(name).append("=").appendSB(
-                Base64.getBase64(bytes)).toString();
+                Base64.getBase64((byte[]) o)).toString();
           }
         }
         int iurl = urlTypeIndex(name);
@@ -393,6 +430,7 @@ public class FileManager {
           name = name.substring(0, iurl);
         }
         boolean isApplet = (appletDocumentBaseURL != null);
+        JmolFileAdapterInterface fai = viewer.getFileAdapter();
         if (name.indexOf(".png") >= 0 && pngjCache == null
             && viewer.cachePngFiles())
           JmolBinary.cachePngjFile(this, null);
@@ -406,7 +444,7 @@ public class FileManager {
           name = url.toString();
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening 1 " + name);
-          ret = viewer.apiPlatform.getBufferedURLInputStream(url, outputBytes, post);
+          ret = fai.getBufferedURLInputStream(url, outputBytes, post);
           if (ret instanceof SB) {
             SB sb = (SB) ret;
             if (allowReader && !JmolBinary.isBase64(sb))
@@ -419,7 +457,7 @@ public class FileManager {
         } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
-          ret = viewer.apiPlatform.getBufferedFileInputStream(name);
+          ret = fai.getBufferedFileInputStream(name);
         }
         if (ret instanceof String)
           return ret;
@@ -749,7 +787,7 @@ public class FileManager {
     return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
-  public Object getFileAsBytes(String name, JmolOutputChannel out,
+  public Object getFileAsBytes(String name, OutputStringBuilder osb,
                                boolean allowZip) {
     // ?? used by eval of "WRITE FILE"
     // will be full path name
@@ -768,10 +806,10 @@ public class FileManager {
       return "Error:" + t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
-      Object bytes = (out != null || !allowZip || subFileList == null
+      Object bytes = (osb != null || !allowZip || subFileList == null
           || subFileList.length <= 1 || !JmolBinary.isZipS(bis)
           && !JmolBinary.isPngZipStream(bis) ? JmolBinary.getStreamAsBytes(bis,
-          out) : JmolBinary.getZipFileContentsAsBytes(bis, subFileList, 1));
+          osb) : JmolBinary.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
       return bytes;
     } catch (Exception ioe) {
@@ -802,11 +840,7 @@ public class FileManager {
       data[1] = (String) t;
       return false;
     }
-    try {
     return JmolBinary.readAll((BufferedReader) t, nBytesMax, allowBinary, data, 1);
-    } catch (Exception e) {
-      return false;
-    }
   }
 
   void loadImage(String name, String echoName) {
@@ -947,8 +981,8 @@ public class FileManager {
     } else {
       // This code is for the app -- no local file reading for headless
       if (urlTypeIndex(name) >= 0 
-          || viewer.haveAccess(ACCESS.NONE) 
-          || viewer.haveAccess(ACCESS.READSPT) 
+          || viewer.isRestricted(ACCESS.NONE) 
+          || viewer.isRestricted(ACCESS.READSPT) 
               && !name.endsWith(".spt") && !name.endsWith("/")) {
         try {
           url = new URL((URL) null, name, null);
@@ -1042,8 +1076,7 @@ public class FileManager {
       "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
       "file:///" };
 
-  String getLocalUrl(String fileName) {
-    JmolFileInterface file = viewer.apiPlatform.newFile(fileName);
+  public static String getLocalUrl(JmolFileInterface file) {
     // entering a url on a file input box will be accepted,
     // but cause an error later. We can fix that...
     // return null if there is no problem, the real url if there is
@@ -1062,7 +1095,7 @@ public class FileManager {
     return null;
   }
 
-  public static JmolFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
+  public static JmolFileInterface getLocalDirectory(JmolViewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
@@ -1098,7 +1131,7 @@ public class FileManager {
    * @param path
    * @param forDialog
    */
-  public static void setLocalPath(Viewer viewer, String path,
+  public static void setLocalPath(JmolViewer viewer, String path,
                                   boolean forDialog) {
     while (path.endsWith("/") || path.endsWith("\\"))
       path = path.substring(0, path.length() - 1);
@@ -1107,7 +1140,7 @@ public class FileManager {
       viewer.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  public static String getLocalPathForWritingFile(Viewer viewer, String file) {
+  public static String getLocalPathForWritingFile(JmolViewer viewer, String file) {
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)

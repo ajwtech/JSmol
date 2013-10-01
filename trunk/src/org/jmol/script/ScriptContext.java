@@ -38,7 +38,7 @@ public class ScriptContext {
   public boolean allowJSThreads;
   boolean chk;
   public String contextPath = " >> ";
-  public Map<String, SV> contextVariables;
+  Map<String, SV> contextVariables;
   boolean displayLoadErrorsSave;
   public String errorMessage;
   String errorMessageUntranslated;
@@ -47,7 +47,7 @@ public class ScriptContext {
   public boolean executionStepping;
   public String functionName;
   public int iCommandError = -1;
-  public int id;
+  int id;
   public boolean isComplete = true;
   boolean isFunction;
   public boolean isJSThread;
@@ -67,7 +67,7 @@ public class ScriptContext {
   String scriptExtensions;
   public String scriptFileName;
   int scriptLevel;
-  public T[] statement;
+  T[] statement;
   Map<String, String> htFileCache;
   int statementLength;
   ContextToken token;

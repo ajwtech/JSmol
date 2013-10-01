@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-18 23:20:01 -0500 (Wed, 18 Sep 2013) $
- * $Revision: 18679 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -707,7 +707,7 @@ public class Resolver {
   private final static int LEADER_CHAR_MAX = 64;
   
   private final static String[] sptContainsRecords = 
-  { "spt", "# Jmol state", "# Jmol script", "JmolManifest" };
+  { "spt", "# Jmol state", "# Jmol script" };
   
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};

@@ -1,20 +1,20 @@
-package org.jmol.image;
+package org.jmol.export.image;
 
 import java.util.zip.CRC32;
 
 import org.jmol.util.ArrayUtil;
 
-abstract class CRCEncoder extends ImageEncoder {
+class GenericCRCEncoder {
 
   protected int startPos, bytePos;
   
   private CRC32 crc;  
-  protected byte[] pngBytes;  
-  protected int dataLen;
+  private byte[] pngBytes;  
+  private int dataLen;
   private byte[] int2 = new byte[2];
   private byte[] int4 = new byte[4];
 
-  CRCEncoder() {
+  GenericCRCEncoder() {
     pngBytes = new byte[250];
     crc = new CRC32();
   }
