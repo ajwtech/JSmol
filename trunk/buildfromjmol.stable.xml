@@ -106,11 +106,18 @@
 	  </filterchain>
 	</copy>
   	
-  	<echo>deleting files in src/org/jmol</echo>
+  	<echo>deleting all files in src</echo>
     <delete>
-      <fileset dir="src/org/jmol" includes="**/*.java"/>
+      <fileset dir="src" includes="**/*.java"/>
     </delete>
+  	
   	<echo>copying files from ${jmol.path}</echo>
+
+    <copy overwrite="true" todir="src" >
+      <fileset dir="${jmol.path}/srcjs">
+        <include name="**/*.java" />
+      </fileset>
+    </copy>
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="${jmol.path}/src/org/jmol">
@@ -118,18 +125,22 @@
       	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
+      	<!-- selective - see next block -->
+        <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/popup/*"/>
       	<!-- unused -->
-        <exclude name="**/dialog/*"/>
-        <exclude name="**/export/**/*"/>
         <exclude name="**/multitouch/**/*"/>
-        <exclude name="**/viewer/*Awt*"/>
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/console" >
       <fileset dir="${jmol.path}/src/org/jmol/console">
+        <include name="Generic*.java" />
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/export/image" >
+      <fileset dir="${jmol.path}/src/org/jmol/export/image">
         <include name="Generic*.java" />
       </fileset>
     </copy>
@@ -150,7 +161,6 @@
   	<!-- replace BS.java with BitSet32.java, since JavaScript does not have LONG data type -->
   	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
-  	
   	
    	<echo>Now run buildtojs.stable.xml to compile ${jmol.path} as JSmol</echo>
 

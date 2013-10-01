@@ -91,6 +91,7 @@
   <target name="fromJmol" id="fromJmol">
   	
 	<!-- pull Jmol.properties key info -->
+  	<echo>copying Jmol.properties</echo>
 	<copy overwrite="true" todir="." >
 	  <fileset dir="${jmol.path}/src/org/jmol/viewer/">
 	    <include name="Jmol.properties" />
@@ -105,12 +106,18 @@
 	  </filterchain>
 	</copy>
   	
-  	<echo>deleting files in src/org/jmol</echo>
+  	<echo>deleting all files in src</echo>
     <delete>
-      <fileset dir="src/org/jmol" includes="**/*.java"/>
+      <fileset dir="src" includes="**/*.java"/>
     </delete>
+  	
   	<echo>copying files from ${jmol.path}</echo>
 
+    <copy overwrite="true" todir="src" >
+      <fileset dir="${jmol.path}/srcjs">
+        <include name="**/*.java" />
+      </fileset>
+    </copy>
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="${jmol.path}/src/org/jmol">
@@ -151,8 +158,7 @@
   	<!-- replace BS.java with BitSet32.java, since JavaScript does not have LONG data type -->
   	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
   	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
-  	
-  	
+  	  	
    	<echo>Now run buildtojstest.xml or buildtojs.xml to compile ${jmol.path} as JSmol</echo>
 
   </target>
