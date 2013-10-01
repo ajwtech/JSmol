@@ -51,21 +51,10 @@ var	basefile = base + "core.z.js";
   if (Jmol.debugCode)
     return;
 
-	ClazzLoader.jarClasspath (base + "coretext.z.js",	[    
-	"J.modelset.Object2d",
-	"$.Text",
-	"J.shape.Object2dShape",
-	"$.TextShape",
-	"$.Labels",
-	"$.Echo",
-	"$.Hover",
-	"J.render.TextRenderer",
-	"$.LabelsRenderer",
-	"$.EchoRenderer",
-	"$.HoverRenderer"
-	]);
-
 	ClazzLoader.jarClasspath (base + "corescript.z.js",	[  
+    "java.util.regex.Pattern", 
+    "$.Matcher", 
+    "$.MatchResult",     
     "J.api.JmolScriptManager", 
     "$.JmolScriptEvaluator",
     "$.JmolScriptFunction",
@@ -79,15 +68,9 @@ var	basefile = base + "core.z.js";
     "$.CommandWatcherThread", 
     "$.ScriptQueueThread", 
     "$.ScriptDelayThread", 
-    "$.ScriptManager",
-    "$.FileLoadThread"
+    "$.ScriptManager" 
 	]);
 	
-	ClazzLoader.jarClasspath (base + "corescript2.z.js",	[  
-	"J.script.JmolScriptExtension", 
-	"J.scriptext.ScriptExt"
-	]);
-	                                                 	
 	ClazzLoader.jarClasspath (base + "corestate.z.js",	[  
     "J.api.JmolStateCreator", 
     "J.viewer.StateCreator" 
@@ -162,6 +145,7 @@ var	basefile = base + "core.z.js";
 		"$.Inflater",
 		"$.Adler32",
 		"$.Tree",
+		"$.Deflate",
 		"$.GZIPHeader",
 		"$.StaticTree",
 		"$.Inflate",
@@ -171,6 +155,10 @@ var	basefile = base + "core.z.js";
 		"$.Inflater",
 		"$.InflaterInputStream",
 		"$.GZIPInputStream",
+		"$.Deflater",
+		"$.DeflaterOutputStream",
+
+		"java.io.ByteArrayOutputStream",
 		"$.PushbackInputStream",
 		"java.util.zip.CRC32",
 		"$.CheckedInputStream",
@@ -182,10 +170,20 @@ var	basefile = base + "core.z.js";
 		"$.ZipEntry",
 		"$.ZipConstants64",
 		"$.ZipInputStream",
+		"$.Deflater",
+		"$.DeflaterOutputStream",
+		"$.ZipOutputStream",
+
 		"J.api.JmolZipUtility",
 		"$.ZInputStream",
+		"$.JmolImageCreatorInterface",
+		"J.export.image.GenericCRCEncoder",
+		"$.GenericPngEncoder",
+		"$.GenericImageCreator",
+		"J.exportjs.JSImageCreator",
 		"J.io2.ZipUtil",
-		"$.JmolZipInputStream"
+		"$.JpegEncoder",
+		"$.JmolZipInputStream"		
 	]);
 	
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[
