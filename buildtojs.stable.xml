@@ -793,7 +793,6 @@
    	<echo>creating distribution zip file jsmol.zip</echo>
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
   	<delete file="dist/*" />
- 	<delete dir="site" /> 	
    	<copy overwrite="true" todir="${jmol.path}/appletweb" >
 	  <fileset dir="dist">
 	    <include name="jsmol.zip" />
