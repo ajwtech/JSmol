@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 16:31:12 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18712 $
+ * $Date: 2013-09-30 21:28:36 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18731 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -32,12 +32,12 @@ import org.jmol.api.JmolRendererInterface;
  *
  * @author Miguel, miguel@jmol.org
  */
-final class CircleRenderer implements G3DRenderer {
+public final class CircleRenderer implements G3DRenderer {
 
   private Graphics3D g3d;
 
-  CircleRenderer() {
-    
+  public CircleRenderer() {
+    // for reflection
   }
   
   public G3DRenderer set(JmolRendererInterface g3d) {

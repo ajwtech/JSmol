@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-09-30 21:28:36 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18731 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1149,9 +1149,10 @@ public class AtomSetCollection {
     }
     // always do the 555 cell first
     
-    // incommensurate symmetry can have lattice centering, reulting in 
-    // duplication of operators.
-    checkAll = checkSpecial && symmetry.hasLatticeCentering();
+    // incommensurate symmetry can have lattice centering, resulting in 
+    // duplication of operators. There's a bug later on that requires we 
+    // only do this with the first atom set for now, at least. 
+    checkAll = (atomSetCount == 1 && checkSpecial && symmetry.hasLatticeCentering());
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -1338,6 +1339,8 @@ public class AtomSetCollection {
             continue;
           int j0 = (checkAll ? atomCount : pt0);
           for (int j = j0; --j >= 0;) {
+            if (cartesians[j] == null)
+              System.out.println("Hmm asc");
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];

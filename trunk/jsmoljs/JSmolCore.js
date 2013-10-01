@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  9/17/2013 10:17:44 AM
+// JSmolCore.js -- Jmol core capability  9/30/2013 6:43:14 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 9/30/2013 6:42:24 PM: pdb.gz switch  pdb should only be for www.rcsb.org
 // BH 9/17/2013 10:17:51 AM: asynchronous file reading and saving
 // BH 8/16/2013 12:02:20 PM: JSmoljQueryExt.js pulled out
 // BH 8/16/2013 12:02:20 PM: Jmol._touching used properly
@@ -667,7 +668,7 @@ Jmol = (function(document) {
   	// use host-server PHP relay if not from this host
     var type = (Jmol._isBinaryUrl(fileName) ? "binary" : "text");
     var asBase64 = ((type == "binary") && !Jmol._canSyncBinary());
-    if (asBase64 && fileName.indexOf("pdb.gz") >= 0) {
+    if (asBase64 && fileName.indexOf("pdb.gz") >= 0 && fileName.indexOf("http://www.rcsb.org/pdb/files/") == 0) {
       // avoid unnecessary binary transfer
       fileName = fileName.replace(/pdb\.gz/,"pdb");
       asBase64 = false;

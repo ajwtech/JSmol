@@ -271,8 +271,6 @@
    		JZ/Adler32.js
    		JZ/Tree.js
    		JZ/StaticTree.js
-   		JZ/Deflate.js
-   		JZ/Deflater.js
    		JZ/GZIPHeader.js
    		JZ/Inflate.js
    		JZ/InfTree.js
