@@ -38,6 +38,8 @@
     </copy>
    	
   	<!-- modify class names -->		
+
+    <echo>modifying class names</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
@@ -87,6 +89,12 @@
       </fileset>
     </copy>
    	
+   	<copy todir="site/jsmol/html">
+  	  <fileset dir="${jmol.path}/srcjs/js">
+  	    <include name="*.htm*" />
+  	  </fileset>
+    </copy>
+
    	<copy todir="site/jsmol/data">
   	  <fileset dir="data">
   	    <include name="**/*" />
@@ -142,22 +150,22 @@
   	  </fileset>
     </copy>
   
-   	<!-- make core files -->
- 
   	<copy todir="site/jsmol/j2s/img">
   	  <fileset dir="img">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
    	
+   	<!-- make core files -->
+ 
    	<copy todir="site/jsmol/j2s/core">
-  	  <fileset dir="jsmoljs/core">
+  	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />
   	  </fileset>
     </copy>
 
    	<!-- note: any changes in these next sections must be reflected also
-   	             in jsmoljs/core/package.js -->
+   	             in package.js -->
    	
    	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="site/jsmol/j2s" files="
    		J/script/ScriptManager.js
