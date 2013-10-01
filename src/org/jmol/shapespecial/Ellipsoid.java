@@ -25,7 +25,6 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.api.Interface;
 import org.jmol.util.C;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
@@ -129,14 +128,14 @@ public class Ellipsoid {
 
   protected void setEquation(double[] coef) {
     isValid = false;
-    tensor = ((Tensor) Interface.getOptionInterface("util.Tensor")).setFromThermalEquation(coef, null);
+    tensor = Tensor.getTensorFromThermalEquation(coef, null);
     validate(true);
   }
 
   protected void setAxes(V3[] axes) {
     isValid = false;
-    tensor = ((Tensor) Interface.getOptionInterface("util.Tensor")).setFromAxes(axes);
-    validate((tensor != null));
+    tensor = Tensor.getTensorFromAxes(axes);
+    validate(true);
   }
 
   private void validate(boolean andSetLengths) {

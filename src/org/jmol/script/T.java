@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-22 20:12:27 -0500 (Sun, 22 Sep 2013) $
- * $Revision: 18689 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -302,7 +302,6 @@ public class T {
   public final static int bondorder    = scriptCommand | 5;
   public final static int calculate    = scriptCommand | 6;
 //public final static int cache        see mathfunc
-  public final static int capture      = scriptCommand | 7;
   public final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
   public final static int centerAt     = scriptCommand | 9;
 //public final static int color        see intproperty
@@ -794,7 +793,6 @@ public class T {
 
   // full set of all Jmol "set" parameters
 
-  public final static int animationmode                  = strparam | 1;
   public final static int appletproxy                    = strparam | 2;
   public final static int atomtypes                      = strparam | 4;
   public final static int axescolor                      = strparam | 6;
@@ -1105,7 +1103,7 @@ public class T {
   public final static int bottom        = misc  | 47;
   public final static int brillouin     = misc  | 48;
   public final static int cancel        = misc  | 50;
-  public final static int cap           = misc  | 51 | expression;
+  public final static int cap    = misc  | 51 | expression;
   public final static int cavity        = misc  | 52;
   public final static int check         = misc  | 54;
   public final static int chemical      = misc  | 55;
@@ -1263,9 +1261,8 @@ public class T {
   public final static int residue = misc  | 296;
   public final static int resolution     = misc  | 298;
   public final static int reversecolor   = misc  | 300;
-  public final static int rewind         = misc  | 302;
-  public final static int right          = misc  | 304;
-  public final static int rock           = misc  | 305;
+  public final static int rewind  = misc  | 302;
+  public final static int right   = misc  | 304;
   public final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
   public final static int rubberband     = misc  | 310;
@@ -1561,7 +1558,6 @@ public class T {
       "boundingBox",       null,
       "break",             T.t(breakcmd),
       "calculate",         T.t(calculate),
-      "capture",           T.t(capture),
       "cartoon",           T.t(cartoon),
       "cartoons",          null,
       "case",              T.t(casecmd),
@@ -1967,7 +1963,6 @@ public class T {
       "reverse",         T.t(reverse),
       "right",           T.t(right),
       "RNA",             T.t(rna),
-      "rock",            T.t(rock),
       "rubberband",      T.t(rubberband),
       "saSurface",       T.t(sasurface),
       "scale",           T.t(scale),
@@ -2191,7 +2186,6 @@ public class T {
       
       // string
       
-      "animationMode",                            T.t(animationmode),
       "appletProxy",                              T.t(appletproxy),
       "atomTypes",                                T.t(atomtypes),
       "axesColor",                                T.t(axescolor),

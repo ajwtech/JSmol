@@ -1041,13 +1041,6 @@ public class ActionManager {
           Long.MAX_VALUE);
       checkReleaseAction(x, y, time, dragRelease);
       return;
-    case Binding.WHEELED:
-      if (viewer.isApplet() && !viewer.hasFocus())
-        return;
-      setCurrent(time, current.x, current.y, buttonMods);
-      checkDragWheelAction(Binding.getMouseAction(0, buttonMods,
-          Binding.WHEELED), current.x, current.y, 0, y, time, Binding.WHEELED);
-      return;
     case Binding.CLICKED:
       setMouseMode();
       clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, buttonMods,
@@ -1065,6 +1058,13 @@ public class ActionManager {
       clickAction = Binding.getMouseAction(clickedCount, buttonMods,
           Binding.CLICKED);
       checkClickAction(x, y, time, clickedCount);
+      return;
+    case Binding.WHEELED:
+      if (viewer.isApplet() && !viewer.hasFocus())
+        return;
+      setCurrent(time, current.x, current.y, buttonMods);
+      checkDragWheelAction(Binding.getMouseAction(0, buttonMods,
+          Binding.WHEELED), current.x, current.y, 0, y, time, Binding.WHEELED);
       return;
     }
   }
@@ -1699,8 +1699,8 @@ public class ActionManager {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
     viewer.setCursor(JC.CURSOR_CROSSHAIR);
-    viewer.setPendingMeasurement(measurementPending = 
-        viewer.getMP());
+    viewer.setPendingMeasurement(measurementPending = MeasurementPending
+        .getMP(viewer.getModelSet()));
     measurementQueued = measurementPending;
   }
 
@@ -1721,7 +1721,7 @@ public class ActionManager {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
     exitMeasurementMode();
-    measurementQueued = viewer.getMP();
+    measurementQueued = MeasurementPending.getMP(viewer.getModelSet());
   }
 
   private void exitMeasurementMode() {

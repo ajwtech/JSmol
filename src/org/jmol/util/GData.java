@@ -702,11 +702,4 @@ public class GData implements JmolGraphicsInterface {
     return i;
   }
 
-  /**
-   * @param tok  
-   */
-  public void addRenderer(int tok) {
-    // needed for JavaScript implementation to avoid unnecessary core loading
-  }
-
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 16:31:12 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18712 $
+ * $Date: 2013-06-29 18:32:44 -0500 (Sat, 29 Jun 2013) $
+ * $Revision: 18381 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -26,13 +26,13 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.shape.Labels;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.Point3fi;
-import org.jmol.viewer.JC;
 
 public class LabelsRenderer extends FontLineShapeRenderer {
 
@@ -116,12 +116,12 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
-      boolean labelsFront = ((offsetFull & JC.LABEL_FRONT_FLAG) != 0);
-      boolean labelsGroup = ((offsetFull & JC.LABEL_GROUP_FLAG) != 0);
-      isExact = ((offsetFull & JC.LABEL_EXACT_OFFSET_FLAG) != 0);
-      offset = offsetFull >> JC.LABEL_FLAG_OFFSET;
+      boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
+      boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
+      isExact = ((offsetFull & Labels.EXACT_OFFSET_FLAG) != 0);
+      offset = offsetFull >> Labels.FLAG_OFFSET;
       textAlign = Labels.getAlignment(offsetFull);
-      pointer = offsetFull & JC.LABEL_POINTER_FLAGS;
+      pointer = offsetFull & Labels.POINTER_FLAGS;
       zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
       if (zCutoff > 0 && zSlab > zCutoff)
         continue;
@@ -184,7 +184,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         text.setScalePixelsPerMicron(sppm);
       }
     } else {
-      boolean isLeft = (textAlign == JC.ALIGN_LEFT || textAlign == JC.ALIGN_NONE);
+      boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
       if (fid != fidPrevious || ascent == 0) {
         g3d.setFontFid(fid);
         fidPrevious = fid;
@@ -198,13 +198,13 @@ public class LabelsRenderer extends FontLineShapeRenderer {
           && (imageFontScaling == 1 && scalePixelsPerMicron == 0
               && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
       if (isSimple) {
-        boolean doPointer = ((pointer & JC.POINTER_ON) != 0);
-        short pointerColix = ((pointer & JC.POINTER_BACKGROUND) != 0
+        boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
+        short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
             && bgcolix != 0 ? bgcolix : labelColix);
         boxXY[0] = atomPt.screenX;
         boxXY[1] = atomPt.screenY;
         TextRenderer.renderSimpleLabel(g3d, font3d, label, labelColix, bgcolix,
-            boxXY, zBox, zSlab, JC.getXOffset(offset), JC
+            boxXY, zBox, zSlab, Object2d.getXOffset(offset), Object2d
                 .getYOffset(offset), ascent, descent, doPointer, pointerColix,
             isExact);
         atomPt = null;
@@ -221,7 +221,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (atomPt != null) {
       if (text.pymolOffset == null) {
         text.setOffset(offset);
-        if (textAlign != JC.ALIGN_NONE)
+        if (textAlign != Object2d.ALIGN_NONE)
           text.setAlignment(textAlign);
       }
       text.setPointer(pointer);

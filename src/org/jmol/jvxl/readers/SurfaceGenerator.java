@@ -116,6 +116,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 
 import java.util.Map;
@@ -126,7 +127,6 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
@@ -164,7 +164,7 @@ public class SurfaceGenerator {
   public String getFileType() {
     return fileType;
   }
-  private JmolOutputChannel out;
+  private OutputStream os;
     
   public void setVersion(String version) {
     this.version = version;
@@ -998,8 +998,8 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("outputChannel" == propertyName) {
-      out = (JmolOutputChannel) value;
+    if ("outputStream" == propertyName) {
+      os = (OutputStream) value;
       return true;
     }
 
@@ -1008,7 +1008,7 @@ public class SurfaceGenerator {
         Logger.error("Could not set the surface data");
         return true;
       }
-      surfaceReader.setOutputChannel(out);
+      surfaceReader.setOutputStream(os);
       generateSurface();
       return true;
     }
@@ -1023,7 +1023,7 @@ public class SurfaceGenerator {
         Logger.error("Could not set the mapping data");
         return true;
       }
-      surfaceReader.setOutputChannel(out);
+      surfaceReader.setOutputStream(os);
       mapSurface();
       return true;
     }
@@ -1448,10 +1448,10 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
-  void setOutputChannel(JmolDocument binaryDoc, JmolOutputChannel out) {
+  void setOutputStream(JmolDocument binaryDoc, OutputStream os) {
     if (meshDataServer == null)
       return;
-     meshDataServer.setOutputChannel(binaryDoc, out);    
+     meshDataServer.setOutputStream(binaryDoc, os);    
   }
 
   public boolean isFullyLit() {

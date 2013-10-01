@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 13:17:49 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18711 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
 
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
@@ -290,18 +290,18 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getADPMinMax(boolean isMax) {
-    Object[] tensors = getTensors();
+    Tensor[] tensors = getTensors();
     if (tensors == null)
       return 0;
-    Tensor t = (Tensor) tensors[0];
+    Tensor t = tensors[0];
     if (t == null || t.iType != Tensor.TYPE_ADP)
       return 0;
     if (group.chain.model.modelSet.isModulated(index) && t.isUnmodulated)
-      t = (Tensor) tensors[1];
+      t = tensors[1];
     return t.getFactoredValue(isMax ? 2 : 1); 
   }
 
-  public Object[] getTensors() {
+  public Tensor[] getTensors() {
     return group.chain.model.modelSet.getAtomTensorList(index);
   }
   

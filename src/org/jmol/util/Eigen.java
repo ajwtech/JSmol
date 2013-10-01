@@ -58,14 +58,11 @@ public class Eigen {
   Public Methods
   * ------------------------ */
 
-  public Eigen() {}
-  
-  public Eigen set(int n) {
+  public Eigen(int n) {
     this.n = n;
     V = new double[n][n];
     d = new double[n];
     e = new double[n];
-    return this;
   }
 
   /**
@@ -74,7 +71,7 @@ public class Eigen {
    * @return  Eigen e
    */
   public static Eigen newM(double[][] m) {
-    Eigen e = new Eigen().set(m.length);
+    Eigen e = new Eigen(m.length);
     e.calc(m);
     return e;
   }

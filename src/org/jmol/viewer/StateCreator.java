@@ -23,6 +23,10 @@
 
 package org.jmol.viewer;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,12 +34,19 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import org.jmol.api.JmolImageCreatorInterface;
+import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolScriptFunction;
+import org.jmol.api.JmolStateCreator;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
+import org.jmol.i18n.GT;
+import org.jmol.io.Base64;
+import org.jmol.io.JmolBinary;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -43,6 +54,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.modelset.TickInfo;
 import org.jmol.modelset.Bond.BondSet;
@@ -73,27 +85,16 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
+import org.jmol.viewer.Viewer.ACCESS;
 
 /**
- * StateCreator handles all aspects of working with the "state" as
- * generally defined, including
- * 
- *  -- creating the state script
- *  
- *  -- general output, including logging
- *  
- *  -- handling undo/redo
- *  
- *  -- processing SYNC directives
- *  
- * 
  * Called by reflection only; all state generation script here, for
  * modularization in JavaScript
  * 
- * 
+ * instantiated by reflection only!
  * 
  */
-public class StateCreator extends JmolStateCreator {
+public class StateCreator implements JmolStateCreator {
 
   public StateCreator() {
 
@@ -102,28 +103,55 @@ public class StateCreator extends JmolStateCreator {
   }
 
   private Viewer viewer;
+  private double privateKey;
 
-  @Override
-  void setViewer(Viewer viewer) {
+  public void setViewer(Viewer viewer, double privateKey) {
     this.viewer = viewer;
+    this.privateKey = privateKey;
+  }
+  
+  public static String SIMULATION_PROTOCOL = "http://SIMULATION/";
+
+  public Object getWrappedState(String fileName, String[] scripts,
+                                boolean isImage, boolean asJmolZip, int width,
+                                int height) {
+    if (isImage && !viewer.global.imageState && !asJmolZip
+        || !viewer.global.preserveState)
+      return "";
+    String s = viewer.getStateInfo3(null, width, height);
+    if (asJmolZip) {
+      if (fileName != null)
+        viewer.fileManager.clearPngjCache(fileName);
+      // when writing a file, we need to make sure
+      // the pngj cache for that file is cleared
+      return JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer, null, s,
+          scripts, true);
+    }
+    // we remove local file references in the embedded states for images
+    try {
+      s = JC.embedScript(FileManager.setScriptFileReferences(s, ".",
+          null, null));
+    } catch (Throwable e) {
+      // ignore if this uses too much memory
+      Logger.error("state could not be saved: " + e.toString());
+      s = "Jmol " + Viewer.getJmolVersion();
+    }
+    return s;
   }
 
-
-  /////////////////// creating the state script ////////////////////
-  
-  static String SIMULATION_PROTOCOL = "http://SIMULATION/";
-
-  @Override
-  String getStateScript(String type, int width, int height) {
+  public String getStateScript(String type, int width, int height) {
     //System.out.println("viewer getStateInfo " + type);
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     SB s = new SB();
-    SB sfunc = (isAll ? new SB().append("function _setState() {\n") : null);
+    SB sfunc = (isAll ? new SB()
+        .append("function _setState() {\n") : null);
     if (isAll)
-      s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion() + ";\n");
+      s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion()
+          + ";\n");
     if (viewer.isApplet() && isAll) {
       appendCmd(s, "# fullName = " + Escape.eS(viewer.fullName));
-      appendCmd(s, "# documentBase = " + Escape.eS(viewer.appletDocumentBase));
+      appendCmd(s, "# documentBase = "
+          + Escape.eS(viewer.appletDocumentBase));
       appendCmd(s, "# codeBase = " + Escape.eS(viewer.appletCodeBase));
       s.append("\n");
     }
@@ -207,8 +235,7 @@ public class StateCreator extends JmolStateCreator {
     return cmd + commands.toString();
   }
 
-  @Override
-  String getModelState(SB sfunc, boolean isAll,
+  public String getModelState(SB sfunc, boolean isAll,
                               boolean withProteinStructure) {
     SB commands = new SB();
     if (isAll && sfunc != null) {
@@ -335,7 +362,7 @@ public class StateCreator extends JmolStateCreator {
         //        commands.append("  unitcell OFF;\n");
         if (haveModulation) {
           //commands.append("  modulation fps "
-          //  + viewer.animationManager.modulationFps + ";\n");
+            //  + viewer.animationManager.modulationFps + ";\n");
           Map<String, BS> temp = new Hashtable<String, BS>();
           int ivib;
           for (int i = modelCount; --i >= 0;) {
@@ -376,7 +403,8 @@ public class StateCreator extends JmolStateCreator {
       imax = (i = iShape) + 1;
     }
     for (; i < imax; ++i)
-      if ((shape = shapes[i]) != null && (isAll || JC.isShapeSecondary(i))
+      if ((shape = shapes[i]) != null
+          && (isAll || JC.isShapeSecondary(i))
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     commands.append("  select *;\n");
@@ -413,8 +441,7 @@ public class StateCreator extends JmolStateCreator {
     return str.toString();
   }
 
-  @Override
-  String getSpecularState() {
+  public String getSpecularState() {
     SB str = new SB();
     GData g = viewer.gdata;
     appendCmd(str, "set ambientPercent " + g.getAmbientPercent());
@@ -448,60 +475,8 @@ public class StateCreator extends JmolStateCreator {
     return commands.toString();
   }
 
-  private void appendLoadStates(SB cmds) {
-    Map<String, Boolean> ligandModelSet = viewer.ligandModelSet;
-    if (ligandModelSet != null) {
-      for (String key : ligandModelSet.keySet()) {
-        String data = (String) viewer.ligandModels.get(key + "_data");
-        if (data != null)
-          cmds.append("  ").append(
-              Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
-        data = (String) viewer.ligandModels.get(key + "_file");
-        if (data != null)
-          cmds.append("  ").append(
-              Escape.encapsulateData("file_" + key, data.trim() + "\n", 0));
-      }
-    }
-    SB commands = new SB();
-    ModelSet ms = viewer.modelSet;
-    Model[] models = ms.models;
-    int modelCount = ms.modelCount;
-    for (int i = 0; i < modelCount; i++) {
-      if (ms.isJmolDataFrameForModel(i) || ms.isTrajectorySubFrame(i))
-        continue;
-      Model m = models[i];
-      int pt = commands.indexOf(m.loadState);
-      if (pt < 0 || pt != commands.lastIndexOf(m.loadState))
-        commands.append(models[i].loadState);
-      if (models[i].isModelKit) {
-        BS bs = ms.getModelAtomBitSetIncludingDeleted(i, false);
-        if (ms.tainted != null) {
-          if (ms.tainted[AtomCollection.TAINT_COORD] != null)
-            ms.tainted[AtomCollection.TAINT_COORD].andNot(bs);
-          if (ms.tainted[AtomCollection.TAINT_ELEMENT] != null)
-            ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
-        }
-        m.loadScript = new SB();
-        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true,
-            "MOL"), i > 0);
-      } else {
-        commands.appendSB(m.loadScript);
-      }
-    }
-    String s = commands.toString();
-    // add a zap command before the first load command.
-    int i = s.indexOf("load /*data*/");
-    int j = s.indexOf("load /*file*/");
-    if (j >= 0 && j < i)
-      i = j;
-    if ((j = s.indexOf("load \"@")) >= 0 && j < i)
-      i = j;
-    if (i >= 0)
-      s = s.substring(0, i) + "zap;" + s.substring(i);
-    cmds.append(s);
-  }
-
-  private void getDataState(DataManager dm, SB state, SB sfunc, String atomProps) {
+  private void getDataState(DataManager dm, SB state,
+                            SB sfunc, String atomProps) {
     if (dm.dataValues == null)
       return;
     SB sb = new SB();
@@ -510,11 +485,10 @@ public class StateCreator extends JmolStateCreator {
       haveData = true;
       sb.append(atomProps);
     }
-    for (String name : dm.dataValues.keySet()) {
+    for (String name: dm.dataValues.keySet()) {
       if (name.indexOf("property_") == 0) {
         Object[] obj = dm.dataValues.get(name);
-        if (obj.length > DataManager.DATA_SAVE_IN_STATE
-            && obj[DataManager.DATA_SAVE_IN_STATE] == Boolean.FALSE)
+        if (obj.length > DataManager.DATA_SAVE_IN_STATE && obj[DataManager.DATA_SAVE_IN_STATE] == Boolean.FALSE)
           continue;
         haveData = true;
         Object data = obj[1];
@@ -717,16 +691,16 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(s, Shape.getColorCommand("label", l.defaultPaletteID,
         l.defaultColix, l.translucentAllowed));
     appendCmd(s, "background label " + Shape.encodeColor(l.defaultBgcolix));
-    appendCmd(s, "set labelOffset " + JC.getXOffset(l.defaultOffset)
-        + " " + (-JC.getYOffset(l.defaultOffset)));
-    String align = JC.getAlignmentName(l.defaultAlignment);
+    appendCmd(s, "set labelOffset " + Object2d.getXOffset(l.defaultOffset)
+        + " " + (-Object2d.getYOffset(l.defaultOffset)));
+    String align = Object2d.getAlignmentName(l.defaultAlignment);
     appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
-    String pointer = JC.getPointer(l.defaultPointer);
+    String pointer = Object2d.getPointer(l.defaultPointer);
     appendCmd(s, "set labelPointer "
         + (pointer.length() == 0 ? "off" : pointer));
-    if ((l.defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
+    if ((l.defaultZPos & Labels.FRONT_FLAG) != 0)
       appendCmd(s, "set labelFront");
-    else if ((l.defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
+    else if ((l.defaultZPos & Labels.GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
     appendCmd(s, Shape.getFontCommand("label", JmolFont
         .getFont3D(l.defaultFontId)));
@@ -753,8 +727,8 @@ public class StateCreator extends JmolStateCreator {
     else
       commands.append(cmd);
     appendCmd(commands, "set hideNotSelected " + sm.hideNotSelected);
-    commands.append((String) viewer.getShapeProperty(JC.SHAPE_STICKS,
-        "selectionState"));
+    commands.append((String) viewer.getShapeProperty(
+        JC.SHAPE_STICKS, "selectionState"));
     if (viewer.getSelectionHaloEnabled(false))
       appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null)
@@ -762,14 +736,13 @@ public class StateCreator extends JmolStateCreator {
     return commands.toString();
   }
 
-  @Override
-  String getTrajectoryState() {
+  public String getTrajectoryState() {
     String s = "";
     ModelSet m = viewer.modelSet;
     if (m.trajectorySteps == null)
       return "";
     for (int i = m.modelCount; --i >= 0;) {
-      int t = m.models[i].getSelectedTrajectory();
+      int t = m.models[i].getSelectedTrajectory(); 
       if (t >= 0) {
         s = " or " + m.getModelNumberDotted(t) + s;
         i = m.models[i].trajectoryBaseIndex; //skip other trajectories
@@ -782,7 +755,7 @@ public class StateCreator extends JmolStateCreator {
 
   private String getViewState(TransformManager tm, SB sfunc) {
     SB commands = new SB();
-    String moveToText = tm.getMoveToText(0, false);
+    String moveToText = tm.getMoveToText(0, false); 
     // finalizes transform parameters, in case that has not been done
     if (sfunc != null) {
       sfunc.append("  _setPerspectiveState;\n");
@@ -812,9 +785,14 @@ public class StateCreator extends JmolStateCreator {
           + tm.stereoDegrees);
     if (!navigating && !tm.zoomEnabled)
       appendCmd(commands, "zoom off");
-    commands.append("  slab ").appendI(tm.slabPercentSetting).append(";depth ")
-        .appendI(tm.depthPercentSetting).append(
-            tm.slabEnabled && !navigating ? ";slab on" : "").append(";\n");
+    commands
+        .append("  slab ")
+        .appendI(tm.slabPercentSetting)
+        .append(";depth ")
+        .appendI(tm.depthPercentSetting)
+        .append(
+            tm.slabEnabled && !navigating ? ";slab on"
+                : "").append(";\n");
     commands.append("  set slabRange ").appendF(tm.slabRange).append(";\n");
     if (tm.zShadeEnabled)
       commands.append("  set zShade;\n");
@@ -826,8 +804,8 @@ public class StateCreator extends JmolStateCreator {
       // don't care
     }
     if (tm.slabPlane != null)
-      commands.append("  slab plane ").append(Escape.eP4(tm.slabPlane)).append(
-          ";\n");
+      commands.append("  slab plane ").append(Escape.eP4(tm.slabPlane))
+          .append(";\n");
     if (tm.depthPlane != null)
       commands.append("  depth plane ").append(Escape.eP4(tm.depthPlane))
           .append(";\n");
@@ -849,8 +827,7 @@ public class StateCreator extends JmolStateCreator {
    * @param isAll
    * @return spin state
    */
-  @Override
-  String getSpinState(boolean isAll) {
+  public String getSpinState(boolean isAll) {
     TransformManager tm = viewer.transformManager;
     String s = "  set spinX " + (int) tm.spinX + "; set spinY "
         + (int) tm.spinY + "; set spinZ " + (int) tm.spinZ + "; set spinFps "
@@ -870,7 +847,8 @@ public class StateCreator extends JmolStateCreator {
       P3 pt = P3.newP(tm.internalRotationCenter);
       pt.sub(tm.rotationAxis);
       s += prefix + " spin " + tm.rotationRate + " "
-          + Escape.eP(tm.internalRotationCenter) + " " + Escape.eP(pt);
+          + Escape.eP(tm.internalRotationCenter) + " "
+          + Escape.eP(pt);
     } else if (tm.isSpinFixed) {
       s += prefix + " spin axisangle " + Escape.eP(tm.rotationAxis) + " "
           + tm.rotationRate;
@@ -882,8 +860,7 @@ public class StateCreator extends JmolStateCreator {
 
   //// info 
 
-  @Override
-  Map<String, Object> getInfo(Object manager) {
+  public Map<String, Object> getInfo(Object manager) {
     if (manager instanceof AnimationManager)
       return getAnimationInfo((AnimationManager) manager);
     return null;
@@ -899,8 +876,7 @@ public class StateCreator extends JmolStateCreator {
     if (am.animationFrames != null) {
       info.put("isMovie", Boolean.TRUE);
       info.put("frames", Escape.eAI(am.animationFrames));
-      info.put("currentAnimationFrame", Integer
-          .valueOf(am.currentAnimationFrame));
+      info.put("currentAnimationFrame", Integer.valueOf(am.currentAnimationFrame));
     }
     info.put("displayModelNumber", viewer
         .getModelNumberDotted(am.currentModelIndex));
@@ -917,9 +893,8 @@ public class StateCreator extends JmolStateCreator {
 
   //// utility methods
 
-  @Override
-  String getCommands(Map<String, BS> htDefine, Map<String, BS> htMore,
-                            String selectCmd) {
+  public String getCommands(Map<String, BS> htDefine,
+                            Map<String, BS> htMore, String selectCmd) {
     SB s = new SB();
     String setPrev = getCommands2(htDefine, s, null, selectCmd);
     if (htMore != null)
@@ -927,8 +902,8 @@ public class StateCreator extends JmolStateCreator {
     return s.toString();
   }
 
-  private static String getCommands2(Map<String, BS> ht, SB s, String setPrev,
-                                     String selectCmd) {
+  private static String getCommands2(Map<String, BS> ht, SB s,
+                                     String setPrev, String selectCmd) {
     if (ht == null)
       return "";
     for (Map.Entry<String, BS> entry : ht.entrySet()) {
@@ -958,8 +933,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(sb, key + Escape.eBS(bs));
   }
 
-  @Override
-  String getFontState(String myType, JmolFont font3d) {
+  public String getFontState(String myType, JmolFont font3d) {
     int objId = StateManager.getObjectIdFromName(myType
         .equalsIgnoreCase("axes") ? "axis" : myType);
     if (objId < 0)
@@ -977,8 +951,7 @@ public class StateCreator extends JmolStateCreator {
     return (s + fcmd);
   }
 
-  @Override
-  String getFontLineShapeState(String s, String myType,
+  public String getFontLineShapeState(String s, String myType,
                                       TickInfo[] tickInfos) {
     boolean isOff = (s.indexOf(" off") >= 0);
     SB sb = new SB();
@@ -998,7 +971,8 @@ public class StateCreator extends JmolStateCreator {
     sb.append(";\n");
   }
 
-  private static void addTickInfo(SB sb, TickInfo tickInfo, boolean addFirst) {
+  private static void addTickInfo(SB sb, TickInfo tickInfo,
+                                  boolean addFirst) {
     sb.append(" ticks ").append(tickInfo.type).append(" ").append(
         Escape.eP(tickInfo.ticks));
     boolean isUnitCell = (tickInfo.scale != null && Float
@@ -1006,8 +980,8 @@ public class StateCreator extends JmolStateCreator {
     if (isUnitCell)
       sb.append(" UNITCELL");
     if (tickInfo.tickLabelFormats != null)
-      sb.append(" format ")
-          .append(Escape.eAS(tickInfo.tickLabelFormats, false));
+      sb.append(" format ").append(
+          Escape.eAS(tickInfo.tickLabelFormats, false));
     if (!isUnitCell && tickInfo.scale != null)
       sb.append(" scale ").append(Escape.eP(tickInfo.scale));
     if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
@@ -1016,10 +990,10 @@ public class StateCreator extends JmolStateCreator {
       sb.append(" point ").append(Escape.eP(tickInfo.reference));
   }
 
-  @Override
-  void getShapeSetState(AtomShape as, Shape shape, int monomerCount,
+  public void getShapeSetState(AtomShape as, Shape shape, int monomerCount,
                                Group[] monomers, BS bsSizeDefault,
-                               Map<String, BS> temp, Map<String, BS> temp2) {
+                               Map<String, BS> temp,
+                               Map<String, BS> temp2) {
     String type = JC.shapeClassBases[shape.shapeID];
     for (int i = 0; i < monomerCount; i++) {
       int atomIndex1 = monomers[i].firstAtomIndex;
@@ -1041,9 +1015,7 @@ public class StateCreator extends JmolStateCreator {
     }
   }
 
-  @Override
-  String getMeasurementState(Measures shape,
-                                    JmolList<Measurement> mList,
+  public String getMeasurementState(Measures shape, JmolList<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
     SB commands = new SB();
@@ -1055,8 +1027,7 @@ public class StateCreator extends JmolStateCreator {
       if (m.thisID != null)
         sb.append(" ID ").append(Escape.eS(m.thisID));
       if (m.mad != 0)
-        sb.append(" radius ").appendF(
-            m.thisID == null || m.mad > 0 ? m.mad / 2000f : 0);
+        sb.append(" radius ").appendF(m.thisID == null || m.mad > 0 ? m.mad / 2000f : 0);
       if (m.colix != 0)
         sb.append(" color ").append(Escape.escapeColor(C.getArgb(m.colix)));
       if (m.text != null) {
@@ -1118,8 +1089,7 @@ public class StateCreator extends JmolStateCreator {
   private Map<String, BS> temp2 = new Hashtable<String, BS>();
   private Map<String, BS> temp3 = new Hashtable<String, BS>();
 
-  @Override
-  String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
+  public String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
     clearTemp();
     ModelSet modelSet = viewer.modelSet;
     boolean haveTainted = false;
@@ -1167,8 +1137,7 @@ public class StateCreator extends JmolStateCreator {
     temp2.clear();
   }
 
-  @Override
-  String getAtomShapeSetState(Shape shape, AtomShape[] bioShapes) {
+  public String getAtomShapeSetState(Shape shape, AtomShape[] bioShapes) {
     clearTemp();
     for (int i = bioShapes.length; --i >= 0;) {
       AtomShape bs = bioShapes[i];
@@ -1181,24 +1150,24 @@ public class StateCreator extends JmolStateCreator {
     }
     String s = "\n"
         + getCommands(temp, temp2,
-            shape.shapeID == JC.SHAPE_BACKBONE ? "Backbone" : "select");
+            shape.shapeID == JC.SHAPE_BACKBONE ? "Backbone"
+                : "select");
     clearTemp();
     return s;
   }
 
-  @Override
-  String getShapeState(Shape shape) {
+  public String getShapeState(Shape shape) {
     String s;
     switch (shape.shapeID) {
     case JC.SHAPE_ECHO:
       Echo es = (Echo) shape;
       SB sb = new SB();
       sb.append("\n  set echo off;\n");
-      for (Text t : es.objects.values()) {
+      for (Text t: es.objects.values()) {
         sb.append(getTextState(t));
         if (t.hidden)
-          sb.append("  set echo ID ").append(Escape.eS(t.target)).append(
-              " hidden;\n");
+          sb.append("  set echo ID ").append(Escape.eS(t.target))
+              .append(" hidden;\n");
       }
       s = sb.toString();
       break;
@@ -1226,8 +1195,8 @@ public class StateCreator extends JmolStateCreator {
             BSUtil.setMapBitSet(temp, i, i, "set hoverLabel "
                 + Escape.eS(h.atomFormats[i]));
       s = "\n  hover "
-          + Escape.eS((h.labelFormat == null ? "" : h.labelFormat)) + ";\n"
-          + getCommands(temp, null, "select");
+          + Escape.eS((h.labelFormat == null ? "" : h.labelFormat))
+          + ";\n" + getCommands(temp, null, "select");
       clearTemp();
       break;
     case JC.SHAPE_LABELS:
@@ -1258,31 +1227,26 @@ public class StateCreator extends JmolStateCreator {
               + (10000f / sppm));
         if (l.offsets != null && l.offsets.length > i) {
           int offsetFull = l.offsets[i];
-          BSUtil
-              .setMapBitSet(
-                  temp2,
-                  i,
-                  i,
-                  "set "
-                      + ((offsetFull & JC.LABEL_EXACT_OFFSET_FLAG) == JC.LABEL_EXACT_OFFSET_FLAG ? "labelOffsetExact "
+          BSUtil.setMapBitSet(temp2, i, i, "set "
+                      + ((offsetFull & Labels.EXACT_OFFSET_FLAG) == Labels.EXACT_OFFSET_FLAG ? "labelOffsetExact "
                           : "labelOffset ")
-                      + JC.getXOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)
+                      + Object2d.getXOffset(offsetFull >> Labels.FLAG_OFFSET)
                       + " "
-                      + (-JC.getYOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)));
-          String align = JC.getAlignmentName(offsetFull >> 2);
-          String pointer = JC.getPointer(offsetFull);
+                      + (-Object2d.getYOffset(offsetFull >> Labels.FLAG_OFFSET)));
+          String align = Object2d.getAlignmentName(offsetFull >> 2);
+          String pointer = Object2d.getPointer(offsetFull);
           if (pointer.length() > 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelPointer " + pointer);
-          if ((offsetFull & JC.LABEL_FRONT_FLAG) != 0)
+          if ((offsetFull & Labels.FRONT_FLAG) != 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelFront");
-          else if ((offsetFull & JC.LABEL_GROUP_FLAG) != 0)
+          else if ((offsetFull & Labels.GROUP_FLAG) != 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelGroup");
           // labelAlignment must come last, so we put it in a separate hash
           // table
           if (align.length() > 0)
             BSUtil.setMapBitSet(temp3, i, i, "set labelAlignment " + align);
         }
-
+        
         if (l.mads != null && l.mads[i] < 0)
           BSUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))
@@ -1312,8 +1276,8 @@ public class StateCreator extends JmolStateCreator {
         if (shape.bsColixSet != null && shape.bsColixSet.get(i)) {
           byte pid = atoms[i].getPaletteID();
           if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
-            BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms", pid,
-                atoms[i].getColix(), shape.translucentAllowed));
+            BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
+                pid, atoms[i].getColix(), shape.translucentAllowed));
           if (colixes != null && i < colixes.length)
             BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("balls",
                 pids[i], colixes[i], shape.translucentAllowed));
@@ -1341,7 +1305,7 @@ public class StateCreator extends JmolStateCreator {
     String strOff = null;
     String echoCmd = "set echo ID " + Escape.eS(t.target);
     switch (t.valign) {
-    case JC.VALIGN_XY:
+    case Object2d.VALIGN_XY:
       if (t.movableXPercent == Integer.MAX_VALUE
           || t.movableYPercent == Integer.MAX_VALUE) {
         strOff = (t.movableXPercent == Integer.MAX_VALUE ? t.movableX + " "
@@ -1352,22 +1316,19 @@ public class StateCreator extends JmolStateCreator {
         strOff = "[" + t.movableXPercent + " " + t.movableYPercent + "%]";
       }
       //$FALL-THROUGH$
-    case JC.VALIGN_XYZ:
+    case Object2d.VALIGN_XYZ:
       if (strOff == null)
         strOff = Escape.eP(t.xyz);
       s.append("  ").append(echoCmd).append(" ").append(strOff);
-      if (t.align != JC.ALIGN_LEFT)
-        s.append(";  ").append(echoCmd).append(" ").append(
-            JC.hAlignNames[t.align]);
+      if (t.align != Object2d.ALIGN_LEFT)
+        s.append(";  ").append(echoCmd).append(" ").append(Object2d.hAlignNames[t.align]);
       break;
     default:
-      s.append("  set echo ").append(JC.vAlignNames[t.valign]).append(" ")
-          .append(JC.hAlignNames[t.align]);
+      s.append("  set echo ").append(Object2d.vAlignNames[t.valign]).append(" ").append(
+          Object2d.hAlignNames[t.align]);
     }
-    if (t.valign == JC.VALIGN_XY
-        && t.movableZPercent != Integer.MAX_VALUE)
-      s.append(";  ").append(echoCmd).append(" depth ").appendI(
-          t.movableZPercent);
+    if (t.valign == Object2d.VALIGN_XY && t.movableZPercent != Integer.MAX_VALUE)
+      s.append(";  ").append(echoCmd).append(" depth ").appendI(t.movableZPercent);
     if (isImage)
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
@@ -1375,8 +1336,7 @@ public class StateCreator extends JmolStateCreator {
     s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && t.imageScale != 1)
-      s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale)
-          .append(";\n");
+      s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale).append(";\n");
     if (t.script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
           Escape.eS(t.script)).append(";\n");
@@ -1385,8 +1345,8 @@ public class StateCreator extends JmolStateCreator {
           viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
     if (t.pointerPt != null) {
       s.append("  ").append(echoCmd).append(" point ").append(
-          t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).index
-              + "})" : Escape.eP(t.pointerPt)).append(";\n");
+          t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).index + "})" 
+              : Escape.eP(t.pointerPt)).append(";\n");
 
     }
     //    }
@@ -1409,7 +1369,8 @@ public class StateCreator extends JmolStateCreator {
     if (t.bgcolix != 0) {
       s.append("; color echo background");
       if (C.isColixTranslucent(t.bgcolix))
-        s.append(" translucent " + C.getColixTranslucencyFractional(t.bgcolix));
+        s.append(" translucent "
+            + C.getColixTranslucencyFractional(t.bgcolix));
       s.append(" ").append(C.getHexCode(t.bgcolix));
     }
     s.append(";\n");
@@ -1425,8 +1386,7 @@ public class StateCreator extends JmolStateCreator {
    * 
    * @return script command
    */
-  @Override
-  String getLoadState(Map<String, Object> htParams) {
+  public String getLoadState(Map<String, Object> htParams) {
     GlobalSettings g = viewer.global;
 
     // some commands register flags so that they will be 
@@ -1449,7 +1409,8 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(str, "set bondRadiusMilliAngstroms " + g.bondRadiusMilliAngstroms);
     appendCmd(str, "set bondTolerance " + g.bondTolerance);
     appendCmd(str, "set defaultLattice " + Escape.eP(g.ptDefaultLattice));
-    appendCmd(str, "set defaultLoadFilter " + Escape.eS(g.defaultLoadFilter));
+    appendCmd(str, "set defaultLoadFilter "
+        + Escape.eS(g.defaultLoadFilter));
     appendCmd(str, "set defaultLoadScript \"\"");
     if (g.defaultLoadScript.length() > 0)
       g.setS("defaultLoadScript", g.defaultLoadScript);
@@ -1460,11 +1421,15 @@ public class StateCreator extends JmolStateCreator {
       appendCmd(str, viewer
           .getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
     appendCmd(str, "set forceAutoBond " + g.forceAutoBond);
-    appendCmd(str, "#set defaultDirectory " + Escape.eS(g.defaultDirectory));
+    appendCmd(str, "#set defaultDirectory "
+        + Escape.eS(g.defaultDirectory));
     appendCmd(str, "#set loadFormat " + Escape.eS(g.loadFormat));
-    appendCmd(str, "#set loadLigandFormat " + Escape.eS(g.loadLigandFormat));
-    appendCmd(str, "#set smilesUrlFormat " + Escape.eS(g.smilesUrlFormat));
-    appendCmd(str, "#set nihResolverFormat " + Escape.eS(g.nihResolverFormat));
+    appendCmd(str, "#set loadLigandFormat "
+        + Escape.eS(g.loadLigandFormat));
+    appendCmd(str, "#set smilesUrlFormat "
+        + Escape.eS(g.smilesUrlFormat));
+    appendCmd(str, "#set nihResolverFormat "
+        + Escape.eS(g.nihResolverFormat));
     appendCmd(str, "#set pubChemFormat " + Escape.eS(g.pubChemFormat));
     appendCmd(str, "#set edsUrlFormat " + Escape.eS(g.edsUrlFormat));
     appendCmd(str, "#set edsUrlCutoff " + Escape.eS(g.edsUrlCutoff));
@@ -1479,8 +1444,7 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(
         str,
         "set pdbAddHydrogens "
-            + (htParams != null
-                && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? g.pdbAddHydrogens
+            + (htParams != null && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? g.pdbAddHydrogens
                 : false));
     appendCmd(str, "set pdbGetHeader " + g.pdbGetHeader);
     appendCmd(str, "set pdbSequential " + g.pdbSequential);
@@ -1492,8 +1456,7 @@ public class StateCreator extends JmolStateCreator {
     return str.toString();
   }
 
-  @Override
-  String getAllSettings(String prefix) {
+  public String getAllSettings(String prefix) {
     GlobalSettings g = viewer.global;
     SB commands = new SB();
     String[] list = new String[g.htBooleanParameterFlags.size()
@@ -1501,14 +1464,14 @@ public class StateCreator extends JmolStateCreator {
     //booleans
     int n = 0;
     String _prefix = "_" + prefix;
-    for (String key : g.htBooleanParameterFlags.keySet()) {
+    for (String key: g.htBooleanParameterFlags.keySet()) {
       if (prefix == null || key.indexOf(prefix) == 0
           || key.indexOf(_prefix) == 0)
         list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
             + g.htBooleanParameterFlags.get(key);
     }
     //save as _xxxx if you don't want "set" to be there first
-    for (String key : g.htNonbooleanParameterValues.keySet()) {
+    for (String key: g.htNonbooleanParameterValues.keySet()) {
       if (key.charAt(0) != '@'
           && (prefix == null || key.indexOf(prefix) == 0 || key
               .indexOf(_prefix) == 0)) {
@@ -1519,7 +1482,7 @@ public class StateCreator extends JmolStateCreator {
             + value;
       }
     }
-    for (String key : g.htUserVariables.keySet()) {
+    for (String key: g.htUserVariables.keySet()) {
       if (prefix == null || key.indexOf(prefix) == 0) {
         SV value = g.htUserVariables.get(key);
         String s = value.asString();
@@ -1551,8 +1514,7 @@ public class StateCreator extends JmolStateCreator {
     return sb.toString();
   }
 
-  @Override
-  String getAtomShapeState(AtomShape shape) {
+  public String getAtomShapeState(AtomShape shape) {
     clearTemp();
     String type = JC.shapeClassBases[shape.shapeID];
     if (shape.bsSizeSet != null)
@@ -1570,8 +1532,7 @@ public class StateCreator extends JmolStateCreator {
     return s;
   }
 
-  @Override
-  String getFunctionCalls(String selectedFunction) {
+  public String getFunctionCalls(String selectedFunction) {
     if (selectedFunction == null)
       selectedFunction = "";
     SB s = new SB();
@@ -1608,8 +1569,7 @@ public class StateCreator extends JmolStateCreator {
         .get(atomIndex));
   }
 
-  @Override
-  String getAtomicPropertyState(byte taintWhat, BS bsSelected) {
+  public String getAtomicPropertyState(byte taintWhat, BS bsSelected) {
     if (!viewer.global.preserveState)
       return "";
     BS bs;
@@ -1622,9 +1582,9 @@ public class StateCreator extends JmolStateCreator {
     return commands.toString();
   }
 
-  @Override
-  void getAtomicPropertyStateBuffer(SB commands, byte type, BS bs,
-                                           String label, float[] fData) {
+  public void getAtomicPropertyStateBuffer(SB commands, byte type,
+                                           BS bs, String label,
+                                           float[] fData) {
     if (!viewer.global.preserveState)
       return;
     // see setAtomData()
@@ -1707,24 +1667,7 @@ public class StateCreator extends JmolStateCreator {
     commands.append("  end \"" + dataLabel + "\";\n");
   }
 
-  
-  @Override
-  String getAtomDefs(Map<String, Object> names) {
-    SB sb = new SB();
-    for (Map.Entry<String, ?> e : names.entrySet()) {
-      if (e.getValue() instanceof BS)
-        sb.append("{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
-            + " atoms>\n");
-    }
-    return sb.append("\n").toString();
-  }
-
-
-  /////////////////////////////////  undo/redo functions /////////////////////
-  
-  
-  @Override
-  void undoMoveAction(int action, int n) {
+  public void undoMoveAction(int action, int n) {
     switch (action) {
     case T.undomove:
     case T.redomove:
@@ -1733,8 +1676,8 @@ public class StateCreator extends JmolStateCreator {
         viewer.undoClear();
         break;
       case -1:
-        (action == T.undomove ? viewer.actionStates : viewer.actionStatesRedo)
-            .clear();
+        (action == T.undomove ? viewer.actionStates
+            : viewer.actionStatesRedo).clear();
         break;
       case 0:
         n = Integer.MAX_VALUE;
@@ -1750,8 +1693,7 @@ public class StateCreator extends JmolStateCreator {
     }
   }
 
-  @Override
-  void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo) {
+  public void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo) {
     // called by actionManager
     if (!viewer.global.preserveState)
       return;
@@ -1848,13 +1790,300 @@ public class StateCreator extends JmolStateCreator {
 
   private boolean undoWorking = false;
   private final static int MAX_ACTION_UNDO = 100;
-  
 
-/////////////////////// SYNC directives ////////////////////////////////////////
+  void appendLoadStates(SB cmds) {
+    Map<String, Boolean> ligandModelSet = viewer.ligandModelSet;
+    if (ligandModelSet != null) {
+      for (String key : ligandModelSet.keySet()) {
+        String data = (String) viewer.ligandModels.get(key + "_data");
+        if (data != null)
+          cmds.append("  ").append(
+              Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
+        data = (String) viewer.ligandModels.get(key + "_file");
+        if (data != null)
+          cmds.append("  ").append(
+              Escape.encapsulateData("file_" + key, data.trim() + "\n", 0));
+      }
+    }
+    SB commands = new SB();
+    ModelSet ms = viewer.modelSet;
+    Model[] models = ms.models;
+    int modelCount = ms.modelCount;
+    for (int i = 0; i < modelCount; i++) {
+      if (ms.isJmolDataFrameForModel(i) || ms.isTrajectorySubFrame(i))
+        continue;
+      Model m = models[i];
+      int pt = commands.indexOf(m.loadState);
+      if (pt < 0 || pt != commands.lastIndexOf(m.loadState))
+        commands.append(models[i].loadState);
+      if (models[i].isModelKit) {
+        BS bs = ms.getModelAtomBitSetIncludingDeleted(i, false);
+        if (ms.tainted != null) {
+          if (ms.tainted[AtomCollection.TAINT_COORD] != null)
+            ms.tainted[AtomCollection.TAINT_COORD].andNot(bs);
+          if (ms.tainted[AtomCollection.TAINT_ELEMENT] != null)
+            ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
+        }
+        m.loadScript = new SB();
+        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true,
+            "MOL"), i > 0);
+      } else {
+        commands.appendSB(m.loadScript);
+      }
+    }
+    String s = commands.toString();
+    // add a zap command before the first load command.
+    int i = s.indexOf("load /*data*/");
+    int j = s.indexOf("load /*file*/");
+    if (j >= 0 && j < i)
+      i = j;
+    if ((j = s.indexOf("load \"@")) >= 0 && j < i)
+      i = j;
+    if (i >= 0)
+      s = s.substring(0, i) + "zap;" + s.substring(i);
+    cmds.append(s);
+  }
 
-  
-  @Override
-  void syncScript(String script, String applet, int port) {
+  private String createSceneSet(String sceneFile, String type, int width,
+                                int height) {
+    String script0 = viewer.getFileAsString(sceneFile);
+    if (script0 == null)
+      return "no such file: " + sceneFile;
+    sceneFile = TextFormat.simpleReplace(sceneFile, ".spt", "");
+    String fileRoot = sceneFile;
+    String fileExt = type.toLowerCase();
+    String[] scenes = TextFormat.splitChars(script0, "pause scene ");
+    Map<String, String> htScenes = new Hashtable<String, String>();
+    JmolList<Integer> list = new  JmolList<Integer>();
+    String script = JmolBinary.getSceneScript(scenes, htScenes, list);
+    if (Logger.debugging)
+      Logger.debug(script);
+    script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "
+        + viewer.animationManager.lastFrameDelay + " # scene");
+    String[] str = new String[] { script0, script, null };
+    viewer.saveState("_scene0");
+    int nFiles = 0;
+    if (scenes[0] != "")
+      viewer.zap(true, true, false);
+    int iSceneLast = -1;
+    for (int i = 0; i < scenes.length - 1; i++) {
+      try {
+        int iScene = list.get(i).intValue();
+        if (iScene > iSceneLast)
+          viewer.showString("Creating Scene " + iScene, false);
+        viewer.eval.runScript(scenes[i]);
+        if (iScene <= iSceneLast)
+          continue;
+        iSceneLast = iScene;
+        str[2] = "all"; // full PNGJ
+        String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
+        String msg = (String) createImagePathCheck(fileName, "PNGJ", null,
+            null, str, -1, width, height, null, false);
+        str[0] = null; // script0 only saved in first file
+        str[2] = "min"; // script only -- for fast loading
+        fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
+        msg += "\n"
+            + (String) createImagePathCheck(fileName, "PNGJ", null, null, str,
+                -1, Math.min(width, 200), Math.min(height, 200), null, false);
+        viewer.showString(msg, false);
+        nFiles += 2;
+      } catch (Exception e) {
+        return "script error " + e.toString();
+      }
+    }
+    try {
+      viewer.eval.runScript(viewer.getSavedState("_scene0"));
+    } catch (Exception e) {
+      // ignore
+    }
+    return "OK " + nFiles + " files created";
+  }
+
+  public String createImageSet(String fileName, String type, String text,
+                               byte[] bytes, String[] scripts, int quality,
+                               int width, int height, BS bsFrames,
+                               int nVibes, String[] fullPath) {
+    if (bsFrames == null && nVibes == 0)
+      return (String) createImagePathCheck(fileName, type, text, bytes,
+          scripts, quality, width, height, fullPath, true);
+    String info = "";
+    int n = 0;
+    fileName = getOutputFileNameFromDialog(fileName, quality);
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    if (fileName == null)
+      return null;
+    int ptDot = fileName.indexOf(".");
+    if (ptDot < 0)
+      ptDot = fileName.length();
+
+    String froot = fileName.substring(0, ptDot);
+    String fext = fileName.substring(ptDot);
+    SB sb = new SB();
+    if (bsFrames == null) {
+      viewer.transformManager.vibrationOn = true;
+      sb = new SB();
+      for (int i = 0; i < nVibes; i++) {
+        for (int j = 0; j < 20; j++) {
+          viewer.transformManager.setVibrationT(j / 20f + 0.2501f);
+          if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
+              height, sb))
+            return "ERROR WRITING FILE SET: \n" + info;
+        }
+      }
+      viewer.setVibrationOff();
+    } else {
+      for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
+          .nextSetBit(i + 1)) {
+        viewer.setCurrentModelIndex(i);
+        if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
+            height, sb))
+          return "ERROR WRITING FILE SET: \n" + info;
+      }
+    }
+    if (info.length() == 0)
+      info = "OK\n";
+    return info + "\n" + n + " files created";
+  }
+
+  private boolean writeFrame(int n, String froot, String fext,
+                             String[] fullPath, String type, int quality,
+                             int width, int height, SB sb) {
+    String fileName = "0000" + n;
+    fileName = froot + fileName.substring(fileName.length() - 4) + fext;
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    String msg = (String) createImagePathCheck(fileName, type, null, null,
+        null, quality, width, height, null, false);
+    viewer.scriptEcho(msg);
+    sb.append(msg).append("\n");
+    return msg.startsWith("OK");
+  }
+
+  public Object createImage(String fileName, String type, String text,
+                            byte[] bytes, String[] scripts, int quality,
+                            int width, int height) {
+    return createImagePathCheck(fileName, type, text, bytes, scripts, quality,
+        width, height, null, true);
+  }
+
+  /**
+   * general routine for creating an image or writing data to a file
+   * 
+   * passes request to statusManager to pass along to app or applet
+   * jmolStatusListener interface
+   * 
+   * @param fileName
+   *        starts with ? --> use file dialog; null --> to clipboard
+   * @param type
+   *        PNG, JPG, etc.
+   * @param text
+   *        String to output
+   * @param bytes
+   *        byte[] or null if an image
+   * @param scripts
+   * @param quality
+   *        Integer.MIN_VALUE --> not an image
+   * @param width
+   *        image width
+   * @param height
+   *        image height
+   * @param fullPath
+   * @param doCheck
+   * @return null (canceled) or a message starting with OK or an error message
+   */
+  private Object createImagePathCheck(String fileName, String type, String text,
+                                     byte[] bytes, String[] scripts,
+                                     int quality, int width, int height,
+                                     String[] fullPath, boolean doCheck) {
+    /*
+     * 
+     * org.jmol.export.image.AviCreator does create AVI animations from Jpegs
+     * but these aren't read by standard readers, so that's pretty much useless.
+     * 
+     * files must have the designated width and height
+     * 
+     * text_or_bytes: new Object[] { (File[]) files, (String) outputFilename,
+     * (int[]) params }
+     * 
+     * where for now we just read param[0] as frames per second
+     * 
+     * 
+     * Note: this method is the gateway to all file writing for the applet.
+     */
+
+    Object ret = null;
+    boolean isClip = (fileName == null);
+    // localName will be fileName only if we are able to write to disk.
+    String localName = null;
+    if (!isClip) {
+      if (doCheck)
+        fileName = getOutputFileNameFromDialog(fileName, quality);
+      if (fileName == null)
+        return null;
+      if (FileManager.isLocal(fileName))
+        localName = fileName;
+      if (fullPath != null)
+        fullPath[0] = fileName;
+    }
+    // JSmol/HTML5 WILL produce a localName now
+    if (!isClip && fullPath != null && (fileName = fullPath[0]) == null)
+      return null;
+    int saveWidth = viewer.dimScreen.width;
+    int saveHeight = viewer.dimScreen.height;
+    viewer.creatingImage = true;
+    if (quality != Integer.MIN_VALUE) {
+      viewer.mustRender = true;
+      viewer.resizeImage(width, height, true, false, false);
+      viewer.setModelVisibility();
+    }
+    try {
+      if (isClip) {
+        ret = viewer.clipImage(text);
+      } else {
+        if (type.equals("JMOL"))
+          type = "ZIPALL";
+        if (type.equals("ZIP") || type.equals("ZIPALL")) {
+          if (scripts != null && type.equals("ZIP"))
+            type = "ZIPALL";
+          ret = JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer, localName,
+              text, scripts, type.equals("ZIPALL"));
+        } else if (type.equals("SCENE")) {
+          ret = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(
+              fileName, text, width, height));
+        } else {
+          // see if application wants to do it (returns non-null String)
+          // both Jmol application and applet return null
+          ret = viewer.statusManager.createImage(fileName, type, text, bytes,
+              quality);
+          if (ret == null) {
+            // application can do it itself or allow Jmol to do it here
+            JmolImageCreatorInterface c = viewer.getImageCreator();
+            ret = c.createImage(localName, type, text, bytes, scripts,
+                quality);
+            if (ret instanceof String)
+              // report error status (text_or_bytes == null)
+              viewer.statusManager.createImage((String) ret, type, null, null,
+                  quality);
+          }
+        }
+        if (ret instanceof byte[])
+          ret = "OK " + JmolBinary.postByteArray(viewer.fileManager, fileName,
+              (byte[]) ret);
+      }
+    } catch (Throwable er) {
+      //er.printStackTrace();
+      Logger.error(viewer.setErrorMessage(
+          (String) (ret = "ERROR creating image??: " + er), null));
+    }
+    viewer.creatingImage = false;
+    if (quality != Integer.MIN_VALUE) {
+      viewer.resizeImage(saveWidth, saveHeight, true, false, true);
+    }
+    return ret;
+  }
+
+  public void syncScript(String script, String applet, int port) {
     StatusManager sm = viewer.statusManager;
     if (Viewer.SYNC_GRAPHICS_MESSAGE.equalsIgnoreCase(script)) {
       sm.setSyncDriver(StatusManager.SYNC_STEREO);
@@ -1963,21 +2192,14 @@ public class StateCreator extends JmolStateCreator {
       viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 
-  @Override
-  void mouseScript(String script) {
+  public void mouseScript(String script) {
     String[] tokens = Parser.getTokens(script);
     String key = tokens[1];
     try {
       key = (key.toLowerCase() + "...............").substring(0, 15);
-      switch ((
-          "zoombyfactor..." + 
-          "zoomby........." + 
-          "rotatezby......" + 
-          "rotatexyby....." + 
-          "translatexyby.." + 
-          "rotatemolecule." + 
-          "spinxyby......." + 
-          "rotatearcball..").indexOf(key)) {
+      switch (("zoombyfactor..." + "zoomby........." + "rotatezby......"
+          + "rotatexyby....." + "translatexyby.." + "rotatemolecule."
+          + "spinxyby......." + "rotatearcball..").indexOf(key)) {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
@@ -2016,15 +2238,11 @@ public class StateCreator extends JmolStateCreator {
         viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]));
         return;
-      case 75: // rotatemolecule
-        viewer.rotateSelected(Parser.parseFloatStr(tokens[2]), Parser
-            .parseFloatStr(tokens[3]), null);
-        return;
-      case 90:// spinxyby
+      case 75:// spinxyby
         viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseFloatStr(tokens[4]));
         return;
-      case 105: // rotatearcball
+      case 90: // rotatearcball
         viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]), Parser.parseFloatStr(tokens[4]));
         return;
@@ -2033,6 +2251,304 @@ public class StateCreator extends JmolStateCreator {
       //
     }
     viewer.showString("error reading SYNC command: " + script, false);
+  }
+
+  public String generateOutputForExport(String type, String[] fileName,
+                                        int width, int height) {
+    String fName = null;
+    if (fileName != null) {
+      fileName[0] = getOutputFileNameFromDialog(fileName[0], Integer.MIN_VALUE);
+      if (fileName[0] == null)
+        return null;
+      fName = fileName[0];
+    }
+    viewer.mustRender = true;
+    int saveWidth = viewer.dimScreen.width;
+    int saveHeight = viewer.dimScreen.height;
+    viewer.resizeImage(width, height, true, true, false);
+    viewer.setModelVisibility();
+    String data = viewer.repaintManager.renderExport(type, viewer.gdata,
+        viewer.modelSet, fName);
+    // mth 2003-01-09 Linux Sun JVM 1.4.2_02
+    // Sun is throwing a NullPointerExceptions inside graphics routines
+    // while the window is resized.
+    viewer.resizeImage(saveWidth, saveHeight, true, true, true);
+    return data;
+  }
+
+  private String getOutputFileNameFromDialog(String fileName, int quality) {
+    if (fileName == null || viewer.isKiosk)
+      return null;
+    boolean useDialog = (fileName.indexOf("?") == 0);
+    if (useDialog)
+      fileName = fileName.substring(1);
+    useDialog |= viewer.isApplet() && (fileName.indexOf("http:") < 0);
+    fileName = FileManager.getLocalPathForWritingFile(viewer, fileName);
+    if (useDialog)
+      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "Save"
+          : "Save Image", fileName);
+    return fileName;
+  }
+
+  public Object getImageAsWithComment(String type, int quality, int width,
+                                      int height, String fileName,
+                                      String[] scripts, OutputStream os,
+                                      String comment) {
+    int saveWidth = viewer.dimScreen.width;
+    int saveHeight = viewer.dimScreen.height;
+    viewer.mustRender = true;
+    viewer.resizeImage(width, height, true, false, false);
+    viewer.setModelVisibility();
+    viewer.creatingImage = true;
+    JmolImageCreatorInterface c = null;
+    Object bytes = null;
+    type = type.toLowerCase();
+    if (!Parser.isOneOf(type, JC.JPEG_EXTENSIONS))
+      try {
+        c = viewer.getImageCreator();
+      } catch (Error er) {
+        // unsigned applet will not have this interface
+        // and thus will not use os or filename
+      }
+    if (c == null) {
+      try {
+        bytes = viewer.apiPlatform.getJpgImage(viewer, quality, comment);
+        if (type.equals("jpg64") || type.equals("jpeg64"))
+          bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
+              .toString());
+      } catch (Error er) {
+        viewer.releaseScreenImage();
+        viewer.handleError(er, false);
+        viewer.setErrorMessage("Error creating image: " + er, null);
+        bytes = viewer.getErrorMessage();
+      }
+    } else {
+      try {
+        bytes = c.getImageBytes(type, quality, fileName, scripts, null,
+            os);
+      } catch (IOException e) {
+        bytes = e;
+        viewer.setErrorMessage("Error creating image: " + e, null);
+      } catch (Error er) {
+        viewer.handleError(er, false);
+        viewer.setErrorMessage("Error creating image: " + er, null);
+        bytes = viewer.getErrorMessage();
+      }
+    }
+    viewer.creatingImage = false;
+    viewer.resizeImage(saveWidth, saveHeight, true, false, true);
+    return bytes;
+  }
+
+  /**
+   * Generates file data and passes it on either to a FileOuputStream (Java) 
+   * or via POSTing to a url using a ByteOutputStream (JavaScript)
+   * 
+   * @param fileName 
+   * @param type  one of: PDB PQR FILE PLOT 
+   * @param modelIndex 
+   * @param parameters 
+   * @return "OK..." or "" or null 
+   * 
+   */
+  public String writeFileData(String fileName, String type, 
+                              int modelIndex, Object[] parameters) {
+    String[] fullPath = new String[1];
+    OutputStream os = getOutputStream(fileName, fullPath);
+    if (os == null)
+      return "";
+    fileName = fullPath[0];
+    String pathName = (type.equals("FILE") ? viewer.getFullPathName() : null);
+    boolean getCurrentFile = (pathName != null && (pathName.equals("string")
+        || pathName.indexOf("[]") >= 0 || pathName.equals("JSNode")));
+    boolean asBytes = (pathName != null && !getCurrentFile);
+    if (asBytes) {
+      pathName = viewer.getModelSetPathName();
+      if (pathName == null)
+        return null; // zapped
+    }
+    BufferedOutputStream bos;
+    /**
+     * @j2sNative
+     * 
+     *            bos = os;
+     */
+    {
+      bos = new BufferedOutputStream(os);
+    }
+    // The OutputStringBuilder allows us to create strings or byte arrays
+    // of a given type, passing just one parameter and maintaining an 
+    // output stream all along. For JavaScript, this will be a ByteArrayOutputStream
+    // which will then be posted to a server for a return that allows saving.
+    OutputStringBuilder osb = new OutputStringBuilder(bos, asBytes);
+    osb.type = type;
+    String msg = (
+        type.equals("PDB") || type.equals("PQR") ? viewer.getPdbAtomData(null, osb)
+        : type.startsWith("PLOT") ? viewer.modelSet.getPdbData(modelIndex, 
+            type.substring(5), viewer.getSelectionSet(false), parameters, osb)
+        : getCurrentFile ? osb.append(viewer.getCurrentFileAsString()).toString()
+        : (String) viewer.getFileAsBytes(pathName, osb));
+    if (msg != null)
+      msg = "OK " + msg + " " + fileName;
+    try {
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      // ignore
+    }
+    return msg;
+  }
+
+  public OutputStream getOutputStream(String fileName, String[] fullPath) {
+    if (!viewer.isRestricted(ACCESS.ALL))
+      return null;
+    fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE);
+    if (fileName == null)
+      return null;
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    String localName = (FileManager.isLocal(fileName) ? fileName : null);
+    try {
+      return (OutputStream) viewer.openOutputChannel(privateKey, localName, false);
+    } catch (IOException e) {
+      Logger.info(e.toString());
+      return null;
+    }
+  }
+
+  public void openFileAsync(String fileName, boolean pdbCartoons) {
+    fileName = fileName.trim();
+    boolean allowScript = (!fileName.startsWith("\t"));
+    if (!allowScript)
+      fileName = fileName.substring(1);
+    fileName = fileName.replace('\\', '/');
+    boolean isCached = fileName.startsWith("cache://");
+    if (viewer.isApplet() && fileName.indexOf("://") < 0)
+      fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
+    if (fileName.endsWith(".pse")) {
+      viewer.evalString((isCached ? "" : "zap;") + "load SYNC " + Escape.eS(fileName)
+          + " filter 'DORESIZE'");
+      return;
+    }
+    String cmd = null;
+    if (fileName.endsWith("jvxl")) {
+      cmd = "isosurface ";
+    } else if (!fileName.endsWith(".spt")) {
+      String type = viewer.fileManager.getFileTypeName(fileName);
+      if (type == null) {
+        type = JmolBinary.determineSurfaceTypeIs(viewer
+            .getBufferedInputStream(fileName));
+        if (type != null) {
+          viewer
+              .evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
+                  + Escape.eS(fileName)
+                  + " mesh nofill }; else; { isosurface "
+                  + Escape.eS(fileName) + "}");
+          return;
+        }
+      } else if (type.equals("Jmol")) {
+        cmd = "script ";
+      } else if (type.equals("Cube")) {
+        cmd = "isosurface sign red blue ";
+      } else if (!type.equals("spt")) {
+        cmd = viewer.global.defaultDropScript;
+        cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);
+        cmd = TextFormat.simpleReplace(cmd, "%ALLOWCARTOONS", "" + pdbCartoons);
+        if (cmd.toLowerCase().startsWith("zap") && isCached)
+          cmd = cmd.substring(3);
+        viewer.evalString(cmd);
+        return;
+      }
+    }
+    if (allowScript && viewer.scriptEditorVisible && cmd == null)
+      showEditor(new String[] { fileName, viewer.getFileAsString(fileName) });
+    else
+      viewer.evalString((cmd == null ? "script " : cmd)
+          + Escape.eS(fileName));
+  }
+
+  public void showEditor(String[] file_text) {
+    if (file_text == null)
+      file_text = new String[] { null, null };
+    if (file_text[1] == null)
+      file_text[1] = "<no data>";
+    String filename = file_text[0];
+    String msg = file_text[1];
+    JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) viewer
+        .getProperty("DATA_API", "getScriptEditor", Boolean.TRUE);
+    if (scriptEditor == null)
+      return;
+    if (msg != null) {
+      scriptEditor.setFilename(filename);
+      scriptEditor.output(JmolBinary.getEmbeddedScript(msg));
+    }
+    scriptEditor.setVisible(true);
+  }
+
+  private String logFileName = null;
+
+  public String getLogFileName() {
+    return (logFileName == null ? "" : logFileName);
+  }
+
+  public String setLogFile(String value) {
+    String path = null;
+    String logFilePath = viewer.getLogFilePath();
+    if (logFilePath == null || value.indexOf("\\") >= 0
+        || value.indexOf("/") >= 0) {
+      value = null;
+    } else if (value.length() > 0) {
+      if (!value.startsWith("JmolLog_"))
+        value = "JmolLog_" + value;
+      path = viewer.getAbsolutePath(privateKey, logFilePath + value);
+    }
+    if (path == null)
+      value = null;
+    else
+      Logger.info(GT._("Setting log file to {0}", path));
+    if (value == null || !viewer.isRestricted(ACCESS.ALL)) {
+      Logger.info(GT._("Cannot set log file path."));
+      value = null;
+    } else {
+      logFileName = path;
+      viewer.global.setS("_logFile", viewer.isApplet() ? value : path);
+    }
+    return value;
+  }
+
+  public void logToFile(String data) {
+    try {
+      boolean doClear = (data.equals("$CLEAR$"));
+      if (data.indexOf("$NOW$") >= 0)
+        data = TextFormat.simpleReplace(data, "$NOW$", (new Date()).toString());
+      if (logFileName == null) {
+        System.out.println(data);
+        return;
+      }
+      BufferedWriter out = (BufferedWriter) viewer.openLogFile(privateKey, logFileName, !doClear);
+      if (!doClear) {
+        int ptEnd = data.indexOf('\0'); 
+        if (ptEnd >= 0)
+          data = data.substring(0, ptEnd);
+        out.write(data);
+        if (ptEnd < 0)
+          out.write("\n");
+      }
+      out.close();
+    } catch (Exception e) {
+      if (Logger.debugging)
+        Logger.debug("cannot log " + data);
+    }
+  }
+  
+  public String getAtomDefs(Map<String, Object> names) {
+    SB sb = new SB();
+    for (Map.Entry<String, ?> e : names.entrySet()) {
+      if (e.getValue() instanceof BS)
+        sb.append("{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
+            + " atoms>\n");
+    }
+    return sb.append("\n").toString();
   }
 
 }

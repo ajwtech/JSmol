@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-24 14:34:28 -0500 (Tue, 24 Sep 2013) $
- * $Revision: 18692 $
+ * $Date: 2013-07-20 17:55:12 -0500 (Sat, 20 Jul 2013) $
+ * $Revision: 18481 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -30,7 +30,7 @@ import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.JmolOutputChannel;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -307,13 +307,13 @@ public class Model {
    * @param ctype
    * @param isDraw
    * @param bsSelected
-   * @param out
+   * @param sb
    * @param bsWritten
    * @param pdbCONECT
    * @param tokens
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BS bsSelected, JmolOutputChannel out,
+                         boolean isDraw, BS bsSelected, OutputStringBuilder sb,
                          LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
 

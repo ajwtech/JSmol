@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 16:31:12 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18712 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -98,7 +98,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   @Override
   protected boolean render() {
     if (shape == null)
-      return false;
+      return false;    
     setGlobals();
     renderShapes();
     return needTranslucent;
@@ -108,7 +108,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    g3d.addRenderer(T.hermitelevel);
     boolean TF = (!isExport && !viewer.checkMotionRendering(T.cartoon));
     
     if (TF != wireframeOnly)
@@ -402,11 +401,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     if (diameterBeg == 0 && diameterEnd == 0 || wireframeOnly)
       g3d.drawLineAB(controlPointScreens[i], controlPointScreens[iNext]);
-    else {
+    else
       g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
           controlPointScreens[iPrev], controlPointScreens[i],
           controlPointScreens[iNext], controlPointScreens[iNext2]);
-    }
   }
 
   /**

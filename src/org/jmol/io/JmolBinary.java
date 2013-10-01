@@ -47,6 +47,7 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.Viewer;
 
 
 public class JmolBinary {
@@ -412,29 +413,71 @@ public class JmolBinary {
     return getJzu().getZipFileContentsAsBytes(bis, subFileList, i);
   }
 
+  public static Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
+    return getJzu().createZipSet(privateKey, fm, viewer, fileName, script, scripts, includeRemoteFiles);
+  }
+
   public static Object getStreamAsBytes(BufferedInputStream bis,
-                                         JmolOutputChannel out) throws IOException {
+                                         OutputStringBuilder osb) throws IOException {
     byte[] buf = new byte[1024];
-    byte[] bytes = (out == null ? new byte[4096] : null);
+    byte[] bytes = (osb == null ? new byte[4096] : null);
     int len = 0;
     int totalLen = 0;
     while ((len = bis.read(buf, 0, 1024)) > 0) {
       totalLen += len;
-      if (out == null) {
+      if (osb == null) {
         if (totalLen >= bytes.length)
           bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
         System.arraycopy(buf, 0, bytes, totalLen - len, len);
       } else {
-        out.write(buf, 0, len);
+        osb.write(buf, 0, len);
       }
     }
     bis.close();
-    if (out == null) {
+    if (osb == null) {
       return ArrayUtil.arrayCopyByte(bytes, totalLen);
     }
     return totalLen + " bytes";
   }
 
+  /**
+   * generic method to create a zip file based on
+   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
+   * @param privateKey 
+   * @param fm 
+   * @param viewer 
+   * 
+   * @param outFileName
+   *        or null to return byte[]
+   * @param fileNamesAndByteArrays
+   *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
+   * @param msg
+   * @return msg bytes filename or errorMessage or byte[]
+   */
+  public static Object writeZipFile(double privateKey, FileManager fm, Viewer viewer, String outFileName,
+                              JmolList<Object> fileNamesAndByteArrays,
+                              String msg) {
+    return getJzu().writeZipFile(privateKey, fm, viewer, outFileName, fileNamesAndByteArrays, msg);
+  }
+
+
+  public static String postByteArray(FileManager fm, String outFileName,
+                                      byte[] bytes) {
+    Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
+        null, false, false, bytes, false);
+    if (ret instanceof String)
+      return (String) ret;
+    try {
+      ret = getStreamAsBytes((BufferedInputStream) ret, null);
+    } catch (IOException e) {
+      try {
+        ((BufferedInputStream) ret).close();
+      } catch (IOException e1) {
+        // ignore
+      }
+    }
+    return fixUTF((byte[]) ret);
+  }
 
   public static boolean isBase64(SB sb) {
     return (sb.indexOf(";base64,") == 0);
@@ -450,6 +493,10 @@ public class JmolBinary {
 
   public static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
+  }
+
+  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, JmolList<Integer> list) {
+    return getJzu().getSceneScript(scenes, htScenes, list);
   }
 
   public static byte[] getCachedPngjBytes(FileManager fm, String pathName) {
@@ -624,20 +671,5 @@ public class JmolBinary {
     }
   }
 
-  public static void addZipEntry(Object zos, String fileName) throws IOException {
-    getJzu().addZipEntry(zos, fileName);    
-  }
-
-  public static void closeZipEntry(Object zos) throws IOException {
-    getJzu().closeZipEntry(zos);
-  }
-
-  public static Object getZipOutputStream(Object bos) {
-    return getJzu().getZipOutputStream(bos);
-  }
-
-  public static int getCrcValue(byte[] bytes) {
-    return getJzu().getCrcValue(bytes);
-  }
 }
 

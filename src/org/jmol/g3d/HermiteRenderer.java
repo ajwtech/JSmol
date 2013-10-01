@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 16:31:12 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18712 $
+ * $Date: 2013-03-03 03:45:24 -0600 (Sun, 03 Mar 2013) $
+ * $Revision: 17960 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -56,7 +56,7 @@ import org.jmol.util.V3;
  *
  * @author Miguel, miguel@jmol.org
  */
-public class HermiteRenderer implements G3DRenderer {
+public class HermiteRenderer {
 
   private static V3 vAB = new V3();
   private static V3 vAC = new V3();
@@ -66,12 +66,8 @@ public class HermiteRenderer implements G3DRenderer {
   
   private JmolRendererInterface g3d;
 
-  public HermiteRenderer() {
-  }
-
-  public G3DRenderer set(JmolRendererInterface g3d) {
+  public HermiteRenderer(JmolRendererInterface g3d) {
     this.g3d = g3d;
-    return this;
   }
 
   private final P3i[] pLeft = new P3i[16];

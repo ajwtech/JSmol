@@ -26,9 +26,9 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.JmolFont;
-import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 class TextRenderer {
@@ -36,7 +36,7 @@ class TextRenderer {
   static void render(Text text, Viewer viewer,
                             JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
-                            boolean isExact, float[] boxXY, float[] temp) {
+                            boolean isExact, float[] boxXY, float[] xy) {
     if (text == null || text.image == null && text.lines == null)
       return;
     boolean showText = g3d.setColix(text.colix);
@@ -61,8 +61,8 @@ class TextRenderer {
     if (text.image == null) {
       // now write properly aligned text
       for (int i = 0; i < text.lines.length; i++) {
-        text.setXYA(temp, i);
-        g3d.drawString(text.lines[i], text.font, (int) temp[0], (int) temp[1],
+        text.setXYA(xy, i);
+        g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
             text.z, text.zSlab, text.bgcolix);
       }
     } else {
@@ -76,8 +76,8 @@ class TextRenderer {
   static void drawPointer(Text text, JmolRendererInterface g3d) {
     // now draw the pointer, if requested
 
-    if ((text.pointer & JC.POINTER_ON) == 0
-        || !g3d.setColix((text.pointer & JC.POINTER_BACKGROUND) != 0
+    if ((text.pointer & Object2d.POINTER_ON) == 0
+        || !g3d.setColix((text.pointer & Object2d.POINTER_BACKGROUND) != 0
             && text.bgcolix != 0 ? text.bgcolix : text.colix))
       return;
     float w = text.boxWidth;

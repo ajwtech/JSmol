@@ -22,42 +22,15 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.exportjs;
 
-import org.jmol.io.JmolOutputChannel;
+import org.jmol.export.image.GenericImageCreator;
 
-public class OutputManagerJS extends OutputManager {
+public class JSImageCreator extends GenericImageCreator {
 
-  public OutputManagerJS() {
-    // by reflection only
-  }
-
-  @Override
-  protected String getLogPath(String fileName) {
-    return fileName;
-  }
-
-  @Override
-  String clipImageOrPasteText(String text) {
-    return "Clipboard not available";
-  }
-
-  @Override
-  String getClipboardText() {
-    return "Clipboard not available";
-  }
-
-  @Override
-  JmolOutputChannel openOutputChannel(double privateKey, String fileName,
-                                      boolean asWriter, boolean asAppend) {
-    return (new JmolOutputChannel())
-        .setParams(viewer, fileName, asWriter, null);
-  }
-
-  @Override
-  protected String createSceneSet(String sceneFile, String type, int width,
-                                int height) {
-    return "ERROR: Not Available";
+  // could override methods here if desired, but it is not necessary, I think.
+  
+  public JSImageCreator() {
   }
 
 }

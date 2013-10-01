@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 21:28:36 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18731 $
+ * $Date: 2013-09-30 21:29:38 -0500 (Mon, 30 Sep 2013) $
+ * $Revision: 18732 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -1149,9 +1149,8 @@ public class AtomSetCollection {
     }
     // always do the 555 cell first
     
-    // incommensurate symmetry can have lattice centering, resulting in 
-    // duplication of operators. There's a bug later on that requires we 
-    // only do this with the first atom set for now, at least. 
+    // incommensurate symmetry can have lattice centering, reulting in 
+    // duplication of operators.
     checkAll = (atomSetCount == 1 && checkSpecial && symmetry.hasLatticeCentering());
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
@@ -1339,8 +1338,6 @@ public class AtomSetCollection {
             continue;
           int j0 = (checkAll ? atomCount : pt0);
           for (int j = j0; --j >= 0;) {
-            if (cartesians[j] == null)
-              System.out.println("Hmm asc");
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];
@@ -1373,11 +1370,11 @@ public class AtomSetCollection {
           if (atoms[i].tensors != null) {
             atom1.tensors = null;
             for (int j = atoms[i].tensors.size(); --j >= 0;) {
-              Tensor t = (Tensor) atoms[i].tensors.get(j);
+              Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
               if (nOperations == 1)
-                atom1.addTensor(t.copyTensor(), null, false);
+                atom1.addTensor(Tensor.copyTensor(t), null, false);
               else
                 addRotatedTensor(atom1, t, iSym, false);
             }
@@ -1407,7 +1404,7 @@ public class AtomSetCollection {
       ptTemp = new P3();
       mTemp = new Matrix3f();
     }
-    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor")).setFromEigenVectors(symmetry
+    return a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }

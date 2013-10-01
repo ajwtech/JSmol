@@ -21,43 +21,28 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.image;
+package org.jmol.export.image;
 
-import java.util.Map;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.jmol.api.ApiPlatform;
+import org.jmol.viewer.Viewer;
 
 /**
  * 
- * Modified by Bob Hanson hansonr@stolaf.edu to be a subclass of ImageEncoder
- * and to use JmolOutputChannel instead of just returning bytes. Also includes: 
- *  
- * -- JavaScript-compatible image processing
- *  
- * -- transparent background option
- *  
- * -- more efficient calculation of needs for pngBytes 
+ * Modified by Bob Hanson hansonr@stolaf.edu to include
  * 
- * -- PNGJ format:
+ * -- JavaScript-compatible image processing -- transparent background option --
+ * more efficient calculation of needs for pngBytes -- PNGJ format:
  * 
- * // IHDR chunk 
- * 
- * // iTXt chunk "Jmol type - <PNG0|PNGJ><0000000pt>+<000000len>" 
- * 
- * // iTXt chunk "Software - Jmol <version>"
- * 
- * // iTXt chunk "Creation Time - <date>"
- * 
- * // tRNS chunk transparent color, if desired
- *
- * // IDAT chunk (image data)
- * 
- * // IEND chunk 
- * 
- * // [JMOL ZIP FILE APPENDIX]
+ * // IHDR chunk // iTXt chunk
+ * ("Jmol type - <PNG0|PNGJ><0000000pt>+<000000len>") // iTXt chunk
+ * ("Software - Jmol <version>") // iTXt chunk ("Creation Time - <date>") //
+ * tRNS chunk (transparent color, if desired) // IDAT chunk (image data) // IEND
+ * chunk // [JMOL ZIP FILE APPENDIX]
  * 
  * Original Comment:
  * 
@@ -79,7 +64,7 @@ import java.io.IOException;
  * 
  * @version 1.4, 31 March 2000
  */
-public class PngEncoder extends CRCEncoder {
+public class GenericPngEncoder extends GenericCRCEncoder {
 
   /** Constants for filters */
   public static final int FILTER_NONE = 0;
@@ -87,6 +72,8 @@ public class PngEncoder extends CRCEncoder {
   public static final int FILTER_UP = 2;
   public static final int FILTER_LAST = 2;
 
+  private Object image;
+  private int width, height;
   private boolean encodeAlpha;
   private int filter = FILTER_NONE;
   private int bytesPerPixel;
@@ -94,78 +81,85 @@ public class PngEncoder extends CRCEncoder {
   private String type;
   private Integer transparentColor;
 
-  private byte[] applicationData;
-  private String applicationPrefix;
-  private String version;
+  private ApiPlatform apiPlatform;
 
-  
-  public PngEncoder() {
+  //private int hdrPos, dataPos, endPos;
+  //private byte[] priorRow;
+  //private byte[] leftBytes;
+
+  public static byte[] getBytesType(ApiPlatform apiPlatform, Object image,
+                                    int quality, int bgcolor, String type, int[] ptJmol) {
+    GenericPngEncoder pg = new GenericPngEncoder(apiPlatform, image, false,
+        GenericPngEncoder.FILTER_NONE, quality);
+    pg.type = (type + "0000").substring(0, 4);
+    if (bgcolor != 0)
+      pg.transparentColor = Integer.valueOf(bgcolor);
+    return pg.pngEncode(ptJmol);
+  }
+
+  /**
+   * Class constructor specifying Image source to encode, whether to encode
+   * alpha, filter to use, and compression level.
+   * 
+   * In Jmol, we do not allow encodeAlpha
+   * 
+   * @param apiPlatform
+   *        platform-dependent image processing
+   * 
+   * @param image
+   *        A Java Image object
+   * @param encodeAlpha
+   *        Encode the alpha channel? false=no; true=yes (Jmol - not used)
+   * @param whichFilter
+   *        0=none, 1=sub, 2=up (Jmol only uses NONE)
+   * @param compLevel
+   *        0..9
+   * @see java.awt.Image
+   */
+  public GenericPngEncoder(ApiPlatform apiPlatform, Object image, boolean encodeAlpha,
+      int whichFilter, int compLevel) {
     super();
+    this.apiPlatform = apiPlatform;
+    this.image = image;
+    //this.encodeAlpha = encodeAlpha;
+    //setFilter(whichFilter);
+    this.compressionLevel = (compLevel >= 0 && compLevel <= 9 ? compLevel : 0);
   }
-
-  @Override
-  protected void setParams(Map<String, Object> params) {
-    if (quality < 0)
-      quality = 2;
-    else if (quality > 9)
-      quality = 9;
-    encodeAlpha = false;
-    filter = FILTER_NONE;
-    compressionLevel = quality;
-    transparentColor = (Integer) params.get("transparentColor");
-    
-    type = (params.get("type") + "0000").substring(0, 4);
-    version = (String) params.get("comment");
-    applicationData = (byte[]) params.get("applicationData");
-    applicationPrefix = (String) params.get("applicationPrefix");
-  }
-
-  
-
-  @Override
-  protected void generate() throws IOException {
-    int[] ptJmol = new int[1];
-    if (!pngEncode(ptJmol)) {
-      out.cancel();
-      return;
-    }
-    byte[] bytes = getBytes();
-    int len = dataLen;
-    if (applicationData != null) {
-      setJmolTypeText(applicationPrefix, ptJmol[0], bytes, len, applicationData.length,
-          type);
-      out.write(bytes, 0, len);
-      len = (bytes = applicationData).length;
-    }
-    out.write(bytes, 0, len);
-  }
-
 
   /**
    * Creates an array of bytes that is the PNG equivalent of the current image,
    * specifying whether to encode alpha or not.
    * 
-   * @param ptAppTag
-   * @return        true if successful
+   * @param ptJmol
    * 
+   * @return an array of bytes, or null if there was a problem and sets
+   *         ptJmol[0] to the position in the file where the PNGJ byte sequence is located.
    */
-  private boolean pngEncode(int[] ptAppTag) {
+  private byte[] pngEncode(int[] ptJmol) {
 
     byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
+
+    if (image == null) {
+      return null;
+    }
+    width = apiPlatform.getImageWidth(image);
+    height = apiPlatform.getImageHeight(image);
 
     writeBytes(pngIdBytes);
     //hdrPos = bytePos;
     writeHeader();
-    ptAppTag[0] = bytePos + 4;
-    writeText(getApplicationText(applicationPrefix, type, 0, 0));
 
-    writeText("Software\0Jmol " + version);
-    writeText("Creation Time\0" + date);
+    // new Jmol 12.3.7; checksum fixed in Jmol 12.3.30 (6/11/2012)
+    ptJmol[0] = bytePos + 4;
+    writeText(getJmolTypeText(type, 0, 0));
+
+    writeText("Software\0Jmol " + Viewer.getJmolVersion());
+    writeText("Creation Time\0" + apiPlatform.getDateFormat());
 
     if (!encodeAlpha && transparentColor != null)
       writeTransparentColor(transparentColor.intValue());
     //dataPos = bytePos;
-    return writeImageData();
+    return (!writeImageData() ? null : getBytes());
   }
 
   /**
@@ -177,8 +171,6 @@ public class PngEncoder extends CRCEncoder {
    * 
    * This was corrected for Jmol 12.3.30. Between 12.3.7 and 12.3.29, PNG files
    * created by Jmol have incorrect checksums.
-   * 
-   * @param prefix 
    * @param ptJmolByteText 
    * 
    * @param b
@@ -186,20 +178,20 @@ public class PngEncoder extends CRCEncoder {
    * @param nState
    * @param type
    */
-  private static void setJmolTypeText(String prefix, int ptJmolByteText, byte[] b, int nPNG, int nState, String type) {
-    String s = "iTXt" + getApplicationText(prefix, type, nPNG, nState);
-    CRCEncoder encoder = new PngEncoder();
+  public static void setJmolTypeText(int ptJmolByteText, byte[] b, int nPNG, int nState, String type) {
+    String s = "iTXt" + getJmolTypeText(type, nPNG, nState);
+    GenericCRCEncoder encoder = new GenericCRCEncoder();
     encoder.setData(b, ptJmolByteText);
     encoder.writeString(s);
     encoder.writeCRC();
   }
 
-  private static String getApplicationText(String prefix, String type, int nPNG, int nState) {
+  private static String getJmolTypeText(String type, int nPNG, int nState) {
     String sPNG = "000000000" + nPNG;
     sPNG = sPNG.substring(sPNG.length() - 9);
     String sState = "000000000" + nState;
     sState = sState.substring(sState.length() - 9);
-    return prefix + "\0" + type + (type.equals("PNG") ? "0" : "") + sPNG + "+"
+    return "Jmol Type\0" + type + (type.equals("PNG") ? "0" : "") + sPNG + "+"
         + sState;
   }
 
@@ -252,7 +244,9 @@ public class PngEncoder extends CRCEncoder {
     writeInt4(width);
     writeInt4(height);
     writeByte(8); // bit depth
-    writeByte(encodeAlpha ? 6 : 2); // color type or direct model
+    writeByte((encodeAlpha) // color type
+    ? 6
+        : 2); // direct model
     writeByte(0); // compression method
     writeByte(0); // filter method
     writeByte(0); // no interlace
@@ -285,11 +279,6 @@ public class PngEncoder extends CRCEncoder {
   private byte[] scanLines; // the scan lines to be compressed
   private int byteWidth; // width * bytesPerPixel
 
-  //private int hdrPos, dataPos, endPos;
-  //private byte[] priorRow;
-  //private byte[] leftBytes;
-
-
   /**
    * Write the image data into the pngBytes array. This will write one or more
    * PNG "IDAT" chunks. In order to conserve memory, this method grabs as many
@@ -313,19 +302,27 @@ public class PngEncoder extends CRCEncoder {
 
     int scanPos; // where we are in the scan lines
 
+    byte[] compressedLines; // the resultant compressed lines
+
     Deflater deflater = new Deflater(compressionLevel);
     ByteArrayOutputStream outBytes = new ByteArrayOutputStream(1024);
 
     DeflaterOutputStream compBytes = new DeflaterOutputStream(outBytes,
         deflater);
 
-    int pt = 0; // overall image byte pointer
-    
-    // Jmol note: The entire image has been stored in pixels[] already
-    
     try {
       while (rowsLeft > 0) {
-        nRows = Math.max(1, Math.min(32767 / scanWidth, rowsLeft));
+        /**
+         * in JavaScript we simply grab all rows
+         * 
+         * @j2sNative
+         * 
+         *            nRows = rowsLeft;
+         * 
+         */
+        {
+          nRows = Math.max(1, Math.min(32767 / scanWidth, rowsLeft));
+        }
         scanLines = new byte[scanWidth * nRows];
         //        if (doFilter)
         //          switch (filter) {
@@ -336,19 +333,33 @@ public class PngEncoder extends CRCEncoder {
         //            priorRow = new byte[scanWidth - 1];
         //            break;
         //          }
+        int[] pixels;
         int nPixels = width * nRows;
+        /**
+         * @j2sNative
+         * 
+         *            pixels = null;
+         * 
+         */
+        {
+          pixels = new int[nPixels];
+        }
+        pixels = apiPlatform.grabPixels(image, width, height, pixels, startRow,
+            nRows);
+        if (pixels == null)
+          return false;
         scanPos = 0;
         //startPos = 1;
-        for (int i = 0; i < nPixels; i++, pt++) {
+        for (int i = 0; i < nPixels; i++) {
           if (i % width == 0) {
             scanLines[scanPos++] = (byte) filter;
             //startPos = scanPos;
           }
-          scanLines[scanPos++] = (byte) ((pixels[pt] >> 16) & 0xff);
-          scanLines[scanPos++] = (byte) ((pixels[pt] >> 8) & 0xff);
-          scanLines[scanPos++] = (byte) ((pixels[pt]) & 0xff);
+          scanLines[scanPos++] = (byte) ((pixels[i] >> 16) & 0xff);
+          scanLines[scanPos++] = (byte) ((pixels[i] >> 8) & 0xff);
+          scanLines[scanPos++] = (byte) ((pixels[i]) & 0xff);
           if (encodeAlpha) {
-            scanLines[scanPos++] = (byte) ((pixels[pt] >> 24) & 0xff);
+            scanLines[scanPos++] = (byte) ((pixels[i] >> 24) & 0xff);
           }
           //          if (doFilter && i % width == width - 1) {
           //            switch (filter) {
@@ -375,7 +386,7 @@ public class PngEncoder extends CRCEncoder {
       /*
        * Write the compressed bytes
        */
-      byte[] compressedLines = outBytes.toByteArray();
+      compressedLines = outBytes.toByteArray();
       writeInt4(compressedLines.length);
       startPos = bytePos;
       writeString("IDAT");

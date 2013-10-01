@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-26 16:31:12 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18712 $
+ * $Date: 2013-05-23 18:45:04 -0500 (Thu, 23 May 2013) $
+ * $Revision: 18245 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -24,13 +24,13 @@
 
 package org.jmol.shape;
 
+import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3i;
-import org.jmol.viewer.JC;
 
 public class Hover extends TextShape {
 
@@ -53,7 +53,7 @@ public class Hover extends TextShape {
     JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
     short colix = C.BLACK;
-    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, JC.ALIGN_LEFT, 0,
+    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, Object2d.ALIGN_LEFT, 0,
         null);
     hoverText.setAdjustForWindow(true);
   }

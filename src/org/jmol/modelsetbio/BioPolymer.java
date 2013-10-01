@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.JmolOutputChannel;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -476,7 +476,7 @@ public abstract class BioPolymer {
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
-                                      JmolOutputChannel pdbATOM,
+                                      OutputStringBuilder pdbATOM,
                                       SB pdbCONECT, BS bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
@@ -594,7 +594,6 @@ public abstract class BioPolymer {
    * @param pdbCONECT
    * @param bsWritten
    */
-  @SuppressWarnings("static-access")
   private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BS bsAtoms, BS bsSelected,
@@ -604,7 +603,7 @@ public abstract class BioPolymer {
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
-                              LabelToken[] tokens, JmolOutputChannel pdbATOM,
+                              LabelToken[] tokens, OutputStringBuilder pdbATOM,
                               SB pdbCONECT, BS bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
@@ -897,7 +896,7 @@ public abstract class BioPolymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(viewer.modelSet.getLabeler().formatLabelAtomArray(viewer, a, tokens, '\0',
+        pdbATOM.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0',
             null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
@@ -1048,7 +1047,7 @@ public abstract class BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
                          int derivType, BS bsAtoms, BS bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, JmolOutputChannel pdbATOM,
+                         LabelToken[] tokens, OutputStringBuilder pdbATOM,
                          SB pdbCONECT, BS bsWritten) {
     return;
   }

@@ -1,6 +1,6 @@
 /* $Author: hansonr $
- * $Date: 2013-09-26 23:08:38 -0500 (Thu, 26 Sep 2013) $
- * $Revision: 18715 $
+ * $Date: 2013-09-26 23:07:50 -0500 (Thu, 26 Sep 2013) $
+ * $Revision: 18714 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -49,7 +49,7 @@ import java.util.Map;
 
 
 
-public class ScriptCompiler extends ScriptCompilationTokenParser {
+class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /*
    * The Compiler class is really two parts -- 
@@ -67,7 +67,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * 
    */
   
-  public ScriptCompiler(Viewer viewer) {
+  ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   
@@ -500,7 +500,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
      * those statements as our commands and any line WITHOUT those as comments.
      * 
      * adjusted to only do this if $ starts the FIRST line of a script
-     * and to accept standard $ ... entries clipped from the console  Jmol 13.3.6
+     * and to accept standard $ ... entries clipped from the console  Jmol 13.2.6
      * 
      */
     if (ichToken == ichCurrentCommand && ch == '$' && (isShowScriptOutput || ichToken == 0)) {
@@ -2644,7 +2644,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if ((ch = charAt(ichToken)) == '"' || ch == '@' || ch == '\0')
       return false;
     int ichT = ichToken;
-    while (!isSpaceOrTab(ch = charAt(ichT)) 
+    while (!isSpaceOrTab(ch = script.charAt(ichT)) 
         && ch != '#' && ch != '}' && !eol(ch))
         ++ichT;
     cchToken = ichT - ichToken;

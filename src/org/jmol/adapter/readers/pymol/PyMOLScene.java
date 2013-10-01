@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jmol.api.Interface;
 import org.jmol.api.JmolSceneGenerator;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.atomdata.RadiusData;
@@ -1047,7 +1046,7 @@ class PyMOLScene implements JmolSceneGenerator {
         offset = floatsAt(listAt(offsets, index), 0, new float[7], 7);
         if (offset == null)
           offset = setLabelPosition(labelPosition, new float[7]);
-        md = mdList[index] = ((MeasurementData) Interface.getOptionInterface("modelset.MeasurementData")).init(objectNameID + "_"
+        md = mdList[index] = new MeasurementData(objectNameID + "_"
             + (index + 1), viewer, points);
         md.note = objectName;
       } else {

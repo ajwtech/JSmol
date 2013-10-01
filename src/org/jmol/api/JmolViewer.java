@@ -1,7 +1,7 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2013-09-30 14:57:32 -0500 (Mon, 30 Sep 2013) $
- * $Revision: 18730 $
+ * $Date: 2013-09-18 18:11:54 -0500 (Wed, 18 Sep 2013) $
+ * $Revision: 18670 $
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.api;
 
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Hashtable;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jmol.io.JmolOutputChannel;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Dimension;
@@ -199,8 +200,8 @@ abstract public class JmolViewer {
 
   // for POV-Ray -- returns the INI file
   
-  abstract public String generateOutputForExport(Map<String, Object> params); 
-  
+  abstract public String generateOutputForExport(String type, String[] fileName, int width, int height); 
+
   abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
 
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
@@ -237,20 +238,34 @@ abstract public class JmolViewer {
   
   /**
    * 
-   * @param params include type, fileName, text, bytes, quality, width, height 
-   * @return          null (canceled) or a message starting with OK or an error message
+   * @param text   null here clips image; String clips text
+   * @return "OK" for image or "OK [number of bytes]"
    */
-  abstract public String outputToFile(Map<String, Object> params);
+  abstract public String clipImage(String text);
 
   /**
-   * @param type 
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
    * @param width 
    * @param height 
-   * @param quality 
-   * @param errMsg TODO
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  abstract public Object createImage(String fileName, String type, Object text_or_bytes, int quality,
+                                   int width, int height);
+
+  /**
+   * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
+   * @param quality
+   * @param width 
+   * @param height 
+   * @param fileName 
+   * @param os 
    * @return base64-encoded or binary version of the image
    */
-  abstract public byte[] getImageAsBytes(String type, int width, int height, int quality, String[] errMsg);
+  abstract public Object getImageAs(String type, int quality, int width, int height, String fileName, OutputStream os);
 
   abstract public int getMotionEventNumber();
 
@@ -501,13 +516,19 @@ abstract public class JmolViewer {
     openFileAsyncPDB(fileName, false);    
   }
   
-  abstract public Object getFileAsBytes(String fullPathName, JmolOutputChannel out);
+  abstract public Object getFileAsBytes(String fullPathName, OutputStringBuilder osb);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUn();
 
   abstract public String getModelFileName(int modelIndex);
 
+  /**
+   * @param privateKey  
+   * @return T/F
+   */
+  abstract public boolean checkPrivateKey(double privateKey);
+  
   public String menuStructure;
 
   abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
@@ -522,6 +543,13 @@ abstract public class JmolViewer {
   }
 
   public ApiPlatform apiPlatform; // used in Viewer and JmolViewer
+
+  private JmolFileAdapterInterface fileAdapter;
+
+  public JmolFileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null ? fileAdapter = apiPlatform.getFileAdapter()
+        : fileAdapter);
+  }
 
   /**
    * old -- not used in 12.2
@@ -600,10 +628,6 @@ abstract public class JmolViewer {
    * @return number of bytes cached
    */
   abstract public int cacheFileByName(String fileName, boolean isAdd);
-  
-  abstract public String getClipboardText();
-  
-  abstract public String clipImageOrPasteText(String text);
- 
+
 }
 

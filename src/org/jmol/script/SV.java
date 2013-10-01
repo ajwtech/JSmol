@@ -59,7 +59,7 @@ public class SV extends T {
   final private static SV vT = newScriptVariableIntValue(on, 1, "true");
   final private static SV vF = newScriptVariableIntValue(off, 0, "false");
 
-  public int index = Integer.MAX_VALUE;    
+  int index = Integer.MAX_VALUE;    
 
   private final static int FLAG_CANINCREMENT = 1;
   private final static int FLAG_LOCALVAR = 2;
@@ -130,7 +130,7 @@ public class SV extends T {
     }
   }
 
-  public static boolean isVariableType(Object x) {
+  static boolean isVariableType(Object x) {
     return (x instanceof SV
         || x instanceof BS
         || x instanceof Boolean
@@ -206,8 +206,6 @@ public class SV extends T {
       return getVariableAV((SV[]) x);
     if (Escape.isAI(x))
       return getVariableAI((int[]) x);
-    if (Escape.isAB(x))
-      return getVariableAB((byte[]) x);
     if (Escape.isAF(x))
       return getVariableAF((float[]) x);
     if (Escape.isAD(x))
@@ -234,7 +232,6 @@ public class SV extends T {
     {
        return x instanceof JmolList<?>
           || x instanceof SV[] 
-          || x instanceof byte[] 
           || x instanceof int[] 
           || x instanceof float[]
           || x instanceof double[] 
@@ -247,7 +244,6 @@ public class SV extends T {
   }
 
   @SuppressWarnings("unchecked")
-  public
   static SV getVariableMap(Map<String, ?> x) {
     Map<String, Object> ht = (Map<String, Object>) x;
     Object o = null;
@@ -268,7 +264,7 @@ public class SV extends T {
     return newVariable(hash, x);
   }
 
-  public static SV getVariableList(JmolList<?> v) {
+  static SV getVariableList(JmolList<?> v) {
     int len = v.size();
     if (len > 0 && v.get(0) instanceof SV)
       return newVariable(varray, v);
@@ -328,13 +324,6 @@ public class SV extends T {
   }
 
   static SV getVariableAI(int[] ix) {
-    JmolList<SV> objects = new  JmolList<SV>();
-    for (int i = 0; i < ix.length; i++)
-      objects.addLast(newScriptVariableInt(ix[i]));
-    return newVariable(varray, objects);
-  }
-
-  static SV getVariableAB(byte[] ix) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newScriptVariableInt(ix[i]));
@@ -425,7 +414,7 @@ public class SV extends T {
     return iValue(this);
   }
 
-  public float asFloat() {
+  float asFloat() {
     return fValue(this);
   }
 
@@ -513,7 +502,7 @@ public class SV extends T {
     }
   }
 
-  public static int iValue(T x) {
+  static int iValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -691,7 +680,7 @@ public class SV extends T {
     }
   }
 
-  public static P3 ptValue(SV x) {
+  static P3 ptValue(SV x) {
     switch (x.tok) {
     case point3f:
       return (P3) x.value;
@@ -703,7 +692,7 @@ public class SV extends T {
     return null;
   }  
 
-  public static P4 pt4Value(SV x) {
+  static P4 pt4Value(SV x) {
     switch (x.tok) {
     case point4f:
       return (P4) x.value;
@@ -756,7 +745,7 @@ public class SV extends T {
     return (BS) x.value;
   }
 
-  public static BS bsSelectVar(SV var) {
+  static BS bsSelectVar(SV var) {
     if (var.index == Integer.MAX_VALUE)
       var = selectItemVar(var);
     return (BS) var.value;
@@ -1018,7 +1007,7 @@ public class SV extends T {
     }
   }
 
-  public static Object unescapePointOrBitsetAsVariable(Object o) {
+  static Object unescapePointOrBitsetAsVariable(Object o) {
     if (o == null)
       return o;
     Object v = null;
@@ -1067,7 +1056,7 @@ public class SV extends T {
     return newScriptVariableToken(value ? vT : vF);
   }
   
-  public static Object sprintf(String strFormat, SV var) {
+  static Object sprintf(String strFormat, SV var) {
     if (var == null)
       return strFormat;
     int[] vd = (strFormat.indexOf("d") >= 0 || strFormat.indexOf("i") >= 0 ? new int[1]
@@ -1110,7 +1099,7 @@ public class SV extends T {
    * @param args
    * @return       formatted string
    */
-  public static String sprintfArray(SV[] args) {
+  static String sprintfArray(SV[] args) {
     switch(args.length){
     case 0:
       return "";
@@ -1154,7 +1143,7 @@ public class SV extends T {
     return (allowNull ? null : new BS());
   }
 
-  public static boolean areEqual(SV x1, SV x2) {
+  static boolean areEqual(SV x1, SV x2) {
     if (x1 == null || x2 == null)
       return false;
     if (x1.tok == string && x2.tok == string)
@@ -1211,7 +1200,7 @@ public class SV extends T {
    * @param arrayPt   1-based or Integer.MIN_VALUE to reverse
    * @return sorted or reversed array
    */
-  public SV sortOrReverse(int arrayPt) {
+  SV sortOrReverse(int arrayPt) {
     JmolList<SV> x = getList();
     if (x == null || x.size() < 2) 
       return this;
