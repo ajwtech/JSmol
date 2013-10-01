@@ -3,7 +3,9 @@
 // jsmol.php
 // Bob Hanson hansonr@stolaf.edu 1/11/2013
 //
-// last modified: 7 Sep 2013 -- adding PHP error handling
+// last modified: 30 Sep 2013 -- adjusted error handling to only report E_ERROR not E_WARNING
+//
+// 7 Sep 2013 -- adding PHP error handling
 //
 // Server-side Jmol delivers:
 //   simple relay for cross-domain files
@@ -50,9 +52,7 @@ $myerror = "";
 function handleError($severity, $msg, $filename, $linenum) {
   global $myerror;
   switch($severity) {
-  case 1:
-  case 2:
-  case 4:
+  case E_ERROR:
     $myerror = "PHP error:$severity $msg $filename $linenum";
     break;
   }
