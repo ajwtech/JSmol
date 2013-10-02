@@ -61,12 +61,12 @@
    	
   	<!-- get required non-JavaScript resources -->		
     <copy todir="site/jsmol/j2s/J/minimize/forcefield/data" >
-      <fileset dir="src/org/jmol/minimize/forcefield/data">
+      <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="site/jsmol/j2s/J/modelkit/images">
-      <fileset dir="src/org/jmol/modelkit/images">
+      <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
