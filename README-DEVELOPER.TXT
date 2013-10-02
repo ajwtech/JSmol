@@ -25,12 +25,13 @@ J2S options in Eclipse. (Our j2sjmol.js file is different from that used by Java
 BUILDING THE PROJECT
 
 
-Almost all of the code in src/org/jmol is derived from the Jmol project.
-The starting point for building this project is buildfromjmol.xml. 
-When buildfromjmol.xml runs, it overwrites all the files in src/org/jmol.
-See the detailed notes there.
+All of the code in src is derived from the Jmol project. Oddly enough, this
+directory is temporary only; it is in svn-ignore, and it is deleted when 
+buildfromjmol.xml or buildfromjmol.stable.xml is run.
 
-Please make commit comments in Jmol/src/viewer/Jmol.properties
+See the detailed notes in buildfromjmol.xml.
+
+Please make commit comments in Jmol/src/viewer/Jmol.properties, not here.
 
 You may have to right-click on buildtojs.xml and set its 
 external configuration to:
@@ -42,5 +43,6 @@ Also, you should turn off "project -- build Automatically", because it
 seems to slow things down.
 
 
-hansonr@stolaf.edu 8/17/2013
+hansonr@stolaf.edu 8/17/2013, 10/1/2013
+
 

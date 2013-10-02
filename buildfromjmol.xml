@@ -6,22 +6,22 @@
 
 	The overall process of creating JSmol starts here. 
 	
-	1) All org.jmol source files in JSmol are derived from Jmol, so you must have both SourceForge
+	1) All source Java code in JSmol is derived from Jmol, so you must have both SourceForge
 	   projects checked out. Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
 	   not even, such as 13.1.18, not 13.0.18.) 
 	   
 	   Be sure to set the above property jmol.path to where you have checked out the Jmol project
 	   both here and in buildtojs.xml
 
-		!!Never modify any file in JSmol/src/org!! - Only work in Jmol. 
+		!!Never modify any file in JSmol/src!! - Only work in Jmol. 
 		
 	   The files that are specific to JSmol and not Jmol are:
 	   
 	     src/com/jcraft/jzlib   -  gzip/zip compresion/decompression classes
 	     src/java               -  modified Java classes, including awt, io, net, and util
-	     org/jsmol              -  some early test files; no longer of much value
 	     
-	   There are also some java.lang and java.util classes that are defined in core.z.js. 
+	   These are in Jmol/srcjs and are just copied here as needed. There are also some 
+	   java.lang and java.util classes that are defined in core.z.js (coretop.js)
 	   
 	   These include (among a few others):
 	   
@@ -106,16 +106,18 @@
 	  </filterchain>
 	</copy>
   	
-  	<echo>deleting all files in src</echo>
+  	<echo>deleting all files in src and bin</echo>
     <delete>
-      <fileset dir="src" includes="**/*.java"/>
+      <fileset dir="bin" includes="**/*"/>
+      <fileset dir="src" includes="**/*"/>
     </delete>
   	
   	<echo>copying files from ${jmol.path}</echo>
 
     <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/srcjs">
-        <include name="**/*.java" />
+        <include name="com/**/*" />
+        <include name="java/**/*" />
       </fileset>
     </copy>
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->

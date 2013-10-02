@@ -106,18 +106,21 @@
 	  </filterchain>
 	</copy>
   	
-  	<echo>deleting all files in src</echo>
+  	<echo>deleting all files in src and bin</echo>
     <delete>
-      <fileset dir="src" includes="**/*.java"/>
+      <fileset dir="bin" includes="**/*"/>
+      <fileset dir="src" includes="**/*"/>
     </delete>
   	
   	<echo>copying files from ${jmol.path}</echo>
 
     <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/srcjs">
-        <include name="**/*.java" />
+        <include name="com/**/*" />
+        <include name="java/**/*" />
       </fileset>
     </copy>
+  	
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="${jmol.path}/src/org/jmol">
