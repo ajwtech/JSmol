@@ -61,16 +61,16 @@
    	
   	<!-- get required non-JavaScript resources -->		
     <copy todir="site/jsmol/j2s/J/minimize/forcefield/data" >
-      <fileset dir="src/org/jmol/minimize/forcefield/data">
+      <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="site/jsmol/j2s/J/modelkit/images">
-      <fileset dir="src/org/jmol/modelkit/images">
+      <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
-   	
+   	   	
   	<!-- get .po files from the Jmol project -->		
    	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
