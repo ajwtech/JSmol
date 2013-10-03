@@ -2955,6 +2955,7 @@ System = {
 		System.props = props;
 	},
 	getProperty : function (key, def) {
+    if (key.equals("line.separator")) return "\n";
 		if (System.props != null) {
 			return System.props.getProperty (key, def);
 		}
