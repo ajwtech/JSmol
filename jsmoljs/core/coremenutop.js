@@ -96,13 +96,21 @@ M.PopupMenu = function(applet, name) {
 	this.name = name;
 	this.items = [];
 	this.enabled = true;
-	this.tainted = true;	
+	this.tainted = true;
+  this.applet = applet;	
 
 	applet._popups || (applet._popups = {});
 	applet._popups[name] = this;
 	Jmol.$after("body",'<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
 	this.setContainer(Jmol.$('#' + this.id));
 }
+
+M.PopupMenu.prototype.dispose = function() {
+  alert(this.name  + " dispose")
+  this.hide();
+  delete this.applet._popups[this.name]
+}
+
 
 M.PopupMenu.prototype.hide = function() {
 	if (!this.visible)return;
@@ -236,7 +244,7 @@ M.setItemProto = function(proto){
 		var s = '<li id="ID" class="' + (this.enabled ? '' : 'ui-state-disabled') + '">';
 		if (this.text) { s += '<a>'; }
 		if (this.isCheckBox) {
-			s += '<input ID="ID-cb" type="checkbox" ' + (this.selected ? 'checked' : '') + ' /><label for="ID-cb">TeXt</label>';
+			s += '<input id="ID-cb" type="checkbox" ' + (this.selected ? 'checked' : '') + ' /><label for="ID-cb">TeXt</label>';
 		} else if (this.isRadio) {
 			s += '<input id="ID-rb" type="radio" name="' + this.htmlName + '" ' 
 				+ (this.selected ? 'checked' : '') + ' /><label for="ID-rb">TeXt</label>';
