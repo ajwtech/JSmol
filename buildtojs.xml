@@ -347,7 +347,6 @@
     </java>
    	<concat destfile="site/jsmol/js/coresurface.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/VolumeDataInterface.js
-   		J/io/XmlReader.js
    		J/jvxl/api/VertexDataServer.js
    		J/jvxl/api/MeshDataServer.js
    		J/shapesurface/Isosurface.js
@@ -355,6 +354,7 @@
    		J/jvxl/data/VolumeData.js
    		J/jvxl/data/JvxlData.js
    		J/jvxl/data/MeshData.js
+   		J/jvxl/readers/XmlReader.js
    		J/jvxl/readers/SurfaceGenerator.js
    		J/jvxl/readers/Parameters.js
    		J/jvxl/readers/SurfaceReader.js
@@ -509,7 +509,7 @@
    		J/constant/EnumCallback.js
    		J/util/Escape.js
    		J/util/Parser.js
-   		J/util/TextFormat.js
+   		J/util/Txt.js
    		J/util/SB.js
    		J/script/T.js
    		J/util/Tuple3d.js
