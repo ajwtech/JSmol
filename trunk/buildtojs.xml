@@ -503,6 +503,8 @@
    		J/api/JmolCallbackListener.js
    		J/api/JmolStatusListener.js
    		J/api/JmolSyncInterface.js
+		J/api/JmolActionManager.js
+		J/api/PlatformManager.js
    		J/appletjs/Jmol.js
    		J/appletjs/JmolAppletRegistry.js
    		java/lang/Enum.js
