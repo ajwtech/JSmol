@@ -58,6 +58,26 @@
 		return this;
 	};
 
+	Jmol._JSVCanvas2D = function(id, Info, caption, checkOnly){
+		this._syncId = ("" + Math.random()).substring(3);
+		this._id = id;
+		this._is2D = true;
+    this._isJSV = true;
+    this._isJava = false;
+		this._aaScale = 1; // antialias scaling
+		this._jmolType = "Jmol._JSVCanvas2D (JSmol)";
+		this._platform = "JSV.awtjs2d.Platform";
+		if (checkOnly)
+			return this;
+    window[id] = this;
+
+		this._createJSVCanvas(id, Info, caption, null);
+    if (!Jmol._document || this._deferApplet)
+      return this;
+    this._init();
+		return this;
+	};
+
 
 	Jmol._jsSetPrototype = function(proto) {
     proto._init = function() {
@@ -67,6 +87,30 @@
 			  this._showInfo(false);
     };
     
+    proto._createJSVCanvas = function(id, Info, caption) {
+			Jmol._setObject(this, id, Info);
+		this.__Info.jsvscript = (Info.initParams ? Info.initParams : "") + ';appletID ' + this._id + ';syncID '+ this._syncId
+		+ ';appletReadyCallbackFunctionName ' + this._id + '._readyCallback'
+		+ ';syncCallbackFunctionName Jmol._mySyncCallback;' + (Info.script ? "||" + Info.script : "");
+		
+      var t = Jmol._getWrapper(this, true);
+      if (this._deferApplet) {
+      } else if (Jmol._document) {
+				Jmol._documentWrite(t);
+        this._getCanvas(false);				        
+				t = "";
+			} else {
+        this._deferApplet = true;
+				t += '<script type="text/javascript">' + id + '._cover(false)</script>';
+			}
+			t += Jmol._getWrapper(this, false);
+      if (Info.addSelectionOptions)
+				t += Jmol._getGrabberOptions(this, caption);
+			if (Jmol._debugAlert && !Jmol._document)
+				alert(t);
+			this._code = Jmol._documentWrite(t);
+		};
+		                      
     proto._createCanvas = function(id, Info, caption, glmol) {
 			Jmol._setObject(this, id, Info);
       if (glmol) {
@@ -171,6 +215,9 @@
 				es.push([this, this.__addExportHook, null, "addExportHook"])
 			}			 			
 			if (Jmol.debugCode) {
+        if (this._isJSV)
+        es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"])
+        else 
         // es.push([this.__checkLoadStatus, null,"checkLoadStatus"])
         es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"])
       }
@@ -214,6 +261,8 @@
         viewerOptions.put("bgcolor", applet._color);
       if (!applet._is2D)  
 			  viewerOptions.put("script", "set multipleBondSpacing 0.35;");
+      else if (applet.__Info.jsvscript)
+        viewerOptions.put("script", applet.__Info.jsvscript)
 			
 			viewerOptions.put("signedApplet", "true");
 			viewerOptions.put("platform", applet._platform);
@@ -227,7 +276,7 @@
 			viewerOptions.put ("codeBase", base.join("/"));
       
 			Jmol._registerApplet(applet._id, applet);
-      applet._applet = new J.appletjs.Jmol(viewerOptions);
+      applet._applet = (applet._isJSV ? new JSV.appletjs.JSVApplet(viewerOptions) : new J.appletjs.Jmol(viewerOptions));
       
       if (!applet._is2D)
 				applet._GLmol.applet = applet;
@@ -361,7 +410,7 @@
     //
 		
     // alert("_repaint " + arguments.callee.caller.caller.exName)
-		if (!applet._applet)return;
+		if (!applet || !applet._applet)return;
 
 		// asNewThread = false;
 		var container = Jmol.$(applet, "appletdiv");

@@ -1,5 +1,7 @@
 // core.z.js
 //
+ // BH 10/10/2013 2:40:20 PM  added Math.log10   
+
 // BH 7/23/2013 7:24:01 AM fixing Number.shortValue() and Number.byteValue() for negative values
 // BH 6/16/2013 1:31:30 PM adding /| in String.replace -- thank you David Koes
 // BH 3/13/2013 12:49:23 PM setting Boolean.valueOf() "@" 
@@ -11,6 +13,8 @@
 // BH 1/7/2013 7:40:06 AM added Clazz.dateToString
 
 ;(function() {
+
+Math.log10 = function(a){ return Math.log(a) / 2.302585092994046 }
 
 Clazz.dateToString = Date.prototype.toString
 

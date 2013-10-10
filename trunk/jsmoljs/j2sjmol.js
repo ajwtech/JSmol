@@ -27,7 +27,7 @@
 
  // NOTES by Bob Hanson: 
 
-  
+
  // J2S class changes:
  
  // BH 6/15/2013 8:02:07 AM corrections to Class.isAS to return true if first element is null
@@ -4566,9 +4566,7 @@ ClazzLoader.loadScript = function (file, why) {
 		}
 	}
   
-  System.out.println("call loadScript "
-    + file.replace(/\//g,"\\")
-      .replace(/j2s[\\\.]/g,"") + (why ? " -- required by " + why : ""))
+  System.out.println("loading... " + file + (why ? " -- required by " + why : ""))
 
 
 	if (ClazzLoader.isUsingXMLHttpRequest) {
@@ -4577,9 +4575,15 @@ ClazzLoader.loadScript = function (file, why) {
 
     if (!ClazzLoader.isAsynchronousLoading) {
       // works in MSIE locally :)
-    	var info = {dataType:"text",async:false,url:file};
-		  var xhr = Jmol.$ajax(info);
-      var data = xhr.responseText;
+     if (self.Jmol) {
+       var data = Jmol._getFileData(file);
+      } else {
+    	  var info = {dataType:"text",async:false,url:file};
+		    var xhr = Jmol.$ajax(info);
+        var data = xhr.responseText;
+        if (data == null && xhr.state)
+          data = "alert('error loading file " + file + " state=" + xhr.state() + "')";
+      }
       ClazzLoader.evaluate(file, data); 
       return;
     }
