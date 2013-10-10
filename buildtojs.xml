@@ -37,6 +37,12 @@
       </fileset>
     </copy>
    	
+   	<copy todir="site/jsmol/j2s/JSV" >
+      <fileset dir="bin/jspecview">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
   	<!-- modify class names -->		
 
     <echo>modifying class names</echo>
@@ -44,6 +50,8 @@
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
   	<!-- get version information  -->		
@@ -53,7 +61,7 @@
   	  </fileset>
     </copy>
    	
-    <copy todir="site/jsmol/j2s/J" >
+   	<copy todir="site/jsmol/j2s/J" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
@@ -77,6 +85,12 @@
 	    <include name="*.po" />
 	  </fileset>
 	</copy>
+
+    <copy todir="site/jsmol/j2s/JSV/common" >
+  	  <fileset dir="src/jspecview/common">
+  	    <include name="*.txt" />
+  	  </fileset>
+    </copy>
 
    	<!-- add jsmol files and subdirectories -->
 
