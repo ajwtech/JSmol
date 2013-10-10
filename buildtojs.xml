@@ -4,6 +4,7 @@
 	
 	
    <property name="jmol.path" value="../Jmol" />
+	   <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJs" id="toJs">
   			
@@ -50,7 +51,7 @@
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+  	<replace dir="site/jsmol/j2s/JSV" includes="**/*.js" token="jspecview" value="JSV"/>
 
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
@@ -73,24 +74,33 @@
         <include name="*.txt" />
       </fileset>
     </copy>
+   	<exit />
     <copy todir="site/jsmol/j2s/J/modelkit/images">
       <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
    	   	
+    <copy todir="site/jsmol/j2s/JSV/common" >
+      <fileset dir="${jsv.path}">
+        <include name="TODO.txt" />
+      </fileset>
+		  <filterchain>
+		    <striplinecomments>
+		      <comment value="#" />
+		    </striplinecomments>
+		    <linecontains>
+		      <contains value="___" />
+		    </linecontains>
+		  </filterchain>
+    </copy>
+
   	<!-- get .po files from the Jmol project -->		
    	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
 	  </fileset>
 	</copy>
-
-    <copy todir="site/jsmol/j2s/JSV/common" >
-  	  <fileset dir="src/jspecview/common">
-  	    <include name="*.txt" />
-  	  </fileset>
-    </copy>
 
    	<!-- add jsmol files and subdirectories -->
 
@@ -103,9 +113,9 @@
       </fileset>
     </copy>
 
-   	<copy todir="site/jsmol/html">
+   	<copy todir="site/jsmol/j2s/core">
   	  <fileset dir="${jmol.path}/srcjs/js">
-  	    <include name="*.htm*" />
+  	    <include name="package.js" />
   	  </fileset>
     </copy>
 

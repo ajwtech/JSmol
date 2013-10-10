@@ -9,15 +9,81 @@
 * 
 */
 
+// 10/10/2013 1:25:28 PM BH JSV HTML5 option
 /*
 	Inserts the JSpecView applet in any compatible User Agent using the <object> tag
 	uses IE conditional comments to distinguish between IE and Mozilla
 	see http://msdn.microsoft.com/workshop/author/dhtml/overview/ccomment_ovw.asp
 */
 
-(function (Jmol, document) {
+;(function (Jmol, document) {
 	
 	Jmol._JSVVersion="2.0";
+
+
+  Jmol._getJSVApplet = function(id, Info, checkOnly) {
+	// note that the variable name the return is assigned to MUST match the first parameter in quotes
+	// applet = Jmol.getJSVApplet("applet", Info)
+
+		Info || (Info = {});
+		var DefaultInfo = {
+			width: 500,
+			height: 300,
+			debug: false,
+			jarPath: ".",
+			jarFile: "JSpecViewApplet.jar",
+      j2sPath: "j2s",
+      use: "JAVA",
+			isSigned: false,
+			initParams: null,
+			readyFunction: null,
+			script: null
+		};
+		Jmol._addDefaultInfo(Info, DefaultInfo);
+    
+		var javaAllowed = false;
+		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
+		var applet = null;
+		
+    if (Info.use) {
+		
+    	var List = Info.use.toUpperCase().split("#")[0].split(" ");
+      
+		  for (var i = 0; i < List.length; i++) {
+		    switch (List[i]) {
+		    case "JAVA":
+		    	javaAllowed = true;
+		    	if (Jmol.featureDetection.supportsJava())
+						applet = new Jmol._JSVApplet(id, Info, null, checkOnly);
+					break;
+		    case "WEBGL":
+		    case "HTML5":
+					applet = Jmol._getJSVCanvas(id, Info, checkOnly);
+		      break;
+		    }
+		    if (applet != null)
+		    	break;		  
+		  }
+		  if (applet == null) {
+		  	if (checkOnly || !javaAllowed)
+		  		applet = {_jmolType : "none" };
+		  	else if (javaAllowed)
+					applet = new Jmol._JSVApplet(id, Info, null, checkOnly);
+			}
+		}
+
+    return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
+	}
+
+  
+	Jmol._getJSVCanvas = function(id, Info, checkOnly) {
+		// overrides the function in JmolCore.js
+		var canvas = null;
+			Jmol._JSVCanvas2D.prototype = Jmol._jsSetPrototype(new Jmol._JSVApplet(id,Info, "", true));
+			canvas = new Jmol._JSVCanvas2D(id, Info, null, checkOnly);
+		return canvas;
+	};
+
 
 	Jmol._JSVApplet = function(id, Info, caption, checkOnly){
 		this._jmolType = "Jmol._JSVApplet" + (Info.isSigned ? " (signed)" : "");
@@ -51,26 +117,8 @@
 		return this;
 	}
 
-  Jmol._JSVApplet._getApplet = function(id, Info) {
-	// note that the variable name the return is assigned to MUST match the first parameter in quotes
-	// applet = Jmol.getJSVApplet("applet", Info)
 
-		Info || (Info = {});
-		var DefaultInfo = {
-			width: 500,
-			height: 300,
-			debug: false,
-			jarPath: ".",
-			jarFile: "JSpecViewApplet.jar",
-			isSigned: false,
-			initParams: null,
-			readyFunction: null,
-			script: null
-		};
-		Jmol._addDefaultInfo(Info, DefaultInfo);
-		return Jmol._registerApplet(id, new Jmol._JSVApplet(id, Info, null));
-	}
-  
+
 	Jmol._JSVApplet.prototype._create = function(id, Info, caption){
 
 		Jmol._setObject(this, id, Info);

@@ -858,12 +858,12 @@ Jmol = (function(document) {
   	Clazz.setConsoleDiv(d);
   }
 
-  Jmol._setJmolParams = function(params, Info, isHashtable) {      
+  Jmol._setJmolParams = function(params, Info, isHashtable, isJSV) {      
 		var availableValues = "'progressbar','progresscolor','boxbgcolor','boxfgcolor','allowjavascript','boxmessage',\
 									'messagecallback','pickcallback','animframecallback','appletreadycallback','atommovedcallback',\
 									'echocallback','evalcallback','hovercallback','language','loadstructcallback','measurecallback',\
 									'minimizationcallback','resizecallback','scriptcallback','statusform','statustext','statustextarea',\
-									'synccallback','usecommandthread'";
+									'synccallback','usecommandthread','syncid','appletid'";
 		for (var i in Info)
 			if(availableValues.indexOf("'" + i.toLowerCase() + "'") >= 0){
         if (i == "language" && !Jmol.featureDetection.supportsLocalization())continue;

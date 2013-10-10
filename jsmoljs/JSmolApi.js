@@ -99,7 +99,7 @@
 			script: null
 		};
     */
-    return Jmol._JSVApplet._getApplet(id, Info, checkOnly);
+    return Jmol._getJSVApplet(id, Info, checkOnly);
   }	
 
 

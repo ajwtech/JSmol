@@ -6,7 +6,8 @@
 	<!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-   <property name="jmol.path" value="../Jmol" />
+	  <property name="jmol.path" value="../Jmol" />
+	  <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJsTest" id="toJsTest">
   			
@@ -38,11 +39,20 @@
       </fileset>
     </copy>
    	
-  	<!-- modify class names -->		
+   	<copy todir="site/jsmol/j2s/JSV" >
+      <fileset dir="bin/jspecview">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
+
+    <echo>modifying class names</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
   	<!-- get version information  -->		
@@ -60,16 +70,30 @@
    	
   	<!-- get required non-JavaScript resources -->		
     <copy todir="site/jsmol/j2s/J/minimize/forcefield/data" >
-      <fileset dir="src/org/jmol/minimize/forcefield/data">
+      <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="site/jsmol/j2s/J/modelkit/images">
-      <fileset dir="src/org/jmol/modelkit/images">
+      <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
-   	
+
+    <copy todir="site/jsmol/j2s/JSV/common" >
+      <fileset dir="${jsv.path}">
+        <include name="TODO.txt" />
+      </fileset>
+		  <filterchain>
+		    <striplinecomments>
+		      <comment value="#" />
+		    </striplinecomments>
+		    <linecontains>
+		      <contains value="___" />
+		    </linecontains>
+		  </filterchain>
+    </copy>
+
   	<!-- get .po files from the Jmol project -->		
    	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
@@ -140,10 +164,11 @@
     </copy>
      	
    	<copy todir="site/jsmol/j2s/core">
-  	  <fileset dir="jsmoljs/core">
+  	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />
   	  </fileset>
     </copy>
+
 
 	<concat destfile="site/jsmol/j2s/core/core.z.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
