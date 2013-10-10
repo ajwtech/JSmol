@@ -1,0 +1,43 @@
+<project name="JSmol" default="fromJSV" basedir=".">
+	
+	<property name="jsv.path" value="../JSpecView" />
+
+	<!-- 
+
+	JSpecView and JspecViewLib classes are added, all to src/jspecview
+	
+            - Bob Hanson October 10, 2013.
+	 -->
+
+  <target name="fromJSV" id="fromJSV">
+  	
+  	<echo>deleting all JSV files in src and bin</echo>
+    <delete>
+      <fileset dir="bin" includes="jspecview/*"/>
+      <fileset dir="src" includes="jspecview/*"/>
+    </delete>
+  	
+  	<echo>copying files from ${jsv.path} and ${jsv.path}Lib</echo>
+
+    <copy overwrite="true" todir="src/jspecview" >
+      <fileset dir="${jsv.path}Lib/src/jspecview">
+        <include name="**/*" />
+      </fileset>
+    </copy>
+  	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
+    <copy overwrite="true" todir="src/jspecview" >
+      <fileset dir="${jsv.path}/src/jspecview">
+        <include name="**/*.java" />
+        <exclude name="**/applet/*"/>
+        <exclude name="**/application/*"/>
+        <exclude name="**/awt/*"/>
+        <exclude name="**/g2d/*"/>
+        <exclude name="**/java/*"/>
+      	<exclude name="**/unused/*"/>
+      </fileset>
+    </copy>
+   	<echo>Now run buildtojstest.xml or buildtojs.xml to compile JSmol with JSpecView</echo>
+
+  </target>
+	
+</project>
