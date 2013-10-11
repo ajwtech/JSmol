@@ -384,7 +384,7 @@ Jmol = (function(document) {
 	  ["=", "RCSB(macromolecules)"]
 	];
 	
-	Jmol._getGrabberOptions = function(applet, note) {
+	Jmol._getGrabberOptions = function(applet) {
 		// feel free to adjust this look to anything you want
 		if (Jmol._grabberOptions.length == 0)
 			return ""
@@ -401,7 +401,7 @@ Jmol = (function(document) {
 			var opt = Jmol._grabberOptions[i];
 		 	s += '<option value="' + opt[0] + '" ' + (i == 0 ? 'selected' : '') + '>' + opt[1] + '</option>';
 		}
-		s = (s + '</select>' + b).replace(/ID/g, applet._id) + (note ? note : "");
+		s = (s + '</select>' + b).replace(/ID/g, applet._id);
 		return '<br />' + s;
 	}
 
@@ -858,15 +858,16 @@ Jmol = (function(document) {
   	Clazz.setConsoleDiv(d);
   }
 
-  Jmol._setJmolParams = function(params, Info, isHashtable, isJSV) {      
-		var availableValues = "'progressbar','progresscolor','boxbgcolor','boxfgcolor','allowjavascript','boxmessage',\
-									'messagecallback','pickcallback','animframecallback','appletreadycallback','atommovedcallback',\
-									'echocallback','evalcallback','hovercallback','language','loadstructcallback','measurecallback',\
-									'minimizationcallback','resizecallback','scriptcallback','statusform','statustext','statustextarea',\
-									'synccallback','usecommandthread','syncid','appletid'";
+  Jmol._setJmolParams = function(params, Info, isHashtable) {
+		var availableValues = ";progressbar;progresscolor;boxbgcolor;boxfgcolor;allowjavascript;boxmessage;\
+									;messagecallback;pickcallback;animframecallback;appletreadycallback;atommovedcallback;\
+									;echocallback;evalcallback;hovercallback;language;loadstructcallback;measurecallback;\
+									;minimizationcallback;resizecallback;scriptcallback;statusform;statustext;statustextarea;\
+									;synccallback;usecommandthread;syncid;appletid;startupscript;";
 		for (var i in Info)
-			if(availableValues.indexOf("'" + i.toLowerCase() + "'") >= 0){
-        if (i == "language" && !Jmol.featureDetection.supportsLocalization())continue;
+			if(availableValues.indexOf(";" + i.toLowerCase() + ";") >= 0){
+        if (i == "language" && !Jmol.featureDetection.supportsLocalization())
+          continue;
         if (isHashtable)
           params.put(i, (Info[i] === true ? Boolean.TRUE: Info[i] === false ? Boolean.FALSE : Info[i]))
         else
