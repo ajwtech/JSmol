@@ -11,21 +11,21 @@
 
   <target name="fromJSV" id="fromJSV">
   	
-  	<echo>deleting all JSV files in src and bin</echo>
+  	<echo>deleting all files in src/jspecview and bin/jspecview</echo>
     <delete>
-      <fileset dir="bin" includes="jspecview/*"/>
-      <fileset dir="src" includes="jspecview/*"/>
+      <fileset dir="bin/jspecview" includes="**/*"/>
+      <fileset dir="src/jspecview" includes="**/*"/>
     </delete>
   	
-  	<echo>copying files from ${jsv.path} and ${jsv.path}Lib</echo>
-
+ 	<echo>copying files from ${jsv.path}Lib</echo>
     <copy overwrite="true" todir="src/jspecview" >
       <fileset dir="${jsv.path}Lib/src/jspecview">
         <include name="**/*" />
       </fileset>
     </copy>
-  	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
-    <copy overwrite="true" todir="src/jspecview" >
+
+  	<echo>copying files from ${jsv.path}</echo>
+  	<copy overwrite="true" todir="src/jspecview" >
       <fileset dir="${jsv.path}/src/jspecview">
         <include name="**/*.java" />
         <exclude name="**/applet/*"/>
