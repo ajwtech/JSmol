@@ -65,7 +65,7 @@
 		return this;
   }
 
-  Jmol._JMEApplet._getApplet = function(id, Info, linkedApplet, checkOnly) {
+  Jmol._JMEApplet._get = function(id, Info, linkedApplet, checkOnly) {
 	
 	// requires JmolJME.js and JME.jar
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes

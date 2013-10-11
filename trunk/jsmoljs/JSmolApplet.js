@@ -1,5 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 10/11/2013 7:17:10 AM streamlined and made consistent with JSV and JSME
 // BH 7/16/2012 1:50:03 PM adds server-side scripting for image
 // BH 8/11/2012 11:00:01 AM adds Jmol._readyCallback for MSIE not in Quirks mode
 // BH 8/12/2012 3:56:40 AM allows .min.png to be replaced by .all.png in Image file name
@@ -9,10 +10,9 @@
 
 (function (Jmol, document) {
 
-
-	// _Applet -- the main, full-featured, object
+	// _Applet -- the main, full-featured, Jmol object
 	
-	Jmol._Applet = function(id, Info, caption, checkOnly){
+	Jmol._Applet = function(id, Info, checkOnly){
     window[id] = this;
 		this._jmolType = "Jmol._Applet" + (Info.isSigned ? " (signed)" : "");
     this._isJava = true;
@@ -28,10 +28,6 @@
 		this._canScript = function(script) {return true;};
 		this._savedOrientations = [];
 		this._syncKeyword = "Select:";
-		
-		/*
-		 * privileged methods
-		 */
 		this._initialize = function(jarPath, jarFile) {
 			var doReport = false;
 			if(this._jarFile) {
@@ -55,11 +51,11 @@
 				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}		
-		this._create(id, Info, caption);
+		this._create(id, Info);
 		return this;
 	}
 
-  Jmol._Applet._getApplet = function(id, Info, checkOnly) {
+  Jmol._Applet._get = function(id, Info, checkOnly) {
 	
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes
 	// applet = Jmol.getApplet("applet", Info)
@@ -95,70 +91,58 @@
   	Jmol._debugAlert = Info.debug;
       if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
       
-      //alert(Info.use)
-		  var javaAllowed = false;
+    //alert(Info.use)
     
-	
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
+    
+		var javaAllowed = false;
 		var applet = null;
-		
-		if (Info.use) {
-		
-		// better idea....
-		// order matters; must have JAVA, WEBGL, HTML5, or IMAGE in some order, separated by a single space
-
-    	var List = Info.use.toUpperCase().split("#")[0].split(" ");
-		
-		  for (var i = 0; i < List.length; i++) {
-		    switch (List[i]) {
-		    case "JAVA":
-		    	javaAllowed = true;
-		    	if (Jmol.featureDetection.supportsJava())
-						applet = new Jmol._Applet(id, Info, null, checkOnly);
-					break;
-		    case "WEBGL":
-					applet = Jmol._getCanvas(id, Info, checkOnly, true, false);
-		      break;
-		    case "HTML5":
-					applet = Jmol._getCanvas(id, Info, checkOnly, false, true);
-		      break;
-		    case "IMAGE":
-					applet = new Jmol._Image(id, Info, null, checkOnly);
-					break;
-		    }
-		    if (applet != null)
-		    	break;		  
-		  }
-		  if (applet == null) {
-		  	if (checkOnly || !javaAllowed)
-		  		applet = {_jmolType : "none" };
-		  	else if (javaAllowed)
-	 		  	applet = new Jmol._Applet(id, Info, null, false);
-			}
-			
-		} else {
-
-			// early idea -- deprecated
-			
-			if (!Info.useNoApplet && !Info.useImageOnly 
-				&& (navigator.javaEnabled() || Info.useJmolOnly)) {
-			
-			// Jmol applet, signed or unsigned
-			
-				applet = new Jmol._Applet(id, Info, null, checkOnly);
-			} 
-			if (applet == null) {
-				if (!Info.useJmolOnly && !Info.useImageOnly) {
-					applet = Jmol._getCanvas(id, Info, checkOnly, Info.useWebGlIfAvailable, !Info.useWebGlIfAvailable);
-				} 
-				if (applet == null)
-					applet = new Jmol._Image(id, Info, null, checkOnly);
-			}
+  	var List = Info.use.toUpperCase().split("#")[0].split(" ");
+	  for (var i = 0; i < List.length; i++) {
+	    switch (List[i]) {
+	    case "JAVA":
+	    	javaAllowed = true;
+	    	if (Jmol.featureDetection.supportsJava())
+					applet = new Jmol._Applet(id, Info, checkOnly);
+				break;
+	    case "WEBGL":
+				applet = Jmol._Applet._getCanvas(id, Info, checkOnly, true);
+	      break;
+	    case "HTML5":
+				applet = Jmol._Applet._getCanvas(id, Info, checkOnly, false);
+	      break;
+	    case "IMAGE":
+				applet = new Jmol._Image(id, Info, checkOnly);
+				break;
+	    }
+	    if (applet != null)
+	    	break;		  
+	  }
+	  if (applet == null) {
+	  	if (checkOnly || !javaAllowed)
+	  		applet = {_jmolType : "none" };
+	  	else if (javaAllowed)
+ 		  	applet = new Jmol._Applet(id, Info);
 		}
-
+			
 		// keyed to both its string id and itself
 		return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
   }
+  
+  Jmol._Applet._getCanvas = function(id, Info, checkOnly, webGL) {
+		if (webGL && Jmol.featureDetection.supportsWebGL()) {
+			Jmol._Canvas3D.prototype = Jmol._jsSetPrototype(new Jmol._Applet(id, Info, true));
+			GLmol.setRefresh(Jmol._Canvas3D.prototype);
+			return new Jmol._Canvas3D(id, Info, "Jmol", checkOnly);
+		}
+		if (!webGL) {
+			Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Jmol._Applet(id, Info, true));
+			return new Jmol._Canvas2D(id, Info, "Jmol", checkOnly);
+		}
+		return null;
+	};
+
+
   /*  AngelH, mar2007:
     By (re)setting these variables in the webpage before calling Jmol.getApplet(),
     a custom message can be provided (e.g. localized for user's language) when no Java is installed.
@@ -179,8 +163,7 @@
 		proto._readyCallback = Jmol._Applet.prototype._readyCallback;
 	}
 
-	Jmol._Applet._createApplet = function(applet, Info, params, myClass, script, caption) {
-
+	Jmol._Applet._createApplet = function(applet, Info, params, myClass) {
 		if (Jmol._syncedApplets.length)
 		  params.synccallback = "Jmol._mySyncCallback";
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
@@ -196,8 +179,8 @@
 		var tHeader, tFooter;
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
 			params.archive = applet._jarFile;
-			if (script)
-  			params.script = script;
+			if (applet._startupScript)
+  			params.script = applet._startupScript;
 			params.mayscript = 'true';
 			params.codebase = applet._jarPath;
 			params.code = myClass + ".class";
@@ -249,7 +232,7 @@
 		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
 		t += visitJava + tFooter 
 			+ Jmol._getWrapper(applet, false) 
-			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet, caption) : "");
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
 		if (Jmol._debugAlert)
 			alert(t);
 		applet._code = Jmol._documentWrite(t);
@@ -257,7 +240,7 @@
 
   var japroto = Jmol._Applet.prototype;
   
-	japroto._create = function(id, Info, caption){
+	japroto._create = function(id, Info){
 		Jmol._setObject(this, id, Info);
 		var params = {
 			syncId: ("" + Math.random()).substring(3),
@@ -268,7 +251,7 @@
 			boxmessage: "Downloading JmolApplet ...",
 			script: (!Info.color ? "" : "background " + (Info.color.indexOf("#") == 0 ? "[0x" + Info.color.substring(1) + "]" : Info.color))
 		};
-    Jmol._setJmolParams(params, Info, false);
+    Jmol._setJmolParams(params, Info);
 		function sterilizeInline(model) {
 			model = model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
 			if(Jmol._debugAlert)
@@ -283,7 +266,7 @@
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || this._memoryLimit) + "m";
 
 		this._initialize(Info.jarPath, Info.jarFile);
-		Jmol._Applet._createApplet(this, Info, params, "JmolApplet", null);
+		Jmol._Applet._createApplet(this, Info, params);
 	}
 
 	japroto._readyCallback = function(id, fullid, isReady, applet) {
@@ -627,21 +610,21 @@
 
 	// _Image -- an alternative to _Applet
 	
-	Jmol._Image = function(id, Info, caption, checkOnly){
+	Jmol._Image = function(id, Info, checkOnly){
 		this._jmolType = "image";
 		if (checkOnly)
 			return this;
-		this._create(id, Info, caption);
+		this._create(id, Info);
 		return this;
 	}
 
-  Jmol._Image.prototype._create = function(id, Info, caption) {
+  Jmol._Image.prototype._create = function(id, Info) {
   	Jmol._setObject(this, id, Info);
   	this._src || (this._src = "");
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
 		 	+	Jmol._getWrapper(this, false)
-			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this, caption) : "");
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this) : "");
 		if (Jmol._debugAlert)
 			alert(t);
 		this._code = Jmol._documentWrite(t);

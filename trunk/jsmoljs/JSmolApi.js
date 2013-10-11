@@ -28,7 +28,8 @@
 	Jmol.getVersion = function(){return Jmol._jmolInfo.version};
 
 	Jmol.getApplet = function(id, Info, checkOnly) {
-  	// requires JmolApplet.js and java/JmolApplet*.jar
+  	// requires JmolApplet.js and, if JAVA, java/JmolApplet*.jar
+    // or if HTML5, then j2s/ subdirectory (core, java, JZ, J)
     /*
 		var DefaultInfo = {
 			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
@@ -56,17 +57,19 @@
 		};	 
     
     */
-    return Jmol._Applet._getApplet(id, Info, checkOnly);
+    return Jmol._Applet._get(id, Info, checkOnly);
 	}
 
 	Jmol.getJMEApplet = function(id, Info, linkedApplet, checkOnly) {
-  	// requires JmolJME.js and jme/JME.jar
+    // Java Molecular Editor
+  	// requires JmolJME.js and jme/ subdirectory
     /*
 		var DefaultInfo = {
 			width: 300,
 			height: 300,
 			jarPath: "jme",
 			jarFile: "JME.jar",
+      use: "HTML", // or JAVA
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button
@@ -81,25 +84,28 @@
 			// depict - the applet will appear without editing butons,this is used for structure display only
 		};		    
     */
-    return Jmol._JMEApplet._getApplet(id, Info, linkedApplet, checkOnly);
+    return Jmol._JMEApplet._get(id, Info, linkedApplet, checkOnly);
   }
   	
 	Jmol.getJSVApplet = function(id, Info, checkOnly) {
-	  // requires JmolJSV.js and either JSpecViewApplet.jar or JSpecViewAppletSigned.jar  
+    // JSpecView
+	  // requires JmolJSV.js and, if JAVA, either JSpecViewApplet.jar or JSpecViewAppletSigned.jar
+    // or if HTML5, then j2s/ subdirectory (core, java, JZ, J, JSV)
     /*
   	var DefaultInfo = {
 			width: 500,
 			height: 300,
 			debug: false,
 			jarPath: ".",
-			jarFile: "JSpecViewApplet.jar",
+			jarFile: "JSpecViewApplet.jar", // or "JSpecViewAppletSigned.jar"
+      uee: "HTML5", // or JAVA
 			isSigned: false,
 			initParams: null,
 			readyFunction: null,
 			script: null
 		};
     */
-    return Jmol._getJSVApplet(id, Info, checkOnly);
+    return Jmol._JSVApplet._get(id, Info, checkOnly);
   }	
 
 
