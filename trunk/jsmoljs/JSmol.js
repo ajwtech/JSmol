@@ -38,6 +38,7 @@
       break;
     case "JSV":
       this._isJSV = true;
+      this._isLayered = true;
   		this._platform = "JSV.awtjs2d.Platform";
       break;
     }
@@ -129,8 +130,12 @@
 		  var canvas = document.createElement( 'canvas' );
       var container = Jmol.$(this, "appletdiv");
       if (doReplace) {
+        try {
         container[0].removeChild(this._canvas);
-        Jmol._jsUnsetMouse(this._canvas);
+        if (this._canvas.topLayer)
+          container[0].removeChild(this._canvas.topLayer);
+        Jmol._jsUnsetMouse(this._mouseInterface);
+        } catch (e) {}
       }
       var w = Math.round(container.width());
 	  	var h = Math.round(container.height());
@@ -142,7 +147,22 @@
   		canvas.height = h; // w and h used in setScreenDimension
   		canvas.id = this._id + "_canvas2d";
   		container.append(canvas);
-      Jmol._jsSetMouse(canvas);
+      if (this._isLayered){
+  		  var canvas2 = document.createElement( 'canvas' );
+    		canvas.topLayer = canvas2;
+    		canvas2.style.width = "100%";
+    		canvas2.style.height = "100%";
+    		canvas2.id = this._id + "_toplayer";
+  		canvas2.width = w;
+  		canvas2.height = h; // w and h used in setScreenDimension
+    		container.append(canvas2);
+        canvas2.applet=this;
+        $("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: 100000,position:"absolute",left:"0px",top:"0px"});
+        this._mouseInterface = canvas2;
+      } else {
+        this._mouseInterface = canvas;
+      }
+      Jmol._jsSetMouse(this._mouseInterface);
 		}
 		
 		proto._setupJS = function() {

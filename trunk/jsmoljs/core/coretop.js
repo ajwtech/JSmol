@@ -1,6 +1,7 @@
 // core.z.js
 //
- // BH 10/10/2013 2:40:20 PM  added Math.log10   
+// BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
+// BH 10/10/2013 2:40:20 PM  added Math.log10   
 
 // BH 7/23/2013 7:24:01 AM fixing Number.shortValue() and Number.byteValue() for negative values
 // BH 6/16/2013 1:31:30 PM adding /| in String.replace -- thank you David Koes
@@ -63,7 +64,7 @@ return this.valueOf();
 });
 $_M(Number,"doubleValue",
 function(){
-return this.valueOf();
+return parseFloat(this.valueOf());
 });
 
 $_V(Number,"hashCode",
@@ -564,7 +565,7 @@ return 0.0;
 $_k(Float,
 function(value){
 this.valueOf=function(){
-return value;
+return Float.parseFloat(value);
 };
 });
 /*
@@ -660,7 +661,7 @@ return 0.0;
 $_k(Double,
 function(value){
 this.valueOf=function(){
-return value;
+return Double.parseDouble(value);
 };
 }); // BH
 
