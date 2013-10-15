@@ -4,7 +4,7 @@
 	
 	
    <property name="jmol.path" value="../Jmol" />
-	   <property name="jsv.path" value="../JSpecView" />
+	<property name="jsv.path" value="../JSpecView" />
 
    <target name="toJs" id="toJs">
   			
@@ -46,13 +46,15 @@
    	
   	<!-- modify class names -->		
 
-    <echo>modifying class names</echo>
+    <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
+	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+  	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
-  	<replace dir="site/jsmol/j2s/JSV" includes="**/*.js" token="jspecview" value="JSV"/>
-
+  	<echo>modifying class names "jspecview" to "JSV"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+    <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
   	<!-- get version information  -->		
@@ -74,7 +76,6 @@
         <include name="*.txt" />
       </fileset>
     </copy>
-   	<exit />
     <copy todir="site/jsmol/j2s/J/modelkit/images">
       <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
@@ -112,13 +113,6 @@
     	 <include name="README.TXT" />
       </fileset>
     </copy>
-
-   	<copy todir="site/jsmol/j2s/core">
-  	  <fileset dir="${jmol.path}/srcjs/js">
-  	    <include name="package.js" />
-  	  </fileset>
-    </copy>
-
 
    	<copy todir="site/jsmol/data">
   	  <fileset dir="data">
@@ -188,6 +182,7 @@
   	    <include name="package.js" />
   	  </fileset>
     </copy>
+
 
    	<!-- note: any changes in these next sections must be reflected also
    	             in package.js -->
