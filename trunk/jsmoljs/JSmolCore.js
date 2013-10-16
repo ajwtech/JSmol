@@ -1439,4 +1439,61 @@ Jmol._setDraggable = function(Obj) {
 	};
 }
 
+////// Jmol.Dialog interface  for Javascript implementation of Swing dialogs
+
+Jmol.Dialog = {
+  count:0,
+  htDialogs:{}
+};
+
+Jmol.Dialog.getScreenDimenions = function(d) {
+  d[0] = $(window).width();
+  d[1] = $(window).height();
+}
+
+Jmol.Dialog.register = function(dialog, type) {
+  dialog.id = type + "_" + (++Jmol.Dialog.count);
+  htDialogs[dialog.id] = dialog;
+}
+
+Jmol.Dialog.dispose = function(dialog) {
+  $("#" + dialog.id).remove();
+  delete htDialogs[dialog.id]
+}
+ 
+Jmol.Dialog.setDialog = function(dialog) {
+  $("body").after(dialog.html);
+}
+ 
+Jmol.Dialog.setVisible = function(element) {
+  if (element.visible)
+    $("#" + element.id).show();
+  else
+    $("#" + element.id).hide();  
+}
+ 
+Jmol.Dialog.click = function(element, keyEvent) {
+  if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
+    return;
+xxxe = element
+  var id = $("div.JDialog:has(#" + element.id + ")")[0].id
+  var dialog = Jmol.Dialog.htDialogs[id];
+  dialog.manager.actionPerformed(id + "/" + element.id);
+}
+
+Jmol.Dialog.setSelected = function(chk) {
+ $("#" + chk.id).prop('checked', !!chk.selected);
+}
+
+Jmol.Dialog.setSelectedIndex = function(cmb) {
+ $("#" + cmb.id).prop('selectedIndex', cmb.selectedIndex);
+}
+
+Jmol.Dialog.windowClosing = function(element) {
+  var id = $("div.JDialog:has(#" + element.id + ")")[0].id
+  var dialog = Jmol.Dialog.htDialogs[id];
+  dialog.manager.processWndowClosing(id);
+}
+
+
 })(Jmol, jQuery);
