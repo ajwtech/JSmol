@@ -64,17 +64,16 @@
     <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
-	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
 
     <echo>modifying class names "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/util" value="JU"/>
-	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JU" value="src/javajs/util"/>
 
   	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
+   	
   	<echo>modifying class names "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+   	
     <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	

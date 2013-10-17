@@ -61,11 +61,9 @@
     <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
-	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
 
     <echo>modifying class names "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/util" value="JU"/>
 
   	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
