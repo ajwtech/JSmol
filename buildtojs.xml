@@ -8,8 +8,6 @@
 
    <target name="toJs" id="toJs">
   			
- 	<delete dir="site" />
-
   	<!-- create a NON svn local directory only containing JS files  -->
   	
   	<echo>creating site/jsmol/j2s</echo>
@@ -26,12 +24,6 @@
       </fileset>
     </copy>
 
-   	<copy todir="site/jsmol/j2s/javajs" >
-      <fileset dir="bin/javajs">
-        <include name="**/*.js" />
-      </fileset>
-    </copy>
-   	
     <copy todir="site/jsmol/j2s/JZ" >
       <fileset dir="bin/com/jcraft/jzlib">
         <include name="**/*.js" />
@@ -50,12 +42,44 @@
       </fileset>
     </copy>
    	
+   	<copy todir="site/jsmol/j2s/JU" >
+      <fileset dir="bin/javajs/util">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JV" >
+      <fileset dir="bin/javajs/vec">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/javajs" >
+      <fileset dir="bin/javajs">
+        <include name="**/*.js" />
+        <exclude name="**/util/*.js" />
+        <exclude name="**/vec/*.js" />
+      </fileset>
+    </copy>
+
+   	
   	<!-- modify class names -->		
 
     <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+
+    <echo>modifying class names "javajs.util" to "JU"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/util" value="JU"/>
+	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JU" value="src/javajs/util"/>
+
+    <echo>modifying class names "javajs.vec" to "JV"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.vec" value="JV"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/vec" value="JV"/>
+	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JV" value="src/javajs/vec"/>
+
   	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<echo>modifying class names "jspecview" to "JSV"</echo>
@@ -463,6 +487,23 @@
    	
    	
    	<concat destfile="site/jsmol/js/coresmiles.js"><filelist dir="site/jsmol/j2s" files="
+   		JV/SB.js
+   		JV/T3.js
+   		JV/T3i.js
+   		JV/T3d.js
+   		JV/P3.js
+   		JV/P3i.js
+   		JV/V3.js
+   		JV/V3d.js
+   		JV/M3.js
+   		JV/T4.js
+   		JV/P4.js
+   		JV/M4.js
+   		JV/A4.js
+   		JU/List.js
+   		JU/BS.js
+   		JU/ArrayUtil.js
+   		javas/awt/Dimension.js
    		J/api/SmilesMatcherInterface.js
    		J/smiles/SmilesMatcher.js
    		J/smiles/InvalidSmilesException.js
@@ -517,8 +558,6 @@
    		J/awtjs2d/JSURLConnection.js
    		java/text/MessageFormat.js
    		java/util/Random.js
-   		J/util/JmolList.js
-   		J/util/ArrayUtil.js
    		J/util/LoggerInterface.js
    		J/util/DefaultLogger.js
    		J/util/Logger.js
@@ -537,22 +576,11 @@
    		J/util/Escape.js
    		J/util/Parser.js
    		J/util/Txt.js
-   		J/util/SB.js
    		J/script/T.js
-   		J/util/Tuple3d.js
-   		J/util/Vector3d.js
-   		J/util/Tuple3f.js
-   		J/util/P3.js
-   		J/util/V3.js
-   		J/util/BS.js
    		J/util/BSUtil.js
-   		J/util/Matrix3f.js
-   		J/util/Matrix4f.js
    		J/util/JmolEdge.js
    		J/modelset/Bond.js
    		J/util/Measure.js
-   		J/util/Tuple4f.js
-   		J/util/P4.js
    		J/script/SV.js
    		J/io/Encoding.js
    		java/util/Properties.js
@@ -565,13 +593,11 @@
    		J/constant/EnumPalette.js
    		J/util/ColorUtil.js
    		J/util/Shader.js
-   		J/util/AxisAngle4f.js
    		J/api/JmolViewer.js
    		J/atomdata/AtomDataServer.js
    		J/constant/EnumVdw.js
    		J/atomdata/RadiusData.js
    		J/util/CommandHistory.js
-   		J/util/Dimension.js
    		J/viewer/Viewer.js
    		java/lang/Thread.js
    		J/constant/EnumQuantumShell.js
@@ -593,8 +619,6 @@
    		J/adapter/smarter/Atom.js
    		J/adapter/smarter/AtomSetObject.js
    		J/adapter/smarter/Bond.js
-   		J/util/Tuple3i.js
-   		J/util/P3i.js
    		J/constant/EnumStructure.js
    		java/util/StringTokenizer.js
    		J/adapter/smarter/AtomSetCollectionReader.js

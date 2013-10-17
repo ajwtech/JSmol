@@ -14,7 +14,7 @@
  	<delete dir="site" />
 
   	<echo>creating site/jsmol/j2s</echo>
-  	
+
    	<copy todir="site/jsmol/j2s/java" >
       <fileset dir="j2s/java">
         <include name="**/*.js" />
@@ -26,13 +26,7 @@
         <include name="**/*.js" />
       </fileset>
     </copy>
-   	
-   	<copy todir="site/jsmol/j2s/javajs" >
-      <fileset dir="bin/javajs">
-        <include name="**/*.js" />
-      </fileset>
-    </copy>
-   	
+
     <copy todir="site/jsmol/j2s/JZ" >
       <fileset dir="bin/com/jcraft/jzlib">
         <include name="**/*.js" />
@@ -50,17 +44,41 @@
         <include name="**/*.js" />
       </fileset>
     </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JU" >
+      <fileset dir="bin/javajs/util">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/javajs" >
+      <fileset dir="bin/javajs">
+        <include name="**/*.js" />
+        <exclude name="**/util/*.js" />
+      </fileset>
+    </copy>
+
+   	
+  	<!-- modify class names -->		
 
     <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/J" value="src/org/jmol"/>
+
+    <echo>modifying class names "javajs.util" to "JU"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/util" value="JU"/>
+	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JU" value="src/javajs/util"/>
+
   	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
   	<echo>modifying class names "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
     <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
+   	  	
+	
    	  	
   	<!-- get version information  -->		
     <copy todir="site/jsmol/j2s" >
@@ -125,12 +143,6 @@
   	  </fileset>
     </copy> 
    	
-   	<copy todir="site/jsmol/flot">
-  	  <fileset dir="lib/flot">
-  	    <include name="**/*" />
-  	  </fileset>
-    </copy>
- 	
   	<copy todir="site/jsmol/java">
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
@@ -140,36 +152,18 @@
 	  </fileset>
 	</copy>
 
-   	<copy todir="site/jsmol/jme">
-  	  <fileset dir="lib/jme">
-  	    <include name="**/*" />
-  	  </fileset>
-    </copy>
-
   	<copy todir="site/jsmol/jquery">
   	  <fileset dir="lib/jquery">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
 
-   	<copy todir="site/jsmol/jsme">
-  	  <fileset dir="lib/jsme">
-  	    <include name="**/*" />
-  	  </fileset>
-    </copy>
-	   	
    	<copy todir="site/jsmol/js">
   	  <fileset dir="jsmoljs">
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
-  	<copy todir="site/jsmol/php">
-  	  <fileset dir="php">
-  	    <include name="**/*" />
-  	  </fileset>
-    </copy>
-     	
    	<copy todir="site/jsmol/j2s/core">
   	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />

@@ -11,12 +11,12 @@
 
   <target name="fromJSV" id="fromJSV">
   	
-  	<echo>deleting all files in src/jspecview|javajs and bin/jspecview|javajs</echo>
+  	<echo>deleting all files in src/jspecview|javajs/swing and bin/jspecview|javajs/swing</echo>
     <delete quiet="true">
       <fileset dir="bin/jspecview" includes="**/*"/>
       <fileset dir="src/jspecview" includes="**/*"/>
-      <fileset dir="bin/javajs" includes="**/*"/>
-      <fileset dir="src/javajs" includes="**/*"/>
+      <fileset dir="bin/javajs/swing" includes="**/*"/>
+      <fileset dir="src/javajs/swing" includes="**/*"/>
     </delete>
   	
  	<echo>copying files from ${jsv.path}Lib</echo>
@@ -25,8 +25,8 @@
         <include name="**/*" />
       </fileset>
     </copy>
-    <copy overwrite="true" todir="src/javajs" >
-      <fileset dir="${jsv.path}Lib/src/javajs">
+    <copy overwrite="true" todir="src/javajs/swing" >
+      <fileset dir="${jsv.path}Lib/src/javajs/swing">
         <include name="**/*" />
       </fileset>
     </copy>
