@@ -2,7 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
-// BH 10/17/2013 added Jmol.Dialog
+// BH 10/17/2013 1:40:51 PM  adding javajs/swing and Jmol.Dialog
 // BH 9/30/2013 6:42:24 PM: pdb.gz switch  pdb should only be for www.rcsb.org
 // BH 9/17/2013 10:17:51 AM: asynchronous file reading and saving
 // BH 8/16/2013 12:02:20 PM: JSmoljQueryExt.js pulled out
@@ -1448,7 +1448,7 @@ Jmol.Dialog = {
   htDialogs:{}
 };
 
-Jmol.Dialog.getScreenDimenions = function(d) {
+Jmol.Dialog.getScreenDimensions = function(d) {
   d[0] = $(window).width();
   d[1] = $(window).height();
 }
@@ -1464,6 +1464,7 @@ Jmol.Dialog.dispose = function(dialog) {
 }
  
 Jmol.Dialog.setDialog = function(dialog) {
+  $("#" + dialog.id).remove();
   $("body").after(dialog.html);
 }
  
@@ -1475,12 +1476,19 @@ Jmol.Dialog.setVisible = function(element) {
 }
  
 Jmol.Dialog.click = function(element, keyEvent) {
+  var component = Jmol.Dialog.htDialogs[element.id];
+  if (component.text != null) {  // JButton, JTextField
+    component.text = element.value;
+  } else if (component.selected != null) { // JCheckBox
+    component.selected = element.checked;
+  } else if (component.selectedIndex != null) { // JComboBox
+    component.selectedIndex = element.selectedIndex;
+  }
   if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
     return;
-xxxe = element
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
-  dialog.manager.actionPerformed(id + "/" + element.id);
+  dialog.manager.actionPerformed(component.name);
 }
 
 Jmol.Dialog.setSelected = function(chk) {
