@@ -1502,7 +1502,7 @@ Jmol.Dialog.setSelectedIndex = function(cmb) {
 Jmol.Dialog.windowClosing = function(element) {
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
-  dialog.manager.processWndowClosing(id);
+  dialog.manager.processWindowClosing(dialog.registryKey);
 }
 
 
