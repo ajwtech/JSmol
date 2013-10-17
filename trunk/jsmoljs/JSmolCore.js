@@ -837,8 +837,9 @@ Jmol = (function(document) {
       isBinary = false;
     }
     isBinary &= Jmol._canSyncBinary();
+    // JU.SB is for Jmol 13.3+; J.util.SB is for Jmol.13.2
     if (!isBinary)
-  		return J.util.SB.newS(data);
+  		return (JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
   	var b;
 	if (Clazz.instanceOf(data, self.ArrayBuffer))
 		return Jmol._toBytes(data);
