@@ -45,6 +45,12 @@
       </fileset>
     </copy>
    	
+   	<copy todir="site/jsmol/j2s/javajs" >
+      <fileset dir="bin/javajs">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
 
     <echo>modifying class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
