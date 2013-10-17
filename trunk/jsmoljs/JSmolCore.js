@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 10/17/2013 added Jmol.Dialog
 // BH 9/30/2013 6:42:24 PM: pdb.gz switch  pdb should only be for www.rcsb.org
 // BH 9/17/2013 10:17:51 AM: asynchronous file reading and saving
 // BH 8/16/2013 12:02:20 PM: JSmoljQueryExt.js pulled out
@@ -1454,12 +1455,12 @@ Jmol.Dialog.getScreenDimenions = function(d) {
 
 Jmol.Dialog.register = function(dialog, type) {
   dialog.id = type + "_" + (++Jmol.Dialog.count);
-  htDialogs[dialog.id] = dialog;
+  Jmol.Dialog.htDialogs[dialog.id] = dialog;
 }
 
 Jmol.Dialog.dispose = function(dialog) {
   $("#" + dialog.id).remove();
-  delete htDialogs[dialog.id]
+  delete Jmol.Dialog.htDialogs[dialog.id]
 }
  
 Jmol.Dialog.setDialog = function(dialog) {
