@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<title>Super-Simple JSmol</title>
 <head>
 <meta charset="utf-8">
 <meta charset="utf-8">
@@ -64,8 +63,8 @@ jmol_isReady = function(applet) {
 
 
 Info = {
-	width: 1000,
-	height: 400,
+	width: 800,
+	height: 300,
 	debug: false,
 	color: "0xC0C0C0",
   disableJ2SLoadMonitor: false,
@@ -83,12 +82,14 @@ Info = {
 </script>
 </head>
 <body>
-<span id=mydiv style="position:relative;left:10px;top:10px;">
+<div id=mydiv style="position:relative;left:10px;top:10px;">
 <script>
 Jmol.getJSVApplet("jsv",Info)  
 </script>
-</span>
+</div>
+<br />
 <a href="javascript:Jmol.script(jsv, 'gridon')">grid on</a> <a href="javascript:Jmol.script(jsv, 'gridon false')">grid off</a>
 <a href="javascript:Jmol.showInfo(jsv, true)">show</a> <a href="javascript:Jmol.showInfo(jsv, false)">hide</a> info
+<a href="javascript:Jmol.script(jsv, 'showpeaklist')">show peak list</a>
 </body>
 </html>
