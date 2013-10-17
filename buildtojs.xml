@@ -48,17 +48,10 @@
       </fileset>
     </copy>
    	
-   	<copy todir="site/jsmol/j2s/JV" >
-      <fileset dir="bin/javajs/vec">
-        <include name="**/*.js" />
-      </fileset>
-    </copy>
-   	
    	<copy todir="site/jsmol/j2s/javajs" >
       <fileset dir="bin/javajs">
         <include name="**/*.js" />
         <exclude name="**/util/*.js" />
-        <exclude name="**/vec/*.js" />
       </fileset>
     </copy>
 
@@ -73,15 +66,10 @@
     <echo>modifying class names "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/util" value="JU"/>
-	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JU" value="src/javajs/util"/>
-
-    <echo>modifying class names "javajs.vec" to "JV"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.vec" value="JV"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs/vec" value="JV"/>
-	<replace dir="site/jsmol/j2s" includes="**/*.js" token="src/JV" value="src/javajs/vec"/>
 
   	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
+   	
   	<echo>modifying class names "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
     <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
@@ -487,19 +475,19 @@
    	
    	
    	<concat destfile="site/jsmol/js/coresmiles.js"><filelist dir="site/jsmol/j2s" files="
-   		JV/SB.js
-   		JV/T3.js
-   		JV/T3i.js
-   		JV/T3d.js
-   		JV/P3.js
-   		JV/P3i.js
-   		JV/V3.js
-   		JV/V3d.js
-   		JV/M3.js
-   		JV/T4.js
-   		JV/P4.js
-   		JV/M4.js
-   		JV/A4.js
+   		JU/SB.js
+   		JU/T3.js
+   		JU/T3i.js
+   		JU/T3d.js
+   		JU/P3.js
+   		JU/P3i.js
+   		JU/V3.js
+   		JU/V3d.js
+   		JU/M3.js
+   		JU/T4.js
+   		JU/P4.js
+   		JU/M4.js
+   		JU/A4.js
    		JU/List.js
    		JU/BS.js
    		JU/ArrayUtil.js
