@@ -73,7 +73,8 @@ Info = {
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
 	use: "HTML5",
 	readyFunction: null,
-	script: "load data/t.jdx"
+	script: "load data/t.jdx",
+  console: "consolediv"
 }
 
 
@@ -82,7 +83,9 @@ Info = {
 </script>
 </head>
 <body>
-<div id=mydiv style="position:relative;left:10px;top:10px;">
+<div id=consolediv style="position:relative;left:850px;top:0px;width:300px;height:300px;overflow:auto"></div>
+<div id=mydiv style="position:relative;left:10px;top:-300px;width:800px;height:350px">
+
 <script>
 Jmol.getJSVApplet("jsv",Info)  
 </script>

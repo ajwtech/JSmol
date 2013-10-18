@@ -1448,6 +1448,11 @@ Jmol.Dialog = {
   htDialogs:{}
 };
 
+Jmol.Dialog.JSDialog = function () {
+}
+
+Jmol._setDraggable(Jmol.Dialog.JSDialog);
+
 Jmol.Dialog.getScreenDimensions = function(d) {
   d[0] = $(window).width();
   d[1] = $(window).height();
@@ -1459,13 +1464,37 @@ Jmol.Dialog.register = function(dialog, type) {
 }
 
 Jmol.Dialog.dispose = function(dialog) {
-  $("#" + dialog.id).remove();
+  $("#" + dialog.id + "_mover").remove();
   delete Jmol.Dialog.htDialogs[dialog.id]
 }
  
 Jmol.Dialog.setDialog = function(dialog) {
   $("#" + dialog.id).remove();
-  $("body").after(dialog.html);
+  var id = dialog.id + "_mover";
+  var container = $("#" + id);
+  var jd;
+  if (container[0]) {
+    container.html(dialog.html);
+    jd = container[0].jd;
+  } else {
+    $("body").after("<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
+    var jd = new Jmol.Dialog.JSDialog();
+    container = $("#" + id);
+    jd.applet = dialog.manager.viewer.applet;
+    jd.setContainer(container);
+    jd.dialog = dialog;
+    jd.setPosition();  
+    jd.dragBind(true);
+    container[0].jd = jd; 
+  }
+  Jmol.$bind("#" + dialog.id + " .JButton", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JComboBox", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JCheckBox", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JTextField", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JTable", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JScrollPane", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+	Jmol.$bind("#" + dialog.id + " .JEditorPane", "mousedown touchstart", function(event) { jd.ignoreMouse=true });
+
 }
  
 Jmol.Dialog.setVisible = function(element) {

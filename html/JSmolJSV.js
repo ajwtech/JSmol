@@ -174,12 +174,11 @@
 	}
 	
 	jsvproto._search = Jmol._Applet.prototype._search;
-  
-	jsvproto._searchDatabase = function(query, database) {
-    return this._applet.script("load " + database + query)
-  }
-  
 	jsvproto._show = Jmol._Applet.prototype._show;
+  
+  jsvproto._searchDatabase = function(query, database) {
+    this._applet.script("load " + database + query)
+  }
 	
 	jsvproto._script = function(script) {
 		if (!this._ready) {

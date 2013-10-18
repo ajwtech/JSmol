@@ -157,7 +157,7 @@
   		canvas2.height = h; // w and h used in setScreenDimension
     		container.append(canvas2);
         canvas2.applet=this;
-        $("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: 100000,position:"absolute",left:"0px",top:"0px"});
+        $("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: 9000,position:"absolute",left:"0px",top:"0px"});
         this._mouseInterface = canvas2;
       } else {
         this._mouseInterface = canvas;
