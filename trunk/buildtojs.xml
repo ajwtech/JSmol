@@ -10,7 +10,10 @@
   			
   	<!-- create a NON svn local directory only containing JS files  -->
   	
-  	<echo>creating site/jsmol/j2s</echo>
+  	<echo>Deleting the site directory.</echo>
+   	 	<delete quiet="true" dir="site" />
+
+   	<echo>creating site/jsmol/j2s</echo>
 
    	<copy todir="site/jsmol/j2s/java" >
       <fileset dir="j2s/java">
@@ -51,7 +54,7 @@
    	<copy todir="site/jsmol/j2s/javajs" >
       <fileset dir="bin/javajs">
         <include name="**/*.js" />
-        <exclude name="**/util/*.js" />
+        <exclude name="**/util	/*.js" />
       </fileset>
     </copy>
 
@@ -427,7 +430,9 @@
     </java>
    	<concat destfile="site/jsmol/js/corebinary.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/JmolDocument.js
+   		java/io/PushbackInputStream.js
    		java/io/DataInputStream.js
+   		JU/ByteConverter.js
    		J/io2/BinaryDocument.js
    	   	" />
    	</concat>
@@ -473,23 +478,6 @@
    	
    	
    	<concat destfile="site/jsmol/js/coresmiles.js"><filelist dir="site/jsmol/j2s" files="
-   		JU/SB.js
-   		JU/T3.js
-   		JU/T3i.js
-   		JU/T3d.js
-   		JU/P3.js
-   		JU/P3i.js
-   		JU/V3.js
-   		JU/V3d.js
-   		JU/M3.js
-   		JU/T4.js
-   		JU/P4.js
-   		JU/M4.js
-   		JU/A4.js
-   		JU/List.js
-   		JU/BS.js
-   		JU/ArrayUtil.js
-   		javas/awt/Dimension.js
    		J/api/SmilesMatcherInterface.js
    		J/smiles/SmilesMatcher.js
    		J/smiles/InvalidSmilesException.js
@@ -508,6 +496,23 @@
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
    		../../../jsmoljs/core/coretop.js
+   		JU/T3.js
+   		JU/T3i.js
+   		JU/T3d.js
+   		JU/P3.js
+   		JU/P3i.js
+   		JU/V3.js
+   		JU/V3d.js
+   		JU/M3.js
+   		JU/T4.js
+   		JU/P4.js
+   		JU/M4.js
+   		JU/A4.js
+   		JU/BS.js
+   		JU/SB.js
+   		JU/List.js
+   		JU/ArrayUtil.js
+   		javas/awt/Dimension.js
    		java/io/InputStream.js
    		java/io/ByteArrayInputStream.js
    		java/io/FilterInputStream.js
@@ -553,8 +558,6 @@
    		J/api/JmolCallbackListener.js
    		J/api/JmolStatusListener.js
    		J/api/JmolSyncInterface.js
-		J/api/JmolActionManager.js
-		J/api/PlatformManager.js
    		J/appletjs/Jmol.js
    		J/appletjs/JmolAppletRegistry.js
    		java/lang/Enum.js
@@ -584,6 +587,8 @@
    		J/constant/EnumVdw.js
    		J/atomdata/RadiusData.js
    		J/util/CommandHistory.js
+		javajs/awt/Dimension.js
+		J/api/JSmolInterface.js
    		J/viewer/Viewer.js
    		java/lang/Thread.js
    		J/constant/EnumQuantumShell.js
@@ -615,6 +620,7 @@
    		J/io/CifDataReader.js
    		J/io/JmolBinary.js
   		J/shape/Shape.js
+		J/api/BytePoster.js
    		J/viewer/FileManager.js
    		J/script/ContextToken.js
    		J/script/ScriptContext.js
@@ -658,6 +664,7 @@
    		J/util/MeshSurface.js
    		J/util/Rectangle.js
    		J/viewer/MouseState.js
+		J/api/EventManager.js
    		J/viewer/ActionManager.js
    		J/viewer/StateManager.js
    		J/modelset/MeasurementPending.js
@@ -679,6 +686,7 @@
    		J/modelset/Chain.js
    		J/modelset/Model.js
    		J/modelset/ModelSet.js
+   		J/api/PlatformViewer.js
    		J/api/ApiPlatform.js
    		J/awtjs2d/Platform.js
    		J/awtjs2d/AjaxURLStreamHandlerFactory.js
@@ -802,8 +810,8 @@
    	<echo>cleaning up files</echo>
  	<delete file="temp.js" />
    	<echo>creating distribution zip file jsmol.zip</echo>
-    <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
   	<delete file="dist/*" />
+    <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
    	<copy overwrite="true" todir="${jmol.path}/appletweb" >
 	  <fileset dir="dist">
 	    <include name="jsmol.zip" />
