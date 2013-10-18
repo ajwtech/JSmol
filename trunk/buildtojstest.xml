@@ -12,14 +12,8 @@
    <target name="toJsTest" id="toJsTest">
   		
   	<echo>Deleting the site directory.</echo>
-   	<trycatch property="foo" reference="bar">
-   	  <try>
-   	 	<delete dir="site" />
-   	  </try>
-   	  <catch>
-   	   	<fail>The delete task failed. Close your browser and all windows accessing site/ directories, and try again.</fail>
-   	  </catch>
-   	</trycatch>
+   	 	<delete quiet="true" dir="site" />
+	   <echo>The delete task failed. Close your browser and all windows accessing site/ directories, and try again.</echo>
 
   	<echo>creating site/jsmol/j2s</echo>
 
