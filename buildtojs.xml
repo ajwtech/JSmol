@@ -512,7 +512,7 @@
    		JU/SB.js
    		JU/List.js
    		JU/ArrayUtil.js
-   		javas/awt/Dimension.js
+   		javajs/awt/Dimension.js
    		java/io/InputStream.js
    		java/io/ByteArrayInputStream.js
    		java/io/FilterInputStream.js
