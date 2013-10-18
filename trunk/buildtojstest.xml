@@ -10,8 +10,16 @@
 	  <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJsTest" id="toJsTest">
-  			
- 	<delete dir="site" />
+  		
+  	<echo>Deleting the site directory.</echo>
+   	<trycatch property="foo" reference="bar">
+   	  <try>
+   	 	<delete dir="site" />
+   	  </try>
+   	  <catch>
+   	   	<fail>The delete task failed. Close your browser and all windows accessing site/ directories, and try again.</fail>
+   	  </catch>
+   	</trycatch>
 
   	<echo>creating site/jsmol/j2s</echo>
 
