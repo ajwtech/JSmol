@@ -37,6 +37,7 @@
 			height: 300,
 			addSelectionOptions: false,
 			serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
+	 console: null,  // div for where the JavaScript console will be.
 			defaultModel: "",
 			script: null,
 			src: null,
