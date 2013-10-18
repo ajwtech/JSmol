@@ -1,5 +1,6 @@
 // core.z.js
 //
+// BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
 // BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
 // BH 10/10/2013 2:40:20 PM  added Math.log10   
 
@@ -596,6 +597,7 @@ function(s){
 if(s==null){
 throw new NumberFormatException("null");
 }
+if (typeof s == "number")return s;  // important -- typeof NaN is "number" and is OK here
 var floatVal=parseFloat(s);
 if(isNaN(floatVal)){
 throw new NumberFormatException("Not a Number : "+s);
@@ -700,6 +702,7 @@ function(s){
 if(s==null){
 throw new NumberFormatException("null");
 }
+if (typeof s == "number")return s;  // important -- typeof NaN is "number" and is OK here
 var doubleVal=parseFloat(s);
 if(isNaN(doubleVal)){
 throw new NumberFormatException("Not a Number : "+s);
