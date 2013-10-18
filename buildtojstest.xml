@@ -17,12 +17,6 @@
 
   	<echo>creating site/jsmol/j2s</echo>
 
-   	<copy todir="site/jsmol/j2s/java" >
-      <fileset dir="j2s/java">
-        <include name="**/*.js" />
-      </fileset>
-    </copy>
-
     <copy overwrite="true" todir="site/jsmol/j2s/java" >
       <fileset dir="bin/java">
         <include name="**/*.js" />
@@ -140,7 +134,9 @@
    	
    	<copy todir="site/jsmol/data">
   	  <fileset dir="data">
-  	    <include name="**/*" />
+  	    <exclude name="**/*" />
+  	    <include name="t.jdx" />
+  	    <include name="caffeine.mol" />
   	  </fileset>
     </copy> 
    	
