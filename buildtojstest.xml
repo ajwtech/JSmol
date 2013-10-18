@@ -13,7 +13,6 @@
   		
   	<echo>Deleting the site directory.</echo>
    	 	<delete quiet="true" dir="site" />
-	   <echo>The delete task failed. Close your browser and all windows accessing site/ directories, and try again.</echo>
 
   	<echo>creating site/jsmol/j2s</echo>
 
