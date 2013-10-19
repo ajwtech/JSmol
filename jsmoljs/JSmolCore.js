@@ -1468,7 +1468,7 @@ Jmol.Dialog.getScreenDimensions = function(d) {
 }
 
 Jmol.Dialog.register = function(dialog, type) {
-  dialog.id = type + "_" + (++Jmol.Dialog.count);
+  dialog.id = type + (++Jmol.Dialog.count);
   Jmol.Dialog.htDialogs[dialog.id] = dialog;
 }
 
@@ -1515,18 +1515,21 @@ Jmol.Dialog.setVisible = function(element) {
  
 Jmol.Dialog.click = function(element, keyEvent) {
   var component = Jmol.Dialog.htDialogs[element.id];
-  if (component.text != null) {  // JButton, JTextField
-    component.text = element.value;
-  } else if (component.selected != null) { // JCheckBox
-    component.selected = element.checked;
-  } else if (component.selectedIndex != null) { // JComboBox
-    component.selectedIndex = element.selectedIndex;
+  // table cells will have an id but are not registered
+  if (component) {
+    if (component.text != null) {  // JButton, JTextField
+      component.text = element.value;
+    } else if (component.selected != null) { // JCheckBox
+      component.selected = element.checked;
+    } else if (component.selectedIndex != null) { // JComboBox
+      component.selectedIndex = element.selectedIndex;
+    }
+    if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
+      return;
   }
-  if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
-    return;
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
-  dialog.manager.actionPerformed(component.name);
+  dialog.manager.actionPerformed(component ? component.name :  dialog.registryKey + "/" + element.id);
 }
 
 Jmol.Dialog.setSelected = function(chk) {

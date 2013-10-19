@@ -1,5 +1,5 @@
 // core.z.js
-//
+// BH 10/19/2013 1:29:27 PM fixed String.$replace()
 // BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
 // BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
 // BH 10/10/2013 2:40:20 PM  added Math.log10   
@@ -1113,7 +1113,7 @@ String.getName=Clazz.innerFunctions.getName;
 String.serialVersionUID=String.prototype.serialVersionUID=-6849794470754667710;
 
 String.prototype.$replace=function(c1,c2){
-	if (c1 == c2 || this.indexOf (c1) < 0) return this;
+	if (c1 == c2 || this.indexOf (c1) < 0) return "" + this;
 	if (c1.length == 1) {
     if ("\\$.*+|?^{}()[]".indexOf(c1) >= 0) 	c1 = "\\" + c1;
   } else {    
