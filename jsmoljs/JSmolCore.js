@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  9/30/2013 6:43:14 PM
+// JSmolCore.js -- Jmol core capability  10/19/2013 7:05:36 AM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 10/19/2013 7:05:04 AM adding Jmol._ajaxCall for Error Contacting Server; database POST method enabled
 // BH 10/17/2013 1:40:51 PM  adding javajs/swing and Jmol.Dialog
 // BH 9/30/2013 6:42:24 PM: pdb.gz switch  pdb should only be for www.rcsb.org
 // BH 9/17/2013 10:17:51 AM: asynchronous file reading and saving
@@ -139,6 +140,7 @@ Jmol = (function(document) {
   }
 	  
   Jmol.$ajax = function (info) {
+    Jmol._ajaxCall = info.url;
 	  return $.ajax(info);
   }
 
@@ -449,7 +451,7 @@ Jmol = (function(document) {
 
 	Jmol._loadError = function(fError){
 		Jmol._ajaxDone();
-		Jmol.say("Error connecting to server.");	
+		Jmol.say("Error connecting to server: " + Jmol._ajaxCall);	
 		null!=fError&&fError()
 	}
 	
@@ -488,7 +490,7 @@ Jmol = (function(document) {
 	
 	Jmol._getRawDataFromServer = function(database,query,fSuccess,fError,asBase64,noScript){
 		var s = 
-			"?call=getRawDataFromDatabase&database=" + database
+			"?call=getRawDataFromDatabase&database=" + database + (query.indexOf("?POST?") >= 0 ? "?POST?" : "")
 				+ "&query=" + encodeURIComponent(query)
 				+ (asBase64 ? "&encoding=base64" : "")
 				+ (noScript ? "" : "&script=" + encodeURIComponent(Jmol._getScriptForDatabase(database)));
@@ -498,6 +500,7 @@ Jmol = (function(document) {
 	Jmol._getInfoFromDatabase = function(applet, database, query){
 		if (database == "====") {
 			var data = Jmol.db._restQueryXml.replace(/QUERY/,query);
+      
 			var info = {
 				dataType: "text",
 				type: "POST",
@@ -544,6 +547,7 @@ Jmol = (function(document) {
 				return;
 			}
 		}	
+    
 		var info = {
 			dataType: "text",
 			url: fileName,
@@ -551,17 +555,21 @@ Jmol = (function(document) {
 			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
 			error: function() {Jmol._loadError(fError)}
 		}
-		var pt = fileName.indexOf("?POST?");
+    Jmol._checkAjaxPost(info);
+		Jmol._ajax(info);
+	}
+
+  Jmol._checkAjaxPost = function(info) {
+  	var pt = info.url.indexOf("?POST?");
 		if (pt > 0) {
-			info.url = fileName.substring(0, pt);
-			info.data = fileName.substring(pt + 6);
+			info.data = info.url.substring(pt + 6);
+			info.url = info.url.substring(0, pt);
 			info.type = "POST";
 			info.contentType = "application/x-www-form-urlencoded";
 		}
-		Jmol._ajax(info);
 	}
-	
 	Jmol._contactServer = function(data,fSuccess,fError){
+    
 		var info = {
 			dataType: "text",
 			type: "GET",
@@ -570,6 +578,7 @@ Jmol = (function(document) {
 			error:function() { Jmol._loadError(fError) },
 			async:fSuccess ? Jmol._asynchronous : false
 		}
+    Jmol._checkAjaxPost(info);
 		return Jmol._ajax(info);
 	}
 	
