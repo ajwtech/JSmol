@@ -510,6 +510,8 @@
    		JU/A4.js
    		JU/BS.js
    		JU/SB.js
+		JU/DecimaFormat.js
+   		JU/ParserJS.js
    		JU/ArrayUtil.js
    		java/util/MapEntry.js
    		java/util/Dictionary.js

@@ -141,6 +141,7 @@
   	  <fileset dir="data">
   	    <include name="t.jdx" />
   	    <include name="caffeine.mol" />
+  	    <include name="vinylpyrr.jdx" />
   	  </fileset>
     </copy> 
 
