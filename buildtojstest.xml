@@ -93,7 +93,9 @@
   	  </fileset>
     </copy>
    	
-  	<!-- get required non-JavaScript resources -->		
+
+   	
+   	<!-- get required non-JavaScript resources -->		
     <copy todir="site/jsmol/j2s/J/minimize/forcefield/data" >
       <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
@@ -118,6 +120,13 @@
 		    </linecontains>
 		  </filterchain>
     </copy>
+   	<echo>adding version information to JSVersion.js</echo>
+   	<concat destfile="temp.js"><filelist dir="site/jsmol/j2s/JSV/common" files="
+   		TODO.txt
+   		JSVersion.js
+   		" />
+   	</concat>
+  	<move file="temp.js" tofile="site/jsmol/j2s/JSV/common/JSVersion.js" />
 
   	<!-- get .po files from the Jmol project -->		
    	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
