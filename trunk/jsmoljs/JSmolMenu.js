@@ -48,7 +48,7 @@ try{
 
 ;(function($){
 	var s = '<style>\
-  .jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:10000}\
+  .jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:'+Jmol._z.menu+'}\
   .jmolPopupMenu,.jmolPopupMenu .ui-corner-all{border-radius:5px}\
   .jmolPopupMenu,.jmolPopupMenu .ui-widget-content{border:1px solid #a6c9e2;background-color:#fcfdfd;color:#222}\
   .jmolPopupMenu a{color:#222}\

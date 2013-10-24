@@ -65,6 +65,7 @@ if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol
 
 
 Jmol = (function(document) {
+  var z=9000;
 	return {
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
@@ -78,6 +79,16 @@ Jmol = (function(document) {
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
+    _z:{
+      header:z,
+      main:z++,
+      image:z++,
+      top:z++,
+      dialog:z++,
+      menu:z+1000,
+      fileOpener:z+1001,
+      coverImage:z+2000
+    },
 		db: {
 			_databasePrefixes: "$=:",
 			_fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
@@ -757,7 +768,7 @@ Jmol = (function(document) {
   	if (!Jmol.featureDetection.hasFileReader)
   		  return fileLoadThread.setData("Local file reading is not enabled in your browser");
   	if (!applet._localReader) {
-  		var div = '<div id="ID" style="z-index:30000;position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
+  		var div = '<div id="ID" style="z-index:"+Jmol._z.fileOpener + ";position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
   		Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
   		applet._localReader = Jmol.$(applet, "localReader");
   	}
@@ -928,12 +939,14 @@ Jmol = (function(document) {
       var img = "";  
       if (applet._coverImage){
         var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + applet._coverTitle + "\"";
-        var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;z-index:10001;opacity:0.5;\"" + more + " />"  
-        img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:10000;width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
+        var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
+          + "z-index:" + (Jmol._z.cover+1)+";opacity:0.5;\"" + more + " />"  
+        img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:" + Jmol._z.cover+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
          + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
       }
 
-			var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative\">IMG<div id=\"ID_appletdiv\" style=\"z-index:9999;width:100%;height:100%;position:absolute:top:0px;left:0px;\">"
+			var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative\">IMG<div id=\"ID_appletdiv\" style=\"z-index:" 
+        + Jmol._z.header + ";width:100%;height:100%;position:absolute;top:0px;left:0px;\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;position:absolute;top:0px;left:0px\">\
 			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow;display:none\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
 			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:95%;overflow:auto\"></div></div></div>");
@@ -1489,6 +1502,7 @@ Jmol.Dialog.setDialog = function(dialog) {
     $("body").after("<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
     var jd = new Jmol.Dialog.JSDialog();
     container = $("#" + id);
+    dialog.container = container;
     jd.applet = dialog.manager.viewer.applet;
     jd.setContainer(container);
     jd.dialog = dialog;
