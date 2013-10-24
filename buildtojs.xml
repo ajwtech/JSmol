@@ -555,7 +555,9 @@
    		java/net/URLStreamHandler.js
    		java/net/URL.js
    		java/net/URLConnection.js
-   		J/awtjs2d/JSURLConnection.js
+   		JU/AjaxURLConnection.js
+   		JU/AjaxURLStreamHandlerFactory.js
+   		JU/AjaxURLStreamHandler.js
    		java/text/MessageFormat.js
    		java/util/Random.js
    		J/util/LoggerInterface.js
@@ -698,8 +700,6 @@
    		J/api/PlatformViewer.js
    		J/api/ApiPlatform.js
    		J/awtjs2d/Platform.js
-   		J/awtjs2d/AjaxURLStreamHandlerFactory.js
-   		J/awtjs2d/AjaxURLStreamHandler.js
    		J/awtjs2d/Display.js
    		J/awtjs2d/Font.js
    		J/awtjs2d/Image.js

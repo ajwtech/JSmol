@@ -16,6 +16,7 @@
     window[id] = this;
 		this._jmolType = "Jmol._Applet" + (Info.isSigned ? " (signed)" : "");
     this._isJava = true;
+		this._syncKeyword = "Select:";
 		if (checkOnly)
 			return this;
 		this._isSigned = Info.isSigned;
@@ -27,7 +28,6 @@
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
 		this._savedOrientations = [];
-		this._syncKeyword = "Select:";
 		this._initialize = function(jarPath, jarFile) {
 			var doReport = false;
 			if(this._jarFile) {
