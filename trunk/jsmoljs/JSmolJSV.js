@@ -25,6 +25,7 @@
 	  this._syncId = ("" + Math.random()).substring(3);
 		Jmol._setObject(this, id, Info);
     this._startupScript = Jmol._JSVApplet.getStartupScript(this, Info);
+		this._syncKeyword = "JSpecView:"
     if (checkOnly)
       return this;
 		this._width = Info.width;
@@ -45,7 +46,6 @@
 		this._canScript = function(script) {return true;};
 		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
 		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
-		this._syncKeyword = "JSpecView:"
 		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}		

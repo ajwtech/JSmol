@@ -152,6 +152,7 @@
   	    <include name="t2d.jdx" />
   	    <include name="caffeine.mol" />
   	    <include name="vinylpyrr.jdx" />
+  	    <include name="acetophenone.jdx" />
   	  </fileset>
     </copy> 
 

@@ -204,7 +204,7 @@
 			this._applet = null;
 			this._canScript = function(script) {return true;};
 			this._savedOrientations = [];
-			this._syncKeyword = "Select:";
+			//this._syncKeyword = "Select:";
 			Jmol._execLog += ("execStack loaded by " + this._id + " len=" + Jmol._execStack.length + "\n")
 			if (!doStart)return;
 			Jmol.__nextExecution();
