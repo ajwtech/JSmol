@@ -134,6 +134,8 @@
         container[0].removeChild(this._canvas);
         if (this._canvas.topLayer)
           container[0].removeChild(this._canvas.topLayer);
+        if (this._canvas.imageLayer)
+          container[0].removeChild(this._canvas.imageLayer);
         Jmol._jsUnsetMouse(this._mouseInterface);
         } catch (e) {}
       }
@@ -148,17 +150,23 @@
   		canvas.id = this._id + "_canvas2d";
   		container.append(canvas);
       if (this._isLayered){
-  		  var canvas2 = document.createElement( 'canvas' );
+        var img = document.createElement("div");
+        canvas.imageLayer = img;
+    		img.id = this._id + "_imagelayer";
+    		container.append(img);
+        $("#" + img.id).css({zIndex:Jmol._z.image,position:"absolute",left:"0px",top:"0px", width:"0px", height:"0px", overflow:"hidden"});
+  		  var canvas2 = document.createElement("canvas");
     		canvas.topLayer = canvas2;
     		canvas2.style.width = "100%";
     		canvas2.style.height = "100%";
     		canvas2.id = this._id + "_toplayer";
-  		canvas2.width = w;
-  		canvas2.height = h; // w and h used in setScreenDimension
+  		  canvas2.width = w;
+  		  canvas2.height = h; // w and h used in setScreenDimension
     		container.append(canvas2);
         canvas2.applet=this;
-        $("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: 9000,position:"absolute",left:"0px",top:"0px"});
+        $("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: Jmol._z.top,position:"absolute",left:"0px",top:"0px",overflow:"hidden"});
         this._mouseInterface = canvas2;
+        img
       } else {
         this._mouseInterface = canvas;
       }

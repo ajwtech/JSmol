@@ -149,6 +149,7 @@
    	<copy todir="site/jsmol/data">
   	  <fileset dir="data">
   	    <include name="t.jdx" />
+  	    <include name="t2d.jdx" />
   	    <include name="caffeine.mol" />
   	    <include name="vinylpyrr.jdx" />
   	  </fileset>
