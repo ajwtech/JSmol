@@ -3,14 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta charset="utf-8">
-<script type="text/javascript" src="jquery/jquery.js"></script>
-<script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
-<script type="text/javascript" src="js/JSmolCore.js"></script>
-<script type="text/javascript" src="js/JSmolApplet.js"></script>
-<script type="text/javascript" src="js/JSmolApi.js"></script>
-<script type="text/javascript" src="js/JSmolControls.js"></script>
-<script type="text/javascript" src="js/j2sjmol.js"></script>
-<script type="text/javascript" src="js/JSmol.js"></script>
+<script type="text/javascript" src="JSmol.min.js"></script>
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 
@@ -78,18 +71,16 @@ Info = {
   console: "consolediv"
 }
 
-
-
+$(document).ready(function() {
+  Jmol.setDocument(0);
+  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsv",Info)));
+});
 
 </script>
 </head>
 <body>
 <div id=consolediv style="position:relative;left:850px;top:0px;width:300px;height:300px;overflow:auto"></div>
-<div id=mydiv style="position:relative;left:10px;top:-300px;width:800px;height:350px">
-
-<script>
-Jmol.getJSVApplet("jsv",Info)  
-</script>
+<div id=jsvdiv style="position:relative;left:10px;top:-300px;width:800px;height:350px">
 </div>
 <div style="position:absolute;left:300px;top:350px">
 <a href="javascript:Jmol.script(jsv, 'gridon')">grid on</a> <a href="javascript:Jmol.script(jsv, 'gridon false')">grid off</a>
