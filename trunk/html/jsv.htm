@@ -71,22 +71,22 @@ Info = {
   console: "consolediv"
 }
 
-
-
+$(document).ready(function() {
+  Jmol.setDocument(0);
+  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsv",Info)));
+});
 
 </script>
 </head>
 <body>
 <div id=consolediv style="position:relative;left:850px;top:0px;width:300px;height:300px;overflow:auto"></div>
-<div id=mydiv style="position:relative;left:10px;top:-300px;width:800px;height:350px">
-
-<script>
-Jmol.getJSVApplet("jsv",Info)  
-</script>
+<div id=jsvdiv style="position:relative;left:10px;top:-300px;width:800px;height:350px">
 </div>
 <div style="position:absolute;left:300px;top:350px">
 <a href="javascript:Jmol.script(jsv, 'gridon')">grid on</a> <a href="javascript:Jmol.script(jsv, 'gridon false')">grid off</a>
 <a href="javascript:Jmol.script(jsv, 'showpeaklist')">show peak list</a>
+<a href="javascript:Jmol.script(jsv, 'load data/vinylpyrr.jdx;view 1.2;showIntegration')">load vinylpyrr.jdx (1HNMR)</a>
+<a href="javascript:Jmol.script(jsv, 'load data/t2d.jdx')">load t2d.jdx (2D NMR)</a>
 </div>
 </body>
 </html>
