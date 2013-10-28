@@ -529,6 +529,7 @@
    		java/util/AbstractList.js
    		java/util/ArrayList.js
    		JU/List.js
+   		JU/ColorUtil.js
    		java/net/Parts.js
    		java/util/AbstractSet.js
    		java/util/Arrays.js
@@ -591,14 +592,12 @@
    		J/util/C.js
    		J/util/Quaternion.js
    		J/constant/EnumPalette.js
-   		J/util/ColorUtil.js
    		J/util/Shader.js
    		J/api/JmolViewer.js
    		J/atomdata/AtomDataServer.js
    		J/constant/EnumVdw.js
    		J/atomdata/RadiusData.js
    		J/util/CommandHistory.js
-		javajs/awt/Dimension.js
 		J/api/JSmolInterface.js
    		J/viewer/Viewer.js
    		java/lang/Thread.js
