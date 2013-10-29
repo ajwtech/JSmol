@@ -163,7 +163,7 @@
 		proto._readyCallback = Jmol._Applet.prototype._readyCallback;
 	}
 
-	Jmol._Applet._createApplet = function(applet, Info, params, myClass) {
+	Jmol._Applet._createApplet = function(applet, Info, params) {
 		if (Jmol._syncedApplets.length)
 		  params.synccallback = "Jmol._mySyncCallback";
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
@@ -183,7 +183,6 @@
   			params.script = applet._startupScript;
 			params.mayscript = 'true';
 			params.codebase = applet._jarPath;
-			params.code = myClass + ".class";
 			tHeader =
 				"<object name='" + applet._id +
 				"_object' id='" + applet._id + "_object' " + "\n" +
@@ -249,7 +248,8 @@
 			boxbgcolor: this._color || "black",
 			boxfgcolor: "white",
 			boxmessage: "Downloading JmolApplet ...",
-			script: (!Info.color ? "" : "background " + (Info.color.indexOf("#") == 0 ? "[0x" + Info.color.substring(1) + "]" : Info.color))
+			script: (!Info.color ? "" : "background " + (Info.color.indexOf("#") == 0 ? "[0x" + Info.color.substring(1) + "]" : Info.color)),
+      code: "JmolApplet.class"
 		};
     Jmol._setJmolParams(params, Info);
 		function sterilizeInline(model) {
