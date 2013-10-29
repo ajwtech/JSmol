@@ -123,11 +123,11 @@
 			progresscolor: "blue",
 			boxbgcolor: Info.color || "black",
 			boxfgcolor: "white",
-			boxmessage: "Downloading JSpecViewApplet ..."
+			boxmessage: "Downloading JSpecViewApplet ...",
+      code:"jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "")
 		};
-		
-		var myClass = "jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "");    
-    Jmol._Applet._createApplet(this, Info, params, myClass);
+
+    Jmol._Applet._createApplet(this, Info, params);
 	}
 	
 	jsvproto._readyCallback = function(id, fullid, isReady, applet) {
