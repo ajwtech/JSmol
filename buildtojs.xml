@@ -360,7 +360,6 @@
    		J/modelsetbio/AlphaPolymer.js
    		J/modelsetbio/AminoMonomer.js
    		J/modelsetbio/AminoPolymer.js
-   		J/modelsetbio/APBridge.js
    		J/modelsetbio/BioModel.js
    		J/modelsetbio/CarbohydrateMonomer.js
    		J/modelsetbio/CarbohydratePolymer.js
@@ -368,6 +367,8 @@
    		J/modelsetbio/NucleicMonomer.js
    		J/modelsetbio/NucleicPolymer.js
    		J/modelsetbio/PhosphorusPolymer.js
+   		J/dssx/APBridge.js
+   		J/dssx/DSSP.js
    		J/shapebio/BioShape.js
    		J/shapebio/BioShapeCollection.js
    		J/shapebio/Rockets.js
@@ -530,6 +531,8 @@
    		java/util/ArrayList.js
    		JU/List.js
    		JU/ColorUtil.js
+   		javajs/api/FontManager.js
+   		javajs/awt/Font.js
    		java/net/Parts.js
    		java/util/AbstractSet.js
    		java/util/Arrays.js
@@ -670,7 +673,6 @@
    		J/api/JmolGraphicsInterface.js
    		J/util/GData.js
    		J/bspt/Node.js
-   		J/util/JmolFont.js
    		J/util/MeshSurface.js
    		J/util/Rectangle.js
    		J/viewer/MouseState.js
@@ -700,7 +702,7 @@
    		J/api/ApiPlatform.js
    		J/awtjs2d/Platform.js
    		J/awtjs2d/Display.js
-   		J/awtjs2d/Font.js
+   		J/awtjs2d/JSFont.js
    		J/awtjs2d/Image.js
    		J/api/JmolFileInterface.js
    		J/awtjs2d/JSFile.js
@@ -739,7 +741,7 @@
    		J/adapter/readers/molxyz/MolReader.js
    		J/adapter/readers/molxyz/XyzReader.js
    		J/awtjs/Platform.js
-   		J/awtjs/Font.js
+   		J/awtjs/JSFont.js
    		J/awtjs/Image.js
    		../../../jsmoljs/core/corebottom.js
    	   	" />
