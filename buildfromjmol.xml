@@ -146,7 +146,6 @@
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
         <exclude name="**/console/*"/>
-        <exclude name="**/image/Pdf*"/>
         <exclude name="**/java/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/popup/*"/>
