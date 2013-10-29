@@ -519,7 +519,7 @@
    		JU/BS.js
    		JU/SB.js
 		JU/DecimalFormat.js
-   		JU/ParserJS.js
+   		JU/Parser.js
    		JU/ArrayUtil.js
    		java/util/MapEntry.js
    		java/util/Dictionary.js
@@ -578,7 +578,7 @@
    		java/lang/Enum.js
    		J/constant/EnumCallback.js
    		J/util/Escape.js
-   		J/util/Parser.js
+   		J/util/ParserBS.js
    		J/util/Txt.js
    		J/script/T.js
    		J/util/BSUtil.js
