@@ -167,7 +167,7 @@
 		if (Jmol._syncedApplets.length)
 		  params.synccallback = "Jmol._mySyncCallback";
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
-
+    params.permissions = (applet._isSigned ? "all-permissions" : "sandbox");
 		applet._initialize(Info.jarPath, Info.jarFile);
 
 		// size is set to 100% of containers' size, but only if resizable. 
