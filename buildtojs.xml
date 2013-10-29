@@ -367,7 +367,7 @@
    		J/modelsetbio/NucleicMonomer.js
    		J/modelsetbio/NucleicPolymer.js
    		J/modelsetbio/PhosphorusPolymer.js
-   		J/dssx/APBridge.js
+   		J/dssx/Bridge.js
    		J/dssx/DSSP.js
    		J/shapebio/BioShape.js
    		J/shapebio/BioShapeCollection.js
