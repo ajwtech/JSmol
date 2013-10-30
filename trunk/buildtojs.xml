@@ -349,7 +349,7 @@
    		java/util/zip/ZipConstants64.js
    		java/util/zip/ZipInputStream.js
    		java/io/PushbackInputStream.js
-   		J/api/ZInputStream.js
+   		javajs/api/ZInputStream.js
    		J/io2/JmolZipInputStream.js
    	   	" />
    	</concat>   	
@@ -451,7 +451,7 @@
    		J/api/JmolDocument.js
    		java/io/PushbackInputStream.js
    		java/io/DataInputStream.js
-   		JU/ByteConverter.js
+   		JU/BC.js
    		J/io2/BinaryDocument.js
    	   	" />
    	</concat>
@@ -529,9 +529,9 @@
    		JU/A4.js
    		JU/BS.js
    		JU/SB.js
-		JU/DecimalFormat.js
-   		JU/Parser.js
-   		JU/ArrayUtil.js
+		JU/DF.js
+   		JU/PT.js
+   		JU/AU.js
    		java/util/MapEntry.js
    		java/util/Dictionary.js
    		java/util/AbstractCollection.js
@@ -541,7 +541,7 @@
    		java/util/AbstractList.js
    		java/util/ArrayList.js
    		JU/List.js
-   		JU/ColorUtil.js
+   		JU/CU.js
    		javajs/api/FontManager.js
    		javajs/api/GenericMenuInterface.js
    		javajs/awt/Font.js
@@ -590,8 +590,7 @@
    		java/lang/Enum.js
    		J/constant/EnumCallback.js
    		J/util/Escape.js
-   		J/util/ParserBS.js
-   		java/util/Txt.js
+   		J/util/Parser.js
    		J/util/Txt.js
    		J/script/T.js
    		J/util/BSUtil.js
@@ -599,7 +598,7 @@
    		J/modelset/Bond.js
    		J/util/Measure.js
    		J/script/SV.js
-   		J/io/Encoding.js
+   		JU/Encoding.js
    		java/util/Properties.js
    		J/util/Elements.js
    		J/util/Vibration.js
@@ -642,7 +641,7 @@
    		J/thread/JmolThread.js
    		J/io/LimitedLineReader.js
    		J/constant/EnumStereoMode.js
-   		J/io/Base64.js
+   		JU/Base64.js
    		J/io/CifDataReader.js
    		J/io/JmolBinary.js
   		J/shape/Shape.js
@@ -720,7 +719,7 @@
    		javajs/api/GenericFileInterface.js
    		J/awtjs2d/JSFile.js
    		javajs/api/GenericMouseInterface.js
-   		jvajs/awt/event/Event.js
+   		javajs/awt/event/Event.js
    		J/awtjs2d/Mouse.js
    		J/api/JmolRendererInterface.js
    		J/g3d/Graphics3D.js
