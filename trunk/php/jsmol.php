@@ -3,8 +3,9 @@
 // jsmol.php
 // Bob Hanson hansonr@stolaf.edu 1/11/2013
 //
-// last modified: 30 Sep 2013 -- adjusted error handling to only report E_ERROR not E_WARNING
+// last modified: 30 Oct 2013 -- saveFile should not convert " to _
 //
+// 30 Sep 2013 -- adjusted error handling to only report E_ERROR not E_WARNING
 // 7 Sep 2013 -- adding PHP error handling
 //
 // Server-side Jmol delivers:
@@ -193,7 +194,7 @@ if ($call == "getInfoFromDatabase") {
 		}
 	}
 } else if ($call == "saveFile") {
-	$imagedata = getValueSimple($values, "data", "");
+	$imagedata = $_REQUEST["data"];//getValueSimple($values, "data", ""); don't want to convert " to _ here
 	$filename = getValueSimple($values, "filename", "");
 	$contentType = getValueSimple($values, "mimetype", "application/octet-stream");
 	if ($encoding == "base64") {
