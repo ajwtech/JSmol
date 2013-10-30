@@ -2981,7 +2981,7 @@ System = {
 		if (System.props)
 			return System.props.getProperty (key, def);
     var v = System.$props[key];
-    return (v !== null ? v : arguments.length == 1 ? null : def != null ? def : key); // BH
+    return (v != null ? v : arguments.length == 1 ? null : def != null ? def : key); // BH
 	},
   getSecurityManager : function() { return null },  // bh
 	setProperties : function (props) {
