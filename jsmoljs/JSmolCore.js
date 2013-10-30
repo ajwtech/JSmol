@@ -824,7 +824,7 @@ Jmol = (function(document) {
     var isString = (typeof data == "string");
     var encoding = (isString ? "" : "base64");
     if (!isString)
-    	data = J.io.Base64.getBase64(data).toString();
+    	data = (JU ? JU : J.util).Base64.getBase64(data).toString();
   	var filename = filename.substring(filename.lastIndexOf("/") + 1);
   	var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
     // Asynchronous output - to be reflected as a download

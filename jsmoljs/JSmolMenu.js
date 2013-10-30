@@ -105,7 +105,6 @@ M.PopupMenu = function(applet, name) {
 }
 
 M.PopupMenu.prototype.dispose = function() {
-  alert(this.name  + " dispose")
   this.hide();
   delete this.applet._popups[this.name]
 }
