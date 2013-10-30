@@ -95,7 +95,8 @@
    	
 
    	
-   	<!-- get required non-JavaScript resources -->		
+   	<!-- get required non-JavaScript resources -->
+   	
     <copy todir="site/jsmol/j2s/J/minimize/forcefield/data" >
       <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
@@ -134,6 +135,14 @@
 	    <include name="*.po" />
 	  </fileset>
 	</copy>
+
+   	<!-- add jspecview files and subdirectories -->
+
+   		<copy todir="site/jsmol/j2s/JSV/export/resources" >
+      <fileset dir="${jsv.path}/src/jspecview/export/resources">
+        <include name="*.vm" />
+      </fileset>
+    </copy>
 
    	<!-- add jsmol files and subdirectories -->
 
