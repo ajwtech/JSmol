@@ -75,6 +75,9 @@
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
     <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
+    <echo>modifying class names "Clazz.overrideMethod " to "$_V"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
+   	  	
    	  	
   	<!-- get version information  -->		
     <copy todir="site/jsmol/j2s" >
@@ -283,7 +286,6 @@
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="site/jsmol/j2s" files="
    		../../../jsmoljs/core/coremenutop.js
-   		J/api/JmolPopupInterface.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
    		J/awtjs2d/JSPopup.js
@@ -541,6 +543,7 @@
    		JU/List.js
    		JU/ColorUtil.js
    		javajs/api/FontManager.js
+   		javajs/api/GenericMenuInterface.js
    		javajs/awt/Font.js
    		java/net/Parts.js
    		java/util/AbstractSet.js
@@ -588,6 +591,7 @@
    		J/constant/EnumCallback.js
    		J/util/Escape.js
    		J/util/ParserBS.js
+   		java/util/Txt.js
    		J/util/Txt.js
    		J/script/T.js
    		J/util/BSUtil.js
@@ -610,7 +614,7 @@
    		J/constant/EnumVdw.js
    		J/atomdata/RadiusData.js
    		J/util/CommandHistory.js
-		J/api/JSmolInterface.js
+		javajs/api/JSInterface.js
    		J/viewer/Viewer.js
    		java/lang/Thread.js
    		J/constant/EnumQuantumShell.js
@@ -642,7 +646,7 @@
    		J/io/CifDataReader.js
    		J/io/JmolBinary.js
   		J/shape/Shape.js
-		J/api/BytePoster.js
+		javajs/api/BytePoster.js
    		J/viewer/FileManager.js
    		J/script/ContextToken.js
    		J/script/ScriptContext.js
@@ -685,7 +689,7 @@
    		J/util/MeshSurface.js
    		J/util/Rectangle.js
    		J/viewer/MouseState.js
-		J/api/EventManager.js
+		javajs/api/EventManager.js
    		J/viewer/ActionManager.js
    		J/viewer/StateManager.js
    		J/modelset/MeasurementPending.js
@@ -707,16 +711,16 @@
    		J/modelset/Chain.js
    		J/modelset/Model.js
    		J/modelset/ModelSet.js
-   		J/api/PlatformViewer.js
-   		J/api/ApiPlatform.js
+   		javajs/api/PlatformViewer.js
+   		javajs/api/GenericPlatform.js
    		J/awtjs2d/Platform.js
    		J/awtjs2d/Display.js
    		J/awtjs2d/JSFont.js
    		J/awtjs2d/Image.js
-   		J/api/JmolFileInterface.js
+   		javajs/api/GenericFileInterface.js
    		J/awtjs2d/JSFile.js
-   		J/api/JmolMouseInterface.js
-   		J/api/Event.js
+   		javajs/api/GenericMouseInterface.js
+   		jvajs/awt/event/Event.js
    		J/awtjs2d/Mouse.js
    		J/api/JmolRendererInterface.js
    		J/g3d/Graphics3D.js
