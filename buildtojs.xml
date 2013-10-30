@@ -129,6 +129,15 @@
 	  </fileset>
 	</copy>
 
+
+   	<!-- add jspecview files and subdirectories -->
+
+   		<copy todir="site/jsmol/j2s/JSV/export/resources" >
+      <fileset dir="${jsv.path}/src/jspecview/export/resources">
+        <include name="*.vm" />
+      </fileset>
+    </copy>
+
    	<!-- add jsmol files and subdirectories -->
 
    	<copy todir="site/jsmol">
