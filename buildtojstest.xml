@@ -78,6 +78,9 @@
     <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
    	  	
+    <echo>modifying class names "Clazz.overrideMethod " to "$_V"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
+   	  	
 	
    	  	
   	<!-- get version information  -->		
