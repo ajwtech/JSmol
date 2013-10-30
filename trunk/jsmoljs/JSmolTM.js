@@ -50,7 +50,7 @@ Jmol._TMApplet._getApplet = function(id, Info, checkOnly) {
  		width: 300,
 		height: 300,
 		addSelectionOptions: false,
-		serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
+		serverURL: "http://your.server.here/jsmol.php",
 		defaultModel: "",
 		readyFunction: null,
 		use: "HTML5",

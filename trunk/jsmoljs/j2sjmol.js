@@ -1,6 +1,6 @@
 // j2sjmol.js 
 
-// Java programming notes:
+// Java programming notes by Bob Hanson:
 //   
 //   There are a few motifs to avoid when optimizing Java code to work smoothly
 //   with the J2S compiler:
@@ -24,12 +24,16 @@
 //   general:
 //
 // 1. j2sRequireImport xxxx is needed if xxxx is a method used in a static function
+// 2. URL.getContent() is not supported. Use other means based on URL.toString()
+// 3. 
 
  // NOTES by Bob Hanson: 
 
 
  // J2S class changes:
  
+ // BH 10/30/2013 8:10:58 AM added getClass().getResource() -- returning a relative string, not a URL
+ // BH 10/30/2013 6:43:00 AM removed second System def and added System.$props and default System.property "line.separator" 
  // BH 6/15/2013 8:02:07 AM corrections to Class.isAS to return true if first element is null
  // BH 6/14/2013 4:41:09 PM corrections to Clazz.isAI and related methods to include check for null object
  // BH 3/17/2013 11:54:28 AM adds stackTrace for ERROR 
@@ -170,8 +174,6 @@ JavaObject = (Clazz.supportsNativeObject ? function () {} : Object);
 ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = {};
 Clazz.Console = {};
 Clazz.dateToString = Date.prototype.toString;
-
-System = new JavaObject ();
 
 Clazz.debuggingBH = false;
 
@@ -1673,7 +1675,7 @@ Clazz.instantialize = function (objThis, args) {
 /* protected */
 /*-# innerFunctionNames -> iFN #-*/
 Clazz.innerFunctionNames = [
-	"equals", "hashCode", /*"toString",*/ "getName", "getClassLoader", "getResourceAsStream" /*# {$no.javascript.support} >>x #*/, "defineMethod", "defineStaticMethod",
+	"equals", "hashCode", /*"toString",*/ "getName", "getClassLoader", "getResource", "getResourceAsStream" /*# {$no.javascript.support} >>x #*/, "defineMethod", "defineStaticMethod",
 	"makeConstructor" /*# x<< #*/
 ];
 
@@ -1714,9 +1716,14 @@ Clazz.innerFunctions = {
 		}
 		var loader = ClassLoader.requireLoaderByBase (baseFolder);
 		loader.getResourceAsStream = Clazz.innerFunctions.getResourceAsStream;
+    loader.getResource = Clazz.innerFunctions.getResource; // BH
 		return loader;
 	},
 
+  getResource : function(name) {
+    return this.getResourceAsStream(name).url;
+  },
+  
 	getResourceAsStream : function (name) {
 		var is = null;
 		if (name == null) {
@@ -2943,36 +2950,11 @@ JavaObject.getName = Clazz.innerFunctions.getName;
 
 w$ = window; // Short for browser's window object
 d$ = document; // Short for browser's document object
+
+
 System = {
-	currentTimeMillis : function () {
-		return new Date ().getTime ();
-	},
 	props : null, //new java.util.Properties (),
-	getProperties : function () {
-		return System.props;
-	},
-	setProperties : function (props) {
-		System.props = props;
-	},
-	getProperty : function (key, def) {
-    if (key.equals("line.separator")) return "\n";
-		if (System.props != null) {
-			return System.props.getProperty (key, def);
-		}
-		if (def != null) {
-			return def;
-		}
-		return key;
-	},
-	setProperty : function (key, val) {
-		if (System.props == null) {
-			return ;
-		}
-		System.props.setProperty (key, val);
-	},
-	currentTimeMillis : function () {
-		return new Date ().getTime ();
-	},
+  $props : {},
 	arraycopy : function (src, srcPos, dest, destPos, length) {
 		if (src !== dest) {
 			for (var i = 0; i < length; i++) {
@@ -2987,8 +2969,33 @@ System = {
 				dest[destPos + i] = swap[i];
 			}
 		}
+	},
+	currentTimeMillis : function () {
+		return new Date ().getTime ();
+	},
+  gc : function() {}, // bh
+	getProperties : function () {
+		return System.props;
+	},
+	getProperty : function (key, def) {
+		if (System.props)
+			return System.props.getProperty (key, def);
+    var v = System.$props[key];
+    return (v !== null ? v : arguments.length == 1 ? null : def != null ? def : key); // BH
+	},
+  getSecurityManager : function() { return null },  // bh
+	setProperties : function (props) {
+		System.props = props;
+	},
+	setProperty : function (key, val) {
+		if (System.props == null)
+      return System.$props[key] = val; // BH
+		System.props.setProperty (key, val);
 	}
 };
+
+System.setProperty("line.separator", navigator.userAgent.indexOf("Windows")>=0?"\r\n" : "\n") //BH
+
 System.out = new JavaObject ();
 System.out.__CLASS_NAME__ = "java.io.PrintStream";
 System.out.print = function () {};
@@ -6786,55 +6793,7 @@ Clazz.alert = function (s) {
 
 	Console.c160 = String.fromCharCode (160); //nbsp;
 	Console.c160 += Console.c160+Console.c160+Console.c160;
-	
-	System.currentTimeMillis = function () {
-		return new Date ().getTime ();
-	};
 
-	/* public */
-	System.arraycopy = function (src, srcPos, dest, destPos, length) {
-		if (src != dest) {
-			for (var i = 0; i < length; i++) {
-				dest[destPos + i] = src[srcPos + i];
-			}
-		} else {
-			var swap = [];
-			for (var i = 0; i < length; i++) {
-				swap[i] = src[srcPos + i];
-			}
-			for (var i = 0; i < length; i++) {
-				dest[destPos + i] = swap[i];
-			}
-		}
-	};
-	
-	System.props = null; //new java.util.Properties ();
-	System.getProperties = function () {
-		return System.props;
-	};
-	System.getProperty = function (key, def) {
-		if (System.props != null) {
-			return System.props.getProperty (key, def);
-		}
-		if (arguments.length == 1) return null;// BH
-		if (def != null) {
-			return def;
-		}
-		return key;
-	};
-	System.setProperties = function (props) {
-		System.props = props;
-	};
-	System.setProperty = function (key, val) {
-		if (System.props == null) {
-			return ;
-		}
-		System.props.setProperty (key, val);
-	};
-
-	/* public */
-	System.out = new JavaObject ();
-	System.out.__CLASS_NAME__ = "java.io.PrintStream";
 	
 	/* public */
 	System.out.print = function (s) { 
@@ -6854,7 +6813,6 @@ Clazz.alert = function (s) {
 	};
 	
 	/* public */
-	System.err = new JavaObject ();
 	System.err.__CLASS_NAME__ = "java.io.PrintStream";
 	
 	/* public */
@@ -6874,10 +6832,8 @@ Clazz.alert = function (s) {
 		Console.consoleOutput (s, "red");
 	};
 	
-  System.gc = function() {}; // bh added
-  System.getSecurityManager = function() { return null };  // bh added
-  String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
-  String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
+
+
 })(Clazz.Console, System);
 
 Clazz.setConsoleDiv = function(d) {
@@ -6886,6 +6842,9 @@ Clazz.setConsoleDiv = function(d) {
 
 })(Clazz);
 
+String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
+  
 // moved here from package.js
 
 	ClazzLoader.registerPackages ("java", [

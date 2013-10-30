@@ -349,7 +349,7 @@
     }
     
     proto._processEvent = function(type, xym) {
-			this._applet.viewer.handleOldJvm10Event(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
+			this._applet.viewer.processMouseEvent(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
     }
     
     proto._resize = function() {

@@ -116,7 +116,7 @@ Jmol = (function(document) {
 		_isXHTML: false,
 		_lastAppletID: null,
     _mousePageX: null,
-		_serverUrl: "http://chemapps.stolaf.edu/jmol/jsmol.jsmol.php",
+		_serverUrl: "http://your.server.here/jsmol.php",
     _touching: false,
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false

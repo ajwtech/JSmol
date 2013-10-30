@@ -67,7 +67,7 @@
 			width: 300,
 			height: 300,
 			addSelectionOptions: false,
-			serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/jsmol.php",
+			serverURL: "http://your.server.here/jsmol.php",
 			defaultModel: "",
 			script: null,
 			src: null,
@@ -310,7 +310,7 @@
           var bytes = Jmol._toBytes(evt.target.result);
           me._applet.viewer.cacheFileByName("cache://DROP_*",false);
           me._applet.viewer.cachePut(cacheName, bytes);
-          me._applet.viewer.openFileAsyncPDB(cacheName, true);
+          me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
           //Jmol.script(me, "load '" + cacheName + "'");
     		}
     	};
