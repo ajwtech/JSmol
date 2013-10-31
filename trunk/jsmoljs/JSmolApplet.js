@@ -229,6 +229,8 @@
  		for (var i in params)
 			if(params[i])
 		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
+    t +="  <param name='documentLocation' value='" + document.location + "' />\n"
+    t +="  <param name='jarPath' value='" + Info.jarPath + "' />\n"
 		t += visitJava + tFooter 
 			+ Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
