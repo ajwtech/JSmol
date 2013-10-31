@@ -61,21 +61,21 @@
    	
   	<!-- modify class names -->		
 
-    <echo>modifying class names "org.jmol" to "J"</echo>
+    <echo>abbreviating class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 
-    <echo>modifying class names "javajs.util" to "JU"</echo>
+    <echo>abbreviating class names "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
 
-  	<echo>modifying class names "com.jcraft.jzlib" to "JZ"</echo>
+  	<echo>abbreviating class names "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
    	
   	<echo>modifying class names "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
-    <echo>modifying class names "Clazz.defineMethod " to "$_M"</echo>
+    <echo>abbreviating method names "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
-    <echo>modifying class names "Clazz.overrideMethod " to "$_V"</echo>
+    <echo>abbreviating method names "Clazz.overrideMethod " to "$_V"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
    	  	
    	  	
@@ -126,6 +126,7 @@
   	<move file="temp.js" tofile="site/jsmol/j2s/JSV/common/JSVersion.js" />
 
   	<!-- get .po files from the Jmol project -->		
+   	<echo>adding .po files</echo>
    	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
@@ -135,6 +136,7 @@
 
    	<!-- add jspecview files and subdirectories -->
 
+   	<echo>adding JSV/export/resources files</echo>
    		<copy todir="site/jsmol/j2s/JSV/export/resources" >
       <fileset dir="${jsv.path}/src/jspecview/export/resources">
         <include name="*.vm" />
@@ -143,6 +145,7 @@
 
    	<!-- add jsmol files and subdirectories -->
 
+   	<echo>adding html files</echo>
    	<copy todir="site/jsmol">
   	  <fileset dir="html">
   	    <include name="**/*" />
@@ -152,18 +155,21 @@
       </fileset>
     </copy>
 
+   	<echo>adding data files</echo>
    	<copy todir="site/jsmol/data">
   	  <fileset dir="data">
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
+   	<echo>adding flot</echo>
    	<copy todir="site/jsmol/flot">
   	  <fileset dir="lib/flot">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
  	
+   	<echo>adding jar files</echo>
   	<copy todir="site/jsmol/java">
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
@@ -173,12 +179,14 @@
 	  </fileset>
 	</copy>
 
+   	<echo>adding jme</echo>
    	<copy todir="site/jsmol/jme">
   	  <fileset dir="lib/jme">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
 
+   	<echo>adding jQuery and minimizing it</echo>
   	<copy todir="site/jsmol/jquery">
   	  <fileset dir="lib/jquery">
   	    <include name="**/*" />
@@ -189,24 +197,28 @@
    		<arg line="--js jquery.js --js_output_file jquery.min.js" />
     </java>
 
+   	<echo>adding jsme</echo>
   	<copy todir="site/jsmol/jsme">
   	  <fileset dir="lib/jsme">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
 	   	
+   	<echo>adding js subdirectory</echo>
    	<copy todir="site/jsmol/js">
   	  <fileset dir="jsmoljs">
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
+   	<echo>adding jsmol.php</echo>
   	<copy todir="site/jsmol/php">
   	  <fileset dir="php">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
   
+   	<echo>adding j2s/img subdirectory</echo>
   	<copy todir="site/jsmol/j2s/img">
   	  <fileset dir="img">
   	    <include name="**/*" />
@@ -215,6 +227,7 @@
    	
    	<!-- make core files -->
  
+   	<echo>adding package.js from ${jmol.path}/srcjs/js</echo>
    	<copy todir="site/jsmol/j2s/core">
   	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />
@@ -225,6 +238,7 @@
    	<!-- note: any changes in these next sections must be reflected also
    	             in package.js -->
    	
+   	<echo>creating and compressing core files - warnings are OK; "does not exist" is trouble</echo>
    	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="site/jsmol/j2s" files="
    		J/api/JmolScriptManager.js
    		J/api/JmolScriptEvaluator.js
