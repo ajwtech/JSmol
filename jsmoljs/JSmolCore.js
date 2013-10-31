@@ -1483,6 +1483,8 @@ Jmol.Dialog.getScreenDimensions = function(d) {
 Jmol.Dialog.register = function(dialog, type) {
   dialog.id = type + (++Jmol.Dialog.count);
   Jmol.Dialog.htDialogs[dialog.id] = dialog;
+  System.out.println("registering " + dialog.id)
+  
 }
 
 Jmol.Dialog.dispose = function(dialog) {
@@ -1492,9 +1494,11 @@ Jmol.Dialog.dispose = function(dialog) {
  
 Jmol.Dialog.setDialog = function(dialog) {
   $("#" + dialog.id).remove();
+  alert("removed" + dialog.id)
   var id = dialog.id + "_mover";
   var container = $("#" + id);
   var jd;
+  System.out.println("set dialog " + dialog.id + " " + container[0]);
   if (container[0]) {
     container.html(dialog.html);
     jd = container[0].jd;
@@ -1529,24 +1533,25 @@ Jmol.Dialog.setVisible = function(element) {
  
 Jmol.Dialog.click = function(element, keyEvent) {
   var component = Jmol.Dialog.htDialogs[element.id];
+  var info = component.toString();
+  System.out.println("click " + info)
   // table cells will have an id but are not registered
-  if (component) {
-    if (component.text != null) {  // JButton, JTextField
-      component.text = element.value;
-    } else if (component.selected != null) { // JCheckBox
-      component.selected = element.checked;
-    } else if (component.selectedIndex != null) { // JComboBox
+    if (info.indexOf("JCheck") >= 0) {
+        component.selected = element.checked;
+    } else if (info.indexOf("JCombo") >= 0) {
       component.selectedIndex = element.selectedIndex;
-    }
-    if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
-      return;
-  }
+    } else if (component.text != null) {  // JButton, JTextField
+      component.text = element.value;
+      if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
+        return;
+    }    
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
   dialog.manager.actionPerformed(component ? component.name :  dialog.registryKey + "/" + element.id);
 }
 
 Jmol.Dialog.setSelected = function(chk) {
+System.out.println("JSmolCore: setSelected " + chk.id + " " + !!chk.selected)
  $("#" + chk.id).prop('checked', !!chk.selected);
 }
 
