@@ -116,6 +116,7 @@ Jmol = (function(document) {
 		_isXHTML: false,
 		_lastAppletID: null,
     _mousePageX: null,
+    _mouseOwner: null,
 		_serverUrl: "http://your.server.here/jsmol.php",
     _touching: false,
 		_XhtmlElement: null,
@@ -309,9 +310,6 @@ Jmol = (function(document) {
 		features.supportsXhr2 = function() {return ($.support.cors || $.support.iecors)}
 		features.allowDestroy = (features.browserName != "msie");
 		features.allowHTML5 = (features.browserName != "msie" || navigator.appVersion.indexOf("MSIE 8") < 0);
-
-//alert(features.allowHTML5 + " " + features.browserName + " " +  navigator.appVersion)
-
 		features.getDefaultLanguage = function() {
 			return navigator.language || navigator.userLanguage || "en-US";
 		};
@@ -867,8 +865,6 @@ Jmol = (function(document) {
     b = Clazz.newByteArray(data.length, 0);
     for (var i = data.length; --i >= 0;)
       b[i] = data.charCodeAt(i) & 0xFF;
-    // alert("Jmol._processData len=" + b.length + " b[0-5]=" + b[0] + " " +
-	// b[1]+ " " + b[2] + " " + b[3]+ " " + b[4] + " " + b[5])
     return b;
   };
 
@@ -1214,6 +1210,13 @@ Jmol = (function(document) {
 
   //////////////////// mouse events //////////////////////
   
+  Jmol._setMouseOwner = function(who, tf) {
+    if (who == null || tf)
+      Jmol._mouseOwner = who;
+    else if (Jmol._mouseOwner == who)
+      Jmol._mouseOwner = null;
+  }
+
 	Jmol._jsGetMouseModifiers = function(ev) {
 		var modifiers = 0;
 		switch (ev.button) {
@@ -1295,6 +1298,7 @@ Jmol = (function(document) {
   
   Jmol._jsSetMouse = function(canvas) {
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
+      Jmol._setMouseOwner(canvas, true);
 	   	ev.stopPropagation();
 	  	ev.preventDefault();
 		  canvas.isDragging = true;
@@ -1311,6 +1315,7 @@ Jmol = (function(document) {
 			return false;
 		});
 		Jmol.$bind(canvas, 'mouseup touchend', function(ev) {
+      Jmol._setMouseOwner(null);
 	   	ev.stopPropagation();
 	  	ev.preventDefault();
 		  canvas.isDragging = false;
@@ -1377,7 +1382,8 @@ Jmol = (function(document) {
  
 		Jmol.$bind('body', 'mouseup touchend', function(ev) {
       if (canvas.applet)
-			  canvas.isDragging = false;
+  			canvas.isDragging = false;
+      Jmol._setMouseOwner(null);
 		});
 
 	}
@@ -1385,6 +1391,7 @@ Jmol = (function(document) {
 	Jmol._jsUnsetMouse = function(canvas) {
     canvas.applet = null;
 		Jmol.$bind(canvas, 'mousedown touchstart mousemove touchmove mouseup touchend DOMMouseScroll mousewheel contextmenu mouseout mouseenter', null);
+    Jmol._setMouseOwner(null);
 	}
 
 Jmol._setDraggable = function(Obj) {
@@ -1392,6 +1399,7 @@ Jmol._setDraggable = function(Obj) {
 	// for menus and console
 	proto.setContainer = function(container) {
 		this.container = container;
+    container.obj = this;
 		this.isDragging = false;
 		this.ignoreMouse = false;
 		var me = this;
@@ -1400,29 +1408,32 @@ Jmol._setDraggable = function(Obj) {
 				me.ignoreMouse = false;
 				return true;
 			}
+      Jmol._setMouseOwner(me, true);
 		  me.isDragging = true;
 		  me.pageX = ev.pageX;
 		  me.pageY = ev.pageY;
 		  return false;
 		});
 		container.bind('mousemove touchmove', function(ev) {
-			if (me.isDragging) {
+			if (me.isDragging && Jmol._mouseOwner == me) {
 				me.mouseMove(ev);
 				return false;
 			}
 		});
 		container.bind('mouseup touchend', function(ev) {
 			me.mouseUp(ev);
+      Jmol._setMouseOwner(null);
 		});
 	};
 
 	proto.mouseUp = function(ev) {
-		if (this.isDragging) {
+		if (this.isDragging && Jmol._mouseOwner == this) {
 			this.pageX0 += (ev.pageX - this.pageX);
 			this.pageY0 += (ev.pageY - this.pageY);
 		  this.isDragging = false;
 		  return false;
 		}
+    Jmol._setMouseOwner(null);
 	}
 	
 	proto.setPosition = function() {
@@ -1439,11 +1450,11 @@ Jmol._setDraggable = function(Obj) {
 	};
 	
 	proto.mouseMove = function(ev) {
-		if (!this.isDragging)
-			return;
-		var x = this.pageX0 + (ev.pageX - this.pageX);
-		var y = this.pageY0 + (ev.pageY - this.pageY);
-		this.container.css({ top: y + 'px', left: x + 'px' })
+		if (this.isDragging && Jmol._mouseOwner == this) {
+  		var x = this.pageX0 + (ev.pageX - this.pageX);
+  		var y = this.pageY0 + (ev.pageY - this.pageY);
+  		this.container.css({ top: y + 'px', left: x + 'px' })
+    }
 	};
 		
 	proto.dragBind = function(isBind) {
@@ -1451,6 +1462,7 @@ Jmol._setDraggable = function(Obj) {
 		this.container.unbind('touchmoveoutjsmol');
 		this.container.unbind('mouseupoutjsmol');
 		this.container.unbind('touchendoutjsmol');
+    Jmol._setMouseOwner(null);
 		if (isBind) {
 			var me = this;
 			this.container.bind('mousemoveoutjsmol touchmoveoutjsmol', function(evspecial, target, ev) {
@@ -1459,7 +1471,7 @@ Jmol._setDraggable = function(Obj) {
 			this.container.bind('mouseupoutjsmol touchendoutjsmol', function(evspecial, target, ev) {
 				me.mouseUp(ev);
 			});
-		}
+    }
 	};
 }
 
@@ -1470,35 +1482,45 @@ Jmol.Dialog = {
   htDialogs:{}
 };
 
+SwingController = Jmol.Dialog; // see javajs.api.SwingController
+
 Jmol.Dialog.JSDialog = function () {
 }
 
 Jmol._setDraggable(Jmol.Dialog.JSDialog);
 
-Jmol.Dialog.getScreenDimensions = function(d) {
-  d[0] = $(window).width();
-  d[1] = $(window).height();
-}
+///// calls from javajs and other Java-derived packages /////
 
-Jmol.Dialog.register = function(dialog, type) {
-  dialog.id = type + (++Jmol.Dialog.count);
-  Jmol.Dialog.htDialogs[dialog.id] = dialog;
-  System.out.println("registering " + dialog.id)
-  
+Jmol.Dialog.getScreenDimensions = function(d) {
+  d.width = $(window).width();
+  d.height = $(window).height();
 }
 
 Jmol.Dialog.dispose = function(dialog) {
   $("#" + dialog.id + "_mover").remove();
   delete Jmol.Dialog.htDialogs[dialog.id]
+  dialog.container.obj.dragBind(false);
+//  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
+//  for (var i = btns.length; --i >= 0;)
+//    delete Jmol.Dialog.htDialogs[btns[i].id]
+  System.out.println("JmolCore.js: dispose " + dialog.id)
 }
  
+Jmol.Dialog.register = function(dialog, type) {
+  dialog.id = type + (++Jmol.Dialog.count);
+  Jmol.Dialog.htDialogs[dialog.id] = dialog;
+  System.out.println("JmolCore.js: register " + dialog.id)
+  
+}
+
 Jmol.Dialog.setDialog = function(dialog) {
+  Jmol._setMouseOwner(null);
   $("#" + dialog.id).remove();
-  System.out.println("removed" + dialog.id)
+  System.out.println("removed " + dialog.id)
   var id = dialog.id + "_mover";
   var container = $("#" + id);
   var jd;
-  System.out.println("set dialog " + dialog.id + " " + container[0]);
+  System.out.println("JmolCore.js: setDialog " + dialog.id);
   if (container[0]) {
     container.html(dialog.html);
     jd = container[0].jd;
@@ -1524,18 +1546,33 @@ Jmol.Dialog.setDialog = function(dialog) {
 
 }
  
-Jmol.Dialog.setVisible = function(element) {
-  if (element.visible)
-    $("#" + element.id).show();
-  else
-    $("#" + element.id).hide();  
+Jmol.Dialog.setSelected = function(chk) {
+ $("#" + chk.id).prop('checked', !!chk.selected);
 }
+
+Jmol.Dialog.setSelectedIndex = function(cmb) {
+ $("#" + cmb.id).prop('selectedIndex', cmb.selectedIndex);
+}
+
+Jmol.Dialog.setText = function(btn) {
+ $("#" + btn.id).prop('value', btn.text);
+}
+
+Jmol.Dialog.setVisible = function(c) {
+  if (c.visible)
+    $("#" + c.id).show();
+  else
+    $("#" + c.id).hide();  
+}
+
+/// callbacks from the HTML elements ////
  
 Jmol.Dialog.click = function(element, keyEvent) {
   var component = Jmol.Dialog.htDialogs[element.id];
-  var info = component.toString();
-  System.out.println("click " + info)
-  // table cells will have an id but are not registered
+  if (component) {
+    System.out.println("click " + element + " " + component)
+    var info = component.toString();
+    // table cells will have an id but are not registered
     if (info.indexOf("JCheck") >= 0) {
         component.selected = element.checked;
     } else if (info.indexOf("JCombo") >= 0) {
@@ -1545,23 +1582,18 @@ Jmol.Dialog.click = function(element, keyEvent) {
       if (keyEvent && ((keyEvent.charCode || keyEvent.keyCode) != 13))
         return;
     }    
+  }
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
-  dialog.manager.actionPerformed(component ? component.name :  dialog.registryKey + "/" + element.id);
-}
-
-Jmol.Dialog.setSelected = function(chk) {
-System.out.println("JSmolCore: setSelected " + chk.id + " " + !!chk.selected)
- $("#" + chk.id).prop('checked', !!chk.selected);
-}
-
-Jmol.Dialog.setSelectedIndex = function(cmb) {
- $("#" + cmb.id).prop('selectedIndex', cmb.selectedIndex);
+  var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
+  System.out.println("JmolCore.js: click " + key); 
+  dialog.manager.actionPerformed(key);
 }
 
 Jmol.Dialog.windowClosing = function(element) {
   var id = $("div.JDialog:has(#" + element.id + ")")[0].id
   var dialog = Jmol.Dialog.htDialogs[id];
+  System.out.println("JmolCore.js: windowClosing " + dialog.registryKey); 
   dialog.manager.processWindowClosing(dialog.registryKey);
 }
 
