@@ -1494,7 +1494,7 @@ Jmol.Dialog.dispose = function(dialog) {
  
 Jmol.Dialog.setDialog = function(dialog) {
   $("#" + dialog.id).remove();
-  alert("removed" + dialog.id)
+  System.out.println("removed" + dialog.id)
   var id = dialog.id + "_mover";
   var container = $("#" + id);
   var jd;
