@@ -1,0 +1,12 @@
+<project name="JSmol" default="zip" basedir=".">
+ 
+   <!-- you must have checked out and built the Jmol project prior to running this. -->
+	
+	
+   <target name="zip" id="zip">
+  			
+  	<delete file="dist/*" />
+    <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
+  </target>
+
+</project>
