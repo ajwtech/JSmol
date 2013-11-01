@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  10/19/2013 7:05:36 AM
+// JSmolCore.js -- Jmol core capability  10/31/2013 7:49:51 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 10/31/2013 7:50:06 PM Jmol.Dialog as SwingController; Jmol._mouseOwner added
 // BH 10/19/2013 7:05:04 AM adding Jmol._ajaxCall for Error Contacting Server; database POST method enabled
 // BH 10/17/2013 1:40:51 PM  adding javajs/swing and Jmol.Dialog
 // BH 9/30/2013 6:42:24 PM: pdb.gz switch  pdb should only be for www.rcsb.org
@@ -858,7 +859,7 @@ Jmol = (function(document) {
     isBinary &= Jmol._canSyncBinary();
     // JU.SB is for Jmol 13.3+; J.util.SB is for Jmol.13.2
     if (!isBinary)
-  		return (JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
+      return (self.JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
   	var b;
 	if (Clazz.instanceOf(data, self.ArrayBuffer))
 		return Jmol._toBytes(data);
