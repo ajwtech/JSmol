@@ -189,8 +189,7 @@
 
 	<concat destfile="site/jsmol/j2s/core/core.z.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
-   		../../../jsmoljs/core/coretop.js
-   		../../../jsmoljs/core/corebottom.js
+   		../../../jsmoljs/JSmolJavaExt.js
    	   	" />
    	</concat>   	
 

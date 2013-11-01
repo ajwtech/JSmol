@@ -78,17 +78,18 @@ Jmol._setDraggable(Jmol.Console.JSConsole);
 Jmol.Console.Input = function(console) {
 
 	this.console = console;
+  this.id = console.id + "_input";
 	
 	// something like this....
 
 	this.getText = function() {
-		return Jmol.$val(this.console.id + "_input");
+		return Jmol.$val(this.id);
 	}
 
 	this.setText = function(text) {
 		if (text == null)
 			text = "";
-		Jmol.$val(this.console.id + "_input", text);
+		Jmol.$val(this.id, text);
 	}
 
 	this.keyPressed = function(ev) {
@@ -103,7 +104,7 @@ Jmol.Console.Input = function(console) {
       if (ev.keyCode == 9 || kcode == 9) {
       // tab         
         var me = this;
-        setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.console.id + "_input")},10);	
+        setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.id)},10);	
       }
         
     if ((mode & 1) == 1 || kcode == 0)
@@ -148,20 +149,20 @@ Jmol.Console.Input = function(console) {
 }
 
 Jmol.Console.Output = function(console) {
-	this.console = console;
-		
+  this.id = console.id + "_output";
 	this.getText = function() {
-		return Jmol.$val(this.console.id + "_output");
+		return Jmol.$val(this.id);
 	}
 
 	this.setText = function(text) {
 		if (text == null)
 			text = "";
-		Jmol.$val(this.console.id + "_output", text);
+		Jmol.$val(this.id, text);
 	}
 	
   this.append = function(message, att) {
-		this.setText(this.getText() + message); 		 
+		this.setText(this.getText() + message);
+    Jmol.$scrollTo(this.id, -1); 		 
   }
 }
 

@@ -183,6 +183,10 @@ Jmol = (function(document) {
 	return $(what).get(i);
   }
  
+  Jmol.$getAncestorDiv = function(id, className) {
+    return $("div." + className + ":has(#" + id + ")")[0];
+  }
+  
   Jmol.$html = function(id, html) {
     return $("#" + id).html(html);
   }
@@ -197,20 +201,38 @@ Jmol = (function(document) {
   
   Jmol.$documentOn = function(evt, id, f) {
 		$(document).on(evt, "#" + id, f);
-	  }
+	}
 	  
   Jmol.$windowOn = function(evt, f) {
     return $(window).on(evt, f);
   }
 
-  Jmol.$prop = function(id, p) {
-	return $("#" + id).prop(p);
+  Jmol.$prop = function(id, p, val) {
+    var d = $("#" + id);
+    return (arguments.length == 3 ? d.prop(p, val) : d.prop(p));
+  }
+  
+  Jmol.$remove = function(id) {
+    $("#" + id).remove();
   }
   
   Jmol.$resize = function (f) {
     return $(window).resize(f);
   }
   
+  Jmol.$scrollTo = function (id, n) {
+    var d = $("#" + id);
+    d.scrollTop(n < 0 ? d[0].scrollHeight : n);
+  }
+
+  Jmol.$setVisible = function(id, b) {
+    var d = $("#" + id);
+    if (b)
+      d.show();
+    else
+      d.hide();  
+  }
+  	  
   Jmol.$submit = function(id) {
     return $("#" + id).submit();
   }
@@ -1498,7 +1520,7 @@ Jmol.Dialog.getScreenDimensions = function(d) {
 }
 
 Jmol.Dialog.dispose = function(dialog) {
-  $("#" + dialog.id + "_mover").remove();
+  Jmol.$remove(dialog.id + "_mover");
   delete Jmol.Dialog.htDialogs[dialog.id]
   dialog.container.obj.dragBind(false);
 //  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
@@ -1516,19 +1538,19 @@ Jmol.Dialog.register = function(dialog, type) {
 
 Jmol.Dialog.setDialog = function(dialog) {
   Jmol._setMouseOwner(null);
-  $("#" + dialog.id).remove();
+  Jmol.$remove(dialog.id);
   System.out.println("removed " + dialog.id)
   var id = dialog.id + "_mover";
-  var container = $("#" + id);
+  var container = Jmol.$("#" + id);
   var jd;
   System.out.println("JmolCore.js: setDialog " + dialog.id);
   if (container[0]) {
     container.html(dialog.html);
     jd = container[0].jd;
   } else {
-    $("body").after("<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
+    Jmol.$after("body","<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
     var jd = new Jmol.Dialog.JSDialog();
-    container = $("#" + id);
+    container = Jmol.$("#" + id);
     dialog.container = container;
     jd.applet = dialog.manager.viewer.applet;
     jd.setContainer(container);
@@ -1548,22 +1570,19 @@ Jmol.Dialog.setDialog = function(dialog) {
 }
  
 Jmol.Dialog.setSelected = function(chk) {
- $("#" + chk.id).prop('checked', !!chk.selected);
+ Jmol.$prop(chk.id, 'checked', !!chk.selected);
 }
 
 Jmol.Dialog.setSelectedIndex = function(cmb) {
- $("#" + cmb.id).prop('selectedIndex', cmb.selectedIndex);
+ Jmol.$prop(cmb.id, 'selectedIndex', cmb.selectedIndex);
 }
 
 Jmol.Dialog.setText = function(btn) {
- $("#" + btn.id).prop('value', btn.text);
+ Jmol.$prop(btn.id, 'value', btn.text);
 }
 
 Jmol.Dialog.setVisible = function(c) {
-  if (c.visible)
-    $("#" + c.id).show();
-  else
-    $("#" + c.id).hide();  
+  Jmol.$setVisible(c.id, c.visible);
 }
 
 /// callbacks from the HTML elements ////
@@ -1584,16 +1603,14 @@ Jmol.Dialog.click = function(element, keyEvent) {
         return;
     }    
   }
-  var id = $("div.JDialog:has(#" + element.id + ")")[0].id
-  var dialog = Jmol.Dialog.htDialogs[id];
+  var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
   var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
   System.out.println("JmolCore.js: click " + key); 
   dialog.manager.actionPerformed(key);
 }
 
 Jmol.Dialog.windowClosing = function(element) {
-  var id = $("div.JDialog:has(#" + element.id + ")")[0].id
-  var dialog = Jmol.Dialog.htDialogs[id];
+  var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
   System.out.println("JmolCore.js: windowClosing " + dialog.registryKey); 
   dialog.manager.processWindowClosing(dialog.registryKey);
 }
