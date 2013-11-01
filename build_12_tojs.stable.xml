@@ -432,8 +432,12 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresmiles.js --js_output_file ../j2s/core/coresmiles.z.js" />
     </java>
+   	<!-- coretop and corebottom just wrap this code in a function 
+   	     that allows us to skip the loading of all the core classes 
+   	     when Jmol.debugCode==true, allowing us to check specific code unminimized   -->
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
+   		../../../jsmoljs/JSmolJavaExt.js
    		../../../jsmoljs/core/coretop.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
