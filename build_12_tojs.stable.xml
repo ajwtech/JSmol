@@ -7,7 +7,7 @@
 
    <target name="toJs-stable" id="toJs-stable">
   			
- 	<delete dir="site" />
+ 	<delete dir="site" quiet="true" />
 
   	<!-- create a NON svn local directory only containing JS files  -->
   	
