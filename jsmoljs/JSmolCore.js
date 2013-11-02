@@ -589,6 +589,7 @@ Jmol = (function(document) {
 			Jmol._setQueryTerm(applet, fileName);
 			fileName = Jmol._getDirectDatabaseCall(fileName, true);
 			
+      
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
 				fileName = Jmol._getDirectDatabaseCall(fileName, false);
@@ -596,7 +597,6 @@ Jmol = (function(document) {
 				return;
 			}
 		}	
-    
 		var info = {
 			dataType: "text",
 			url: fileName,

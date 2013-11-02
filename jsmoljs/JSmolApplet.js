@@ -575,6 +575,8 @@
 	}
 	         
 	japroto._searchDatabase = function(query, database, script){
+    if (this._2dapplet && this._2dapplet._isEmbedded && Jmol.$(this, "2dappletdiv:visible")[0])
+      return this._2dapplet._searchDatabase(query, database, script); 
 		this._showInfo(false);
 		if (query.indexOf("?") >= 0) {
 			Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
