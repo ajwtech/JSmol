@@ -274,22 +274,26 @@
 	japroto._readyCallback = function(id, fullid, isReady, applet) {
 		if (!isReady)
 			return; // ignore -- page is closing
-    var me = this;
-    Jmol._setDestroy(me);
-		me._ready = true;
-		var script = me._readyScript;
-		me._applet = applet;
-		if (me._defaultModel)
-			Jmol._search(me, me._defaultModel, (script ? ";" + script : ""));
+    Jmol._setDestroy(this);
+		this._ready = true;
+		var script = this._readyScript;
+		this._applet = applet;
+		if (this._defaultModel)
+			Jmol._search(this, this._defaultModel, (script ? ";" + script : ""));
 		else if (script)
-			me._script(script);
-		else if (me._src)
-			me._script('load "' + me._src + '"');
-		me._showInfo(true);
-		me._showInfo(false);
-    me._setDragDrop();
-		me._readyFunction && me._readyFunction(me);
+			this._script(script);
+		else if (this._src)
+			this._script('load "' + this._src + '"');
+		this._showInfo(true);
+		this._showInfo(false);
+    this._setDragDrop();
+    var me = this;
+		this._readyFunction && this._readyFunction(me);
 		Jmol._setReady(this);
+    var app = this._2dapplet;
+    if (app && app._isEmbedded && app._ready && app.__Info.visible) {
+      this._show2d(true);
+      }
 	}
 
   japroto._setDragDrop = function() {
@@ -320,40 +324,37 @@
     });
   }	
 	japroto._showInfo = function(tf) {
-		Jmol._getElement(this, "infoheaderspan").innerHTML = this._infoHeader;
+    if(tf && this._2dapplet)
+      this._2dapplet._show(false);
+    Jmol.$html(Jmol.$(this, "infoheaderspan"), this._infoHeader);
 		if (this._info)
-			Jmol._getElement(this, "infodiv").innerHTML = this._info;
+			Jmol.$html(Jmol.$(this, "infodiv"), this._info);
 		if ((!this._isInfoVisible) == (!tf))
 			return;
 		this._isInfoVisible = tf;
 		// 1px does not work for MSIE
 	  if (this._isJava) {
-  		var w = (tf ? "2px" : "100%");
-  		var h = (tf ? "2px" : "100%");
-  //		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-  //		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-  		Jmol._getElement(this, "appletdiv").style.width = w;
-  		Jmol._getElement(this, "appletdiv").style.height = h;
+  		var x = (tf ? 2 : "100%");
+      Jmol.$setSize(Jmol.$(this, "appletdiv"), x, x);
     }
-		if (this._infoObject) {
-			this._infoObject._showInfo(tf);
-		} else {
-			Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
-  		Jmol._getElement(this, "infoheaderdiv").style.display = (tf ? "block" : "none");
-		}
+		Jmol.$setVisible(Jmol.$(this, "infotablediv"), tf);
+		Jmol.$setVisible(Jmol.$(this, "infoheaderdiv"), tf);
 		this._show(!tf);
 	}
 
+	japroto._show2d = function(tf) {
+    this._2dapplet._show2d(tf);
+    if (this._2dapplet._isEmbedded) {
+      this._showInfo(false);
+      this._show(!tf);
+    }
+	}
+
 	japroto._show = function(tf) {
-		var w = (!tf ? "2px" : "100%");
-		var h = (!tf ? "2px" : "100%");
-		//var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-		//var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-		var o = Jmol._getElement(this, "object");
-		if (o && o.style) {
-			o.style.width = w; 
-			o.style.height = h;
-		} 
+		var x = (!tf ? 2 : "100%");
+    Jmol.$setSize(Jmol.$(this, "object"), x, x);
+    if (!this._isJava)
+      Jmol.$setVisible(Jmol.$(this, "appletdiv"), tf);
 	}
 
 	japroto._search = function(query, script){
@@ -379,7 +380,8 @@
 
 	
   japroto._addScript = function(script) {      
-		this._readyScript || (this._readyScript = ";");
+		this._readyScript || (this.
+    Script = ";");
 		this._readyScript += ";" + script;
     return true;
   }

@@ -224,6 +224,11 @@
 		applet._showInfo(tf);
 	}
 
+	Jmol.show2d = function(applet, tf) {
+    // only when JME or JSME is synced with Jmol
+		applet._show2d(tf);
+	}
+
 
 //////////// controls and HTML /////////////
 

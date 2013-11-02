@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  10/31/2013 7:49:51 PM
+// JSmolCore.js -- Jmol core capability  11/2/2013 12:06:05 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 11/2/2013 12:05:11 PM JSmolJSME fixes; https access fixed
 // BH 10/31/2013 7:50:06 PM Jmol.Dialog as SwingController; Jmol._mouseOwner added
 // BH 10/19/2013 7:05:04 AM adding Jmol._ajaxCall for Error Contacting Server; database POST method enabled
 // BH 10/17/2013 1:40:51 PM  adding javajs/swing and Jmol.Dialog
@@ -67,6 +68,8 @@ if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol
 
 Jmol = (function(document) {
   var z=9000;
+  var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
+
 	return {
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
@@ -80,6 +83,7 @@ Jmol = (function(document) {
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
+    _ajaxTestSite: http + "://google.com",
     _z:{
       header:z,
       main:z++,
@@ -144,63 +148,74 @@ Jmol = (function(document) {
   // hooks to jQuery -- if you have a different AJAX tool, feel free to adapt.
   // There should be no other references to jQuery in all the JSmol libraries.
 
-  Jmol.$ = function(objectOrId, appletDiv) {
-	  return $(appletDiv ? "#" + objectOrId._id + "_" + appletDiv : objectOrId);
+  Jmol.$ = function(objectOrId, subdiv) {
+	  return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
   }	
-
-  Jmol.$after = function (what, s) {
-	  $(what).after(s);
+  
+  Jmol._$ = function(id) {
+    return (typeof id == "string" ? $("#" + id) : id);
   }
-	  
+
+  /// special functions:
+  
   Jmol.$ajax = function (info) {
+    //if (info.url.indexOf("http:") == 0)
+      //info.url = Jmol.http + info.url.substring(4);
     Jmol._ajaxCall = info.url;
 	  return $.ajax(info);
   }
 
-  Jmol.$attr = function (id, a, val) {
-	  return $("#" + id).attr(a, val);
-  }
+  Jmol.$appEvent = function(app, subdiv, evt, f) {
+    var o = Jmol.$(app, subdiv); 
+  	o.off(evt) && f && o.on(evt, f);
+  }	  
+
+  //// full identifier expected (could be "body", for example):
   
+  Jmol.$after = function (what, s) {
+	  return $(what).after(s);
+  }
+	
   Jmol.$bind = function(what, list, f) {
 	  return (f ? $(what).bind(list, f) : $(what).unbind(list));
   }
 
-  Jmol.$appStyle = function(app, div, style) {
-	  return Jmol.$(app, div).css(style);
-  }
-	 
-  Jmol.$appEvent = function(app, div, evt, f) {
-	Jmol.$(app, div).off(evt);
-	if (f)
-  	  Jmol.$(app, div).on(evt, f);
-  }	  
-
-  Jmol.$focus = function(id) {
-	  return $("#" + id).focus();
-  }
-	   
   Jmol.$get = function(what, i) {
 	return $(what).get(i);
   }
  
+  //// div id or jQuery object expected:
+  
+  Jmol.$attr = function (id, a, val) {
+	  return Jmol._$(id).attr(a, val);
+  }
+  
+  Jmol.$css = function(id, style) {
+	  return Jmol._$(id).css(style);
+  }
+	 
+  Jmol.$focus = function(id) {
+	  return Jmol._$(id).focus();
+  }
+	   
   Jmol.$getAncestorDiv = function(id, className) {
     return $("div." + className + ":has(#" + id + ")")[0];
   }
   
   Jmol.$html = function(id, html) {
-    return $("#" + id).html(html);
+    return Jmol._$(id).html(html);
   }
    
   Jmol.$offset = function(id) {
-    return $("#" + id).offset();
+    return Jmol._$(id).offset();
   }
 
   Jmol.$documentOff = function(evt, id) {
-	$(document).off(evt, "#" + id);
+    return $(document).off(evt, "#" + id);
   }
   
   Jmol.$documentOn = function(evt, id, f) {
-		$(document).on(evt, "#" + id, f);
+		return $(document).on(evt, "#" + id, f);
 	}
 	  
   Jmol.$windowOn = function(evt, f) {
@@ -208,12 +223,12 @@ Jmol = (function(document) {
   }
 
   Jmol.$prop = function(id, p, val) {
-    var d = $("#" + id);
-    return (arguments.length == 3 ? d.prop(p, val) : d.prop(p));
+    var o = Jmol._$(id);
+    return (arguments.length == 3 ? o.prop(p, val) : o.prop(p));
   }
   
   Jmol.$remove = function(id) {
-    $("#" + id).remove();
+    return Jmol._$(id).remove();
   }
   
   Jmol.$resize = function (f) {
@@ -221,24 +236,26 @@ Jmol = (function(document) {
   }
   
   Jmol.$scrollTo = function (id, n) {
-    var d = $("#" + id);
-    d.scrollTop(n < 0 ? d[0].scrollHeight : n);
+    var o = Jmol._$(id);
+    return o.scrollTop(n < 0 ? o[0].scrollHeight : n);
   }
 
+  Jmol.$setSize = function(id, w, h) {
+    return Jmol._$(id).width(w).height(h);
+  }
+  
   Jmol.$setVisible = function(id, b) {
-    var d = $("#" + id);
-    if (b)
-      d.show();
-    else
-      d.hide();  
+    var o = Jmol._$(id);
+    return (b ? o.show() : o.hide());  
   }
   	  
   Jmol.$submit = function(id) {
-    return $("#" + id).submit();
+    return Jmol._$(id).submit();
   }
 
   Jmol.$val = function (id, v) {
-    return (arguments.length == 1 ? $("#" + id).val() : $("#" + id).val(v));
+    var o = Jmol._$(id);
+    return (arguments.length == 1 ? o.val() : o.val(v));
   }
   
   ////////////// protected variables ///////////
@@ -685,20 +702,22 @@ Jmol = (function(document) {
 	  Jmol._syncBinaryOK = true;
 		try {
 			var xhr = new window.XMLHttpRequest();
-		  xhr.open( "text", "http://google.com", false );
+		  xhr.open( "text", Jmol._ajaxTestSite, false );
 		  if (xhr.hasOwnProperty("responseType")) {
 		    xhr.responseType = "arraybuffer";
 		  } else if (xhr.overrideMimeType) {
 		    xhr.overrideMimeType('text/plain; charset=x-user-defined');
 		  }
 		} catch( e ) {
-      System.out.println("JmolCore.js: synchronous binary file transfer is not available");
+      var s = "JmolCore.js: synchronous binary file transfer is requested but not available";
+      System.out.println(s);
+      alert(s)
 			return Jmol._syncBinaryOK = false;
 		}
 		return true;	
 	}
 
-	Jmol._binaryTypes = [".gz",".jpg",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".pse"]; // mrc? O? others?
+	Jmol._binaryTypes = [".gz",".jpg",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".pse", ".map", ".omap"];
 	
   Jmol._isBinaryUrl = function(url) {
   	for (var i = Jmol._binaryTypes.length; --i >= 0;)
@@ -799,7 +818,7 @@ Jmol = (function(document) {
   		var reader = new FileReader();
   		reader.onloadend = function(evt) {
   			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-  			  Jmol.$appStyle(applet, "localReader", {display : "none"});
+  			  Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
   			  fileLoadThread.setData(file.name, Jmol._toBytes(evt.target.result));
   			}
   		};
@@ -807,10 +826,10 @@ Jmol = (function(document) {
   	});
   	Jmol.$appEvent(applet, "localReader_cancel", "click");
   	Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
-      Jmol.$appStyle(applet, "localReader", {display: "none"});
+      Jmol.$css(Jmol.$(applet, "localReader"), {display: "none"});
   		fileLoadThread.setData(null, "#CANCELED#");
-  	});  	     
-    Jmol.$appStyle(applet, "localReader", {display : "block"});
+  	});
+    Jmol.$css(Jmol.$(applet, "localReader"), {display : "block"});
   }
 
   Jmol._toBytes = function(data) {
@@ -878,7 +897,8 @@ Jmol = (function(document) {
       data = "";
       isBinary = false;
     }
-    isBinary &= Jmol._canSyncBinary();
+    if (isBinary)
+      isBinary = Jmol._canSyncBinary();
     // JU.SB is for Jmol 13.3+; J.util.SB is for Jmol.13.2
     if (!isBinary)
       return (self.JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
@@ -929,12 +949,6 @@ Jmol = (function(document) {
 	}
 
 	Jmol._getWrapper = function(applet, isHeader) {
-		var height = applet._height;
-		var width = applet._width;
-		if (typeof height !== "string" || height.indexOf("%") < 0)
-			height += "px";
-		if (typeof width !== "string" || width.indexOf("%") < 0)
-			width += "px";
 			
 			// id_appletinfotablediv
 			//     id_appletdiv
@@ -954,8 +968,10 @@ Jmol = (function(document) {
 			// But it turns out the table has problems with DOCTYPE tags, so that's out. 
 			// The 95% is a compromise that we need until the no-DOCTYPE MSIE solution is found. 
 			// (100% does not work with the JME linked applet)
-			
-      var img = "";  
+    var s;
+    // ... here are just for clarification in this code; they are removed immediately
+    if (isHeader) {
+      var img = "";	
       if (applet._coverImage){
         var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + applet._coverTitle + "\"";
         var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
@@ -963,13 +979,27 @@ Jmol = (function(document) {
         img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:" + Jmol._z.cover+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
          + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
       }
-
-			var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative\">IMG<div id=\"ID_appletdiv\" style=\"z-index:" 
-        + Jmol._z.header + ";width:100%;height:100%;position:absolute;top:0px;left:0px;\">"
-				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;position:absolute;top:0px;left:0px\">\
-			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow;display:none\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:95%;overflow:auto\"></div></div></div>");
-		return s.replace(/IMG/, img).replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
+      s = "\
+...<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative\">IMG\
+......<div id=\"ID_appletdiv\" style=\"z-index:" + Jmol._z.header + ";width:100%;height:100%;position:absolute;top:0px;left:0px;\">";
+  		var height = applet._height;
+  		var width = applet._width;
+  		if (typeof height !== "string" || height.indexOf("%") < 0) 
+  			height += "px";
+  		if (typeof width !== "string" || width.indexOf("%") < 0)
+  			width += "px";
+  		s = s.replace(/IMG/, img).replace(/Hpx/g, height).replace(/Wpx/g, width);
+    } else {
+      s = "\
+......</div>\
+......<div id=\"ID_2dappletdiv\" style=\"position:absolute;width:100%;height:100%;overflow:hidden;display:none\"></div>\
+......<div id=\"ID_infotablediv\" style=\"width:100%;height:100%;position:absolute;top:0px;left:0px\">\
+.........<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow;display:none\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
+.........<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:100%;overflow:auto\"></div>\
+......</div>\
+...</div>";
+    }
+		return s.replace(/\.\.\./g,"").replace(/[\n\r]/g,"").replace(/ID/g, applet._id);
 	}
 
 	Jmol._documentWrite = function(text) {
