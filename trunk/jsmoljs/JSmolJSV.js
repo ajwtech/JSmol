@@ -148,39 +148,14 @@
     return false;
   }	
   
-	jsvproto._showInfo = function(tf) {
-		Jmol._getElement(this, "infoheaderspan").innerHTML = this._infoHeader;
-		if (this._info)
-			Jmol._getElement(this, "infodiv").innerHTML = this._info;
-		if ((!this._isInfoVisible) == (!tf))
-			return;
-		this._isInfoVisible = tf;
-		// 1px does not work for MSIE
-	  if (this._isJava) {
-  		var w = (tf ? "2px" : "100%");
-  		var h = (tf ? "2px" : "100%");
-  //		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-  //		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-  		Jmol._getElement(this, "appletdiv").style.width = w;
-  		Jmol._getElement(this, "appletdiv").style.height = h;
-    }
-		if (this._infoObject) {
-			this._infoObject._showInfo(tf);
-		} else {
-			Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
-  		Jmol._getElement(this, "infoheaderdiv").style.display = (tf ? "block" : "none");
-		}
-		this._show(!tf);
-	}
+	jsvproto._search = Jmol._Applet.prototype._search;  
+	jsvproto._showInfo = Jmol._Applet.prototype._showInfo;
+	jsvproto._show = Jmol._Applet.prototype._show;
 	
-	jsvproto._search = Jmol._Applet.prototype._search;
-  
 	jsvproto._searchDatabase = function(query, database) {
     return this._applet.script("load " + database + query)
   }
   
-	jsvproto._show = Jmol._Applet.prototype._show;
-	
 	jsvproto._script = function(script) {
 		if (!this._ready) {
 			this._readyScript || (this._readyScript = ";");

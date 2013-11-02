@@ -134,7 +134,7 @@ Jmol.Console.Input = function(console) {
 
 
   this.getCaretPosition = function() {
-    var el = Jmol.$get(this, 0);
+    var el = Jmol.$get(this.id)[0];
     if('selectionStart' in el)
       return el.selectionStart;
 		if(!('selection' in document))

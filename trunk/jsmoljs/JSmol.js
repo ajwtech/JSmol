@@ -269,18 +269,8 @@
 			this._showInfo(false);
 		};
 	
-/*
- * proto._showInfo = function(tf) { Jmol._getElement(this,
- * "infoheaderspan").innerHTML = this._infoHeader; if (this._info)
- * Jmol._getElement(this, "infodiv").innerHTML = this._info; if
- * ((!this._isInfoVisible) == (!tf)) return; this._isInfoVisible = tf; if
- * (this._infoObject) { this._infoObject._showInfo(tf); } else {
- * Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" :
- * "none"); Jmol._getElement(this, "infoheaderdiv").style.display = (tf ?
- * "block" : "none"); } this._show(!tf); }
- */		
 		proto._show = function(tf) {
-			Jmol._getElement(this,"appletdiv").style.display = (tf ? "block" : "none");
+			Jmol.$setVisible(Jmol.$(this,"appletdiv"), tf);
 			if (tf)
 				Jmol._repaint(this, true);
 		};
