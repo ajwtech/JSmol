@@ -131,26 +131,30 @@
   
 	proto._searchDatabase = function(query, database){
 		this._showInfo(false);
-		if (database == "$")
+		if (database == "$") {
 			query = "$" + query; // 2D variant
+    }
 		var dm = database + query;
 		if (Jmol.db._DirectDatabaseCalls[database]) {
-			this._loadFile(dm, script);
+			this._loadFile(dm);
 			return;
 		}
-		var self=this;
+		var me=this;
 		Jmol._getRawDataFromServer(
 			database,
 			query,
-			function(data){self._loadModel(data)}
+			function(data){me._loadModel(data)},
+      null, 
+      false,// not base64
+      true  // noScript
 		);
 	}
 	
-	proto._loadFile = function(fileName){
+ 	proto._loadFile = function(fileName){
 		this._showInfo(false);
 		this._thisJmolModel = "" + Math.random();
-		var self = this;
-		Jmol._loadFileData(this, fileName, function(data){self._loadModel(data)});
+		var me = this;
+		Jmol._loadFileData(this, fileName, function(data){me._loadModel(data)});
 	}
 	
 	proto._loadModel = function(jmeOrMolData) {
