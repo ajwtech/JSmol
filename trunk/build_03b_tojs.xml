@@ -288,7 +288,7 @@
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/JmolConsole.js
+   		../../../jsmoljs/JSmolConsole.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
    		J/console/GenericConsole.js
@@ -299,7 +299,7 @@
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/JmolMenu.js
+   		../../../jsmoljs/JSmolMenu.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
    		J/awtjs2d/JSPopup.js
@@ -814,7 +814,6 @@
    	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
    	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
    		JSmol.min.js
-   		../../jsmoljs/core/coretop2.js
    		j2s/core/core.z.js 
    		" />
    	</concat>
