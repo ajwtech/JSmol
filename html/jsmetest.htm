@@ -13,16 +13,16 @@ var jmol="jmol";
 var jme = "jme";
 
 var JmolInfo = {
-	width: 400,
-	height: 400,
+	width: 300,
+	height: 300,
 	debug: false,
 	color: "black",
 	use: "HTML5",
   addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	jarPath: "..",
+	jarPath: "java",
 	jarFile: "JmolAppletSigned.jar",
-  j2sPath: "../jsmol/j2s",
+  j2sPath: "j2s",
 	isSigned: true,
   defaultModel: ":morphine",
 	console: "none",
@@ -40,8 +40,8 @@ var JMEInfo = {
   //,"jme" : startingStructure   
 }
 
-Jmol.setGrabberOptions([[":", "PubChem"]])
-//Jmol.setGrabberOptions([["$", "NCI"]])
+//Jmol.setGrabberOptions([[":", "PubChem"]])
+Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
         
 </script>
 </head>
