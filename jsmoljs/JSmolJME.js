@@ -183,7 +183,7 @@
       var isOK = true;
       if (jme != null) {
   		  var jmeSMILES = jme.smiles();
-  		  var jmolAtoms = jmeSMILES ? Jmol.evaluate(jmol, "{*}.find('SMILES', '" + jmeSMILES + "')") : "({})";
+  		  var jmolAtoms = (jmeSMILES ? Jmol.evaluate(jmol, "{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')") : "({})");
 		    var isOK = (jmolAtoms != "({})");
       }
 		  if (!isOK) {
