@@ -32,6 +32,7 @@
 
  // J2S class changes:
  
+ // BH 11/3/2013 7:21:39 AM additional wrapping functions for better compressibility
  // BH 10/30/2013 8:10:58 AM added getClass().getResource() -- returning a relative string, not a URL
  // BH 10/30/2013 6:43:00 AM removed second System def and added System.$props and default System.property "line.separator" 
  // BH 6/15/2013 8:02:07 AM corrections to Class.isAS to return true if first element is null
@@ -3555,32 +3556,16 @@ Clazz.fixEvent.stopPropagation = function() {
  */
 ClazzLoader = function () {};
 
+
 /**
  * Class dependency tree node
  */
 /* private */
 ClazzNode = function () {
-	this.parents = new Array ();
-	this.musts = new Array ();
-	this.optionals = new Array ();
-	this.declaration = null;
-	this.name = null; // id
-	this.path = null;
-	this.status = 0;
-	this.random = 0.13412;
-	this.optionalsLoaded = null;
-	this.toString = function () {
-		if (this.name != null) {
-			return this.name;
-		} else if (this.path != null) {
-			return this.path;
-		} else {
-			return "ClazzNode";
-		}
-	};
+  ClazzLoader.initNode(this);
 };
 
-;(function(ClazzLoader, ClazzNode) {
+;(function(Clazz, ClazzLoader, ClazzNode) {
 /*-#
  # ClazzNode.STATUS_UNKNOWN = 0
  # ClazzNode.STATUS_KNOWN -> 1
@@ -3590,6 +3575,23 @@ ClazzNode = function () {
  # ClazzNode.STATUS_OPTIONALS_LOADED -> 5
  #-*/
 /*# >>x #*/
+
+ClazzLoader.initNode = function(node) {
+	node.parents = new Array ();
+	node.musts = new Array ();
+	node.optionals = new Array ();
+	node.declaration = null;
+	node.name = null; // id
+	node.path = null;
+	node.status = 0;
+	node.random = 0.13412;
+	node.optionalsLoaded = null;
+}
+
+ClazzNode.prototype.toString = function () {
+	return this.name || this.path || "ClazzNode";
+}
+
 ClazzNode.STATUS_UNKNOWN = 0;
 ClazzNode.STATUS_KNOWN = 1;
 ClazzNode.STATUS_CONTENT_LOADED = 2;
@@ -6275,7 +6277,7 @@ ClazzLoader.assureInnerClass = function (clzz, fun) {
 
 ClassLoader = ClazzLoader;
 
-})(ClazzLoader, ClazzNode);
+})(Clazz, ClazzLoader, ClazzNode);
 
 //}
 /******************************************************************************

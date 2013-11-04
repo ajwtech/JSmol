@@ -1,4 +1,5 @@
 // JSmolJavaExt.js
+// BH 11/4/2013 7:34:26 AM changing "var nativeClazz" to "var nativeClass" to avoid ANT replacement of "nativeClazz." to "nativeClazz_"
 // BH 10/19/2013 1:29:27 PM fixed String.$replace()
 // BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
 // BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
@@ -2052,30 +2053,30 @@ var index=Clazz.callingStackTraces.length-1;
 var noLooping=true;
 while(index>-1||caller!=null){
 var clazzName=null;
-var nativeClazz=null;
+var nativeClass=null;
 if(!noLooping||caller==Clazz.tryToSearchAndExecute||caller==$_U||caller==null){
 if(index<0){
 break;
 }
 noLooping=true;
 superCaller=Clazz.callingStackTraces[index].caller;
-nativeClazz=Clazz.callingStackTraces[index].owner;
+nativeClass=Clazz.callingStackTraces[index].owner;
 index--;
 }else{
 superCaller=caller;
 if(superCaller.claxxOwner!=null){
-nativeClazz=superCaller.claxxOwner;
+nativeClass=superCaller.claxxOwner;
 }else if(superCaller.exClazz!=null){
-nativeClazz=superCaller.exClazz;
+nativeClass=superCaller.exClazz;
 }
 }
 var st=new StackTraceElement(
-((nativeClazz!=null&&nativeClazz.__CLASS_NAME__.length!=0)?
-nativeClazz.__CLASS_NAME__:"anonymous"),
+((nativeClass!=null&&nativeClass.__CLASS_NAME__.length!=0)?
+nativeClass.__CLASS_NAME__:"anonymous"),
 ((superCaller.exName==null)?"anonymous":superCaller.exName)
 +" ("+Clazz.getParamsType(superCaller.arguments)+")",
 null,-1);
-st.nativeClazz=nativeClazz;
+st.nativeClazz=nativeClass;
 this.stackTrace[this.stackTrace.length]=st;
 for(var i=0;i<callerList.length;i++){
 if(callerList[i]==superCaller){
