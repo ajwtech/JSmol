@@ -257,6 +257,17 @@
    		J/script/ScriptMathProcessor.js
    		" />
    	</concat>
+   	<echo>Wrapping corescript.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/corescript.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/corescript.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corescript.js --js_output_file ../j2s/core/corescript.z.js" />
     </java>
@@ -266,6 +277,17 @@
    		J/scriptext/ScriptExt.js
    		" />
    	</concat> 	   	
+   	<echo>Wrapping corescript2.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/corescript2.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/corescript2.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corescript2.js --js_output_file ../j2s/core/corescript2.z.js" />
     </java>
@@ -288,7 +310,7 @@
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/JSmolConsole.js
+   		../js/JSmolConsole.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
    		J/console/GenericConsole.js
@@ -299,7 +321,7 @@
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/JSmolMenu.js
+   		../js/JSmolMenu.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
    		J/awtjs2d/JSPopup.js
@@ -367,6 +389,17 @@
    		J/io2/JmolZipInputStream.js
    	   	" />
    	</concat>   	
+   	<echo>Wrapping corezip.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/corezip.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/corezip.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corezip.js --js_output_file ../j2s/core/corezip.z.js" />
     </java>
@@ -413,6 +446,17 @@
    		J/renderbio/TraceRenderer.js
    	   	" />
    	</concat>   	
+   	<echo>Wrapping corebio.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/corebio.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/corebio.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js corebio.js --js_output_file ../j2s/core/corebio.z.js" />
     </java>
@@ -440,7 +484,17 @@
    		J/jvxl/readers/JvxlXmlReader.js
    		J/rendersurface/IsosurfaceRenderer.js
    	   	" />
-   	</concat>	
+   	</concat>	   	<echo>Wrapping coresurface.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/coresurface.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		coresurface.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresurface.js --js_output_file ../j2s/core/coresurface.z.js" />
     </java>
@@ -457,6 +511,17 @@
    		J/symmetry/SymmetryInfo.js
    		J/symmetry/UnitCell.js
    	" />
+   	</concat>
+   	<echo>Wrapping coresym.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/coresym.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/coresym.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresym.js --js_output_file ../j2s/core/coresym.z.js" />
@@ -526,10 +591,11 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js coresmiles.js --js_output_file ../j2s/core/coresmiles.z.js" />
     </java>
+   	<echo>creating site/jsmol/j2s/core/core.z.js</echo>
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
-   		../../../jsmoljs/JSmolJavaExt.js
-   		../../../jsmoljs/core/coretop.js
+   		../js/JSmolJavaExt.js
+   		../js/core/coretop.js
    		JU/T3.js
    		JU/T3i.js
    		JU/T3d.js
@@ -769,9 +835,20 @@
    		J/awtjs/Platform.js
    		J/awtjs/JSFont.js
    		J/awtjs/Image.js
-   		../../../jsmoljs/core/corebottom.js
+   		../js/core/corebottom.js
    	   	" />
-   	</concat>   	
+   	</concat>
+   	<echo>Wrapping core.js with anonymous function for Google Compressor Compiler</echo>
+   	<copy file="site/jsmol/js/core.js" tofile="site/jsmol/js/core2.js" />
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/js" files="
+   		core/coretop2.js
+   		core2.js
+   		core/corebottom2.js
+   		" />
+   	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js core.js --js_output_file ../j2s/core/core.z.js" />
     </java>
