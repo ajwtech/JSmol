@@ -229,6 +229,9 @@
       else if (applet._startupScript)
         viewerOptions.put("script", applet._startupScript)
 			
+			if (Jmol._syncedApplets.length) {
+		    viewerOptions.put("synccallback", "Jmol._mySyncCallback");
+      }
 			viewerOptions.put("signedApplet", "true");
 			viewerOptions.put("platform", applet._platform);
 			if (applet._is2D)
