@@ -1,12 +1,17 @@
 <project name="JSmol" default="zip" basedir=".">
- 
-   <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
+	   <property name="jmol.path" value="../Jmol" />
 	
    <target name="zip" id="zip">
   			
+   	<echo>creating distribution zip file jsmol.zip</echo>
   	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
+   	<copy overwrite="true" todir="${jmol.path}/appletweb" >
+	  <fileset dir="dist">
+	    <include name="jsmol.zip" />
+	  </fileset>
+	</copy>
   </target>
 
 </project>
