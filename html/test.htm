@@ -21,6 +21,9 @@
 
 <script type="text/javascript">
 
+Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
+
+
 var jmolApplet0; // set up in HTML table, below
 var Info;
 
@@ -37,8 +40,6 @@ var s = document.location.search;
 // true if you want to do some code debugging by inserting
 // System.out.println, document.title, or alert commands
 // anywhere in the Java or Jmol code.
-
-Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
 
 //if (s.indexOf("?") < 0) s = "USE=HTML5"
 
