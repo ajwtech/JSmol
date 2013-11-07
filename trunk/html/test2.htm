@@ -3,6 +3,7 @@
 <title>HTML5-only and WebGL Jmol Demo</title>
 <head>
 <meta charset="utf-8">
+<!-- breaking out the library for debugging -->
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -17,6 +18,8 @@
 <script type="text/javascript" src="js/JSmolGLmol.js"></script>
 
 <script type="text/javascript">
+
+Jmol.debugCode = true; // stops core.z.js from loading, allowing unminimized class files to load instead
 
 var jmolApplet0; // set up in HTML table, below
 var Info;
@@ -34,10 +37,6 @@ var s = document.location.search;
 // true if you want to do some code debugging by inserting
 // System.out.println, document.title, or alert commands
 // anywhere in the Java or Jmol code.
-
-Jmol.debugCode = (s.indexOf("debugcode") >= 0);
-
-//if (s.indexOf("?") < 0) s = "USE=HTML5"
 
 if (s.indexOf("USE=") >= 0)
   use = s.split("USE=")[1].split("&")[0]
