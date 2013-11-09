@@ -4,7 +4,7 @@
 	
 	
    <property name="jmol.path" value="../Jmol" />
-	<property name="jsv.path" value="../JSpecView" />
+   <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJs" id="toJs">
   			
@@ -174,7 +174,7 @@
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
   	  </fileset>
-	  <fileset dir="${jmol.path}/appletweb">
+	  <fileset dir="${jmol.path}/jars">
 	    <include name="JSpecViewApplet*.jar" />
 	  </fileset>
 	</copy>
