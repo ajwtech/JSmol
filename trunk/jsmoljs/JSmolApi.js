@@ -155,8 +155,10 @@
   // optional Info here	
   Jmol.getAppletHtml = function(applet, Info) {
     if (Info) {
-      Jmol.setDocument(0);
+      var d = Jmol._document;
+      Jmol._document = null;
       applet = Jmol.getApplet(applet, Info);
+      Jmol._document = d;
     }  
     return applet._code;
 	}

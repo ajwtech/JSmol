@@ -379,7 +379,7 @@
 		applet._applet.viewer.setScreenDimension(w, h);
 
 		if (asNewThread) {
-      setTimeout(function(){ applet._applet.viewer.updateJS(0,0)});
+      setTimeout(function(){ applet._applet && applet._applet.viewer.updateJS(0,0)});
   	} else {
   		applet._applet.viewer.updateJS(0,0);
   	}

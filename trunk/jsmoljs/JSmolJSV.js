@@ -397,6 +397,18 @@
     jsvApplet._applet.setVisible(TF);    
   }
 
+    // optional Info here	
+  Jmol.getJSVAppletHtml = function(applet, Info) {
+    if (Info) {
+      var d = Jmol._document;
+      Jmol._document = null;
+      applet = Jmol.getJSVApplet(applet, Info);
+      Jmol._document = d;
+    }  
+    return applet._code;
+	}
+		
+
 
 })(Jmol, document);
 

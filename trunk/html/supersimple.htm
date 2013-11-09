@@ -8,7 +8,6 @@
 
 $(document).ready(function() {
 
-
 Info = {
 	width: 400,
 	height: 400,
@@ -23,14 +22,7 @@ Info = {
 	script: "load $caffeine"
 }
 
-Jmol.setDocument(0) // required for after-page-loading to avoid document.write()
-
-Jmol.getApplet("jmolApplet0",Info)  
-
-// app would be the first parameter of a Jmol.script command 
-
-$("#mydiv").html(Jmol.getAppletHtml(jmolApplet0))
-
+$("#mydiv").html(Jmol.getAppletHtml("jmolApplet0",Info))
 
 });
 
