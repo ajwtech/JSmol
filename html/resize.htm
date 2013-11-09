@@ -84,9 +84,7 @@ Jmol.setDocument(document);
 // Jmol.getAppletHtml is working.
 
 $(document).ready(function(){
-  Jmol.setDocument(0);
-  jmol1 = Jmol.getApplet("jmol1", InfoA)    
-  $("#appletplace1").html(Jmol.getAppletHtml(jmol1));
+  $("#appletplace1").html(Jmol.getAppletHtml("jmol1", InfoA));
 });
 
 </script>

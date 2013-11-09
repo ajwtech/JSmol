@@ -2,9 +2,19 @@
 <html>
 <head>
 <meta charset="utf-8">
-<script type="text/javascript" src="JSmol.min.js"></script>
+<script type="text/javascript" src="jquery/jquery.js"></script>
+<script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
+<script type="text/javascript" src="js/JSmolCore.js"></script>
+<script type="text/javascript" src="js/JSmolApplet.js"></script>
+<script type="text/javascript" src="js/JSmolApi.js"></script>
+<script type="text/javascript" src="js/JSmolControls.js"></script>
+<script type="text/javascript" src="js/j2sjmol.js"></script>
+<script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
+<script type="text/javascript" src="js/JSmolConsole.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
+<script type="text/javascript" src="js/JSmolJME.js"></script>
+<script type="text/javascript" src="jsme/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
 
@@ -37,17 +47,14 @@ var MInfo;       // for Molfile
 Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
 use="HTML5";
 
-jmol_isReady = function(applet) {
-	document.title = (applet._id + " is ready")
-	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
-}
-
 //jsv_isReady = function(applet) {
 //	document.title = (applet._id + " is ready")
 //	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
 //}
 
-SInfo = {
+Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
+
+JSVInfo = {
 	width: 800,
 	height: 300,
 	debug: false,
@@ -63,36 +70,36 @@ SInfo = {
 //        console: "consolediv"
 }
 
-MInfo = {
+JMEInfo = {     
+  addSelectionOptions: true,
 	width: 300,
 	height: 300,
-	debug: false,
-	color: "0xF0F0F0",
-//	addSelectionOptions: true,
-//	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	use: "HTML5",
-	j2sPath: "j2s",
-	disableJ2SLoadMonitor: true,
-	disableInitialConsole: true,
-	readyFunction: null ,      //         jmol_isReady
-  allowjavascript: true,
-	script: "sync on;"
-//	script: "load data/acetophenone.jdx;",
-//        console: "consolediv1"
-
+	use: "HTML5"
+  ,options : "nohydrogens;autoez;removehs"
+	//,jarPath: "jme",
+	//,jarFile: "JME.jar"
+  //optional parameters
+  //,"jme" : startingStructure   
 }
+
 
 
 })();
 
+function predictSpectrum() {
+  var s = jme.molFile();
+  s = "load MOL \"" + s.replace(/\n/g,"|") + "\""
+  alert(s)
+  jsv.script(s);
+}
 
 $(document).ready(function() {
 
-// note that getAppletHtml with an Info invokes Jmol.setDocument(0), but resets it
+// note that getAppletHtml with an Info invokes Jmol.setDocument(0)
 
-  $("#jmoldiv").html(Jmol.getAppletHtml("jmolApplet0", MInfo));
-  Jmol.setDocument(0);
-  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsvApplet0",SInfo)))  
+Jmol.setDocument(0);
+  $("#jsmediv").html(Jmol.getAppletHtml(Jmol.getJMEApplet("jme",JMEInfo)))  
+  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsv",JSVInfo)))  
 });
 
 </script>
@@ -101,16 +108,18 @@ $(document).ready(function() {
 <table width=1000 cellpadding=10 border=1 >
 <tr>
 <td>
-<div id=jsvdiv></div>
+<div id=jsmediv></div>
 </td>
 <td>
-<div id=jmoldiv></div>
+<div id=btndiv></div>
+<input type="button" onclick="predictSpectrum()" value="&#8594" />
+</td>
+<td>
+<div id=jsvdiv></div>
 </td>
 </tr>
 </table>
-<a href="javascript:Jmol.script(jsvApplet0, 'gridon')">grid on</a> <a href="javascript:Jmol.script(jsvApplet0, 'gridon false')">grid off</a>
-<a href="javascript:Jmol.script(jsvApplet0, 'showpeaklist')">show peak list</a>
-<a href="javascript:jsvApplet0._showInfo(true)">show info</a>
+<a href="javascript:jsv._showInfo(true);jme._showInfo(true)">show info</a>
 </div>
 </body>
 </html>
