@@ -169,7 +169,7 @@
   	  </fileset>
     </copy>
  	
- 	<echo>adding jar files</echo>
+ 	<echo>adding Jmol and JSpecView jar files</echo>
   	<copy todir="site/jsmol/java">
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
