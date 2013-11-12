@@ -31,7 +31,8 @@
 
 
  // J2S class changes:
- 
+
+ // BH 11/10/2013 9:02:20 AM fixing fading in MSIE  
  // BH 11/3/2013 7:21:39 AM additional wrapping functions for better compressibility
  // BH 10/30/2013 8:10:58 AM added getClass().getResource() -- returning a relative string, not a URL
  // BH 10/30/2013 6:43:00 AM removed second System def and added System.$props and default System.property "line.separator" 
@@ -6322,11 +6323,8 @@ clpm.DEFAULT_OPACITY = 55;
 	}
 	this.fadeAlpha = alpha;
 	var ua = navigator.userAgent.toLowerCase ();
-	if (ua.indexOf ("msie") != -1 && ua.indexOf ("opera") == -1) {
-		this.monitorEl.style.filter = "Alpha(Opacity=" + alpha + ")";
-	} else {
-		this.monitorEl.style.opacity = alpha / 100.0;
-	}
+	this.monitorEl.style.filter = "Alpha(Opacity=" + alpha + ")";
+	this.monitorEl.style.opacity = alpha / 100.0;
 };
 /* private */ clpm.hiddingOnMouseOver = function () {
 	this.style.display = "none";
@@ -6370,7 +6368,9 @@ clpm.DEFAULT_OPACITY = 55;
 		this.fadeOutTimer = window.setTimeout (function () {
 					ClassLoaderProgressMonitor.fadeOut ();
 				}, 40);
-	}
+	} else {
+  	this.monitorEl.style.display = "none";
+  }
 };
 /* private */ clpm.getFixedOffsetTop = function (){
 	if (this.bindingParent != null) {
