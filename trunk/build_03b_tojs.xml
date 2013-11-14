@@ -204,6 +204,13 @@
   	  </fileset>
     </copy> 
    	
+   	<echo>adding spt subdirectory</echo>
+   	<copy todir="site/jsmol/spt">
+  	  <fileset dir="spt">
+  	    <include name="**/*" />
+  	  </fileset>
+    </copy> 
+   	
    	<echo>adding jsmol.php</echo>
   	<copy todir="site/jsmol/php">
   	  <fileset dir="php">
