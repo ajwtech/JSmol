@@ -1,5 +1,15 @@
 <?php
 
+// from http://us3.php.net/file_get_contents 
+
+// Tip
+//
+// A URL can be used as a filename with this function if the fopen wrappers 
+// have been enabled. See fopen() for more details on how to specify the 
+// filename. See the Supported Protocols and Wrappers for links to information 
+// about what abilities the various wrappers have, notes on their usage, and 
+// information on any predefined variables they may provide.
+
 // jsmol.php
 // Bob Hanson hansonr@stolaf.edu 1/11/2013
 //
