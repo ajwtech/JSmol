@@ -1,5 +1,6 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
+// BH 11/15/2013 1:51:08 PM  adding URI ?USEJAR=.......
 // BH 9/3/2013 5:48:03 PM simplification of Jmol.getAppletHTML()
 // BH 5/16/2013 9:01:41 AM checkbox group fix
 // BH 1/15/2013 10:55:06 AM updated to default to HTML5 not JAVA
@@ -24,6 +25,12 @@
 // BH 8/12/2012 5:15:11 PM added Jmol.getAppletHtml()
 
 (function (Jmol) {
+  var getField = function(key) {
+    key = "&" + key + "=";
+    return decodeURI(("&" + document.location.search.substring(1) + key).split(key)[1].split("&")[0]);
+  }
+  Jmol._j2sPath = getField("J2SPATH"); 
+  Jmol._jarFile = getField("USEJAR");
 
 	Jmol.getVersion = function(){return Jmol._jmolInfo.version};
 

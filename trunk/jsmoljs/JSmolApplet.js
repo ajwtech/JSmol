@@ -30,6 +30,7 @@
 		this._savedOrientations = [];
 		this._initialize = function(jarPath, jarFile) {
 			var doReport = false;
+      Jmol._jarFile && (jarFile = Jmol._jarFile);
 			if(this._jarFile) {
 				var f = this._jarFile;
 				if(f.indexOf("/") >= 0) {
@@ -44,9 +45,11 @@
 				} else {
 					jarFile = f;
 				}
+        this_isSigned = Info.isSigned = (jarFile.indexOf("Signed") >= 0);
 			}
- 			this._jarPath = jarPath || ".";
-			this._jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+ 			this._jarPath = Info.jarPath = jarPath || ".";
+			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+      
 	    if (doReport)
 				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		

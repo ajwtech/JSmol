@@ -1121,11 +1121,11 @@ Jmol = (function(document) {
 		obj._color = (Info.color ? Info.color.replace(/0x/,"#") : "#FFFFFF");
 		obj._disableInitialConsole = Info.disableInitialConsole;
 		obj._noMonitor = Info.disableJ2SLoadMonitor;
+    Jmol._j2sPath && (Info.j2sPath = Jmol._j2sPath);
 		obj._j2sPath = Info.j2sPath;
     obj._deferApplet = Info.deferApplet;
     obj._deferUncover = Info.deferUncover;
     obj._coverImage = !obj._isJava && Info.coverImage;
-
     obj._isCovered = !!obj._coverImage; 
     obj._coverScript = Info.coverScript;
     obj._coverTitle = Info.coverTitle;
