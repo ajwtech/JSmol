@@ -929,15 +929,20 @@
    	<echo>creating distribution zip file jsmol.zip</echo>
   	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
-    <zip zipfile="${jmol.path}/appletweb/jsmol.zip">
+    <copy todir="${jmol.path}/appletfiles" >
+      <fileset dir="dist">
+        <include name="jsmol_unsigned.zip" />
+      </fileset>
+    </copy>
+   <zip zipfile="${jmol.path}/appletfiles/jsmol_nojars.zip">
 	  <fileset dir="site">
 	    <include name="**/*" />
 	    <exclude name="**/*.jar" />
 	  </fileset>
     </zip>
-   	<echo>dist/jsmol.zip and ${jmol.path}/appletweb/jsmol.zip have been updated. 
+   	<echo>dist/jsmol.zip and ${jmol.path}/appletfiles/jsmol_unsigned.zip,jsmol_nojars.zip have been updated. 
    		Now unzip dist/jsmol.zip into a local directory for testing</echo>
-   	<echo>or run tools/jsmol-release.xml to release ${jmol.path}</echo>
+   	<echo>or run tools/jsmol-release.xml to release ${jmol.path} (with unsigned JAR files) </echo>
    	<echo>If incorporating into a ${jmol.path} build, now run ${jmol.path}/build or run tools/jsmol-release.xml to release ${jmol.path}</echo>
   </target>
 
