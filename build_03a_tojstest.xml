@@ -105,6 +105,11 @@
         <include name="*.txt" />
       </fileset>
     </copy>
+    <copy todir="site/jsmol/j2s/J/quantum" >
+      <fileset dir="${jmol.path}/src/org/jmol/quantum">
+        <include name="*.txt" />
+      </fileset>
+    </copy>
     <copy todir="site/jsmol/j2s/J/modelkit/images">
       <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
