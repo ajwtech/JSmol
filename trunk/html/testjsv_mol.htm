@@ -96,10 +96,8 @@ MInfo = {
 
 $(document).ready(function() {
 
-// note that getAppletHtml with an Info invokes Jmol.setDocument(0)
-
   $("#jmoldiv").html(Jmol.getAppletHtml("jmolApplet0", MInfo));
-  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsvApplet0",SInfo)))  
+  $("#jsvdiv").html(Jmol.getJSVAppletHtml("jsvApplet0",SInfo));  
 });
 
 </script>
