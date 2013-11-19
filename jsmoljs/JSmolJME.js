@@ -255,5 +255,17 @@
   Jmol.jmeOptions = function(jme, options) {
   	jme._applet.options(options);
   }
+
+    // optional Info here	
+  Jmol.getJSVAppletHtml = function(applet, Info, linkedApplet) {
+    if (Info) {
+      var d = Jmol._document;
+      Jmol._document = null;
+      applet = Jmol.getJMEApplet(applet, Info, linkedApplet);
+      Jmol._document = d;
+    }  
+    return applet._code;
+	}
+		
 	
 })(Jmol, document);

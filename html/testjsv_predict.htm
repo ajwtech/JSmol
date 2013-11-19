@@ -95,11 +95,8 @@ function predictSpectrum() {
 
 $(document).ready(function() {
 
-// note that getAppletHtml with an Info invokes Jmol.setDocument(0)
-
-Jmol.setDocument(0);
-  $("#jsmediv").html(Jmol.getAppletHtml(Jmol.getJMEApplet("jme",JMEInfo)))  
-  $("#jsvdiv").html(Jmol.getAppletHtml(Jmol.getJSVApplet("jsv",JSVInfo)))  
+  $("#jsmediv").html(Jmol.getJMEAppletHtml("jme",JMEInfo)))  
+  $("#jsvdiv").html(Jmol.getJSVAppletHtml("jsv",JSVInfo)))  
 });
 
 </script>
