@@ -61,7 +61,7 @@ M._style = '\
   .jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:'+Jmol._z.menu+'}\
   .jmolPopupMenu,.jmolPopupMenu .ui-corner-all{border-radius:5px}\
   .jmolPopupMenu,.jmolPopupMenu .ui-widget-content{border:1px solid #a6c9e2;background-color:#fcfdfd;color:#222}\
-  .jmolPopupMenu a{color:#222}\
+  .jmolPopupMenu a{color:#222;font-size:10px;}\
   .jmolPopupMenu input[type="checkbox"]{vertical-align:middle;}\
   .jmolPopupMenu,.jmolPopupMenu .ui-menu{list-style:none;padding:2px;margin:0;display:block;outline:none;box-shadow:1px 1px 5px rgba(50,50,50,0.75)}\
   .jmolPopupMenu .ui-menu{margin-top:-3px;position:absolute}\
