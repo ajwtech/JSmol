@@ -109,8 +109,8 @@ Jmol.Console.Input = function(console) {
         
     if ((mode & 1) == 1 || kcode == 0)
 			ev.preventDefault();
-		if ((mode & 2) == 2) {
-		}
+		//if ((mode & 2) == 2) {
+		//}
     
     
 	}
@@ -128,8 +128,8 @@ Jmol.Console.Input = function(console) {
 		
     if ((mode & 1) == 1)
 			ev.preventDefault();
-		if ((mode & 2) == 2) {
-		}
+		//if ((mode & 2) == 2) {
+		//}
 	}
 
 

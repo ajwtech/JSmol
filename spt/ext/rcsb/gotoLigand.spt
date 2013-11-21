@@ -23,7 +23,9 @@ if (xxxx) {
 	isosurface delete;
 	contact delete;
 }
-
+if (ligandAtoms.type == "string" && !ligandAtoms.find("[")) {
+  ligandAtoms = "[" + ligandAtoms + "]"
+}
 select @ligandAtoms
 ligandAtoms = {selected}[1]
 ligandAtoms = {within(group, ligandAtoms)}
