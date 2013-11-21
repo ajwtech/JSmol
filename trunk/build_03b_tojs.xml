@@ -262,7 +262,7 @@
    		J/script/ScriptMathProcessor.js
    		" />
    	</concat>
-   	<echo>Wrapping corescript.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping corescript.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/corescript.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -282,7 +282,7 @@
    		J/scriptext/ScriptExt.js
    		" />
    	</concat> 	   	
-   	<echo>Wrapping corescript2.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping corescript2.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/corescript2.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -394,7 +394,7 @@
    		J/io2/JmolZipInputStream.js
    	   	" />
    	</concat>   	
-   	<echo>Wrapping corezip.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping corezip.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/corezip.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -451,7 +451,7 @@
    		J/renderbio/TraceRenderer.js
    	   	" />
    	</concat>   	
-   	<echo>Wrapping corebio.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping corebio.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/corebio.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -489,7 +489,7 @@
    		J/jvxl/readers/JvxlXmlReader.js
    		J/rendersurface/IsosurfaceRenderer.js
    	   	" />
-   	</concat>	   	<echo>Wrapping coresurface.js with anonymous function for Google Compressor Compiler</echo>
+   	</concat>	   	<echo>Wrapping coresurface.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/coresurface.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -517,7 +517,7 @@
    		J/symmetry/UnitCell.js
    	" />
    	</concat>
-   	<echo>Wrapping coresym.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping coresym.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/coresym.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
@@ -843,7 +843,7 @@
    		../js/core/corebottom.js
    	   	" />
    	</concat>
-   	<echo>Wrapping core.js with anonymous function for Google Compressor Compiler</echo>
+   	<echo>Wrapping core.js with anonymous function for Google Closure Compiler</echo>
    	<copy file="site/jsmol/js/core.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
