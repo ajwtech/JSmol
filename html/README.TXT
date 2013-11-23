@@ -1,7 +1,20 @@
 @source http://chemapps.stolaf.edu/jmol/jsmol
 @author hansonr@stolaf.edu project started 8/26/2012
 
-last revision, 8/17/13
+last revision: 11/23/2013
+
+All Jmol and JSpecView code in JSmol is now signed with a 
+secure code signing certificate in the name of "Integrated Graphics" 
+(Robert M. Hanson DBA Integrated Graphics, registered in the state 
+of Minnesota) by authority of Starfield Technologies/GoDaddy.com.
+
+WHEN RUNNING JMOL/JAVA OR JSPECVIEW/JAVA BE CERTAIN THAT THE 
+WARNING STATES THAT THE ORGANIZATION IS "Integrated Graphics".
+IF IT DOES NOT, THEN IT IS POSSIBLE THAT THE OPEN-SOURCE 
+JMOL PROJECT HAS BEEN COMPROMISED. PLEASE NOTIFY hansonr@stolaf.edu
+IMMEDIATELY IF THIS IS THE CASE AND CONSIDER NOT USING THE APPLET.
+
+revision: 8/17/13
 
 JSmol -- Java(Script) web-based molecular viewer
 
