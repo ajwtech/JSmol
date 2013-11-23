@@ -27,7 +27,7 @@ var s = document.location.search;
 
 Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
 
-//if (s.indexOf("?") < 0) s = "USE=HTML5"
+if (s.indexOf("?") < 0) s = "USE=HTML5"
 
 if (s.indexOf("USE=") >= 0)
   use = s.split("USE=")[1].split("&")[0]
@@ -44,17 +44,6 @@ if (s.indexOf("NOWEBGL") >= 0)
 var useSignedApplet = (s.indexOf("SIGNED") >= 0);
 if(useSignedApplet && use == "HTML5") use = "JAVA";
 
-jmol_isReady = function(applet) {
-	document.title = (applet._id + " is ready")
-	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
- 
-}		
-
-
-})();
-
-
-
 Info = {
 	width: 800,
 	height: 300,
@@ -63,12 +52,28 @@ Info = {
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false,
 	addSelectionOptions: true,
+  jarPath: "java",
+  jarFile: (useSignedApplet ? "JSpecViewAppletSigned.jar" :"JSpecViewApplet.jar" ),
+  j2sPath: "j2s",  
+  isSigned: useSignedApplet,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	use: "HTML5",
+	use: use,
 	readyFunction: null,
 	script: "load data/t.jdx",
   console: "consolediv"
 }
+
+
+})();
+
+
+
+jmol_isReady = function(applet) {
+	document.title = (applet._id + " is ready")
+	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
+ 
+}		
+
 
 $(document).ready(function() {
   $("#jsvdiv").html(Jmol.getJSVAppletHtml("jsv",Info));
