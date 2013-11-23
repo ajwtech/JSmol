@@ -23,6 +23,7 @@
 		this._jmolType = "Jmol._JSVApplet" + (Info.isSigned ? " (signed)" : "");
 		this._id = id;
 	  this._syncId = ("" + Math.random()).substring(3);
+    this._isJava = true;
 		Jmol._setObject(this, id, Info);
     this._startupScript = Jmol._JSVApplet.getStartupScript(this, Info);
 		this._syncKeyword = "JSpecView:"
@@ -31,6 +32,7 @@
 		this._width = Info.width;
 		this._height = Info.height;
 		this._isSigned = Info.isSigned;
+    this._isJava = true;
     this._isPro = this._isSigned;
 		this._dataMultiplier=1;
 		this._hasOptions = Info.addSelectionOptions;
@@ -41,7 +43,7 @@
 		this._ready = false; 
 		this._applet = null;
 		this._jarFile = Info.jarFile || (Info.isSigned ? "JSpecViewAppletSigned.jar" : "JSpecViewApplet.jar"); 
-		this._jarPath =	Info.jarPath || "."; 
+		this._jarPath =	Info.jarPath || "java"; 
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
 		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
@@ -62,10 +64,10 @@
 			width: 500,
 			height: 300,
 			debug: false,
-			jarPath: ".",
+			jarPath: "java",
 			jarFile: "JSpecViewApplet.jar",
       j2sPath: "j2s",
-      use: "JAVA",
+      use: "HTML5",
 			isSigned: false,
 			initParams: null,
 			readyFunction: null,
@@ -106,7 +108,7 @@
   Jmol._JSVApplet.getStartupScript = function(applet, Info) {
     return (Info.initParams ? Info.initParams : "") 
         + ';appletID ' + applet._id + ';syncID '+ applet._syncId
-        + ';appletReadyCallbackFunctionName ' + applet._id + '._readyCallback'
+        + ';appletReadyCallbackFunctionName Jmol._readyCallback'// + applet._id + '._readyCallback'
         + ';syncCallbackFunctionName Jmol._mySyncCallback;';	
   }
   
@@ -131,7 +133,7 @@
 	}
 	
 	jsvproto._readyCallback = function(id, fullid, isReady, applet) {
-		if (!isReady)
+   if (!isReady)
 			return; // ignore -- page is closing
     var o = self[id];
 		o._ready = true;
@@ -142,8 +144,8 @@
 		o._readyFunction && o._readyFunction(o);
 	    //o._setDragDrop();
     Jmol._setReady(o);
-	}
-	
+  }	
+  
   jsvproto._checkDeferred = function(script) {
     return false;
   }	
