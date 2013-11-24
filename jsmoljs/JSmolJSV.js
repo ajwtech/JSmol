@@ -44,6 +44,7 @@
 		this._applet = null;
 		this._jarFile = Info.jarFile || (Info.isSigned ? "JSpecViewAppletSigned.jar" : "JSpecViewApplet.jar"); 
 		this._jarPath =	Info.jarPath || "java"; 
+    this._jnlp = (this._isSigned ? "JSpecViewAppletSigned.jnlp" : "JSpecViewApplet.jnlp");
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
 		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");

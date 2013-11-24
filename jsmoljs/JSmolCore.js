@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 11/23/2013 10:51:37 PM  adds JNLP support for local applet
 // BH 11/2/2013 12:05:11 PM JSmolJSME fixes; https access fixed
 // BH 10/31/2013 7:50:06 PM Jmol.Dialog as SwingController; Jmol._mouseOwner added
 // BH 10/19/2013 7:05:04 AM adding Jmol._ajaxCall for Error Contacting Server; database POST method enabled
@@ -69,12 +70,9 @@ if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol
 Jmol = (function(document) {
   var z=9000;
   var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
-
   return {
-    _jmolInfo: {
-      userAgent:navigator.userAgent, 
-      version: version = 'Jmol-JSO 13.0'
-    },
+    _version: 'JSmol 13.3.9 11/23/2013 10:51:10 PM',
+    _isLocal: (document.location.protocol.toLowerCase().indexOf("file:") == 0),
     _allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
     /*  By setting the Jmol.allowedJmolSize[] variable in the webpage
         before calling Jmol.getApplet(), limits for applet size can be overriden.

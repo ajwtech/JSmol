@@ -49,7 +49,7 @@
 			}
  			this._jarPath = Info.jarPath = jarPath || ".";
 			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
-      
+      this._jnlp = (this._isSigned ? "JmolAppletSigned.jnlp" : "JmolApplet.jnlp");
 	    if (doReport)
 				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
@@ -180,6 +180,7 @@
 		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
 		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
 		var tHeader, tFooter;
+    var jnlp =  (Jmol._isLocal ? " jnlp_href=\"" + Info.jarPath + "/" + applet._jnlp + "\"" : "");
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
 			params.archive = applet._jarFile;
 			if (applet._startupScript)
@@ -189,7 +190,7 @@
 			tHeader =
 				"<object name='" + applet._id +
 				"_object' id='" + applet._id + "_object' " + "\n" +
-				widthAndHeight + "\n";
+				widthAndHeight + jnlp + "\n";
 			tFooter = "</object>";
 		}
 		if (Jmol.featureDetection.useIEObject) { // use MSFT IE6 object tag with .cab file reference
@@ -206,7 +207,7 @@
 				"_object' id='" + applet._id + "_object' \n" +
 				widthAndHeight + "\n" +
 				" code='" + myClass + "'" +
-				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'\n" +
+				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'" + jnlp + "\n" +
 				" mayscript='true'>\n";
 			tFooter = "</applet>";
 		}
@@ -229,11 +230,11 @@
 		}
 	
 		var t = Jmol._getWrapper(applet, true) + tHeader;
+    params.documentLocation = document.location;
+    params.jarPath = Info.jarPath; 
  		for (var i in params)
 			if(params[i])
 		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
-    t +="  <param name='documentLocation' value='" + document.location + "' />\n"
-    t +="  <param name='jarPath' value='" + Info.jarPath + "' />\n"
 		t += visitJava + tFooter 
 			+ Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
