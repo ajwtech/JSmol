@@ -146,7 +146,7 @@
 
    	<!-- add jspecview files and subdirectories -->
 
-   		<copy todir="site/jsmol/j2s/JSV/export/resources" >
+   	<copy todir="site/jsmol/j2s/JSV/export/resources" >
       <fileset dir="${jsv.path}/src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
@@ -191,6 +191,22 @@
   	  </fileset>
     </copy> 
    	
+ 	<echo>adding Jmol and JSpecView jar and jnlp files</echo>
+  	<copy todir="site/jsmol/java">
+  	  <fileset dir="${jmol.path}/build">
+  	    <include name="JmolApplet*.jar" />
+  	  </fileset>
+	  <fileset dir="${jmol.path}/jars">
+	    <include name="JSpecViewApplet*.jar" />
+	  </fileset>
+   	  <fileset dir="jnlp">
+        <include name="*.jnlp" />
+     </fileset>
+	</copy>
+	
+   	<!-- make core files -->
+ 
+   	<echo>adding package.js from ${jmol.path}/srcjs/js</echo>
    	<copy todir="site/jsmol/j2s/core">
   	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />
@@ -198,7 +214,9 @@
     </copy>
 
 
-	<concat destfile="site/jsmol/j2s/core/core.z.js"><filelist dir="site/jsmol/j2s" files="
+   	<echo>creating empty core.z.js for testing only</echo>
+
+   	<concat destfile="site/jsmol/j2s/core/core.z.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
    		../../../jsmoljs/JSmolJavaExt.js
    	   	" />

@@ -174,7 +174,7 @@
   	  </fileset>
     </copy>
  	
- 	<echo>adding Jmol and JSpecView jar files</echo>
+ 	<echo>adding Jmol and JSpecView jar and jnlp files</echo>
   	<copy todir="site/jsmol/java">
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
@@ -182,8 +182,11 @@
 	  <fileset dir="${jmol.path}/jars">
 	    <include name="JSpecViewApplet*.jar" />
 	  </fileset>
+   	  <fileset dir="jnlp">
+        <include name="*.jnlp" />
+     </fileset>
 	</copy>
-	
+		
    	<echo>adding jQuery and minimizing it</echo>
   	<copy todir="site/jsmol/jquery">
   	  <fileset dir="lib/jquery">
@@ -893,12 +896,14 @@
    		<arg line="--js site/jsmol/js/jsmol.nojq.js --js_output_file site/jsmol/JSmol.min.nojq.js" />
     </java>
 
-   	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
-   	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
-   		JSmol.min.js
-   		j2s/core/core.z.js 
-   		" />
-   	</concat>
+   	<!--
+   	   	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
+   	   	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
+   	   		JSmol.min.js
+   	   		j2s/core/core.z.js 
+   	   		" />
+   	   	</concat>
+   	-->
 
    	<echo>JSmol.lite.js is a very minimal non-Jmol viewer; includes jQuery</echo>
   	<concat destfile="temp.js"><filelist dir="jsmoljs" files="
