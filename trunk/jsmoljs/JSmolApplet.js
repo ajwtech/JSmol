@@ -180,7 +180,7 @@
 		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
 		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
 		var tHeader, tFooter;
-    var jnlp =  (Jmol._isLocal ? " jnlp_href=\"" + Info.jarPath + "/" + applet._jnlp + "\"" : "");
+    var jnlp =  (Jmol._isLocal ? " jnlp_href=\"" + applet._jnlp + "\"" : "");
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
 			params.archive = applet._jarFile;
 			if (applet._startupScript)
