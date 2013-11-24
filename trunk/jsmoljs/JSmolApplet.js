@@ -188,7 +188,9 @@
 		params.mayscript = 'true';
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
     params.permissions = (applet._isSigned ? "all-permissions" : "sandbox");
-    params.documentLocation = document.location;
+    params.documentLocation = document.location.href;
+    params.documentBase = (document.location + "?#").split("#")[0].split("?")[0];
+
     params.jarPath = Info.jarPath;
 		Jmol._syncedApplets.length && (params.synccallback = "Jmol._mySyncCallback");
 		applet._startupScript && (params.script = applet._startupScript);
