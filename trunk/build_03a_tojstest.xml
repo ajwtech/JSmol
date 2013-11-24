@@ -196,7 +196,7 @@
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
   	  </fileset>
-	  <fileset dir="${jmol.path}/jars">
+	  <fileset dir="${jsv.path}/build">
 	    <include name="JSpecViewApplet*.jar" />
 	  </fileset>
    	  <fileset dir="jnlp">
