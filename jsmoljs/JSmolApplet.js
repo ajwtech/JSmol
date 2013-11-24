@@ -1,5 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 11/24/2013 11:41:31 AM streamlined createApplet, with added JNLP for local reading
 // BH 10/11/2013 7:17:10 AM streamlined and made consistent with JSV and JSME
 // BH 7/16/2012 1:50:03 PM adds server-side scripting for image
 // BH 8/11/2012 11:00:01 AM adds Jmol._readyCallback for MSIE not in Quirks mode
@@ -8,7 +9,7 @@
 // BH 11/18/2012 1:06:39 PM adds option ">" in database query box for quick command execution
 // BH 12/17/2012 6:25:00 AM change ">" option to "!"
 
-(function (Jmol, document) {
+;(function (Jmol, document) {
 
 	// _Applet -- the main, full-featured, Jmol object
 	
@@ -49,7 +50,6 @@
 			}
  			this._jarPath = Info.jarPath = jarPath || ".";
 			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
-      this._jnlp = (this._isSigned ? "JmolAppletSigned.jnlp" : "JmolApplet.jnlp");
 	    if (doReport)
 				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
@@ -167,76 +167,49 @@
 	}
 
 	Jmol._Applet._createApplet = function(applet, Info, params) {
-		if (Jmol._syncedApplets.length)
-		  params.synccallback = "Jmol._mySyncCallback";
-		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
-    params.permissions = (applet._isSigned ? "all-permissions" : "sandbox");
 		applet._initialize(Info.jarPath, Info.jarFile);
-
+    var jarFile = applet._jarFile;
+    var jnlp = ""
+    if (Jmol._isLocal && Info.jarPath.indexOf("http") != 0) {
+      // local installations need jnlp here and should reference JmolApplet(Signed).jar, not JmolApplet(Signed)0.jar  
+      jarFile = jarFile.replace(/0\.jar/,".jar");
+      jnlp = " jnlp_href=\"" + jarFile.replace(/\.jar/,".jnlp") + "\"";
+    }
 		// size is set to 100% of containers' size, but only if resizable. 
 		// Note that resizability in MSIE requires: 
 		// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 		var w = (applet._containerWidth.indexOf("px") >= 0 ? applet._containerWidth : "100%");
 		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
 		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
-		var tHeader, tFooter;
-    var jnlp =  (Jmol._isLocal ? " jnlp_href=\"" + applet._jnlp + "\"" : "");
-		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			params.archive = applet._jarFile;
-			if (applet._startupScript)
-  			params.script = applet._startupScript;
-			params.mayscript = 'true';
-			params.codebase = applet._jarPath;
-			tHeader =
-				"<object name='" + applet._id +
-				"_object' id='" + applet._id + "_object' " + "\n" +
-				widthAndHeight + jnlp + "\n";
-			tFooter = "</object>";
-		}
-		if (Jmol.featureDetection.useIEObject) { // use MSFT IE6 object tag with .cab file reference
-			var _windowsClassId = "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93";
-			var _windowsCabUrl = "http://java.sun.com/update/1.6.0/jinstall-6u22-windows-i586.cab";
-			tHeader += " classid='" + _windowsClassId + "'\n" + " codebase='" + _windowsCabUrl + "'\n>\n";
-		} else if (Jmol.featureDetection.useHtml4Object) { // use HTML4 object tag
-			tHeader += " type='application/x-java-applet'\n>\n";
-		} else { // use applet tag
-			if (script)
-  			params.script = script;
-			tHeader =
-				"<applet name='" + applet._id +
-				"_object' id='" + applet._id + "_object' \n" +
-				widthAndHeight + "\n" +
-				" code='" + myClass + "'" +
-				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'" + jnlp + "\n" +
-				" mayscript='true'>\n";
-			tFooter = "</applet>";
-		}
-		var visitJava;
-		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			var szX = "width:" + applet._width;
-			if ( szX.indexOf("%")==-1 ) 
-				szX+="px";
-			var szY = "height:" + applet._height;
-			if ( szY.indexOf("%")==-1 )
-				szY+="px";
-			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
-					// why doesn't this vertical-align work?
-				"text-align:center;vertical-align:middle;'>\n" +
-				Jmol._Applet._noJavaMsg + "</p>";
-		} else {
-			visitJava = "<table bgcolor='yellow'><tr>" +
-				"<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
-				Jmol._Applet._noJavaMsg2 + "</font></td></tr></table>";
-		}
-	
-		var t = Jmol._getWrapper(applet, true) + tHeader;
+    var attributes = "name='" + applet._id + "_object' id='" + applet._id + "_object' " + "\n"
+				+ widthAndHeight + jnlp + "\n"
+		params.codebase = applet._jarPath;
+		params.archive = jarFile;
+		params.mayscript = 'true';
+		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
+    params.permissions = (applet._isSigned ? "all-permissions" : "sandbox");
     params.documentLocation = document.location;
-    params.jarPath = Info.jarPath; 
+    params.jarPath = Info.jarPath;
+		Jmol._syncedApplets.length && (params.synccallback = "Jmol._mySyncCallback");
+		applet._startupScript && (params.script = applet._startupScript);
+    var t = "\n"; 
  		for (var i in params)
 			if(params[i])
-		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
-		t += visitJava + tFooter 
-			+ Jmol._getWrapper(applet, false) 
+		 		t += "  <param name='"+i+"' value='"+params[i]+"' />\n";
+		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
+      t = "<object " + attributes
+        + (Jmol.featureDetection.useIEObject ? 
+			     " classid='clsid:8AD9C840-044E-11D1-B3E9-00805F499D93' codebase='http://java.sun.com/update/1.6.0/jinstall-6u22-windows-i586.cab'>"
+			   : " type='application/x-java-applet'>")
+         + t + "<p style='background-color:yellow;" + widthAndHeight.split('"')[1] 
+				+ ";text-align:center;vertical-align:middle;'>\n" + Jmol._Applet._noJavaMsg + "</p></object>\n";
+		} else { // use applet tag
+      t = "<applet " + attributes
+        + " code='" + myClass + "' codebase='" + applet._jarPath + "' archive='" + jarFile + "' mayscript='true'>\n"
+        + t + "<table bgcolor='yellow'><tr><td align='center' valign='middle' " + widthAndHeight + ">\n"
+				+ Jmol._Applet._noJavaMsg2 + "</td></tr></table></applet>\n";
+		}	
+		t = Jmol._getWrapper(applet, true) + t + Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
 		if (Jmol._debugAlert)
 			alert(t);
