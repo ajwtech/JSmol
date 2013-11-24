@@ -208,7 +208,7 @@
    		<arg line="--js coreprop.js --js_output_file ../j2s/core/coreprop.z.js" />
     </java>
    	<concat destfile="site/jsmol/js/coreconsole.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/core/coreconsoletop.js
+   		../js/JSmolConsole.js
    		J/api/JmolAppConsoleInterface.js
    		J/console/GenericTextArea.js
    		J/console/GenericConsole.js
@@ -219,7 +219,7 @@
    		<arg line="--js coreconsole.js --js_output_file ../j2s/core/coreconsole.z.js" />
     </java>
   	<concat destfile="site/jsmol/js/coremenu.js"><filelist dir="site/jsmol/j2s" files="
-   		../../../jsmoljs/core/coremenutop.js
+   		../js/JSmolMenu.js
    		J/api/JmolPopupInterface.js
    		J/popup/JmolAbstractMenu.js
    		J/popup/GenericPopup.js
@@ -437,8 +437,8 @@
    	     when Jmol.debugCode==true, allowing us to check specific code unminimized   -->
 	<concat destfile="site/jsmol/js/core.js"><filelist dir="site/jsmol/j2s" files="
    		../../../Jmol.properties
-   		../../../jsmoljs/JSmolJavaExt.js
-   		../../../jsmoljs/core/coretop.js
+   		../js/JSmolJavaExt.js
+   		../js/core/coretop.js
    		java/net/MalformedURLException.js
    		java/net/URLEncoder.js
    		java/net/URLDecoder.js
@@ -718,7 +718,7 @@
    		J/awtjs/Font.js
    		J/awtjs/Image.js
    		J/util/Tensor.js  
-   		../../../jsmoljs/core/corebottom.js
+   		../js/core/corebottom.js
    	   	" />
    	</concat>   	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
@@ -759,15 +759,14 @@
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
    		<arg line="--js site/jsmol/js/jsmol.nojq.js --js_output_file site/jsmol/JSmol.min.nojq.js" />
     </java>
-
+<!--
    	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
    	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
    		JSmol.min.js
-   		../../jsmoljs/core/coretop2.js
    		j2s/core/core.z.js 
    		" />
    	</concat>
-
+-->
    	<echo>JSmol.lite.js is a very minimal non-Jmol viewer; includes jQuery</echo>
   	<concat destfile="temp.js"><filelist dir="jsmoljs" files="
    		../lib/jquery/jquery.js
