@@ -1011,7 +1011,6 @@ Jmol = (function(document) {
         Jmol._domWrite(text);
       else
         Jmol._document.write(text);
-      return null;
     }
     return text;
   }
