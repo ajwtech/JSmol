@@ -74,6 +74,7 @@
 			height: 300,
 			jarPath: "jme",
 			jarFile: "JME.jar",
+      use: "HTML5",
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button

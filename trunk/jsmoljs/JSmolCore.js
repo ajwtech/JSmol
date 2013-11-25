@@ -2,6 +2,8 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 11/25/2013 7:38:31 AM adds option for GoogleAnalytics tracking
+// BH 11/25/2013 7:39:03 AM adds URL options _J2S=  _JAR=  _USE=
 // BH 11/23/2013 10:51:37 PM  adds JNLP support for local applet
 // BH 11/2/2013 12:05:11 PM JSmolJSME fixes; https access fixed
 // BH 10/31/2013 7:50:06 PM Jmol.Dialog as SwingController; Jmol._mouseOwner added
@@ -72,12 +74,17 @@ Jmol = (function(document) {
   var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
   return {
     _version: 'JSmol 13.3.9 11/23/2013 10:51:10 PM',
+    // this url is used to track Jmol use. You may remove it or modify it if you wish. 
+    _tracker: 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1',
     _isLocal: (document.location.protocol.toLowerCase().indexOf("file:") == 0),
     _allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
     /*  By setting the Jmol.allowedJmolSize[] variable in the webpage
         before calling Jmol.getApplet(), limits for applet size can be overriden.
         2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
-    */    
+    */
+    _jarFile: null,  // can be set in URL using _JAR=
+    _j2sPath: null,  // can be set in URL using _J2S=
+    _use: null,      // can be set in URL using _USE=
     _applets: {},
     _asynchronous: true,
     _ajaxQueue: [],
@@ -942,8 +949,8 @@ Jmol = (function(document) {
     var app = a.split("_object")[0];
     // necessary for MSIE in strict mode -- apparently, we can't call 
     // jmol._readyCallback, but we can call Jmol._readyCallback. Go figure...
-
-    Jmol._applets[app]._readyCallback(a,b,c,d);
+    
+    Jmol._track(Jmol._applets[app])._readyCallback(a,b,c,d);
   }
 
   Jmol._getWrapper = function(applet, isHeader) {
@@ -1147,6 +1154,13 @@ Jmol = (function(document) {
     for (var x in DefaultInfo)
       if (typeof Info[x] == "undefined")
         Info[x] = DefaultInfo[x];
+    Jmol._use && (Info.use = Jmol._use);
+    if (Info.use == "SIGNED") {
+      if (Info.jarFile.indexOf("Signed") < 0)
+        Info.jarFile = Info.jarFile.replace(/Applet/,"AppletSigned");
+      Info.use = "JAVA";
+      Info.isSigned = true;
+    }
   }
   
   Jmol._syncedApplets = [];
@@ -1642,5 +1656,21 @@ Jmol.Dialog.windowClosing = function(element) {
   dialog.manager.processWindowClosing(dialog.registryKey);
 }
 
+Jmol._track = function(applet) {
+  // this function inserts an iFrame that can be used to track your page's applet use. 
+  // By default it tracks to a page at St. Olaf College, but you can change that. 
+  if (Jmol._tracker && !Jmol._isLocal){
+  try {  
+    var url = Jmol._tracker + "&applet=" + applet._jmolType + "&version=" + Jmol._version 
+      + "&appver=" + self.___JmolVersion + "&url=" + encodeURIComponent(document.location.href);
+    var s = '<iframe style="display:none" width="0" height="0" frameborder="0" tabindex="-1" src="' + url + '"></iframe>'
+    Jmol.$after("body", s);
+  } catch (e) {
+    // ignore
+  }}
+  delete Jmol._tracker;
+  return applet;
+}
 
 })(Jmol, jQuery);
+

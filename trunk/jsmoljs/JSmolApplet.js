@@ -90,7 +90,8 @@
 			debug: false
 		};	 
 		Jmol._addDefaultInfo(Info, DefaultInfo);
-
+    if (Info.color.indexOf("0x") == 0)
+      Info.color = "#" + Info.color.substring(1);
   	Jmol._debugAlert = Info.debug;
       if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
       
@@ -189,7 +190,7 @@
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
     params.permissions = (applet._isSigned ? "all-permissions" : "sandbox");
     params.documentLocation = document.location.href;
-    params.documentBase = (document.location + "?#").split("#")[0].split("?")[0];
+    params.documentBase = document.location.href.split("#")[0].split("?")[0];
 
     params.jarPath = Info.jarPath;
 		Jmol._syncedApplets.length && (params.synccallback = "Jmol._mySyncCallback");

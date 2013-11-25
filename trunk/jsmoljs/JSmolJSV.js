@@ -61,9 +61,10 @@
 
 		Info || (Info = {});
 		var DefaultInfo = {
-			width: 500,
+			width: 800,
 			height: 300,
 			debug: false,
+      color: "#A0A0A0",
 			jarPath: "java",
 			jarFile: "JSpecViewApplet.jar",
       j2sPath: "j2s",
@@ -108,6 +109,7 @@
   Jmol._JSVApplet.getStartupScript = function(applet, Info) {
     return (Info.initParams ? Info.initParams : "") 
         + ';appletID ' + applet._id + ';syncID '+ applet._syncId
+        + ';backgroundcolor ' + Info.color
         + ';appletReadyCallbackFunctionName Jmol._readyCallback'// + applet._id + '._readyCallback'
         + ';syncCallbackFunctionName Jmol._mySyncCallback;';	
   }
@@ -120,12 +122,9 @@
     this._startupScript = Jmol._JSVApplet.getStartupScript(this, Info);
 
 		var params = {
-			syncId: ("" + Math.random()).substring(3),
-			progressbar: "true",
-			progresscolor: "blue",
-			boxbgcolor: Info.color || "black",
+			boxbgcolor: Info.color,
 			boxfgcolor: "white",
-			boxmessage: "Downloading JSpecViewApplet ...",
+			syncId: this._syncId,
       code:"jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "")
 		};
 
