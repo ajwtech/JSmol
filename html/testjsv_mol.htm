@@ -43,23 +43,17 @@ var MInfo;       // for Molfile
 // anywhere in the Java or Jmol code.
 
 Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
-use="HTML5";
 
 jmol_isReady = function(applet) {
 	document.title = (applet._id + " is ready")
 	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
 }
 
-//jsv_isReady = function(applet) {
-//	document.title = (applet._id + " is ready")
-//	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
-//}
-
 SInfo = {
 	width: 800,
 	height: 300,
 	debug: false,
-	color: "0xC0C0C0",
+	color: "#A0F0F0",
 //	addSelectionOptions: true,
 //	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	use: "HTML5",
@@ -75,7 +69,7 @@ MInfo = {
 	width: 300,
 	height: 300,
 	debug: false,
-	color: "0xF0F0F0",
+	color: "#A0F0F0",
 //	addSelectionOptions: true,
 //	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	use: "HTML5",
@@ -103,7 +97,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<table width=1000 cellpadding=10 border=1 >
+<table width=1100 cellpadding=10 >
 <tr>
 <td>
 <div id=jsvdiv></div>

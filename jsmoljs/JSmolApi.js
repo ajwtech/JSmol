@@ -1,6 +1,6 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
-// BH 11/15/2013 1:51:08 PM  adding URI ?USEJAR=.......
+// BH 11/25/2013 6:55:53 AM adds URL flags _USE=, _JAR=, _J2S=
 // BH 9/3/2013 5:48:03 PM simplification of Jmol.getAppletHTML()
 // BH 5/16/2013 9:01:41 AM checkbox group fix
 // BH 1/15/2013 10:55:06 AM updated to default to HTML5 not JAVA
@@ -29,9 +29,16 @@
     key = "&" + key + "=";
     return decodeURI(("&" + document.location.search.substring(1) + key).split(key)[1].split("&")[0]);
   }
-  Jmol._j2sPath = getField("J2SPATH"); 
-  Jmol._jarFile = getField("USEJAR");
-
+  Jmol._j2sPath = getField("_J2S");
+    // allows URL-line setting of Info.j2sPath
+  Jmol._jarFile = getField("_JAR");
+    // allows URL-line setting of Info.jarPath and Info.jarFile
+  Jmol._use = getField("_USE");
+    // allows URL-line setting of Info.use
+    // defaults to "HTML5"
+    // looking for "_USE=xxxx" 
+    // _USE=SIGNED implies JAVA, sets Info.isSigned, and adds "Signed" to applet jar name if necessary
+    
 	Jmol.getVersion = function(){return Jmol._jmolInfo.version};
 
 	Jmol.getApplet = function(id, Info, checkOnly) {
