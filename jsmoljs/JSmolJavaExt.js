@@ -228,7 +228,7 @@ Integer.toOctalString=Integer.prototype.toOctalString=function(d){if(d.valueOf)d
 Integer.toBinaryString=Integer.prototype.toBinaryString=function(d){if(d.valueOf)d=d.valueOf();return d._numberToString(2);};
 
 Number.toString = Number.prototype.toString=function(a){
-if (arguments.length == 0)return ""+a
+if (arguments.length == 0)return ""+this.valueOf();
 return Integer.toHexString(a);
 };
 

@@ -85,6 +85,7 @@ Jmol = (function(document) {
     _jarFile: null,  // can be set in URL using _JAR=
     _j2sPath: null,  // can be set in URL using _J2S=
     _use: null,      // can be set in URL using _USE=
+    _j2sLoadMonitorOpacity: 55, // initial opacity for j2s load monitor message
     _applets: {},
     _asynchronous: true,
     _ajaxQueue: [],
