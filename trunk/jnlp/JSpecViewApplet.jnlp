@@ -15,7 +15,4 @@
          width="1200"
          height="500">
      </applet-desc>
-     <security>
-         <sandbox />
-     </security>
 </jnlp> 
