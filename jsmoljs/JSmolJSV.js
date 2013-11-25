@@ -109,7 +109,7 @@
   Jmol._JSVApplet.getStartupScript = function(applet, Info) {
     return (Info.initParams ? Info.initParams : "") 
         + ';appletID ' + applet._id + ';syncID '+ applet._syncId
-        + ';backgroundcolor ' + Info.color
+        + ';backgroundcolor ' + applet._color
         + ';appletReadyCallbackFunctionName Jmol._readyCallback'// + applet._id + '._readyCallback'
         + ';syncCallbackFunctionName Jmol._mySyncCallback;';	
   }
@@ -126,7 +126,7 @@
 			boxfgcolor: "white",
 			syncId: this._syncId,
       code:"jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "")
-		};
+  		};
 
     Jmol._Applet._createApplet(this, Info, params);
 	}
