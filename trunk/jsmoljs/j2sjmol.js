@@ -6302,7 +6302,7 @@ clpm.fadeAlpha = 0;
 clpm.monitorEl = null;
 clpm.lastScrollTop = 0;
 clpm.bindingParent = null;
-clpm.DEFAULT_OPACITY = 55;
+clpm.DEFAULT_OPACITY = (self.Jmol && Jmol._j2sLoadMonitorOpacity ? Jmol._j2sLoadMonitorOpacity : 55);
 /* private static */ clpm.clearChildren = function (el) {
 	if (el == null) return;
 	for (var i = el.childNodes.length - 1; i >= 0; i--) {
