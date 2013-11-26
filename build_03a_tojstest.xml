@@ -138,7 +138,7 @@
   	<move file="temp.js" tofile="site/jsmol/j2s/JSV/common/JSVersion.js" />
 
   	<!-- get .po files from the Jmol project -->		
-   	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
+   	<copy overwrite="true" todir="site/jsmol/idioma" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
 	  </fileset>

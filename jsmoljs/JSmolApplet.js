@@ -180,6 +180,12 @@
     var attributes = "name='" + applet._id + "_object' id='" + applet._id + "_object' " + "\n"
 				+ widthAndHeight + jnlp + "\n"
 		params.codebase = applet._jarPath;
+		params.codePath = params.codebase + "/";
+    if (params.codePath.indexOf("://") < 0) {
+      var base = document.location.href.split("#")[0].split("?")[0].split("/");
+      base[base.length - 1] = params.codePath;
+      params.codePath = base.join("/");
+    }
 		params.archive = jarFile;
 		params.mayscript = 'true';
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
