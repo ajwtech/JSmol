@@ -132,7 +132,7 @@
 
   	<!-- get .po files from the Jmol project -->		
    	<echo>adding .po files</echo>
-   	<copy overwrite="true" todir="site/jsmol/j2s/trans" >
+   	<copy overwrite="true" todir="site/jsmol/idioma" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
 	  </fileset>
