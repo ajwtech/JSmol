@@ -738,6 +738,7 @@
    		JSmolControls.js
    		JSmolApi.js
    		j2sjmol.js
+   		JSmolDebugOff.js
    		" />
    	</concat>
    
@@ -754,6 +755,7 @@
    		JSmolControls.js
    		JSmolApi.js
    		j2sjmol.js
+   		JSmolDebugOff.js
    		" />
    	</concat>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">

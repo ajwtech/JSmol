@@ -100,6 +100,7 @@ Jmol = (function(document) {
       fileOpener:z+1001,
       coverImage:z+2000
     },
+    _debugCode: true,  // set false in process of minimizatino
     db: {
       _databasePrefixes: "$=:",
       _fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
@@ -412,7 +413,7 @@ Jmol = (function(document) {
   features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
   features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
     (features.browserName == "opera" && features.browserVersion >= 8) ||
-    (features.browserName == "webkit" && features.browserVersion >= 412.2);
+    (features.browserName == "webkit" && features.browserVersion >= 412.2 && features.browserVersion < 500); // 500 is a guess; required for 536.3
   
   features.hasFileReader = (window.File && window.FileReader);
   

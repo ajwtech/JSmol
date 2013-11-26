@@ -152,14 +152,9 @@
     a custom message can be provided (e.g. localized for user's language) when no Java is installed.
   */
 	Jmol._Applet._noJavaMsg =
-      "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\
+      "Either you do not have Java applets enabled in your web<br />browser or your browser is blocking this applet.<br />\
       Check the warning message from your browser and/or enable Java applets in<br />\
       your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>";
-	Jmol._Applet._noJavaMsg2 =
-      "You do not have the<br />\
-      Java Runtime Environment<br />\
-      installed for applet support.<br />\
-      Visit <a href='http://www.java.com'>www.java.com</a>";
 
 	Jmol._Applet._setCommonMethods = function(proto) {
 		proto._showInfo = Jmol._Applet.prototype._showInfo;	
@@ -208,9 +203,9 @@
 				+ ";text-align:center;vertical-align:middle;'>\n" + Jmol._Applet._noJavaMsg + "</p></object>\n";
 		} else { // use applet tag
       t = "<applet " + attributes
-        + " code='" + myClass + "' codebase='" + applet._jarPath + "' archive='" + jarFile + "' mayscript='true'>\n"
+        + " code='" + params.code + "' codebase='" + applet._jarPath + "' archive='" + jarFile + "' mayscript='true'>\n"
         + t + "<table bgcolor='yellow'><tr><td align='center' valign='middle' " + widthAndHeight + ">\n"
-				+ Jmol._Applet._noJavaMsg2 + "</td></tr></table></applet>\n";
+				+ Jmol._Applet._noJavaMsg + "</td></tr></table></applet>\n";
 		}	
 		t = Jmol._getWrapper(applet, true) + t + Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
