@@ -187,7 +187,7 @@
 	   		es.push([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
 				es.push([this, this.__addExportHook, null, "addExportHook"])
 			}			 			
-			if (Jmol.debugCode) {
+			if (Jmol._debugCode) {
         if (this._isJSV) {
           es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"])
          if (this._isPro) {
@@ -434,7 +434,7 @@
 			ClazzLoader.globalLoaded = function (file) {
        // not really.... just nothing more yet to do yet
       	ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
-  			if (!Jmol.debugCode || !Jmol.haveCore) {
+  			if (!Jmol._debugCode || !Jmol.haveCore) {
   				Jmol.haveCore = true;
     			Jmol.__nextExecution();
     		}
@@ -446,7 +446,7 @@
 			ClazzLoader.packageClasspath (applet._j2sPath); // where the other
 															// files are to be
 															// found
-  		// if (!Jmol.debugCode)
+  		// if (!Jmol._debugCode)
 			  return;
 		}
 		Jmol.__nextExecution();

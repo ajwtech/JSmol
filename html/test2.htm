@@ -21,46 +21,19 @@
 
 <script type="text/javascript">
 
-Jmol.debugCode = true; // stops core.z.js from loading, allowing unminimized class files to load instead
 
 var jmolApplet0; // set up in HTML table, below
 var Info;
 
 ;(function() {
 
-// logic is set by indicating order of USE -- default is HTML5 for this test page, though
-var use = "HTML5"//"JAVA HTML5 IMAGE" // WEBGL only by request by link below.
-var s = document.location.search;
-
-
-// Developers: The debugCode flag is checked in j2s/java/core.z.js, 
-// and, if TRUE, skips loading the core methods, forcing those
-// to be read from their individual directories. Set this
-// true if you want to do some code debugging by inserting
-// System.out.println, document.title, or alert commands
-// anywhere in the Java or Jmol code.
-
-if (s.indexOf("USE=") >= 0)
-  use = s.split("USE=")[1].split("&")[0]
-else if (s.indexOf("JAVA") >= 0)
-  use = "JAVA"
-else if (s.indexOf("IMAGE") >= 0)
-  use = "IMAGE"
-else if (s.indexOf("NOWEBGL") >= 0)
-  use = "JAVA IMAGE"
-else if (s.indexOf("WEBGL") >= 0)
-  use = "WEBGL HTML5"
-if (s.indexOf("NOWEBGL") >= 0)
-  use = use.replace(/WEBGL/,"")
-var useSignedApplet = (s.indexOf("SIGNED") >= 0);
-if(useSignedApplet && use == "HTML5") use = "JAVA";
+// use ?_USE=JAVA or _USE=SIGNED or _USE=HTML5
 
 jmol_isReady = function(applet) {
 	document.title = (applet._id + " is ready")
 	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
  
 }		
-
 
 Info = {
 	width: 300,
@@ -69,12 +42,12 @@ Info = {
 	color: "#F0F0F0",
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	use: use,
+	use: "HTML5",
   //language: "fr", // NOTE: LOCALIZATION REQUIRES <meta charset="utf-8"> (see JSmolCore Jmol.featureDetection.supportsLocalization)
 	jarPath: "java",
 	j2sPath: "j2s",
-	jarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
-	isSigned: useSignedApplet,
+	jarFile: "JmolApplet.jar",
+	isSigned: false,
 	disableJ2SLoadMonitor: false,
 	disableInitialConsole: false,
 	readyFunction: jmol_isReady,
@@ -192,16 +165,13 @@ Enter "!" and a command into the search box and press ENTER to execute a <a targ
 <table cellpadding=5><tr><td valign=top>
 <b>rendering options:</b> 
 	 <br /> 
-  <a href=test2.htm?USE=JAVA>unsigned Jmol applet</a> 
+  <a href=test2.htm?_USE=JAVA>unsigned Jmol applet</a> 
  <br /> 
-<a href=test2.htm?SIGNED>signed Jmol applet</a>
+<a href=test2.htm?_USE=SIGNED>signed Jmol applet</a>
  <br /> 
-<a href=test2.htm?USE=HTML5>JSmol (HTML5 only)</a> 
+<a href=test2.htm?_USE=HTML5>JSmol (HTML5 only)</a> 
  <br /> 
- <a href=test2.htm?WEBGL>JSmol (WebGL)</a> 
- <br /> 
- <a href=test2.htm?IMAGE>image only</a>
- <br />
+ <a href=test2.htm?_USE=WEBGL>JSmol (WebGL)</a> 
  <br />
 	<b>keyword searches</b>
  <br />
