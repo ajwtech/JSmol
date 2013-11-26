@@ -239,9 +239,13 @@
   			
 			// viewerOptions.put("repaintManager", "J.render");
 			viewerOptions.put("documentBase", document.location.href);
-			var base = document.location.href.split("?")[0].split("#")[0].split("/")
-			base[base.length - 1] = window["j2s.lib"].base
-			viewerOptions.put ("codeBase", base.join("/"));
+      var codePath = applet._j2sPath + "/";
+      if (codePath.indexOf("://") < 0) {
+        var base = document.location.href.split("#")[0].split("?")[0].split("/");
+        base[base.length - 1] = codePath;
+        codePath = base.join("/");
+      }
+			viewerOptions.put ("codePath", codePath);
       
 			Jmol._registerApplet(applet._id, applet);
       applet._applet = (!applet._isJSV ? new J.appletjs.Jmol(viewerOptions) 
