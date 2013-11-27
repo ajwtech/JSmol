@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 11/26/2013 8:19:55 PM fix !xxxx search commmand entry and stop MSIE from duplicating command
 // BH 11/25/2013 7:38:31 AM adds option for GoogleAnalytics tracking
 // BH 11/25/2013 7:39:03 AM adds URL options _J2S=  _JAR=  _USE=
 // BH 11/23/2013 10:51:37 PM  adds JNLP support for local applet
@@ -447,7 +448,7 @@ Jmol = (function(document) {
     // feel free to adjust this look to anything you want
     if (Jmol._grabberOptions.length == 0)
       return ""
-    var s = '<input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()" size="32" value="" />';
+    var s = '<input type="text" id="ID_query" onkeypress="if(13==event.which){Jmol._applets[\'ID\']._search();return false}" size="32" value="" />';
     var b = '<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>'
     if (Jmol._grabberOptions.length == 1) {
       s = '<nobr>' + s + '<span style="display:none">';
@@ -661,11 +662,11 @@ Jmol = (function(document) {
     query || (query = Jmol._getElement(applet, "query").value);
     if (query.indexOf("!") == 0) {
     // command prompt in this box as well
-      applet._script(query);
+    // remove exclamation point "immediate" indicator
+      applet._script(query.substring(1));
       return;
-    } else if (query) {
-      query = query.replace(/\"/g, "");
-    }
+    } 
+    query && (query = query.replace(/\"/g, ""));
     applet._showInfo(false);
     var database;
     if (Jmol._isDatabaseCall(query)) {
