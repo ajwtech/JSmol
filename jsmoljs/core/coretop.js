@@ -1,4 +1,4 @@
 ;(function() {
 
-if (Jmol.debugCode)return;
+if (Jmol._debugCode)return;
 

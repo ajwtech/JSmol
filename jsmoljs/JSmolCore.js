@@ -101,7 +101,7 @@ Jmol = (function(document) {
       fileOpener:z+1001,
       coverImage:z+2000
     },
-    _debugCode: true,  // set false in process of minimizatino
+    _debugCode: true,  // set false in process of minimization
     db: {
       _databasePrefixes: "$=:",
       _fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
