@@ -4,14 +4,15 @@
 
 	<!-- 
 
-	The overall process of creating JSmol starts here. 
+	See Jmol/build.xml for details on building Jmol and JSmol. 
 	
-	1) All source Java code in JSmol is derived from Jmol, so you must have both SourceForge
-	   projects checked out. Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
+	1) All source Java code in JSmol is derived from Jmol and JSpecView, 
+	   so you must have all three SourceForge projects checked out. 
+	   Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
 	   not even, such as 13.1.18, not 13.0.18.) 
 	   
-	   Be sure to set the above property jmol.path to where you have checked out the Jmol project
-	   both here and in buildtojs.xml
+	   Be sure to set the above property jmol.path to where 
+	   you have checked out the Jmol project both here and in build_03_tojs.xml
 
 		!!Never modify any file in JSmol/src!! - Only work in Jmol. 
 		
