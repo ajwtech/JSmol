@@ -122,7 +122,7 @@
     this._startupScript = Jmol._JSVApplet.getStartupScript(this, Info);
 
 		var params = {
-			boxbgcolor: Info.color,
+			boxbgcolor: this._color,
 			boxfgcolor: "white",
 			syncId: this._syncId,
       code:"jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "")

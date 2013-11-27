@@ -90,8 +90,6 @@
 			debug: false
 		};	 
 		Jmol._addDefaultInfo(Info, DefaultInfo);
-    if (Info.color.indexOf("0x") == 0)
-      Info.color = "#" + Info.color.substring(1);
   	Jmol._debugAlert = Info.debug;
       if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
       
@@ -231,7 +229,7 @@
 			boxbgcolor: this._color || "black",
 			boxfgcolor: "white",
 			boxmessage: "Downloading JmolApplet ...",
-			script: (!Info.color ? "" : "background " + (Info.color.indexOf("#") == 0 ? "[0x" + Info.color.substring(1) + "]" : Info.color)),
+			script: (this._color ? "background " + this._color : ""),
       code: "JmolApplet.class"
 		};
     Jmol._setJmolParams(params, Info);
