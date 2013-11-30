@@ -344,8 +344,8 @@
    * @param a
    *        the alpha portion of the highlight color
    */
-  Jmol.jsvAddHightlight = function(jsvApplet, x1, x2, r, g, b, a) {
-    jsvApplet._applet.addHightlight(x1, x2, r, g, b, a);    
+  Jmol.jsvAddHighlight = function(jsvApplet, x1, x2, r, g, b, a) {
+    jsvApplet._applet.addHighlight(x1, x2, r, g, b, a);    
   }
 
   /**
