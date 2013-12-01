@@ -1,4 +1,27 @@
 // JSmolJavaExt.js
+
+// BH 11/30/2013 1:46:31 PM fixing Byte, Short, Long, Integer, Float, Double to reflect proper bounds and error conditions
+// BH 11/29/2013 8:58:49 PM removing Boolean.toString(boolean)
+// BH 11/4/2013 7:34:26 AM changing "var nativeClazz" to "var nativeClass" to avoid ANT replacement of "nativeClazz." to "nativeClazz_"
+// BH 10/19/2013 1:29:27 PM fixed String.$replace()
+// BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
+// BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
+// BH 10/10/2013 2:40:20 PM  added Math.log10   
+
+// BH 7/23/2013 7:24:01 AM fixing Number.shortValue() and Number.byteValue() for negative values
+// BH 6/16/2013 1:31:30 PM adding /| in String.replace -- thank you David Koes
+// BH 3/13/2013 12:49:23 PM setting Boolean.valueOf() "@" 
+// BH 3/2/2013 10:46:45 PM removed Double.valueOf(String)
+// BH 11/6/2012 8:26:33 PM added instanceof Int32Array in String.instantialize
+// BH 10/13/2012 11:38:07 PM corrected Integer.parseInt to allow only +-0123456789; created Integer.parseIntRadix
+// BH 11/1/2012 added Short
+// BH 9/10/2012 6:27:21 AM added java.net.URL... classes
+// BH 1/7/2013 7:40:06 AM added Clazz.dateToString
+
+// JSmolJavaExt.js
+
+// BH 11/30/2013 1:46:31 PM fixing Float(), Integer(), Double() (again)
+// BH 11/29/2013 8:58:49 PM removing Boolean.toString(boolean)
 // BH 11/4/2013 7:34:26 AM changing "var nativeClazz" to "var nativeClass" to avoid ANT replacement of "nativeClazz." to "nativeClazz_"
 // BH 10/19/2013 1:29:27 PM fixed String.$replace()
 // BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
@@ -33,9 +56,6 @@ Number.equals=Clazz.innerFunctions.equals;
 Number.getName=Clazz.innerFunctions.getName;
 
 
-Number.serialVersionUID=Number.prototype.serialVersionUID=-8742448824652078965;
-
-// HOWEVER this is not correct -- 0xffff should be -1. 
 $_M(Number,"shortValue",
 function(){
 var x = Math.round(this)&0xffff;
@@ -97,12 +117,11 @@ return 0;
 */
 
 
-$_k(Integer,
-function(value){
-var v=Math.round(value)&0xffffffff;
-this.valueOf=function(){
-return v;
-};
+$_k(Integer, function(v){
+ v == null && (v = 0);
+ if (typeof v != "number")
+  v = Integer.parseIntRadix(v, 10);
+ this.valueOf=function(){return v;};
 }); //BH
 /*
 Clazz.makeConstructor(Integer,
@@ -113,7 +132,6 @@ return value;
 };
 },"String");
 */
-Integer.serialVersionUID=Integer.prototype.serialVersionUID=1360826667806852920;
 Integer.MIN_VALUE=Integer.prototype.MIN_VALUE=-0x80000000;
 Integer.MAX_VALUE=Integer.prototype.MAX_VALUE=0x7fffffff;
 Integer.TYPE=Integer.prototype.TYPE=Integer;
@@ -173,11 +191,11 @@ if (radix == 10) {
 
 	}
 }
-var integer=parseInt(s,radix);
-if(isNaN(integer)){
+var i=parseInt(s,radix);
+if(isNaN(i)){
 throw new NumberFormatException("Not a Number : "+s);
 }
-return integer;
+return i;
 },"String, Number");
 Integer.parseIntRadix=Integer.prototype.parseIntRadix;
 
@@ -232,39 +250,22 @@ if (arguments.length == 0)return ""+this.valueOf();
 return Integer.toHexString(a);
 };
 
+Integer.decodeRaw=$_M(Integer,"decodeRaw", function(n){
+if (n.indexOf(".") >= 0)n = "";
+var i = (n.startsWith("-") ? 1 : 0);
+n = n.replace(/\#/, "0x").toLowerCase();
+var radix=(n.startsWith("0x", i) ? 16 : n.startsWith("0", i) ? 8 : 10);
+// The general problem with parseInt is that is not strict -- ParseInt("10whatever") == 10.
+// Number is strict, but Number("055") does not work, though ParseInt("055", 8) does.
+n = Number(n);
+return (radix == 8 ? parseInt(n, 8) : n);
+},"~S");
 
-
-Integer.decode=$_M(Integer,"decode",
-function(nm){
-var radix=10;
-var index=0;
-var negative=false;
-var result;
-if(nm.startsWith("-")){
-negative=true;
-index++;
-}if(nm.startsWith("0x",index)||nm.startsWith("0X",index)){
-index+=2;
-radix=16;
-}else if(nm.startsWith("#",index)){
-index++;
-radix=16;
-}else if(nm.startsWith("0",index)&&nm.length>1+index){
-index++;
-radix=8;
-}if(nm.startsWith("-",index))throw new NumberFormatException("Negative sign in wrong position");
-try{
-result=Integer.$valueOf(nm.substring(index),radix);
-result=negative?new Integer(-result.intValue()):result;
-}catch(e){
-if(Clazz.instanceOf(e,NumberFormatException)){
-var constant=negative?String.instantialize("-"+nm.substring(index)):nm.substring(index);
-result=Integer.$valueOf(constant,radix);
-}else{
-throw e;
-}
-}
-return result;
+Integer.decode=$_M(Integer,"decode", function(n){
+  n = Integer.decodeRaw(n);
+  if (isNaN(n) || n < Integer.MIN_VALUE|| n > Integer.MAX_VALUE)
+  throw new NumberFormatException("Invalid Integer");
+  return new Integer(n);
 },"~S");
 
 $_V(Integer,"hashCode",
@@ -272,6 +273,7 @@ function(){
 return this.valueOf();
 });
 
+// Note that Long is problematic in JavaScript 
 
 java.lang.Long=Long=function(){
 Clazz.instantialize(this,arguments);
@@ -286,59 +288,29 @@ return"class java.lang.Long";
 }
 return""+this.valueOf();
 };
-Clazz.makeConstructor(Long,
-function(){
-this.valueOf=function(){
-return 0;
-};
+
+$_k(Long, function(v){
+ v == null && (v = 0);
+ v = (typeof v == "number" ? Math.round(v) : Integer.parseIntRadix(v, 10));
+this.valueOf=function(){return v;};
 });
-Clazz.makeConstructor(Long,
-function(value){
-var v=Math.round(value);
-this.valueOf=function(){
-return v;
-};
-},"Number");
-Clazz.makeConstructor(Long,
-function(s){
-var value=Long.parseLong(s,10);
-this.valueOf=function(){
-return value;
-};
-},"String");
-Long.serialVersionUID=Long.prototype.serialVersionUID=4290774380558885855;
-Long.MIN_VALUE=Long.prototype.MIN_VALUE=-0x8000000000000000;
-Long.MAX_VALUE=Long.prototype.MAX_VALUE=0x7fffffffffffffff;
+
+//Long.MIN_VALUE=Long.prototype.MIN_VALUE=-0x8000000000000000;
+//Long.MAX_VALUE=Long.prototype.MAX_VALUE=0x7fffffffffffffff;
 Long.TYPE=Long.prototype.TYPE=Long;
 
 $_M(Long,"parseLong",
 function(s,radix){
-if(s==null){
-throw new NumberFormatException("null");
-}if(radix<2){
-throw new NumberFormatException("radix "+radix+" less than Character.MIN_RADIX");
-}if(radix>36){
-throw new NumberFormatException("radix "+radix+" greater than Character.MAX_RADIX");
-}
-var longVal=parseInt(s,radix);
-if(isNaN(longVal)){
-throw new NumberFormatException("Not a Number : "+s);
-}
-return longVal;
-},"String, Number");
-
-$_M(Long,"parseLong",
-function(s){
-return Long.parseLong(s,10);
-},"String");
+ return Integer.parseInteger(s, radix || 10);
+});
 
 Long.parseLong=Long.prototype.parseLong;
 
-$_M(Long,"$valueOf",
+$_V(Long,"$valueOf",
 function(s){
-return new Long(Long.parseLong(s,10));
-},"String");
-
+return new Long(s);
+});
+/*
 $_M(Long,"$valueOf",
 function(s){
 return new Long(s);
@@ -348,7 +320,7 @@ $_M(Long,"$valueOf",
 function(s,r){
 return new Long(Long.parseLong(s,r));
 },"String, Number");
-
+*/
 Long.$valueOf=Long.prototype.$valueOf;
 $_V(Long,"equals",
 function(s){
@@ -369,36 +341,11 @@ return i.toString(2);
 
 
 Long.decode=$_M(Long,"decode",
-function(nm){
-var radix=10;
-var index=0;
-var negative=false;
-var result;
-if(nm.startsWith("-")){
-negative=true;
-index++;
-}if(nm.startsWith("0x",index)||nm.startsWith("0X",index)){
-index+=2;
-radix=16;
-}else if(nm.startsWith("#",index)){
-index++;
-radix=16;
-}else if(nm.startsWith("0",index)&&nm.length>1+index){
-index++;
-radix=8;
-}if(nm.startsWith("-",index))throw new NumberFormatException("Negative sign in wrong position");
-try{
-result=Long.$valueOf(nm.substring(index),radix);
-result=negative?new Long(-result.longValue()):result;
-}catch(e){
-if(Clazz.instanceOf(e,NumberFormatException)){
-var constant=negative?String.instantialize("-"+nm.substring(index)):nm.substring(index);
-result=Long.$valueOf(constant,radix);
-}else{
-throw e;
-}
-}
-return result;
+function(n){
+  n = Integer.decodeRaw(n);
+  if (isNaN(n))
+    throw new NumberFormatException("Invalid Long");
+  return new Long(n);
 },"~S");
 
 java.lang.Short = Short = function () {
@@ -414,57 +361,30 @@ Short.toString = Short.prototype.toString = function () {
 	}
 	return "" + this.valueOf ();
 };
-/*
-Clazz.makeConstructor (Short,
-function () {
-this.valueOf = function () {
-	return 0;
-};
-});
-*/
 
 $_k (Short,
-function (value) {
-var v = Math.round (value) & 0xffffffff;
-this.valueOf = function () {
-	return v;
-};
+function (v) {
+ v == null && (v = 0);
+ if (typeof v != "number")
+  v = Integer.parseIntRadix(v, 10);
+ v = v.shortValue();
+ this.valueOf = function () {return v;};
 });
 
-/*
-Clazz.makeConstructor (Short,
-function (s) {
-var value = Short.parseShort (s, 10);
-this.valueOf = function () {
-	return value;
-};
-}, "String");
-*/
 
-Short.serialVersionUID = Short.prototype.serialVersionUID = 7515723908773894738;
 Short.MIN_VALUE = Short.prototype.MIN_VALUE = -32768;
 Short.MAX_VALUE = Short.prototype.MAX_VALUE = 32767;
 Short.TYPE = Short.prototype.TYPE = Short;
 
-$_M(Short, "parseShort",
+$_M(Short, "parseShortRadix",
 function (s, radix) {
-if (s == null) {
-throw  new NumberFormatException ("null");
-}if (radix < 2) {
-throw  new NumberFormatException ("radix " + radix + " less than Character.MIN_RADIX");
-}if (radix > 36) {
-throw  new NumberFormatException ("radix " + radix + " greater than Character.MAX_RADIX");
-}
-var integer = parseInt (s, radix);
-if(isNaN(integer)){
-throw  new NumberFormatException ("Not a Number : " + s);
-}
-return integer;
+return Integer.parseIntRadix(s, radix).shortValue();
 }, "String, Number");
-Short.parseShort = Short.prototype.parseShort;
+Short.parseShortRadix = Short.prototype.parseShortRadix;
+
 $_M(Short, "parseShort",
 function (s) {
-return Short.parseShort (s, 10);
+return Short.parseShortRadix (s, 10);
 }, "String");
 
 Short.parseShort = Short.prototype.parseShort;
@@ -506,37 +426,84 @@ Short.toBinaryString = Short.prototype.toBinaryString = function (i) {
 	return i.toString (2);
 };
 Short.decode = $_M(Short, "decode",
-function (nm) {
-var radix = 10;
-var index = 0;
-var negative = false;
-var result;
-if (nm.startsWith ("-")) {
-negative = true;
-index++;
-}if (nm.startsWith ("0x", index) || nm.startsWith ("0X", index)) {
-index += 2;
-radix = 16;
-} else if (nm.startsWith ("#", index)) {
-index++;
-radix = 16;
-} else if (nm.startsWith ("0", index) && nm.length > 1 + index) {
-index++;
-radix = 8;
-}if (nm.startsWith ("-", index)) throw  new NumberFormatException ("Negative sign in wrong position");
-try {
-result = Short.$valueOf (nm.substring (index), radix);
-result = negative ?  new Short (-result.shortValue ()) : result;
-} catch (e) {
-if (Clazz.instanceOf (e, NumberFormatException)) {
-var constant = negative ?  String.instantialize ("-" + nm.substring (index)) : nm.substring (index);
-result = Short.$valueOf (constant, radix);
-} else {
-throw e;
-}
-}
-return result;
+function(n){
+  n = Integer.decodeRaw(n);
+  if (isNaN(n) || n < -32768|| n > 32767)
+    throw new NumberFormatException("Invalid Short");
+  return new Short(n);
 }, "~S");
+
+java.lang.Byte=Byte=function(){
+Clazz.instantialize(this,arguments);
+};
+Clazz.decorateAsType(Byte,"Byte",Number,Comparable,null,true);
+Byte.prototype.valueOf=function(){return 0;};
+Byte.toString=Byte.prototype.toString=function(){
+if(arguments.length!=0){
+return""+arguments[0];
+}else if(this===Byte){
+return"class java.lang.Byte";
+}
+return""+this.valueOf();
+};
+Clazz.makeConstructor(Byte,
+function(v){
+ if (typeof v != "number")
+   v = Integer.parseIntRadix(v, 10);
+ v = v.byteValue();
+this.valueOf=function(){
+return v;
+};
+});
+
+Byte.serialVersionUID=Byte.prototype.serialVersionUID=-7183698231559129828;
+Byte.MIN_VALUE=Byte.prototype.MIN_VALUE=-128;
+Byte.MAX_VALUE=Byte.prototype.MAX_VALUE=127;
+Byte.SIZE=Byte.prototype.SIZE=8;
+Byte.TYPE=Byte.prototype.TYPE=Byte;
+
+$_M(Byte,"parseByteRadix",
+function(s,radix){
+ return Integer.parseIntRadix(s, radix).byteValue();
+},"String, Number");
+Byte.parseByteRadix=Byte.prototype.parseByteRadix;
+
+$_M(Byte,"parseByte",
+function(s){
+return Byte.parseByte(s,10);
+},"String");
+
+Byte.parseByte=Byte.prototype.parseByte;
+
+$_V(Byte, "$valueOf",
+function (s) {
+return new Byte(s);
+});
+
+Byte.$valueOf=Byte.prototype.$valueOf;
+$_V(Byte,"equals",
+function(s){
+if(s==null||!Clazz.instanceOf(s,Byte)){
+return false;
+}
+return s.valueOf()==this.valueOf();
+},"Object");
+Byte.toHexString=Byte.prototype.toHexString=function(i){
+return i.toString(16);
+};
+Byte.toOctalString=Byte.prototype.toOctalString=function(i){
+return i.toString(8);
+};
+Byte.toBinaryString=Byte.prototype.toBinaryString=function(i){
+return i.toString(2);
+};
+Byte.decode=$_M(Byte,"decode",
+function(n){
+  n = Integer.decodeRaw(n);
+  if (isNaN(n) || n < -128|| n > 127)
+    throw new NumberFormatException("Invalid Byte");
+return new Byte(n);
+},"~S");
 
 java.lang.Float=Float=function(){
 Clazz.instantialize(this,arguments);
@@ -552,36 +519,12 @@ return"class java.lang.Float";
 return""+this.valueOf();
 };
 
-
-/*
-Clazz.makeConstructor(Float,
-function(){
-
-this.valueOf=function(){
-return 0.0;
-};
+$_k(Float, function(v){
+ v == null && (v = 0);
+ if (typeof v != "number") 
+  v = Number(v);
+ this.valueOf=function(){return v;}
 });
-*/
-$_k(Float,
-function(value){
-this.valueOf=function(){
-return Float.parseFloat(value);
-};
-});
-/*
-Clazz.makeConstructor(Float,
-function(s){
-var value=null;
-if(s!=null){
-value=Float.parseFloat(s);
-}else{
-value=0;
-}
-this.valueOf=function(){
-return value;
-};
-},"String");
-*/
 
 Float.serialVersionUID=Float.prototype.serialVersionUID=-2671257302660747028;
 Float.MIN_VALUE=Float.prototype.MIN_VALUE=3.4028235e+38;
@@ -597,20 +540,13 @@ if(s==null){
 throw new NumberFormatException("null");
 }
 if (typeof s == "number")return s;  // important -- typeof NaN is "number" and is OK here
-var floatVal=parseFloat(s);
+var floatVal=Number(s);
 if(isNaN(floatVal)){
 throw new NumberFormatException("Not a Number : "+s);
 }
 return floatVal;
 },"String");
 Float.parseFloat=Float.prototype.parseFloat;
-
-/*
-$_M(Float,"$valueOf",
-function(s){
-return new Float(Float.parseFloat(s,10));
-},"String");
-*/
 
 $_V(Float,"$valueOf",
 function(s){
@@ -651,31 +587,13 @@ return"class java.lang.Double";
 }
 return""+this.valueOf();
 };
-/*
-Clazz.makeConstructor(Double,
-function(){
-this.valueOf=function(){
-return 0.0;
-};
-});
-*/
-$_k(Double,
-function(value){
-this.valueOf=function(){
-return Double.parseDouble(value);
-};
+
+$_k(Double, function(v){
+ v == null && (v = 0);
+ if (typeof v != "number") 
+  v = Double.parseDouble(v);
+ this.valueOf=function(){return v;};
 }); // BH
-
-/*
-
-Clazz.makeConstructor(Double,
-function(s){
-var value=Double.parseDouble(s);
-this.valueOf=function(){
-return value;
-};
-},"String");
-*/
 
 Double.serialVersionUID=Double.prototype.serialVersionUID=-9172774392245257468;
 Double.MIN_VALUE=Double.prototype.MIN_VALUE=4.9e-324;
@@ -702,7 +620,7 @@ if(s==null){
 throw new NumberFormatException("null");
 }
 if (typeof s == "number")return s;  // important -- typeof NaN is "number" and is OK here
-var doubleVal=parseFloat(s);
+var doubleVal=Number(s);
 if(isNaN(doubleVal)){
 throw new NumberFormatException("Not a Number : "+s);
 }
@@ -732,132 +650,6 @@ return false;
 return s.valueOf()==this.valueOf();
 },"Object");
 
-java.lang.Byte=Byte=function(){
-Clazz.instantialize(this,arguments);
-};
-Clazz.decorateAsType(Byte,"Byte",Number,Comparable,null,true);
-Byte.prototype.valueOf=function(){return 0;};
-Byte.toString=Byte.prototype.toString=function(){
-if(arguments.length!=0){
-return""+arguments[0];
-}else if(this===Byte){
-return"class java.lang.Byte";
-}
-return""+this.valueOf();
-};
-Clazz.makeConstructor(Byte,
-function(){
-this.valueOf=function(){
-return 0;
-};
-});
-Clazz.makeConstructor(Byte,
-function(value){
-var v=Math.round(value)&0xffffffff;
-this.valueOf=function(){
-return v;
-};
-},"Number");
-Clazz.makeConstructor(Byte,
-function(s){
-var value=Byte.parseByte(s,10);
-this.valueOf=function(){
-return value;
-};
-},"String");
-Byte.serialVersionUID=Byte.prototype.serialVersionUID=-7183698231559129828;
-Byte.MIN_VALUE=Byte.prototype.MIN_VALUE=-128;
-Byte.MAX_VALUE=Byte.prototype.MAX_VALUE=127;
-Byte.SIZE=Byte.prototype.SIZE=8;
-Byte.TYPE=Byte.prototype.TYPE=Byte;
-
-$_M(Byte,"parseByte",
-function(s,radix){
-if(s==null){
-throw new NumberFormatException("null");
-}if(radix<2){
-throw new NumberFormatException("radix "+radix+" less than Character.MIN_RADIX");
-}if(radix>36){
-throw new NumberFormatException("radix "+radix+" greater than Character.MAX_RADIX");
-}
-var integer=parseInt(s,radix);
-if(isNaN(integer)){
-throw new NumberFormatException("Not a Number : "+s);
-}
-return integer;
-},"String, Number");
-Byte.parseByte=Byte.prototype.parseByte;
-$_M(Byte,"parseByte",
-function(s){
-return Byte.parseByte(s,10);
-},"String");
-
-Byte.parseByte=Byte.prototype.parseByte;
-
-$_M(Byte,"$valueOf",
-function(s){
-return new Byte(Byte.parseByte(s,10));
-},"String");
-
-$_M(Byte,"$valueOf",
-function(s){
-return new Byte(s);
-},"Number");
-
-$_M(Byte,"$valueOf",
-function(s,r){
-return new Byte(Byte.parseByte(s,r));
-},"String, Number");
-
-Byte.$valueOf=Byte.prototype.$valueOf;
-$_V(Byte,"equals",
-function(s){
-if(s==null||!Clazz.instanceOf(s,Byte)){
-return false;
-}
-return s.valueOf()==this.valueOf();
-},"Object");
-Byte.toHexString=Byte.prototype.toHexString=function(i){
-return i.toString(16);
-};
-Byte.toOctalString=Byte.prototype.toOctalString=function(i){
-return i.toString(8);
-};
-Byte.toBinaryString=Byte.prototype.toBinaryString=function(i){
-return i.toString(2);
-};
-Byte.decode=$_M(Byte,"decode",
-function(nm){
-var radix=10;
-var index=0;
-var negative=false;
-var result;
-if(nm.startsWith("-")){
-negative=true;
-index++;
-}if(nm.startsWith("0x",index)||nm.startsWith("0X",index)){
-index+=2;
-radix=16;
-}else if(nm.startsWith("#",index)){
-index++;
-radix=16;
-}else if(nm.startsWith("0",index)&&nm.length>1+index){
-index++;
-radix=8;
-}if(nm.startsWith("-",index))throw new NumberFormatException("Negative sign in wrong position");
-try{
-result=Byte.$valueOf(nm.substring(index),radix);
-result=negative?new Byte(-result.byteValue()):result;
-}catch(e){
-if(Clazz.instanceOf(e,NumberFormatException)){
-var constant=negative?String.instantialize("-"+nm.substring(index)):nm.substring(index);
-result=Byte.$valueOf(constant,radix);
-}else{
-throw e;
-}
-}
-return result;
-},"~S");
 
 java.lang.B00lean = Boolean;
 java.lang.Boolean = Boolean = function () {
@@ -900,10 +692,14 @@ Boolean.$valueOf=$_V(Boolean,"$valueOf",
 function(b){
 return(b?Boolean.TRUE:Boolean.FALSE);
 });
+
+/*
 Boolean.toString=$_M(Boolean,"toString",
 function(b){
 return b?"true":"false";
 },"~B");
+*/
+
 $_V(Boolean,"toString",
 function(){
 return this.valueOf()?"true":"false";
@@ -2970,568 +2766,4 @@ function(){
 return null;
 });
 
-
-
-/*
-
-these are all now included in core.z.js itself.
-
-
-$_J("java.net");
-c$=$_T(java.net,"URLEncoder");
-c$.encode=$_M(c$,"encode",
-function(s){
-return encodeURIComponent(arguments[0]);
-},"~S");
-c$.encode=$_M(c$,"encode",
-function(s,enc){
-return encodeURIComponent(arguments[0]);
-},"~S,~S");
-$_S(c$,
-"digits","0123456789ABCDEF");
-
-c$=$_T(java.net,"MalformedURLException",java.io.IOException);
-
-
-
-
-$_J("java.net");
-$_L(null,"java.net.URLDecoder",["java.lang.NullPointerException"],function(){
-c$=$_T(java.net,"URLDecoder");
-c$.decode=$_M(c$,"decode",
-function(s){
-return decodeURIComponent(arguments[0]);
-},"~S");
-c$.decode=$_M(c$,"decode",
-function(s,enc){
-if(enc==null){
-throw new NullPointerException();
-}{
-return decodeURIComponent(arguments[0]);
-}return null;
-},"~S,~S");
-});
-
-Clazz.declarePackage ("java.net");
-Clazz.declareInterface (java.net, "URLStreamHandlerFactory");
-
-Clazz.declarePackage ("java.net");
-Clazz.load (null, "java.net.URLStreamHandler", ["java.lang.IllegalArgumentException", "$.SecurityException", "$.StringBuffer", "$.UnsupportedOperationException"], function () {
-c$ = Clazz.declareType (java.net, "URLStreamHandler");
-$_M(c$, "openConnection",
-function (u, p) {
-throw  new UnsupportedOperationException ("Method not implemented.");
-}, "java.net.URL,java.net.Proxy");
-$_M(c$, "parseURL",
-function (u, spec, start, limit) {
-var protocol = u.getProtocol ();
-var authority = u.getAuthority ();
-var userInfo = u.getUserInfo ();
-var host = u.getHost ();
-var port = u.getPort ();
-var path = u.getPath ();
-var query = u.getQuery ();
-var ref = u.getRef ();
-var isRelPath = false;
-var queryOnly = false;
-if (start < limit) {
-var queryStart = spec.indexOf ('?');
-queryOnly = queryStart == start;
-if ((queryStart != -1) && (queryStart < limit)) {
-query = spec.substring (queryStart + 1, limit);
-if (limit > queryStart) limit = queryStart;
-spec = spec.substring (0, queryStart);
-}}var i = 0;
-var isUNCName = (start <= limit - 4) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 2)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 3)).charCodeAt (0) == ('/').charCodeAt (0));
-if (!isUNCName && (start <= limit - 2) && ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) && ((spec.charAt (start + 1)).charCodeAt (0) == ('/').charCodeAt (0))) {
-start += 2;
-i = spec.indexOf ('/', start);
-if (i < 0) {
-i = spec.indexOf ('?', start);
-if (i < 0) i = limit;
-}host = authority = spec.substring (start, i);
-var ind = authority.indexOf ('@');
-if (ind != -1) {
-userInfo = authority.substring (0, ind);
-host = authority.substring (ind + 1);
-} else {
-userInfo = null;
-}if (host != null) {
-if (host.length > 0 && ((host.charAt (0)).charCodeAt (0) == ('[').charCodeAt (0))) {
-throw  new IllegalArgumentException ("Invalid host: " + host);
-} else {
-ind = host.indexOf (':');
-port = -1;
-if (ind >= 0) {
-if (host.length > (ind + 1)) {
-port = Integer.parseInt (host.substring (ind + 1));
-}host = host.substring (0, ind);
-}}} else {
-host = "";
-}if (port < -1) throw  new IllegalArgumentException ("Invalid port number :" + port);
-start = i;
-if (authority != null && authority.length > 0) path = "";
-}if (host == null) {
-host = "";
-}if (start < limit) {
-if ((spec.charAt (start)).charCodeAt (0) == ('/').charCodeAt (0)) {
-path = spec.substring (start, limit);
-} else if (path != null && path.length > 0) {
-isRelPath = true;
-var ind = path.lastIndexOf ('/');
-var seperator = "";
-if (ind == -1 && authority != null) seperator = "/";
-path = path.substring (0, ind + 1) + seperator + spec.substring (start, limit);
-} else {
-var seperator = (authority != null) ? "/" : "";
-path = seperator + spec.substring (start, limit);
-}} else if (queryOnly && path != null) {
-var ind = path.lastIndexOf ('/');
-if (ind < 0) ind = 0;
-path = path.substring (0, ind) + "/";
-}if (path == null) path = "";
-if (isRelPath) {
-while ((i = path.indexOf ("/./")) >= 0) {
-path = path.substring (0, i) + path.substring (i + 2);
-}
-i = 0;
-while ((i = path.indexOf ("/../", i)) >= 0) {
-if (i > 0 && (limit = path.lastIndexOf ('/', i - 1)) >= 0 && (path.indexOf ("/../", limit) != 0)) {
-path = path.substring (0, limit) + path.substring (i + 3);
-i = 0;
-} else {
-i = i + 3;
-}}
-while (path.endsWith ("/..")) {
-i = path.indexOf ("/..");
-if ((limit = path.lastIndexOf ('/', i - 1)) >= 0) {
-path = path.substring (0, limit + 1);
-} else {
-break;
-}}
-if (path.startsWith ("./") && path.length > 2) path = path.substring (2);
-if (path.endsWith ("/.")) path = path.substring (0, path.length - 1);
-}this.setURL (u, protocol, host, port, authority, userInfo, path, query, ref);
-}, "java.net.URL,~S,~N,~N");
-$_M(c$, "getDefaultPort",
-function () {
-return -1;
-});
-$_M(c$, "equals",
-function (u1, u2) {
-var ref1 = u1.getRef ();
-var ref2 = u2.getRef ();
-return (ref1 === ref2 || (ref1 != null && ref1.equals (ref2))) && this.sameFile (u1, u2);
-}, "java.net.URL,java.net.URL");
-$_V(c$, "hashCode",
-function (u) {
-var h = 0;
-var protocol = u.getProtocol ();
-if (protocol != null) h += protocol.hashCode ();
-h += u.toString ().hashCode ();
-var file = u.getFile ();
-if (file != null) h += file.hashCode ();
-if (u.getPort () == -1) h += this.getDefaultPort ();
- else h += u.getPort ();
-var ref = u.getRef ();
-if (ref != null) h += ref.hashCode ();
-return h;
-}, "java.net.URL");
-$_M(c$, "sameFile",
-function (u1, u2) {
-if (!((u1.getProtocol () === u2.getProtocol ()) || (u1.getProtocol () != null && u1.getProtocol ().equalsIgnoreCase (u2.getProtocol ())))) return false;
-if (!(u1.getFile () === u2.getFile () || (u1.getFile () != null && u1.getFile ().equals (u2.getFile ())))) return false;
-var port1;
-var port2;
-port1 = (u1.getPort () != -1) ? u1.getPort () : u1.handler.getDefaultPort ();
-port2 = (u2.getPort () != -1) ? u2.getPort () : u2.handler.getDefaultPort ();
-if (port1 != port2) return false;
-if (!this.hostsEqual (u1, u2)) return false;
-return true;
-}, "java.net.URL,java.net.URL");
-$_M(c$, "hostsEqual",
-function (u1, u2) {
-if (u1.getHost () != null && u2.getHost () != null) return u1.getHost ().equalsIgnoreCase (u2.getHost ());
- else return u1.getHost () == null && u2.getHost () == null;
-}, "java.net.URL,java.net.URL");
-$_M(c$, "toExternalForm",
-function (u) {
-var len = u.getProtocol ().length + 1;
-if (u.getAuthority () != null && u.getAuthority ().length > 0) len += 2 + u.getAuthority ().length;
-if (u.getPath () != null) {
-len += u.getPath ().length;
-}if (u.getQuery () != null) {
-len += 1 + u.getQuery ().length;
-}if (u.getRef () != null) len += 1 + u.getRef ().length;
-var result =  new StringBuffer (len);
-result.append (u.getProtocol ());
-result.append (":");
-if (u.getAuthority () != null && u.getAuthority ().length > 0) {
-result.append ("//");
-result.append (u.getAuthority ());
-}if (u.getPath () != null) {
-result.append (u.getPath ());
-}if (u.getQuery () != null) {
-result.append ('?');
-result.append (u.getQuery ());
-}if (u.getRef () != null) {
-result.append ("#");
-result.append (u.getRef ());
-}return result.toString ();
-}, "java.net.URL");
-$_M(c$, "setURL",
-function (u, protocol, host, port, authority, userInfo, path, query, ref) {
-if (this !== u.handler) {
-throw  new SecurityException ("handler for url different from this handler");
-}u.set (u.getProtocol (), host, port, authority, userInfo, path, query, ref);
-}, "java.net.URL,~S,~S,~N,~S,~S,~S,~S,~S");
-$_M(c$, "setURL",
-function (u, protocol, host, port, file, ref) {
-var authority = null;
-var userInfo = null;
-if (host != null && host.length != 0) {
-authority = (port == -1) ? host : host + ":" + port;
-var at = host.lastIndexOf ('@');
-if (at != -1) {
-userInfo = host.substring (0, at);
-host = host.substring (at + 1);
-}}var path = null;
-var query = null;
-if (file != null) {
-var q = file.lastIndexOf ('?');
-if (q != -1) {
-query = file.substring (q + 1);
-path = file.substring (0, q);
-} else path = file;
-}this.setURL (u, protocol, host, port, authority, userInfo, path, query, ref);
-}, "java.net.URL,~S,~S,~N,~S,~S");
-});
-
-Clazz.declarePackage ("java.net");
-c$ = Clazz.decorateAsClass (function () {
-this.path = null;
-this.query = null;
-this.ref = null;
-Clazz.instantialize (this, arguments);
-}, java.net, "Parts");
-
-Clazz.makeConstructor (c$,
-function (file) {
-var ind = file.indexOf ('#');
-this.ref = ind < 0 ? null : file.substring (ind + 1);
-file = ind < 0 ? file : file.substring (0, ind);
-var q = file.lastIndexOf ('?');
-if (q != -1) {
-this.query = file.substring (q + 1);
-this.path = file.substring (0, q);
-} else {
-this.path = file;
-}}, "~S");
-$_M(c$, "getPath",
-function () {
-return this.path;
-});
-$_M(c$, "getQuery",
-function () {
-return this.query;
-});
-$_M(c$, "getRef",
-function () {
-return this.ref;
-});
-                   
-Clazz.declarePackage ("java.net");
-Clazz.load (["java.util.Hashtable"], "java.net.URL", ["java.io.IOException", "java.lang.Character", "$.Error", "java.net.MalformedURLException", "$.Parts"], function () {
-c$ = Clazz.decorateAsClass (function () {
-this.protocol = null;
-this.host = null;
-this.port = -1;
-this.file = null;
-this.query = null;
-this.authority = null;
-this.path = null;
-this.userInfo = null;
-this.ref = null;
-this.handler = null;
-this.$hashCode = -1;
-Clazz.instantialize (this, arguments);
-}, java.net, "URL", null, java.io.Serializable);
-Clazz.makeConstructor (c$,
-function (protocol, host, port, file) {
-this.construct (protocol, host, port, file, null);
-}, "~S,~S,~N,~S");
-Clazz.makeConstructor (c$,
-function (protocol, host, file) {
-this.construct (protocol, host, -1, file);
-}, "~S,~S,~S");
-Clazz.makeConstructor (c$,
-function (protocol, host, port, file, handler) {
-if (handler != null) {
-var sm = System.getSecurityManager ();
-if (sm != null) {
-this.checkSpecifyHandler (sm);
-}}protocol = protocol.toLowerCase ();
-this.protocol = protocol;
-if (host != null) {
-if (host.indexOf (':') >= 0 && !host.startsWith ("[")) {
-host = "[" + host + "]";
-}this.host = host;
-if (port < -1) {
-throw  new java.net.MalformedURLException ("Invalid port number :" + port);
-}this.port = port;
-this.authority = (port == -1) ? host : host + ":" + port;
-}var parts =  new java.net.Parts (file);
-this.path = parts.getPath ();
-this.query = parts.getQuery ();
-if (this.query != null) {
-this.file = this.path + "?" + this.query;
-} else {
-this.file = this.path;
-}this.ref = parts.getRef ();
-if (handler == null && (handler = java.net.URL.getURLStreamHandler (protocol)) == null) {
-throw  new java.net.MalformedURLException ("unknown protocol: " + protocol);
-}this.handler = handler;
-}, "~S,~S,~N,~S,java.net.URLStreamHandler");
-Clazz.makeConstructor (c$,
-function (spec) {
-this.construct (null, spec);
-}, "~S");
-Clazz.makeConstructor (c$,
-function (context, spec) {
-this.construct (context, spec, null);
-}, "java.net.URL,~S");
-Clazz.makeConstructor (c$,
-function (context, spec, handler) {
-var original = spec;
-var i;
-var limit;
-var c;
-var start = 0;
-var newProtocol = null;
-var aRef = false;
-var isRelative = false;
-if (handler != null) {
-var sm = System.getSecurityManager ();
-if (sm != null) {
-this.checkSpecifyHandler (sm);
-}}try {
-limit = spec.length;
-while ((limit > 0) && ((spec.charAt (limit - 1)).charCodeAt (0) <= (' ').charCodeAt (0))) {
-limit--;
-}
-while ((start < limit) && ((spec.charAt (start)).charCodeAt (0) <= (' ').charCodeAt (0))) {
-start++;
-}
-if (spec.regionMatches (true, start, "url:", 0, 4)) {
-start += 4;
-}if (start < spec.length && (spec.charAt (start)).charCodeAt (0) == ('#').charCodeAt (0)) {
-aRef = true;
-}for (i = start; !aRef && (i < limit) && ((c = (spec.charAt (i)).charCodeAt (0)) != ('/').charCodeAt (0)); i++) {
-if (c == (':').charCodeAt (0)) {
-var s = spec.substring (start, i).toLowerCase ();
-if (this.isValidProtocol (s)) {
-newProtocol = s;
-start = i + 1;
-}break;
-}}
-this.protocol = newProtocol;
-if ((context != null) && ((newProtocol == null) || newProtocol.equalsIgnoreCase (context.protocol))) {
-if (handler == null) {
-handler = context.handler;
-}if (context.path != null && context.path.startsWith ("/")) newProtocol = null;
-if (newProtocol == null) {
-this.protocol = context.protocol;
-this.authority = context.authority;
-this.userInfo = context.userInfo;
-this.host = context.host;
-this.port = context.port;
-this.file = context.file;
-this.path = context.path;
-isRelative = true;
-}}if (this.protocol == null) {
-throw  new java.net.MalformedURLException ("no protocol: " + original);
-}if (handler == null && (handler = java.net.URL.getURLStreamHandler (this.protocol)) == null) {
-throw  new java.net.MalformedURLException ("unknown protocol: " + this.protocol);
-}this.handler = handler;
-i = spec.indexOf ('#', start);
-if (i >= 0) {
-this.ref = spec.substring (i + 1, limit);
-limit = i;
-}if (isRelative && start == limit) {
-this.query = context.query;
-if (this.ref == null) {
-this.ref = context.ref;
-}}
-//Clazz.alert(["corz URL ", handler])
-handler.parseURL (this, spec, start, limit);
-} catch (e$$) {
-if (Clazz.instanceOf (e$$, java.net.MalformedURLException)) {
-var e = e$$;
-{
-throw e;
-}
-} else if (Clazz.instanceOf (e$$, Exception)) {
-var e = e$$;
-{
-var exception =  new java.net.MalformedURLException (e.getMessage ());
-exception.initCause (e);
-throw exception;
-}
-} else {
-throw e$$;
-}
-}
-}, "java.net.URL,~S,java.net.URLStreamHandler");
-$_M(c$, "isValidProtocol",
-($fz = function (protocol) {
-var len = protocol.length;
-if (len < 1) return false;
-var c = protocol.charAt (0);
-if (!Character.isLetter (c)) return false;
-for (var i = 1; i < len; i++) {
-c = protocol.charAt (i);
-if (!Character.isLetterOrDigit (c) && (c).charCodeAt (0) != ('.').charCodeAt (0) && (c).charCodeAt (0) != ('+').charCodeAt (0) && (c).charCodeAt (0) != ('-').charCodeAt (0)) {
-return false;
-}}
-return true;
-}, $fz.isPrivate = true, $fz), "~S");
-$_M(c$, "checkSpecifyHandler",
-($fz = function (sm) {
-}, $fz.isPrivate = true, $fz), "SecurityManager");
-$_M(c$, "set",
-function (protocol, host, port, file, ref) {
-{
-this.protocol = protocol;
-this.host = host;
-this.authority = port == -1 ? host : host + ":" + port;
-this.port = port;
-this.file = file;
-this.ref = ref;
-this.$hashCode = -1;
-var q = file.lastIndexOf ('?');
-if (q != -1) {
-this.query = file.substring (q + 1);
-this.path = file.substring (0, q);
-} else this.path = file;
-}}, "~S,~S,~N,~S,~S");
-$_M(c$, "set",
-function (protocol, host, port, authority, userInfo, path, query, ref) {
-{
-this.protocol = protocol;
-this.host = host;
-this.port = port;
-this.file = query == null ? path : path + "?" + query;
-this.userInfo = userInfo;
-this.path = path;
-this.ref = ref;
-this.$hashCode = -1;
-this.query = query;
-this.authority = authority;
-}}, "~S,~S,~N,~S,~S,~S,~S,~S");
-$_M(c$, "getQuery",
-function () {
-return this.query;
-});
-$_M(c$, "getPath",
-function () {
-return this.path;
-});
-$_M(c$, "getUserInfo",
-function () {
-return this.userInfo;
-});
-$_M(c$, "getAuthority",
-function () {
-return this.authority;
-});
-$_M(c$, "getPort",
-function () {
-return this.port;
-});
-$_M(c$, "getDefaultPort",
-function () {
-return this.handler.getDefaultPort ();
-});
-$_M(c$, "getProtocol",
-function () {
-return this.protocol;
-});
-$_M(c$, "getHost",
-function () {
-return this.host;
-});
-$_M(c$, "getFile",
-function () {
-return this.file;
-});
-$_M(c$, "getRef",
-function () {
-return this.ref;
-});
-$_V (c$, "equals",
-function (obj) {
-if (!(Clazz.instanceOf (obj, java.net.URL))) return false;
-var u2 = obj;
-return this.handler.equals (this, u2);
-}, "~O");
-$_V (c$, "hashCode",
-function () {
-if (this.$hashCode != -1) return this.$hashCode;
-this.$hashCode = this.handler.hashCode (this);
-return this.$hashCode;
-});
-$_M(c$, "sameFile",
-function (other) {
-return this.handler.sameFile (this, other);
-}, "java.net.URL");
-$_V (c$, "toString",
-function () {
-return this.toExternalForm ();
-});
-$_M(c$, "toExternalForm",
-function () {
-return this.handler.toExternalForm (this);
-});
-$_M(c$, "openConnection",
-function () {
-return this.handler.openConnection (this);
-});
-$_M(c$, "openStream",
-function () {
-return this.openConnection ().getInputStream ();
-});
-$_M(c$, "getContent",
-function () {
-return this.openConnection ().getContent ();
-});
-$_M(c$, "getContent",
-function (classes) {
-return this.openConnection ().getContent (classes);
-}, "~A");
-c$.setURLStreamHandlerFactory = $_M(c$, "setURLStreamHandlerFactory",
-function (fac) {
-{
-if (java.net.URL.factory != null) {
-throw  new Error ("factory already defined");
-}var security = System.getSecurityManager ();
-if (security != null) {
-security.checkSetFactory ();
-}java.net.URL.handlers.clear ();
-($t$ = java.net.URL.factory = fac, java.net.URL.prototype.factory = java.net.URL.factory, $t$);
-}}, "java.net.URLStreamHandlerFactory");
-c$.getURLStreamHandler = $_M(c$, "getURLStreamHandler",
-function (protocol) {
-var handler = java.net.URL.handlers.get (protocol);
-if (handler == null) {
-if (java.net.URL.factory != null) {
-handler = java.net.URL.factory.createURLStreamHandler (protocol);
-}}return handler;
-}, "~S");
-Clazz.defineStatics (c$,
-"factory", null);
-c$.handlers = c$.prototype.handlers =  new java.util.Hashtable ();
-c$.streamHandlerLock = c$.prototype.streamHandlerLock =  new JavaObject ();
-});
-
-*/
 

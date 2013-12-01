@@ -2,8 +2,11 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 11/30/2013 10:31:37 AM added type:"GET" for jQuery.ajax() requests instead of using defaults
+// BH 11/30/2013 10:31:37 AM added cache:true for jQuery.ajax() requests; can override with cache:"NO", not cache:false
+// BH 11/28/2013 11:09:27 AM added Jmol._alertNoBinary:true
 // BH 11/26/2013 8:19:55 PM fix !xxxx search commmand entry and stop MSIE from duplicating command
-// BH 11/25/2013 7:38:31 AM adds option for GoogleAnalytics tracking
+// BH 11/25/2013 7:38:31 AM adds Jmol._tracker: option for GoogleAnalytics tracking
 // BH 11/25/2013 7:39:03 AM adds URL options _J2S=  _JAR=  _USE=
 // BH 11/23/2013 10:51:37 PM  adds JNLP support for local applet
 // BH 11/2/2013 12:05:11 PM JSmolJSME fixes; https access fixed
@@ -75,7 +78,8 @@ Jmol = (function(document) {
   var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
   return {
     _version: 'JSmol 13.3.9 11/23/2013 10:51:10 PM',
-    // this url is used to track Jmol use. You may remove it or modify it if you wish. 
+    _alertNoBinary: true,
+    // this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
     _tracker: 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1',
     _isLocal: (document.location.protocol.toLowerCase().indexOf("file:") == 0),
     _allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -169,7 +173,11 @@ Jmol = (function(document) {
   Jmol.$ajax = function (info) {
     //if (info.url.indexOf("http:") == 0)
       //info.url = Jmol.http + info.url.substring(4);
+    // System.out.println(JSON.stringify(info))
     Jmol._ajaxCall = info.url;
+    info.cache = (info.cache != "NO"); 
+    // don't let jQuery add $_=... to URL unless we 
+    // use cache:"NO"; other packages might use $.ajaxSetup() to set this to cache:false 
     return $.ajax(info);
   }
 
@@ -606,6 +614,7 @@ Jmol = (function(document) {
       }
     } 
     var info = {
+      type: "GET",
       dataType: "text",
       url: fileName,
       async: Jmol._asynchronous,
@@ -626,7 +635,6 @@ Jmol = (function(document) {
     }
   }
   Jmol._contactServer = function(data,fSuccess,fError){
-    
     var info = {
       dataType: "text",
       type: "GET",
@@ -719,7 +727,8 @@ Jmol = (function(document) {
     } catch( e ) {
       var s = "JmolCore.js: synchronous binary file transfer is requested but not available";
       System.out.println(s);
-      alert(s)
+      if (Jmol._alertNoBinary)
+        alert(s)
       return Jmol._syncBinaryOK = false;
     }
     return true;  
@@ -758,6 +767,7 @@ Jmol = (function(document) {
       info.url = fileName.split("?POST?")[0]
       info.data = fileName.split("?POST?")[1]
     } else {
+      info.type = "GET";
       info.url = fileName;
     }
     var xhr = Jmol.$ajax(info); 
@@ -1675,5 +1685,10 @@ Jmol._track = function(applet) {
   return applet;
 }
 
+Jmol.getProfile = function() {
+  window["j2s.doProfile"] = true;
+  if (self.Clazz)
+    return Clazz.getProfile();
+ }
 })(Jmol, jQuery);
 
