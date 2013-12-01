@@ -331,7 +331,7 @@
        		J/api/JmolStatusListener.js
        		J/api/JmolSyncInterface.js
     		J/api/JmolModulationSet.js
-       		J/appletjs/Jmol.js
+        	J/appletjs/Jmol.js
        		J/appletjs/JmolAppletRegistry.js
        		java/lang/Enum.js
        		J/constant/EnumCallback.js
@@ -681,8 +681,9 @@
        		J/modelsetbio/NucleicPolymer.js
        		J/modelsetbio/PhosphorusPolymer.js
        		J/dssx/Bridge.js
-       		J/dssx/DSSP.js
-       		J/shapebio/BioShape.js
+        	J/api/DSSPInterface.js
+       		J/dssx/DSSP.js        	
+        	J/shapebio/BioShape.js
        		J/shapebio/BioShapeCollection.js
        		J/shapebio/Rockets.js
        		J/shapebio/Cartoon.js
