@@ -28,10 +28,12 @@
 // 3. 
 
  // NOTES by Bob Hanson: 
-
+ 
+ // This version of j2slib requires jQuery and works in both Chrome and MSIE locally.
 
  // J2S class changes:
 
+ // BH 12/1/2013 5:34:21 AM removed ClazzLoaderProgressMonitor.initialize and all Clazz.event business; handled by Jmol.clearVars()
  // BH 11/30/2013 12:43:58 PM adding Clazz.arrayIs() -- avoids Number.constructor.toString() infinite recursion
  // BH 11/29/2013 6:33:51 AM adding Clazz.profiler -- reports use of SAEM
  // BH 11/10/2013 9:02:20 AM fixing fading in MSIE  
@@ -146,10 +148,9 @@ window["j2s.object.native"] = true;
 /* static */
 Class = Clazz = function () {};
 
-
-//Clazz.dateToString = Date.prototype.toString
-
 ;(function(Clazz) {
+
+Clazz.debuggingBH = false;
 
 // BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
 // which could be a bottle-neck for function calling.
@@ -160,20 +161,20 @@ Clazz.profile = (window["j2s.doProfile"]  && self.JSON ? {} : null);
 
 Clazz.getProfile = function() {
   var s = "";
-  var l = [];
   if (Clazz.profile) {
+    var l = [];
     for (var i in Clazz.profile) {
       var n = "" + Clazz.profile[i];
       l.push("        ".substring(n.length) + n + "\t" + i);
     }
     s = l.sort().reverse().join("\r\n");
+    Clazz.profile = {};
   }
-  Clazz.profile = {};
   return s;
 }
 
-Clazz.addProfile = function(claxxRef, fxName, params) {
-  var s = claxxRef.__CLASS_NAME__ + " " + fxName + " " + JSON.stringify(params);
+Clazz.addProfile = function(c, f, p) {
+  var s = c.__CLASS_NAME__ + " " + f + " " + JSON.stringify(p);
   Clazz.profile[s] || (Clazz.profile[s] = 0);
   Clazz.profile[s]++;
 }
@@ -191,7 +192,6 @@ ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = {};
 Clazz.Console = {};
 Clazz.dateToString = Date.prototype.toString;
 
-Clazz.debuggingBH = false;
 
 Clazz.getSignature = function(proto, name, func, isNew) {
   // BH pointing to signatures based on number of parameters
@@ -3342,107 +3342,6 @@ Clazz.unloadClass = function (qClazzName) {
 	return false;
 };
 
-//written by Dean Edwards, 2005
-//with input from Tino Zijdel, Matthias Miller, Diego Perini
-
-//http://dean.edwards.name/weblog/2005/10/add-event/
-
-// Merge Dean Edwards' addEvent for Java2Script
-/* public */
-Clazz.addEvent = function (element, type, handler) {
-	if (element.addEventListener) {
-		element.addEventListener(type, handler, false);
-	} else {
-		// assign each event handler a unique ID
-		if (!handler.$$guid) handler.$$guid = Clazz.addEvent.guid++;
-		// create a hash table of event types for the element
-		if (!element.events) element.events = {};
-		// create a hash table of event handlers for each element/event pair
-		var handlers = element.events[type];
-		if (!handlers) {
-			handlers = element.events[type] = {};
-			// store the existing event handler (if there is one)
-			if (element["on" + type]) {
-				handlers[0] = element["on" + type];
-			}
-		}
-		// store the event handler in the hash table
-		handlers[handler.$$guid] = handler;
-		// assign a global event handler to do all the work
-		element["on" + type] = Clazz.handleEvent;
-	}
-};
-/* private */
-//a counter used to create unique IDs
-Clazz.addEvent.guid = 1;
-
-/* public */
-Clazz.removeEvent = function (element, type, handler) {
-	if (element.removeEventListener) {
-		element.removeEventListener(type, handler, false);
-	} else {
-		// delete the event handler from the hash table
-		if (element.events && element.events[type]) {
-			delete element.events[type][handler.$$guid];
-		}
-	}
-};
-
-/* private */
-Clazz.isVeryOldIE = navigator.userAgent.indexOf("MSIE 6.0") != -1 || navigator.userAgent.indexOf("MSIE 5.5") != -1 || navigator.userAgent.indexOf("MSIE 5.0") != -1;
-
-/* protected */
-Clazz.handleEvent = function (event) {
-	var returnValue = true;
-	// grab the event object (IE uses a global event object)
-	if (!Clazz.isVeryOldIE) {
-		event = event || Clazz.fixEvent(((this.ownerDocument || this.document || this).parentWindow || window).event);
-	} else { // The above line is buggy in IE 6.0
-		if (event == null) {
-			var evt = null;
-			try {
-				var pWindow = (this.ownerDocument || this.document || this).parentWindow;
-				if (pWindow != null) {
-					evt = pWindow.event;
-				}
-			} catch (e) {
-				evt = window.event;
-			}
-			event = Clazz.fixEvent(evt);
-		}
-	}
-	// get a reference to the hash table of event handlers
-	var handlers = this.events[event.type];
-	// execute each event handler
-	for (var i in handlers) {
-		if (isNaN (i)) {
-			continue;
-		}
-		this.$$handleEvent = handlers[i];
-		if (typeof this.$$handleEvent != "function") {
-			continue;
-		}
-		if (this.$$handleEvent(event) === false) {
-			returnValue = false;
-		}
-	}
-	return returnValue;
-};
-
-/* private */
-Clazz.fixEvent = function (event) {
-	// add W3C standard event methods
-	event.preventDefault = Clazz.fixEvent.preventDefault;
-	event.stopPropagation = Clazz.fixEvent.stopPropagation;
-	return event;
-};
-Clazz.fixEvent.preventDefault = function() {
-	this.returnValue = false;
-};
-Clazz.fixEvent.stopPropagation = function() {
-	this.cancelBubble = true;
-};
-
 }
 /******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
@@ -4269,7 +4168,6 @@ ClazzLoader.xhrOnload = function (transport, file) {
 };
 
 ClazzLoader.evaluate = function(file, js) {
-System.out.println("evaluating " + file)
  		try {
 			eval(js);
 		} catch (e) {
@@ -4590,19 +4488,17 @@ ClazzLoader.loadScript = function (file, why) {
   
   System.out.println("loading... " + file + (why ? " -- required by " + why : ""))
 
-
 	if (ClazzLoader.isUsingXMLHttpRequest) {
 		ClazzLoader.scriptLoading (file);
 		//var transport = null;
 
     if (!ClazzLoader.isAsynchronousLoading) {
-      // works in MSIE locally :)
      if (self.Jmol) {
+      // works in MSIE locally :)
        var data = Jmol._getFileData(file);
       } else {
-    	  var info = {type:"GET",dataType:"text",async:false,url:file};
-        alert(info)
-		    var xhr = Jmol.$ajax(info);
+    	  var info = {type:"GET",dataType:"text",async:false,url:file,cached:true};
+		    var xhr = jQuery.ajax(info);
         var data = xhr.responseText;
         if (data == null && xhr.state)
           data = "alert('error loading file " + file + " state=" + xhr.state() + "')";
@@ -6344,12 +6240,12 @@ clpm.DEFAULT_OPACITY = (self.Jmol && Jmol._j2sLoadMonitorOpacity ? Jmol._j2sLoad
 /* private */ clpm.attached = false;
 /* private */ clpm.cleanup = function () {
 	var oThis = ClassLoaderProgressMonitor;
-	if (oThis.monitorEl != null) {
-		oThis.monitorEl.onmouseover = null;
-	}
+	//if (oThis.monitorEl != null) {
+	//	oThis.monitorEl.onmouseover = null;
+	//}
 	oThis.monitorEl = null;
 	oThis.bindingParent = null;
-	Clazz.removeEvent (window, "unload", oThis.cleanup);
+	//Clazz.removeEvent (window, "unload", oThis.cleanup);
 	//window.detachEvent ("onunload", oThis.cleanup);
 	oThis.attached = false;
 };
@@ -6404,21 +6300,23 @@ clpm.DEFAULT_OPACITY = (self.Jmol && Jmol._j2sLoadMonitorOpacity ? Jmol._j2sLoad
 	return bcScrollTop;
 };
 /* public */
-clpm.initialize = function (parent) {
+/*clpm.initialize = function (parent) {
+alert("clpm.innit")
 	this.bindingParent = parent;
 	if (parent != null && !this.attached) {
 		this.attached = true;
-		Clazz.addEvent (window, "unload", this.cleanup);
+		//Clazz.addEvent (window, "unload", this.cleanup);
 		// window.attachEvent ("onunload", this.cleanup);
 	}
 };
+*/
 /* public */
 clpm.showStatus = function (msg, fading) {
 	if (this.monitorEl == null) {
 		this.createHandle ();
 		if (!this.attached) {
 			this.attached = true;
-			Clazz.addEvent (window, "unload", this.cleanup);
+			//Clazz.addEvent (window, "unload", this.cleanup);
 			// window.attachEvent ("onunload", this.cleanup);
 		}
 	}

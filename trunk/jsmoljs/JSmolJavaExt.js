@@ -1,5 +1,6 @@
 // JSmolJavaExt.js
 
+// BH 12/1/2013 6:50:16 AM evit Number.prototype.toString assignment removed!
 // BH 11/30/2013 1:46:31 PM fixing Byte, Short, Long, Integer, Float, Double to reflect proper bounds and error conditions
 // BH 11/29/2013 8:58:49 PM removing Boolean.toString(boolean)
 // BH 11/4/2013 7:34:26 AM changing "var nativeClazz" to "var nativeClass" to avoid ANT replacement of "nativeClazz." to "nativeClazz_"
@@ -38,17 +39,22 @@
 // BH 9/10/2012 6:27:21 AM added java.net.URL... classes
 // BH 1/7/2013 7:40:06 AM added Clazz.dateToString
 
-Math.log10 = function(a){ return Math.log(a) / 2.302585092994046 }
 
-Clazz.dateToString = Date.prototype.toString
+// will be wrapped by anonymous function using ANT in build_03_tojs.xml
+
+Math.log10||(Math.log10=function(a){return Math.log(a)/2.302585092994046});
+
+var ntsp = Number.prototype.toString; // don't touch this one
 
 java.lang.Number=Number;
 if(Clazz.supportsNativeObject){
-for(var i=0;i<Clazz.extendedObjectMethods.length;i++){
-var p=Clazz.extendedObjectMethods[i];
-Number.prototype[p]=JavaObject.prototype[p];
+  for(var i=0;i<Clazz.extendedObjectMethods.length;i++){
+    var p=Clazz.extendedObjectMethods[i];
+    Number.prototype[p]=JavaObject.prototype[p];
+  }
 }
-}
+
+Number.prototype.toString = ntsp;
 
 Number.__CLASS_NAME__="Number";
 Clazz.implementOf(Number,java.io.Serializable);
@@ -244,11 +250,6 @@ return c._numberToString(16) + (b = b._numberToString(16)).substring(b.length - 
 return d._numberToString(16);};
 Integer.toOctalString=Integer.prototype.toOctalString=function(d){if(d.valueOf)d=d.valueOf();return d._numberToString(8);};
 Integer.toBinaryString=Integer.prototype.toBinaryString=function(d){if(d.valueOf)d=d.valueOf();return d._numberToString(2);};
-
-Number.toString = Number.prototype.toString=function(a){
-if (arguments.length == 0)return ""+this.valueOf();
-return Integer.toHexString(a);
-};
 
 Integer.decodeRaw=$_M(Integer,"decodeRaw", function(n){
 if (n.indexOf(".") >= 0)n = "";
@@ -1678,7 +1679,6 @@ return $_A(length);
 
 java.util.Date=Date;
 Clazz.decorateAsType(java.util.Date,"java.util.Date",null,[java.io.Serializable,Cloneable,Comparable]);
-java.util.Date.prototype.toString = Clazz.dateToString
 
 $_M(java.util.Date,"clone",
 function(){
