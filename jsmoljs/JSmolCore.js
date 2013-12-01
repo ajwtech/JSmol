@@ -269,6 +269,10 @@ Jmol = (function(document) {
     return Jmol._$(id).submit();
   }
 
+  Jmol.$supportsIECrossDomainScripting = function() {
+    return $.support.iecors;
+  }
+  
   Jmol.$val = function (id, v) {
     var o = Jmol._$(id);
     return (arguments.length == 1 ? o.val() : o.val(v));
@@ -290,10 +294,9 @@ Jmol = (function(document) {
     delete JZ;
     delete java;
     delete Clazz;
+    delete ClassLoader;
+    delete ClassLoaderProgressMonitor;
     delete JavaObject;
-    delete bhtest;
-    delete xxxbhparams;
-    delete xxxShowParams;
     delete c$;
     delete d$;
     delete w$;      
@@ -757,7 +760,7 @@ Jmol = (function(document) {
       fileName = "file://" + fileName.substring(5);      /// fixes IE problem
     var isMyHost = (fileName.indexOf("://") < 0 || fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
     var isDirectCall = Jmol._isDirectCall(fileName);
-    var cantDoSynchronousLoad = (!isMyHost && $.support.iecors);
+    var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
     if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)
       return Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
     
