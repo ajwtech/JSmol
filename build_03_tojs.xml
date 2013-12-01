@@ -470,6 +470,7 @@
        		javajs/api/GenericMouseInterface.js
        		javajs/awt/event/Event.js
        		J/awtjs2d/Mouse.js
+       		J/api/JmolNavigatorInterface.js
        		J/api/JmolRendererInterface.js
        		J/g3d/Graphics3D.js
        		J/g3d/SphereRenderer.js
