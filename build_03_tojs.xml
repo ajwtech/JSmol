@@ -509,6 +509,109 @@
         	" />
     </antcall>
 
+    <antcall target="call-core">
+        <param name="call-core.name" value="jsv" />
+        <param name="call-core.list" value="
+       		../../../Jmol.properties
+       		../js/JSmolJavaExt.js
+       		../js/core/coretop.js
+       	JSV/api/JSVAppletInterface.js
+       	JSV/api/AppletFrame.js
+   	JSV/appletjs/JSVApplet.js
+           	JSV/appletjs/JSVAppletPro.js
+       	JSV/api/ScriptInterface.js
+       	JSV/api/JSVAppInterface.js
+       	JSV/api/PanelListener.js
+   	JSV/app/JSVApp.js
+   	JSV/common/JSVersion.js
+       	JSV/api/JSVPanel.js 
+   	JSV/js2d/JsPanel.js
+       	JSV/api/JSVMainPanel.js 
+       	JSV/api/JSVViewPanel.js 
+   	JSV/js2d/JsViewPanel.js
+       	JSV/common/CoordComparator.js
+   	JSV/common/Coordinate.js
+   	JSV/common/JSVFileManager.js
+       	JSV/source/JDXHeader.js
+       	JSV/source/JDXDataObject.js
+       	JSV/common/JDXSpectrum.js
+   	JSV/common/JSViewer.js
+   	JSV/common/PanelNode.js
+   	JSV/common/Parameters.js
+   	JSV/util/JSVEscape.js
+   	JU/OC.js
+   	JSV/common/Annotation.js
+   	JSV/common/ExportType.js
+   	JSV/common/PanelData.js
+   	JSV/common/ScriptToken.js
+   	JSV/common/PeakInfo.js
+   	JSV/source/JDXSourceStreamTokenizer.js
+       	java/io/Writer.js
+   	java/io/BufferedWriter.js
+   	JSV/api/JSVGraphics.js
+   	JSV/common/ScriptTokenizer.js
+       	JSV/common/Measurement.js
+   	JSV/common/Integral.js
+   	JSV/exception/JSpecViewException.js
+       	JSV/dialog/JSVDialog.js
+       	JSV/api/XYScaleConverter.js
+   	JSV/common/GraphSet.js
+       	JSV/api/AnnotationData.js
+   	JSV/common/MeasurementData.js
+   	JSV/common/PeakPickEvent.js
+   	JSV/common/SubSpecChangeEvent.js
+   	JSV/common/ZoomEvent.js
+   	JSV/common/ColorParameters.js
+   	JSV/common/ColoredAnnotation.js
+   	JSV/common/ImageView.js
+       	JSV/common/IntegralComparator.js
+   	JSV/common/IntegralData.js
+   	JSV/common/PeakData.js
+   	JSV/common/PlotWidget.js
+   	JSV/common/ScaleData.js
+   	JSV/common/ViewData.js
+   	JSV/common/PrintLayout.js
+   	JSV/common/PeakPick.js
+   	JSV/common/RepaintManager.js
+   	JSV/source/JDXSource.js
+       	JSV/api/JSVTree.js
+   	JSV/tree/SimpleTree.js
+   	JSV/source/FileReader.js
+   	JSV/common/PDFWriter.js
+   	JSV/tree/SimpleTreeModel.js
+       	JSV/api/JSVTreeNode.js
+   	JSV/tree/SimpleTreeNode.js
+       	JSV/api/JSVTreePath.js
+   	JSV/tree/SimpleTreePath.js
+   	JSV/api/JSVZipReader.js
+   	JSV/exception/JDXSourceException.js
+   	JSV/source/JDXDecompressor.js
+   	javajs/export/PDFCreator.js
+   	JSV/tree/SimpleTreeEnumeration.js
+   	javajs/export/PDFObject.js
+       	JZ/Deflater.js
+   	java/util/zip/Deflater.js
+       	java/io/FilterOutputStream.js
+       	JZ/DeflaterOutputStream.js
+   	java/util/zip/DeflaterOutputStream.js
+   	JZ/Deflate.js
+   	JSV/js2d/JsPlatform.js
+   	JSV/js2d/Display.js
+   	JSV/js2d/Image.js
+   	JSV/js2d/JsFile.js
+   	JSV/js2d/JsFont.js
+   	JSV/js2d/Mouse.js
+   	JSV/js2d/JsG2D.js
+   	javajs/awt/Color.js
+   	javajs/api/GenericColor.js
+   	JSV/js2d/JsParameters.js
+   	JSV/js2d/JsFileHelper.js
+   	JSV/api/JSVFileHelper.js
+       		../js/core/corebottom.js
+    	" />
+</antcall>
+
+   	   	
    	<!-- minimize JSmol JavaScript -->
    	
    	<echo>JSmol.min.js is the standard set, including jQuery</echo>

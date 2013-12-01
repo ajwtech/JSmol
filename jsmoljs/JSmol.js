@@ -25,6 +25,8 @@
 
 ;(function (Jmol) {
 
+   Jmol._coreFiles = [];      		
+
 	Jmol._Canvas2D = function(id, Info, type, checkOnly){
     // type: Jmol or JSV
 		this._syncId = ("" + Math.random()).substring(3);
@@ -172,7 +174,7 @@
       }
       Jmol._jsSetMouse(this._mouseInterface);
 		}
-		
+
 		proto._setupJS = function() {
 			window["j2s.lib"] = {
 				base : this._j2sPath + "/",
@@ -187,15 +189,18 @@
 	   		es.push([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
 				es.push([this, this.__addExportHook, null, "addExportHook"])
 			}			 			
-			if (Jmol._debugCode) {
-        if (this._isJSV) {
-          es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"])
-         if (this._isPro) {
-            es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"])
-          }
-        } else {
-          es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"])
+      if (this._isJSV) {
+        Jmol._coreFiles.push(this._j2sPath + "/core/corejsv.z.js");
+        if (Jmol._debugCode) {
+        // no min package for that
+          es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"]);
+          if (this._isPro)
+            es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
         }
+      } else if (Jmol._debugCode) {
+          es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
+      } else {
+          Jmol._coreFiles.push(this._j2sPath + "/core/core.z.js");
       }
 			es.push([this, this.__startAppletJS, null, "start applet"])
 
@@ -209,6 +214,54 @@
 			if (!doStart)return;
 			Jmol.__nextExecution();
 		};
+
+	Jmol.__loadClass = function(applet, javaClass) {
+	  ClazzLoader.loadClass(javaClass, function() {Jmol.__nextExecution()});
+	};
+
+	Jmol.__nextExecution = function(trigger) {
+		var es = Jmol._execStack;
+	  if (es.length == 0)
+	  	return;
+	  if (!trigger) {
+			Jmol._execLog += ("settimeout for " + es[0][0]._id + " " + es[0][3] + " len=" + es.length + "\n")
+		  setTimeout("Jmol.__nextExecution(true)",10)
+	  	return;
+	  }
+	  var e = es.shift();
+	  Jmol._execLog += "executing " + e[0]._id + " " + e[3] + "\n"
+		e[1](e[0],e[2]);	
+	};
+
+	Jmol.__loadClazz = function(applet) {
+		// problems with multiple applets?
+	  if (!Jmol.__clazzLoaded) {
+  		Jmol.__clazzLoaded = true;
+			LoadClazz();
+			if (applet._noMonitor)
+				ClassLoaderProgressMonitor.showStatus = function() {}
+			LoadClazz = null;
+
+			ClazzLoader.globalLoaded = function (file) {
+       // not really.... just nothing more yet to do yet
+      	ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
+  			if (!Jmol._debugCode || !Jmol.haveCore) {
+  				Jmol.haveCore = true;
+    			Jmol.__nextExecution();
+    		}
+      };
+			ClazzLoader.packageClasspath ("java", null, true);
+			ClazzLoader.setPrimaryFolder (applet._j2sPath); // where
+															// org.jsmol.test.Test
+															// is to be found
+			ClazzLoader.packageClasspath (applet._j2sPath); // where the other
+															// files are to be
+															// found
+  		// if (!Jmol._debugCode)
+			  return;
+		}
+		Jmol.__nextExecution();
+	};
 
 		proto.__addExportHook = function(applet) {
 		  GLmol.addExportHook(applet);
