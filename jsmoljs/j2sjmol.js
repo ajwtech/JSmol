@@ -32,6 +32,8 @@
 
  // J2S class changes:
 
+ // BH 11/30/2013 12:43:58 PM adding Clazz.arrayIs() -- avoids Number.constructor.toString() infinite recursion
+ // BH 11/29/2013 6:33:51 AM adding Clazz.profiler -- reports use of SAEM
  // BH 11/10/2013 9:02:20 AM fixing fading in MSIE  
  // BH 11/3/2013 7:21:39 AM additional wrapping functions for better compressibility
  // BH 10/30/2013 8:10:58 AM added getClass().getResource() -- returning a relative string, not a URL
@@ -95,20 +97,6 @@ if (window["j2s.clazzloaded"])return;
 
 window["j2s.clazzloaded"] = true;
 
-// BH this just allows me to monitor exactly what is being delegated
-// I run xxxShowParams from the developer console in the browser.
-bhtest = false;
-xxxbhtest=""
-xxxbhparams = {};
-xxxShowParams = function() {
-  var s = "";
-  for (var i in xxxbhparams) {
-    s += ("#P " + xxxbhparams[i] + "\t" + i + "\n");
-  }
-  xxxbhparams= {};
-  alert(s)
-}
-
 
 window["j2s.object.native"] = true;
 
@@ -163,6 +151,32 @@ Class = Clazz = function () {};
 
 ;(function(Clazz) {
 
+// BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
+// which could be a bottle-neck for function calling.
+
+// Jmol.getProfile()
+  
+Clazz.profile = (window["j2s.doProfile"]  && self.JSON ? {} : null);
+
+Clazz.getProfile = function() {
+  var s = "";
+  var l = [];
+  if (Clazz.profile) {
+    for (var i in Clazz.profile) {
+      var n = "" + Clazz.profile[i];
+      l.push("        ".substring(n.length) + n + "\t" + i);
+    }
+    s = l.sort().reverse().join("\r\n");
+  }
+  Clazz.profile = {};
+  return s;
+}
+
+Clazz.addProfile = function(claxxRef, fxName, params) {
+  var s = claxxRef.__CLASS_NAME__ + " " + fxName + " " + JSON.stringify(params);
+  Clazz.profile[s] || (Clazz.profile[s] = 0);
+  Clazz.profile[s]++;
+}
 
 NullObject = function () {};
 
@@ -922,15 +936,7 @@ Clazz.getParamsType = function (funParams) {
 Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 	var fx = objThis[fxName];
 	var params = Clazz.getParamsType (funParams);
-
- if (bhtest && self.JSON) { 
-  var s = claxxRef.__CLASS_NAME__ + " " + fxName + " " + JSON.stringify(params);
-  if (!xxxbhparams[s]) {
-    xxxbhparams[s] = 0;
-  }
-  xxxbhparams[s]++;
- }
-  
+  Clazz.profile && Clazz.addProfile(claxxRef, fxName, params);
 
 	/*
 	 * Cache last matched method
@@ -2070,10 +2076,11 @@ Clazz.exceptionOf=function(e, clazz) {
     || clazz == NullPointerException && Clazz._isNPEExceptionPredicate(e));
 };
 
-Clazz.getStackTrace = function() {
+Clazz.getStackTrace = function(n) {
 	var s = "";
+  n || (n = 25);
   var c = arguments.callee.caller;
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < n; i++) {
       if (!c)break;
       s += (i + " " + (c.exName ? (c.claxxOwner ? c.claxxOwner.__CLASS_NAME__ + "."  : "") + c.exName 
       : (c.toString ? c.toString().substring(0, c.toString().indexOf("{")) : "<native method>"))) + "\n";
@@ -2597,8 +2604,13 @@ $_AC=Clazz.newCharArray;
 $_Ab=Clazz.newBooleanArray;
 
 
+Clazz.arrayIs = function(a, what) {
+  // for some reason, Number.constructor.toString() now gives "too much recursion"
+  return a.constructor && a.constructor != Number && a.constructor.toString().indexOf(what) >= 0
+}
+
 Clazz.isAS = function(a) { // just checking first parameter
-  return (a && typeof a == "object" && a.constructor && a.constructor.toString().indexOf(" Array") >= 0 && (typeof a[0] == "string" || typeof a[0] == "undefined"));
+  return (a && typeof a == "object" && Clazz.arrayIs(a, " Array") && (typeof a[0] == "string" || typeof a[0] == "undefined"));
 }
 
 Clazz.isASS = function(a) {
@@ -2610,7 +2622,7 @@ Clazz.isAP = function(a) {
 }
 
 Clazz.isAI = function(a) {
-  return (a && typeof a == "object" && (Clazz.haveInt32 ? a.constructor && a.constructor.toString().indexOf("Int32Array") >= 0 : a.int32Fake ? true : false));
+  return (a && typeof a == "object" && (Clazz.haveInt32 ? Clazz.arrayIs(a, "Int32Array") : a.int32Fake ? true : false));
 }
 
 Clazz.isAII = function(a) { // assumes non-null a[0]
@@ -2618,7 +2630,7 @@ Clazz.isAII = function(a) { // assumes non-null a[0]
 }
 
 Clazz.isAF = function(a) {
-  return (a && typeof a == "object" && (Clazz.haveFloat64 ? a.constructor && a.constructor.toString().indexOf("Float64Array") >= 0 : a.float64Fake ? true : false));
+  return (a && typeof a == "object" && (Clazz.haveFloat64 ? Clazz.arrayIs(a, "Float64Array") : a.float64Fake ? true : false));
 }
 
 Clazz.isAFF = function(a) { // assumes non-null a[0]
@@ -2630,7 +2642,7 @@ Clazz.isAFFF = function(a) { // assumes non-null a[0]
 }
 
 Clazz.isAFloat = function(a) { // just checking first parameter
-  return (a && typeof a == "object" && a.constructor && a.constructor.toString().indexOf(" Array") >= 0 && Clazz.instanceOf(a[0], Float));
+  return (a && typeof a == "object" && Clazz.arrayIs(a, " Array") && Clazz.instanceOf(a[0], Float));
 }
 
 
@@ -4257,6 +4269,7 @@ ClazzLoader.xhrOnload = function (transport, file) {
 };
 
 ClazzLoader.evaluate = function(file, js) {
+System.out.println("evaluating " + file)
  		try {
 			eval(js);
 		} catch (e) {
@@ -4555,7 +4568,6 @@ ClazzLoader.loadScript = function (file, why) {
   	//System.out.println(("call loadScript " + file.replace(/\//g,"\\") + " Z").replace(/j2s[\\\.]/g,""))
 	// maybe some scripts are to be loaded without needs to know onload event.
   
-  //alert(file  + " " + arguments.callee.caller.caller )
   
  
 	var ignoreOnload = (arguments[2] == true);
@@ -4588,7 +4600,8 @@ ClazzLoader.loadScript = function (file, why) {
      if (self.Jmol) {
        var data = Jmol._getFileData(file);
       } else {
-    	  var info = {dataType:"text",async:false,url:file};
+    	  var info = {type:"GET",dataType:"text",async:false,url:file};
+        alert(info)
 		    var xhr = Jmol.$ajax(info);
         var data = xhr.responseText;
         if (data == null && xhr.state)
@@ -4615,8 +4628,8 @@ ClazzLoader.loadScript = function (file, why) {
 			Clazz.alert ("[Java2Script] XMLHttpRequest not supported!");
 			return;
 		}
-		}
-		var transport = Clazz.transport
+	}
+	var transport = Clazz.transport
   
   //alert("transport=" + transport + " " + file)
   
@@ -5522,7 +5535,6 @@ ClazzLoader.load = function (musts, clazz, optionals, declaration) {
 		if (n != null) {
 			node = n;
 		} else {
-      xxxbhtest += clazz + ";" + declaration + "\n"
 			node = new ClazzNode ();
 		}
 		node.name = clazz;
