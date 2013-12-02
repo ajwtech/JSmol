@@ -2962,10 +2962,6 @@ java.lang.Object = JavaObject;
 JavaObject.getName = Clazz.innerFunctions.getName;
 
 
-w$ = window; // Short for browser's window object
-d$ = document; // Short for browser's document object
-
-
 System = {
 	props : null, //new java.util.Properties (),
   $props : {},
@@ -5676,9 +5672,8 @@ ClazzLoader.queueBe4KeyClazz = new Array ();
 ClazzLoader.getJ2SLibBase = function () {
 	var o = window["j2s.lib"];
 	if (o != null) {
-		if (o.base == null) {
+   if (o.base == null)
 			o.base = "http://archive.java2script.org/";
-		}
 		return o.base + (o.alias == "." ? "" : (o.alias ? o.alias : (o.version ? o.version : "1.0.0")) + "/");
 	}
 	var ss = document.getElementsByTagName ("SCRIPT");
@@ -6573,13 +6568,13 @@ Console.createConsoleWindow = function (parentEl) {
  #
  #-*/
 Console.consoleOutput = function (s, color) {
-	var console = window["j2s.lib"].console;
+	var o = window["j2s.lib"];
+	var console = (o && o.console);
 	if (console && typeof console == "string")
 		console = document.getElementById(console)
 		// console)
-	if (console == null) {
+	if (!console)
 	  return false; // BH this just means we have turned off all console action
-	}
 	if (Console.linesCount > Console.maxTotalLines) {
 		for (var i = 0; i < Console.linesCount - Console.maxTotalLines; i++) {
 			if (console != null && console.childNodes.length > 0) {
@@ -6685,16 +6680,15 @@ Console.consoleOutput = function (s, color) {
 /* public */
 Console.clear = function () {
 	try {
-	Console.metLineBreak = true;
-	var console = window["j2s.lib"].console;
-	if (console == null || (console = document.getElementById (console)) == null) {
-		return;
-	}
-	var childNodes = console.childNodes;
-	for (var i = childNodes.length - 1; i >= 0; i--) {
-		console.removeChild (childNodes[i]);
-	}
-	Console.linesCount = 0;
+  	Console.metLineBreak = true;
+  	var o = window["j2s.lib"];
+  	var console = o && o.console;
+  	if (!console || !(console = document.getElementById (console)))
+  		return;
+  	var childNodes = console.childNodes;
+  	for (var i = childNodes.length - 1; i >= 0; i--)
+  		console.removeChild (childNodes[i]);
+  	Console.linesCount = 0;
 	} catch(e){};
 };
 
@@ -6749,14 +6743,11 @@ Clazz.alert = function (s) {
 })(Clazz.Console, System);
 
 Clazz.setConsoleDiv = function(d) {
-	window["j2s.lib"].console = d;
+	window["j2s.lib"] && (window["j2s.lib"].console = d);
 };
 
 })(Clazz);
 
-String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
-String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
-  
 // moved here from package.js
 
 	ClazzLoader.registerPackages ("java", [

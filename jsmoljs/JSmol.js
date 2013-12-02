@@ -197,10 +197,10 @@
           if (this._isPro)
             es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
         }
-      } else if (Jmol._debugCode) {
-          es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
       } else {
-          Jmol._coreFiles.push(this._j2sPath + "/core/core.z.js");
+        if (Jmol._debugCode)
+          es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
+        Jmol._coreFiles.push(this._j2sPath + "/core/core.z.js");
       }
 			es.push([this, this.__startAppletJS, null, "start applet"])
 

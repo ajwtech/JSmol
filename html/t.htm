@@ -36,22 +36,6 @@ var s = document.location.search;
 
 Jmol.debugCode = true;//(s.indexOf("debugcode") >= 0);
 
-//if (s.indexOf("?") < 0) s = "USE=HTML5"
-
-if (s.indexOf("USE=") >= 0)
-  use = s.split("USE=")[1].split("&")[0]
-else if (s.indexOf("JAVA") >= 0)
-  use = "JAVA"
-else if (s.indexOf("IMAGE") >= 0)
-  use = "IMAGE"
-else if (s.indexOf("NOWEBGL") >= 0)
-  use = "JAVA IMAGE"
-else if (s.indexOf("WEBGL") >= 0)
-  use = "WEBGL HTML5"
-if (s.indexOf("NOWEBGL") >= 0)
-  use = use.replace(/WEBGL/,"")
-var useSignedApplet = (s.indexOf("SIGNED") >= 0);
-if(useSignedApplet && use == "HTML5") use = "JAVA";
 
 jmol_isReady = function(applet) {
 	document.title = (applet._id + " is ready")

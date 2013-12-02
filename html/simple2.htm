@@ -18,8 +18,8 @@
 ////// special stuff just for this particular page
 
 var s = unescape(document.location.search);
-var xxxx = s.split("USE=")[0]
-if (xxxx.length == 0) {
+var xxxx = s.split("_USE=")[0]
+if (xxxx.length < 2) {
 	xxxx = "ethanol"
 	script = 'set errorCallback "myCallback";'
 	+'set zoomlarge false;set echo top left;echo loading XXXX...;refresh;'

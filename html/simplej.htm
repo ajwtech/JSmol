@@ -44,15 +44,16 @@ Info = {
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	readyFunction: setOptions,
-	script: "set zoomLarge falase; load $caffeine"
+	script: "set zoomLarge false; load $caffeine"
 }
 
 
 function getApplet(isJava) {
   Info.use = (isJava ? "JAVA" : "HTML5");
   Info.width = $("#mydiv").width($("#width").val()).width();
-  Info.height = $("#mydiv").height($("#height").val()).height(); 
+  Info.height = $("#mydiv").height($("#height").val()).height();
   $("#mydiv").html(Jmol.getAppletHtml("jmolApplet0", Info))
+
 }
 
 </script>
