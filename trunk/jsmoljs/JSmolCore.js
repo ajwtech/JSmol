@@ -288,18 +288,18 @@ Jmol = (function(document) {
     delete $;
     delete Jmol;
 
-    if (!java)return; 
+    if (!self.Clazz)return; 
 
     delete J;
+    delete JU;
+    delete JSV;
     delete JZ;
     delete java;
     delete Clazz;
     delete ClassLoader;
     delete ClassLoaderProgressMonitor;
     delete JavaObject;
-    delete c$;
-    delete d$;
-    delete w$;      
+    delete c$; // used in p0p; could be gotten rid of
     delete $_A;
     delete $_AB;
     delete $_AC;

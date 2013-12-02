@@ -1009,6 +1009,9 @@ s2=s2.toLowerCase();
 }
 return s1==s2;
 };
+
+
+
 String.prototype.$plit=function(regex,limit){
 
 if(limit!=null&&limit>0){
@@ -1155,6 +1158,7 @@ ii++;
 return arrs;
 };
 
+/*
 String.prototype.compareTo=function(anotherString){
 if(anotherString==null){
 throw new java.lang.NullPointerException();
@@ -1173,6 +1177,13 @@ k++;
 }
 return len1-len2;
 };
+
+*/
+
+String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
+  
+
 
 String.prototype.toCharArray=function(){
 var result=new Array(this.length);
