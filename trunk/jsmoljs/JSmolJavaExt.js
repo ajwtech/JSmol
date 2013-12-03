@@ -1,5 +1,6 @@
 // JSmolJavaExt.js
 
+// BH 12/3/2013 11:43:10 AM bizarre Safari bug in reassigning Boolean (OK, I admit, we shouldn't have done that...) 
 // BH 12/1/2013 6:50:16 AM evit Number.prototype.toString assignment removed!
 // BH 11/30/2013 1:46:31 PM fixing Byte, Short, Long, Integer, Float, Double to reflect proper bounds and error conditions
 // BH 11/29/2013 8:58:49 PM removing Boolean.toString(boolean)
@@ -653,9 +654,7 @@ return s.valueOf()==this.valueOf();
 
 
 java.lang.B00lean = Boolean;
-java.lang.Boolean = Boolean = function () {
-	Clazz.instantialize (this, arguments);
-};
+Boolean = java.lang.Boolean = Boolean || function () {Clazz.instantialize (this, arguments);};
 if (Clazz.supportsNativeObject) {
 	for (var i = 0; i < Clazz.extendedObjectMethods.length; i++) {
 		var p = Clazz.extendedObjectMethods[i];

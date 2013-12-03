@@ -50,6 +50,11 @@ var Info = {
 	//defaultModel: "$dopamine",
 	//console: "none", // default will be jmolApplet0_infodiv
 }
+
+$(document).ready(function() {
+  $("#appdiv").html(Jmol.getAppletHtml("jmolApplet0", Info))
+})
+var lastPrompt=0;
 </script>
 </head>
 <body>
@@ -63,22 +68,9 @@ Credits:
 WebGL interface written by <b>Takanori Nakane</b>. 
 Java2Script written by <b>Zhou Renjian, et al.</b>
 Jzlib written by <b>Atsuhiko Yamanaka</b>.
-Jmol code conversion to JavaScript by <b>Bob Hanson</b>. 
-
 </td></tr>
 <tr><td valign="top">
-
-<script>
-
-// note that the variable name MUST match the first parameter in quotes
-
-jmolApplet0 = Jmol.getApplet("jmolApplet0", Info)
-
-// note that now scripts can be sent immediately after the _Applet object is created
-
-//Jmol.script(jmolApplet0,"background gray;delay 0.5;background black")
-var lastPrompt=0;
-</script>
+<div id="appdiv"></div>
 <br>
 <a href="javascript:Jmol.script(jmolApplet0,'console')">console</a>
 <a href="javascript:Jmol.script(jmolApplet0,'write PNGJ jmol.png')">image</a>
