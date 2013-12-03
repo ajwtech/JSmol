@@ -219,6 +219,7 @@
 	}
 
   var japroto = Jmol._Applet.prototype;
+
   
 	japroto._create = function(id, Info){
 		Jmol._setObject(this, id, Info);
@@ -376,7 +377,11 @@
 	japroto._syncScript = function(script) {
 		this._applet.syncScript(script);
 	}
-	
+
+  japroto._scriptCheck = function(script) {
+    return this._ready && this._applet.scriptCheck(script);  
+  }
+  	
 	japroto._scriptWait = function(script) {
 		var Ret = this._scriptWaitAsArray(script);
 		var s = "";
@@ -604,7 +609,9 @@
 		return this;
 	}
 
-  Jmol._Image.prototype._create = function(id, Info) {
+  var iproto = Jmol._Image.prototype;
+
+  iproto._create = function(id, Info) {
   	Jmol._setObject(this, id, Info);
   	this._src || (this._src = "");
 		var t = Jmol._getWrapper(this, true) 
@@ -619,9 +626,9 @@
 			this._readyCallback(id, null, this._ready = true, null);
   }
 
-	Jmol._Applet._setCommonMethods(Jmol._Image.prototype);
+	Jmol._Applet._setCommonMethods(iproto);
 
-	Jmol._Image.prototype._canScript = function(script) {
+	iproto._canScript = function(script) {
 		var slc = script.toLowerCase().replace(/[\",\']/g, '');
 		var ipt = slc.length;
 		return (script.indexOf("#alt:LOAD") >= 0 || slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
@@ -629,7 +636,7 @@
 		  && (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".jpg") == ipt - 4));
 	}
 
-	Jmol._Image.prototype._script = function(script) {
+	iproto._script = function(script) {
 		var slc = script.toLowerCase().replace(/[\",\']/g, '');
 		// single command only
 		// "script ..." or "load ..." only
@@ -675,11 +682,11 @@
     }
 	}
 	
-	Jmol._Image.prototype._show = function(tf) {
+	iproto._show = function(tf) {
 		Jmol._getElement(this, "appletdiv").style.display = (tf ? "block" : "none");
 	}
 		
-	Jmol._Image.prototype._loadFile = function(fileName, params){
+	iproto._loadFile = function(fileName, params){
 		this._showInfo(false);
 		this._thisJmolModel = "" + Math.random();
 		params = (params ? params : "");
@@ -702,7 +709,7 @@
 		Jmol._getElement(this, "image").src = src;
 	}
 
-	Jmol._Image.prototype._searchDatabase = function(query, database, script){
+	iproto._searchDatabase = function(query, database, script){
 		if (query.indexOf("?") == query.length - 1) {
 			Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
 			return;

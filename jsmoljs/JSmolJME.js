@@ -161,7 +161,7 @@
 	proto._loadModel = function(jmeOrMolData) {
 		Jmol.jmeReadMolecule(this, jmeOrMolData);
 	}
-	
+
 	proto._showInfo = Jmol._Applet.prototype._showInfo;
 	proto._show = Jmol._Applet.prototype._show;
   
