@@ -1,3 +1,6 @@
+// JSmolControls.js
+//
+// BH 12/3/2013 12:39:48 PM added up/down arrow key-driven command history for commandInput (changed keypress to keydown)
 // BH 5/16/2013 8:14:47 AM fix for checkbox groups and default radio names
 // BH 8:36 AM 7/27/2012  adds name/id for cmd button 
 // BH 8/12/2012 6:51:53 AM adds function() {...} option for all controls:
@@ -94,15 +97,16 @@
 			Jmol.script(applet, script);
 	}
 	
-  c.__checkScript = function(applet, inputBox) {
-    var ok = (inputBox.value.indexOf("JSCONSOLE ") >= 0 || applet._scriptCheck(inputBox.value) === "");
-    inputBox.style.color = (ok ? "black" : "red");
+  c.__checkScript = function(applet, d) {
+    var ok = (d.value.indexOf("JSCONSOLE ") >= 0 || applet._scriptCheck(d.value) === "");
+    d.style.color = (ok ? "black" : "red");
     return ok;
   } 
 
   c.__getCmd = function(dir, d) {
     if (!d._cmds || !d._cmds.length)return
-    d.value = d._cmds[d._cmdpt = (d._cmdpt + d._cmds.length + dir*d._cmdadd) % d._cmds.length]
+    var s = d._cmds[d._cmdpt = (d._cmdpt + d._cmds.length + dir) % d._cmds.length]
+    setTimeout(function(){d.value = s},10);    
     d._cmdadd = 1;
     d._cmddir = dir;
   }
@@ -341,7 +345,7 @@
 		size != undefined && !isNaN(size) || (size = 60);
 		++c._cmdCount;
 		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id +
-						"' size='"+size+"' onkeypress='return Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")' /><input " +
+						"' size='"+size+"' onkeydown='return Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")' /><input " +
 						" type='button' name='" + id + "Btn' id='" + id + "Btn' value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
 		if (Jmol._debugAlert)
 			alert(t);
