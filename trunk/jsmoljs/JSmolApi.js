@@ -135,6 +135,13 @@
       return;
 		applet._script(script);
 	}
+
+/**
+ * returns false if cannot check, empty string if OK, or error message if not OK
+ */	
+	Jmol.scriptCheck = function(applet, script) {
+    return applet && applet._scriptCheck && applet._ready && applet._scriptCheck(script);
+	}
 	
 	Jmol.scriptWait = function(applet, script) {
 		return applet._scriptWait(script);

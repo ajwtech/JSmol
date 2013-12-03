@@ -94,14 +94,52 @@
 			Jmol.script(applet, script);
 	}
 	
-	c._commandKeyPress = function(e, id, appId) {
-		var keycode = (e == 13 ? 13 : window.event ? window.event.keyCode : e ? e.which : 0);
-		if (keycode == 13) {
-			var inputBox = document.getElementById(id)
-			c._scriptExecute(inputBox, [appId, inputBox.value]);
-		}
-	}
-	
+  c.__checkScript = function(applet, inputBox) {
+    var ok = (inputBox.value.indexOf("JSCONSOLE ") >= 0 || applet._scriptCheck(inputBox.value) === "");
+    inputBox.style.color = (ok ? "black" : "red");
+    return ok;
+  } 
+
+  c._cmds = [];
+  c._cmdpt = -1;
+  c._cmdadd = 0;
+  c.__getCmd = function(dir, d) {
+    if (c._cmds.length == 0)return
+    d.value = c._cmds[c._cmdpt = (c._cmdpt + c._cmds.length + dir*c._cmdadd) % c._cmds.length]
+    c._cmdadd = 1;
+  }
+
+  c._commandKeyPress = function(e, id, appId) {
+  var keycode = (e == 13 ? 13 : window.event ? window.event.keyCode : e ? e.keyCode || e.which : 0);
+  var inputBox = document.getElementById(id);
+    var applet = Jmol._applets[appId];
+  switch (keycode) {
+  case 13:
+    var v = inputBox.value;
+    if (c.__checkScript(applet, inputBox) && (c._scriptExecute(inputBox, [appId, v]) || 1)) {
+       if (v && c._cmdadd == 0) {
+          c._cmds.splice(++c._cmdpt, 0, v);
+          c._cmdadd = 0;
+       }
+       inputBox.value = "";
+    }
+    return false;
+  case 27:
+    setTimeout(function() {inputBox.value = ""}, 20);
+    return false;
+  case 38: // up
+    c.__getCmd(-1, inputBox);
+    break;
+  case 40: // dn
+    c.__getCmd(1, inputBox);
+    break;
+  default:
+    c._cmdadd = 0;
+  }
+  setTimeout(function() {c.__checkScript(applet, inputBox)}, 20);
+  return true;
+ }
+  
 	c._click = function(obj, scriptIndex) {
 		c._element = obj;
     if (arguments.length == 1)
@@ -216,7 +254,6 @@
 		c._hasResetForms = true;
 		c._previousOnloadHandler = window.onload;
 		window.onload = function() {
-//			var c = Jmol.controls;
 			if (c._buttonCount+c._checkboxCount+c._menuCount+c._radioCount+c._radioGroupCount > 0) {
 				var forms = document.forms;
 				for (var i = forms.length; --i >= 0; )
@@ -295,7 +332,7 @@
 		size != undefined && !isNaN(size) || (size = 60);
 		++c._cmdCount;
 		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id +
-						"' size='"+size+"' onkeypress='Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")' /><input " +
+						"' size='"+size+"' onkeypress='return Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")' /><input " +
 						" type='button' name='" + id + "Btn' id='" + id + "Btn' value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
 		if (Jmol._debugAlert)
 			alert(t);
