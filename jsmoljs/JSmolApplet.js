@@ -230,7 +230,7 @@
 			boxbgcolor: this._color || "black",
 			boxfgcolor: "white",
 			boxmessage: "Downloading JmolApplet ...",
-			script: (this._color ? "background '" + this._color +"'": ""),
+			script: (this._color ? "background \"" + this._color +"\"": ""),
       code: "JmolApplet.class"
 		};
     
