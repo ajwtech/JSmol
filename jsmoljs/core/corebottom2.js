@@ -88,4 +88,5 @@
 ,Clazz.isAFFF
 ,Clazz.tryToSearchAndExecute
 ,Clazz.getStackTrace
+,Clazz.inheritArgs
 );

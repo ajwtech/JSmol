@@ -88,6 +88,7 @@
 ,Clazz_isAFFF
 ,Clazz_tryToSearchAndExecute
 ,Clazz_getStackTrace
+,Clazz_inheritArgs
 ){
 var $t$;
 //var c$;
