@@ -100,43 +100,52 @@
     return ok;
   } 
 
-  c._cmds = [];
-  c._cmdpt = -1;
-  c._cmdadd = 0;
   c.__getCmd = function(dir, d) {
-    if (c._cmds.length == 0)return
-    d.value = c._cmds[c._cmdpt = (c._cmdpt + c._cmds.length + dir*c._cmdadd) % c._cmds.length]
-    c._cmdadd = 1;
+    if (!d._cmds || !d._cmds.length)return
+    d.value = d._cmds[d._cmdpt = (d._cmdpt + d._cmds.length + dir*d._cmdadd) % d._cmds.length]
+    d._cmdadd = 1;
+    d._cmddir = dir;
   }
 
   c._commandKeyPress = function(e, id, appId) {
   var keycode = (e == 13 ? 13 : window.event ? window.event.keyCode : e ? e.keyCode || e.which : 0);
-  var inputBox = document.getElementById(id);
+  var d = document.getElementById(id);
     var applet = Jmol._applets[appId];
   switch (keycode) {
   case 13:
-    var v = inputBox.value;
-    if (c.__checkScript(applet, inputBox) && (c._scriptExecute(inputBox, [appId, v]) || 1)) {
-       if (v && c._cmdadd == 0) {
-          c._cmds.splice(++c._cmdpt, 0, v);
-          c._cmdadd = 0;
+    var v = d.value;
+    if (c.__checkScript(applet, d) && (c._scriptExecute(d, [appId, v]) || 1)) {
+       if (!d._cmds){
+         d._cmds = [];
+         d._cmddir = 0;
+         d._cmdpt = -1;
+         d._cmdadd = 0;      
+	}
+       if (v && d._cmdadd == 0) {
+          ++d._cmdpt;
+          d._cmds.splice(d._cmdpt, 0, v);
+          d._cmdadd = 0;
+          d._cmddir = 0;
+       } else {
+          //d._cmdpt -= d._cmddir;
+          d._cmdadd = 0;
        }
-       inputBox.value = "";
+       d.value = "";
     }
     return false;
   case 27:
-    setTimeout(function() {inputBox.value = ""}, 20);
+    setTimeout(function() {d.value = ""}, 20);
     return false;
   case 38: // up
-    c.__getCmd(-1, inputBox);
+    c.__getCmd(-1, d);
     break;
   case 40: // dn
-    c.__getCmd(1, inputBox);
+    c.__getCmd(1, d);
     break;
   default:
-    c._cmdadd = 0;
+    d._cmdadd = 0;
   }
-  setTimeout(function() {c.__checkScript(applet, inputBox)}, 20);
+  setTimeout(function() {c.__checkScript(applet, d)}, 20);
   return true;
  }
   

@@ -830,7 +830,7 @@ Jmol = (function(document) {
     if (!Jmol.featureDetection.hasFileReader)
         return fileLoadThread.setData("Local file reading is not enabled in your browser");
     if (!applet._localReader) {
-      var div = '<div id="ID" style="z-index:"+Jmol._z.fileOpener + ";position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
+      var div = '<div id="ID" style="z-index:'+Jmol._z.fileOpener + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
       Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
       applet._localReader = Jmol.$(applet, "localReader");
     }
@@ -1692,8 +1692,10 @@ Jmol._track = function(applet) {
 
 Jmol.getProfile = function() {
   window["j2s.doProfile"] = true;
-  if (self.Clazz)
+  if (self.Clazz) {
+    Clazz.profile = self.JSON && {};
     return Clazz.getProfile();
+  }
  }
 })(Jmol, jQuery);
 
