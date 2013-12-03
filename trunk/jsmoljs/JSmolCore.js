@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/3/2013 6:30:08 AM fix for ready function returning Boolean instead of boolean in HTML5 version
 // BH 11/30/2013 10:31:37 AM added type:"GET" for jQuery.ajax() requests instead of using defaults
 // BH 11/30/2013 10:31:37 AM added cache:true for jQuery.ajax() requests; can override with cache:"NO", not cache:false
 // BH 11/28/2013 11:09:27 AM added Jmol._alertNoBinary:true
@@ -963,7 +964,7 @@ Jmol = (function(document) {
 
   Jmol._readyCallback = function (appId,fullId,isReady,jmolApp) {
     appId = appId.split("_object")[0];
-    isReady = isReady.booleanValue();
+    isReady = (isReady.booleanValue ? isReady.booleanValue() : isReady);
     // necessary for MSIE in strict mode -- apparently, we can't call 
     // jmol._readyCallback, but we can call Jmol._readyCallback. Go figure...
     

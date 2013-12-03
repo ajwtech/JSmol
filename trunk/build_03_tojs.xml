@@ -331,8 +331,9 @@
        		J/api/JmolStatusListener.js
        		J/api/JmolSyncInterface.js
     		J/api/JmolModulationSet.js
+    		J/api/JmolAppletInterface.js
+        	J/util/GenericApplet.js
         	J/appletjs/Jmol.js
-       		J/appletjs/JmolAppletRegistry.js
        		java/lang/Enum.js
        		J/constant/EnumCallback.js
        		J/util/Escape.js
@@ -628,6 +629,7 @@
        		JSmolControls.js
        		JSmolApi.js
        		j2sjmol.js
+       		../Jmol.properties
         " />
     </antcall>
 
@@ -920,6 +922,7 @@
         <param name="call-min.fullname" value="nojq" />
         <param name="call-min.minname" value="min.nojq" />
         <param name="call-min.list" value="
+       	../Jmol.properties
    		JSmoljQueryExt.js
    		JSmolCore.js
    		JSmolDebugOff.js
