@@ -972,7 +972,7 @@
   	<delete file="dist/*" />
  	<delete file="temp.js" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
-   	<copy file="README-DOWNLOAD.TXT" tofile="dist/README.txt" />
+   	<copy file="README-DOWNLOAD.TXT" tofile="dist/README.TXT" />
    	<copy file="dist/jsmol.zip" tofile="${jmol.path}/appletweb/jsmol.zip" />
 <!-- no longer necessary
    <zip zipfile="${jmol.path}/appletfiles/jsmol_nojars.zip">
