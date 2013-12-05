@@ -1,6 +1,6 @@
 <project name="JSmol" default="fromJmolStable" basedir=".">
 	
-	<property name="jmol.path" value="../Jmol-13_2" />
+	<property name="jmol.path" value="../Jmol-14_0" />
 
 	<!-- 
 
