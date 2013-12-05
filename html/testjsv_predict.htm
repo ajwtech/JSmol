@@ -21,6 +21,10 @@
 function predictSpectrum() {
   unhideJSV();
   var s = Jmol.jmeGetFile(jme, false);
+  if (!s.length) {
+    alert("Please draw a structure or do a search first.");
+    return;
+  }
   $("#moldiv").html(s)
   Jmol.script(jsv, "load \"http://SIMULATION/MOL=" + s.replace(/\n/g,"\\n") + "\"");
 }
@@ -122,7 +126,7 @@ credits:
 </span>
 </td><td>
 </td><td>
-<div id="moldiv" style="white-space:pre"></div>
+<div id="moldiv" style="white-space:pre;font-family:monospace"></div>
 </td>
 </tr>
 
