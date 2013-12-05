@@ -46,7 +46,7 @@ Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
 
 JSVInfo = {
 	width: 800,
-	height: 300,
+	height: 325,
 	debug: false,
 	color: "0xC0C0C0",
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
@@ -72,7 +72,7 @@ $(document).ready(function() {
 <body>
 <table width=1000 cellpadding=10>
 <tr>
-<td>
+<td valign="top">
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
 <script>
 Jmol.getJMEApplet("jme", JMEInfo);
@@ -81,8 +81,8 @@ Jmol.getJMEApplet("jme", JMEInfo);
 <td>
 <input class="btn" type="button" onclick="predictSpectrum()" value="&#8594" />
 </td>
-<td>
-<div id="jsvdiv">
+<td valign="top">
+<div id="jsvdiv" style="position:relative">
 <script>
 Jmol.getJSVApplet("jsv", JSVInfo)
 </script>
@@ -91,7 +91,7 @@ Jmol.getJSVApplet("jsv", JSVInfo)
 <a href="javascript:Jmol.clearConsole(jsv)">clear</a>
 <a href="javascript:Jmol.showInfo(jsv, false)">spectrum</a>
  (note that OH and NH hydrogens will not be shown)
-<div style="position:absolute;left:1150px;top:300px;z-index:50000"><a href="javascript:Jmol.script(jsv, 'write PDF')">print</a></div>
+<div style="position:absolute;left:750px;top:335px;z-index:50000"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
 </div>
 <div id="infodiv" style="text-align:center">
 This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
