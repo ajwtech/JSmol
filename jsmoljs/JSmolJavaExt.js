@@ -1,5 +1,7 @@
 // JSmolJavaExt.js
+// will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 12/4/2013 9:20:44 PM fix for reassigning Date.prototype.toString()
 // BH 12/3/2013 11:43:10 AM bizarre Safari bug in reassigning Boolean (OK, I admit, we shouldn't have done that...) 
 // BH 12/1/2013 6:50:16 AM evit Number.prototype.toString assignment removed!
 // BH 11/30/2013 1:46:31 PM fixing Byte, Short, Long, Integer, Float, Double to reflect proper bounds and error conditions
@@ -9,7 +11,6 @@
 // BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
 // BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
 // BH 10/10/2013 2:40:20 PM  added Math.log10   
-
 // BH 7/23/2013 7:24:01 AM fixing Number.shortValue() and Number.byteValue() for negative values
 // BH 6/16/2013 1:31:30 PM adding /| in String.replace -- thank you David Koes
 // BH 3/13/2013 12:49:23 PM setting Boolean.valueOf() "@" 
@@ -19,29 +20,6 @@
 // BH 11/1/2012 added Short
 // BH 9/10/2012 6:27:21 AM added java.net.URL... classes
 // BH 1/7/2013 7:40:06 AM added Clazz.dateToString
-
-// JSmolJavaExt.js
-
-// BH 11/30/2013 1:46:31 PM fixing Float(), Integer(), Double() (again)
-// BH 11/29/2013 8:58:49 PM removing Boolean.toString(boolean)
-// BH 11/4/2013 7:34:26 AM changing "var nativeClazz" to "var nativeClass" to avoid ANT replacement of "nativeClazz." to "nativeClazz_"
-// BH 10/19/2013 1:29:27 PM fixed String.$replace()
-// BH 10/18/2013 6:09:23 PM fixed (Double|Float).valueOf(NaN).valueOf(), which should return NaN, not throw an error
-// BH 10/12/2013 11:18:44 AM fixed bug in Double(String) and Float(String) that was returning typeof "string"
-// BH 10/10/2013 2:40:20 PM  added Math.log10   
-
-// BH 7/23/2013 7:24:01 AM fixing Number.shortValue() and Number.byteValue() for negative values
-// BH 6/16/2013 1:31:30 PM adding /| in String.replace -- thank you David Koes
-// BH 3/13/2013 12:49:23 PM setting Boolean.valueOf() "@" 
-// BH 3/2/2013 10:46:45 PM removed Double.valueOf(String)
-// BH 11/6/2012 8:26:33 PM added instanceof Int32Array in String.instantialize
-// BH 10/13/2012 11:38:07 PM corrected Integer.parseInt to allow only +-0123456789; created Integer.parseIntRadix
-// BH 11/1/2012 added Short
-// BH 9/10/2012 6:27:21 AM added java.net.URL... classes
-// BH 1/7/2013 7:40:06 AM added Clazz.dateToString
-
-
-// will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
 Math.log10||(Math.log10=function(a){return Math.log(a)/2.302585092994046});
 
@@ -1688,7 +1666,9 @@ return $_A(length);
 },"Class,~N");
 
 java.util.Date=Date;
-Clazz.decorateAsType(java.util.Date,"java.util.Date",null,[java.io.Serializable,Cloneable,Comparable]);
+Date.TYPE="java.util.Date";
+Date.__CLASS_NAME__="Date";
+Clazz.implementOf(Date,[java.io.Serializable,java.lang.Comparable]);
 
 $_M(java.util.Date,"clone",
 function(){

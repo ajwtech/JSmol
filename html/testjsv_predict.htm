@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<title>JSpecView/JSME/nmrdb/NIH-Resolver demo</title>
+<meta charset="utf-8" />
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -11,29 +12,35 @@
 <script type="text/javascript" src="js/j2sjmol.js"></script>
 <script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
-<script type="text/javascript" src="js/JSmolConsole.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
-<script type="text/javascript" src="jsme/jsme/jsme.nocache.js"></script>
+<script type="text/javascript" language="javascript" src="jsme/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
 
-// always predefine the variables as their own name,
-// allowing buttons to be created before or after applet placement
+function predictSpectrum() {
+  unhideJSV();
+  var s = Jmol.jmeGetFile(jme, false);
+  $("#moldiv").html(s)
+  Jmol.script(jsv, "load \"http://SIMULATION/MOL=" + s.replace(/\n/g,"\\n") + "\"");
+}
 
-// applet ids and commands to give only when all applets are ready;
-// also sets up a script sync pathway for Jmol/JSpecView.
-Jmol.setAppletSync(["jsvApplet0", "jmolApplet0"], ["load data/acetophenone.jdx", ""], true);
+function unhideJSV() {
+ $("#infodiv").hide();
+ $("#jsvdiv").show(); 
+}
 
-var SInfo;       // for Spectrum
-var MInfo;       // for Molfile
-
-;(function() {
-
-//jsv_isReady = function(applet) {
-//	document.title = (applet._id + " is ready")
-//	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
-//}
+var JMEInfo = {     
+	use: "HTML5"
+  ,visible: true
+  ,divId: "jmediv"
+  ,options : "autoez;"
+  ,addSelectionOptions: true
+	//,jarPath: "jme",
+	//,jarFile: "JME.jar"
+  //optional parameters
+  //,"jme" : startingStructure   
+}
 
 Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
 
@@ -42,64 +49,82 @@ JSVInfo = {
 	height: 300,
 	debug: false,
 	color: "0xC0C0C0",
-//	addSelectionOptions: true,
-//	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
+	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	use: "HTML5",
 	j2sPath: "j2s",
-  disableJ2SLoadMonitor: true,
-  disableInitialConsole: true,
+  disableJ2SLoadMonitor: false,
+  disableInitialConsole: false,
 	readyFunction: null,      //   jsv_isReady
   allowjavascript: true
 //        console: "consolediv"
 }
 
-JMEInfo = {     
-  addSelectionOptions: true,
-	width: 300,
-	height: 300,
-	use: "HTML5"
-  ,options : "nohydrogens;autoez;removehs"
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
-}
-
-
-
-})();
-
-function predictSpectrum() {
-  var s = jme.molFile();
-  s = "load MOL \"" + s.replace(/\n/g,"|") + "\""
-  alert(s)
-  jsv.script(s);
-}
-
 $(document).ready(function() {
-
-  $("#jsmediv").html(Jmol.getJMEAppletHtml("jme",JMEInfo)))  
-  $("#jsvdiv").html(Jmol.getJSVAppletHtml("jsv",JSVInfo)))  
+ $("#infodiv").show();
+ $("#jsvdiv").hide(); 
+ $("#jme_query").val("ethanol");
+ $(".btn").css({width:"30px"});
+ $("a").css({"text-decoration":"none"});
 });
-
+        
 </script>
 </head>
 <body>
-<table width=1000 cellpadding=10 border=1 >
+<table width=1000 cellpadding=10>
 <tr>
 <td>
-<div id=jsmediv></div>
+<div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
+<script>
+Jmol.getJMEApplet("jme", JMEInfo);
+</script>
 </td>
 <td>
-<div id=btndiv></div>
-<input type="button" onclick="predictSpectrum()" value="&#8594" />
+<input class="btn" type="button" onclick="predictSpectrum()" value="&#8594" />
 </td>
 <td>
-<div id=jsvdiv></div>
+<div id="jsvdiv">
+<script>
+Jmol.getJSVApplet("jsv", JSVInfo)
+</script>
+<br />
+<a href="javascript:unhideJSV();Jmol.showInfo(jsv, true)">info</a>
+<a href="javascript:Jmol.clearConsole(jsv)">clear</a>
+<a href="javascript:Jmol.showInfo(jsv, false)">spectrum</a>
+ (note that OH and NH hydrogens will not be shown)
+<div style="position:absolute;left:1150px;top:300px;z-index:50000"><a href="javascript:Jmol.script(jsv, 'write PDF')">print</a></div>
+</div>
+<div id="infodiv" style="text-align:center">
+This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
+<br />along with JSpecView to quickly get a simulated spectrum for a compound of our choice.
+<br />It loads slowly because it is a test page; it will load much faster when not in testing.
+<br /><br />JSmol on this page calls servers in Frederick, Maryland (NIH resolver, for name-to-structure)
+<br />and Lausanne, Switzerland (nmrdb, for structure-to-spectrum)
+<br /><br /><span style="color:blue">Draw a chemical structure 
+<br />or search for a chemical identifier such as <b>caffeine</b> or <i>CCOCC</i>, 
+<br />then press <input class="btn" type="button" onclick="predictSpectrum()" value="&#8594" />.</span>
+<br /><br /><span style="color:red">Note that these spectra are <i>just predictions.</i> 
+<br />They may differ significantly from actual NMR spectra.</span>
+
+</div>
 </td>
 </tr>
+<tr>
+<td valign="top">
+<span style="white-space:pre">
+credits:
+
+<a href=http://jsmol.sourceforge.net/>JSmol and page development</a>: <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>
+<a href=http://peter-ertl.com/jsme/>JSME</a>: Peter Ertl, Bruno Bienfait
+<a href=http://jspecview.sourceforge.net>JSpecView</a>: Robert Lancashire, Bob Hanson
+<a href=http://www.nmrdb.org>nmrdb</a>: Luc Patiny
+<a href=http://cactus.nci.nih.gov>NIH Resolver</a>: Markus Sitzmann
+</span>
+</td><td>
+</td><td>
+<div id="moldiv" style="white-space:pre"></div>
+</td>
+</tr>
+
 </table>
-<a href="javascript:jsv._showInfo(true);jme._showInfo(true)">show info</a>
-</div>
 </body>
 </html>

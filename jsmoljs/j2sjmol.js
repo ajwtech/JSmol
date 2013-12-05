@@ -5896,7 +5896,7 @@
   	var idx = -1;
   	if ((idx = clazzStr.indexOf ("@")) != -1) {
   		var path = clazzStr.substring (idx + 1);
-  		ClazzLoader.setPrimaryFolder (path); // TODO: No primary folder?
+  		ClazzLoader.setPrimaryFolder (path); // BH JSmol will not use this
   		clazzStr = clazzStr.substring (0, idx);
   		idx = clazzStr.lastIndexOf (".");
   		if (idx != -1) {
