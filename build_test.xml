@@ -1,0 +1,293 @@
+<project name="JSmolTesting" default="test" basedir=".">
+ 
+   <!-- you must have checked out and built the Jmol project prior to running this. -->
+	
+	
+   <property name="jmol.path" value="../Jmol" />
+   <property name="jsv.path" value="../JSpecView" />
+
+   <target name="test" id="test">
+
+   	
+    <antcall target="call-core">
+        <param name="call-core.name" value="jsv" />
+        <param name="call-core.list" value="
+       		../../../Jmol.properties
+       		../js/JSmolJavaExt.js
+       		../js/core/coretop.js
+        	java/lang/AbstractStringBuilder.js
+        	java/lang/Enum.js
+        	java/lang/StringBuffer.js
+        	java/lang/StringBuilder.js
+        	java/lang/Thread.js
+        	java/lang/ThreadGroup.js
+        	java/util/Arrays.js
+        	java/util/AbstractCollection.js
+        	java/util/AbstractList.js
+        	java/util/AbstractMap.js
+        	java/util/AbstractSet.js
+        	java/util/ArrayList.js
+        	java/util/Collections.js
+        	java/util/Dictionary.js
+        	java/util/Hashtable.js
+        	java/util/MapEntry.js
+        	java/util/Properties.js
+        	java/util/Random.js
+        	java/util/SortedMap.js
+        	java/util/SortedSet.js
+        	java/util/StringTokenizer.js
+        	java/io/BufferedInputStream.js
+        	java/io/BufferedReader.js
+        	java/io/ByteArrayInputStream.js
+        	java/io/ByteArrayOutputStream.js
+        	java/io/FilterInputStream.js
+        	java/io/InputStream.js
+        	java/io/InputStreamReader.js
+        	java/io/OutputStream.js
+        	java/io/Reader.js
+        	java/io/StringReader.js
+        	java/net/MalformedURLException.js
+        	java/net/URL.js
+        	java/net/URLConnection.js
+        	java/net/URLEncoder.js
+        	java/net/URLStreamHandler.js
+        	java/net/URLStreamHandlerFactory.js
+        	java/text/MessageFormat.js
+        	javajs/api/BytePoster.js
+        	javajs/api/EventManager.js
+        	javajs/api/FontManager.js
+        	javajs/api/GenericFileInterface.js
+        	javajs/api/GenericMouseInterface.js
+        	javajs/api/GenericPlatform.js
+        	javajs/api/JSInterface.js
+        	javajs/api/PlatformViewer.js
+        	javajs/api/ZInputStream.js
+        	javajs/awt/Dimension.js
+        	javajs/awt/event/Event.js
+        	javajs/awt/Font.js
+        	JU/A4.js
+        	JU/AjaxURLConnection.js
+        	JU/AjaxURLStreamHandler.js
+        	JU/AjaxURLStreamHandlerFactory.js
+        	JU/AU.js
+        	JU/Base64.js
+        	JU/BS.js
+        	JU/CU.js
+        	JU/DF.js
+        	JU/Encoding.js
+        	JU/List.js
+        	JU/M3.js
+        	JU/M4.js
+        	JU/P3.js
+        	JU/P3i.js
+        	JU/P4.js
+        	JU/PT.js
+        	JU/SB.js
+        	JU/T3.js
+        	JU/T3i.js
+        	JU/T4.js
+        	JU/V3.js
+        	JU/PT.js
+        	J/util/DefaultLogger.js
+        	J/util/Logger.js
+        	J/util/LoggerInterface.js
+        	JSV/appletjs/JSVApplet.js
+        	JSV/api/AppletFrame.js 
+        	JSV/api/JSVAppletInterface.js 
+        	JSV/app/JSVApp.js
+        	JSV/common/JSVersion.js
+        	JSV/js2d/JsPanel.js
+        	JSV/js2d/JsViewPanel.js
+        	JSV/api/JSVAppInterface.js 
+        	JSV/api/PanelListener.js 
+        	JSV/common/Coordinate.js
+        	JSV/common/JSVFileManager.js
+        	JSV/common/JSViewer.js
+        	JSV/common/PanelNode.js
+        	JSV/api/ScriptInterface.js 
+        	JSV/common/Parameters.js
+        	JSV/common/CoordComparator.js 
+        	JSV/util/JSVEscape.js
+        	JSV/common/JDXSpectrum.js 
+        	JSV/source/JDXDataObject.js 
+        	JSV/common/ScriptToken.js
+        	JSV/common/PeakInfo.js
+        	JSV/source/JDXSourceStreamTokenizer.js
+
+        	JSV/source/JDXHeader.js 
+        	JSV/common/Annotation.js
+        	JSV/common/Integral.js
+        	JSV/exception/JSpecViewException.js
+        	JSV/common/ScriptTokenizer.js
+        	JU/OC.js
+        	JSV/common/Measurement.js 
+        	java/io/BufferedWriter.js
+        	JSV/common/ExportType.js
+        	JSV/common/PanelData.js
+        	JSV/common/PrintLayout.js
+        	JSV/common/RepaintManager.js
+        	JSV/source/JDXSource.js
+        	java/io/Writer.js 
+        	JSV/tree/SimpleTree.js
+        	JSV/api/JSVGraphics.js
+        	JSV/common/GraphSet.js
+        	JSV/common/MeasurementData.js
+        	JSV/common/PeakPickEvent.js
+        	JSV/common/SubSpecChangeEvent.js
+        	JSV/common/ZoomEvent.js
+        	JSV/dialog/JSVDialog.js
+        	JSV/api/XYScaleConverter.js 
+        	JSV/common/ColorParameters.js
+        	JSV/common/ColoredAnnotation.js
+        	JSV/common/ImageView.js
+        	JSV/common/IntegralData.js
+        	JSV/api/AnnotationData.js 
+        	JSV/common/PeakData.js
+        	JSV/common/PlotWidget.js
+        	JSV/common/ScaleData.js
+        	JSV/common/ViewData.js
+        	JSV/common/IntegralComparator.js
+
+        	
+        	
+        	JSV/api/JSVTree.js
+        	JSV/common/PeakPick.js
+        	JSV/tree/SimpleTreeModel.js
+        	JSV/tree/SimpleTreeNode.js
+        	JSV/tree/SimpleTreePath.js
+        	JSV/source/FileReader.js
+        	JSV/api/JSVPanel.js 
+
+        	JSV/api/JSVTreeNode.js
+        	JSV/tree/SimpleTreeEnumeration.js
+        	JSV/api/JSVTreePath.js
+        	JSV/api/JSVZipReader.js
+        	JSV/exception/JDXSourceException.js
+        	JSV/source/JDXDecompressor.js
+        	JSV/api/JSVViewPanel.js
+
+        	JSV/api/JSVMainPanel.js
+        	
+        	JSV/js2d/JsPlatform.js
+        	JSV/js2d/Display.js
+        	JSV/js2d/Image.js
+        	JSV/js2d/JsFile.js
+        	JSV/js2d/JsFont.js
+        	JSV/js2d/Mouse.js
+        	JSV/js2d/JsG2D.js
+        	javajs/awt/Color.js
+        	javajs/api/GenericColor.js
+        	JSV/js2d/JsParameters.js
+        	JSV/js2d/JsFileHelper.js
+        	JSV/api/JSVFileHelper.js
+        	
+       		../js/core/corebottom.js
+    	" />
+    	
+    </antcall>
+
+    <antcall target="call-core">
+        <param name="call-core.name" value="jsvmenu" />
+        <param name="call-core.list" value="
+        	JSV/js2d/JsPopup.js
+        	JSV/popup/JSVGenericPopup.js
+        	JSV/api/JSVAbstractMenu.js
+        	JSV/api/JSVPopupMenu.js
+        	javajs/api/GenericMenuInterface.js
+        	JSV/popup/JSVPopupResourceBundle.js
+        	JSV/popup/PopupResource.js
+    	" />
+    </antcall>
+
+    <antcall target="call-core">
+        <param name="call-core.name" value="jsvdialog" />
+        <param name="call-core.list" value="
+        	JSV/dialog/IntegrationDialog.js        	
+        	JSV/dialog/PeakListDialog.js
+    	    JSV/dialog/MeasurementsDialog.js
+        	JSV/dialog/OverlayLegendDialog.js
+        	JSV/dialog/ViewsDialog.js
+        	JSV/js2d/JsDialogManager.js
+        	JSV/dialog/DialogManager.js
+        	javajs/awt/BorderLayout.js
+        	javajs/awt/LayoutManager.js
+        	javajs/swing/JDialog.js
+        	javajs/swing/JContainer.js
+        	javajs/swing/JComponent.js
+        	javajs/awt/Component.js
+        	javajs/swing/JContentPane.js
+        	javajs/swing/JEditorPane.js
+        	javajs/swing/JPanel.js
+        	javajs/swing/Grid.js
+        	javajs/swing/Cell.js
+        	javajs/swing/GridBagConstraints.js
+        	javajs/swing/Insets.js
+        	javajs/swing/JScrollPane.js
+        	javajs/swing/JTable.js
+        	javajs/swing/ColumnSelectionModel.js
+        	javajs/swing/ListSelectionModel.js
+        	JSV/js2d/DialogTableModel.js
+        	javajs/swing/AbstractTableModel.js
+        	javajs/swing/TableColumn.js
+        	JSV/js2d/JsDialog.js
+        	JSV/api/PlatformDialog.js
+        	javajs/swing/FlowLayout.js
+        	javajs/swing/GridBagLayout.js
+        	javajs/swing/JButton.js
+        	javajs/swing/JCheckBox.js
+        	javajs/swing/JComboBox.js
+        	javajs/swing/JLabel.js
+        	javajs/swing/JSplitPane.js
+        	javajs/swing/JTextField.js
+    	" />
+    </antcall>
+
+    <antcall target="call-core">
+        <param name="call-core.name" value="jsvexport" />
+        <param name="call-core.list" value="
+        	JSV/export/Exporter.js
+        	JSV/api/ExportInterface.js
+        	JSV/api/JSVExporter.js
+        	JSV/util/JSVTxt.js
+        	JSV/common/PDFWriter.js
+        	javajs/export/PDFCreator.js
+        	javajs/export/PDFObject.js
+        	java/util/zip/Deflater.js
+        	java/util/zip/DeflaterOutputStream.js
+        	JZ/Deflater.js
+        	JZ/DeflaterOutputStream.js
+        	JZ/ZStream.js
+        	JZ/Deflate.js
+        	java/io/FilterOutputStream.js
+        	JZ/Adler32.js
+        	JZ/Tree.js
+        	JZ/CRC32.js
+        	JZ/GZIPHeader.js
+        	JZ/StaticTree.js
+        	JZ/Checksum.js
+    	" />
+    </antcall>
+        	
+</target>
+    <target name="call-core" id="call-core">
+     	<echo>Creating core${call-core.name}.js</echo> 	
+     	<concat destfile="site/jsmol/js/core${call-core.name}.js">
+     		<filelist dir="site/jsmol/j2s" files="${call-core.list}" />
+     	</concat> 
+    	<copy file="site/jsmol/js/core${call-core.name}.js" tofile="site/jsmol/js/core2.js" />
+    	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+    	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
+    	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+     	<concat destfile="site/jsmol/js/core${call-core.name}.js"><filelist dir="site/jsmol/js" files="
+     		core/coretop2.js
+     		core2.js
+     		core/corebottom2.js
+     		" />
+     	</concat>
+     	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
+     		<arg line="--js core${call-core.name}.js --js_output_file ../j2s/core/core${call-core.name}.z.js" />
+      </java>
+    </target>
+
+	
+</project>

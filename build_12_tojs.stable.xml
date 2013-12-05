@@ -3,7 +3,7 @@
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-   <property name="jmol.path" value="../Jmol-13_2" />
+   <property name="jmol.path" value="../Jmol-14_0" />
 
    <target name="toJs-stable" id="toJs-stable">
   			
