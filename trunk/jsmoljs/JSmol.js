@@ -251,13 +251,12 @@
     		}
       };
 			ClazzLoader.packageClasspath ("java", null, true);
-			ClazzLoader.setPrimaryFolder (applet._j2sPath); // where
+			//ClazzLoader.setPrimaryFolder (applet._j2sPath); // where
 															// org.jsmol.test.Test
 															// is to be found
-			ClazzLoader.packageClasspath (applet._j2sPath); // where the other
+			//ClazzLoader.packageClasspath (applet._j2sPath); // where the other
 															// files are to be
 															// found
-  		// if (!Jmol._debugCode)
 			  return;
 		}
 		Jmol.__nextExecution();

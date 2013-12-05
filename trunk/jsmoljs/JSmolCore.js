@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/4/2013 7:44:26 PM fix for JME independent search box
 // BH 12/3/2013 6:30:08 AM fix for ready function returning Boolean instead of boolean in HTML5 version
 // BH 11/30/2013 10:31:37 AM added type:"GET" for jQuery.ajax() requests instead of using defaults
 // BH 11/30/2013 10:31:37 AM added cache:true for jQuery.ajax() requests; can override with cache:"NO", not cache:false
@@ -657,10 +658,10 @@ Jmol = (function(document) {
     if (Jmol._isDatabaseCall(query)) {
       var database = query.substring(0, 1);
       query = query.substring(1);
-      if (database == "=" && query.length == 4 && query.substring(0, 1) == "=")
+      if (query.substring(0,1) == database && "=$".indexOf(database) >= 0)
         query = query.substring(1);
       var d = Jmol._getElement(applet, "select");
-      if (d.options)
+      if (d && d.options)
         for (var i = 0; i < d.options.length; i++)
           if (d[i].value == database)
             d[i].selected = true;

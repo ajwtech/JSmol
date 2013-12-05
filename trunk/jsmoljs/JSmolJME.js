@@ -1,26 +1,57 @@
-/*
-  JSmolJME.js   Bob Hanson hansonr@stolaf.edu  6/14/2012 and 3/20/2013
+//  JSmolJME.js   Bob Hanson hansonr@stolaf.edu  6/14/2012 and 3/20/2013
 
-  JME 2D option -- use Jmol.getJMEApplet(id, Info, linkedApplet) to access
+// BH 12/4/2013 7:44:26 PM fix for JME independent search box
+
+/*
+
+  Only HTML5 version (JSME) is supported.
   
+  JME 2D option -- use 
+  
+    Jmol.getJMEApplet(id, Info)
+    Jmol.getJMEApplet(id, Info, linkedApplet)
+
+  no option for getJMEAppletHtml(), but instead we indicate the
+  target div using Info.divId.
+    
   linkedApplet puts JME into INFO block for that applet; 
-	use Jmol.showInfo(jmol,true/false) to show/hide JME
-	
-	see http://chemapps.stolaf.edu/jmol/jme for files and demo
-	
-	There is a bug in JME that the first time it loads a model, it centers it, 
-	but after that, it fails to center it. Could get around that, perhaps, by
-	creating a new JME applet each time.
+	use Jmol.showInfo(jme,true/false) to show/hide JME applet with id "jme"
 	
 	JME licensing: http://www.molinspiration.com/jme/doc/index.html
 	note that required boilerplate: "JME Editor courtesy of Peter Ertl, Novartis"
 	
+  API includes:
   
-  these methods are private to JSmolJME.js
+  Jmol.jmeSmiles = function(jme, withStereoChemistry); 
+    
+    // returns SMILES string
+    
+  Jmol.jmeGetFile = function(jme, asJME)
+  
+    // retrieves JME data as JME or MOL data
+    
+  Jmol.jmeReadMolecule = function(jme, jmeOrMolData); 
+  
+    // loads JME or MOL data into the app
+    // JME data is recognized as a single line with no line ending
+	
+  
+  Jmol.jmeReset = function(jme);
+  
+    // clears the app
+  
+  Jmol.jmeOptions = function(jme, options);
+  
+       
+  All other methods are private to JSmolJME.js
+
+
+
   
 */
 
-(function (Jmol, document) {
+
+;(function (Jmol, document) {
 
 	Jmol._JMEApplet = function(id, Info, linkedApplet, checkOnly) {
     this._isJME = true;
@@ -34,6 +65,7 @@
     if (this._options.indexOf("autoez") < 0)
       this._options += ",autoez";
 		var jmol = this._linkedApplet = linkedApplet;
+		this._hasOptions = Info.addSelectionOptions;
 		this._readyFunction = Info.readyFunction;
 		this._ready = false; 
  		this._jarPath = Info.jarPath;
@@ -121,8 +153,10 @@
   			+ '<param name="options" value="' + this._options + '" />'	
   			+ '</applet>';
     } else if (this._isEmbedded) {
-      s = ""; 
-    }
+      return this._code = "";
+    }    
+    if (this._hasOptions)
+      s += Jmol._getGrabberOptions(this);
   	return this._code = Jmol._documentWrite(s);
 	}
 
@@ -157,7 +191,11 @@
 		var me = this;
 		Jmol._loadFileData(this, fileName, function(data){me._loadModel(data)});
 	}
-	
+  
+  proto._search = function(query){
+		Jmol._search(this, query);
+	}
+		
 	proto._loadModel = function(jmeOrMolData) {
 		Jmol.jmeReadMolecule(this, jmeOrMolData);
 	}
@@ -257,16 +295,17 @@
   	jme._applet.options(options);
   }
 
-    // optional Info here	
-  Jmol.getJSVAppletHtml = function(applet, Info, linkedApplet) {
-    if (Info) {
-      var d = Jmol._document;
-      Jmol._document = null;
-      applet = Jmol.getJMEApplet(applet, Info, linkedApplet);
-      Jmol._document = d;
-    }  
-    return applet._code;
-	}
+// doesn't work because of the way JSME is created using frames and SVG.
+//	
+//  Jmol.getJSVAppletHtml = function(applet, Info, linkedApplet) {
+//    if (Info) {
+//      var d = Jmol._document;
+//      Jmol._document = null;
+//      applet = Jmol.getJMEApplet(applet, Info, linkedApplet);
+//      Jmol._document = d;
+//    }  
+//    return applet._code;
+//	}
 		
 	
 })(Jmol, document);

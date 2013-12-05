@@ -149,6 +149,7 @@
     return false;
   }	
   
+	jsvproto._clearConsole = Jmol._Applet.prototype._clearConsole;
 	jsvproto._search = Jmol._Applet.prototype._search;  
 	jsvproto._showInfo = Jmol._Applet.prototype._showInfo;
 	jsvproto._show = Jmol._Applet.prototype._show;
