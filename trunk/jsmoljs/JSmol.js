@@ -1,3 +1,4 @@
+// BH 12/6/2013 10:12:30 AM adding corejmoljsv.z.js
 // BH 9/17/2013 10:18:40 AM  file transfer functions moved to JSmolCore 
 // BH 3/5/2013 9:54:16 PM added support for a cover image: Info.coverImage, coverScript, coverTitle, deferApplet, deferUncover
  
@@ -25,7 +26,67 @@
 
 ;(function (Jmol) {
 
-   Jmol._coreFiles = [];      		
+  Jmol._coreFiles = []; // required for package.js
+
+  Jmol.__execLog = [];
+  Jmol.__execStack = [];
+  Jmol.__execTimer = 0;
+  Jmol.__coreSet = [];
+  
+  Jmol.showExecLog = function() { return Jmol.__execLog.join("\n") }; 
+
+  Jmol.__addExec = function(e) {
+    Jmol.__execLog.push("load " + e[0]._id + " " + e[3]);   
+    Jmol.__execStack.push(e);
+  }
+
+  Jmol.__addCoreFile = function(type, path) {
+    if (Jmol.__coreSet.join("").indexOf(type) >= 0) return;
+    Jmol.__coreSet.push(type);
+    Jmol.__coreSet.sort();
+    var f = Jmol.__coreSet.join("");
+    Jmol._coreFiles = [path + "/core/core" + (f == "jmol" ? "" : f) + ".z.js" ];
+  }      		
+
+	Jmol.__nextExecution = function(trigger) {
+    delete Jmol.__execTimer;
+		var es = Jmol.__execStack;
+	  if (es.length == 0)
+	  	return;
+	  if (!trigger) {
+		  setTimeout("Jmol.__nextExecution(true)",10)
+	  	return;
+	  }
+	  var e = es.shift();
+	  Jmol.__execLog.push("exec " + e[0]._id + " " + e[3]);
+		e[1](e[0],e[2]);	
+	};
+
+	Jmol.__loadClazz = function(applet) {
+		// problems with multiple applets?
+	  if (!Jmol.__clazzLoaded) {
+  		Jmol.__clazzLoaded = true;
+			LoadClazz();
+			if (applet._noMonitor)
+				ClassLoaderProgressMonitor.showStatus = function() {}
+			LoadClazz = null;
+
+			ClazzLoader.globalLoaded = function (file) {
+       // not really.... just nothing more yet to do yet
+      	ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
+  			if (!Jmol._debugCode || !Jmol.haveCore) {
+  				Jmol.haveCore = true;
+    			Jmol.__nextExecution();
+    		}
+      };
+			ClazzLoader.packageClasspath ("java", null, true);
+		}
+		Jmol.__nextExecution();
+	};
+
+	Jmol.__loadClass = function(applet, javaClass) {
+	  ClazzLoader.loadClass(javaClass, function() {Jmol.__nextExecution()});
+	};
 
 	Jmol._Canvas2D = function(id, Info, type, checkOnly){
     // type: Jmol or JSV
@@ -182,85 +243,35 @@
 				console : this._console
 			};
 			
-			var es = Jmol._execStack;
-			var doStart = (es.length == 0);
-			es.push([this, Jmol.__loadClazz, null, "loadClazz"])
+			if (Jmol.__execStack.length == 0)
+  			Jmol.__addExec([this, Jmol.__loadClazz, null, "loadClazz"]);
 			if (!this._is2D) {
-	   		es.push([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
-				es.push([this, this.__addExportHook, null, "addExportHook"])
+	   		Jmol.__addExec([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
+				Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
 			}			 			
       if (this._isJSV) {
-        Jmol._coreFiles.push(this._j2sPath + "/core/corejsv.z.js");
+        Jmol.__addCoreFile("jsv", this._j2sPath);
         if (Jmol._debugCode) {
         // no min package for that
-          es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"]);
+          Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"]);
           if (this._isPro)
-            es.push([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
+            Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
         }
       } else {
         if (Jmol._debugCode)
-          es.push([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
-        Jmol._coreFiles.push(this._j2sPath + "/core/core.z.js");
+          Jmol.__addExec([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
+        Jmol.__addCoreFile("jmol", this._j2sPath);
       }
-			es.push([this, this.__startAppletJS, null, "start applet"])
+			Jmol.__addExec([this, this.__startAppletJS, null, "start applet"])
 
 			this._isSigned = true; // access all files via URL hook
 			this._ready = false; 
 			this._applet = null;
 			this._canScript = function(script) {return true;};
 			this._savedOrientations = [];
-			//this._syncKeyword = "Select:";
-			Jmol._execLog += ("execStack loaded by " + this._id + " len=" + Jmol._execStack.length + "\n")
-			if (!doStart)return;
-			Jmol.__nextExecution();
+      Jmol.__execTimer && clearTimeout(Jmol.__execTimer);
+      Jmol.__execTimer = setTimeout(Jmol.__nextExecution, 50);// leaving a 50-ms delay for next applet creation initiation
 		};
-
-	Jmol.__loadClass = function(applet, javaClass) {
-	  ClazzLoader.loadClass(javaClass, function() {Jmol.__nextExecution()});
-	};
-
-	Jmol.__nextExecution = function(trigger) {
-		var es = Jmol._execStack;
-	  if (es.length == 0)
-	  	return;
-	  if (!trigger) {
-			Jmol._execLog += ("settimeout for " + es[0][0]._id + " " + es[0][3] + " len=" + es.length + "\n")
-		  setTimeout("Jmol.__nextExecution(true)",10)
-	  	return;
-	  }
-	  var e = es.shift();
-	  Jmol._execLog += "executing " + e[0]._id + " " + e[3] + "\n"
-		e[1](e[0],e[2]);	
-	};
-
-	Jmol.__loadClazz = function(applet) {
-		// problems with multiple applets?
-	  if (!Jmol.__clazzLoaded) {
-  		Jmol.__clazzLoaded = true;
-			LoadClazz();
-			if (applet._noMonitor)
-				ClassLoaderProgressMonitor.showStatus = function() {}
-			LoadClazz = null;
-
-			ClazzLoader.globalLoaded = function (file) {
-       // not really.... just nothing more yet to do yet
-      	ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
-  			if (!Jmol._debugCode || !Jmol.haveCore) {
-  				Jmol.haveCore = true;
-    			Jmol.__nextExecution();
-    		}
-      };
-			ClazzLoader.packageClasspath ("java", null, true);
-			//ClazzLoader.setPrimaryFolder (applet._j2sPath); // where
-															// org.jsmol.test.Test
-															// is to be found
-			//ClazzLoader.packageClasspath (applet._j2sPath); // where the other
-															// files are to be
-															// found
-			  return;
-		}
-		Jmol.__nextExecution();
-	};
 
 		proto.__addExportHook = function(applet) {
 		  GLmol.addExportHook(applet);
@@ -459,54 +470,6 @@
 	  }
 	  return d;
 	}
-
-	Jmol.__loadClass = function(applet, javaClass) {
-	  ClazzLoader.loadClass(javaClass, function() {Jmol.__nextExecution()});
-	};
-
-	Jmol.__nextExecution = function(trigger) {
-		var es = Jmol._execStack;
-	  if (es.length == 0)
-	  	return;
-	  if (!trigger) {
-			Jmol._execLog += ("settimeout for " + es[0][0]._id + " " + es[0][3] + " len=" + es.length + "\n")
-		  setTimeout("Jmol.__nextExecution(true)",10)
-	  	return;
-	  }
-	  var e = es.shift();
-	  Jmol._execLog += "executing " + e[0]._id + " " + e[3] + "\n"
-		e[1](e[0],e[2]);	
-	};
-
-	Jmol.__loadClazz = function(applet) {
-		// problems with multiple applets?
-	  if (!Jmol.__clazzLoaded) {
-  		Jmol.__clazzLoaded = true;
-			LoadClazz();
-			if (applet._noMonitor)
-				ClassLoaderProgressMonitor.showStatus = function() {}
-			LoadClazz = null;
-
-			ClazzLoader.globalLoaded = function (file) {
-       // not really.... just nothing more yet to do yet
-      	ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
-  			if (!Jmol._debugCode || !Jmol.haveCore) {
-  				Jmol.haveCore = true;
-    			Jmol.__nextExecution();
-    		}
-      };
-			ClazzLoader.packageClasspath ("java", null, true);
-			ClazzLoader.setPrimaryFolder (applet._j2sPath); // where
-															// org.jsmol.test.Test
-															// is to be found
-			ClazzLoader.packageClasspath (applet._j2sPath); // where the other
-															// files are to be
-															// found
-  		// if (!Jmol._debugCode)
-			  return;
-		}
-		Jmol.__nextExecution();
-	};
 
   Jmol._loadImage = function(platform, echoNameAndPath, bytes, fOnload, image) {
   // bytes would be from a ZIP file -- will have to reflect those back from
