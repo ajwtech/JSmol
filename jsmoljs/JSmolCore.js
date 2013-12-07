@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  11/2/2013 12:06:05 PM
+// JSmolCore.js -- Jmol core capability  12/6/2013 6:18:48 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/6/2013 6:18:32 PM cover.htm and coverImage fix
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
 // BH 12/3/2013 6:30:08 AM fix for ready function returning Boolean instead of boolean in HTML5 version
 // BH 11/30/2013 10:31:37 AM added type:"GET" for jQuery.ajax() requests instead of using defaults
@@ -75,6 +76,7 @@
 if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol, but it's not defined.")
 
 
+if (!Jmol)
 Jmol = (function(document) {
   var z=9000;
   var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
@@ -105,7 +107,8 @@ Jmol = (function(document) {
       dialog:z++,
       menu:z+1000,
       fileOpener:z+1001,
-      coverImage:z+2000
+      coverImage:z+2000,
+      monitorZIndex:300000 // used in JSmol.js to set window["j2s.lib"].monitorZIndex (see j2sjmol.js)
     },
     _debugCode: true,  // set false in process of minimization
     db: {
@@ -997,10 +1000,10 @@ Jmol = (function(document) {
     if (isHeader) {
       var img = ""; 
       if (applet._coverImage){
-        var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + applet._coverTitle + "\"";
+        var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + (applet._coverTitle) + "\"";
         var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
-          + "z-index:" + (Jmol._z.cover+1)+";opacity:0.5;\"" + more + " />"  
-        img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:" + Jmol._z.cover+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
+          + "z-index:" + (Jmol._z.coverImage)+";opacity:0.5;\"" + more + " />"  
+        img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:" + Jmol._z.coverImage+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
          + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
       }
       s = "\
