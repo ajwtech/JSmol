@@ -80,6 +80,7 @@
     		}
       };
 			ClazzLoader.packageClasspath ("java", null, true);
+      return;
 		}
 		Jmol.__nextExecution();
 	};
@@ -244,12 +245,9 @@
         monitorZIndex : Jmol._z.monitorZIndex
 			};
 			
-			if (Jmol.__execStack.length == 0)
+      var isFirst = (Jmol.__execStack.length == 0);
+			if (isFirst)
   			Jmol.__addExec([this, Jmol.__loadClazz, null, "loadClazz"]);
-			if (!this._is2D) {
-	   		Jmol.__addExec([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
-				Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
-			}			 			
       if (this._isJSV) {
         Jmol.__addCoreFile("jsv", this._j2sPath);
         if (Jmol._debugCode) {
@@ -259,9 +257,13 @@
             Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
         }
       } else {
+        Jmol.__addCoreFile("jmol", this._j2sPath);
+  			if (!this._is2D) {
+  	   		Jmol.__addExec([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
+  				Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
+  			}			 			
         if (Jmol._debugCode)
           Jmol.__addExec([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
-        Jmol.__addCoreFile("jmol", this._j2sPath);
       }
 			Jmol.__addExec([this, this.__startAppletJS, null, "start applet"])
 

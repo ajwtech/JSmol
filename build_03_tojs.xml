@@ -1036,12 +1036,19 @@
     <antcall target="call-core">
         <param name="call-core.name" value="jsvdialog" />
         <param name="call-core.list" value="
+        	JSV/dialog/IntegrationDialog.js        	
+        	JSV/dialog/PeakListDialog.js
+    	    JSV/dialog/MeasurementsDialog.js
+        	JSV/dialog/OverlayLegendDialog.js
+        	JSV/dialog/ViewsDialog.js
+        	JSV/js2d/JsDialogManager.js
+        	JSV/dialog/DialogManager.js
         	javajs/awt/BorderLayout.js
-        	javajs/awt/Component.js
         	javajs/awt/LayoutManager.js
         	javajs/swing/JDialog.js
         	javajs/swing/JContainer.js
         	javajs/swing/JComponent.js
+        	javajs/awt/Component.js
         	javajs/swing/JContentPane.js
         	javajs/swing/JEditorPane.js
         	javajs/swing/JPanel.js
@@ -1053,8 +1060,11 @@
         	javajs/swing/JTable.js
         	javajs/swing/ColumnSelectionModel.js
         	javajs/swing/ListSelectionModel.js
+        	JSV/js2d/DialogTableModel.js
         	javajs/swing/AbstractTableModel.js
         	javajs/swing/TableColumn.js
+        	JSV/js2d/JsDialog.js
+        	JSV/api/PlatformDialog.js
         	javajs/swing/FlowLayout.js
         	javajs/swing/GridBagLayout.js
         	javajs/swing/JButton.js
@@ -1063,42 +1073,32 @@
         	javajs/swing/JLabel.js
         	javajs/swing/JSplitPane.js
         	javajs/swing/JTextField.js
-        	JSV/api/PlatformDialog.js
-        	JSV/js2d/DialogTableModel.js
-        	JSV/js2d/JsDialog.js
-        	JSV/js2d/JsDialogManager.js
-        	JSV/dialog/IntegrationDialog.js        	
-        	JSV/dialog/PeakListDialog.js
-    	    JSV/dialog/MeasurementsDialog.js
-        	JSV/dialog/OverlayLegendDialog.js
-        	JSV/dialog/ViewsDialog.js
-        	JSV/dialog/DialogManager.js
     	" />
     </antcall>
 
     <antcall target="call-core">
         <param name="call-core.name" value="jsvexport" />
         <param name="call-core.list" value="
-        	java/io/FilterOutputStream.js
-        	java/util/zip/Deflater.js
-        	java/util/zip/DeflaterOutputStream.js
+        	JSV/export/Exporter.js
+        	JSV/api/ExportInterface.js
+        	JSV/api/JSVExporter.js
+        	JSV/util/JSVTxt.js
+        	JSV/common/PDFWriter.js
         	javajs/export/PDFCreator.js
         	javajs/export/PDFObject.js
+        	java/util/zip/Deflater.js
+        	java/util/zip/DeflaterOutputStream.js
         	JZ/Deflater.js
         	JZ/DeflaterOutputStream.js
         	JZ/ZStream.js
         	JZ/Deflate.js
+        	java/io/FilterOutputStream.js
         	JZ/Adler32.js
         	JZ/Tree.js
         	JZ/CRC32.js
         	JZ/GZIPHeader.js
         	JZ/StaticTree.js
         	JZ/Checksum.js
-        	JSV/api/ExportInterface.js
-        	JSV/api/JSVExporter.js
-        	JSV/common/PDFWriter.js
-        	JSV/export/Exporter.js
-        	JSV/util/JSVTxt.js
     	" />
     </antcall>
         	
