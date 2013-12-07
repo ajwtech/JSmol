@@ -240,7 +240,8 @@
 			window["j2s.lib"] = {
 				base : this._j2sPath + "/",
 				alias : ".",
-				console : this._console
+				console : this._console,
+        monitorZIndex : Jmol._z.monitorZIndex
 			};
 			
 			if (Jmol.__execStack.length == 0)
