@@ -107,8 +107,7 @@ Jmol = (function(document) {
       dialog:z++,
       menu:z+1000,
       fileOpener:z+1001,
-      coverImage:z+2000,
-      monitorZIndex:300000 // used in JSmol.js to set window["j2s.lib"].monitorZIndex (see j2sjmol.js)
+      coverImage:z+2000
     },
     _debugCode: true,  // set false in process of minimization
     db: {
@@ -151,7 +150,7 @@ Jmol = (function(document) {
 
 // this library is organized into the following sections:
 
-  // jQuery interface
+  // jQuery interface 
   // protected variables
   // feature detection
   // AJAX-related core functionality
