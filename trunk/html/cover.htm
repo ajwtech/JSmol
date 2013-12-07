@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <script type="text/javascript" src="JSmol.min.js"></script>
 
-  <script type="text/javascript">
+  <script type="text/javascript"> 
 
 
 var jmolApplet0; // set up in HTML table, below
@@ -51,8 +51,8 @@ Info = {
   deferUncover: true,                 // wait to uncover applet until script completed
   jarPath: "java",
 	j2sPath: "j2s",
-	jarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
-	isSigned: useSignedApplet,
+	jarFile: "JmolApplet.jar",
+	isSigned: false,
 	//disableJ2SLoadMonitor: true,
 	//disableInitialConsole: true,
 	readyFunction: jmol_isReady,
