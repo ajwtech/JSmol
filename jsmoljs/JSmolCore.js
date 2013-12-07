@@ -76,7 +76,7 @@
 if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol, but it's not defined.")
 
 
-if (!Jmol)
+if (!self.Jmol)
 Jmol = (function(document) {
   var z=9000;
   var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
