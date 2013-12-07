@@ -6259,7 +6259,7 @@
   	var div = document.createElement ("DIV");
   	div.id = "clazzloader-status";
   	div.style.cssText = "position:absolute;bottom:4px;left:4px;padding:2px 8px;"
-  			+ "z-index:" + (window["j2s.lib"].monitorZIndex || 3333);background-color:#8e0000;color:yellow;" 
+  			+ "z-index:" + (window["j2s.lib"].monitorZIndex || 3333) + ";background-color:#8e0000;color:yellow;" 
   			+ "font-family:Arial, sans-serif;font-size:10pt;white-space:nowrap;";
   	div.onmouseover = this.hiddingOnMouseOver;
   	this.monitorEl = div;
