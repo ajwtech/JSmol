@@ -767,7 +767,7 @@ Jmol = (function(document) {
     var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
     if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)
       return Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
-    
+    fileName = fileName.replace(/file:\/\/\/\//, "file://"); // opera
     var info = {dataType:type,async:false};
     if (isPost) {
       info.type = "POST";
@@ -777,14 +777,14 @@ Jmol = (function(document) {
       info.type = "GET";
       info.url = fileName;
     }
-    var xhr = Jmol.$ajax(info); 
+    var xhr = Jmol.$ajax(info);
     if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
       // Safari
       return xhr.response;
     } 
     return xhr.responseText;
   }
-  
+
   Jmol._isDirectCall = function(url) {
     for (var key in Jmol.db._DirectDatabaseCalls) {
       if (key.indexOf(".") >= 0 && url.indexOf(key) >= 0)
