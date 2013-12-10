@@ -1,27 +1,29 @@
-<project name="JSmol" default="fromJmolStable" basedir=".">
+<project name="JSmol" default="fromJmol" basedir=".">
 	
 	<property name="jmol.path" value="../Jmol-14_0" />
 
 	<!-- 
 
-	The overall process of creating JSmol starts here. 
+	See Jmol/build.xml for details on building Jmol and JSmol. 
 	
-	1) All org.jmol source files in JSmol are derived from Jmol, so you must have both SourceForge
-	   projects checked out. Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
+	1) All source Java code in JSmol is derived from Jmol and JSpecView, 
+	   so you must have all three SourceForge projects checked out. 
+	   Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
 	   not even, such as 13.1.18, not 13.0.18.) 
 	   
-	   Be sure to set the above property jmol.path to where you have checked out the Jmol project
-	   both here and in buildtojs.xml
+	   Be sure to set the above property jmol.path to where 
+	   you have checked out the Jmol project both here and in build_03_tojs.xml
 
-		!!Never modify any file in JSmol/src/org!! - Only work in Jmol. 
+		!!Never modify any file in JSmol/src!! - Only work in Jmol. 
 		
 	   The files that are specific to JSmol and not Jmol are:
 	   
 	     src/com/jcraft/jzlib   -  gzip/zip compresion/decompression classes
 	     src/java               -  modified Java classes, including awt, io, net, and util
-	     org/jsmol              -  some early test files; no longer of much value
+	     src/javajs             -  modified Java, VecMath, and Swing classes
 	     
-	   There are also some java.lang and java.util classes that are defined in core.z.js. 
+	   These are in Jmol/srcjs and are just copied here as needed. There are also some 
+	   java.lang and java.util classes that are defined in core.z.js (coretop.js)
 	   
 	   These include (among a few others):
 	   
@@ -37,6 +39,12 @@
 		   java.lang.Character
 		   java.util.Date
 		   java.util.Array
+		   
+		   javajs.api.GenericColor
+		   javajs.awt.Color
+		   javajs.awt.Dimension
+		   javajs.util.*
+		   javajs.swing.*  (JSpecView only)
 	   
 	   
 	2) Do all your coding in Jmol, then run this Ant task (buildfromjmol.xml)
@@ -55,6 +63,8 @@
 							Java2Script-compiled JavaScript versions. The Java2Script compiler 
 							will simply copy these JavaScript files into the bin directory.
 							  
+		JSmol/src/javajs -	Additional Java-like classes
+		 
 		JSmol/src/com   - 	www.jcraft.com/jzlib/ files that I have specially optimized for 
 							Jmol and JavaScript.
 							
@@ -63,6 +73,7 @@
 	   
 	       org.jmol      		J
 	       com.jcraft.jzlib		JZ
+	       jspecview            JSV
 	       
 	   It also copies all the language localization .po files from Jmol's 
 	   src/org/jmol/translation/JmolApplet directory into jslocal/trans.
@@ -85,10 +96,10 @@
 	
    10) At some time go to SourceForge and create a release. It is just jsmol.zip.
        
-            - Bob Hanson March 23, 2013 (revised July 27, 2013).
+            - Bob Hanson March 23, 2013 (revised July 27, 2013, Oct. 17, 2013).
 	 -->
 
-  <target name="fromJmolStable" id="fromJmolStable">
+  <target name="fromJmol" id="fromJmol">
   	
 	<!-- pull Jmol.properties key info -->
   	<echo>copying Jmol.properties</echo>
@@ -107,43 +118,47 @@
 	</copy>
   	
   	<echo>deleting all files in src and bin</echo>
-    <delete>
+    <delete quiet="true">
       <fileset dir="bin" includes="**/*"/>
       <fileset dir="src" includes="**/*"/>
     </delete>
   	
-  	<echo>copying files from ${jmol.path}</echo>
-
+  	<echo>copying files from ${jmol.path}/srcjs (com and java)</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/srcjs">
         <include name="com/**/*" />
         <include name="java/**/*" />
       </fileset>
     </copy>
-  	
+
+  	<echo>copying all files from ${jmol.path}/src/javajs</echo>
+    <copy overwrite="true" todir="src" >
+      <fileset dir="${jmol.path}/src">
+        <include name="javajs/**/*" />
+      </fileset>
+    </copy>
+
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
+  	<echo>copying selected files from ${jmol.path}/src/org/jmol</echo>
     <copy overwrite="true" todir="src/org/jmol" >
       <fileset dir="${jmol.path}/src/org/jmol">
         <include name="**/*.java" />
       	<!-- specialized JSmol versions -->
         <exclude name="**/applet/*"/>
         <exclude name="**/awt/*"/>
-      	<!-- selective - see next block -->
-        <exclude name="**/export/**/*"/>
         <exclude name="**/console/*"/>
+        <exclude name="**/java/*"/>
       	<exclude name="**/modelkit/*"/>
         <exclude name="**/popup/*"/>
       	<!-- unused -->
+        <exclude name="**/dialog/**/*"/>
+        <exclude name="**/export/**/*"/>
         <exclude name="**/multitouch/**/*"/>
+        <exclude name="**/viewer/*Awt*"/>
       </fileset>
     </copy>
   	<copy overwrite="true" todir="src/org/jmol/console" >
       <fileset dir="${jmol.path}/src/org/jmol/console">
-        <include name="Generic*.java" />
-      </fileset>
-    </copy>
-  	<copy overwrite="true" todir="src/org/jmol/export/image" >
-      <fileset dir="${jmol.path}/src/org/jmol/export/image">
         <include name="Generic*.java" />
       </fileset>
     </copy>
@@ -160,12 +175,12 @@
         <exclude name="SwingPopup.java"/>
       </fileset>
     </copy>
-	
-  	<!-- replace BS.java with BitSet32.java, since JavaScript does not have LONG data type -->
-  	<move file="src/org/jmol/util/BitSet32.java" tofile="src/org/jmol/util/BS.java" />
-  	<replace file="src/org/jmol/util/BS.java" token="BitSet32" value="BS" />
-  	
-   	<echo>Now run buildtojs.stable.xml to compile ${jmol.path} as JSmol</echo>
+ 	
+   	<echo>Replacing all "org.jmol.java.BS" references with "javajs.util.BS"</echo>
+	<!-- replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type -->
+  	<replace dir="src/org/jmol" includes="**/*.java" token="org.jmol.java.BS" value="javajs.util.BS" />
+  	  	
+   	<echo>Now run build_02_fromjspecview.xml</echo>
 
   </target>
 	
