@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JSmol -- Jmol/HTML5 Demo</title>
+<script type="text/javascript" src="JSmol.min.js"></script>
+
+<script type="text/javascript">
+
+Images = [["image", "model", "scale", "caption"]
+	,["data/Sr2Nb2O7_working2.gif","data/Sr2Nb2O7_working2.png", "70%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 1"]
+	,["data/Sr2Nb2O7_working.gif","data/Sr2Nb2O7_working.png", "70%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 2"]
+	]
+
+function setImages() {
+  var s = ""
+  for (var i = 1; i < Images.length; i++) {
+    var img = Images[i];
+    var src = img[0];
+    var scale = img[2];
+    var caption = img[3];
+    s += "<img src='SRC' id='img_IMG' onclick='getImage(this.id)' style='width:SCALE;height:SCALE'/></br>CAPTION</br></br>";
+    s = s.replace(/SRC/, src).replace(/IMG/, i).replace(/SCALE/g,scale).replace(/CAPTION/,caption);
+  }
+  $("#leftpanel").html(s);
+}
+
+function getImage(id) {
+  var d = Images[parseInt(id.substring(4))];
+  Jmol.script(jmol, 'script "' + d[1] + '"');
+}
+
+////// every page will need one variable and one Info object for each applet object
+
+var Info = {
+	width: 700,
+	height: 450,
+	script: "set echo top left;echo click on an image",
+	use: "HTML5",
+	jarPath: "java",
+	j2sPath: "j2s",
+	jarFile: "JmolApplet.jar",
+	isSigned: false,
+	addSelectionOptions: false,
+	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
+	readyFunction: null,
+	console: "jmol_infodiv",
+  color:"#A0A0A0",
+	disableInitialConsole: true,
+	defaultModel: null,
+	debug: false
+}
+
+$(document).ready(function(){	
+
+	Jmol.setDocument(0);
+	
+	setImages();
+
+  	$("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
+  // right panel
+  
+  var isApplet = true;
+	Jmol.setButtonCss(null, "style='width:160px'");	
+	$("#rightpanel").html(
+		Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a molecule',molname);if (!x) { quit }; molname = x; load @{'$' + molname} #alt:LOAD $??Enter a model name","Load MOL (NCI)")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name of a compound',molname);if (!x) { quit }; molname = x; load @{':' + molname} #alt:LOAD :??Enter a model name","Load MOL (PubChem)")
+ 		+ "<br />"
+		+ Jmol.jmolButton(jmol,"load ? ","Load URL")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"load ? ","Load FILE")
+		+ "<br /><br />"
+		+ Jmol.jmolButton(jmol,"write FILE ?","Save FILE")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"write PNGJ ?.png","Save 3D-PNG")
+		+ "<br /><br />" + Jmol.jmolLink(jmol, "JSCONSOLE", "show info")
+		+ "<br />"
+	);
+	
+	// lower panel:
+			
+	Jmol.setButtonCss(null,"style='width:120px'");
+	var s = "<br />"
+		+ Jmol.jmolButton(jmol,"wireframe -0.1 #alt:SETTING Line", "wireframe")
+		+ Jmol.jmolButton(jmol,"spacefill only;spacefill 23%;wireframe 0.15 #alt:SETTING Ball and Stick","ball&stick");
+		s += Jmol.jmolButton(jmol,"spacefill #alt:SETTING van der Waals Spheres", "spacefill");	
+		Jmol.setButtonCss(null,"style='width:100px'");
+	
+		s += "<br />"
+
+    s += Jmol.jmolButton(jmol,"console");
+		
+    s += Jmol.jmolCommandInput(jmol);
+    
+    
+	$("#lowerpanel").html(s);
+})
+
+</script>
+</head>
+<body>
+<table style="margin-left:auto; margin-right:auto;">
+	<tr>
+		<td><div id="leftpanel"></div></td>
+		<td><div id="middlepanel"></div></td>
+		<td><div id="rightpanel"></div></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td style="text-align:center"><div id="lowerpanel"></div></td>
+		<td></td>
+	</tr>
+</table>
+<div id="console"></div>
+</body>
+</html>
