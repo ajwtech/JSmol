@@ -8,8 +8,8 @@
 <script type="text/javascript">
 
 Images = [["image", "model", "scale", "caption"]
-	,["data/Sr2Nb2O7_working2.gif","data/Sr2Nb2O7_working2.png", "70%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 1"]
-	,["data/Sr2Nb2O7_working.gif","data/Sr2Nb2O7_working.png", "70%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 2"]
+	,["data/Sr2Nb2O7_working2.gif","data/Sr2Nb2O7_working2.png", "60%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 1"]
+	,["data/Sr2Nb2O7_working.gif","data/Sr2Nb2O7_working.png", "60%", "<a href='http://www.crystal.uni-bayreuth.de/en/research/incommensurately_modulated_Sr2Nb2O7/'>Sr2Nb2O7</a>, View 2"]
 	]
 
 function setImages() {
@@ -30,17 +30,47 @@ function getImage(id) {
   Jmol.script(jmol, 'script "' + d[1] + '"');
 }
 
+function myPickCallback(a,b,c,d) {
+  var d = $("#console");
+  var s = d.html();
+  if (s.indexOf("plott(a)") >= 0)s = "";
+  d.html(s + b + "\n");
+  
+  d[0].scrollTop = 0;//d[0].scrollHeight
+  setTimeout(doTPlotCheck,100)
+}
+
+function doTPlotCheck() {
+  var n = Jmol.evaluate(jmol,"{picked}.count");
+  if (n> 0)doTPlot();
+}
+
+function doTPlot() {
+  switch (Jmol.evaluate(jmol,"{picked}.count")) {
+  case 0:
+    alert("pick two atoms first, then click here");
+    Jmol.script(jmol,"vibration off");
+    return;
+  case 1:
+    $("#console").html(Jmol.evaluate(jmol,"script('if (!af){script spt/ext/xtal/plott.spt};plott(pickedList[0]);')"))
+    break;
+  default:
+    $("#console").html(Jmol.evaluate(jmol,"script('if (!af){script spt/ext/xtal/plott.spt};plott(pickedList[-1] pickedList[0]);')"))
+  }
+}
+
 ////// every page will need one variable and one Info object for each applet object
 
 var Info = {
 	width: 700,
 	height: 450,
 	script: "set echo top left;echo click on an image",
-	use: "HTML5",
+	use: "JAVA",
 	jarPath: "java",
 	j2sPath: "j2s",
-	jarFile: "JmolApplet.jar",
-	isSigned: false,
+  pickCallback: "myPickCallback",
+	jarFile: "JmolAppletSigned.jar",
+	isSigned: true,
 	addSelectionOptions: false,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	readyFunction: null,
@@ -71,11 +101,37 @@ $(document).ready(function(){
 		+ Jmol.jmolButton(jmol,"load ? ","Load URL")
 		+ "<br />"
 		+ Jmol.jmolButton(jmol,"load ? ","Load FILE")
-		+ "<br /><br />"
+		+ "<br />"
 		+ Jmol.jmolButton(jmol,"write FILE ?","Save FILE")
 		+ "<br />"
 		+ Jmol.jmolButton(jmol,"write PNGJ ?.png","Save 3D-PNG")
 		+ "<br /><br />" + Jmol.jmolLink(jmol, "JSCONSOLE", "show info")
+		+ "<br />"
+	);
+
+  // button panel:
+  
+	Jmol.setButtonCss(null,"style='width:100px'");
+  $("#btnpanel").html(
+		Jmol.jmolButton(jmol,"modulation off", "no modulation")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"modulation scale 1.0", "mod x 1")
+ 		+ "<br />"
+		+ Jmol.jmolButton(jmol,"modulation scale 5.0", "mod x 5")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"vibration off", "motion off")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"vibration on", "motion on")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"set measurementunits angstroms;x= {within(4.0, @144) and( O7 or O3)}; measure @144 @x all;moveto /* time, axisAngle */ 1.0 { 333 598 -729 107.8} /* zoom, translation */  305.81 0.35 -1.91  /* center, rotationRadius */ {-9.536743E-7 13.3745 8.550301} 17.275505 /* navigation center, translation, depth */ {0 0 0} 0 0 0 /* cameraDepth, cameraX, cameraY */  3.0 0.0 0.0;", "measurements")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"load '' {3 1 1};rotate z 90;unitcell off", "3x1x1 block")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"unitcell off;axes off", "unit cell off")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,"unitcell on;axes on", "unit cell on")
+		+ "<br />"
+		+ Jmol.jmolButton(jmol,doTPlot, "t-plot")
 		+ "<br />"
 	);
 	
@@ -101,18 +157,26 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<table style="margin-left:auto; margin-right:auto;">
+<table>
 	<tr>
+    <td><table><tr>
 		<td><div id="leftpanel"></div></td>
-		<td><div id="middlepanel"></div></td>
+		<td><div id="btnpanel"></div></td>
+  </tr>
+  <tr>
+    <td colspan=2 valign=top>
+    <a href=spt/ext/xtal/plott.spt target=_blank>plott.spt</a>
+    <div id="console" style="white-space:pre;font-family:sanSerif;background-color:#E0E0A0;overflow:auto;width:450px;height:225px"></div>
+    </td>
+  </tr></table>
+    </td>
+    <td><table><tr>
+		<td valign=top><div id="middlepanel"></div></td>
+	</tr><tr>
+		<td style="text-align:center" valign=top><div id="lowerpanel"></div></td>
+	</tr></table></td>
 		<td><div id="rightpanel"></div></td>
 	</tr>
-	<tr>
-		<td></td>
-		<td style="text-align:center"><div id="lowerpanel"></div></td>
-		<td></td>
-	</tr>
 </table>
-<div id="console"></div>
 </body>
 </html>
