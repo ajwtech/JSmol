@@ -350,7 +350,7 @@ Jmol = (function(document) {
     var features = {};
     features.ua = navigator.userAgent.toLowerCase()
     
-    features.os = function(){
+    features.os = (function(){
       var osList = ["linux","unix","mac","win"]
       var i = osList.length;
 
@@ -358,7 +358,7 @@ Jmol = (function(document) {
         if (features.ua.indexOf(osList[i])!=-1) return osList[i]
       }
       return "unknown";
-    }
+    })();
 
     features.browser = function(){
       var ua = features.ua;
@@ -412,7 +412,7 @@ Jmol = (function(document) {
     
   features.compliantBrowser = function() {
     var a = !!document.getElementById;
-    var os = features.os()
+    var os = features.os;
     // known exceptions (old browsers):
     if (features.browserName == "opera" && features.browserVersion <= 7.54 && os == "mac"
       || features.browserName == "webkit" && features.browserVersion < 125.12
@@ -426,7 +426,7 @@ Jmol = (function(document) {
     return features.compliantBrowser() && features.supportsJava();
   }
     
-  features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
+  features.useIEObject = (features.os == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
   features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
     (features.browserName == "opera" && features.browserVersion >= 8) ||
     (features.browserName == "webkit" && features.browserVersion >= 412.2 && features.browserVersion < 500); // 500 is a guess; required for 536.3
@@ -1431,7 +1431,7 @@ Jmol = (function(document) {
       // Webkit or Firefox
       canvas.isDragging = false;
       var oe = ev.originalEvent;
-      var scroll = (oe.detail ? oe.detail : oe.wheelDelta);
+      var scroll = (oe.detail ? oe.detail : (Jmol.featureDetection.os == "mac" ? 1 : -1) * oe.wheelDelta); // Mac and PC are reverse; but 
       var modifiers = Jmol._jsGetMouseModifiers(ev);
       canvas.applet._processEvent(-1,[scroll < 0 ? -1 : 1,0,modifiers]);
       return false;
