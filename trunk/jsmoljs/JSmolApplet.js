@@ -1,5 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 12/13/2013 9:04:53 AM _evaluate DEPRECATED (see JSmolApi.js Jmol.evaulateVar
 // BH 11/24/2013 11:41:31 AM streamlined createApplet, with added JNLP for local reading
 // BH 10/11/2013 7:17:10 AM streamlined and made consistent with JSV and JSME
 // BH 7/16/2012 1:50:03 PM adds server-side scripting for image
@@ -466,10 +467,10 @@
 		return this._applet.getProperty(sKey,sValue);
 	}
 
-	
-	japroto._evaluate = function(molecularMath) {
+  // DEPRECATED!!!	
+	japroto._evaluate = function(molecularMath) {   // DEPRECATED!!!	
+  // DEPRECATED!!!	
 		//carries out molecular math on a model
-	
 		var result = "" + this._getPropertyAsJavaObject("evaluate", molecularMath);
 		var s = result.replace(/\-*\d+/, "");
 		if(s == "" && !isNaN(parseInt(result)))
@@ -478,9 +479,9 @@
 		if(s == "" && !isNaN(parseFloat(result)))
 			return parseFloat(result);
 		return result;
+  // DEPRECATED!!!	
 	}
 
-	
 	japroto._saveOrientation = function(id) {	
 		return this._savedOrientations[id] = this._getPropertyAsArray("orientationInfo","info").moveTo;
 	}
