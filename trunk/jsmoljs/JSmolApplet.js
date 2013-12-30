@@ -225,7 +225,7 @@
 	japroto._create = function(id, Info){
 		Jmol._setObject(this, id, Info);
 		var params = {
-			syncId: ("" + Math.random()).substring(3),
+			syncId: Jmol._syncId,
 			progressbar: "true",                      
 			progresscolor: "blue",
 			boxbgcolor: this._color || "black",

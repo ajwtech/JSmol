@@ -91,7 +91,7 @@
 
 	Jmol._Canvas2D = function(id, Info, type, checkOnly){
     // type: Jmol or JSV
-		this._syncId = ("" + Math.random()).substring(3);
+    this._uniqueId = ("" + Math.random()).substring(3);
 		this._id = id;
 		this._is2D = true;
     this._isJava = false;
@@ -287,7 +287,7 @@
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
 			viewerOptions.put("applet", true);
 			viewerOptions.put("name", applet._id + "_object");
-			viewerOptions.put("syncId", applet._syncId);      
+			viewerOptions.put("syncId", Jmol._syncId);      
       if (applet._color) 
         viewerOptions.put("bgcolor", applet._color);
       if (!applet._is2D)  
@@ -404,7 +404,7 @@
 	
 		proto.equals = function(a) { return this == a };
 		proto.clone = function() { return this };
-		proto.hashCode = function() { return parseInt(this._syncId) };  
+		proto.hashCode = function() { return parseInt(this._uniqueId) };  
 	
   
     proto._processGesture = function(touches) {

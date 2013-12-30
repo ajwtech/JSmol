@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/21/2013 6:38:35 PM applet sync broken
 // BH 12/6/2013 6:18:32 PM cover.htm and coverImage fix
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
 // BH 12/3/2013 6:30:08 AM fix for ready function returning Boolean instead of boolean in HTML5 version
@@ -139,6 +140,7 @@ Jmol = (function(document) {
     _mousePageX: null,
     _mouseOwner: null,
     _serverUrl: "http://your.server.here/jsmol.php",
+    _syncId: ("" + Math.random()).substring(3),
     _touching: false,
     _XhtmlElement: null,
     _XhtmlAppendChild: false
