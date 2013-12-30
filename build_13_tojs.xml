@@ -310,6 +310,7 @@
     		javajs/awt/Dimension.js
     		javajs/awt/event/Event.js
     		javajs/awt/Font.js
+    		javajs/api/JSONEncodable.js
     		JU/A4.js
     		JU/AjaxURLConnection.js
     		JU/AjaxURLStreamHandler.js
