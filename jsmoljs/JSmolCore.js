@@ -431,7 +431,7 @@ Jmol = (function(document) {
   features.useIEObject = (features.os == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
   features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
     (features.browserName == "opera" && features.browserVersion >= 8) ||
-    (features.browserName == "webkit" && features.browserVersion >= 412.2 && features.browserVersion < 500); // 500 is a guess; required for 536.3
+    (features.browserName == "webkit"/* && features.browserVersion >= 412.2 && features.browserVersion < 500*/); // 500 is a guess; required for 536.3
   
   features.hasFileReader = (window.File && window.FileReader);
   
@@ -1004,7 +1004,7 @@ Jmol = (function(document) {
         var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + (applet._coverTitle) + "\"";
         var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
           + "z-index:" + (Jmol._z.coverImage)+";opacity:0.5;\"" + more + " />"  
-        img = "<div id=\"ID_coverdiv\" style=\"backgoround-color:red;z-index:" + Jmol._z.coverImage+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
+        img = "<div id=\"ID_coverdiv\" style=\"background-color:red;z-index:" + Jmol._z.coverImage+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
          + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
       }
       s = "\
