@@ -1,58 +1,117 @@
 /* 
 
-BH 11/12/2013 6:34:22 AM adds jmolAppletInline()
-BH 9/23/2013 10:07:16 PM adds set of loadInline functions
- 
 Jmol2.js   (JSmol version)
 author: Bob Hanson hansonr@stolaf.edu 5/24/2013 12:06:25 PM
 
 Script replacement for legacy Jmol.js that uses JSmol instead.
 Can be used to turn most legacy Jmol.js-based sites to JSmol.
-Presumes prior loading of JSmol.min.js
 
-1) rename your current Jmol.js file Jmol_old.js in case you want to undo this
+BH 1/8/2014 5:56:15 AM simplified instructions; removed option for self.Info
+BH 11/12/2013 6:34:22 AM adds jmolAppletInline()
+BH 9/23/2013 10:07:16 PM adds set of loadInline functions
+BH 9/19/2013 7:09:41 AM  fixed jmolSetTarget() to accept "0" as a suffix; use of undefined --> null
 
-2) replace that file with this one
+Summary:
 
-3) If you use JmolInitialize, put the Jar files from the java/ directory here 
-   in that designated directory and make a new subdirectory there called j2s.
-   Then put all j2s/* files in that j2s subdirectory.
-      
-    If you don't use JmolIinitialize, all the jar files should go into a subdirectory named "java" 
-    in the same directory as your web page, and all the JavaScript should go into a subdirectory "j2s"
-    also in the same directory as your web page, just like it is here.
-      
-3) copy all j2s/* files into a directory on your site if you want to use HTML5 (defaults to ./j2s)
+You should not have to change any of your HTML pages.
+You are going to replace Jmol.js, wherever that is, with this file.
+You are going to replace all your JAR file with the ones in this distribution.
+You are going to add about 1000 files in the  j2s directory to your website. 
+  Don't worry; only a few will be called. But you won't know which ones.
+You will be able to switch from HTML5 to JAVA using ?_USE=JAVA in the URL
 
-4) copy all java/* files into a directory on your site if you want to use Java (defaults to ./java)
+Procedure:
+
+1a) If you are using HTML5, copy all jsmol/j2s/* files into a j2s subdirectory in the directory that contains Jmol.js
+
+1b) If you are not using HTML5, change the "use" parameter below from "HTML5" to "JAVA" and save this file.
+
+2) rename your current Jmol.js file Jmol_old.js in case you want to undo this
+
+3a) concatenate Jmol.min.js if you are not using jQuery (or Jmol.min.nojq.js if you are)
+   with this file to form a new Jmol.js
+   
+3b) Alternatively, you can change your HTML file from script src=Jmol.js to two tags,
+    first src=JSmol.min.js and second Jmol2.js. But this is a pain if you have lots of HTML pages.
+
+4) copy all jsmol/java/* files into the directory containing your current JAR files. This adds
+   four JNLP files as well. 
 
 5) try your page and see how it goes. You may still have some problems, because not all of the 
    methods in the original Jmol.js are included here. Let me know if that's the case.
 
 You can change the parameters below to override what your pages already use:
-
-BH  9/19/2013 7:09:41 AM  fixed jmolSetTarget() to accept "0" as a suffix; use of undefined --> null
+ 
 
 */
 
-Jmol.Info = {
-      
-      jarPath: "java",
-      jarFile: "",
-      j2sPath: "j2s",
+Jmol.Info = {      // overrides jmolInitialize()
+      //jarPath: "java", 
+      //jarFile: "JmolAppletSigned0.jar", 
+      //j2sPath: "j2s",  
       use: "HTML5", // could be JAVA or HTML5
 	disableJ2SLoadMonitor: false,
 	disableInitialConsole: true
       
 }
 
+////////// private functions /////////////
+
+var _jmol = {
+  appletCount: 0,
+  applets: {},
+  allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
+  codebase: "java",
+  targetSuffix: 0,
+  target: "jmolApplet0",
+  buttonCount: 0,
+  checkboxCount: 0,
+  linkCount: 0,
+  cmdCount: 0,
+  menuCount: 0,
+  radioCount: 0,
+  radioGroupCount: 0,
+  initialized: false,
+  initChecked: false,
+  archivePath: "JmolAppletSigned0.jar"
+}
+
+function _jmolApplet(size, inlineModel, script, nameSuffix) {
+    nameSuffix == null && (nameSuffix = _jmol.appletCount);
+    var id = "jmolApplet" + nameSuffix;
+    jmolSetTarget(nameSuffix);
+    ++_jmol.appletCount;
+    script || (script = "select *");
+    inlineModel && (script = 'load DATA "inline"\n' + inlineModel + '\nEND "inline";' + script); 
+    var Info = {}
+    for (var i in Jmol.Info)
+      Info[i] = Jmol.Info[i]
+    Info.jarFile || (Info.jarFile = _jmol.archivePath);
+    Info.jarPath || (Info.jarPath = _jmol.codebase);
+    Info.j2sPath || (Info.j2sPath = Info.jarPath + "/j2s");    
+    var sz = _jmolGetAppletSize(size);
+    Info.width || (Info.width = sz[0]);
+    Info.height || (Info.height = sz[1]);  
+    Info.script || (Info.script = script);
+    Info.isSigned == null && (Info.isSigned = (Info.jarFile.indexOf("Signed") >= 0));
+    for (var i in _jmol.params)
+      if(_jmol.params[i]!="")
+        Info[i] || (Info[i] = _jmol.params[i]);
+//  alert(JSON.stringify(Info).replace(/\,/g,"\n\n\n\n"))
+    return _jmol.applets[id] = Jmol.getApplet(id, Info)
+}
+
+function _jmolGetJarFilename(fileNameOrFlag) {
+  _jmol.archivePath =
+    (typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+}
 
 ////////////////////////////////////////////////////////////////
-// Legacy Scripting infrastruture
+// Legacy Scripting API
 ////////////////////////////////////////////////////////////////
 
 function jmolSetParameter(key,value) {
-  (self.Info || Jmol.Info)[key] = value;
+  Jmol.Info[key] = value;
 }
 
 function jmolSetXHTML(id) {
@@ -92,7 +151,7 @@ function jmolSetDocument(doc) {
 }
 
 function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
-  (self.Info || Jmol.Info).color = boxbgcolor ? boxbgcolor : "black";
+  Jmol.Info.color = boxbgcolor ? boxbgcolor : "black";
 }
 
 function jmolSetAppletWindow(w) {
@@ -344,63 +403,5 @@ function jmolResizeApplet(size, targetSuffix) {
 
 function jmolAppletAddParam(appletCode,name,value){
   alert ("use Info to add a parameter: " + name + "/" + value)
-}
-
-////////// private functions /////////////
-
-var _jmol = {
-  appletCount: 0,
-  applets: {},
-  allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
-  codebase: "java",
-  targetSuffix: 0,
-  target: "jmolApplet0",
-  buttonCount: 0,
-  checkboxCount: 0,
-  linkCount: 0,
-  cmdCount: 0,
-  menuCount: 0,
-  radioCount: 0,
-  radioGroupCount: 0,
-  initialized: false,
-  initChecked: false,
-  archivePath: null, // JmolApplet0.jar OR JmolAppletSigned0.jar
-}
-
-
-function _jmolApplet(size, inlineModel, script, nameSuffix) {
-    nameSuffix == null && (nameSuffix = _jmol.appletCount);
-    var id = "jmolApplet" + nameSuffix;
-    jmolSetTarget(nameSuffix);
-    ++_jmol.appletCount;
-    script || (script = "select *");
-    inlineModel && (script = 'load DATA "inline"\n' + inlineModel + '\nEND "inline";' + script); 
-    self.Info || (self.Info = Jmol.Info);
-    var Info = {}
-    for (var i in self.Info)
-      Info[i] = self.Info[i]
-    if (_jmol.initialized) {
-      // intentionally not allowing "" here. "this directory" is ".", not ""
-      Info.jarPath || (Info.jarPath = _jmol.codebase);
-      Info.jarFile || (Info.jarFile = _jmol.archivePath);
-      Info.j2sPath || (Info.j2sPath = Info.jarPath + "/j2s");    
-    } else {
-     // we just assume they are in ./java and ./j2s
-    }
-    var sz = _jmolGetAppletSize(size);
-    Info.width || (Info.width = sz[0]);
-    Info.height || (Info.height = sz[1]);  
-    Info.script || (Info.script = script);
-    Info.isSigned == null && (Info.isSigned = (Info.jarFile.indexOf("Signed") >= 0));
-    for (var i in _jmol.params)
-      if(_jmol.params[i]!="")
-        Info[i] || (Info[i] = _jmol.params[i]);
-//  alert(JSON.stringify(Info).replace(/\,/g,"\n\n\n\n"))
-    return _jmol.applets[id] = Jmol.getApplet(id, Info)
-}
-
-function _jmolGetJarFilename(fileNameOrFlag) {
-  _jmol.archivePath =
-    (typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
 }
 
