@@ -6,6 +6,7 @@ author: Bob Hanson hansonr@stolaf.edu 5/24/2013 12:06:25 PM
 Script replacement for legacy Jmol.js that uses JSmol instead.
 Can be used to turn most legacy Jmol.js-based sites to JSmol.
 
+BH 1/13/2014 11:14:12 AM incorrect default for missing jmolInitialize() (should be ".")
 BH 1/8/2014 5:56:15 AM simplified instructions; removed option for self.Info
 BH 11/12/2013 6:34:22 AM adds jmolAppletInline()
 BH 9/23/2013 10:07:16 PM adds set of loadInline functions
@@ -16,9 +17,9 @@ Summary:
 You should not have to change any of your HTML pages.
 You are going to replace Jmol.js, wherever that is, with this file.
 You are going to replace all your JAR file with the ones in this distribution.
-You are going to add about 1000 files in the  j2s directory to your website. 
+You are going to add about 1000 files in the ./j2s directory to your website. 
   Don't worry; only a few will be called. But you won't know which ones.
-You will be able to switch from HTML5 to JAVA using ?_USE=JAVA in the URL
+You will be able to switch from HTML5 to JAVA using ?_USE=SIGNED in the URL
 
 Procedure:
 
@@ -61,7 +62,7 @@ var _jmol = {
   appletCount: 0,
   applets: {},
   allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
-  codebase: "java",
+  codebase: ".",
   targetSuffix: 0,
   target: "jmolApplet0",
   buttonCount: 0,

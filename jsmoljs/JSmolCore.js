@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 1/13/2014 2:12:38 PM adding "http://www.nmrdb.org/tools/jmol/predict.php":"%URL", to _DirectDatabaseCalls
 // BH 12/21/2013 6:38:35 PM applet sync broken
 // BH 12/6/2013 6:18:32 PM cover.htm and coverImage fix
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
@@ -120,6 +121,7 @@ Jmol = (function(document) {
         "cactus.nci.nih.gov": "%URL",
         "www.rcsb.org": "%URL",
         "pubchem.ncbi.nlm.nih.gov":"%URL",
+        "http://www.nmrdb.org/tools/jmol/predict.php":"%URL",
         "$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
         "$$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf",
         "=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
@@ -721,7 +723,7 @@ Jmol = (function(document) {
     
   Jmol._syncBinaryOK="?";
   
-  Jmol._canSyncBinary = function() {
+  Jmol._canSyncBinary = function(isSilent) {
     if (self.VBArray) return (Jmol._syncBinaryOK = false);
     if (Jmol._syncBinaryOK != "?") return Jmol._syncBinaryOK;
     Jmol._syncBinaryOK = true;
@@ -736,7 +738,7 @@ Jmol = (function(document) {
     } catch( e ) {
       var s = "JmolCore.js: synchronous binary file transfer is requested but not available";
       System.out.println(s);
-      if (Jmol._alertNoBinary)
+      if (Jmol._alertNoBinary && !isSilent)
         alert(s)
       return Jmol._syncBinaryOK = false;
     }
@@ -754,8 +756,9 @@ Jmol = (function(document) {
   Jmol._getFileData = function(fileName) {
     // use host-server PHP relay if not from this host
     var type = (Jmol._isBinaryUrl(fileName) ? "binary" : "text");
-    var asBase64 = ((type == "binary") && !Jmol._canSyncBinary());
-    if (asBase64 && fileName.indexOf("pdb.gz") >= 0 && fileName.indexOf("http://www.rcsb.org/pdb/files/") == 0) {
+    var isPDB = (fileName.indexOf("pdb.gz") >= 0 && fileName.indexOf("http://www.rcsb.org/pdb/files/") == 0);
+    var asBase64 = (type == "binary" && !Jmol._canSyncBinary(isPDB));
+    if (asBase64 && isPDB) {
       // avoid unnecessary binary transfer
       fileName = fileName.replace(/pdb\.gz/,"pdb");
       asBase64 = false;
