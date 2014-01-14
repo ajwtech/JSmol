@@ -305,12 +305,12 @@
     		javajs/api/GenericMouseInterface.js
     		javajs/api/GenericPlatform.js
     		javajs/api/JSInterface.js
+    		javajs/api/JSONEncodable.js
     		javajs/api/PlatformViewer.js
     		javajs/api/ZInputStream.js
     		javajs/awt/Dimension.js
     		javajs/awt/event/Event.js
     		javajs/awt/Font.js
-    		javajs/api/JSONEncodable.js
     		JU/A4.js
     		JU/AjaxURLConnection.js
     		JU/AjaxURLStreamHandler.js
@@ -566,6 +566,7 @@
         	javajs/api/GenericMouseInterface.js
         	javajs/api/GenericPlatform.js
         	javajs/api/JSInterface.js
+    		javajs/api/JSONEncodable.js
         	javajs/api/PlatformViewer.js
         	javajs/api/ZInputStream.js
         	javajs/awt/Color.js
@@ -589,7 +590,6 @@
         	JU/P3.js
         	JU/P3i.js
         	JU/P4.js
-        	JU/PT.js
         	JU/PT.js
         	JU/SB.js
         	JU/T3.js
@@ -651,8 +651,7 @@
         	JSV/common/ViewData.js
         	JSV/common/ZoomEvent.js
         	JSV/dialog/JSVDialog.js
-        	JSV/exception/JDXSourceException.js
-        	JSV/exception/JSpecViewException.js
+        	JSV/exception/JSVException.js
         	JSV/js2d/Display.js
         	JSV/js2d/Image.js
         	JSV/js2d/JsFile.js
@@ -662,7 +661,7 @@
         	JSV/js2d/JsPanel.js
         	JSV/js2d/JsParameters.js
         	JSV/js2d/JsPlatform.js
-        	JSV/js2d/JsViewPanel.js
+        	JSV/js2d/JsMainPanel.js
         	JSV/js2d/Mouse.js
         	JSV/source/FileReader.js
         	JSV/source/JDXDataObject.js 
@@ -675,7 +674,6 @@
         	JSV/tree/SimpleTreeModel.js
         	JSV/tree/SimpleTreeNode.js
         	JSV/tree/SimpleTreePath.js
-        	JSV/util/JSVEscape.js
        		../js/core/corebottom.js
     	" />
     	
@@ -756,6 +754,7 @@
 			JU/DF.js
 			JU/Encoding.js
 			JU/List.js
+    		JU/Matrix.js
 			JU/M3.js
 			JU/M4.js
 			JU/OC.js
@@ -994,8 +993,7 @@
 			JSV/common/ViewData.js
 			JSV/common/ZoomEvent.js
 			JSV/dialog/JSVDialog.js
-			JSV/exception/JDXSourceException.js
-			JSV/exception/JSpecViewException.js
+			JSV/exception/JSVException.js
 			JSV/js2d/Display.js
 			JSV/js2d/Image.js
 			JSV/js2d/JsFile.js
@@ -1005,7 +1003,7 @@
 			JSV/js2d/JsPanel.js
 			JSV/js2d/JsParameters.js
 			JSV/js2d/JsPlatform.js
-			JSV/js2d/JsViewPanel.js
+			JSV/js2d/JsMainPanel.js
 			JSV/js2d/Mouse.js
 			JSV/source/FileReader.js
 			JSV/source/JDXDataObject.js 
@@ -1018,7 +1016,6 @@
 			JSV/tree/SimpleTreeModel.js
 			JSV/tree/SimpleTreeNode.js
 			JSV/tree/SimpleTreePath.js
-			JSV/util/JSVEscape.js
        		../js/core/corebottom.js
     	" />
     </antcall>
@@ -1085,7 +1082,7 @@
         	JSV/export/Exporter.js
         	JSV/api/ExportInterface.js
         	JSV/api/JSVExporter.js
-        	JSV/util/JSVTxt.js
+        	JSV/api/JSVPdfWriter.js
         	JSV/common/PDFWriter.js
         	javajs/export/PDFCreator.js
         	javajs/export/PDFObject.js

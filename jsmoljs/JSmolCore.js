@@ -833,10 +833,10 @@ Jmol = (function(document) {
     return true;
   }
 
-  Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName) {
+  Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
     // we actually cannot suggest a fileName, I believe.
     if (!Jmol.featureDetection.hasFileReader)
-        return fileLoadThread.setData("Local file reading is not enabled in your browser");
+        return fileLoadThread.setData("Local file reading is not enabled in your browser", null, appData);
     if (!applet._localReader) {
       var div = '<div id="ID" style="z-index:'+Jmol._z.fileOpener + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
       Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
@@ -849,7 +849,7 @@ Jmol = (function(document) {
       reader.onloadend = function(evt) {
         if (evt.target.readyState == FileReader.DONE) { // DONE == 2
           Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
-          fileLoadThread.setData(file.name, Jmol._toBytes(evt.target.result));
+          fileLoadThread.setData(file.name, Jmol._toBytes(evt.target.result), appData);
         }
       };
       reader.readAsArrayBuffer(file);
@@ -857,7 +857,7 @@ Jmol = (function(document) {
     Jmol.$appEvent(applet, "localReader_cancel", "click");
     Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
       Jmol.$css(Jmol.$(applet, "localReader"), {display: "none"});
-      fileLoadThread.setData(null, "#CANCELED#");
+      fileLoadThread.setData(null, "#CANCELED#", appData);
     });
     Jmol.$css(Jmol.$(applet, "localReader"), {display : "block"});
   }
