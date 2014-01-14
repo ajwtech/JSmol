@@ -322,6 +322,7 @@
     		JU/DF.js
     		JU/Encoding.js
     		JU/List.js
+    		JU/Matrix.js
     		JU/M3.js
     		JU/M4.js
     		JU/P3.js
@@ -737,6 +738,7 @@
 			javajs/api/GenericMouseInterface.js
 			javajs/api/GenericPlatform.js
 			javajs/api/JSInterface.js
+			javajs/api/JSONEncodable.js
 			javajs/api/PlatformViewer.js
 			javajs/api/ZInputStream.js
 			javajs/awt/Color.js
@@ -1332,6 +1334,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="sym" />
         <param name="call-core.list" value="
+            J/adapter/smarter/XtalSymmetry.js
        		J/api/SymmetryInterface.js
        		J/symmetry/Symmetry.js
        		J/symmetry/PointGroup.js
