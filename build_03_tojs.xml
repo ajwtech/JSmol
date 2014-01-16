@@ -1023,6 +1023,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="jsvmenu" />
         <param name="call-core.list" value="
+       		../js/JSmolMenu.js
         	JSV/js2d/JsPopup.js
         	JSV/popup/JSVGenericPopup.js
         	JSV/api/JSVAbstractMenu.js
