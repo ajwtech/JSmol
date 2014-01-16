@@ -134,8 +134,6 @@ Jmol = (function(document) {
     },
     _debugAlert: false,
     _document: document,
-    _execLog: "",
-    _execStack: [],
     _isMsie: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
     _isXHTML: false,
     _lastAppletID: null,
