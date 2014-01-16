@@ -54,7 +54,7 @@
    	<copy todir="site/jsmol/j2s/javajs" >
       <fileset dir="bin/javajs">
         <include name="**/*.js" />
-        <exclude name="**/util	/*.js" />
+        <exclude name="**/util		/*.js" />
       </fileset>
     </copy>
 
