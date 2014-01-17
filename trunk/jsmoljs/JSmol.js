@@ -1,3 +1,6 @@
+// BH 1/16/2014 8:44:03 PM   Jmol.__execDelayMS = 100; // FF bug when loading into a tab that is not 
+//                           immediately focused and not using jQuery for adding the applet and having  
+//                           multiple applets.
 // BH 12/6/2013 10:12:30 AM adding corejmoljsv.z.js
 // BH 9/17/2013 10:18:40 AM  file transfer functions moved to JSmolCore 
 // BH 3/5/2013 9:54:16 PM added support for a cover image: Info.coverImage, coverScript, coverTitle, deferApplet, deferUncover
@@ -32,6 +35,7 @@
   Jmol.__execStack = [];
   Jmol.__execTimer = 0;
   Jmol.__coreSet = [];
+  Jmol.__execDelayMS = 100; // must be > 55 ms for FF
   
   Jmol.showExecLog = function() { return Jmol.__execLog.join("\n") }; 
 
@@ -273,7 +277,7 @@
 			this._canScript = function(script) {return true;};
 			this._savedOrientations = [];
       Jmol.__execTimer && clearTimeout(Jmol.__execTimer);
-      Jmol.__execTimer = setTimeout(Jmol.__nextExecution, 50);// leaving a 50-ms delay for next applet creation initiation
+      Jmol.__execTimer = setTimeout(Jmol.__nextExecution, Jmol.__execDelayMS);
 		};
 
 		proto.__addExportHook = function(applet) {
