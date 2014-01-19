@@ -323,6 +323,7 @@
     		JU/Encoding.js
     		JU/List.js
     		JU/Matrix.js
+    		JU/M34.js
     		JU/M3.js
     		JU/M4.js
     		JU/P3.js
@@ -584,6 +585,7 @@
         	JU/DF.js
         	JU/Encoding.js
         	JU/List.js
+    		JU/M34.js
         	JU/M3.js
         	JU/M4.js
         	JU/OC.js
@@ -755,6 +757,7 @@
 			JU/Encoding.js
 			JU/List.js
     		JU/Matrix.js
+    		JU/M34.js
 			JU/M3.js
 			JU/M4.js
 			JU/OC.js
