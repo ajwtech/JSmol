@@ -56,9 +56,9 @@
 //    jQuery            -- at least jQuery.1.9
 //    JSmoljQueryext.js -- required for binary file transfer; otherwise standard jQuery should be OK
 //    JSmolCore.js      -- required;
-//    JSmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JmolCore
-//    JSmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JmolCore
-//    JSmolApi.js       -- required; all user functions; must be after JmolCore
+//    JSmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JSmolCore
+//    JSmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JSmolCore
+//    JSmolApi.js       -- required; all user functions; must be after JSmolCore
 //    JSmolTHREE.js     -- WebGL library required for JSmolGLmol.js
 //    JSmolGLmol.js     -- WebGL version of JSmol.
 //    JSmolJSV.js       -- optional; for creating and interacting with a JSpecView applet 
@@ -734,7 +734,7 @@ Jmol = (function(document) {
         xhr.overrideMimeType('text/plain; charset=x-user-defined');
       }
     } catch( e ) {
-      var s = "JmolCore.js: synchronous binary file transfer is requested but not available";
+      var s = "JSmolCore.js: synchronous binary file transfer is requested but not available";
       System.out.println(s);
       if (Jmol._alertNoBinary && !isSilent)
         alert(s)
@@ -1591,13 +1591,13 @@ Jmol.Dialog.dispose = function(dialog) {
 //  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
 //  for (var i = btns.length; --i >= 0;)
 //    delete Jmol.Dialog.htDialogs[btns[i].id]
-  System.out.println("JmolCore.js: dispose " + dialog.id)
+  System.out.println("JSmolCore.js: dispose " + dialog.id)
 }
  
 Jmol.Dialog.register = function(dialog, type) {
   dialog.id = type + (++Jmol.Dialog.count);
   Jmol.Dialog.htDialogs[dialog.id] = dialog;
-  System.out.println("JmolCore.js: register " + dialog.id)
+  System.out.println("JSmolCore.js: register " + dialog.id)
   
 }
 
@@ -1608,7 +1608,7 @@ Jmol.Dialog.setDialog = function(dialog) {
   var id = dialog.id + "_mover";
   var container = Jmol.$("#" + id);
   var jd;
-  System.out.println("JmolCore.js: setDialog " + dialog.id);
+  System.out.println("JSmolCore.js: setDialog " + dialog.id);
   if (container[0]) {
     container.html(dialog.html);
     jd = container[0].jd;
@@ -1670,14 +1670,19 @@ Jmol.Dialog.click = function(element, keyEvent) {
   }
   var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
   var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
-  System.out.println("JmolCore.js: click " + key); 
+  System.out.println("JSmolCore.js: click " + key); 
   dialog.manager.actionPerformed(key);
 }
 
 Jmol.Dialog.windowClosing = function(element) {
   var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
-  System.out.println("JmolCore.js: windowClosing " + dialog.registryKey); 
-  dialog.manager.processWindowClosing(dialog.registryKey);
+  if (dialog.registryKey) {
+    System.out.println("JSmolCore.js: windowClosing " + dialog.registryKey); 
+    dialog.manager.processWindowClosing(dialog.registryKey);
+  } else {
+    System.out.println("JSmolCore.js: windowClosing " + dialog.title); 
+    dialog.dispose();
+  }
 }
 
 Jmol._track = function(applet) {

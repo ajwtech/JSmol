@@ -55,14 +55,19 @@
 	Jmol.__nextExecution = function(trigger) {
     delete Jmol.__execTimer;
 		var es = Jmol.__execStack;
+	  var e;
+    while (es.length > 0 && (e = es[0])[4] == "done")
+      es.shift();
 	  if (es.length == 0)
 	  	return;
 	  if (!trigger) {
 		  setTimeout("Jmol.__nextExecution(true)",10)
 	  	return;
 	  }
-	  var e = es.shift();
-	  Jmol.__execLog.push("exec " + e[0]._id + " " + e[3]);
+    e.push("done");
+    var s = "exec " + e[0]._id + " " + e[3] + " " + e[2];
+    if (self.console)console.log(s)
+	  Jmol.__execLog.push(s);
 		e[1](e[0],e[2]);	
 	};
 
@@ -521,5 +526,45 @@
     canvas.getContext("2d").drawImage(canvas.image, 0, 0, width, height);
   };
 
+  Jmol.Sync = {
+    _doSync: false,
+    _syncData: {}
+  };
+  
+(function(Sync) {
+
+Sync._sync = function(applet, data) {
+  // from Jmol, JSME, or JSV
+  Sync.__checkNeeds(data);
+  Sync.__getData(data);
+}
+  
+
+Sync.__checkNeeds = function(applet, data) {
+
+
+}
+
+Sync.__getData = function(data) {
+
+  for (type in data) {
+    if (data[type] != "?" && data[type] != "!") continue;
+    switch(type) {
+    case "mol2d":
+      break;
+    case "mol3d":
+      break;
+    case "spec":
+      break;
+    }
+  }  
+}
+
+Sync.__sendSync = function(data) {
+
+}
+
+  
+}) (Jmol.Sync);
 		
 })(Jmol);
