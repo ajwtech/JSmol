@@ -11,7 +11,7 @@
 // 
 // If you have a big site with many HTML files, see comments in js/Jmol2.js
 
-Info = {
+Jmol.Info = {
       
       jarPath: "java",
       jarFile: "JmolAppletSigned0.jar",
@@ -49,11 +49,13 @@ addModel("1d66","transcription")
 
 <script type="text/javascript">
 //jmolInitialize(".","http://chemapps.stolaf.edu/pe/protexpl/molview/JmolAppletSigned.jar")
-jmolInitialize(".","JmolAppletSigned0.jar")
+
+jmolInitialize("java","JmolAppletSigned0.jar")
 
 jmolSetCallback("errorCallback","myCallback")
 
 var xxxx = document.location.search
+if (xxxx.indexOf("USE=") > 0)xxxx = "";
 if (xxxx.length == 5 || xxxx.length == 0) {
 	xxxx = (xxxx + "?1crn").substring(1,5)
 	script = 'h2oOn=true;set animframecallback "jmolscript:if (!selectionHalos) {select model=_modelNumber}";'
