@@ -18,31 +18,45 @@ Summary:
 You should not have to change any of your HTML pages.
 You are going to replace Jmol.js, wherever that is, with this file.
 You are going to replace all your JAR file with the ones in this distribution.
-You are going to add about 1000 files in the ./j2s directory to your website. 
+You are going to add about 1000 files in the jsmol/j2s directory to your website. 
   Don't worry; only a few will be called. But you won't know which ones.
 You will be able to switch from HTML5 to JAVA using ?_USE=SIGNED in the URL
 
 Procedure:
 
-1a) If you are using HTML5, copy all jsmol/j2s/* files into a j2s subdirectory in the directory that contains Jmol.js
+1a) If you want to use HTML5, copy all jsmol/j2s/* files into a j2s subdirectory 
+    in the directory that contains Jmol.js and your old Jmol jar files.
 
 1b) If you are not using HTML5, change the "use" parameter below from "HTML5" to "JAVA" and save this file.
+    Copy all the jsmol/java/* files into the directory containing your current JAR files. This adds
+    four JNLP files as well and will replace all your JAR files.
 
-2) rename your current Jmol.js file Jmol_old.js in case you want to undo this
+2) Rename your current Jmol.js file Jmol_old.js in case you want to undo this.
 
-3a) concatenate Jmol.min.js if you are not using jQuery (or Jmol.min.nojq.js if you are)
-   with this file to form a new Jmol.js (Jmol.min.js first, then Jmol2.js)
+3) Concatenate Jmol.min.js if you are not using jQuery (or Jmol.min.nojq.js if you are)
+   with this file to form a new file (Jmol.min.js first, then Jmol2.js) and replace your
+   current Jmol.js with it.
    
-3b) Alternatively, you can change your HTML file from script src=Jmol.js to two tags,
-    first src=JSmol.min.js and second Jmol2.js. But this is a pain if you have lots of HTML pages.
-
-4) copy all jsmol/java/* files into the directory containing your current JAR files. This adds
-   four JNLP files as well. 
-
-5) try your page and see how it goes. You may still have some problems, because not all of the 
+4) Try your page and see how it goes. You may still have some problems, because not all of the 
    methods in the original Jmol.js are included here. Let me know if that's the case.
 
-You can change the parameters below to override what your pages already use:
+If you wish to change the directories your j2s or JAR files and override the default settings
+(old JAR file location; j2s directory in the directory of those JAR files) and thus override
+your current settings in your HTML files, then you can to that three ways:
+
+a) You can change the parameters below to override what your pages already use by uncommenting
+   one or the other of the jarPath and j2sPath definitions. This will override jmolInitialize
+   in ALL your HTML files. 
+   
+b) You can change your jmolInitialization call in an individual HTML file. This sets both 
+   the JAR path and the j2s path (as [jarPath]/j2s) together.
+
+c) You can add lines to an individual HTML file along the lines of:
+
+    Jmol.Info.jarPath = "../../Jmol"
+    Jmol.Info.j2sPath = "../../JSmol"
+    
+   or whatever. This will override jmolInitialize in that specific HTML file only. 
  
 Note that: 
 
@@ -109,6 +123,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       if(_jmol.params[i]!="")
         Info[i] || (Info[i] = _jmol.params[i]);
 //  alert(JSON.stringify(Info).replace(/\,/g,"\n\n\n\n"))
+xxxInfo = Info
     return _jmol.applets[id] = Jmol.getApplet(id, Info)
 }
 

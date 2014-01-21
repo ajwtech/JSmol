@@ -66,7 +66,7 @@
 	  }
     e.push("done");
     var s = "exec " + e[0]._id + " " + e[3] + " " + e[2];
-    if (self.console)console.log(s)
+    if (self.console)console.log(s + " -- OK")
 	  Jmol.__execLog.push(s);
 		e[1](e[0],e[2]);	
 	};
