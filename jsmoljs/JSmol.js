@@ -345,12 +345,6 @@
 
 		};
 
-		proto._loadModel = function(mol, params) {
-			var script = 'load DATA "model"\n' + mol + '\nEND "model" ' + params;
-			this._script(script);
-			this._showInfo(false);
-		};
-	
 		proto._show = function(tf) {
 			Jmol.$setVisible(Jmol.$(this,"appletdiv"), tf);
 			if (tf)
@@ -364,14 +358,6 @@
 		// need to be cached.
 			this._delayID = setTimeout(function(){eval.resumeEval(sc,false)}, millis);		
 		}
-		
-		proto._loadFile = function(fileName, params){
-			this._showInfo(false);
-			params || (params = "");
-			this._thisJmolModel = "" + Math.random();
-			this._fileName = fileName;
-      Jmol._scriptLoad(this, fileName, params, true);
-		};
 		
 		proto._createDomNode = function(id, data) {
 			id = this._id + "_" + id;
@@ -433,12 +419,9 @@
       Jmol[s] = setTimeout(function() {Jmol._repaint(self, true);Jmol[s]=null}, 100);
     }
     
-    
     return proto;
 	};
-	
-	
-	
+		
   Jmol._repaint = function(applet, asNewThread) {
     // asNewThread: true is from RepaintManager.repaintNow()
     // false is from Repaintmanager.requestRepaintAndWait()
@@ -525,46 +508,5 @@
     canvas.height = height;
     canvas.getContext("2d").drawImage(canvas.image, 0, 0, width, height);
   };
-
-  Jmol.Sync = {
-    _doSync: false,
-    _syncData: {}
-  };
-  
-(function(Sync) {
-
-Sync._sync = function(applet, data) {
-  // from Jmol, JSME, or JSV
-  Sync.__checkNeeds(data);
-  Sync.__getData(data);
-}
-  
-
-Sync.__checkNeeds = function(applet, data) {
-
-
-}
-
-Sync.__getData = function(data) {
-
-  for (type in data) {
-    if (data[type] != "?" && data[type] != "!") continue;
-    switch(type) {
-    case "mol2d":
-      break;
-    case "mol3d":
-      break;
-    case "spec":
-      break;
-    }
-  }  
-}
-
-Sync.__sendSync = function(data) {
-
-}
-
-  
-}) (Jmol.Sync);
 		
 })(Jmol);

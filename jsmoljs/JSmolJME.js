@@ -57,6 +57,7 @@
     this._isJME = true;
     this._isJava = (Info.use && Info.use.toUpperCase() == "JAVA")
 		this._jmolType = "Jmol._JME" + (this._isJava ? "(JAVA)" : "(HTML5)");
+    this._viewType = "JME";
     if (checkOnly)
       return this;
     window[id] = this;
@@ -83,8 +84,7 @@
           this._divId = id;
         var d = Jmol._document;
 			  Jmol._document = null;
-        var s = this.create();
-			  Jmol.$html(this._divId, s);
+			  Jmol.$html(this._divId, this.create());
 			  Jmol._document = d;
 				this.__showContainer(false, false);
 			} else {
@@ -126,7 +126,7 @@
     return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
   }
   
-  Jmol._JMEApplet.onload = function() {
+  jsmeOnLoad = Jmol._JMEApplet.onload = function() {
     for (var i in Jmol._applets) {
       var app = Jmol._applets[i]
       if (app._isJME && !app._isJava && !app._ready) {
@@ -139,8 +139,6 @@
     }
   }   
 
-  jsmeOnLoad = Jmol._JMEApplet.onload;
-        
 ;(function(proto){
 
   proto.create = function() {
@@ -156,7 +154,7 @@
       return this._code = "";
     }    
     if (this._hasOptions)
-      s += Jmol._getGrabberOptions(this);
+      s += Jmol._getGrabberOptions(this);      
   	return this._code = Jmol._documentWrite(s);
 	}
 
@@ -164,42 +162,77 @@
     return false;
   }	
   
-	proto._searchDatabase = function(query, database){
+  proto._search = function(query){
+		Jmol._search(this, query);
+	}
+		
+	proto._searchDatabase = function(query, database, _jme_searchDatabase){
 		this._showInfo(false);
-		if (database == "$") {
-			query = "$" + query; // 2D variant
-    }
+    //alert("JME setting currentView to null in searchdatabase")
+    this._currentView = null;
+    this._searchQuery = database + query;
+		if (database == "$")
+			query = "$" + query; // 2D variant;  will be $$caffeine
 		var dm = database + query;
 		if (Jmol.db._DirectDatabaseCalls[database]) {
-			this._loadFile(dm);
+			this._loadFile(dm, {chemID: this._searchQuery});
 			return;
 		}
 		var me=this;
 		Jmol._getRawDataFromServer(
 			database,
 			query,
-			function(data){me._loadModel(data)},
-      null, 
+			function(data){me._loadModel(data, me._searchQuery)},
+      function() {me._loadModel(null, me._searchQuery)}, 
       false,// not base64
       true  // noScript
 		);
 	}
 	
- 	proto._loadFile = function(fileName){
+ 	proto._loadFile = function(fileName, params, _jme_loadFile){
+    var chemID = (params ? params.chemID : fileName);
+    //alert("_loadfle " + chemID);
 		this._showInfo(false);
 		this._thisJmolModel = "" + Math.random();
 		var me = this;
-		Jmol._loadFileData(this, fileName, function(data){me._loadModel(data)});
+		Jmol._loadFileData(this, fileName, function(data){me._loadModel(data, chemID)}, function() {me._loadModel(null, chemID)});
 	}
   
-  proto._search = function(query){
-		Jmol._search(this, query);
-	}
-		
-	proto._loadModel = function(jmeOrMolData) {
-		Jmol.jmeReadMolecule(this, jmeOrMolData);
+	proto._loadModel = function(jmeOrMolData, chemID, _jme_loadModel) {
+    //alert("_loadmodel " + chemID);
+    if (jmeOrMolData != null)
+		  Jmol.jmeReadMolecule(this, jmeOrMolData);
+    if (this._viewSet != null)
+      Jmol.View.updateCurrentView(this, chemID, jmeOrMolData);      
 	}
 
+  proto._loadModelFromView = function(view, _jme_loadModelFromView) {
+    // request from Jmol.View to update view with view.JME.data==null or needs changing
+    var rec = view["JME"];
+    if (rec.data != null) {
+		  this._loadModel(rec.data, rec.chemID);
+      return;
+    }
+    if (rec.chemID != null) {
+      Jmol._searchMol(this, rec.chemID, null, false);
+      return;
+    }
+    rec = view["Jmol"];
+    if (rec) {
+      this._show2d(true, rec.applet);
+      return;
+    }
+    // NOW WHAT??
+  }
+
+  proto._updateView = function(_jme_updateView) {
+    // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
+    if (this._viewSet == null)
+      return;
+    Jmol.View.setCurrentView(this, null, this._applet.molFile());
+    Jmol.View.newEvent(this, "fileLoaded"); 
+  }
+  	  
 	proto._showInfo = Jmol._Applet.prototype._showInfo;
 	proto._show = Jmol._Applet.prototype._show;
   
@@ -213,8 +246,8 @@
     }
 	}
 
-	proto._show2d = function(tf) {
-	  var jmol = this._linkedApplet;
+	proto._show2d = function(toJME, jmol) {
+	  jmol || (jmol = this._linkedApplet);
 	  if (jmol) {
 		  var jme = this._applet;
       if (jme == null && this._isJava)
@@ -226,8 +259,7 @@
 		    var isOK = (jmolAtoms != "({})");
       }
 		  if (!isOK) {
-			  if (tf) {
-			    // toJME
+			  if (toJME) {
           this._molData = //Jmol.evaluate(jmol, "write('mol')")
           Jmol.evaluate(jmol, "script('show chemical sdf')");
           var cmd  = this._id + ".__readMolData()";
@@ -238,9 +270,11 @@
 				    Jmol.script(jmol, "load \"$" + jmeSMILES + "\"");
 			  }
 			}
- 		  this.__showContainer(tf, true);
 		}
-    this._showInfo(!tf);
+    if (this._linkedApplet) {
+     	this.__showContainer(toJME, true);
+      this._showInfo(!toJME);
+    }
 	}
 
   proto.__readMolData = function() {
@@ -266,12 +300,13 @@
       Jmol.$setVisible(mydiv, tf);
     }
 	}
+
 })(Jmol._JMEApplet.prototype);
 
   //////  additional API for JME /////////
 
   // see also http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
-	  
+
   Jmol.jmeSmiles = function(jme, withStereoChemistry) {
   	return (arguments.length == 1 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles())
   }

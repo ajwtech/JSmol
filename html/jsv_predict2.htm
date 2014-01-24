@@ -3,7 +3,16 @@
 <head>
 <title>JSpecView/JSME/nmrdb/NIH-Resolver demo</title>
 <meta charset="utf-8" />
-<script type="text/javascript" src="JSmol.min.js"></script>
+<script type="text/javascript" src="jquery/jquery.js"></script>
+<script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
+<script type="text/javascript" src="js/JSmolCore.js"></script>
+<script type="text/javascript" src="js/JSmolApplet.js"></script>
+<script type="text/javascript" src="js/JSmolApi.js"></script>
+<script type="text/javascript" src="js/JSmolControls.js"></script>
+<script type="text/javascript" src="js/j2sjmol.js"></script>
+<script type="text/javascript" src="js/JSmol.js"></script>
+<script type="text/javascript" src="js/JSmolConsole.js"></script>
+<script type="text/javascript" src="js/JSmolMenu.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
 <script type="text/javascript" language="javascript" src="jsme/jsme/jsme.nocache.js"></script>
@@ -11,16 +20,21 @@
 <script type="text/javascript">
 
 function predictSpectrum() {
-  //Jmol.show2d(jmol, false)
   unhideJSV();
-  var s = Jmol.jmeGetFile(jme, false);
-  if (!s.length) {
+  var data = Jmol.jmeGetFile(jme, false);
+  $("#moldiv").html(data)
+  if (!data.length) {
     alert("Please draw a structure or do a search first.");
     return;
   }
-  $("#moldiv").html(s)
-  var m = "MOL=" + s.replace(/\n/g,"\\n");
-  Jmol.script(jsv, "load \"http://SIMULATION/" + m + "\"");
+  Jmol.updateView(jme);
+}
+
+js = Jmol._search;
+
+Jmol._search = function(applet, query) {
+ unhideJSV();
+ js(applet, query);
 }
 
 function unhideJSV() {
@@ -34,6 +48,7 @@ var JMEInfo = {
   ,divId: "jmediv"
   ,options : "autoez;"
   ,addSelectionOptions: true
+  ,viewSet: 1
 	//,jarPath: "jme",
 	//,jarFile: "JME.jar"
   //optional parameters
@@ -47,6 +62,7 @@ var JmolInfo = {
   width: 300,
   height:250,
 	script: "sync on;",
+  viewSet: 1,
 	//,jarPath: "jme",
 	//,jarFile: "JME.jar"
   //optional parameters
@@ -64,6 +80,9 @@ JSVInfo = {
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	use: "HTML5",
 	j2sPath: "j2s",
+  viewSet: 1,
+  preloadScript: "close VIEWS;close SIMULATIONS > 1; DEFAULTNMRNORMALIZATION 100;",
+  script: 'defaultLoadScript "OVERLAYSTACKED FALSE; STACKOFFSETY 10;VIEW \\\"1HNMR\\\""',
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false,
 	readyFunction: null,      //   jsv_isReady
@@ -71,7 +90,7 @@ JSVInfo = {
 //        console: "consolediv"
 }
 
-Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
+//Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
 
 $(document).ready(function() {
  $("#infodiv").show();
@@ -80,8 +99,6 @@ $(document).ready(function() {
  $(".btn").css({width:"30px"});
  $("a").css({"text-decoration":"none"});
  
- Jmol.getJMEApplet("jme", JMEInfo, jmol)
-
 });
         
 </script>
@@ -91,6 +108,9 @@ $(document).ready(function() {
 <tr>
 <td valign="top">
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
+<script>
+Jmol.getJMEApplet("jme", JMEInfo);
+</script>
 <br>
 <br>
 
