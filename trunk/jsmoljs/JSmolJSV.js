@@ -235,12 +235,14 @@
     Jmol.script(this, script);
 
 //alert("in jsv loadmodelfromview ec.chemID=" + rec.chemID)    
-    if (this._viewSet != null)
+    if (this._viewSet != null && this._applet)
       Jmol.View.updateView(this, rec.chemID, script);
     // will need a load data callback?
   }
   
   proto._loadModel = function(data, chemID) {
+    if (data == null)
+      return;
   // retun from asynchronous call in loadModelFromView 
     Jmol.View.updateView(this, chemID, data);
  }

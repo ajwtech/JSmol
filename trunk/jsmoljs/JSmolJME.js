@@ -199,9 +199,9 @@
 	}
   
 	proto._loadModel = function(jmeOrMolData, chemID, _jme_loadModel) {
-    //alert("_loadmodel " + chemID);
-    if (jmeOrMolData != null)
-		  Jmol.jmeReadMolecule(this, jmeOrMolData);
+    if (jmeOrMolData == null)
+      return;
+	  Jmol.jmeReadMolecule(this, jmeOrMolData);
     if (this._viewSet != null)
       Jmol.View.updateView(this, chemID, jmeOrMolData);      
 	}
