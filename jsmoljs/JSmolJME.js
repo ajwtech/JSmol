@@ -203,7 +203,7 @@
     if (jmeOrMolData != null)
 		  Jmol.jmeReadMolecule(this, jmeOrMolData);
     if (this._viewSet != null)
-      Jmol.View.updateCurrentView(this, chemID, jmeOrMolData);      
+      Jmol.View.updateView(this, chemID, jmeOrMolData);      
 	}
 
   proto._loadModelFromView = function(view, _jme_loadModelFromView) {
@@ -227,10 +227,8 @@
 
   proto._updateView = function(_jme_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-    if (this._viewSet == null)
-      return;
-    Jmol.View.setCurrentView(this, null, this._applet.molFile());
-    Jmol.View.newEvent(this, "fileLoaded"); 
+    if (this._viewSet != null)
+      Jmol.View.updateView(this, null, this._applet.molFile());
   }
   	  
 	proto._showInfo = Jmol._Applet.prototype._showInfo;

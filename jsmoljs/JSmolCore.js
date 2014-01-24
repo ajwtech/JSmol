@@ -1753,6 +1753,22 @@ Jmol.View = {
   
 (function(View) {
 
+View.updateView = function(applet, chemID, data, _updateView) {
+  // return from applet after asynchronous download of new data
+  if (applet._viewSet == null)
+    return;
+  var type = applet._viewType;
+  if (chemID == null)
+    applet._searchQuery = null;
+  //alert("setCurrentView for " + applet._currentView + " type=" + type + " chemID=" + chemID + "\n" + Clazz.getStackTrace())
+  if((applet._currentView = View.__findView(applet._viewSet, type, chemID, data || "N/A")) == null) {
+  //alert("did not find type="+type + " chemID=" + chemID + " data=" + data)
+    applet._currentView = View.__createViewSet(applet._viewSet, chemID);
+  }
+  applet._currentView[type].data = data;
+  View.__setView(applet._currentView, applet);
+}
+  
 View.__findView = function(set, type, chemID, data) {
   //alert("findView " + set)
   var views = View.sets[set];
@@ -1772,7 +1788,7 @@ View.__findView = function(set, type, chemID, data) {
   //alert("nothing found for " + set + " " + type + " " + chemID + " " + data)
   return null;  
 }
-
+/*
 View.__dumpSet = function(views) {
  var s = "dumeSet " + views.length + " ";
     for (var i = views.length; --i >= 0;) {
@@ -1783,35 +1799,7 @@ View.__dumpSet = function(views) {
     }
     return s
 }
-
-View.newEvent = function(applet, action, view, _newEvent) {
-// from app (Jmol, JSME, JSV), indicating data has been received
-  var set = applet._viewSet;
-  var type = applet._viewType;
-  var currentView = applet._currentView;
-  var chemID = currentView[type].chemID;
-  var data = currentView[type].data;
-  //alert(type + " " + action)
-  switch(action) {
-  case "picked":
-  // TODO
-    break;
-  case "oldSearch":
-    // view will NOT be null here -- already tested.
-    // fall through ??
-  case "fileLoaded":
-    // look for a view, and if found set that view
-    if (view == null && data != null)
-      view = View.__findView(set, null, null, data);
-    if (!view) {
-    // create a new view, as no view with this data has been found
-      view = View.__createViewSet(set, chemID);
-      view[type].data = data;
-    }
-    View.__setView(view, applet);
-  }
-}
-
+*/
 View.__createViewSet = function(set, chemID, _createViewSet) {
   var view = {};
   for (var id in Jmol._applets) {
@@ -1824,7 +1812,7 @@ View.__createViewSet = function(set, chemID, _createViewSet) {
 }
 
 View.__setView = function(view, applet, _setView) {
-  // called from View.newEvent and Jmol._search 
+  // called from Jmol._searchMol and Jmol.View.setCurrentView 
   // notify the applets in the set that there may be new data for them
   // skip the originating applet itself and cases where the data has not changed.
   // stop at first null data, because that will initiate some sort of asynchronous
@@ -1850,29 +1838,6 @@ View.__setView = function(view, applet, _setView) {
   // In either case, we are done.
 }
 
-View.updateCurrentView = function(applet, chemID, data, _updateCurrentView) {
-  // return from applet after asynchronous download of new data
-  if (applet._viewSet == null)
-    return;
-  data || (data = "N/A");
-  var type = applet._viewType;
-  //alert("updatecurrrentview type=" + type + " chemID=" + chemID + " data=" + data)
-  View.setCurrentView(applet, chemID, data);
-  View.__setView(applet._currentView, applet);
-}
-
-View.setCurrentView = function(applet, chemID, data, _setCurrentView) {
-  var type = applet._viewType;
-  if (chemID == null)
-    applet._searchQuery = null;
-  //alert("setCurrentView for " + applet._currentView + " type=" + type + " chemID=" + chemID + "\n" + Clazz.getStackTrace())
-  if((applet._currentView = View.__findView(applet._viewSet, type, chemID, data)) == null) {
-  //alert("did not find type="+type + " chemID=" + chemID + " data=" + data)
-    applet._currentView = View.__createViewSet(applet._viewSet, chemID);
-  }
-  applet._currentView[type].data = data;
-}
-  
 }) (Jmol.View);
 
 })(Jmol, jQuery);

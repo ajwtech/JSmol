@@ -590,7 +590,6 @@
       this._script("zap;set echo middle center;echo Retrieving data...");
     if (!this._isSigned || this._viewSet != null)
       return false;
-    alert("scriptload")
     // should not be here if _viewSet
     if (doscript)
       this._script("load \"" + file + "\";" + script);
@@ -609,7 +608,7 @@
   		this._applet.script(script);
     }
     if (this._viewSet != null)
-      Jmol.View.updateCurrentView(this, chemID, mol);      
+      Jmol.View.updateView(this, chemID, mol);      
 	}
 	
   proto._loadModelFromView = function(view, _jmol_loadModelFromView) {
@@ -633,10 +632,8 @@
 
   proto._updateView = function(_jmol_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-    if (this._viewSet == null)
-      return;
-    Jmol.View.setCurrentView(this, null, this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
-    Jmol.View.newEvent(this, "fileLoaded"); 
+    if (this._viewSet != null)
+      Jmol.View.updateView(this, null, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
   }
   	  
   proto._isDeferred = function () {
