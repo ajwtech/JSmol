@@ -420,8 +420,8 @@
     }
   }  
 
-  Jmol.updateView = function(applet) {
-    applet._updateView();
+  Jmol.updateView = function(applet, param1, param2) {
+    applet._updateView(param1, param2);
   }
 
 })(Jmol);
