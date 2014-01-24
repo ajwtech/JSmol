@@ -81,8 +81,8 @@ JSVInfo = {
 	use: "HTML5",
 	j2sPath: "j2s",
   viewSet: 1,
-  preloadScript: "close VIEWS;close SIMULATIONS > 1; DEFAULTNMRNORMALIZATION 100;",
-  script: 'defaultLoadScript "OVERLAYSTACKED FALSE; STACKOFFSETY 10;VIEW \\\"1HNMR\\\""',
+  preloadScript: "close views;close simulations > 1; DEFAULTNMRNORMALIZATION 100;",
+  script: 'defaultLoadScript "OVERLAYSTACKED true; VIEW *;STACKOFFSETY 50;";',
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false,
 	readyFunction: null,      //   jsv_isReady
@@ -132,7 +132,7 @@ Jmol.getJSVApplet("jsv", JSVInfo)
 <a href="javascript:Jmol.clearConsole(jsv)">clear</a>
 <a href="javascript:Jmol.showInfo(jsv, false)">spectrum</a>
  (note that OH and NH hydrogens will not be shown)
-<div style="position:absolute;left:750px;top:335px;z-index:50000"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
+<div style="position:absolute;left:745px;top:565px;z-index:9005"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
 </div>
 <div id="infodiv" style="text-align:center">
 This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
