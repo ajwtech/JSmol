@@ -885,7 +885,10 @@ String.getName=Clazz.innerFunctions.getName;
 
 String.serialVersionUID=String.prototype.serialVersionUID=-6849794470754667710;
 
-String.prototype.$replace=function(c1,c2){
+
+;(function(sp) {
+
+sp.$replace=function(c1,c2){
 	if (c1 == c2 || this.indexOf (c1) < 0) return "" + this;
 	if (c1.length == 1) {
     if ("\\$.*+|?^{}()[]".indexOf(c1) >= 0) 	c1 = "\\" + c1;
@@ -894,7 +897,7 @@ String.prototype.$replace=function(c1,c2){
   }
   return this.replace(new RegExp(c1,"gm"),c2);
 };
-String.prototype.$generateExpFunction=function(str){
+sp.$generateExpFunction=function(str){
 var arr=[];
 var orders=[];
 var idx=0;
@@ -944,15 +947,15 @@ eval(funStr)
 return f;
 };
 
-String.prototype.replaceAll=function(exp,str){
+sp.replaceAll=function(exp,str){
 var regExp=new RegExp(exp,"gm");
 return this.replace(regExp,this.$generateExpFunction(str));
 };
-String.prototype.replaceFirst=function(exp,str){
+sp.replaceFirst=function(exp,str){
 var regExp=new RegExp(exp,"m");
 return this.replace(regExp,this.$generateExpFunction(str));
 };
-String.prototype.matches=function(exp){
+sp.matches=function(exp){
 if(exp!=null){
 exp="^("+exp+")$";
 }
@@ -960,7 +963,7 @@ var regExp=new RegExp(exp,"gm");
 var m=this.match(regExp);
 return m!=null&&m.length!=0;
 };
-String.prototype.regionMatches=function(ignoreCase,toffset,
+sp.regionMatches=function(ignoreCase,toffset,
 other,ooffset,len){
 
 if(typeof ignoreCase=="number"
@@ -989,7 +992,7 @@ return s1==s2;
 
 
 
-String.prototype.$plit=function(regex,limit){
+sp.$plit=function(regex,limit){
 
 if(limit!=null&&limit>0){
 if(limit==1){
@@ -1019,8 +1022,8 @@ var regExp=new RegExp(regex,"gm");
 return this.split(regExp);
 }
 };
-
-String.prototype.trim=function(){
+/*
+sp.trim=function(){
 var len=this.length;
 var st=0;
 
@@ -1033,54 +1036,60 @@ len--;
 return((st>0)||(len<len))?this.substring(st,len):this;
 };
 
-String.prototype.trim=function(){
+
+*/
+
+if (!sp.trim)
+sp.trim=function(){
 return this.replace(/^\s+/g,'').replace(/\s+$/g,'');
 };
 
-
-String.prototype.startsWith_string_number=function(prefix,toffset){
+if (!sp.startsWith || !sp.endsWith) {
+var sn=function(s, prefix,toffset){
 var to=toffset;
 var po=0;
 var pc=prefix.length;
 
-if((toffset<0)||(toffset>this.length-pc)){
+if((toffset<0)||(toffset>s.length-pc)){
 return false;
 }
 while(--pc>=0){
-if(this.charAt(to++)!=prefix.charAt(po++)){
+if(s.charAt(to++)!=prefix.charAt(po++)){
 return false;
 }
 }
 return true;
 };
 
-String.prototype.startsWith=function(prefix){
+sp.startsWith=function(prefix){
 if(arguments.length==1){
-return this.startsWith_string_number(arguments[0],0);
+return sn(this,arguments[0],0);
 }else if(arguments.length==2){
-return this.startsWith_string_number(arguments[0],arguments[1]);
+return sn(this,arguments[0],arguments[1]);
 }else{
 return false;
 }
 };
 
-String.prototype.endsWith=function(suffix){
-return this.startsWith(suffix,this.length-suffix.length);
+sp.endsWith=function(suffix){
+return sn(this, suffix,this.length-suffix.length);
 };
 
-String.prototype.equals=function(anObject){
+}
+
+sp.equals=function(anObject){
 return this.valueOf()==anObject;
 };
 
-String.prototype.equalsIgnoreCase=function(anotherString){
+sp.equalsIgnoreCase=function(anotherString){
 return(anotherString==null)?false:(this==anotherString
 ||this.toLowerCase()==anotherString.toLowerCase());
 };
 
 
-String.prototype.hash=0;
+sp.hash=0;
 
-String.prototype.hashCode=function(){
+sp.hashCode=function(){
 var h=this.hash;
 if(h==0){
 var off=0;
@@ -1094,7 +1103,7 @@ this.hash=h;
 return h;
 };
 
-String.prototype.getBytes=function(){
+sp.getBytes=function(){
 if(arguments.length==4){
 return this.getChars(arguments[0],arguments[1],arguments[2],arguments[3]);
 }
@@ -1136,7 +1145,7 @@ return arrs;
 };
 
 /*
-String.prototype.compareTo=function(anotherString){
+sp.compareTo=function(anotherString){
 if(anotherString==null){
 throw new java.lang.NullPointerException();
 }
@@ -1157,12 +1166,12 @@ return len1-len2;
 
 */
 
-String.prototype.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
-String.prototype.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
+sp.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
+sp.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
   
 
 
-String.prototype.toCharArray=function(){
+sp.toCharArray=function(){
 var result=new Array(this.length);
 for(var i=0;i<this.length;i++){
 result[i]=this.charAt(i);
@@ -1190,11 +1199,11 @@ return oo.join('');
 return""+o;
 };
 
-String.prototype.subSequence=function(beginIndex,endIndex){
+sp.subSequence=function(beginIndex,endIndex){
 return this.substring(beginIndex,endIndex);
 };
 
-String.prototype.compareToIgnoreCase=function(str){
+sp.compareToIgnoreCase=function(str){
 if(str==null){
 throw new NullPointerException();
 }
@@ -1215,7 +1224,7 @@ return-1;
 }
 };
 
-String.prototype.contentEquals=function(sb){
+sp.contentEquals=function(sb){
 if(this.length!=sb.length()){
 return false;
 }
@@ -1231,7 +1240,7 @@ return false;
 return true;
 };
 
-String.prototype.getChars=function(srcBegin,srcEnd,dst,dstBegin){
+sp.getChars=function(srcBegin,srcEnd,dst,dstBegin){
 if(srcBegin<0){
 throw new StringIndexOutOfBoundsException(srcBegin);
 }
@@ -1248,16 +1257,16 @@ for(var i=0;i<srcEnd-srcBegin;i++){
 dst[dstBegin+i]=this.charAt(srcBegin+i);
 }
 };
-String.prototype.$concat=String.prototype.concat;
-String.prototype.concat=function(s){
+sp.$concat=sp.concat;
+sp.concat=function(s){
 if(s==null){
 throw new NullPointerException();
 }
 return this.$concat(s);
 };
 
-String.prototype.$lastIndexOf=String.prototype.lastIndexOf;
-String.prototype.lastIndexOf=function(s,last){
+sp.$lastIndexOf=sp.lastIndexOf;
+sp.lastIndexOf=function(s,last){
 if(last!=null&&last+this.length<=0){
 return-1;
 }
@@ -1268,16 +1277,21 @@ return this.$lastIndexOf(s);
 }
 };
 
-String.prototype.intern=function(){
+sp.intern=function(){
 return this.valueOf();
 };
-String.copyValueOf=String.prototype.copyValueOf=function(){
+String.copyValueOf=sp.copyValueOf=function(){
 if(arguments.length==1){
 return String.instantialize(arguments[0]);
 }else{
 return String.instantialize(arguments[0],arguments[1],arguments[2]);
 }
 };
+
+})(String.prototype);
+
+/*
+
 String.indexOf=function(source,sourceOffset,sourceCount,
 target,targetOffset,targetCount,fromIndex){
 if(fromIndex>=sourceCount){
@@ -1319,7 +1333,6 @@ return i-sourceOffset;
 }
 };
 
-/*
 
 
 String.instantialize=function(){

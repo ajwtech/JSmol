@@ -21,6 +21,7 @@
 	Jmol._JSVApplet = function(id, Info, checkOnly){
     this._version="2.0";
 		this._jmolType = "Jmol._JSVApplet" + (Info.isSigned ? " (signed)" : "");
+    this._viewType = "JSV";
 		this._id = id;
 	  this._uniqueId = ("" + Math.random()).substring(3);
     this._isJava = true;
@@ -55,7 +56,8 @@
 		return this;
 	}
 
-  Jmol._JSVApplet._get = function(id, Info, checkOnly) {
+;(function (Applet, proto) {
+  Applet._get = function(id, Info, checkOnly) {
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes
 	// applet = Jmol.getJSVApplet("applet", Info)
 
@@ -86,11 +88,11 @@
 	    case "JAVA":
 	    	javaAllowed = true;
 	    	if (Jmol.featureDetection.supportsJava())
-					applet = new Jmol._JSVApplet(id, Info, checkOnly);
+					applet = new Applet(id, Info, checkOnly);
 				break;
 	    case "WEBGL":
 	    case "HTML5":
-    		Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Jmol._JSVApplet(id,Info, true));
+    		Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Applet(id,Info, true));
        	applet = new Jmol._Canvas2D(id, Info, "JSV", checkOnly);
 	      break;
 	    }
@@ -101,25 +103,23 @@
 	  	if (checkOnly || !javaAllowed)
 	  		applet = {_jmolType : "none" };
 	  	else if (javaAllowed)
-				applet = new Jmol._JSVApplet(id, Info);
+				applet = new Applet(id, Info);
 		}
     return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
 	}
 
-  Jmol._JSVApplet.getStartupScript = function(applet, Info) {
+  Applet.getStartupScript = function(applet, Info) {
     return (Info.initParams ? Info.initParams : "") 
         + ';appletID ' + applet._id + ';syncID '+ Jmol._syncId
         + ';backgroundcolor ' + applet._color
         + ';appletReadyCallbackFunctionName Jmol._readyCallback'// + applet._id + '._readyCallback'
         + ';syncCallbackFunctionName Jmol._mySyncCallback;';	
   }
-  
-  var jsvproto = Jmol._JSVApplet.prototype;
 
-	jsvproto._create = function(id, Info){
+	proto._create = function(id, Info){
 
 		Jmol._setObject(this, id, Info);
-    this._startupScript = Jmol._JSVApplet.getStartupScript(this, Info);
+    this._startupScript = Applet.getStartupScript(this, Info);
 
 		var params = {
 			boxbgcolor: this._color,
@@ -131,7 +131,7 @@
     Jmol._Applet._createApplet(this, Info, params);
 	}
 	
-	jsvproto._readyCallback = function(id, fullid, isReady, applet) {
+	proto._readyCallback = function(id, fullid, isReady, applet) {
    if (!isReady)
 			return; // ignore -- page is closing
     var o = self[id];
@@ -145,20 +145,20 @@
     Jmol._setReady(o);
   }	
   
-  jsvproto._checkDeferred = function(script) {
+  proto._checkDeferred = function(script) {
     return false;
   }	
   
-	jsvproto._clearConsole = Jmol._Applet.prototype._clearConsole;
-	jsvproto._search = Jmol._Applet.prototype._search;  
-	jsvproto._showInfo = Jmol._Applet.prototype._showInfo;
-	jsvproto._show = Jmol._Applet.prototype._show;
+	proto._clearConsole = Jmol._Applet.prototype._clearConsole;
+	proto._search = Jmol._Applet.prototype._search;  
+	proto._showInfo = Jmol._Applet.prototype._showInfo;
+	proto._show = Jmol._Applet.prototype._show;
 	
-	jsvproto._searchDatabase = function(query, database) {
+	proto._searchDatabase = function(query, database) {
     return this._applet.script("load " + database + query)
   }
   
-	jsvproto._script = function(script) {
+	proto._script = function(script) {
 		if (!this._ready) {
 			this._readyScript || (this._readyScript = ";");
 			this._readyScript += ";" + script;
@@ -167,37 +167,87 @@
 		this._applet.runScript(script);
 	}
 	
-	jsvproto._syncScript = function(script) {
+	proto._syncScript = function(script) {
 		this._applet.syncScript(script);
 	}
 	
-	jsvproto._getPropertyAsJSON = function(sKey) {
+	proto._getPropertyAsJSON = function(sKey) {
 		return this._applet.getPropertyAsJSON(sKey) + "";
 	}
 
-	jsvproto._getPropertyAsJavaObject = function(sKey) {		
+	proto._getPropertyAsJavaObject = function(sKey) {		
 		return this._applet.getPropertyAsJavaObject(sKey);
 	}
 
-	jsvproto._getPropertyAsArray = function(sKey,sValue) {
+	proto._getPropertyAsArray = function(sKey,sValue) {
 		return Jmol._evalJSON(this._getPropertyAsJSON(sKey,sValue),sKey);
 	}
 
-	jsvproto._resizeApplet = Jmol._Applet.prototype._resizeApplet;
+	proto._resizeApplet = Jmol._Applet.prototype._resizeApplet;
 
-	jsvproto._loadFile = function(fileName, params){
+	proto._loadFile = function(fileName, params){
 		this._showInfo(false);
 		params || (params = "");
 		this._thisJSVModel = "" + Math.random();
 		// TODO
 //		this._script("zap;set echo middle center;echo Retrieving data...");
-		if (this._jvsIsSigned) {
+		if (this._jvsIsSigned && this._viewSet == null) {
 			this._script("load \"" + fileName + "\"" + params);
 			return;
 		}
-		var self = this;
-		Jmol._loadFileData(this, fileName, function(data){Jmol.jsvLoadInline(self, data, params)});
+		var me = this;
+		Jmol._loadFileData(this, fileName, function(data){me._loadInline(data)}, function(data){me._loadInline(null)});
 	}
+  
+  proto._loadInline = function(data) {
+    // called when loading JDX data
+    this._currentView = null;
+    if (data != null)
+      this._applet.loadInline(data);
+    if (this._viewSet != null)
+      Jmol.View.updateCurrentView(this, null, data);
+  }
+  
+  proto._loadModelFromView = function(view) {
+    // called request to update view with view.JSV.data==null from Jmol.View
+    // we must get the simulation from MOL data
+    var molData = null;
+    var rec = view["JSV"];
+    var haveMolData = (view["Jmol"] || view["JME"]); 
+    if (!haveMolData && rec.chemID == null) {
+      rec.data = "N/A"; // this has to be a simulation to work
+      return;
+    }
+    var vmol = null;
+    if ((vmol = view["Jmol"]) != null)
+      molData = view["Jmol"].data;
+    if (molData == null && (vmol = view["JME"]) != null)
+      molData = view["JME"].data;
+    if (molData == null) {
+      // complete Jmol or JME needs first
+      vmol.applet._loadModelFromView(view);
+      return;
+    }
+    var script = this.__Info.preloadScript;
+    if (script == null) 
+      script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
+    script += "; LOAD APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
+    Jmol.script(this, script);
+
+//alert("in jsv loadmodelfromview ec.chemID=" + rec.chemID)    
+    if (this._viewSet != null)
+      Jmol.View.updateCurrentView(this, rec.chemID, script);
+    // will need a load data callback?
+  }
+  
+  proto._loadModel = function(data, chemID) {
+  // retun from asynchronous call in loadModelFromView 
+    Jmol.View.updateCurrentView(this, data, chemID);
+}
+
+
+
+})(Jmol._JSVApplet, Jmol._JSVApplet.prototype);
 
 ////// additional API for JSpecView ////////////
 
@@ -290,7 +340,7 @@
    */
 
   Jmol.jsvLoadInline = function(jsvApplet, data, params) {
-    jsvApplet._applet.loadInline(data);
+    jsvApplet._loadInline(data);
     // currently params are ignored
   }
 
@@ -399,8 +449,8 @@
     jsvApplet._applet.setVisible(TF);    
   }
 
-    // optional Info here	
   Jmol.getJSVAppletHtml = function(applet, Info) {
+    // optional Info here	
     if (Info) {
       var d = Jmol._document;
       Jmol._document = null;
@@ -409,8 +459,5 @@
     }  
     return applet._code;
 	}
-		
-
 
 })(Jmol, document);
-

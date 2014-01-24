@@ -1,5 +1,7 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
+// BH 1/22/2014 7:31:59 AM Jmol._Image removed -- just never found useful to have
+//    a server-side process with only a client-side image. Response time is too slow.
 // BH 12/13/2013 8:39:00 AM Jmol.evaulate is DEPRECATED -- use Jmol.evaluateVar
 // BH 11/25/2013 6:55:53 AM adds URL flags _USE=, _JAR=, _J2S=
 // BH 9/3/2013 5:48:03 PM simplification of Jmol.getAppletHTML()
@@ -25,7 +27,7 @@
 
 // BH 8/12/2012 5:15:11 PM added Jmol.getAppletHtml()
 
-(function (Jmol) {
+;(function (Jmol) {
   var getField = function(key) {
     key = "&" + key + "=";
     return decodeURI(("&" + document.location.search.substring(1) + key).split(key)[1].split("&")[0]);
@@ -57,7 +59,7 @@
 			script: null,
 			src: null,
 			readyFunction: null,
-			use: "HTML5",//other options include JAVA, WEBGL, and IMAGE
+			use: "HTML5",//other options include JAVA, WEBGL//, and IMAGE (removed)
 			jarPath: "java",
 			jarFile: "JmolApplet0.jar",
 			isSigned: false,
@@ -409,7 +411,17 @@
     if (applet._cover)
       applet._cover(doCover);
   }
-  
 
+  Jmol.setFileCaching = function(applet, doCache) {
+    if (applet) {
+      applet._cacheFiles = doCache;
+    } else {
+      Jmol.fileCache = (doCache ? {} : null);
+    }
+  }  
+
+  Jmol.updateView = function(applet) {
+    applet._updateView();
+  }
 
 })(Jmol);

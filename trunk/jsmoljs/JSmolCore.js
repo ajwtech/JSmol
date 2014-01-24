@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 1/21/2014 12:06:59 PM adding Jmol.Info.cacheFiles (applet, true/false) and applet._cacheFiles and Jmol._fileCache
 // BH 1/13/2014 2:12:38 PM adding "http://www.nmrdb.org/tools/jmol/predict.php":"%URL", to _DirectDatabaseCalls
 // BH 12/21/2013 6:38:35 PM applet sync broken
 // BH 12/6/2013 6:18:32 PM cover.htm and coverImage fix
@@ -93,6 +94,7 @@ Jmol = (function(document) {
         before calling Jmol.getApplet(), limits for applet size can be overriden.
         2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
     */
+    _fileCache: null, // enabled by Jmol.setFileCaching(applet, true/false)
     _jarFile: null,  // can be set in URL using _JAR=
     _j2sPath: null,  // can be set in URL using _J2S=
     _use: null,      // can be set in URL using _USE=
@@ -167,6 +169,7 @@ Jmol = (function(document) {
   // There should be no other references to jQuery in all the JSmol libraries.
 
   Jmol.$ = function(objectOrId, subdiv) {
+  if (objectOrId == null)alert(subdiv + arguments.callee.caller.toString());
     return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
   } 
   
@@ -610,17 +613,28 @@ Jmol = (function(document) {
   }
 
   Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
+    var isRaw = false;
     if (Jmol._isDatabaseCall(fileName)) {
       Jmol._setQueryTerm(applet, fileName);
       fileName = Jmol._getDirectDatabaseCall(fileName, true);
-      
-      
       if (Jmol._isDatabaseCall(fileName)) {
         // xhr2 not supported (MSIE)
         fileName = Jmol._getDirectDatabaseCall(fileName, false);
+        isRaw = true;
+      }
+    }
+    if (applet._cacheFiles && Jmol._fileCache && !fileName.endsWith(".js")) {
+      var data = Jmol._fileCache[fileName];
+      if (data) {
+        System.out.println("using "  + data.length + " bytes of cached data for "  + fileName);
+        fSuccess(data);
+      } else {
+        fSuccess = function(fileName, data) { fSuccess(Jmol._fileCache[fileName] = data) };     
+      }
+    }
+    if (isRaw) {
         Jmol._getRawDataFromServer("_",fileName,fSuccess,fError);   
         return;
-      }
     } 
     var info = {
       type: "GET",
@@ -630,6 +644,7 @@ Jmol = (function(document) {
       success: function(a) {Jmol._loadSuccess(a, fSuccess)},
       error: function() {Jmol._loadError(fError)}
     }
+    //alert(JSON.stringify(info))
     Jmol._checkAjaxPost(info);
     Jmol._ajax(info);
   }
@@ -685,6 +700,10 @@ Jmol = (function(document) {
     } 
     query && (query = query.replace(/\"/g, ""));
     applet._showInfo(false);
+    Jmol._searchMol(applet, query, script, true);
+  }
+  
+  Jmol._searchMol = function(applet, query, script, checkView) {
     var database;
     if (Jmol._isDatabaseCall(query)) {
       database = query.substring(0, 1);
@@ -699,6 +718,12 @@ Jmol = (function(document) {
       return;    
     }
     applet._thisJmolModel = dm;
+    var view;
+    if (checkView && applet._viewSet != null && (view = Jmol.View.__findView(applet._viewSet, null, dm, null)) != null) {
+      Jmol.View.__setView(view, applet);
+      return;
+    }
+
     if (database == "$" || database == ":")
       applet._jmolFileType = "MOL";
     else if (database == "=")
@@ -816,20 +841,6 @@ Jmol = (function(document) {
     name = name.split('.').pop().toUpperCase();
     return name.substring(0, Math.min(name.length, 3));
   };
-
-  Jmol._scriptLoad = function(app, file, params, doload) {
-    var doscript = (app._isJava || !app._noscript || params.length > 1);
-    if (doscript)
-      app._script("zap;set echo middle center;echo Retrieving data...");
-    if (!doload)
-      return false;
-    if (doscript)
-      app._script("load \"" + file + "\"" + params);
-    else
-      app._applet.viewer.openFile(file);
-    app._checkDeferred("");
-    return true;
-  }
 
   Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
     // we actually cannot suggest a fileName, I believe.
@@ -1139,8 +1150,11 @@ Jmol = (function(document) {
     obj._height = Info.height;
     obj._noscript = !obj._isJava && Info.noscript;
     obj._console = Info.console;
-
-
+    obj._cacheFiles = !!Info.cacheFiles;
+    obj._viewSet = (Info.viewSet == null ? null : "Set" + Info.viewSet);
+    if (obj._viewSet != null)
+      obj._currentView = null;
+    !Jmol._fileCache && obj._cacheFiles && (Jmol._fileCache = {});
     if (!obj._console)
       obj._console = obj._id + "_infodiv";
     if (obj._console == "none")
@@ -1566,42 +1580,44 @@ Jmol._setDraggable = function(Obj) {
 ////// Jmol.Dialog interface  for Javascript implementation of Swing dialogs
 
 Jmol.Dialog = {
+  // a static class
   count:0,
   htDialogs:{}
 };
 
-SwingController = Jmol.Dialog; // see javajs.api.SwingController
+(function(Dialog) {
+ SwingController = Dialog; // see javajs.api.SwingController
 
-Jmol.Dialog.JSDialog = function () {
+Dialog.JSDialog = function () {
 }
 
-Jmol._setDraggable(Jmol.Dialog.JSDialog);
+Jmol._setDraggable(Dialog.JSDialog);
 
 ///// calls from javajs and other Java-derived packages /////
 
-Jmol.Dialog.getScreenDimensions = function(d) {
+Dialog.getScreenDimensions = function(d) {
   d.width = $(window).width();
   d.height = $(window).height();
 }
 
-Jmol.Dialog.dispose = function(dialog) {
+Dialog.dispose = function(dialog) {
   Jmol.$remove(dialog.id + "_mover");
-  delete Jmol.Dialog.htDialogs[dialog.id]
+  delete Dialog.htDialogs[dialog.id]
   dialog.container.obj.dragBind(false);
 //  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
 //  for (var i = btns.length; --i >= 0;)
-//    delete Jmol.Dialog.htDialogs[btns[i].id]
+//    delete Dialog.htDialogs[btns[i].id]
   System.out.println("JSmolCore.js: dispose " + dialog.id)
 }
  
-Jmol.Dialog.register = function(dialog, type) {
-  dialog.id = type + (++Jmol.Dialog.count);
-  Jmol.Dialog.htDialogs[dialog.id] = dialog;
+Dialog.register = function(dialog, type) {
+  dialog.id = type + (++Dialog.count);
+  Dialog.htDialogs[dialog.id] = dialog;
   System.out.println("JSmolCore.js: register " + dialog.id)
   
 }
 
-Jmol.Dialog.setDialog = function(dialog) {
+Dialog.setDialog = function(dialog) {
   Jmol._setMouseOwner(null);
   Jmol.$remove(dialog.id);
   System.out.println("removed " + dialog.id)
@@ -1614,7 +1630,7 @@ Jmol.Dialog.setDialog = function(dialog) {
     jd = container[0].jd;
   } else {
     Jmol.$after("body","<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
-    var jd = new Jmol.Dialog.JSDialog();
+    var jd = new Dialog.JSDialog();
     container = Jmol.$("#" + id);
     dialog.container = container;
     jd.applet = dialog.manager.viewer.applet;
@@ -1634,26 +1650,26 @@ Jmol.Dialog.setDialog = function(dialog) {
 
 }
  
-Jmol.Dialog.setSelected = function(chk) {
+Dialog.setSelected = function(chk) {
  Jmol.$prop(chk.id, 'checked', !!chk.selected);
 }
 
-Jmol.Dialog.setSelectedIndex = function(cmb) {
+Dialog.setSelectedIndex = function(cmb) {
  Jmol.$prop(cmb.id, 'selectedIndex', cmb.selectedIndex);
 }
 
-Jmol.Dialog.setText = function(btn) {
+Dialog.setText = function(btn) {
  Jmol.$prop(btn.id, 'value', btn.text);
 }
 
-Jmol.Dialog.setVisible = function(c) {
+Dialog.setVisible = function(c) {
   Jmol.$setVisible(c.id, c.visible);
 }
 
 /// callbacks from the HTML elements ////
  
-Jmol.Dialog.click = function(element, keyEvent) {
-  var component = Jmol.Dialog.htDialogs[element.id];
+Dialog.click = function(element, keyEvent) {
+  var component = Dialog.htDialogs[element.id];
   if (component) {
     System.out.println("click " + element + " " + component)
     var info = component.toString();
@@ -1668,13 +1684,13 @@ Jmol.Dialog.click = function(element, keyEvent) {
         return;
     }    
   }
-  var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
+  var dialog = Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
   var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
   System.out.println("JSmolCore.js: click " + key); 
   dialog.manager.actionPerformed(key);
 }
 
-Jmol.Dialog.windowClosing = function(element) {
+Dialog.windowClosing = function(element) {
   var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
   if (dialog.registryKey) {
     System.out.println("JSmolCore.js: windowClosing " + dialog.registryKey); 
@@ -1684,6 +1700,8 @@ Jmol.Dialog.windowClosing = function(element) {
     dialog.dispose();
   }
 }
+
+})(Jmol.Dialog);
 
 Jmol._track = function(applet) {
   // this function inserts an iFrame that can be used to track your page's applet use. 
@@ -1707,6 +1725,154 @@ Jmol.getProfile = function() {
     Clazz.profile = self.JSON && {};
     return Clazz.getProfile();
   }
- }
-})(Jmol, jQuery);
+}
 
+Jmol.View = {
+
+// The objective of Jmol.View is to coordinate
+// asynchronous applet loading and atom/peak picking
+// among any combination of Jmol, JME, and JSV.
+// 
+// basic element is a view object:
+//   view = {
+//     viewType1: viewRecord1,
+//     viewType2: viewRecord2,
+//     viewType3: viewRecord3
+//   }
+// where viewType is one of (Jmol, JME, JSV)
+// and a viewRecord is an object
+// with elements .chemID, .applet, .data, .script
+//
+// Jmol.View.sets is a list of cached views[0..n]
+// for a given group of applet objects with common Info.viewSet
+//
+// Bob Hanson 1/22/2014 7:05:38 AM
+
+  sets: {}
+};
+  
+(function(View) {
+
+View.__findView = function(set, type, chemID, data) {
+  //alert("findView " + set)
+  var views = View.sets[set];
+  if (views == null)
+    views = View.sets[set] = [];
+  //alert(set + " " + View.__dumpSet(views))
+  for (var i = views.length; --i >= 0;) {
+    var view = views[i];
+    for (var viewType in view) {
+    //alert("finding type=" + type + "chemID=" + chemID + " vt.chemID=" + view[viewType].chemID+ " data=" + data + " vt.data=" + view[viewType].data);
+      if (chemID != null ? chemID == view[viewType].chemID 
+        : data != null && view[viewType].data != null ? data == view[viewType].data 
+        : type == viewType)
+        return view;
+    }
+  }
+  //alert("nothing found for " + set + " " + type + " " + chemID + " " + data)
+  return null;  
+}
+
+View.__dumpSet = function(views) {
+ var s = "dumeSet " + views.length + " ";
+    for (var i = views.length; --i >= 0;) {
+      var view = views[i];
+      for (var viewType in view) {
+        s += "\nview " + i + " " + viewType + " " + view[viewType].applet._viewType + " " + view[viewType].chemID + " " + view[viewType].data + "\n"
+      }
+    }
+    return s
+}
+
+View.newEvent = function(applet, action, view, _newEvent) {
+// from app (Jmol, JSME, JSV), indicating data has been received
+  var set = applet._viewSet;
+  var type = applet._viewType;
+  var currentView = applet._currentView;
+  var chemID = currentView[type].chemID;
+  var data = currentView[type].data;
+  //alert(type + " " + action)
+  switch(action) {
+  case "picked":
+  // TODO
+    break;
+  case "oldSearch":
+    // view will NOT be null here -- already tested.
+    // fall through ??
+  case "fileLoaded":
+    // look for a view, and if found set that view
+    if (view == null && data != null)
+      view = View.__findView(set, null, null, data);
+    if (!view) {
+    // create a new view, as no view with this data has been found
+      view = View.__createViewSet(set, chemID);
+      view[type].data = data;
+    }
+    View.__setView(view, applet);
+  }
+}
+
+View.__createViewSet = function(set, chemID, _createViewSet) {
+  var view = {};
+  for (var id in Jmol._applets) {
+    var a = Jmol._applets[id];
+    if (a._viewSet == set)
+      view[a._viewType] = {applet:a, chemID: chemID, data: null};
+  }
+  View.sets[set].push(view);
+  return view;
+}
+
+View.__setView = function(view, applet, _setView) {
+  // called from View.newEvent and Jmol._search 
+  // notify the applets in the set that there may be new data for them
+  // skip the originating applet itself and cases where the data has not changed.
+  // stop at first null data, because that will initiate some sort of asynchronous
+  // call that will be back here afterward.
+  
+  for (var viewType in view) {
+    var rec = view[viewType];
+    var a = rec.applet;
+    if (a == null || a == applet)
+      continue; // may be a mol3d required by JSV but not having a corresponding applet
+    var wasNull = (rec.data == null);
+    if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull)
+      continue;
+  //alert("loading model from view " + viewType + " wasNull=" + wasNull + " \nrec.data = " + rec.data +"\n current data = \n" + (a._currentView == null ? "no view " : a._currentView[viewType].data) + "\n" + Clazz.getStackTrace())
+    a._currentView = view;
+    a._loadModelFromView(view);
+    if (wasNull)
+      break;
+  }
+  // Either all are taken care of or one was null,
+  // in which case we have started an asynchronous
+  // process to get the data, and we can quit here.
+  // In either case, we are done.
+}
+
+View.updateCurrentView = function(applet, chemID, data, _updateCurrentView) {
+  // return from applet after asynchronous download of new data
+  if (applet._viewSet == null)
+    return;
+  data || (data = "N/A");
+  var type = applet._viewType;
+  //alert("updatecurrrentview type=" + type + " chemID=" + chemID + " data=" + data)
+  View.setCurrentView(applet, chemID, data);
+  View.__setView(applet._currentView, applet);
+}
+
+View.setCurrentView = function(applet, chemID, data, _setCurrentView) {
+  var type = applet._viewType;
+  if (chemID == null)
+    applet._searchQuery = null;
+  //alert("setCurrentView for " + applet._currentView + " type=" + type + " chemID=" + chemID + "\n" + Clazz.getStackTrace())
+  if((applet._currentView = View.__findView(applet._viewSet, type, chemID, data)) == null) {
+  //alert("did not find type="+type + " chemID=" + chemID + " data=" + data)
+    applet._currentView = View.__createViewSet(applet._viewSet, chemID);
+  }
+  applet._currentView[type].data = data;
+}
+  
+}) (Jmol.View);
+
+})(Jmol, jQuery);
