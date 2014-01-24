@@ -634,8 +634,11 @@
 
   proto._updateView = function(imodel, iatom, _jmol_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-    if (this._viewSet != null && this._applet)
+    if (this._viewSet == null || !this._applet)
+      return;
+    if (arguments.length == 0) {
       Jmol.View.updateView(this, null, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
+    }
   }
   	  
   proto._isDeferred = function () {

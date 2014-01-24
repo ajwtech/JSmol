@@ -235,7 +235,7 @@
     Jmol.script(this, script);
 
 //alert("in jsv loadmodelfromview ec.chemID=" + rec.chemID)    
-    if (this._viewSet != null && this._applet)
+    if (this._viewSet != null)
       Jmol.View.updateView(this, rec.chemID, script);
     // will need a load data callback?
   }
@@ -247,7 +247,7 @@
     Jmol.View.updateView(this, chemID, data);
  }
  
- proto._updateView(selectedPanel, msg, _jsv_updateView) {
+ proto._updateView = function(selectedPanel, msg, _jsv_updateView) {
    // called from file load or panel selection or peak selection
    if (msg) {
      // peak/panel selection
@@ -255,10 +255,10 @@
      // model loaded
    }
    //TODO
-   alert(msg);
+//   alert(msg);
  }
  
- proto._showStatus(msg, title) {
+ proto._showStatus = function(msg, title) {
    // from JSV
    title && (msg = title + "\n\n\n" + msg);
    alert(msg);
