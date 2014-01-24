@@ -630,7 +630,7 @@
     // NOW WHAT??
   }
 
-  proto._updateView = function(_jmol_updateView) {
+  proto._updateView = function(imodel, iatom, _jmol_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
     if (this._viewSet != null)
       Jmol.View.updateView(this, null, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));

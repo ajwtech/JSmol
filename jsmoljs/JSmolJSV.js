@@ -243,9 +243,24 @@
   proto._loadModel = function(data, chemID) {
   // retun from asynchronous call in loadModelFromView 
     Jmol.View.updateView(this, chemID, data);
-}
-
-
+ }
+ 
+ proto._updateView(selectedPanel, msg, _jsv_updateView) {
+   // called from file load or panel selection or peak selection
+   if (msg) {
+     // peak/panel selection
+   } else {
+     // model loaded
+   }
+   //TODO
+   alert(msg);
+ }
+ 
+ proto._showStatus(msg, title) {
+   // from JSV
+   title && (msg = title + "\n\n\n" + msg);
+   alert(msg);
+ }
 
 })(Jmol._JSVApplet, Jmol._JSVApplet.prototype);
 
