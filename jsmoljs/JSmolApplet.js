@@ -600,6 +600,8 @@
   }
 
 	proto._loadModel = function(mol, script, chemID, _jmol_loadModel) {
+    if (mol == null)
+      return;
     if (!script && this._noscript) {
       this._applet.viewer.loadInline(mol, '\0');
     } else {
@@ -632,7 +634,7 @@
 
   proto._updateView = function(imodel, iatom, _jmol_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-    if (this._viewSet != null)
+    if (this._viewSet != null && this._applet)
       Jmol.View.updateView(this, null, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
   }
   	  
