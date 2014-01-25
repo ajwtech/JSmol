@@ -228,6 +228,7 @@
       vmol.applet._loadModelFromView(view);
       return;
     }
+    
     var script = this.__Info.preloadScript;
     if (script == null) 
       script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";

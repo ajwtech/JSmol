@@ -1727,6 +1727,16 @@ Jmol.getProfile = function() {
   }
 }
 
+Jmol._getInChIKey = function(applet, data) {
+  if (data.indexOf("MOL=") >= 0)
+    data = data.split("MOL=")[1].split("\"")[0];
+  
+}
+
+Jmol.User = {
+  viewUpdatedCallback: null
+}
+
 Jmol.View = {
 
 // The objective of Jmol.View is to coordinate
@@ -1757,6 +1767,8 @@ View.updateView = function(applet, chemID, data, _updateView) {
   // return from applet after asynchronous download of new data
   if (applet._viewSet == null)
     return;
+  //if (chemID == null)
+    //return Jmol._getInChIKey(applet, data);
   var type = applet._viewType;
   if (chemID == null)
     applet._searchQuery = null;
@@ -1766,15 +1778,30 @@ View.updateView = function(applet, chemID, data, _updateView) {
     applet._currentView = View.__createViewSet(applet._viewSet, chemID);
   }
   applet._currentView[type].data = data;
+  if (Jmol.User.viewUpdatedCallback)
+    Jmol.User.viewUpdatedCallback(applet);
   View.__setView(applet._currentView, applet);
 }
   
+View.dumpViews = function(applet) {
+  var views = View.sets[applet._viewSet];
+  var s = "View set " + applet._viewSet + ":\n";
+  for (var i = views.length; --i >= 0;) {
+    var view = views[i];
+    for (var viewType in view) {
+      s += "\nview=" + i + " type=" + viewType + " chemID=" + view[viewType].chemID + " \n data=\n" + view[viewType].data + "\n"
+    }
+  }
+  return s
+}
+
+
 View.__findView = function(set, type, chemID, data) {
   //alert("findView " + set)
   var views = View.sets[set];
   if (views == null)
     views = View.sets[set] = [];
-  //alert(set + " " + View.__dumpSet(views))
+  //alert(set + " " + View.dumpViews(views))
   for (var i = views.length; --i >= 0;) {
     var view = views[i];
     for (var viewType in view) {
@@ -1788,18 +1815,7 @@ View.__findView = function(set, type, chemID, data) {
   //alert("nothing found for " + set + " " + type + " " + chemID + " " + data)
   return null;  
 }
-/*
-View.__dumpSet = function(views) {
- var s = "dumeSet " + views.length + " ";
-    for (var i = views.length; --i >= 0;) {
-      var view = views[i];
-      for (var viewType in view) {
-        s += "\nview " + i + " " + viewType + " " + view[viewType].applet._viewType + " " + view[viewType].chemID + " " + view[viewType].data + "\n"
-      }
-    }
-    return s
-}
-*/
+
 View.__createViewSet = function(set, chemID, _createViewSet) {
   var view = {};
   for (var id in Jmol._applets) {
@@ -1832,6 +1848,7 @@ View.__setView = function(view, applet, _setView) {
     if (wasNull)
       break;
   }
+  
   // Either all are taken care of or one was null,
   // in which case we have started an asynchronous
   // process to get the data, and we can quit here.

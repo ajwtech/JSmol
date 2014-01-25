@@ -19,15 +19,16 @@
 
 <script type="text/javascript">
 
-function predictSpectrum() {
+function predictSpectrum(isJmol) {
   unhideJSV();
-  var data = Jmol.jmeGetFile(jme, false);
-  $("#moldiv").html(data)
-  if (!data.length) {
-    alert("Please draw a structure or do a search first.");
-    return;
+  if (!isJmol) {
+    var data = Jmol.jmeGetFile(jme, false);
+    if (!data.length) {
+      alert("Please draw a structure or do a search first.");
+      return;
+    }
   }
-  Jmol.updateView(jme);
+  Jmol.updateView(isJmol ? jmol : jme);
 }
 
 js = Jmol._search;
@@ -35,6 +36,10 @@ js = Jmol._search;
 Jmol._search = function(applet, query) {
  unhideJSV();
  js(applet, query);
+}
+
+Jmol.User.viewUpdatedCallback = function(applet) {
+  $("#moldiv").html(Jmol.View.dumpViews(applet))
 }
 
 function unhideJSV() {
@@ -107,6 +112,7 @@ $(document).ready(function() {
 <table width=1000 cellpadding=10>
 <tr>
 <td valign="top">
+<table><tr><td>
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
 <script>
 Jmol.getJMEApplet("jme", JMEInfo);
@@ -114,13 +120,19 @@ Jmol.getJMEApplet("jme", JMEInfo);
 <br>
 <br>
 
+</td><td>
+<input class="btn" type="button" onclick="predictSpectrum(0)" value="&#8594" />
+</td>
+</tr>
+<tr><td>
 <script>
 Jmol.getApplet("jmol", JmolInfo)
 </script>
-
+</td><td>
+<input class="btn" type="button" onclick="predictSpectrum(1)" value="&#8594" />
 </td>
-<td>
-<input class="btn" type="button" onclick="predictSpectrum()" value="&#8594" />
+</tr>
+</table>
 </td>
 <td valign="top">
 <div id="jsvdiv" style="position:relative">
@@ -161,7 +173,6 @@ credits:
 <a href=http://cactus.nci.nih.gov>NIH Resolver</a>: Markus Sitzmann
 <a href=https://code.google.com/p/java2script>Java2Script</a>: Zhou Renjian
 </span>
-</td><td>
 </td><td>
 <div id="moldiv" style="white-space:pre;font-family:monospace"></div>
 </td>

@@ -609,6 +609,7 @@
   		script = 'load DATA "model"\n' + mol + '\nEND "model" ' + script;
   		this._applet.script(script);
     }
+    alert(mol)
     if (this._viewSet != null)
       Jmol.View.updateView(this, chemID, mol);      
 	}
@@ -637,7 +638,14 @@
     if (this._viewSet == null || !this._applet)
       return;
     if (arguments.length == 0) {
-      Jmol.View.updateView(this, null, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
+      chemID = "" + this._getPropertyAsJavaObject("evaluate","script('show chemical inchiKey')");
+      if (chemID.length() < 36) // InChIKey=RZVAJINKPMORJF-BGGKNDAXNA-N
+        chemID = null;
+      else
+        chemID = chemID.substring(36).split('\n')[0];
+      Jmol.View.updateView(this, chemID, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
+    } else {
+// TODO peak pick
     }
   }
   	  
