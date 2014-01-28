@@ -598,9 +598,9 @@
         	JU/T3i.js
         	JU/T4.js
         	JU/V3.js
-        	J/adapter/smarter/JmolJDXModelPeakLoader.js
-        	J/adapter/smarter/JmolJDXModelPeakReader.js
-        	J/jsv/JDXModelPeakReader.js
+        	J/adapter/smarter/JmolJDXMOLParser.js
+        	J/adapter/smarter/JmolJDXMOLReader.js
+        	J/jsv/JDXMOLParser.js
         	J/util/DefaultLogger.js
         	J/util/Logger.js
         	J/util/LoggerInterface.js
@@ -787,6 +787,9 @@
 			J/adapter/smarter/Resolver.js
 			J/adapter/smarter/SmarterJmolAdapter.js
 			J/adapter/smarter/StructureIterator.js
+        	J/adapter/smarter/JmolJDXMOLParser.js
+        	J/adapter/smarter/JmolJDXMOLReader.js
+        	J/jsv/JDXMOLParser.js
 			J/api/AtomIndexIterator.js
 			J/api/Interface.js
 			J/api/JmolAdapter.js
