@@ -2,8 +2,18 @@
 <html>
 <head>
 <meta charset="utf-8">
-<script type="text/javascript" src="JSmol.min.js"></script>
+<script type="text/javascript" src="jquery/jquery.js"></script>
+<script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
+<script type="text/javascript" src="js/JSmolCore.js"></script>
+<script type="text/javascript" src="js/JSmolApplet.js"></script>
+<script type="text/javascript" src="js/JSmolApi.js"></script>
+<script type="text/javascript" src="js/JSmolControls.js"></script>
+<script type="text/javascript" src="js/j2sjmol.js"></script>
+<script type="text/javascript" src="js/JSmol.js"></script>
+<script type="text/javascript" src="js/JSmolConsole.js"></script>
+<script type="text/javascript" src="js/JSmolMenu.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
+
 
 <script type="text/javascript">
 
@@ -74,7 +84,7 @@ MInfo = {
 	disableInitialConsole: true,
 	readyFunction: null ,      //         jmol_isReady
   allowjavascript: true,
-	script: "sync on;"
+	script: "sync on;set debug"
 //	script: "load data/acetophenone.jdx;",
 //        console: "consolediv1"
 
