@@ -48,12 +48,13 @@ function unhideJSV() {
 }
 
 var JMEInfo = {     
-	use: "HTML5"
-  ,visible: true
-  ,divId: "jmediv"
-  ,options : "autoez;"
-  ,addSelectionOptions: true
-  ,viewSet: 1
+	use: "HTML5",
+  visible: true,
+  divId: "jmediv",
+  options : "autoez",
+  addSelectionOptions: true,
+  structureChangeCallback: null, // Jmol will handle this
+  viewSet: 1
 	//,jarPath: "jme",
 	//,jarFile: "JME.jar"
   //optional parameters
