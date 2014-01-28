@@ -1,5 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 1/27/2014 8:36:43 AM adding Info.viewSet
 // BH 12/13/2013 9:04:53 AM _evaluate DEPRECATED (see JSmolApi.js Jmol.evaulateVar
 // BH 11/24/2013 11:41:31 AM streamlined createApplet, with added JNLP for local reading
 // BH 10/11/2013 7:17:10 AM streamlined and made consistent with JSV and JSME
@@ -609,7 +610,7 @@
   		script = 'load DATA "model"\n' + mol + '\nEND "model" ' + script;
   		this._applet.script(script);
     }
-    alert(mol)
+    //alert(mol)
     if (this._viewSet != null)
       Jmol.View.updateView(this, chemID, mol);      
 	}
@@ -649,6 +650,15 @@
     }
   }
   	  
+  proto._updateAtomPick = function(A) {
+    if (A.length == 0)
+      return this._script("select none");
+    var B = []
+    for (var i = A.length; --i >= 0;)
+      B[i] = A[i] + 1;
+    this._script("select on @" + B.join(",@"));
+  }
+
   proto._isDeferred = function () {
     return this._cover && this._isCovered && this._deferApplet
   }

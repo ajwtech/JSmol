@@ -248,7 +248,7 @@
     Jmol.View.updateView(this, chemID, data);
  }
  
- proto._updateView = function(selectedPanel, msg, _jsv_updateView) {
+  proto._updateView = function(selectedPanel, msg, _jsv_updateView) {
    // called from file load or panel selection or peak selection
    if (msg) {
      // peak/panel selection
@@ -257,8 +257,13 @@
    }
    //TODO
 //   alert(msg);
- }
+  }
  
+   proto._updateAtomPick = function(A) {
+   
+    // TODO
+   }
+
  proto._showStatus = function(msg, title) {
    // from JSV
    title && (msg = title + "\n\n\n" + msg);

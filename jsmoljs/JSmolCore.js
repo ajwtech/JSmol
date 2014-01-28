@@ -87,7 +87,7 @@ Jmol = (function(document) {
     _version: 'JSmol 13.3.9 11/23/2013 10:51:10 PM',
     _alertNoBinary: true,
     // this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
-    _tracker: 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1',
+    _tracker: (http == "http" && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
     _isLocal: (document.location.protocol.toLowerCase().indexOf("file:") == 0),
     _allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
     /*  By setting the Jmol.allowedJmolSize[] variable in the webpage
@@ -1151,7 +1151,7 @@ Jmol = (function(document) {
     obj._noscript = !obj._isJava && Info.noscript;
     obj._console = Info.console;
     obj._cacheFiles = !!Info.cacheFiles;
-    obj._viewSet = (Info.viewSet == null ? null : "Set" + Info.viewSet);
+    obj._viewSet = (Info.viewSet == null || obj._isJava ? null : "Set" + Info.viewSet);
     if (obj._viewSet != null)
       obj._currentView = null;
     !Jmol._fileCache && obj._cacheFiles && (Jmol._fileCache = {});
@@ -1763,7 +1763,7 @@ Jmol.View = {
   
 (function(View) {
 
-View.updateView = function(applet, chemID, data, _updateView) {
+View.updateView = function(applet, chemID, data, _View_updateView) {
   // return from applet after asynchronous download of new data
   if (applet._viewSet == null)
     return;
@@ -1782,6 +1782,15 @@ View.updateView = function(applet, chemID, data, _updateView) {
     Jmol.User.viewUpdatedCallback(applet);
   View.__setView(applet._currentView, applet);
 }
+
+View.updateAtomPick = function(applet, A, _View_updateAtomPick) {
+  var view = applet._currentView;
+  //alert(applet._viewType + " " +  JSON.stringify(A))
+  
+  for (var viewType in view)
+    if (view[viewType].applet != applet)
+      view[viewType].applet._updateAtomPick(A);
+}
   
 View.dumpViews = function(applet) {
   var views = View.sets[applet._viewSet];
@@ -1794,7 +1803,6 @@ View.dumpViews = function(applet) {
   }
   return s
 }
-
 
 View.__findView = function(set, type, chemID, data) {
   //alert("findView " + set)
@@ -1833,14 +1841,14 @@ View.__setView = function(view, applet, _setView) {
   // skip the originating applet itself and cases where the data has not changed.
   // stop at first null data, because that will initiate some sort of asynchronous
   // call that will be back here afterward.
-  
   for (var viewType in view) {
     var rec = view[viewType];
     var a = rec.applet;
-    if (a == null || a == applet)
+    var modified = (a != null && a._molData == "<modified>");
+    if (a == null || a == applet && !modified)
       continue; // may be a mol3d required by JSV but not having a corresponding applet
     var wasNull = (rec.data == null);
-    if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull)
+    if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull & !modified)
       continue;
   //alert("loading model from view " + viewType + " wasNull=" + wasNull + " \nrec.data = " + rec.data +"\n current data = \n" + (a._currentView == null ? "no view " : a._currentView[viewType].data) + "\n" + Clazz.getStackTrace())
     a._currentView = view;

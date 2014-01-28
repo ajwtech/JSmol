@@ -1,5 +1,9 @@
 //  JSmolJME.js   Bob Hanson hansonr@stolaf.edu  6/14/2012 and 3/20/2013
 
+// see http://peter-ertl.com/jsme/JSME_2013-10-13/api_javadoc/index.html
+
+
+// BH 1/27/2014 8:37:06 AM adding Info.viewSet  
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
 
 /*
@@ -28,7 +32,7 @@
     
   Jmol.jmeGetFile = function(jme, asJME)
   
-    // retrieves JME data as JME or MOL data
+    // retrieves structure as JME or MOL data
     
   Jmol.jmeReadMolecule = function(jme, jmeOrMolData); 
   
@@ -55,7 +59,7 @@
 
 	Jmol._JMEApplet = function(id, Info, linkedApplet, checkOnly) {
     this._isJME = true;
-    this._isJava = (Info.use && Info.use.toUpperCase() == "JAVA")
+    this._isJava = false;//(Info.use && (Info.use.toUpperCase() != "HTML5"))
 		this._jmolType = "Jmol._JME" + (this._isJava ? "(JAVA)" : "(HTML5)");
     this._viewType = "JME";
     if (checkOnly)
@@ -63,8 +67,10 @@
     window[id] = this;
     Jmol._setObject(this, id, Info);
     this._options = Info.options;
-    if (this._options.indexOf("autoez") < 0)
-      this._options += ",autoez";
+    (this._options.indexOf("autoez") < 0) && (this._options += ",autoez");
+    if (this._viewSet != null) {
+      this._options += ",star";
+    }
 		var jmol = this._linkedApplet = linkedApplet;
 		this._hasOptions = Info.addSelectionOptions;
 		this._readyFunction = Info.readyFunction;
@@ -107,6 +113,7 @@
 			jarPath: "jme",
 			jarFile: "JME.jar",
       use: "HTML5",
+      structureChangedCallback: null, // could be myFunction(); first parameter will be reference to this object  
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button
@@ -125,12 +132,21 @@
     var applet = new Jmol._JMEApplet(id, Info, linkedApplet, checkOnly);
     return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
   }
-  
+
   jsmeOnLoad = Jmol._JMEApplet.onload = function() {
     for (var i in Jmol._applets) {
       var app = Jmol._applets[i]
       if (app._isJME && !app._isJava && !app._ready) {
         app._applet = new JSApplet.JSME(app._divId, app.__Info);
+        app._applet.options(app._options);
+        var f = "";
+        if (app._viewSet) {
+          f = "(function(){" + app._id + "._viewAtomPicked()})";
+        } else if (app.__Info.structureChangedCallback) {
+          f = "(function(){"+app.__Info.structureChangedCallback.replace(/\(\)/, "(" + app._id + ")") + "})";
+        }
+        if (f) 
+          app._applet.setNotifyStructuralChangeJSfunction(f);
         app._ready = true;
         if (app._isEmbedded && app._linkedApplet._ready && app.__Info.visible)
           app._linkedApplet.show2d(true);
@@ -169,7 +185,6 @@
 	proto._searchDatabase = function(query, database, _jme_searchDatabase){
 		this._showInfo(false);
     //alert("JME setting currentView to null in searchdatabase")
-    this._currentView = null;
     this._searchQuery = database + query;
 		if (database == "$")
 			query = "$" + query; // 2D variant;  will be $$caffeine
@@ -209,6 +224,7 @@
   proto._loadModelFromView = function(view, _jme_loadModelFromView) {
     // request from Jmol.View to update view with view.JME.data==null or needs changing
     var rec = view["JME"];
+    //alert("loadmodel rec.data=" + rec.data + "  rec.chemID = " + rec.chemID);
     if (rec.data != null) {
 		  this._loadModel(rec.data, rec.chemID);
       return;
@@ -231,6 +247,53 @@
       Jmol.View.updateView(this, null, this._applet.molFile());
   }
   	  
+  proto._viewAtomPicked = function(_jme_viewAtomPicked) {
+    if (this._viewSet == null)
+      return;
+    if (this._applet.molFile().split("V2000")[1] != ("" + this._molData).split("V2000")[1]) {
+      this._molData = "<modified>";
+      this._thisJmolModel = null;
+      this._applet.resetAtomColors(1);
+      this._atomSelection = -1;
+      return;
+    }
+    // not a structural change
+    var data = this._applet.jmeFile();
+    if (data.indexOf(":") < 0) {
+      this._atomSelection = -1;
+      return;
+    }
+    data = data.split(" ");
+    var n = parseInt(data[0]);
+    var iAtom = -1;
+    for (var i = 0; i < n; i++)
+      if (i != this._atomSelection && data[i*3 + 2].indexOf(":") >= 0) {
+        iAtom = i;
+        break;
+      }
+    if (iAtom < 0)
+      return;
+    this._atomSelection = iAtom;
+    this._applet.resetAtomColors(1);
+    var A = [];
+    A.push(iAtom);
+    Jmol.View.updateAtomPick(this, A);
+    this._updateAtomPick(A);
+    if (this._atomPickCallback)
+      setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
+  }
+  
+  proto._updateAtomPick = function(A, _jme_updateAtomPick) {
+    this._applet.resetAtomColors(1);
+    var B = [];
+    for (var i = 0; i < A.length; i++) { 
+     B.push(A[i] + 1);
+     B.push(3);
+    }
+    document.title = B.join(" ");
+    this._applet.setAtomBackgroundColors(1, B.join(","));
+  }
+
 	proto._showInfo = Jmol._Applet.prototype._showInfo;
 	proto._show = Jmol._Applet.prototype._show;
   
@@ -279,8 +342,10 @@
     if (!this._applet)return;
     if (this._molData) {
       this._applet.readMolFile(this._molData);
+      this._molData = this._applet.molFile();
     } else {
       this._applet.reset();
+      this._molData = "<zapped>";
     }
       
   }
@@ -312,12 +377,15 @@
   Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {
     // JME data is a single line with no line ending
   	if (jmeOrMolData.indexOf("\n") < 0 && jmeOrMolData.indexOf("\r") < 0)
-	  	return  jme._applet.readMolecule(jmeOrMolData);
-  	return  jme._applet.readMolFile(jmeOrMolData);
+	  	jme._applet.readMolecule(jmeOrMolData);
+  	else 
+      jme._applet.readMolFile(jmeOrMolData);   
+   jme._molData = jme._applet.molFile();
 	}
 	
   Jmol.jmeGetFile = function(jme, asJME) {
-  	return  (asJME ? jme._applet.jmeFile() : jme._applet.molFile());
+    jme._molData = jme._applet.molFile();
+  	return  (asJME ? jme._applet.jmeFile() : jme._molData);
   }
   
   Jmol.jmeReset = function(jme) {
@@ -342,3 +410,4 @@
 		
 	
 })(Jmol, document);
+

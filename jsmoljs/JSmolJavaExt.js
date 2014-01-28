@@ -1794,11 +1794,7 @@ this.cause=cause;
 },"Throwable");
 $_M(c$,"getMessage",
 function(){
-{
-if(typeof this.message!="undefined"){
-return this.message;
-}
-}return this.detailMessage;
+return (this.message || this.detailMessage || this.toString());
 });
 $_M(c$,"getLocalizedMessage",
 function(){
@@ -1819,7 +1815,7 @@ $_V(c$,"toString",
 function(){
 var s=this.getClass().getName();
 var message=this.getLocalizedMessage();
-return(message!=null)?(s+": "+message):s;
+return(message ? s+": "+message : s);
 });
 $_M(c$,"printStackTrace",
 function(){
@@ -1989,7 +1985,7 @@ buf.append(lineNum);
 }buf.append(')');
 }}return buf.toString();
 });
-
+TypeError.prototype.getMessage || (TypeError.prototype.getMessage = function(){ return (this.message || this.toString())});
 c$=$_T(java.lang,"Error",Throwable);
 
 c$=$_T(java.lang,"LinkageError",Error);
@@ -2311,9 +2307,7 @@ this.initCause(rootCause);
 $_M(c$,"getMessage",
 function(){
 var msg=$_U(this,java.io.WriteAbortedException,"getMessage",[]);
-if(this.detail!=null){
-msg=msg+"; "+this.detail.toString();
-}return msg;
+return (this.detail ? msg + "; "+this.detail.toString() : msg);
 });
 $_V(c$,"getCause",
 function(){
