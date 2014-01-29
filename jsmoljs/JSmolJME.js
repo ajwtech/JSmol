@@ -244,7 +244,8 @@
   proto._updateView = function(_jme_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
     if (this._viewSet != null)
-      Jmol.View.updateView(this, null, this._applet.molFile());
+      this._search("$" + this._applet.smiles())
+//      Jmol.View.updateView(this, null, this._applet.molFile());
   }
   	  
   proto._viewAtomPicked = function(_jme_viewAtomPicked) {
