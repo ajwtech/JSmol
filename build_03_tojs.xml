@@ -143,7 +143,7 @@
 
    	<echo>adding JSV/export/resources files</echo>
    		<copy todir="site/jsmol/j2s/JSV/export/resources" >
-      <fileset dir="${jsv.path}/src/jspecview/export/resources">
+      <fileset dir="${jsv.path}lib/src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
     </copy>
