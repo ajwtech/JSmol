@@ -237,7 +237,7 @@
 
 //alert("in jsv loadmodelfromview ec.chemID=" + rec.chemID)    
     if (this._viewSet != null)
-      Jmol.View.updateView(this, rec.chemID, script);
+      Jmol.View.updateView(this, rec.chemID, molData);
     // will need a load data callback?
   }
   

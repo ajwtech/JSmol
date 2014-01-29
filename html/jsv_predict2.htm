@@ -52,7 +52,7 @@ var JMEInfo = {
   visible: true,
   divId: "jmediv",
   options : "autoez",
-  addSelectionOptions: true,
+  addSelectionOptions: false,
   structureChangeCallback: null, // Jmol will handle this
   viewSet: 1
 	//,jarPath: "jme",
@@ -69,6 +69,7 @@ var JmolInfo = {
   height:250,
 	script: "sync on;",
   viewSet: 1,
+  addSelectionOptions: true,
 	//,jarPath: "jme",
 	//,jarFile: "JME.jar"
   //optional parameters
@@ -101,7 +102,7 @@ JSVInfo = {
 $(document).ready(function() {
  $("#infodiv").show();
  $("#jsvdiv").hide(); 
- $("#jme_query").val("ethanol");
+ $("#jmol_query").val("ethanol");
  $(".btn").css({width:"30px"});
  $("a").css({"text-decoration":"none"});
  

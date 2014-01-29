@@ -1262,6 +1262,7 @@ Jmol = (function(document) {
   }
 
   Jmol._mySyncCallback = function(app,msg) {
+  alert(app._viewType + " " + msg)
     if (!Jmol._syncReady || !Jmol._isJmolJSVSync)
       return 1; // continue processing and ignore me
     for (var i = 0; i < Jmol._syncedApplets.length; i++) {
