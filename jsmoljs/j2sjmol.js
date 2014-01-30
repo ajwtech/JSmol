@@ -36,7 +36,7 @@
    // BH 12/3/2013 3:39:57 PM window["j2s.lib"].base implemented
    // BH 12/1/2013 5:34:21 AM removed ClazzLoaderProgressMonitor.initialize and all Clazz.event business; handled by Jmol.clearVars()
    // BH 11/30/2013 12:43:58 PM adding Clazz.arrayIs() -- avoids Number.constructor.toString() infinite recursion
-   // BH 11/29/2013 6:33:51 AM adding Clazz.profiler -- reports use of SAEM
+   // BH 11/29/2013 6:33:51 AM adding Clazz._profiler -- reports use of SAEM
    // BH 11/10/2013 9:02:20 AM fixing fading in MSIE  
    // BH 11/3/2013 7:21:39 AM additional wrapping functions for better compressibility
    // BH 10/30/2013 8:10:58 AM added getClass().getResource() -- returning a relative string, not a URL
@@ -151,33 +151,33 @@
   
   ;(function(Clazz) {
   
-  Clazz.debuggingBH = false;
+  Clazz.__debuggingBH = false;
   
   // BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
   // which could be a bottle-neck for function calling.
   
   // Jmol.getProfile()
     
-  Clazz.profile = (window["j2s.doProfile"]  && self.JSON ? {} : null);
+  Clazz._profile = (window["j2s.doProfile"]  && self.JSON ? {} : null);
   
   Clazz.getProfile = function() {
     var s = "";
-    if (Clazz.profile) {
+    if (Clazz._profile) {
       var l = [];
-      for (var i in Clazz.profile) {
-        var n = "" + Clazz.profile[i];
+      for (var i in Clazz._profile) {
+        var n = "" + Clazz._profile[i];
         l.push("        ".substring(n.length) + n + "\t" + i);
       }
       s = l.sort().reverse().join("\r\n");
-      Clazz.profile = {};
+      Clazz._profile = {};
     }
     return s;
   }
   
   Clazz.addProfile = function(c, f, p) {
     var s = c.__CLASS_NAME__ + " " + f + " " + JSON.stringify(p);
-    Clazz.profile[s] || (Clazz.profile[s] = 0);
-    Clazz.profile[s]++;
+    Clazz._profile[s] || (Clazz._profile[s] = 0);
+    Clazz._profile[s]++;
   }
   
   NullObject = function () {};
@@ -185,9 +185,9 @@
   JavaObject = Object;
   
   /* protected */
-  Clazz.supportsNativeObject = window["j2s.object.native"];
+  Clazz._supportsNativeObject = window["j2s.object.native"];
   
-  JavaObject = (Clazz.supportsNativeObject ? function () {} : Object);
+  JavaObject = (Clazz._supportsNativeObject ? function () {} : Object);
   
   ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = {};
   Clazz.Console = {};
@@ -269,14 +269,14 @@
     });
   
   
-    if (Clazz.supportsNativeObject) {
+    if (Clazz._supportsNativeObject) {
     	/* protected */
-    	Clazz.extendedObjectMethods = [
+    	Clazz._extendedObjectMethods = [
     			"equals", "hashCode", "getClass", "clone", "finalize", "notify", "notifyAll", "wait", "to$tring", "toString"
     	];
     
-    	for (var i = 0; i < Clazz.extendedObjectMethods.length; i++) {
-    		var p = Clazz.extendedObjectMethods[i];
+    	for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
+    		var p = Clazz._extendedObjectMethods[i];
     		Array.prototype[p] = JavaObject.prototype[p];
     	}
     	JavaObject.__CLASS_NAME__ = "Object";
@@ -289,9 +289,9 @@
   Clazz.extendJO = function(c, name) {  
     if (name)
       c.__CLASS_NAME__ = c.prototype.__CLASS_NAME__ = name;
-    if (Clazz.supportsNativeObject) {
-    	for (var i = 0; i < Clazz.extendedObjectMethods.length; i++) {
-    		var p = Clazz.extendedObjectMethods[i];
+    if (Clazz._supportsNativeObject) {
+    	for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
+    		var p = Clazz._extendedObjectMethods[i];
     		Clazz.getSignature(c.prototype, p, JavaObject.prototype[p], true);
     	}
     }
@@ -439,7 +439,7 @@
   Clazz.checkInnerFunction = function (hostSuper, funName) {
   	for (var k = 0; k < Clazz.innerFunctionNames.length; k++) {
   		if (funName == Clazz.innerFunctionNames[k] && 
-  				Clazz.innerFunctions[funName] === hostSuper[funName]) {
+  				Clazz._innerFunctions[funName] === hostSuper[funName]) {
   			return true;
   		}
   	}
@@ -937,7 +937,7 @@
   Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
   	var fx = objThis[fxName];
   	var params = Clazz.getParamsType (funParams);
-    Clazz.profile && Clazz.addProfile(claxxRef, fxName, params);
+    Clazz._profile && Clazz.addProfile(claxxRef, fxName, params);
   
   	/*
   	 * Cache last matched method
@@ -1115,9 +1115,9 @@
   				caller = caller.arguments.callee.caller; 
   				var xpushed = f.exName == "construct" 
   						&& Clazz.getInheritedLevel (f.exClazz, Throwable) >= 0
-  						&& !Clazz.initializingException;
+  						&& !Clazz._initializingException;
   				if (xpushed) {
-  					Clazz.initializingException = true;
+  					Clazz._initializingException = true;
   					// constructor is wrapped
   					var xcaller = caller.arguments.callee.caller // Delegate
   							.arguments.callee.caller; // last method
@@ -1168,7 +1168,7 @@
   };
   
   /*# {$no.debug.support} >>x #*/
-  Clazz.initializingException = false;
+  Clazz._initializingException = false;
   /*# x<< #*/
   
   /**
@@ -1391,7 +1391,7 @@
   		 * Generate a new delegating method for the class
   		 */
   		f$ = Clazz.getSignature(proto, funName, Clazz.generateDelegatingMethod (clazzThis, funName, f$), true);				
-  		//if (funName != "construct" && Clazz.debuggingBH)
+  		//if (funName != "construct" && Clazz.__debuggingBH)
   	    // System.out.println("delegating " + clazzThis.__CLASS_NAME__ + " " + funName + " " + funParams);
   		/*
   		 * Keep the class inheritance stacks
@@ -1594,7 +1594,7 @@
   	}
   	Clazz.decorateAsType (clazzFun, qClazzName, clazzParent, interfacez);
   	/*# {$no.javascript.support} >>x #*/
-  	var iFun = Clazz.innerFunctions;
+  	var iFun = Clazz._innerFunctions;
   	clazzFun.defineMethod = iFun.defineMethod;
   	clazzFun.defineStaticMethod = iFun.defineStaticMethod;
   	clazzFun.makeConstructor = iFun.makeConstructor;
@@ -1692,7 +1692,7 @@
    * Static methods
    */
   /*x-# innerFunctions -> inF #-x*/
-  Clazz.innerFunctions = {
+  Clazz._innerFunctions = {
   	/*
   	 * Similar to Object#equals
   	 */
@@ -1724,8 +1724,8 @@
   			baseFolder = ClazzLoader.getClasspathFor (clazzName, true);
   		}
   		var loader = ClassLoader.requireLoaderByBase (baseFolder);
-  		loader.getResourceAsStream = Clazz.innerFunctions.getResourceAsStream;
-      loader.getResource = Clazz.innerFunctions.getResource; // BH
+  		loader.getResourceAsStream = Clazz._innerFunctions.getResourceAsStream;
+      loader.getResource = Clazz._innerFunctions.getResource; // BH
   		return loader;
   	},
   
@@ -1897,7 +1897,7 @@
     Clazz.extendJO(clazzFun, qName);
   	var inF = Clazz.innerFunctionNames;
   	for (var i = 0; i < inF.length; i++) {
-  		clazzFun[inF[i]] = Clazz.innerFunctions[inF[i]];
+  		clazzFun[inF[i]] = Clazz._innerFunctions[inF[i]];
   	}
   
   	if (window["ClazzLoader"] != null) {
@@ -1991,12 +1991,12 @@
   Clazz.decorateAsType = function (clazzFun, qClazzName, clazzParent, 
   		interfacez, parentClazzInstance, inheritClazzFuns) {
     Clazz.extendJO(clazzFun, qClazzName);
-  	clazzFun.equals = Clazz.innerFunctions.equals;
-  	clazzFun.getName = Clazz.innerFunctions.getName;
+  	clazzFun.equals = Clazz._innerFunctions.equals;
+  	clazzFun.getName = Clazz._innerFunctions.getName;
   	if (inheritClazzFuns) {
   		for (var i = 0; i < Clazz.innerFunctionNames.length; i++) {
   			var methodName = Clazz.innerFunctionNames[i];
-  			clazzFun[methodName] = Clazz.innerFunctions[methodName];
+  			clazzFun[methodName] = Clazz._innerFunctions[methodName];
   		}
   	}
   	if (parentClazzInstance != null) {
@@ -2078,7 +2078,7 @@
   };
   
   Clazz.getStackTrace = function(n) {
-  	var s = "";
+  	var s = "\n";
     n || (n = 25);
     var c = arguments.callee.caller;
       for (var i = 0; i < n; i++) {
@@ -2868,22 +2868,22 @@
    * Use to mark that the Throwable instance is created or not.
    */
   /* private */
-  Clazz.initializingException = false;
+  Clazz._initializingException = false;
   
   /* private */
   Clazz.callingStack = function (caller, owner) {
   	this.caller = caller;
   	this.owner = owner;
   };
-  Clazz.callingStackTraces = new Array ();
+  Clazz._callingStackTraces = new Array ();
   Clazz.pu$hCalling = function (stack) {
-  	Clazz.callingStackTraces[Clazz.callingStackTraces.length] = stack;
+  	Clazz._callingStackTraces[Clazz._callingStackTraces.length] = stack;
   };
   Clazz.p0pCalling = function () {
-  	var length = Clazz.callingStackTraces.length;
+  	var length = Clazz._callingStackTraces.length;
   	if (length > 0) {
-  		var stack = Clazz.callingStackTraces[length - 1];
-  		Clazz.callingStackTraces.length--;
+  		var stack = Clazz._callingStackTraces[length - 1];
+  		Clazz._callingStackTraces.length--;
   		return stack;
   	} else {
   		return null;
@@ -2968,7 +2968,7 @@
    */
   java.lang.Object = JavaObject;
   
-  JavaObject.getName = Clazz.innerFunctions.getName;
+  JavaObject.getName = Clazz._innerFunctions.getName;
   
   
   System = {
@@ -3180,20 +3180,20 @@
   		"isAssignableFrom", "getMethods", "getMethod", "getDeclaredMethods", 
   		"getDeclaredMethod", "getConstructor", "getModifiers", "isArray", "newInstance"]);
   
-  Clazz.innerFunctions.getSuperclass = function () {
+  Clazz._innerFunctions.getSuperclass = function () {
   	return this.superClazz;	
   };
-  Clazz.innerFunctions.isAssignableFrom = function (clazz) {
+  Clazz._innerFunctions.isAssignableFrom = function (clazz) {
   	return Clazz.getInheritedLevel (clazz, this) >= 0;	
   };
-  Clazz.innerFunctions.getConstructor = function () {
+  Clazz._innerFunctions.getConstructor = function () {
   	return new java.lang.reflect.Constructor (this, [], [], 
   			java.lang.reflect.Modifier.PUBLIC);
   };
   /**
    * TODO: fix bug for polymorphic methods!
    */
-  Clazz.innerFunctions.getDeclaredMethods = Clazz.innerFunctions.getMethods = function () {
+  Clazz._innerFunctions.getDeclaredMethods = Clazz._innerFunctions.getMethods = function () {
   	var ms = new Array ();
   	var p = this.prototype;
   	for (var attr in p) {
@@ -3213,7 +3213,7 @@
   	}
   	return ms;
   };
-  Clazz.innerFunctions.getDeclaredMethod = Clazz.innerFunctions.getMethod = function (name, clazzes) {
+  Clazz._innerFunctions.getDeclaredMethod = Clazz._innerFunctions.getMethod = function (name, clazzes) {
   	var p = this.prototype;
   	for (var attr in p) {
   		if (name == attr && typeof p[attr] == "function" 
@@ -3234,23 +3234,23 @@
   	}
   	return null;
   };
-  Clazz.innerFunctions.getModifiers = function () {
+  Clazz._innerFunctions.getModifiers = function () {
   	return java.lang.reflect.Modifier.PUBLIC;
   };
-  Clazz.innerFunctions.isArray = function () {
+  Clazz._innerFunctions.isArray = function () {
   	return false;
   };
-  Clazz.innerFunctions.newInstance = function () {
+  Clazz._innerFunctions.newInstance = function () {
   	var clz = this;
   	return new clz ();
   };
   
-  //Object.newInstance = Clazz.innerFunctions.newInstance;
+  //Object.newInstance = Clazz._innerFunctions.newInstance;
   ;(function(){  // BH added wrapper here
   	var inF = Clazz.innerFunctionNames;
   	for (var i = 0; i < inF.length; i++) {
-  		JavaObject[inF[i]] = Clazz.innerFunctions[inF[i]];
-  		Array[inF[i]] = Clazz.innerFunctions[inF[i]];
+  		JavaObject[inF[i]] = Clazz._innerFunctions[inF[i]];
+  		Array[inF[i]] = Clazz._innerFunctions[inF[i]];
   	}
   	Array["isArray"] = function () {
   		return true;
@@ -4331,7 +4331,7 @@
   /*-# generatingW3CScriptOnCallback -> gWSC #-*/
   ClazzLoader.generatingW3CScriptOnCallback = function (path, forError) {
   	return function () {
-  	if (forError && Clazz.debuggingBH)Clazz.alert("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
+  	if (forError && Clazz.__debuggingBH)Clazz.alert("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
   
   		if (ClazzLoader.isGecko && this.timeoutHandle != null) {
   			window.clearTimeout (this.timeoutHandle);

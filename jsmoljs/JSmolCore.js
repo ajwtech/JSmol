@@ -1726,7 +1726,7 @@ Jmol._track = function(applet) {
 Jmol.getProfile = function() {
   window["j2s.doProfile"] = true;
   if (self.Clazz) {
-    Clazz.profile = self.JSON && {};
+    Clazz._profile = self.JSON && {};
     return Clazz.getProfile();
   }
 }
@@ -1769,11 +1769,7 @@ Jmol.View = {
   
 (function(View) {
 
-View.__init = function(applet) {
-  var a = View.applets;
-  a[applet._viewSet] || (a[applet._viewSet] = {});
-  a[applet._viewSet][applet._viewType] = applet;
-}
+// methods called from other modules have no "_" in their name
 
 View.updateView = function(applet, Info, _View_updateView) {
   // return from applet after asynchronous download of new data
@@ -1793,19 +1789,16 @@ View.updateView = function(applet, Info, _View_updateView) {
 
 View.updateFromSync = function(applet, msg) {
   applet._updateMsg = msg;
-  var id = JU.PT.getQuotedAttribute(msg, "sourceID");
+  var id = View.__getAttr(msg, "sourceID");
   if (!id)
     return;
   var view = View.__findView(applet._viewSet, {viewID:id});
   if (view != applet._currentView) {
     View.__setView(view, applet, true);
-    }
-  
-  // TODO: check for new source here.
-    
-  var A = (msg.indexOf("selectionhalos ON") >= 0  
-    ? JU.PT.getQuotedAttribute(msg, "atoms").split(",")
-    : []);
+    //return ??
+  }
+  var A = ((id = View.__getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
+    ? id.split(",") : []);
   View.updateAtomPick(applet, A);
 }
 
@@ -1824,12 +1817,30 @@ View.dumpViews = function(applet) {
   var s = "View set " + applet._viewSet + ":\n";
   for (var i = views.length; --i >= 0;) {
     var view = views[i];
+    s += "\n<b>view=" + i 
+      + " viewID=" + view.info.viewID 
+      + " chemID=" + view.info.chemID + "</b>\n"
     for (var viewType in view) 
-      if (viewType != "info") {
-      s += "\nview=" + i + " type=" + viewType + " viewID=" + view.info.viewID + " chemID=" + view[viewType].chemID + " \n data=\n" + view[viewType].data + "\n"
-    }
+      if (viewType != "info")
+        s += "\nview=" + i + " type=" + viewType + " applet=" 
+          + (view[viewType].applet ? view[viewType].applet._id : null) 
+          + " \n data=\n" + view[viewType].data + "\n"
   }
   return s
+}
+
+// methods starting with "__" are "private" to JSmolCore.js
+
+View.__init = function(applet) {
+  var a = View.applets;
+  a[applet._viewSet] || (a[applet._viewSet] = {});
+  a[applet._viewSet][applet._viewType] = applet;
+}
+
+View.__getAttr = function(s, a) {
+  var pt = s.indexOf(a + "=");
+  return (pt >= 0 && (pt = s.indexOf('"', pt)) >= 0 
+    ? s.substring(pt+1, s.indexOf('"', pt+1)) : null);
 }
 
 View.__findView = function(set, Info) {
@@ -1838,15 +1849,20 @@ View.__findView = function(set, Info) {
     views = View.sets[set] = [];
   for (var i = views.length; --i >= 0;) {
     var view = views[i];
-    if (view.info.viewID == Info.viewID)
-      return view;
-    for (var viewType in view) 
-      if (viewType != "info") {
-        if (Info.chemID != null ? Info.chemID == view[viewType].chemID 
-          : Info.data != null && view[viewType].data != null ? Info.data == view[viewType].data 
-          : Info.type == viewType)
-            return view;
+    if (Info.viewID) {
+      if (view.info.viewID == Info.viewID)
+        return view;
+    } else if (Info.chemID != null && Info.chemID == view.info.chemID) {
+        return view;
+    } else {
+      for (var viewType in view) { 
+        if (viewType != "info") {
+          if (Info.data != null && view[viewType].data != null ? Info.data == view[viewType].data 
+            : Info.type == viewType)
+              return view;
+        }
       }
+    }
   }
   return null;  
 }
@@ -1858,7 +1874,7 @@ View.__createViewSet = function(set, chemID, _createViewSet) {
   for (var id in Jmol._applets) {
     var a = Jmol._applets[id];
     if (a._viewSet == set)
-      view[a._viewType] = {applet:a, chemID: chemID, data: null};
+      view[a._viewType] = {applet:a, data: null};
   }
   View.sets[set].push(view);
   return view;
@@ -1884,8 +1900,6 @@ View.__setView = function(view, applet, isSwitch, _setView) {
     if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull & !modified)
       continue;
     a._currentView = view;
-    
-
     a._loadModelFromView(view);
     if (wasNull)
       break;

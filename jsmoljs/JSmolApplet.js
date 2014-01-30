@@ -560,8 +560,8 @@
 			Jmol._getRawDataFromServer(
 				database,
 				query,
-				function(data){me._loadModel(data, dm, script)},
-        function(){me._loadModel(null)}
+				function(data){me.__loadModel(data, dm, script)},
+        function(){me.__loadModel(null)}
 
 			);
 		}
@@ -575,10 +575,10 @@
     if (!this._scriptLoad(fileName, script)) {
       // we load the data here instead of in Jmol in the case of
       // JSmol/Java/Sandboxed or when part of a view set 
-		  var me = this;
+		  var me = this;      
 		  Jmol._loadFileData(this, fileName, 
-        function(data){me._loadModel(data, script, chemID)},
-        function() {me._loadModel(null)}
+        function(data){me.__loadModel(data, script, chemID)},
+        function() {me.__loadModel(null)}
       );
     }
 	}
@@ -598,7 +598,7 @@
     return true;
   }
 
-	proto._loadModel = function(mol, script, chemID, _jmol_loadModel) {
+	proto.__loadModel = function(mol, script, chemID, _jmol__loadModel) {
     if (mol == null)
       return;
     if (!script && this._noscript) {
@@ -616,11 +616,11 @@
     // request from Jmol.View to update view with view.JME.data==null or needs changing
     var rec = view["Jmol"];
     if (rec.data != null) {
-      this._loadModel(rec.data, null, rec.chemID);
+      this.__loadModel(rec.data, null, view.info.chemID);
       return;
     }
-    if (rec.chemID != null) {
-      Jmol._searchMol(this, rec.chemID, null, false);
+    if (view.info.chemID != null) {
+      Jmol._searchMol(this, view.info.chemID, null, false);
       return;
     }
     rec = view["JME"];

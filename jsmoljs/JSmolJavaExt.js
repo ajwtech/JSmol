@@ -1,6 +1,7 @@
 // JSmolJavaExt.js
 // will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 1/30/2014 9:04:25 AM adding Throwable.getStackTrace() as a STRING
 // BH 12/4/2013 9:20:44 PM fix for reassigning Date.prototype.toString()
 // BH 12/3/2013 11:43:10 AM bizarre Safari bug in reassigning Boolean (OK, I admit, we shouldn't have done that...) 
 // BH 12/1/2013 6:50:16 AM evit Number.prototype.toString assignment removed!
@@ -26,9 +27,9 @@ Math.log10||(Math.log10=function(a){return Math.log(a)/2.302585092994046});
 var ntsp = Number.prototype.toString; // don't touch this one
 
 java.lang.Number=Number;
-if(Clazz.supportsNativeObject){
-  for(var i=0;i<Clazz.extendedObjectMethods.length;i++){
-    var p=Clazz.extendedObjectMethods[i];
+if(Clazz._supportsNativeObject){
+  for(var i=0;i<Clazz._extendedObjectMethods.length;i++){
+    var p=Clazz._extendedObjectMethods[i];
     Number.prototype[p]=JavaObject.prototype[p];
   }
 }
@@ -37,8 +38,8 @@ Number.prototype.toString = ntsp;
 
 Number.__CLASS_NAME__="Number";
 Clazz.implementOf(Number,java.io.Serializable);
-Number.equals=Clazz.innerFunctions.equals;
-Number.getName=Clazz.innerFunctions.getName;
+Number.equals=Clazz._innerFunctions.equals;
+Number.getName=Clazz._innerFunctions.getName;
 
 
 $_M(Number,"shortValue",
@@ -633,16 +634,16 @@ return s.valueOf()==this.valueOf();
 
 java.lang.B00lean = Boolean;
 Boolean = java.lang.Boolean = Boolean || function () {Clazz.instantialize (this, arguments);};
-if (Clazz.supportsNativeObject) {
-	for (var i = 0; i < Clazz.extendedObjectMethods.length; i++) {
-		var p = Clazz.extendedObjectMethods[i];
+if (Clazz._supportsNativeObject) {
+	for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
+		var p = Clazz._extendedObjectMethods[i];
 		Boolean.prototype[p] = JavaObject.prototype[p];
 	}
 }
 Boolean.__CLASS_NAME__="Boolean";
 Clazz.implementOf(Boolean,[java.io.Serializable,java.lang.Comparable]);
-Boolean.equals=Clazz.innerFunctions.equals;
-Boolean.getName=Clazz.innerFunctions.getName;
+Boolean.equals=Clazz._innerFunctions.equals;
+Boolean.getName=Clazz._innerFunctions.getName;
 Boolean.serialVersionUID=Boolean.prototype.serialVersionUID=-3665804199014368530;
 
 //Clazz.makeConstructor(Boolean,
@@ -869,9 +870,9 @@ return buf.join('');
 
 if(String.prototype.$replace==null){
 java.lang.String=String;
-if(Clazz.supportsNativeObject){
-for(var i=0;i<Clazz.extendedObjectMethods.length;i++){
-var p=Clazz.extendedObjectMethods[i];
+if(Clazz._supportsNativeObject){
+for(var i=0;i<Clazz._extendedObjectMethods.length;i++){
+var p=Clazz._extendedObjectMethods[i];
 if("to$tring"==p||"toString"==p||"equals"==p||"hashCode"==p){
 continue;
 }
@@ -881,7 +882,7 @@ String.prototype[p]=JavaObject.prototype[p];
 
 Clazz.implementOf(String,[java.io.Serializable,CharSequence,Comparable]);
 
-String.getName=Clazz.innerFunctions.getName;
+String.getName=Clazz._innerFunctions.getName;
 
 String.serialVersionUID=String.prototype.serialVersionUID=-6849794470754667710;
 
@@ -1814,22 +1815,30 @@ return this;
 $_V(c$,"toString",
 function(){
 var s=this.getClass().getName();
-var message=this.getLocalizedMessage();
+var message=this.message || this.detailMessage;
 return(message ? s+": "+message : s);
 });
 $_M(c$,"printStackTrace",
 function(){
-System.err.println(this);
-for(var i=0;i<this.stackTrace.length;i++){
-var t=this.stackTrace[i];
-var x=t.methodName.indexOf("(");
-var n=t.methodName.substring(0,x).replace(/\s+/g,"");
-if(n!="construct"||t.nativeClazz==null
-||Clazz.getInheritedLevel(t.nativeClazz,Throwable)<0){
-System.err.println(t);
-}
-}
+System.err.println(this.getStackTrace());
 });
+
+$_M(c$,"getStackTrace",
+function(){
+var s = "" + this + "\n";
+for(var i=0;i<this.stackTrace.length;i++){
+ var t=this.stackTrace[i];
+  var x=t.methodName.indexOf("(");
+  var n=t.methodName.substring(0,x).replace(/\s+/g,"");
+  if(n!="construct"||t.nativeClazz==null
+     ||Clazz.getInheritedLevel(t.nativeClazz,Throwable)<0){
+        s += t + "\n";
+  }
+}
+return s;
+});
+
+
 $_M(c$,"printStackTrace",
 function(s){
 this.printStackTrace();
@@ -1844,7 +1853,7 @@ this.stackTrace=new Array();
 var caller=arguments.callee.caller;
 var superCaller=null;
 var callerList=new Array();
-var index=Clazz.callingStackTraces.length-1;
+var index=Clazz._callingStackTraces.length-1;
 var noLooping=true;
 while(index>-1||caller!=null){
 var clazzName=null;
@@ -1854,8 +1863,8 @@ if(index<0){
 break;
 }
 noLooping=true;
-superCaller=Clazz.callingStackTraces[index].caller;
-nativeClass=Clazz.callingStackTraces[index].owner;
+superCaller=Clazz._callingStackTraces[index].caller;
+nativeClass=Clazz._callingStackTraces[index].owner;
 index--;
 }else{
 superCaller=caller;
@@ -1888,7 +1897,7 @@ callerList[callerList.length]=superCaller;
 }
 caller=superCaller.arguments.callee.caller;
 }
-Clazz.initializingException=false;
+Clazz._initializingException=false;
 return this;
 });
 $_M(c$,"setStackTrace",
@@ -1985,7 +1994,7 @@ buf.append(lineNum);
 }buf.append(')');
 }}return buf.toString();
 });
-TypeError.prototype.getMessage || (TypeError.prototype.getMessage = function(){ return (this.message || this.toString())});
+TypeError.prototype.getMessage || (TypeError.prototype.getMessage = function(){ return (this.message || this.toString()) + this.getStackTrace()});
 c$=$_T(java.lang,"Error",Throwable);
 
 c$=$_T(java.lang,"LinkageError",Error);
@@ -2001,27 +2010,11 @@ $_R(this,AssertionError,[String.valueOf(detailMessage),($_O(detailMessage,Throwa
 },"~O");
 $_K(c$,
 function(detailMessage){
-this.construct(String.valueOf(detailMessage));
+this.construct("" + detailMessage);
 },"~B");
 $_K(c$,
 function(detailMessage){
-this.construct(String.valueOf(detailMessage));
-},"~N");
-$_K(c$,
-function(detailMessage){
-this.construct(Integer.toString(detailMessage));
-},"~N");
-$_K(c$,
-function(detailMessage){
-this.construct(Long.toString(detailMessage));
-},"~N");
-$_K(c$,
-function(detailMessage){
-this.construct(Float.toString(detailMessage));
-},"~N");
-$_K(c$,
-function(detailMessage){
-this.construct(Double.toString(detailMessage));
+this.construct("" + detailMessage);
 },"~N");
 
 c$=$_T(java.lang,"ClassCircularityError",LinkageError);

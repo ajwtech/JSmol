@@ -69,12 +69,8 @@
 ,Clazz_implementOf
 ,Clazz_newDoubleArray
 ,Clazz_overrideConstructor
-,Clazz_supportsNativeObject
-,Clazz_extendedObjectMethods
-,Clazz_callingStackTraces
 ,Clazz_clone
 ,Clazz_doubleToShort
-,Clazz_innerFunctions
 ,Clazz_getInheritedLevel
 ,Clazz_getParamsType
 ,Clazz_isAF
