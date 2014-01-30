@@ -38,7 +38,7 @@
 			if(this._jarFile) {
 				var f = this._jarFile;
 				if(f.indexOf("/") >= 0) {
-					alert("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
+					alert ("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
 					var ok = prompt("Do you want to use applet " + f + "? ", "yes or no")
 					if(ok == "yes") {
 						jarPath = f.substring(0, f.lastIndexOf("/"));
@@ -54,7 +54,7 @@
  			this._jarPath = Info.jarPath = jarPath || ".";
 			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
 	    if (doReport)
-				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
+				alert ("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}		
 		this._create(id, Info);
@@ -97,8 +97,6 @@
   	Jmol._debugAlert = Info.debug;
       if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
       
-    //alert(Info.use)
-    
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
     
 		var javaAllowed = false;
@@ -218,7 +216,7 @@
 		t = Jmol._getWrapper(applet, true) + t + Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
 		if (Jmol._debugAlert)
-			alert(t);
+			alert (t);
 		applet._code = Jmol._documentWrite(t);
 	}
 
@@ -239,7 +237,7 @@
 		function sterilizeInline(model) {
 			model = model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
 			if(Jmol._debugAlert)
-				alert("inline model:\n" + model);
+				alert ("inline model:\n" + model);
 			return model;
 		}
 
@@ -610,9 +608,8 @@
   		script = 'load DATA "model"\n' + mol + '\nEND "model" ' + script;
   		this._applet.script(script);
     }
-    //alert(mol)
     if (this._viewSet != null)
-      Jmol.View.updateView(this, chemID, mol);      
+      Jmol.View.updateView(this, {chemID:chemID, data:mol});      
 	}
 	
   proto._loadModelFromView = function(view, _jmol_loadModelFromView) {
@@ -644,7 +641,7 @@
         chemID = null;
       else
         chemID = chemID.substring(36).split('\n')[0];
-      Jmol.View.updateView(this, chemID, "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}"));
+      Jmol.View.updateView(this, {chemID:chemID, data: "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}")});
     } else {
 // TODO peak pick
     }
@@ -653,10 +650,7 @@
   proto._updateAtomPick = function(A) {
     if (A.length == 0)
       return this._script("select none");
-    var B = []
-    for (var i = A.length; --i >= 0;)
-      B[i] = A[i] + 1;
-    this._script("select on @" + B.join(",@"));
+    this._script("select on visible and (@" + A.join(",@") + ")");
   }
 
   proto._isDeferred = function () {
@@ -700,7 +694,7 @@
 		 	+	Jmol._getWrapper(this, false)
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this) : "");
 		if (Jmol._debugAlert)
-			alert(t);
+			alert (t);
 		this._code = Jmol._documentWrite(t);
 		this._ready = false;
 		if (Jmol._document)

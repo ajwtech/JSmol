@@ -16,7 +16,7 @@
 	see http://msdn.microsoft.com/workshop/author/dhtml/overview/ccomment_ovw.asp
 */
 
-;(function (Jmol, document) {
+;(function (Jmol, document, $) {
 	
 	Jmol._JSVApplet = function(id, Info, checkOnly){
     this._version="2.0";
@@ -150,12 +150,21 @@
   }	
   
 	proto._clearConsole = Jmol._Applet.prototype._clearConsole;
-	proto._search = Jmol._Applet.prototype._search;  
 	proto._showInfo = Jmol._Applet.prototype._showInfo;
 	proto._show = Jmol._Applet.prototype._show;
 	
+	proto._search = function(query, script){
+    query || (query = Jmol.$val(Jmol.$(this, "query")))
+    var a = this;
+    if (a._viewSet && !query.startsWith("!")) {
+      a = Jmol.View.applets[a._viewSet];
+		  a = a["Jmol"] || a["JSV"] || this;
+    }
+		Jmol._search(a, query);
+	}
+	
 	proto._searchDatabase = function(query, database) {
-    return this._applet.script("load " + database + query)
+    return this._applet.script("load ID \"" + query + "\" " + database + query)
   }
   
 	proto._script = function(script) {
@@ -205,12 +214,20 @@
     if (data != null)
       this._applet.loadInline(data);
     if (this._viewSet != null)
-      Jmol.View.updateView(this, null, data);
+      Jmol.View.updateView(this, {data:data});
   }
   
   proto._loadModelFromView = function(view) {
     // called request to update view with view.JSV.data==null from Jmol.View
     // we must get the simulation from MOL data
+
+
+    if ((xxxx=this._applet.getPropertyAsJavaObject("SOURCEID")).get("SOURCEID") == view.info.viewID)
+      return;
+    this._applet.script("CLOSE VIEWS;VIEW *;SELECT ID \"" + view.info.viewID + "\"");
+    if (this._applet.getPropertyAsJavaObject("SOURCEID").get("SOURCEID") == view.info.viewID)
+      return;
+    
     var molData = null;
     var rec = view["JSV"];
     var haveMolData = (view["Jmol"] || view["JME"]); 
@@ -219,9 +236,15 @@
       return;
     }
     var vmol = null;
-    if ((vmol = view["Jmol"]) != null)
+    if ((vmol = view["Jmol"]) != null) {
       molData = view["Jmol"].data;
-    if (molData == null && (vmol = view["JME"]) != null)
+      if (molData == null && vmol.applet && view["JME"] != null && view["JME"].data) {
+        // go with Jmol
+      } else if (molData == null) {
+        vmol = null;
+      }
+    }
+    if (molData == null && vmol == null && (vmol = view["JME"]) != null)
       molData = view["JME"].data;
     if (molData == null) {
       // complete Jmol or JME needs first
@@ -232,12 +255,10 @@
     var script = this.__Info.preloadScript;
     if (script == null) 
       script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
-    script += "; LOAD APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
+    script += "; LOAD ID \"" + view.info.viewID + "\" APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
     Jmol.script(this, script);
-
-//alert("in jsv loadmodelfromview ec.chemID=" + rec.chemID)    
     if (this._viewSet != null)
-      Jmol.View.updateView(this, rec.chemID, molData);
+      Jmol.View.updateView(this, {chemID:rec.chemID, data:molData});
     // will need a load data callback?
   }
   
@@ -245,29 +266,30 @@
     if (data == null)
       return;
   // retun from asynchronous call in loadModelFromView 
-    Jmol.View.updateView(this, chemID, data);
+    Jmol.View.updateView(this, {chemID:chemID, data:data});
  }
  
   proto._updateView = function(selectedPanel, msg, _jsv_updateView) {
    // called from file load or panel selection or peak selection
    if (msg) {
+     Jmol.View.updateFromSync(this, msg);
      // peak/panel selection
    } else {
+     // ignore
      // model loaded
    }
    //TODO
-//   alert(msg);
+//   alert (msg);
   }
  
    proto._updateAtomPick = function(A) {
-   
-    // TODO
+     // TODO
    }
 
  proto._showStatus = function(msg, title) {
    // from JSV
    title && (msg = title + "\n\n\n" + msg);
-   alert(msg);
+   alert (msg);
  }
 
 })(Jmol._JSVApplet, Jmol._JSVApplet.prototype);
@@ -483,4 +505,4 @@
     return applet._code;
 	}
 
-})(Jmol, document);
+})(Jmol, document, jQuery);

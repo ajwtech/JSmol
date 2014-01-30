@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 1/29/2014 8:02:23 AM Jmol.View and Info.viewSet
 // BH 1/21/2014 12:06:59 PM adding Jmol.Info.cacheFiles (applet, true/false) and applet._cacheFiles and Jmol._fileCache
 // BH 1/13/2014 2:12:38 PM adding "http://www.nmrdb.org/tools/jmol/predict.php":"%URL", to _DirectDatabaseCalls
 // BH 12/21/2013 6:38:35 PM applet sync broken
@@ -76,7 +77,7 @@
 // The NCI and RCSB databases are accessed via direct AJAX if available (xhr2/xdr).
 
 
-if(typeof(jQuery)=="undefined") alert("Note -- JSmoljQuery is required for JSmol, but it's not defined.")
+if(typeof(jQuery)=="undefined") alert ("Note -- JSmoljQuery is required for JSmol, but it's not defined.")
 
 
 if (!self.Jmol)
@@ -169,7 +170,7 @@ Jmol = (function(document) {
   // There should be no other references to jQuery in all the JSmol libraries.
 
   Jmol.$ = function(objectOrId, subdiv) {
-  if (objectOrId == null)alert(subdiv + arguments.callee.caller.toString());
+  if (objectOrId == null)alert (subdiv + arguments.callee.caller.toString());
     return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
   } 
   
@@ -286,7 +287,7 @@ Jmol = (function(document) {
     var o = Jmol._$(id);
     return (arguments.length == 1 ? o.val() : o.val(v));
   }
-  
+
   ////////////// protected variables ///////////
   
 
@@ -468,7 +469,9 @@ Jmol = (function(document) {
     // feel free to adjust this look to anything you want
     if (Jmol._grabberOptions.length == 0)
       return ""
-    var s = '<input type="text" id="ID_query" onkeypress="if(13==event.which){Jmol._applets[\'ID\']._search();return false}" size="32" value="" />';
+      
+
+    var s = '<input type="text" id="ID_query" onfocus="jQuery(this).select()" onkeypress="if(13==event.which){Jmol._applets[\'ID\']._search();return false}" size="32" value="" />';
     var b = '<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>'
     if (Jmol._grabberOptions.length == 1) {
       s = '<nobr>' + s + '<span style="display:none">';
@@ -644,7 +647,6 @@ Jmol = (function(document) {
       success: function(a) {Jmol._loadSuccess(a, fSuccess)},
       error: function() {Jmol._loadError(fError)}
     }
-    //alert(JSON.stringify(info))
     Jmol._checkAjaxPost(info);
     Jmol._ajax(info);
   }
@@ -685,13 +687,13 @@ Jmol = (function(document) {
           if (d[i].value == database)
             d[i].selected = true;
     }
-    Jmol._getElement(applet, "query").value = query;
+    Jmol.$val(Jmol.$(applet, "query"), query);
   }
 
   Jmol._search = function(applet, query, script) {
     arguments.length > 1 || (query = null);
     Jmol._setQueryTerm(applet, query);
-    query || (query = Jmol._getElement(applet, "query").value);
+    query || (query = Jmol.$val(Jmol.$(applet, "query")))
     if (query.indexOf("!") == 0) {
     // command prompt in this box as well
     // remove exclamation point "immediate" indicator
@@ -709,7 +711,7 @@ Jmol = (function(document) {
       database = query.substring(0, 1);
       query = query.substring(1);
     } else {
-      database = (applet._hasOptions ? Jmol._getElement(applet, "select").value : "$");
+      database = (applet._hasOptions ? Jmol.$val(Jmol.$(applet, "select")) : "$");
     }
     if (database == "=" && query.length == 3)
       query = "=" + query; // this is a ligand      
@@ -719,8 +721,8 @@ Jmol = (function(document) {
     }
     applet._thisJmolModel = dm;
     var view;
-    if (checkView && applet._viewSet != null && (view = Jmol.View.__findView(applet._viewSet, null, dm, null)) != null) {
-      Jmol.View.__setView(view, applet);
+    if (checkView && applet._viewSet != null && (view = Jmol.View.__findView(applet._viewSet, {chemID:dm})) != null) {
+      Jmol.View.__setView(view, applet, false);
       return;
     }
 
@@ -762,7 +764,7 @@ Jmol = (function(document) {
       var s = "JSmolCore.js: synchronous binary file transfer is requested but not available";
       System.out.println(s);
       if (Jmol._alertNoBinary && !isSilent)
-        alert(s)
+        alert (s)
       return Jmol._syncBinaryOK = false;
     }
     return true;  
@@ -1152,8 +1154,10 @@ Jmol = (function(document) {
     obj._console = Info.console;
     obj._cacheFiles = !!Info.cacheFiles;
     obj._viewSet = (Info.viewSet == null || obj._isJava ? null : "Set" + Info.viewSet);
-    if (obj._viewSet != null)
+    if (obj._viewSet != null) {
+      Jmol.View.__init(obj);
       obj._currentView = null;
+    }
     !Jmol._fileCache && obj._cacheFiles && (Jmol._fileCache = {});
     if (!obj._console)
       obj._console = obj._id + "_infodiv";
@@ -1262,8 +1266,7 @@ Jmol = (function(document) {
   }
 
   Jmol._mySyncCallback = function(app,msg) {
-  alert(app._viewType + " " + msg)
-    if (!Jmol._syncReady || !Jmol._isJmolJSVSync)
+    if (app._viewSet || !Jmol._syncReady || !Jmol._isJmolJSVSync)
       return 1; // continue processing and ignore me
     for (var i = 0; i < Jmol._syncedApplets.length; i++) {
       if (msg.indexOf(Jmol._syncedApplets[i]._syncKeyword) >= 0) {
@@ -1759,38 +1762,61 @@ Jmol.View = {
 //
 // Bob Hanson 1/22/2014 7:05:38 AM
 
+  count: 0,
+  applets: {},
   sets: {}
 };
   
 (function(View) {
 
-View.updateView = function(applet, chemID, data, _View_updateView) {
+View.__init = function(applet) {
+  var a = View.applets;
+  a[applet._viewSet] || (a[applet._viewSet] = {});
+  a[applet._viewSet][applet._viewType] = applet;
+}
+
+View.updateView = function(applet, Info, _View_updateView) {
   // return from applet after asynchronous download of new data
   if (applet._viewSet == null)
     return;
-  //if (chemID == null)
-    //return Jmol._getInChIKey(applet, data);
-  var type = applet._viewType;
-  if (chemID == null)
-    applet._searchQuery = null;
-  //alert("setCurrentView for " + applet._currentView + " type=" + type + " chemID=" + chemID + "\n" + Clazz.getStackTrace())
-  if((applet._currentView = View.__findView(applet._viewSet, type, chemID, data || "N/A")) == null) {
-  //alert("did not find type="+type + " chemID=" + chemID + " data=" + data)
-    applet._currentView = View.__createViewSet(applet._viewSet, chemID);
+  Info.chemID || (applet._searchQuery = null);
+  Info.data || (Info.data = "N/A");
+  Info.type = applet._viewType;
+  if((applet._currentView = View.__findView(applet._viewSet, Info)) == null) {
+    applet._currentView = View.__createViewSet(applet._viewSet, Info.chemID);
   }
-  applet._currentView[type].data = data;
+  applet._currentView[Info.type].data = Info.data;
   if (Jmol.User.viewUpdatedCallback)
     Jmol.User.viewUpdatedCallback(applet);
-  View.__setView(applet._currentView, applet);
+  View.__setView(applet._currentView, applet, false);
+}
+
+View.updateFromSync = function(applet, msg) {
+  applet._updateMsg = msg;
+  var id = JU.PT.getQuotedAttribute(msg, "sourceID");
+  if (!id)
+    return;
+  var view = View.__findView(applet._viewSet, {viewID:id});
+  if (view != applet._currentView) {
+    View.__setView(view, applet, true);
+    }
+  
+  // TODO: check for new source here.
+    
+  var A = (msg.indexOf("selectionhalos ON") >= 0  
+    ? JU.PT.getQuotedAttribute(msg, "atoms").split(",")
+    : []);
+  View.updateAtomPick(applet, A);
 }
 
 View.updateAtomPick = function(applet, A, _View_updateAtomPick) {
   var view = applet._currentView;
-  //alert(applet._viewType + " " +  JSON.stringify(A))
-  
-  for (var viewType in view)
-    if (view[viewType].applet != applet)
+  if (view == null)
+    return;
+  for (var viewType in view) {
+    if (viewType != "info" && view[viewType].applet != applet)
       view[viewType].applet._updateAtomPick(A);
+  }
 }
   
 View.dumpViews = function(applet) {
@@ -1798,35 +1824,37 @@ View.dumpViews = function(applet) {
   var s = "View set " + applet._viewSet + ":\n";
   for (var i = views.length; --i >= 0;) {
     var view = views[i];
-    for (var viewType in view) {
-      s += "\nview=" + i + " type=" + viewType + " chemID=" + view[viewType].chemID + " \n data=\n" + view[viewType].data + "\n"
+    for (var viewType in view) 
+      if (viewType != "info") {
+      s += "\nview=" + i + " type=" + viewType + " viewID=" + view.info.viewID + " chemID=" + view[viewType].chemID + " \n data=\n" + view[viewType].data + "\n"
     }
   }
   return s
 }
 
-View.__findView = function(set, type, chemID, data) {
-  //alert("findView " + set)
+View.__findView = function(set, Info) {
   var views = View.sets[set];
   if (views == null)
     views = View.sets[set] = [];
-  //alert(set + " " + View.dumpViews(views))
   for (var i = views.length; --i >= 0;) {
     var view = views[i];
-    for (var viewType in view) {
-    //alert("finding type=" + type + "chemID=" + chemID + " vt.chemID=" + view[viewType].chemID+ " data=" + data + " vt.data=" + view[viewType].data);
-      if (chemID != null ? chemID == view[viewType].chemID 
-        : data != null && view[viewType].data != null ? data == view[viewType].data 
-        : type == viewType)
-        return view;
-    }
+    if (view.info.viewID == Info.viewID)
+      return view;
+    for (var viewType in view) 
+      if (viewType != "info") {
+        if (Info.chemID != null ? Info.chemID == view[viewType].chemID 
+          : Info.data != null && view[viewType].data != null ? Info.data == view[viewType].data 
+          : Info.type == viewType)
+            return view;
+      }
   }
-  //alert("nothing found for " + set + " " + type + " " + chemID + " " + data)
   return null;  
 }
 
 View.__createViewSet = function(set, chemID, _createViewSet) {
-  var view = {};
+  View.count++;
+  var view = {info:{chemID: chemID, viewID: chemID || "model_" + View.count}};
+  
   for (var id in Jmol._applets) {
     var a = Jmol._applets[id];
     if (a._viewSet == set)
@@ -1836,23 +1864,28 @@ View.__createViewSet = function(set, chemID, _createViewSet) {
   return view;
 }
 
-View.__setView = function(view, applet, _setView) {
+View.__setView = function(view, applet, isSwitch, _setView) {
   // called from Jmol._searchMol and Jmol.View.setCurrentView 
-  // notify the applets in the set that there may be new data for them
+  // to notify the applets in the set that there may be new data for them
   // skip the originating applet itself and cases where the data has not changed.
   // stop at first null data, because that will initiate some sort of asynchronous
   // call that will be back here afterward.
+  
   for (var viewType in view) {
+      if (viewType == "info") 
+        continue;
     var rec = view[viewType];
     var a = rec.applet;
-    var modified = (a != null && a._molData == "<modified>");
+    var modified = (isSwitch || a != null && a._molData == "<modified>");
+    
     if (a == null || a == applet && !modified)
       continue; // may be a mol3d required by JSV but not having a corresponding applet
     var wasNull = (rec.data == null);
     if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull & !modified)
       continue;
-  //alert("loading model from view " + viewType + " wasNull=" + wasNull + " \nrec.data = " + rec.data +"\n current data = \n" + (a._currentView == null ? "no view " : a._currentView[viewType].data) + "\n" + Clazz.getStackTrace())
     a._currentView = view;
+    
+
     a._loadModelFromView(view);
     if (wasNull)
       break;
