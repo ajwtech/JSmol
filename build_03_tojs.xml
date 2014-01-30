@@ -1496,6 +1496,7 @@
    	</concat> 
   	<copy file="site/jsmol/js/core${call-core.name}.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz__" value="Clazz._"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
   	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
    	<concat destfile="site/jsmol/js/core${call-core.name}.js"><filelist dir="site/jsmol/js" files="
