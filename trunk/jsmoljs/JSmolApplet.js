@@ -628,25 +628,31 @@
       rec.applet._show2d(false, this);
       return;
     }
-    // NOW WHAT??
   }
 
-  proto._updateView = function(imodel, iatom, _jmol_updateView) {
-    // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
+  proto._updateView = function(_jmol_updateView) {
     if (this._viewSet == null || !this._applet)
       return;
-    if (arguments.length == 0) {
-      chemID = "" + this._getPropertyAsJavaObject("evaluate","script('show chemical inchiKey')");
-      if (chemID.length() < 36) // InChIKey=RZVAJINKPMORJF-BGGKNDAXNA-N
-        chemID = null;
-      else
-        chemID = chemID.substring(36).split('\n')[0];
-      Jmol.View.updateView(this, {chemID:chemID, data: "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}")});
-    } else {
-// TODO peak pick
-    }
+    // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
+    chemID = "" + this._getPropertyAsJavaObject("evaluate","script('show chemical inchiKey')");
+    if (chemID.length() < 36) // InChIKey=RZVAJINKPMORJF-BGGKNDAXNA-N
+      chemID = null;
+    else
+      chemID = chemID.substring(36).split('\n')[0];
+    Jmol.View.updateView(this, {chemID:chemID, data: "" + this._getPropertyAsJavaObject("evaluate", "extractModel", "{visible}")});
   }
   	  
+  proto._atomPickedCallback = function(imodel, iatom, _jmol_atomPickedCallback) {
+    // direct callback from Jmol HTML5 applet
+    if (iatom < 0) {
+    // TODO could be a model change? 
+    } else {
+      var A = [iatom + 1];
+      Jmol.View.updateAtomPick(this, A);
+      this._updateAtomPick(A);
+    }
+  }
+
   proto._updateAtomPick = function(A) {
     if (A.length == 0)
       return this._script("select none");
