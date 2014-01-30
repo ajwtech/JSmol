@@ -282,19 +282,17 @@
      // ignore
      // model loaded
    }
-   //TODO
-//   alert (msg);
   }
  
-   proto._updateAtomPick = function(A) {
-     // TODO
-   }
+  proto._updateAtomPick = function(A) {
+    this._applet.syncScript('<PeakData atom="' + A[0] + '" sourceID="' + this._currentView.info.viewID + '">');
+  }
 
- proto._showStatus = function(msg, title) {
+  proto._showStatus = function(msg, title) {
    // from JSV
-   title && (msg = title + "\n\n\n" + msg);
-   alert (msg);
- }
+    title && (msg = title + "\n\n\n" + msg);
+    alert (msg);
+  }
 
 })(Jmol._JSVApplet, Jmol._JSVApplet.prototype);
 

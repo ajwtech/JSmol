@@ -1799,6 +1799,7 @@ View.updateFromSync = function(applet, msg) {
   }
   var A = ((id = View.__getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
     ? id.split(",") : []);
+  setTimeout(function(){View.updateAtomPick(applet, A)}, 10); 
   View.updateAtomPick(applet, A);
 }
 
