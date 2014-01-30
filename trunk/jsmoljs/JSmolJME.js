@@ -141,7 +141,7 @@
         app._applet.options(app._options);
         var f = "";
         if (app._viewSet) {
-          f = "(function(){" + app._id + "._viewAtomPicked()})";
+          f = "(function(){" + app._id + "._atomPickedCallback()})";
         } else if (app.__Info.structureChangedCallback) {
           f = "(function(){"+app.__Info.structureChangedCallback.replace(/\(\)/, "(" + app._id + ")") + "})";
         }
@@ -244,55 +244,58 @@
       this._search("$" + Jmol.jmeSmiles(this))
   }
  
-  proto._viewAtomPicked = function(_jme_viewAtomPicked) {
-    // callback from JSME applet
+  proto._atomPickedCallback = function(_jme_viewAtomPicked) {
+    // direct callback from JSME applet
     if (this._viewSet == null)
       return;
     if (this._applet.molFile().split("V2000")[1] != ("" + this._molData).split("V2000")[1]) {
       this._molData = "<modified>";
       this._thisJmolModel = null;
       this._applet.resetAtomColors(1);
-      this._atomSelection = -1;
+      this.__atomSelection = [];
       return;
     }
     // not a structural change
     var data = this._applet.jmeFile();
+    
     if (data.indexOf(":") < 0) {
-      this._atomSelection = -1;
+      this.__atomSelection = [];
       this._applet.resetAtomColors(1);
       Jmol.View.updateAtomPick(this, []);
       return;
     }
+    
     data = data.split(" ");
     var n = parseInt(data[0]);
     var iAtom = 0;
     for (var i = 0; i < n; i++)
-      if (i != this._atomSelection && data[i*3 + 2].indexOf(":") >= 0) {
+      if (!this.__atomSelection[i + 1] && data[i*3 + 2].indexOf(":") >= 0) {
         iAtom = i + 1;
         break;
       }
     if (iAtom <= 0)
       return;
-    this._atomSelection = iAtom;
-    this._applet.resetAtomColors(1);
-    var A = [];
+    var A = [];    
     A.push(iAtom);
     Jmol.View.updateAtomPick(this, A);
     this._updateAtomPick(A);
     if (this._atomPickCallback)
       setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
   }
-  
+
   proto._updateAtomPick = function(A, _jme_updateAtomPick) {
     this._applet.resetAtomColors(1);
     if (A.length == 0)
       return;
     var B = [];
+    var C = [];
     for (var i = 0; i < A.length; i++) { 
      B.push(A[i]);
      B.push(3);
+     C[A[i]] = 1;
     }
     this._applet.setAtomBackgroundColors(1, B.join(","));
+    this.__atomSelection = C;
   }
 
 	proto._showInfo = Jmol._Applet.prototype._showInfo;

@@ -32,7 +32,8 @@
    // This version of j2slib requires jQuery and works in both Chrome and MSIE locally.
   
    // J2S class changes:
-  
+
+   // BH 1/30/2014 12:54:22 PM gave all field variables prefix underscore. This allows Google Closure Compiler to skip them.  
    // BH 12/3/2013 3:39:57 PM window["j2s.lib"].base implemented
    // BH 12/1/2013 5:34:21 AM removed ClazzLoaderProgressMonitor.initialize and all Clazz.event business; handled by Jmol.clearVars()
    // BH 11/30/2013 12:43:58 PM adding Clazz.arrayIs() -- avoids Number.constructor.toString() infinite recursion
@@ -277,7 +278,7 @@
     
     	for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
     		var p = Clazz._extendedObjectMethods[i];
-    		Array.prototype[p] = JavaObject.prototype[p];
+    		Array.prototype[p] = proto[p];
     	}
     	JavaObject.__CLASS_NAME__ = "Object";
     	JavaObject["getClass"] = function () { return JavaObject; }; 
