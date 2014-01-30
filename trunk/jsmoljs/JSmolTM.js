@@ -238,15 +238,15 @@ proto._searchDatabase = function(query, database, script){
 		this._loadFile(dm, script);
 		return;
 	}
-	var self = this;
+	var me = this;
 	Jmol._getRawDataFromServer(
 		database,
 		query,
-		function(data){self._loadModel(data, "")}
+		function(data){me.__loadModel(data)}
 	);
 }
 
-proto._loadModel = function(mol) {
+proto.__loadModel = function(mol) {
   this._spin(false);
   if (mol == "''")mol = this._mol;
   if (!mol) {
@@ -294,7 +294,7 @@ proto._loadFile = function(fileName){
 	this._showInfo(false);
 	this._thisJmolModel = fileName;
 	var app = this;
-	Jmol._loadFileData(this, fileName, function(data){app._loadModel(data)});
+	Jmol._loadFileData(this, fileName, function(data){app.__loadModel(data)});
 }
 
 proto._processEvent = function(type, xym) {

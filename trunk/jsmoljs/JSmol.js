@@ -415,8 +415,8 @@
       // only at end
       if (Jmol[s])
         clearTimeout(Jmol[s]);
-      var self = this;
-      Jmol[s] = setTimeout(function() {Jmol._repaint(self, true);Jmol[s]=null}, 100);
+      var me = this;
+      Jmol[s] = setTimeout(function() {Jmol._repaint(me, true);Jmol[s]=null}, 100);
     }
     
     return proto;

@@ -221,17 +221,10 @@
     // called request to update view with view.JSV.data==null from Jmol.View
     // we must get the simulation from MOL data
 
-
-    if ((xxxx=this._applet.getPropertyAsJavaObject("SOURCEID")).get("SOURCEID") == view.info.viewID)
-      return;
-    this._applet.script("CLOSE VIEWS;VIEW *;SELECT ID \"" + view.info.viewID + "\"");
-    if (this._applet.getPropertyAsJavaObject("SOURCEID").get("SOURCEID") == view.info.viewID)
-      return;
-    
     var molData = null;
     var rec = view["JSV"];
     var haveMolData = (view["Jmol"] || view["JME"]); 
-    if (!haveMolData && rec.chemID == null) {
+    if (!haveMolData && view.info.chemID == null) {
       rec.data = "N/A"; // this has to be a simulation to work
       return;
     }
@@ -251,18 +244,28 @@
       vmol.applet._loadModelFromView(view);
       return;
     }
-    
+
+    this.__selectSpectrum(view);
+    if (this._applet.getPropertyAsJavaObject("SOURCEID").get("SOURCEID") == view.info.viewID)
+      return;
+
     var script = this.__Info.preloadScript;
     if (script == null) 
       script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
     script += "; LOAD ID \"" + view.info.viewID + "\" APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
-    Jmol.script(this, script);
+    this._applet.runScriptNow(script);
+    this.__selectSpectrum(view);
     if (this._viewSet != null)
-      Jmol.View.updateView(this, {chemID:rec.chemID, data:molData});
+      Jmol.View.updateView(this, {chemID:view.info.chemID, data:molData});
     // will need a load data callback?
   }
   
-  proto._loadModel = function(data, chemID) {
+  proto.__selectSpectrum = function(view) {
+    view || (view = this._currentView);  
+    this._applet.runScriptNow("SELECT ID \"" + view.info.viewID + "\"");
+  }
+  
+  proto.__loadModel = function(data, chemID) {
     if (data == null)
       return;
   // retun from asynchronous call in loadModelFromView 

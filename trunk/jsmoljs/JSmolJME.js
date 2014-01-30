@@ -196,8 +196,8 @@
 		Jmol._getRawDataFromServer(
 			database,
 			query,
-			function(data){me._loadModel(data, me._searchQuery)},
-      function() {me._loadModel(null, me._searchQuery)}, 
+			function(data){me.__loadModel(data, me._searchQuery)},
+      function() {me.__loadModel(null, me._searchQuery)}, 
       false,// not base64
       true  // noScript
 		);
@@ -208,10 +208,10 @@
 		this._showInfo(false);
 		this._thisJmolModel = "" + Math.random();
 		var me = this;
-		Jmol._loadFileData(this, fileName, function(data){me._loadModel(data, chemID)}, function() {me._loadModel(null, chemID)});
+		Jmol._loadFileData(this, fileName, function(data){me.__loadModel(data, chemID)}, function() {me.__loadModel(null, chemID)});
 	}
   
-	proto._loadModel = function(jmeOrMolData, chemID, _jme_loadModel) {
+	proto.__loadModel = function(jmeOrMolData, chemID, _jme__loadModel) {
     if (jmeOrMolData == null)
       return;
 	  Jmol.jmeReadMolecule(this, jmeOrMolData);
@@ -223,11 +223,11 @@
     // request from Jmol.View to update view with view.JME.data==null or needs changing
     var rec = view["JME"];
     if (rec.data != null) {
-		  this._loadModel(rec.data, rec.chemID);
+		  this.__loadModel(rec.data, view.info.chemID);
       return;
     }
     if (rec.chemID != null) {
-      Jmol._searchMol(this, rec.chemID, null, false);
+      Jmol._searchMol(this, view.info.chemID, null, false);
       return;
     }
     rec = view["Jmol"];

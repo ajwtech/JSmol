@@ -164,15 +164,15 @@ GLmol.prototype.create = function() {
 	this.orthoscopicCamera.position.z = this.CAMERA_Z;
 	this.orthoscopicCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
-	var self = this;
+	var me = this;
 	Jmol.$resize(function() { // only window can capture resize event
-		self.WIDTH = self.container.width();
-		self.HEIGHT = self.container.height();
-		self.ASPECT = self.WIDTH / self.HEIGHT;
-		self.renderer.setSize(self.WIDTH, self.HEIGHT);
-		self.camera.aspect = self.ASPECT;
-		self.camera.updateProjectionMatrix();
-		self.show();
+		me.WIDTH = me.container.width();
+		me.HEIGHT = me.container.height();
+		me.ASPECT = me.WIDTH / me.HEIGHT;
+		me.renderer.setSize(me.WIDTH, me.HEIGHT);
+		me.camera.aspect = me.ASPECT;
+		me.camera.updateProjectionMatrix();
+		me.show();
 	});
 
 	this.scene = null;
