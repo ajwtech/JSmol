@@ -143,7 +143,7 @@
 
    	<echo>adding JSV/export/resources files</echo>
    		<copy todir="site/jsmol/j2s/JSV/export/resources" >
-      <fileset dir="${jsv.path}lib/src/jspecview/export/resources">
+      <fileset dir="${jsv.path}Lib/src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
     </copy>
@@ -621,6 +621,7 @@
         	JSV/api/ScriptInterface.js 
         	JSV/api/XYScaleConverter.js 
         	JSV/app/JSVApp.js
+        	JSV/app/GenericMouse.js
         	JSV/appletjs/JSVApplet.js
         	JSV/common/Annotation.js
         	JSV/common/ColoredAnnotation.js
@@ -667,7 +668,6 @@
         	JSV/js2d/JsParameters.js
         	JSV/js2d/JsPlatform.js
         	JSV/js2d/JsMainPanel.js
-        	JSV/js2d/Mouse.js
         	JSV/source/FileReader.js
         	JSV/source/JDXDataObject.js 
         	JSV/source/JDXDecompressor.js
@@ -967,6 +967,7 @@
 			JSV/api/ScriptInterface.js 
 			JSV/api/XYScaleConverter.js 
 			JSV/app/JSVApp.js
+        	JSV/app/GenericMouse.js
 			JSV/appletjs/JSVApplet.js
 			JSV/common/Annotation.js
 			JSV/common/ColoredAnnotation.js
@@ -1013,7 +1014,6 @@
 			JSV/js2d/JsParameters.js
 			JSV/js2d/JsPlatform.js
 			JSV/js2d/JsMainPanel.js
-			JSV/js2d/Mouse.js
 			JSV/source/FileReader.js
 			JSV/source/JDXDataObject.js 
 			JSV/source/JDXDecompressor.js
