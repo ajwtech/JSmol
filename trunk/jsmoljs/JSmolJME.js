@@ -184,7 +184,6 @@
 		
 	proto._searchDatabase = function(query, database, _jme_searchDatabase){
 		this._showInfo(false);
-    //alert("JME setting currentView to null in searchdatabase")
     this._searchQuery = database + query;
 		if (database == "$")
 			query = "$" + query; // 2D variant;  will be $$caffeine
@@ -206,7 +205,6 @@
 	
  	proto._loadFile = function(fileName, params, _jme_loadFile){
     var chemID = (params ? params.chemID : fileName);
-    //alert("_loadfle " + chemID);
 		this._showInfo(false);
 		this._thisJmolModel = "" + Math.random();
 		var me = this;
@@ -218,13 +216,12 @@
       return;
 	  Jmol.jmeReadMolecule(this, jmeOrMolData);
     if (this._viewSet != null)
-      Jmol.View.updateView(this, chemID, jmeOrMolData);      
+      Jmol.View.updateView(this, {chemID:chemID, data:jmeOrMolData});      
 	}
 
   proto._loadModelFromView = function(view, _jme_loadModelFromView) {
     // request from Jmol.View to update view with view.JME.data==null or needs changing
     var rec = view["JME"];
-    //alert("loadmodel rec.data=" + rec.data + "  rec.chemID = " + rec.chemID);
     if (rec.data != null) {
 		  this._loadModel(rec.data, rec.chemID);
       return;
@@ -244,11 +241,11 @@
   proto._updateView = function(_jme_updateView) {
     // called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
     if (this._viewSet != null)
-      this._search("$" + this._applet.smiles())
-//      Jmol.View.updateView(this, null, this._applet.molFile());
+      this._search("$" + Jmol.jmeSmiles(this))
   }
-  	  
+ 
   proto._viewAtomPicked = function(_jme_viewAtomPicked) {
+    // callback from JSME applet
     if (this._viewSet == null)
       return;
     if (this._applet.molFile().split("V2000")[1] != ("" + this._molData).split("V2000")[1]) {
@@ -262,17 +259,19 @@
     var data = this._applet.jmeFile();
     if (data.indexOf(":") < 0) {
       this._atomSelection = -1;
+      this._applet.resetAtomColors(1);
+      Jmol.View.updateAtomPick(this, []);
       return;
     }
     data = data.split(" ");
     var n = parseInt(data[0]);
-    var iAtom = -1;
+    var iAtom = 0;
     for (var i = 0; i < n; i++)
       if (i != this._atomSelection && data[i*3 + 2].indexOf(":") >= 0) {
-        iAtom = i;
+        iAtom = i + 1;
         break;
       }
-    if (iAtom < 0)
+    if (iAtom <= 0)
       return;
     this._atomSelection = iAtom;
     this._applet.resetAtomColors(1);
@@ -286,12 +285,13 @@
   
   proto._updateAtomPick = function(A, _jme_updateAtomPick) {
     this._applet.resetAtomColors(1);
+    if (A.length == 0)
+      return;
     var B = [];
     for (var i = 0; i < A.length; i++) { 
-     B.push(A[i] + 1);
+     B.push(A[i]);
      B.push(3);
     }
-    document.title = B.join(" ");
     this._applet.setAtomBackgroundColors(1, B.join(","));
   }
 
@@ -316,7 +316,7 @@
         jme = this._applet = Jmol._getElement(this, "object");
       var isOK = true;
       if (jme != null) {
-  		  var jmeSMILES = jme.smiles();
+  		  var jmeSMILES = Jmol.jmeSmiles(this);
   		  var jmolAtoms = (jmeSMILES ? Jmol.evaluate(jmol, "{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')") : "({})");
 		    var isOK = (jmolAtoms != "({})");
       }
@@ -370,9 +370,11 @@
   //////  additional API for JME /////////
 
   // see also http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
-
+  
+  // The final replacement here is to remove markings from star option.
+  
   Jmol.jmeSmiles = function(jme, withStereoChemistry) {
-  	return (arguments.length == 1 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles())
+  	return (arguments.length == 1 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
   }
   
   Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {
