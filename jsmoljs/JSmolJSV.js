@@ -9,7 +9,8 @@
 * 
 */
 
-// 10/10/2013 1:25:28 PM BH JSV HTML5 option
+// BH 1/30/2014 1:04:09 PM  adds Info.viewSet 
+// BH 10/10/2013 1:25:28 PM JSV HTML5 option
 /*
 	Inserts the JSpecView applet in any compatible User Agent using the <object> tag
 	uses IE conditional comments to distinguish between IE and Mozilla
