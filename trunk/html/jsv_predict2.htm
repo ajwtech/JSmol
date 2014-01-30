@@ -3,6 +3,10 @@
 <head>
 <title>JSpecView/JSME/nmrdb/NIH-Resolver demo</title>
 <meta charset="utf-8" />
+
+<script type="text/javascript" src="JSmol.min.js"></script>
+
+<!--
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -12,6 +16,9 @@
 <script type="text/javascript" src="js/j2sjmol.js"></script>
 <script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolConsole.js"></script>
+
+-->
+
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
@@ -47,55 +54,45 @@ function unhideJSV() {
  $("#jsvdiv").show(); 
 }
 
+
+// The special thing here is Info.viewSet, which defines the group of applets 
+// that are to be communicating with each other. Info.viewSet is an HTML5-only
+// option. You can have any combination of JSME, Jmol, and JSV applets in a group.
+
 var JMEInfo = {     
+  viewSet: 1,
 	use: "HTML5",
-  visible: true,
   divId: "jmediv",
   options : "autoez",
   addSelectionOptions: true,
-  structureChangeCallback: null, // Jmol will handle this
-  viewSet: 1
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
+  structureChangeCallback: null // Jmol will handle this
 }
 
 Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
 
 var JmolInfo = {     
+  viewSet: 1,
 	use: "HTML5",
   width: 300,
   height:250,
-	script: "sync on;",
-  viewSet: 1,
   addSelectionOptions: false,
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false
 }
 
 
 JSVInfo = {
+  viewSet: 1,
+	use: "HTML5",
 	width: 800,
 	height: 600,
-	debug: false,
 	color: "0xC0C0C0",
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	use: "HTML5",
-	j2sPath: "j2s",
-  viewSet: 1,
   preloadScript: "close views;close simulations > 1; DEFAULTNMRNORMALIZATION 100;",
   script: 'defaultLoadScript "OVERLAYSTACKED true; VIEW *;STACKOFFSETY 50;";',
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false,
   addSelectionOptions: true,
-	readyFunction: null,      //   jsv_isReady
-  allowjavascript: true
-//        console: "consolediv"
 }
 
 //Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
@@ -154,7 +151,7 @@ Jmol.getJSVApplet("jsv", JSVInfo)
 <div id="infodiv" style="text-align:center">
 This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
 <br />along with JSpecView to quickly get a simulated spectrum for a compound of our choice.
-<br />It loads slowly because it is a test page; it will load much faster when not in testing.
+<br />Note that the three applets can be combined easily in any combination. 
 <br /><br />JSmol on this page calls servers in Frederick, Maryland (NIH resolver, for name-to-structure)
 <br />and Lausanne, Switzerland (nmrdb, for structure-to-spectrum)
 <br /><br /><span style="color:blue">Draw a chemical structure 
