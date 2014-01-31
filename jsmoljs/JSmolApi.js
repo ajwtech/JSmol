@@ -174,13 +174,12 @@
 
 
 	Jmol.evaluateVar = function(applet,expr) {
-		arguments.length >= 2 || (expr = "");
-		return applet._getPropertyAsArray("variableInfo", expr);
+		return applet._evaluate(expr);
 	}
 
 	// DEPRECATED -- use Jmol.evaluateVar
 	Jmol.evaluate = function(applet,molecularMath) {
-		return applet._evaluate(molecularMath);
+		return applet._evaluateDEPRECATED(molecularMath);
 	}
 
 	// optional Info here	
