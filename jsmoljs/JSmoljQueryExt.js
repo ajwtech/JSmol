@@ -3,75 +3,75 @@
 
 ;(function($) {
 
-  // adds support for synchronous binary file reading
-  // incorporates jquery.iecors MSIE asynchronous cross-domain request
+	// adds support for synchronous binary file reading
+	// incorporates jquery.iecors MSIE asynchronous cross-domain request
 
-  $.extend( $.support, { iecors: !!window.XDomainRequest });
+	$.extend( $.support, { iecors: !!window.XDomainRequest });
 
-  if ($.support.iecors) {
-    // source: https://github.com/dkastner/jquery.iecors
-    // author: Derek Kastner dkastner@gmail.com http://dkastner.github.com    
-    $.ajaxTransport(function(s) {
-      return {
-        send: function( headers, complete ) {
-          // Note that xdr is not synchronous.
-          // This is only being used in JSmol for transport of java code packages.
-          var xdr = new window.XDomainRequest();
-          xdr.onload = function() {          
-            var headers = { 'Content-Type': xdr.contentType };
-            complete(200, 'OK', { text: xdr.responseText }, headers);
-          };
+	if ($.support.iecors) {
+		// source: https://github.com/dkastner/jquery.iecors
+		// author: Derek Kastner dkastner@gmail.com http://dkastner.github.com    
+		$.ajaxTransport(function(s) {
+			return {
+				send: function( headers, complete ) {
+					// Note that xdr is not synchronous.
+					// This is only being used in JSmol for transport of java code packages.
+					var xdr = new window.XDomainRequest();
+					xdr.onload = function() {          
+						var headers = { 'Content-Type': xdr.contentType };
+						complete(200, 'OK', { text: xdr.responseText }, headers);
+					};
 					if ( s.xhrFields ) {
-            xdr.onerror = s.xhrFields.error;
-            xdr.ontimeout = s.xhrFields.timeout;
+						xdr.onerror = s.xhrFields.error;
+						xdr.ontimeout = s.xhrFields.timeout;
 					}
-          xdr.open( s.type, s.url );
-          xdr.send( ( s.hasContent && s.data ) || null );
-        },
-        abort: function() {        
-          xdr.abort();
-        }
-      };
-    });
-  } else {
-    $.ajaxSetup({
-      accepts: { binary: "text/plain; charset=x-user-defined" },
-      responseFields: { binary: "response" }
+					xdr.open( s.type, s.url );
+					xdr.send( ( s.hasContent && s.data ) || null );
+				},
+				abort: function() {        
+					xdr.abort();
+				}
+			};
+		});
+	} else {
+		$.ajaxSetup({
+			accepts: { binary: "text/plain; charset=x-user-defined" },
+			responseFields: { binary: "response" }
 		})
 
-    $.ajaxTransport('binary', function(s) {
+		$.ajaxTransport('binary', function(s) {
 			var callback;
-      return {
-        // synchronous binary transfer only
-    		send: function( headers, complete ) {        
-    			var xhr = s.xhr();
-    			xhr.open( s.type, s.url, false ); // not asynchronous
-          if (xhr.hasOwnProperty("responseType")) {
-            xhr.responseType = "arraybuffer";
-          } else if (xhr.overrideMimeType) {
-            xhr.overrideMimeType('text/plain; charset=x-user-defined');
-          }
-    			if ( !s.crossDomain && !headers["X-Requested-With"] ) {
-    				headers["X-Requested-With"] = "XMLHttpRequest";
-    			}
-    			try {
-    				for (var i in headers )
-    					xhr.setRequestHeader( i, headers[ i ] );
-    			} catch(_) {}
-          
-    			xhr.send( ( s.hasContent && s.data ) || null );
-          
+			return {
+				// synchronous binary transfer only
+				send: function( headers, complete ) {        
+					var xhr = s.xhr();
+					xhr.open( s.type, s.url, false ); // not asynchronous
+					if (xhr.hasOwnProperty("responseType")) {
+						xhr.responseType = "arraybuffer";
+					} else if (xhr.overrideMimeType) {
+						xhr.overrideMimeType('text/plain; charset=x-user-defined');
+					}
+					if ( !s.crossDomain && !headers["X-Requested-With"] ) {
+						headers["X-Requested-With"] = "XMLHttpRequest";
+					}
+					try {
+						for (var i in headers )
+							xhr.setRequestHeader( i, headers[ i ] );
+					} catch(_) {}
+
+					xhr.send( ( s.hasContent && s.data ) || null );
+
  					// Listener
 					callback = function( _, isAbort ) {
 
 					var 
-  				  status = xhr.status,
+						status = xhr.status,
 						statusText = "",
-  				  responseHeaders = xhr.getAllResponseHeaders(),
+						responseHeaders = xhr.getAllResponseHeaders(),
 						responses = {},
 						xml;
-          
-    			try {
+
+					try {
 
 						// Firefox throws exceptions when accessing properties
 						// of an xhr when a network error occured
@@ -85,14 +85,14 @@
 							// When requesting binary data, IE6-9 will throw an exception
 							// on any attempt to access responseText (#11426)
 							try {
-                responses.text = (typeof xhr.responseText === "string" ? xhr.responseText : null);
-          		} catch( _ ) {
+								responses.text = (typeof xhr.responseText === "string" ? xhr.responseText : null);
+							} catch( _ ) {
 							}
 							try {
 								responses.binary = xhr.response;
 							} catch( _ ) {
 							}
-              
+
 							// Firefox throws an exception when accessing
 							// statusText for faulty cross-domain requests
 							try {
@@ -112,21 +112,21 @@
 							} else if ( status === 1223 ) {
 								status = 204;
 							}
-      				complete( status, statusText, responses, responseHeaders );
+							complete( status, statusText, responses, responseHeaders );
 						}
-  				} catch( e ) {
-            alert(e)
-  					complete( -1, e );
-  				}
-          };
-          callback();          
-    		},
-    		abort: function() {}
-    	};
-    });
-  }
+					} catch( e ) {
+						alert(e)
+						complete( -1, e );
+					}
+					};
+					callback();          
+				},
+				abort: function() {}
+			};
+		});
+	}
 })( jQuery );
-   
+	 
 /*
  * jQuery outside events - v1.1 - 3/16/2010
  * http://benalman.com/projects/jquery-outside-events-plugin/
@@ -141,50 +141,50 @@
  */
 
 ;(function($,doc,eventList,id){  
-  // was 'click dblclick mousemove mousedown mouseup mouseover mouseout change select submit keydown keypress keyup'
-  $.map(
-    eventList.split(' '),
-    function( event_name ) { jq_addOutsideEvent( event_name ); }
-  );
-  jq_addOutsideEvent( 'focusin',  'focus' + id );
-  jq_addOutsideEvent( 'focusout', 'blur' + id );
-  function jq_addOutsideEvent( event_name, outside_event_name ) {
-    outside_event_name = outside_event_name || event_name + id;
-    var elems = $(),
-      event_namespaced = event_name + '.' + outside_event_name + '-special-event';
-    $.event.special[ outside_event_name ] = {    
-      setup: function(){
-        elems = elems.add( this );
-        if ( elems.length === 1 ) {
-          $(doc).bind( event_namespaced, handle_event );
-        }
-      },
-      teardown: function(){
-        self.Jmol && Jmol._setMouseOwner(null);
-        elems = elems.not( this );
-        if ( elems.length === 0 ) {
-          $(doc).unbind( event_namespaced );
-        }
-      },
-      add: function( handleObj ) {
-        var old_handler = handleObj.handler;
-        handleObj.handler = function( event, elem ) {
-          event.target = elem;
-          old_handler.apply( this, arguments );
-        };
-      }
-    };
-    function handle_event( event ) {
-      $(elems).each(function(){
-        self.Jmol && (outside_event_name.indexOf("mouseup") >= 0 || outside_event_name.indexOf("touchend") >= 0) && Jmol._setMouseOwner(null);
-        var elem = $(this);
-        if ( this !== event.target && !elem.has(event.target).length ) {
-        	//BH: adds event to pass that along to our handler as well.
-          elem.triggerHandler( outside_event_name, [ event.target, event ] );
-        }
-      });
-    };
-  };
+	// was 'click dblclick mousemove mousedown mouseup mouseover mouseout change select submit keydown keypress keyup'
+	$.map(
+		eventList.split(' '),
+		function( event_name ) { jq_addOutsideEvent( event_name ); }
+	);
+	jq_addOutsideEvent( 'focusin',  'focus' + id );
+	jq_addOutsideEvent( 'focusout', 'blur' + id );
+	function jq_addOutsideEvent( event_name, outside_event_name ) {
+		outside_event_name = outside_event_name || event_name + id;
+		var elems = $(),
+			event_namespaced = event_name + '.' + outside_event_name + '-special-event';
+		$.event.special[ outside_event_name ] = {    
+			setup: function(){
+				elems = elems.add( this );
+				if ( elems.length === 1 ) {
+					$(doc).bind( event_namespaced, handle_event );
+				}
+			},
+			teardown: function(){
+				self.Jmol && Jmol._setMouseOwner(null);
+				elems = elems.not( this );
+				if ( elems.length === 0 ) {
+					$(doc).unbind( event_namespaced );
+				}
+			},
+			add: function( handleObj ) {
+				var old_handler = handleObj.handler;
+				handleObj.handler = function( event, elem ) {
+					event.target = elem;
+					old_handler.apply( this, arguments );
+				};
+			}
+		};
+		function handle_event( event ) {
+			$(elems).each(function(){
+				self.Jmol && (outside_event_name.indexOf("mouseup") >= 0 || outside_event_name.indexOf("touchend") >= 0) && Jmol._setMouseOwner(null);
+				var elem = $(this);
+				if ( this !== event.target && !elem.has(event.target).length ) {
+					//BH: adds event to pass that along to our handler as well.
+					elem.triggerHandler( outside_event_name, [ event.target, event ] );
+				}
+			});
+		};
+	};
 })(jQuery,document,"click mousemove mouseup touchmove touchend", "outjsmol");
-  
+
 

@@ -28,10 +28,10 @@ var ntsp = Number.prototype.toString; // don't touch this one
 
 java.lang.Number=Number;
 if(Clazz._supportsNativeObject){
-  for(var i=0;i<Clazz._extendedObjectMethods.length;i++){
-    var p=Clazz._extendedObjectMethods[i];
-    Number.prototype[p]=JavaObject.prototype[p];
-  }
+	for(var i=0;i<Clazz._extendedObjectMethods.length;i++){
+		var p=Clazz._extendedObjectMethods[i];
+		Number.prototype[p]=JavaObject.prototype[p];
+	}
 }
 
 Number.prototype.toString = ntsp;
@@ -106,7 +106,7 @@ return 0;
 $_k(Integer, function(v){
  v == null && (v = 0);
  if (typeof v != "number")
-  v = Integer.parseIntRadix(v, 10);
+	v = Integer.parseIntRadix(v, 10);
  this.valueOf=function(){return v;};
 }); //BH
 /*
@@ -125,12 +125,12 @@ Integer.TYPE=Integer.prototype.TYPE=Integer;
 
 $_M(Integer,"bitCount",
 function(i) {
-  i = i - ((i >>> 1) & 0x55555555);
-  i = (i & 0x33333333) + ((i >>> 2) & 0x33333333);
-  i = (i + (i >>> 4)) & 0x0f0f0f0f;
-  i = i + (i >>> 8);
-  i = i + (i >>> 16);
-  return i & 0x3f;
+	i = i - ((i >>> 1) & 0x55555555);
+	i = (i & 0x33333333) + ((i >>> 2) & 0x33333333);
+	i = (i + (i >>> 4)) & 0x0f0f0f0f;
+	i = i + (i >>> 8);
+	i = i + (i >>> 16);
+	return i & 0x3f;
 },"Number");
 Integer.bitCount=Integer.prototype.bitCount;
 
@@ -149,13 +149,13 @@ Integer.numberOfLeadingZeros=Integer.prototype.numberOfLeadingZeros;
 
 $_M(Integer,"numberOfTrailingZeros",
 function(i) {
-  if (i == 0) return 32;
-  var n = 31;
-  var y = i <<16; if (y != 0) { n = n -16; i = y; }
-  y = i << 8; if (y != 0) { n = n - 8; i = y; }
-  y = i << 4; if (y != 0) { n = n - 4; i = y; }
-  y = i << 2; if (y != 0) { n = n - 2; i = y; }
-  return n - ((i << 1) >>> 31);
+	if (i == 0) return 32;
+	var n = 31;
+	var y = i <<16; if (y != 0) { n = n -16; i = y; }
+	y = i << 8; if (y != 0) { n = n - 8; i = y; }
+	y = i << 4; if (y != 0) { n = n - 4; i = y; }
+	y = i << 2; if (y != 0) { n = n - 2; i = y; }
+	return n - ((i << 1) >>> 31);
 },"Number");
 Integer.numberOfTrailingZeros=Integer.prototype.numberOfTrailingZeros;
 
@@ -170,10 +170,10 @@ throw new NumberFormatException("radix "+radix+" greater than Character.MAX_RADI
 }
 if (radix == 10) {
 	for (var i = s.length; --i >= 0;) {
-	  var c = s.charCodeAt(i);
-	  if (c >= 48 && c <= 57) continue;
-	  if (i > 0 || c != 43 && c != 45)
-		  throw new NumberFormatException("Not a Number : "+s);
+		var c = s.charCodeAt(i);
+		if (c >= 48 && c <= 57) continue;
+		if (i > 0 || c != 43 && c != 45)
+			throw new NumberFormatException("Not a Number : "+s);
 
 	}
 }
@@ -243,10 +243,10 @@ return (radix == 8 ? parseInt(n, 8) : n);
 },"~S");
 
 Integer.decode=$_M(Integer,"decode", function(n){
-  n = Integer.decodeRaw(n);
-  if (isNaN(n) || n < Integer.MIN_VALUE|| n > Integer.MAX_VALUE)
-  throw new NumberFormatException("Invalid Integer");
-  return new Integer(n);
+	n = Integer.decodeRaw(n);
+	if (isNaN(n) || n < Integer.MIN_VALUE|| n > Integer.MAX_VALUE)
+	throw new NumberFormatException("Invalid Integer");
+	return new Integer(n);
 },"~S");
 
 $_V(Integer,"hashCode",
@@ -323,10 +323,10 @@ return i.toString(2);
 
 Long.decode=$_M(Long,"decode",
 function(n){
-  n = Integer.decodeRaw(n);
-  if (isNaN(n))
-    throw new NumberFormatException("Invalid Long");
-  return new Long(n);
+	n = Integer.decodeRaw(n);
+	if (isNaN(n))
+		throw new NumberFormatException("Invalid Long");
+	return new Long(n);
 },"~S");
 
 java.lang.Short = Short = function () {
@@ -347,7 +347,7 @@ $_k (Short,
 function (v) {
  v == null && (v = 0);
  if (typeof v != "number")
-  v = Integer.parseIntRadix(v, 10);
+	v = Integer.parseIntRadix(v, 10);
  v = v.shortValue();
  this.valueOf = function () {return v;};
 });
@@ -375,8 +375,8 @@ $_M(Short, "$valueOf",
 function (s) {
 return new Short(Short.parseShort (s, 10));
 }, "String");
-  */
-  
+	*/
+
 $_V(Short, "$valueOf",
 function (s) {
 return new Short(s);
@@ -387,8 +387,8 @@ $_M(Short, "$valueOf",
 function (s, r) {
 return new Short(Short.parseShort (s, r));
 }, "String, Number");
-  */
-  
+	*/
+
 Short.$valueOf = Short.prototype.$valueOf;
 $_V(Short, "equals",
 function (s) {
@@ -408,10 +408,10 @@ Short.toBinaryString = Short.prototype.toBinaryString = function (i) {
 };
 Short.decode = $_M(Short, "decode",
 function(n){
-  n = Integer.decodeRaw(n);
-  if (isNaN(n) || n < -32768|| n > 32767)
-    throw new NumberFormatException("Invalid Short");
-  return new Short(n);
+	n = Integer.decodeRaw(n);
+	if (isNaN(n) || n < -32768|| n > 32767)
+		throw new NumberFormatException("Invalid Short");
+	return new Short(n);
 }, "~S");
 
 java.lang.Byte=Byte=function(){
@@ -430,7 +430,7 @@ return""+this.valueOf();
 Clazz.makeConstructor(Byte,
 function(v){
  if (typeof v != "number")
-   v = Integer.parseIntRadix(v, 10);
+	 v = Integer.parseIntRadix(v, 10);
  v = v.byteValue();
 this.valueOf=function(){
 return v;
@@ -480,9 +480,9 @@ return i.toString(2);
 };
 Byte.decode=$_M(Byte,"decode",
 function(n){
-  n = Integer.decodeRaw(n);
-  if (isNaN(n) || n < -128|| n > 127)
-    throw new NumberFormatException("Invalid Byte");
+	n = Integer.decodeRaw(n);
+	if (isNaN(n) || n < -128|| n > 127)
+		throw new NumberFormatException("Invalid Byte");
 return new Byte(n);
 },"~S");
 
@@ -503,7 +503,7 @@ return""+this.valueOf();
 $_k(Float, function(v){
  v == null && (v = 0);
  if (typeof v != "number") 
-  v = Number(v);
+	v = Number(v);
  this.valueOf=function(){return v;}
 });
 
@@ -572,7 +572,7 @@ return""+this.valueOf();
 $_k(Double, function(v){
  v == null && (v = 0);
  if (typeof v != "number") 
-  v = Double.parseDouble(v);
+	v = Double.parseDouble(v);
  this.valueOf=function(){return v;};
 }); // BH
 
@@ -655,8 +655,8 @@ Boolean.serialVersionUID=Boolean.prototype.serialVersionUID=-3665804199014368530
 
 Clazz.overrideConstructor(Boolean,
 function(s){
-  var b = ((typeof s == "string" ? Boolean.toBoolean(s) : s) ? true : false);
-  this.valueOf=function(){return b;};
+	var b = ((typeof s == "string" ? Boolean.toBoolean(s) : s) ? true : false);
+	this.valueOf=function(){return b;};
 },"~O");
 
 Boolean.parseBoolean=$_M(Boolean,"parseBoolean",
@@ -892,11 +892,11 @@ String.serialVersionUID=String.prototype.serialVersionUID=-6849794470754667710;
 sp.$replace=function(c1,c2){
 	if (c1 == c2 || this.indexOf (c1) < 0) return "" + this;
 	if (c1.length == 1) {
-    if ("\\$.*+|?^{}()[]".indexOf(c1) >= 0) 	c1 = "\\" + c1;
-  } else {    
-    c1=c1.replace(/([\\\$\.\*\+\|\?\^\{\}\(\)\[\]])/g,function($0,$1){return"\\"+$1;});
-  }
-  return this.replace(new RegExp(c1,"gm"),c2);
+		if ("\\$.*+|?^{}()[]".indexOf(c1) >= 0) 	c1 = "\\" + c1;
+	} else {    
+		c1=c1.replace(/([\\\$\.\*\+\|\?\^\{\}\(\)\[\]])/g,function($0,$1){return"\\"+$1;});
+	}
+	return this.replace(new RegExp(c1,"gm"),c2);
 };
 sp.$generateExpFunction=function(str){
 var arr=[];
@@ -1169,7 +1169,7 @@ return len1-len2;
 
 sp.contains = function(a) {return this.indexOf(a) >= 0}  // bh added
 sp.compareTo = function(a){return this > a ? 1 : this < a ? -1 : 0} // bh added
-  
+
 
 
 sp.toCharArray=function(){
@@ -1828,12 +1828,12 @@ function(){
 var s = "" + this + "\n";
 for(var i=0;i<this.stackTrace.length;i++){
  var t=this.stackTrace[i];
-  var x=t.methodName.indexOf("(");
-  var n=t.methodName.substring(0,x).replace(/\s+/g,"");
-  if(n!="construct"||t.nativeClazz==null
-     ||Clazz.getInheritedLevel(t.nativeClazz,Throwable)<0){
-        s += t + "\n";
-  }
+	var x=t.methodName.indexOf("(");
+	var n=t.methodName.substring(0,x).replace(/\s+/g,"");
+	if(n!="construct"||t.nativeClazz==null
+		 ||Clazz.getInheritedLevel(t.nativeClazz,Throwable)<0){
+				s += t + "\n";
+	}
 }
 return s;
 });

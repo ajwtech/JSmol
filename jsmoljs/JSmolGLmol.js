@@ -17,7 +17,7 @@ BH: added drawSphere and getMat methods
 
 
  GLmol - Molecular Viewer on WebGL/Javascript (0.44)
-  (C) Copyright 2011-2012, biochem_fan
+	(C) Copyright 2011-2012, biochem_fan
 		License: dual license of MIT or LGPL3
 
 	 This program uses
@@ -27,9 +27,9 @@ BH: added drawSphere and getMat methods
 		jQuery
 			http://jquery.org/
 			Copyright (c) 2011 John Resig
-			
-  // ParseXYZ by Bob Hanson hansonr@stolaf.edu 6/12/2012
-  
+
+	// ParseXYZ by Bob Hanson hansonr@stolaf.edu 6/12/2012
+
  */
 
 (function(THREE) {
@@ -47,25 +47,25 @@ Jmol._Canvas3D = function(id, Info, type, checkOnly){
 	this._uniqueId = ("" + Math.random()).substring(3);
 	this._id = id;
 	this._is2D = false;
-  this._isJava = false;
+	this._isJava = false;
 	this._jmolType = "Jmol._Canvas3D (Jmol/GLmol)";
 	this._platform = "J.awtjs.Platform";
 	if (checkOnly)
 		return this;
 	window[id] = this;
 	this._createCanvas(id, Info, new GLmol);
-  if (!Jmol._document || this._deferApplet)
-    return this;
-  this._init();
+	if (!Jmol._document || this._deferApplet)
+		return this;
+	this._init();
 	return this;
 };
 
 
 Jmol._refresh = function(applet, mode, strWhy, data) {
 	// just the orientation/scaling -- JSmol-GLmol
-  if (applet && applet._refresh) {
+	if (applet && applet._refresh) {
  		applet._refresh(mode, strWhy, data)
-  }
+	}
 };
 
 
@@ -75,13 +75,13 @@ function GLmol() {
 
 
 GLmol.setRefresh = function(proto) {
-    /**
-     * @j2sNative
-     * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
-     *   this.transformManager.finalizeTransformParameters();
-     *   Jmol.refresh(this.htmlName);
-     * }
-     */
+		/**
+		 * @j2sNative
+		 * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
+		 *   this.transformManager.finalizeTransformParameters();
+		 *   Jmol.refresh(this.htmlName);
+		 * }
+		 */
 		proto._refresh = function() {
 
 	// pixelsPerAngstrom can be used to calculate the new camera position.
@@ -121,8 +121,8 @@ GLmol.setRefresh = function(proto) {
 				gl.camera.bottom = -gl.camera.top;
 			}
 			gl.camera.updateProjectionMatrix();
-		  var me = this;
-		  requestAnimationFrame(function() {me._GLmol.show();});
+			var me = this;
+			requestAnimationFrame(function() {me._GLmol.show();});
 		}
 }
 
@@ -137,7 +137,7 @@ GLmol.getMat = function(me, color) {
 
 GLmol.prototype.create = function() {
 	this.container = Jmol.$(this.applet, "appletdiv");
-  this.WIDTH = this.container.width(), this.HEIGHT = this.container.height();
+	this.WIDTH = this.container.width(), this.HEIGHT = this.container.height();
 	this.ASPECT = this.WIDTH / this.HEIGHT;
 	this.NEAR = 1, FAR = 800;
 	this.CAMERA_Z = -150;
@@ -149,7 +149,7 @@ GLmol.prototype.create = function() {
 	canvas.height = this.container.height();
 	canvas.applet = this.applet;
 	Jmol._jsSetMouse(canvas);
-  this.applet._canvas = canvas;
+	this.applet._canvas = canvas;
 	canvas.style.width = "100%";
 	canvas.style.height = "100%";
 	canvas.id = this.id+"_canvas";
@@ -291,7 +291,7 @@ GLmol.prototype.initializeJmolExport = function() {
 };
 
 GLmol.prototype.drawSphere = function(group, pt, color, radius) {
-  var isRough = (radius < 0.05); // typical mesh dot
+	var isRough = (radius < 0.05); // typical mesh dot
 	var geom = (isRough ? this.sphereGeometry0 : this.sphereGeometry);
 	var sphere = new THREE.Mesh(geom, GLmol.getMat(this, color));
 	group.add(sphere);
@@ -300,7 +300,7 @@ GLmol.prototype.drawSphere = function(group, pt, color, radius) {
 	sphere.position.y = pt.y;
 	sphere.position.z = pt.z;
 }
-		
+
 GLmol.prototype.addJmolSphere = function(pt, color, radius) {
 	this.drawSphere(this.modelGroup, pt, color, radius);
 }
@@ -312,7 +312,7 @@ GLmol.prototype.addJmolCylinder = function(pt1, pt2, color, length, radius) {
 	GLmol.setPt(this.tpt2,pt2);
 	this.drawCylinder(this.modelGroup, this.tpt1, this.tpt2, 0 + radius, color, true);
 };
-			
+
 GLmol.prototype.addJmolTriangle = function(color, pt1, pt2, pt3) {
 	var geo = this._geoTriangles;
 	if (!geo)
@@ -332,10 +332,10 @@ GLmol.prototype.finalizeJmolExport = function() {
 		var geo = this._geoTriangles;
 		geo.computeFaceNormals();
 		var params = {vertexColors: THREE.FaceColors};
-    var obj = new THREE.Mesh(geo, new THREE.MeshLambertMaterial(params));
-    obj.doubleSided = true; // generally?
+		var obj = new THREE.Mesh(geo, new THREE.MeshLambertMaterial(params));
+		obj.doubleSided = true; // generally?
 //			    obj.material.wireframe = true;
-    this.modelGroup.add(obj);
+		this.modelGroup.add(obj);
 
 	}
 	this.setView(this._view);
@@ -345,7 +345,7 @@ GLmol.prototype.drawCylinder = function(group, from, to, radius, color, cap) {
 	if (!from || !to) return;
 
 	midpoint = new THREE.Vector3().add(from, to).multiplyScalar(0.5);
-	
+
 	var isRough = (radius < 0.05);
 	var geom = this.cylinderGeometry[(cap ? "c" : "n") + (isRough ? "0" : "")];
 	var cylinder = new THREE.Mesh(geom, GLmol.getMat(this, color));
@@ -357,106 +357,106 @@ GLmol.prototype.drawCylinder = function(group, from, to, radius, color, cap) {
 	group.add(cylinder);
 };
 
-  GLmol.addExportHook = function(applet) {
-  			J.exportjs.JSExporter.prototype.jsInitExport = function(applet) {
-  				applet._GLmol.initializeJmolExport();
-  			}
-  
-  			J.exportjs.JSExporter.prototype.jsSphere = function(applet, id, found, pt, o) {
-        
-        //alert(arguments.callee.caller.caller)
+	GLmol.addExportHook = function(applet) {
+				J.exportjs.JSExporter.prototype.jsInitExport = function(applet) {
+					applet._GLmol.initializeJmolExport();
+				}
 
-  				applet._GLmol.addJmolSphere(pt, o[0], o[1]);
-  			}
-  			J.exportjs.JSExporter.prototype.jsCylinder = function(applet, id, found, pt1, pt2, o) {
-   				applet._GLmol.addJmolCylinder(pt1, pt2, o[0], o[1], o[2])
-  			}
-  			
-  			J.exportjs.JSExporter.prototype.jsTriangle = function(applet, color, pt1, pt2, pt3) {
-   				applet._GLmol.addJmolTriangle(color, pt1, pt2, pt3)
-  			}
-  			
-  			J.exportjs.JSExporter.prototype.jsEndExport = function(applet) {
-  				applet._GLmol.finalizeJmolExport();
-  				applet._refresh();
-  			}
-  			
-  //  private void jsSurface(Point3f[] vertices, Vector3f[] normals,
-  //                         int[][] indices, int nVertices, int nPolygons,
-  //                         int nFaces, BitSet bsPolygons, int faceVertexMax,
-  //                         int color, int[] vertexColors, int[] polygonColors) {
-  //    // JavaScript only    
-  //  }
-  			
-  			J.exportjs.JSExporter.prototype.jsSurface = function(applet, vertices, normals, indices, 
-  					nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax,
-  					color, vertexColors, polygonColors) {
-  			// notes: Color is only used if both vertexColors and polygonColors are null.
-  			//        Only one of vertexColors or polygonColors will NOT be null.
-  			//        Int facevertexMax is either 3 or 4; indices may have MORE than that number
-  			//        of vertex indices, because the last one may be a flag indicating which 
-  			//        edges to display when just showing mesh edges. When there are quadrilaterals,
-  			//        then nPolygons != nFaces, and you need to create both 3-sides and 4-sided faces
-  			//				based on the length of the individual indices[i] array.  
-  			
-  			// nFaces was determined as follows:
-  			
-  			//    boolean isAll = (bsPolygons == null);
-  			//    if (isAll) {
-  			//      for (int i = nPolygons; --i >= 0;)
-  			//        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);    
-  			//    } else {
-  			//      for (int i = bsPolygons.nextSetBit(0); i >= 0; i = bsPolygons.nextSetBit(i + 1))
-  			//        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);      
-  			
-  			
-  			    var params = {};
-  			    if (vertexColors != null) {
-              params.vertexColors = THREE.VertexColors;
-              var vc = new Array(vertexColors.length);
-              for (var i = vertexColors.length; --i >= 0;)
-                vc[i] = new THREE.Color(vertexColors[i]);
-            } else if (polygonColors != null) {
-              params.vertexColors = THREE.FaceColors;
-            } else {
-              params.color = color;
-            }
-  			    var geo = new THREE.Geometry();
-  			    for (var i = 0; i < nVertices; i++) {
-      				geo.vertices.push(new THREE.Vector3(vertices[i].x, vertices[i].y, vertices[i].z));
-  			    }
-  				for (var i = 0; i < nPolygons; i++) {
-  				  var h = indices[i][0], k = indices[i][1], l = indices[i][2];
-            var m = indices[i][3];
-  				  var is3 = (faceVertexMax == 3 || indices[i].length == 3);
-  				  var f = (is3 ? new THREE.Face3(h, k, l) : new THREE.Face4(h, k, l, m));
-  				  // we can use the normals themselves, because they have .x .y .z
-  			    f.vertexNormals[0] = normals[h];
-  			    f.vertexNormals[1] = normals[k];
-  			    f.vertexNormals[2] = normals[l];
-  			    if (is3) {
-    			    if (vertexColors != null) {
-                f.vertexColors = [vc[h], vc[k], vc[l]];
-              }
-  			    } else {
-  				    f.vertexNormals[3] = normals[m];
-  			    }
-  
-            if (polygonColors != null) {
-              f.color = new THREE.Color(polygonColors[i]);
-            }
-  
-  				  geo.faces.push(f);
-  				}
-  
-  			    var obj = new THREE.Mesh(geo, new THREE.MeshLambertMaterial(params));
-  			    obj.doubleSided = true; // generally?
-  //			    obj.material.wireframe = true;
-  			    applet._GLmol.modelGroup.add(obj);
-  
-  //			    console.log(obj);
-  			}
-  }
+				J.exportjs.JSExporter.prototype.jsSphere = function(applet, id, found, pt, o) {
+
+				//alert(arguments.callee.caller.caller)
+
+					applet._GLmol.addJmolSphere(pt, o[0], o[1]);
+				}
+				J.exportjs.JSExporter.prototype.jsCylinder = function(applet, id, found, pt1, pt2, o) {
+	 				applet._GLmol.addJmolCylinder(pt1, pt2, o[0], o[1], o[2])
+				}
+
+				J.exportjs.JSExporter.prototype.jsTriangle = function(applet, color, pt1, pt2, pt3) {
+	 				applet._GLmol.addJmolTriangle(color, pt1, pt2, pt3)
+				}
+
+				J.exportjs.JSExporter.prototype.jsEndExport = function(applet) {
+					applet._GLmol.finalizeJmolExport();
+					applet._refresh();
+				}
+
+	//  private void jsSurface(Point3f[] vertices, Vector3f[] normals,
+	//                         int[][] indices, int nVertices, int nPolygons,
+	//                         int nFaces, BitSet bsPolygons, int faceVertexMax,
+	//                         int color, int[] vertexColors, int[] polygonColors) {
+	//    // JavaScript only    
+	//  }
+
+				J.exportjs.JSExporter.prototype.jsSurface = function(applet, vertices, normals, indices, 
+						nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax,
+						color, vertexColors, polygonColors) {
+				// notes: Color is only used if both vertexColors and polygonColors are null.
+				//        Only one of vertexColors or polygonColors will NOT be null.
+				//        Int facevertexMax is either 3 or 4; indices may have MORE than that number
+				//        of vertex indices, because the last one may be a flag indicating which 
+				//        edges to display when just showing mesh edges. When there are quadrilaterals,
+				//        then nPolygons != nFaces, and you need to create both 3-sides and 4-sided faces
+				//				based on the length of the individual indices[i] array.  
+
+				// nFaces was determined as follows:
+
+				//    boolean isAll = (bsPolygons == null);
+				//    if (isAll) {
+				//      for (int i = nPolygons; --i >= 0;)
+				//        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);    
+				//    } else {
+				//      for (int i = bsPolygons.nextSetBit(0); i >= 0; i = bsPolygons.nextSetBit(i + 1))
+				//        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);      
+
+
+						var params = {};
+						if (vertexColors != null) {
+							params.vertexColors = THREE.VertexColors;
+							var vc = new Array(vertexColors.length);
+							for (var i = vertexColors.length; --i >= 0;)
+								vc[i] = new THREE.Color(vertexColors[i]);
+						} else if (polygonColors != null) {
+							params.vertexColors = THREE.FaceColors;
+						} else {
+							params.color = color;
+						}
+						var geo = new THREE.Geometry();
+						for (var i = 0; i < nVertices; i++) {
+							geo.vertices.push(new THREE.Vector3(vertices[i].x, vertices[i].y, vertices[i].z));
+						}
+					for (var i = 0; i < nPolygons; i++) {
+						var h = indices[i][0], k = indices[i][1], l = indices[i][2];
+						var m = indices[i][3];
+						var is3 = (faceVertexMax == 3 || indices[i].length == 3);
+						var f = (is3 ? new THREE.Face3(h, k, l) : new THREE.Face4(h, k, l, m));
+						// we can use the normals themselves, because they have .x .y .z
+						f.vertexNormals[0] = normals[h];
+						f.vertexNormals[1] = normals[k];
+						f.vertexNormals[2] = normals[l];
+						if (is3) {
+							if (vertexColors != null) {
+								f.vertexColors = [vc[h], vc[k], vc[l]];
+							}
+						} else {
+							f.vertexNormals[3] = normals[m];
+						}
+
+						if (polygonColors != null) {
+							f.color = new THREE.Color(polygonColors[i]);
+						}
+
+						geo.faces.push(f);
+					}
+
+						var obj = new THREE.Mesh(geo, new THREE.MeshLambertMaterial(params));
+						obj.doubleSided = true; // generally?
+	//			    obj.material.wireframe = true;
+						applet._GLmol.modelGroup.add(obj);
+
+	//			    console.log(obj);
+				}
+	}
 
 return GLmol;
 }()); // GLmol = ....
