@@ -1782,6 +1782,7 @@ View.updateView = function(applet, Info, _View_updateView) {
 		applet._currentView = View.__createViewSet(applet._viewSet, Info.chemID);
 	}
 	applet._currentView[Info.type].data = Info.data;
+	applet._currentView[Info.type].smiles = applet._getSmiles();
 	if (Jmol.User.viewUpdatedCallback)
 		Jmol.User.viewUpdatedCallback(applet);
 	View.__setView(applet._currentView, applet, false);
@@ -1821,11 +1822,12 @@ View.dumpViews = function(applet) {
 		s += "\n<b>view=" + i 
 			+ " viewID=" + view.info.viewID 
 			+ " chemID=" + view.info.chemID + "</b>\n"
+		var v;
 		for (var viewType in view) 
 			if (viewType != "info")
 				s += "\nview=" + i + " type=" + viewType + " applet=" 
-					+ (view[viewType].applet ? view[viewType].applet._id : null) 
-					+ " \n data=\n" + view[viewType].data + "\n"
+					+ ((v = view[viewType]).applet ? v.applet._id : null) 
+					+ " SMILES=" + v.smiles + "\n data=\n" + v.data + "\n"
 	}
 	return s
 }

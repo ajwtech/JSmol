@@ -256,15 +256,21 @@
 		//var jsonData = JSV.common.JSVFileManager.htSimulate.get("jsonMol")
 		this.__selectSpectrum(view);
 		if (this._viewSet != null) {
-			//molData = this._getAppletInfo("DATA_mol");
+		  molData = this._getAppletInfo("DATA_mol");
 			Jmol.View.updateView(this, {chemID:view.info.chemID, data:molData});
-			if (false && vJmol != null) {
-				vJmol.data = molData;
-				if (vJmol.applet)
-					vJmol.applet._loadModelFromView(this._currentView);
+			if (true) {
+				if (vJmol) {
+					vJmol.data = molData;
+					if (vJmol.applet)
+						vJmol.applet._loadModelFromView(this._currentView);
+					if (vJME) {
+					  vJME.applet._loadFromJmol(vJmol.applet);
+					}
+				} else if (vJME) {
+					vJME.data = molData;
+					vJME.applet._loadModelFromView(this._currentView);
+				}
 			}
-			if (false && vJME != null)
-				vJME.applet._loadModelFromView(this._currentView);
 		}
 	}
 
@@ -303,6 +309,10 @@
 	 // from JSV
 		title && (msg = title + "\n\n\n" + msg);
 		alert (msg);
+	}
+	
+	proto._getSmiles = function() {
+	 return null;
 	}
 
 })(Jmol._JSVApplet, Jmol._JSVApplet.prototype);

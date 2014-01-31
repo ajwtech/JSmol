@@ -452,8 +452,13 @@
 		return this._applet.getProperty(sKey,sValue);
 	}
 
-	// DEPRECATED -- use Jmol.evaluateVar
-	proto._evaluate = function(molecularMath) {   // DEPRECATED!!!	
+  proto._evaluate = function(expr) {  
+  	expr != null || (expr = "");
+		return this._getPropertyAsArray("variableInfo", expr);
+
+  }
+
+	proto._evaluateDEPRECATED = function(molecularMath) {   // DEPRECATED!!!	
 	// DEPRECATED!!!	
 		//carries out molecular math on a model
 		var result = "" + this._getPropertyAsJavaObject("evaluate", molecularMath);
@@ -606,10 +611,11 @@
 		} else {
 			script || (script = "");
 			script = 'load DATA "model"\n' + mol + '\nEND "model" ' + script;
-			this._applet.script(script);
+			this._applet.scriptWait(script);
 		}
-		if (this._viewSet != null)
-			Jmol.View.updateView(this, {chemID:chemID, data:mol});      
+		if (this._viewSet != null) {
+			Jmol.View.updateView(this, {chemID:chemID, data:mol});
+		}      
 	}
 
 	proto._loadModelFromView = function(view, _jmol_loadModelFromView) {
@@ -634,7 +640,7 @@
 		if (this._viewSet == null || !this._applet)
 			return;
 		// called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-		chemID = "" + this._getPropertyAsJavaObject("evaluate","script('show chemical inchiKey')");
+		chemID = "" + this._getPropertyAsJavaObject("variableInfo","script('show chemical inchiKey')");
 		if (chemID.length() < 36) // InChIKey=RZVAJINKPMORJF-BGGKNDAXNA-N
 			chemID = null;
 		else
@@ -672,6 +678,19 @@
 		return false;
 	}
 
+  proto._getSmiles = function() {
+		return this._evaluate("script('select visible;show smiles')");   
+  }
+  
+  proto._getMol = function() {
+		return this._evaluate("script('select visible;write MOL')");   
+  }
+
+  proto._getMol2D = function() {
+		return jmol._evaluate("script('select visible;show chemical sdf')"); // 2D equivalent
+  }
+  
+  
 })(Jmol._Applet, Jmol._Applet.prototype);
 
 /* ****************************************
@@ -807,5 +826,10 @@
 })(Jmol._Image, Jmol._Image.prototype);
 
 ************************************ */
+
+	Jmol.jmolSmiles = function(jmol, withStereoChemistry) {
+		return jmol._getSmiles();
+	}
+
 
 })(Jmol, document);
