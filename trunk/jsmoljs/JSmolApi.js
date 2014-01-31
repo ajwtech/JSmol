@@ -28,26 +28,26 @@
 // BH 8/12/2012 5:15:11 PM added Jmol.getAppletHtml()
 
 ;(function (Jmol) {
-  var getField = function(key) {
-    key = "&" + key + "=";
-    return decodeURI(("&" + document.location.search.substring(1) + key).split(key)[1].split("&")[0]);
-  }
-  Jmol._j2sPath = getField("_J2S");
-    // allows URL-line setting of Info.j2sPath
-  Jmol._jarFile = getField("_JAR");
-    // allows URL-line setting of Info.jarPath and Info.jarFile
-  Jmol._use = getField("_USE");
-    // allows URL-line setting of Info.use
-    // defaults to "HTML5"
-    // looking for "_USE=xxxx" 
-    // _USE=SIGNED implies JAVA, sets Info.isSigned, and adds "Signed" to applet jar name if necessary
-    
+	var getField = function(key) {
+		key = "&" + key + "=";
+		return decodeURI(("&" + document.location.search.substring(1) + key).split(key)[1].split("&")[0]);
+	}
+	Jmol._j2sPath = getField("_J2S");
+		// allows URL-line setting of Info.j2sPath
+	Jmol._jarFile = getField("_JAR");
+		// allows URL-line setting of Info.jarPath and Info.jarFile
+	Jmol._use = getField("_USE");
+		// allows URL-line setting of Info.use
+		// defaults to "HTML5"
+		// looking for "_USE=xxxx" 
+		// _USE=SIGNED implies JAVA, sets Info.isSigned, and adds "Signed" to applet jar name if necessary
+
 	Jmol.getVersion = function(){return Jmol._jmolInfo.version};
 
 	Jmol.getApplet = function(id, Info, checkOnly) {
-  	// requires JmolApplet.js and, if JAVA, java/JmolApplet*.jar
-    // or if HTML5, then j2s/ subdirectory (core, java, JZ, J)
-    /*
+		// requires JmolApplet.js and, if JAVA, java/JmolApplet*.jar
+		// or if HTML5, then j2s/ subdirectory (core, java, JZ, J)
+		/*
 		var DefaultInfo = {
 			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
 			width: 300,
@@ -64,30 +64,30 @@
 			jarFile: "JmolApplet0.jar",
 			isSigned: false,
 			j2sPath: "j2s",
-      coverImage: null,     // URL for image to display
-      coverTitle: "",       // tip that is displayed before model starts to load
-      coverCommand: "",     // Jmol command executed upon clicking image
-      deferApplet: false,   // true == the model should not be loaded until the image is clicked
-      deferUncover: false,  // true == the image should remain until command execution is complete 
+			coverImage: null,     // URL for image to display
+			coverTitle: "",       // tip that is displayed before model starts to load
+			coverCommand: "",     // Jmol command executed upon clicking image
+			deferApplet: false,   // true == the model should not be loaded until the image is clicked
+			deferUncover: false,  // true == the image should remain until command execution is complete 
 			disableJ2SLoadMonitor: false,
 			disableInitialConsole: false,
 			debug: false
 		};	 
-    
-    */
-    return Jmol._Applet._get(id, Info, checkOnly);
+
+		*/
+		return Jmol._Applet._get(id, Info, checkOnly);
 	}
 
 	Jmol.getJMEApplet = function(id, Info, linkedApplet, checkOnly) {
-    // Java Molecular Editor
-  	// requires JmolJME.js and jme/ subdirectory
-    /*
+		// Java Molecular Editor
+		// requires JmolJME.js and jme/ subdirectory
+		/*
 		var DefaultInfo = {
 			width: 300,
 			height: 300,
 			jarPath: "jme",
 			jarFile: "JME.jar",
-      use: "HTML", // or JAVA
+			use: "HTML", // or JAVA
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button
@@ -101,41 +101,41 @@
 			// number - possibility to number (mark) atoms
 			// depict - the applet will appear without editing butons,this is used for structure display only
 		};		    
-    */
-    return Jmol._JMEApplet._get(id, Info, linkedApplet, checkOnly);
-  }
-  	
+		*/
+		return Jmol._JMEApplet._get(id, Info, linkedApplet, checkOnly);
+	}
+
 	Jmol.getJSVApplet = function(id, Info, checkOnly) {
-    // JSpecView
-	  // requires JmolJSV.js and, if JAVA, either JSpecViewApplet.jar or JSpecViewAppletSigned.jar
-    // or if HTML5, then j2s/ subdirectory (core, java, JZ, J, JSV)
-    /*
-  	var DefaultInfo = {
+		// JSpecView
+		// requires JmolJSV.js and, if JAVA, either JSpecViewApplet.jar or JSpecViewAppletSigned.jar
+		// or if HTML5, then j2s/ subdirectory (core, java, JZ, J, JSV)
+		/*
+		var DefaultInfo = {
 			width: 500,
 			height: 300,
 			debug: false,
 			jarPath: ".",
 			jarFile: "JSpecViewApplet.jar", // or "JSpecViewAppletSigned.jar"
-      uee: "HTML5", // or JAVA
+			uee: "HTML5", // or JAVA
 			isSigned: false,
 			initParams: null,
 			readyFunction: null,
 			script: null
 		};
-    */
-    return Jmol._JSVApplet._get(id, Info, checkOnly);
-  }	
+		*/
+		return Jmol._JSVApplet._get(id, Info, checkOnly);
+	}	
 
 
 ////////////////// scripting ///////////////////
-  
+
 	Jmol.loadFile = function(applet, fileName, params){
 		applet._loadFile(fileName, params);
 	}
 
 	Jmol.script = function(applet, script) {
-    if (applet._checkDeferred(script)) 
-      return;
+		if (applet._checkDeferred(script)) 
+			return;
 		applet._script(script);
 	}
 
@@ -143,57 +143,57 @@
  * returns false if cannot check, empty string if OK, or error message if not OK
  */	
 	Jmol.scriptCheck = function(applet, script) {
-    return applet && applet._scriptCheck && applet._ready && applet._scriptCheck(script);
+		return applet && applet._scriptCheck && applet._ready && applet._scriptCheck(script);
 	}
-	
+
 	Jmol.scriptWait = function(applet, script) {
 		return applet._scriptWait(script);
 	}
-	
+
 	Jmol.scriptEcho = function(applet, script) {
 		return applet._scriptEcho(script);
 	}
-	
+
 	Jmol.scriptMessage = function(applet, script) {
 		return applet._scriptMessage(script);
 	}
-	
+
 	Jmol.scriptWaitOutput = function(applet, script) {
 		return applet._scriptWait(script);
 	}
-	
+
 	Jmol.scriptWaitAsArray = function(applet, script) {
 		return applet._scriptWaitAsArray(script);
 	}
-	
+
 	Jmol.search = function(applet, query, script) {
 		applet._search(query, script);
 	}
 
 ////////////////// "get" methods ///////////////////
-	
+
 
 	Jmol.evaluateVar = function(applet,expr) {
-    arguments.length >= 2 || (expr = "");
-    return applet._getPropertyAsArray("variableInfo", expr);
+		arguments.length >= 2 || (expr = "");
+		return applet._getPropertyAsArray("variableInfo", expr);
 	}
-  
-  // DEPRECATED -- use Jmol.evaluateVar
+
+	// DEPRECATED -- use Jmol.evaluateVar
 	Jmol.evaluate = function(applet,molecularMath) {
 		return applet._evaluate(molecularMath);
 	}
 
-  // optional Info here	
-  Jmol.getAppletHtml = function(applet, Info) {
-    if (Info) {
-      var d = Jmol._document;
-      Jmol._document = null;
-      applet = Jmol.getApplet(applet, Info);
-      Jmol._document = d;
-    }  
-    return applet._code;
+	// optional Info here	
+	Jmol.getAppletHtml = function(applet, Info) {
+		if (Info) {
+			var d = Jmol._document;
+			Jmol._document = null;
+			applet = Jmol.getApplet(applet, Info);
+			Jmol._document = d;
+		}  
+		return applet._code;
 	}
-		
+
 	Jmol.getPropertyAsArray = function(applet,sKey,sValue) {
 		return applet._getPropertyAsArray(sKey,sValue);
 	}
@@ -201,7 +201,7 @@
 	Jmol.getPropertyAsJavaObject = function(applet,sKey,sValue) {
 		return applet._getPropertyAsJavaObject(sKey,sValue);
 	}
-	
+
 	Jmol.getPropertyAsJSON = function(applet,sKey,sValue) {
 		return applet._getPropertyAsJSON(sKey,sValue);
 	}
@@ -214,7 +214,7 @@
 		return applet._getStatus(strStatus);
 	}
 
-	
+
 ////////////////// general methods ///////////////////
 
 	Jmol.resizeApplet = function(applet,size) {
@@ -224,15 +224,15 @@
 	Jmol.restoreOrientation = function(applet,id) {
 		return applet._restoreOrientation(id);
 	}
-	
+
 	Jmol.restoreOrientationDelayed = function(applet,id,delay) {
 		return applet._restoreOrientationDelayed(id,delay);
 	}
-	
+
 	Jmol.saveOrientation = function(applet,id) {
 		return applet._saveOrientation(id);
 	}
-	
+
 	Jmol.say = function(msg) {
 		alert(msg);
 	}
@@ -258,7 +258,7 @@
 	}
 
 	Jmol.show2d = function(applet, tf) {
-    // only when JME or JSME is synced with Jmol
+		// only when JME or JSME is synced with Jmol
 		applet._show2d(tf);
 	}
 
@@ -273,7 +273,7 @@
 	Jmol.jmolButton = function(appletOrId, script, label, id, title) {
 		return Jmol.controls._getButton(appletOrId, script, label, id, title);
 	}
-	
+
 	Jmol.jmolCheckbox = function(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
 			labelHtml, isChecked, id, title) {
 		return Jmol.controls._getCheckbox(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
@@ -284,11 +284,11 @@
 	Jmol.jmolCommandInput = function(appletOrId, label, size, id, title) {
 		return Jmol.controls._getCommandInput(appletOrId, label, size, id, title);
 	}
-		
+
 	Jmol.jmolHtml = function(html) {
 		return Jmol._documentWrite(html);
 	}
-	
+
 	Jmol.jmolLink = function(appletOrId, script, label, id, title) {
 		return Jmol.controls._getLink(appletOrId, script, label, id, title);
 	}
@@ -306,12 +306,12 @@
 	}
 
 	Jmol.setCheckboxGroup = function(chkMaster, chkBoxes) {
-    // chkBoxes can be an array or any number of additional string arguments
+		// chkBoxes can be an array or any number of additional string arguments
 		Jmol.controls._cbSetCheckboxGroup(chkMaster, chkBoxes, arguments);
 	}
-	
+
 	Jmol.setDocument = function(doc) {
-		
+
 		// If doc is null or 0, Jmol.getApplet() will still return an Object, but the HTML will
 		// put in applet._code and not written to the page. This can be nice, because then you 
 		// can still refer to the applet, but place it on the page after the controls are made. 
@@ -329,7 +329,7 @@
 		// in any button creation 
 		//		 
 		//  Bob Hanson 25.04.2012
-		
+
 		Jmol._document = doc;
 	}
 
@@ -346,82 +346,82 @@
 	////////////////////////////////////////////////////////////////
 	// Cascading Style Sheet Class support
 	////////////////////////////////////////////////////////////////
-	
+
 	// BH 4/25 -- added text option. setAppletCss(null, "style=\"xxxx\"")
 	// note that since you must add the style keyword, this can be used to add any attribute to these tags, not just css. 
-	
+
 	Jmol.setAppletCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._appletCssClass = cssClass);
 		Jmol.controls._appletCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
-	
+
 	Jmol.setButtonCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._buttonCssClass = cssClass);
 		Jmol.controls._buttonCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
-	
+
 	Jmol.setCheckboxCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._checkboxCssClass = cssClass);
 		Jmol.controls._checkboxCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
-	
+
 	Jmol.setRadioCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._radioCssClass = cssClass);
 		Jmol.controls._radioCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
-	
+
 	Jmol.setLinkCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._linkCssClass = cssClass);
 		Jmol.controls._linkCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
-	
+
 	Jmol.setMenuCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._menuCssClass = cssClass);
 		Jmol.controls._menuCssText = text ? text + " ": cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 
-  Jmol.setAppletSync = function(applets, commands, isJmolJSV) {
-    Jmol._syncedApplets = applets;   // an array of appletIDs
-    Jmol._syncedCommands = commands; // an array of commands; one or more may be null 
-    Jmol._syncedReady = {};
-    Jmol._isJmolJSVSync = isJmolJSV;
+	Jmol.setAppletSync = function(applets, commands, isJmolJSV) {
+		Jmol._syncedApplets = applets;   // an array of appletIDs
+		Jmol._syncedCommands = commands; // an array of commands; one or more may be null 
+		Jmol._syncedReady = {};
+		Jmol._isJmolJSVSync = isJmolJSV;
 	}
-	
+
 	/*
 	Jmol._grabberOptions = [
-	  ["$", "NCI(small molecules)"],
-	  [":", "PubChem(small molecules)"],
-	  ["=", "RCSB(macromolecules)"]
+		["$", "NCI(small molecules)"],
+		[":", "PubChem(small molecules)"],
+		["=", "RCSB(macromolecules)"]
 	];
 	*/
-	
+
 	Jmol.setGrabberOptions = function(options) {
-	  Jmol._grabberOptions = options;
+		Jmol._grabberOptions = options;
 	}
 
-  Jmol.setAppletHtml = function (applet, divid) {
-    if (!applet._code) 
-      return;
-    Jmol.$html(divid, applet._code);
-    if (applet._init && !applet._deferApplet)
-      applet._init();
-  }
+	Jmol.setAppletHtml = function (applet, divid) {
+		if (!applet._code) 
+			return;
+		Jmol.$html(divid, applet._code);
+		if (applet._init && !applet._deferApplet)
+			applet._init();
+	}
 
-  Jmol.coverApplet = function(applet, doCover) {
-    if (applet._cover)
-      applet._cover(doCover);
-  }
+	Jmol.coverApplet = function(applet, doCover) {
+		if (applet._cover)
+			applet._cover(doCover);
+	}
 
-  Jmol.setFileCaching = function(applet, doCache) {
-    if (applet) {
-      applet._cacheFiles = doCache;
-    } else {
-      Jmol.fileCache = (doCache ? {} : null);
-    }
-  }  
+	Jmol.setFileCaching = function(applet, doCache) {
+		if (applet) {
+			applet._cacheFiles = doCache;
+		} else {
+			Jmol.fileCache = (doCache ? {} : null);
+		}
+	}  
 
-  Jmol.updateView = function(applet, param1, param2) {
-    applet._updateView(param1, param2);
-  }
+	Jmol.updateView = function(applet, param1, param2) {
+		applet._updateView(param1, param2);
+	}
 
 })(Jmol);
