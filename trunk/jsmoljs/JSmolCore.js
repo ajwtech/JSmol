@@ -1798,7 +1798,7 @@ View.updateFromSync = function(applet, msg) {
 		View.__setView(view, applet, true);
 	}
 	var A = ((id = View.__getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
-		? id.split(",") : []);
+		? eval("[" + id + "]") : []);
 	setTimeout(function(){View.updateAtomPick(applet, A)}, 10); 
 	View.updateAtomPick(applet, A);
 	if (Jmol.User.viewUpdatedCallback)

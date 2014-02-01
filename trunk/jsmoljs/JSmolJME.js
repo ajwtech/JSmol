@@ -292,13 +292,14 @@
 		var C = [];
 		//System.out.println("JME updateAtomPick for " + A.join(","));
 		//System.out.println("JME Using " + this._currentView.info.viewID + " atomMap=" + this._currentView.JME.atomMap.toJME.join(","));
-		for (var i = 0; i < A.length; i++) { 
-		 B.push(this._currentView.JME.atomMap.toJME[A[i]]);
+		var j;
+		for (var i = 0; i < A.length; i++) {
+		 C[j = this._currentView.JME.atomMap.toJME[A[i]]] = 1; 
+		 B.push(j);
 		 B.push(3);
-		 C[A[i]] = 1;
 		}
 		this._applet.setAtomBackgroundColors(1, B.join(","));
-		//System.out.println("JME setting atom colors " + B.join(","))
+		System.out.println("JME setting atom colors " + B.join(","))
 		this.__atomSelection = C;
 	}
 

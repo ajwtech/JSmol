@@ -605,8 +605,13 @@
 	}
 
 	proto.__loadModel = function(mol, script, chemID, _jmol__loadModel) {
-		if (mol == null)
+		if (mol == null) 
 			return;
+		if (this._viewSet != null) {
+			script || (script = ""); 
+			// first component only
+			script += ";if ({*}.molecule.max > 1 || {*}.modelindex.max > 0){ delete molecule > 1 or modelindex > 0;x = getProperty('extractModel',{*});load inline @x};"
+		}
 		if (!script && this._noscript) {
 			this._applet.viewer.loadInline(mol, '\0');
 		} else {
