@@ -104,7 +104,7 @@
 
 	// requires JmolJME.js and JME.jar
 	// Jmol.getJMEApplet("jme", Info)
-	// window["jme"] will be created as the return to this function
+	// window.JME will be created as the return to this function
 
 		Info || (Info = {});
 		var DefaultInfo = {
@@ -221,7 +221,8 @@
 
 	proto._loadModelFromView = function(view, _jme_loadModelFromView) {
 		// request from Jmol.View to update view with view.JME.data==null or needs changing
-		var rec = view["JME"];
+		var rec = view.JME;
+		this._currentView = view;
 		if (rec.data != null) {
 			this.__loadModel(rec.data, view.info.chemID);
 			return;
@@ -230,7 +231,7 @@
 			Jmol._searchMol(this, view.info.chemID, null, false);
 			return;
 		}
-		rec = view["Jmol"];
+		rec = view.Jmol;
 		if (rec) {
 			this._show2d(true, rec.applet);
 			return;
@@ -289,13 +290,15 @@
 			return;
 		var B = [];
 		var C = [];
+		//System.out.println("JME updateAtomPick for " + A.join(","));
+		//System.out.println("JME Using " + this._currentView.info.viewID + " atomMap=" + this._currentView.JME.atomMap.toJME.join(","));
 		for (var i = 0; i < A.length; i++) { 
 		 B.push(this._currentView.JME.atomMap.toJME[A[i]]);
 		 B.push(3);
 		 C[A[i]] = 1;
 		}
 		this._applet.setAtomBackgroundColors(1, B.join(","));
-		document.title = A[0] + " " + B[0]
+		//System.out.println("JME setting atom colors " + B.join(","))
 		this.__atomSelection = C;
 	}
 
@@ -355,6 +358,7 @@
 			this._molData = this._applet.molFile();
 			if (this._viewSet) {
 			  var v = this._currentView;
+			  v.JME.data = this._molData;
 			  v.JME.atomMap = (v.Jmol && v.Jmol.applet? this.__getAtomCorrelation(v.Jmol.applet) : null);
 			}
 		} else {

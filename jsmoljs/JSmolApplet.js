@@ -626,7 +626,8 @@
   
 	proto._loadModelFromView = function(view, _jmol_loadModelFromView) {
 		// request from Jmol.View to update view with view.JME.data==null or needs changing
-		var rec = view["Jmol"];
+		this._currentView = view;
+		var rec = view.Jmol;
 		if (rec.data != null) {
 			this.__loadModel(rec.data, null, view.info.chemID);
 			return;
@@ -635,7 +636,7 @@
 			Jmol._searchMol(this, view.info.chemID, null, false);
 			return;
 		}
-		rec = view["JME"];
+		rec = view.JME;
 		if (rec) {
 			rec.applet._show2d(false, this);
 			return;
