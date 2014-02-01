@@ -368,9 +368,10 @@
 		return this._ready && this._applet.scriptCheck(script);  
 	}
 
-	proto._scriptWait = function(script) {
+	proto._scriptWait = function(script, noReturn) {
 		var Ret = this._scriptWaitAsArray(script);
 		var s = "";
+		if (!noReturn)
 		for(var i = Ret.length; --i >= 0; )
 			for(var j = 0, jj = Ret[i].length; j < jj; j++)
 				s += Ret[i][j] + "\n";
@@ -609,15 +610,20 @@
 		if (!script && this._noscript) {
 			this._applet.viewer.loadInline(mol, '\0');
 		} else {
-			script || (script = "");
-			script = 'load DATA "model"\n' + mol + '\nEND "model" ' + script;
-			this._applet.scriptWait(script);
+		  this._loadMolData(mol, script, false);
 		}
 		if (this._viewSet != null) {
 			Jmol.View.updateView(this, {chemID:chemID, data:mol});
 		}      
 	}
 
+  proto._loadMolData = function(mol, script, isAppend) {
+		script || (script = "");
+		var name = (isAppend ? "append" : "model");
+		script = 'load DATA "' + name + '"' + mol + '\nEND "'+ name +'" ;' + script;
+		this._applet.scriptWait(script);
+  }
+  
 	proto._loadModelFromView = function(view, _jmol_loadModelFromView) {
 		// request from Jmol.View to update view with view.JME.data==null or needs changing
 		var rec = view["Jmol"];
@@ -660,9 +666,7 @@
 	}
 
 	proto._updateAtomPick = function(A) {
-		if (A.length == 0)
-			return this._script("select none");
-		this._script("select on visible and (@" + A.join(",@") + ")");
+			this._script(A.length == 0 ? "select none" : "select on visible and (@" + A.join(",@") + ")");
 	}
 
 	proto._isDeferred = function () {
@@ -679,11 +683,11 @@
 	}
 
   proto._getSmiles = function() {
-		return this._evaluate("script('select visible;show smiles')");   
+		return this._evaluate("{visible}.find('SMILES')");   
   }
   
   proto._getMol = function() {
-		return this._evaluate("script('select visible;write MOL')");   
+		return this._evaluate("getProperty('ExtractModel',{visible})");   
   }
 
   proto._getMol2D = function() {

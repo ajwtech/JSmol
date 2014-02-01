@@ -263,9 +263,8 @@
 					vJmol.data = molData;
 					if (vJmol.applet)
 						vJmol.applet._loadModelFromView(this._currentView);
-					if (vJME) {
+					if (vJME)
 					  vJME.applet._loadFromJmol(vJmol.applet);
-					}
 				} else if (vJME) {
 					vJME.data = molData;
 					vJME.applet._loadModelFromView(this._currentView);

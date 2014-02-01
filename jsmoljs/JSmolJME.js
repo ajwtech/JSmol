@@ -276,7 +276,7 @@
 		if (iAtom <= 0)
 			return;
 		var A = [];    
-		A.push(iAtom);
+		A.push(this._currentView.JME.atomMap.toJmol[iAtom]);
 		Jmol.View.updateAtomPick(this, A);
 		this._updateAtomPick(A);
 		if (this._atomPickCallback)
@@ -290,11 +290,12 @@
 		var B = [];
 		var C = [];
 		for (var i = 0; i < A.length; i++) { 
-		 B.push(A[i]);
+		 B.push(this._currentView.JME.atomMap.toJME[A[i]]);
 		 B.push(3);
 		 C[A[i]] = 1;
 		}
 		this._applet.setAtomBackgroundColors(1, B.join(","));
+		document.title = A[0] + " " + B[0]
 		this.__atomSelection = C;
 	}
 
@@ -318,7 +319,9 @@
 			if (jme == null && this._isJava)
 				jme = this._applet = Jmol._getElement(this, "object");
 			var isOK = true;
-			if (jme != null) {
+			if (this._viewSet != null) {
+			  isOK = false;
+			} else if (jme != null) {
 				var jmeSMILES = this._getSmiles();
 				// testing here to see that we have the same structure as in the JMOL applet
 				var jmolAtoms = (jmeSMILES ? jmol._evaluate("{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')") : "({})");
@@ -350,13 +353,33 @@
 		if (this._molData) {
 			this._applet.readMolFile(this._molData);
 			this._molData = this._applet.molFile();
+			if (this._viewSet) {
+			  var v = this._currentView;
+			  v.JME.atomMap = (v.Jmol && v.Jmol.applet? this.__getAtomCorrelation(v.Jmol.applet) : null);
+			}
 		} else {
 			this._applet.reset();
 			this._molData = "<zapped>";
 		}
-
 	}
 
+  proto.__getAtomCorrelation = function(jmol) {
+    // get the first atom mapping available by loading the JME structure into model 2, 
+    jmol._loadMolData(this._molData, "jmeMap = compare({1.1} {2.1} 'MAP' 'H'); zap 2.1", true);
+    var map = jmol._evaluate("jmeMap");
+    var n = jmol._evaluate("{*}.count");
+    var A = [];
+    var B = [];
+    // these are Jmol atom indexes. The second number will be >= n, and all must be incremented by 1.
+		for (var i = 0; i < map.length; i++) {
+		  var c = map[i];
+		  A[c[0] + 1] = c[1] - n + 1;
+		  B[c[1] - n + 1] = c[0] + 1;
+		}
+		return {toJME:A, toJmol:B}; // forward and rev.		
+  }
+  
+  
 	proto.__showContainer = function(tf, andShow) {
 		var jmol = this._linkedApplet;
 		var mydiv = Jmol.$(jmol, "2dappletdiv");
