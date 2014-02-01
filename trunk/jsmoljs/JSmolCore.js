@@ -1611,24 +1611,24 @@ Dialog.dispose = function(dialog) {
 //  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
 //  for (var i = btns.length; --i >= 0;)
 //    delete Dialog.htDialogs[btns[i].id]
-	System.out.println("JSmolCore.js: dispose " + dialog.id)
+	//System.out.println("JSmolCore.js: dispose " + dialog.id)
 }
  
 Dialog.register = function(dialog, type) {
 	dialog.id = type + (++Dialog.count);
 	Dialog.htDialogs[dialog.id] = dialog;
-	System.out.println("JSmolCore.js: register " + dialog.id)
+	//System.out.println("JSmolCore.js: register " + dialog.id)
 
 }
 
 Dialog.setDialog = function(dialog) {
 	Jmol._setMouseOwner(null);
 	Jmol.$remove(dialog.id);
-	System.out.println("removed " + dialog.id)
+	//System.out.println("removed " + dialog.id)
 	var id = dialog.id + "_mover";
 	var container = Jmol.$("#" + id);
 	var jd;
-	System.out.println("JSmolCore.js: setDialog " + dialog.id);
+	//System.out.println("JSmolCore.js: setDialog " + dialog.id);
 	if (container[0]) {
 		container.html(dialog.html);
 		jd = container[0].jd;
@@ -1675,7 +1675,7 @@ Dialog.setVisible = function(c) {
 Dialog.click = function(element, keyEvent) {
 	var component = Dialog.htDialogs[element.id];
 	if (component) {
-		System.out.println("click " + element + " " + component)
+		//System.out.println("click " + element + " " + component)
 		var info = component.toString();
 		// table cells will have an id but are not registered
 		if (info.indexOf("JCheck") >= 0) {
@@ -1690,17 +1690,17 @@ Dialog.click = function(element, keyEvent) {
 	}
 	var dialog = Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
-	System.out.println("JSmolCore.js: click " + key); 
+	//System.out.println("JSmolCore.js: click " + key); 
 	dialog.manager.actionPerformed(key);
 }
 
 Dialog.windowClosing = function(element) {
 	var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	if (dialog.registryKey) {
-		System.out.println("JSmolCore.js: windowClosing " + dialog.registryKey); 
+		//System.out.println("JSmolCore.js: windowClosing " + dialog.registryKey); 
 		dialog.manager.processWindowClosing(dialog.registryKey);
 	} else {
-		System.out.println("JSmolCore.js: windowClosing " + dialog.title); 
+		//System.out.println("JSmolCore.js: windowClosing " + dialog.title); 
 		dialog.dispose();
 	}
 }
@@ -1784,7 +1784,7 @@ View.updateView = function(applet, Info, _View_updateView) {
 	applet._currentView[Info.type].data = Info.data;
 	applet._currentView[Info.type].smiles = applet._getSmiles();
 	if (Jmol.User.viewUpdatedCallback)
-		Jmol.User.viewUpdatedCallback(applet);
+		Jmol.User.viewUpdatedCallback(applet, "updateView");
 	View.__setView(applet._currentView, applet, false);
 }
 
@@ -1796,12 +1796,13 @@ View.updateFromSync = function(applet, msg) {
 	var view = View.__findView(applet._viewSet, {viewID:id});
 	if (view != applet._currentView) {
 		View.__setView(view, applet, true);
-		//return ??
 	}
 	var A = ((id = View.__getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
 		? id.split(",") : []);
 	setTimeout(function(){View.updateAtomPick(applet, A)}, 10); 
 	View.updateAtomPick(applet, A);
+	if (Jmol.User.viewUpdatedCallback)
+		Jmol.User.viewUpdatedCallback(applet, "updateFromSync");
 }
 
 View.updateAtomPick = function(applet, A, _View_updateAtomPick) {
@@ -1812,14 +1813,22 @@ View.updateAtomPick = function(applet, A, _View_updateAtomPick) {
 		if (viewType != "info" && view[viewType].applet != applet)
 			view[viewType].applet._updateAtomPick(A);
 	}
+	if (Jmol.User.viewUpdatedCallback)
+		Jmol.User.viewUpdatedCallback(applet, "updateAtomPick");
 }
 
-View.dumpViews = function(applet) {
-	var views = View.sets[applet._viewSet];
-	var s = "View set " + applet._viewSet + ":\n";
+View.dumpViews = function(setID) {
+	var views = View.sets[setID];
+	if (!views)
+	  return;
+	var s = "View set " + setID + ":\n";
+	var applets = View.applets[setID];
+	for (var i in applets)
+		s += "\napplet " + applets[i]._id
+			+ " currentView=" + (applets[i]._currentView ? applets[i]._currentView.info.viewID : null);
 	for (var i = views.length; --i >= 0;) {
 		var view = views[i];
-		s += "\n<b>view=" + i 
+		s += "\n\n<b>view=" + i 
 			+ " viewID=" + view.info.viewID 
 			+ " chemID=" + view.info.chemID + "</b>\n"
 		var v;
@@ -1827,7 +1836,9 @@ View.dumpViews = function(applet) {
 			if (viewType != "info")
 				s += "\nview=" + i + " type=" + viewType + " applet=" 
 					+ ((v = view[viewType]).applet ? v.applet._id : null) 
-					+ " SMILES=" + v.smiles + "\n data=\n" + v.data + "\n"
+					+ " SMILES=" + v.smiles + "\n"
+					+ " atomMap=" + JSON.stringify(v.atomMap) + "\n"
+					+ " data=\n" + v.data + "\n"
 	}
 	return s
 }
@@ -1835,9 +1846,10 @@ View.dumpViews = function(applet) {
 // methods starting with "__" are "private" to JSmolCore.js
 
 View.__init = function(applet) {
+  var set = applet._viewSet;
 	var a = View.applets;
-	a[applet._viewSet] || (a[applet._viewSet] = {});
-	a[applet._viewSet][applet._viewType] = applet;
+	a[set] || (a[set] = {});
+	a[set][applet._viewType] = applet;
 }
 
 View.__getAttr = function(s, a) {
@@ -1900,9 +1912,10 @@ View.__setView = function(view, applet, isSwitch, _setView) {
 		if (a == null || a == applet && !modified)
 			continue; // may be a mol3d required by JSV but not having a corresponding applet
 		var wasNull = (rec.data == null);
-		if (a._currentView != null && a._currentView[viewType].data == rec.data && !wasNull & !modified)
+		var haveView = (a._currentView != null);
+		a._currentView = view; 
+		if (haveView && view[viewType].data == rec.data && !wasNull & !modified)
 			continue;
-		a._currentView = view;
 		a._loadModelFromView(view);
 		if (wasNull)
 			break;

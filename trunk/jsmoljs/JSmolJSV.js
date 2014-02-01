@@ -159,7 +159,7 @@
 		var a = this;
 		if (a._viewSet && !query.startsWith("!")) {
 			a = Jmol.View.applets[a._viewSet];
-			a = a["Jmol"] || a["JSV"] || this;
+			a = a.Jmol || a.JSV || this;
 		}
 		Jmol._search(a, query);
 	}
@@ -218,14 +218,15 @@
 			Jmol.View.updateView(this, {data:data});
 	}
 
-	proto._loadModelFromView = function(view) {
+	proto._loadModelFromView = function(view, _jsv_loadModelFromView) {
 		// called request to update view with view.JSV.data==null from Jmol.View
 		// we must get the simulation from MOL data
 
+		this._currentView = view;
 		var molData = null;
-		var rec = view["JSV"];
-		var vJmol = view["Jmol"];
-		var vJME = view["JME"];
+		var rec = view.JSV;
+		var vJmol = view.Jmol;
+		var vJME = view.JME;
 		if (!vJME && !vJmol && view.info.chemID == null) {
 			rec.data = "N/A"; // this has to be a simulation to work
 			return;
