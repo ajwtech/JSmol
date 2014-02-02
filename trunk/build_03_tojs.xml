@@ -1505,6 +1505,7 @@
    		core/corebottom2.js
    		" />
    	</concat>
+   	<echo>Generating core${call-core.name}.z.js</echo> 	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js core${call-core.name}.js --js_output_file ../j2s/core/core${call-core.name}.z.js" />
     </java>
