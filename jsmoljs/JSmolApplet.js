@@ -555,22 +555,7 @@
 		var dm = database + query;
 		this._currentView = null;
 		this._searchQuery = dm;
- 		if (this._viewSet != null || Jmol.db._DirectDatabaseCalls[database]) {
- 			this._loadFile(dm, script, dm);
-			return;
-		}
-		script = ";" + script;
-		if (!this._scriptLoad(dm, script)) {
-			// need to do the postLoad here as well
-			var me = this;
-			Jmol._getRawDataFromServer(
-				database,
-				query,
-				function(data){me.__loadModel(data, dm, script)},
-				function(){me.__loadModel(null)}
-
-			);
-		}
+ 		this._loadFile(dm, script, dm);
 	}
 
 	proto._loadFile = function(fileName, script, chemID, _jmol_loadFile){
@@ -595,7 +580,6 @@
 			this._script("zap;set echo middle center;echo Retrieving data...");
 		if (!this._isSigned || this._viewSet != null)
 			return false;
-		// should not be here if _viewSet
 		if (doscript)
 			this._script("load \"" + file + "\";" + script);
 		else
@@ -605,7 +589,7 @@
 	}
 
 	proto.__loadModel = function(mol, script, chemID, _jmol__loadModel) {
-		if (mol == null) 
+		if (mol == null)
 			return;
 		if (this._viewSet != null) {
 			script || (script = ""); 
