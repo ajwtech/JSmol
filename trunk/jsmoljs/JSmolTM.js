@@ -234,16 +234,7 @@ proto._searchDatabase = function(query, database, script){
 		return;
 	}
 	var dm = database + query; 
-	if (Jmol.db._DirectDatabaseCalls[database]) {
-		this._loadFile(dm, script);
-		return;
-	}
-	var me = this;
-	Jmol._getRawDataFromServer(
-		database,
-		query,
-		function(data){me.__loadModel(data)}
-	);
+	this._loadFile(dm, script);
 }
 
 proto.__loadModel = function(mol) {

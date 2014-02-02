@@ -188,19 +188,7 @@
 		if (database == "$")
 			query = "$" + query; // 2D variant;  will be $$caffeine
 		var dm = database + query;
-		if (Jmol.db._DirectDatabaseCalls[database]) {
-			this._loadFile(dm, {chemID: this._searchQuery});
-			return;
-		}
-		var me=this;
-		Jmol._getRawDataFromServer(
-			database,
-			query,
-			function(data){me.__loadModel(data, me._searchQuery)},
-			function() {me.__loadModel(null, me._searchQuery)}, 
-			false,// not base64
-			true  // noScript
-		);
+		this._loadFile(dm, {chemID: this._searchQuery});
 	}
 
  	proto._loadFile = function(fileName, params, _jme_loadFile){
@@ -292,7 +280,7 @@
 		var C = [];
 		//System.out.println("JME updateAtomPick for " + A.join(","));
 		//System.out.println("JME Using " + this._currentView.info.viewID + " atomMap=" + this._currentView.JME.atomMap.toJME.join(","));
-		var j;
+		var j;		
 		for (var i = 0; i < A.length; i++) {
 		 C[j = this._currentView.JME.atomMap.toJME[A[i]]] = 1; 
 		 B.push(j);

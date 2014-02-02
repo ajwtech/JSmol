@@ -564,7 +564,7 @@ Jmol = (function(document) {
 				query = ":name/" + encodeURIComponent(query.substring(1));
 			}
 		}
-		query = (call ? call.replace(/\%FILE/, query.substring(pt)) : query);
+		query = (call ? call.replace(/\%FILE/, encodeURIComponent(query.substring(pt))) : query);
 		return query;
 	}
 
