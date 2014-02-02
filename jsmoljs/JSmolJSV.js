@@ -9,7 +9,8 @@
 * 
 */
 
-// BH 1/30/2014 1:04:09 PM  adds Info.viewSet 
+// BH 2/2/2014 11:39:44 AM Jmol/JSME/JSV working triad
+// BH 1/30/2014 1:04:09 PM adds Info.viewSet 
 // BH 10/10/2013 1:25:28 PM JSV HTML5 option
 /*
 	Inserts the JSpecView applet in any compatible User Agent using the <object> tag
@@ -83,7 +84,7 @@
 
 		var javaAllowed = false;
 		var applet = null;		
-		var List = Info.use.toUpperCase().split("#")[0].split(" ");    
+		var List = Info.use.toUpperCase().split("#")[0].split(" ");
 		for (var i = 0; i < List.length; i++) {
 			switch (List[i]) {
 			case "JAVA":
@@ -98,7 +99,7 @@
 				break;
 			}
 			if (applet != null)
-				break;		  
+				break;
 		}
 		if (applet == null) {
 			if (checkOnly || !javaAllowed)
@@ -106,7 +107,7 @@
 			else if (javaAllowed)
 				applet = new Applet(id, Info);
 		}
-		return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
+		return (checkOnly ? applet : Jmol._registerApplet(id, applet));
 	}
 
 	Applet.getStartupScript = function(applet, Info) {
@@ -138,7 +139,7 @@
 		var o = self[id];
 		o._ready = true;
 		o._applet = applet;
-		o._readyScript && setTimeout(id + "._script(" + id  + "._readyScript)",50);
+		o._readyScript && setTimeout(id + "._script(" + id + "._readyScript)",50);
 		o._showInfo(true);
 		o._showInfo(false);
 		o._readyFunction && o._readyFunction(o);
@@ -165,7 +166,7 @@
 	}
 
 	proto._searchDatabase = function(query, database) {
-		return this._applet.script("load ID \"" + query + "\" " + database + query)
+		return this._applet.runScript("load ID \"" + query + "\" " + database + query)
 	}
 
 	proto._script = function(script) {
@@ -245,43 +246,36 @@
 			return;
 		}
 
-		this.__selectSpectrum(view);
-		if (this._getAppletInfo("SOURCEID") == view.info.viewID)
+		if (this._getAppletInfo("SOURCEID") == view.info.viewID) {
+			this._applet.runScriptNow("SELECT ID \"" + view.info.viewID + "\"");
 			return;
-
+		}
+		// get the simulation into JSpecView
 		var script = this.__Info.preloadScript;
 		if (script == null) 
 			script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
 		script += "; LOAD ID \"" + view.info.viewID + "\" APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
 		this._applet.runScriptNow(script);
-		//var jsonData = JSV.common.JSVFileManager.htSimulate.get("jsonMol")
-		this.__selectSpectrum(view);
-		if (this._viewSet != null) {
-		  molData = this._getAppletInfo("DATA_mol");
-			Jmol.View.updateView(this, {chemID:view.info.chemID, data:molData});
-			if (true) {
-				if (vJmol) {
-					vJmol.data = molData;
-					if (vJmol.applet)
-						vJmol.applet._loadModelFromView(this._currentView);
-					if (vJME)
-					  vJME.applet._loadFromJmol(vJmol.applet);
-				} else if (vJME) {
-					vJME.data = molData;
-					vJME.applet._loadModelFromView(this._currentView);
-				}
-			}
+		// update Jmol and/or JME to correspond with the model returned.
+		molData = this._getAppletInfo("DATA_mol");
+		if (!molData)
+			return;
+		Jmol.View.updateView(this, {chemID:view.info.chemID, data:molData});
+		if (vJmol) {
+			vJmol.data = molData;
+			if (vJmol.applet)
+				vJmol.applet._loadModelFromView(this._currentView);
+			if (vJME)
+				vJME.applet._loadFromJmol(vJmol.applet);
+		} else if (vJME) {
+			vJME.data = molData;
+			vJME.applet._loadModelFromView(this._currentView);
 		}
+		this.__selectSpectrum();
 	}
 
 	proto._getAppletInfo = function(key) {
 		return "" + this._applet.getPropertyAsJavaObject(key).get(key)
-	}
-
-	proto.__selectSpectrum = function(view) {
-		// tell JSpecView to highlight a specific spectrum
-		view || (view = this._currentView);  
-		this._applet.runScriptNow("SELECT ID \"" + view.info.viewID + "\"");
 	}
 
 	proto.__loadModel = function(data, chemID) {
@@ -290,12 +284,22 @@
 			return;
 		Jmol.View.updateView(this, {chemID:chemID, data:data});
 	}
- 
+
+	proto.__selectSpectrum = function() {
+	// not entirely clear why this should be necessary, but it is, especially
+	// after a peak pick
+		var me = this;
+		setTimeout(function() {me._applet.runScript("SELECT ID \"" + me._currentView.info.viewID + "\"")},10);
+	}
+	 
 	proto._updateAtomPick = function(A) {
 		// from JSmolCore.js
 		// send the message to JSpecView to highlight a peak;
 		// will result in a return to _updateView providing a <PeakData record
 		this._applet.syncScript('<PeakData atom="' + A[0] + '" sourceID="' + this._currentView.info.viewID + '">');
+		// seems to be necessary when there are two spectra and when this atom is clicked,
+		// this structure is not yet highlighted.
+		this.__selectSpectrum();
 	}
 
 	proto._updateView = function(selectedPanel, peakData, _jsv_updateView) {
@@ -321,30 +325,30 @@
 
 	/**
 	 * returns a Java Map<String, Object>
-	 * -- use key = "" for full set	    
-	 * -- key can drill down into spectra selecting specific subsets of data   
-	 */   
+	 * -- use key = "" for full set
+	 * -- key can drill down into spectra selecting specific subsets of data 
+	 */ 
 
 	Jmol.jsvGetPropertyAsJavaObject = function(jsvApplet, key) {
-		return jsvApplet._applet.getPropertyAsJavaObject(key)    
+		return jsvApplet._applet.getPropertyAsJavaObject(key)
 	}
 
 	/**
 	 * returns a JSON equivalent of jsvGetPropertyAsJavaObject
-	 * -- use key = "" for full set	    
-	 * -- key can drill down into spectra selecting specific subsets of data   
-	 */   
+	 * -- use key = "" for full set	
+	 * -- key can drill down into spectra selecting specific subsets of data 
+	 */ 
 
 	Jmol.jsvGetPropertyAsJSON = function(jsvApplet, key) {
-		return "" + jsvApplet._applet.getPropertyAsJSON(key)    
+		return "" + jsvApplet._applet.getPropertyAsJSON(key)
 	}
 
 	Jmol.jsvIsPro = function(jsvApplet) {
-		return (jsvApplet._applet.isPro() ? true : false);    
+		return (jsvApplet._applet.isPro() ? true : false);
 	}
 
 	Jmol.jsvIsSigned = function(jsvApplet) {
-		return (jsvApplet._applet.isSigned() ? true : false);    
+		return (jsvApplet._applet.isSigned() ? true : false);
 	}
 
 	/**
@@ -372,7 +376,7 @@
 	 * Delivers spectrum coded as desired: XY, SQZ, PAC, DIF, DIFDUP, FIX, AML, CML
 	 * 
 	 * @param type
-	 * @param n  -- nth spectrum in set: -1 for current; 0->[nSpec-1] for a specific one
+	 * @param n -- nth spectrum in set: -1 for current; 0->[nSpec-1] for a specific one
 	 * @return data or "only <nSpec> spectra available"
 	 * 
 	 */
@@ -383,28 +387,28 @@
 
 	/**
 	 * runs a script right now, without queuing it, and returns 
-	 * only after completion   
+	 * only after completion 
 	 * returns TRUE if succesful (ureliably; under development)
-	 */	   
+	 */	 
 	Jmol.jsvRunScriptNow = function(jsvApplet, script) {
-		return (jsvApplet._applet.runScriptNow(script) ? true : false);    
+		return (jsvApplet._applet.runScriptNow(script) ? true : false);
 	}
 
 	/**
 	 * runs a script using a queue, possibly waiting until an applet is ready
-	 * same as Jmol.script(jsvApplet, script)   
-	 *   
+	 * same as Jmol.script(jsvApplet, script) 
+	 * 
 	 * @param script
 	 */
 	Jmol.jsvRunScript = function(jsvApplet, script) {
-		jsvApplet.runScript(script);   
+		jsvApplet.runScript(script); 
 	}
 
 	/**
 	 * Loads in-line JCAMP-DX data into the existing applet window
 	 * 
 	 * @param data
-	 *        String
+	 *      String
 	 */
 
 	Jmol.jsvLoadInline = function(jsvApplet, data, params) {
@@ -413,7 +417,7 @@
 	}
 
 	Jmol.jsvSetFilePath = function(jsvApplet, tmpFilePath) {
-		jsvApplet._applet.setFilePath(tmpFilePath);    
+		jsvApplet._applet.setFilePath(tmpFilePath);
 	}
 
 	/**
@@ -422,7 +426,7 @@
 	 * @param n -- starting with 1
 	 */
 	Jmol.jsvSetSpectrumNumber = function(jsvApplet, n) {
-		jsvApplet._applet.setSpectrumNumber(n)    
+		jsvApplet._applet.setSpectrumNumber(n);
 	}
 
 	/**
@@ -437,14 +441,14 @@
 	 * toggles the coordinate display
 	 */
 	Jmol.jsvToggleCoordinate = function(jsvApplet) {
-		jsvApplet._applet.toggleCoordinate();    
+		jsvApplet._applet.toggleCoordinate();
 	}
 
 	/**
 	 * toggles the integration graph on/off
 	 */
 	Jmol.jsvToggleIntegration = function(jsvApplet) {
-		jsvApplet._applet.toggleIntegration();    
+		jsvApplet._applet.toggleIntegration();
 	}
 
 	/**
@@ -464,14 +468,14 @@
 	 *        the alpha portion of the highlight color
 	 */
 	Jmol.jsvAddHighlight = function(jsvApplet, x1, x2, r, g, b, a) {
-		jsvApplet._applet.addHighlight(x1, x2, r, g, b, a);    
+		jsvApplet._applet.addHighlight(x1, x2, r, g, b, a);
 	}
 
 	/**
 	 * removes all highlights from the plot area
 	 */
 	Jmol.jsvRemoveAllHighlights = function(jsvApplet) {
-		jsvApplet._applet.removeAllHighlights();    
+		jsvApplet._applet.removeAllHighlights();
 	}
 
 	/**
@@ -491,16 +495,7 @@
 	 * toggles reversing the plot on a <code>JSVPanel</code>
 	 */
 	Jmol.jsvReversePlot = function(jsvApplet) {
-		jsvApplet._applet.reversePlot();    
-	}
-
-	/**
-	 * special command linking Jmol and JSpecView
-	 * -- currently in development (5/2012, BH)   
-	 * 
-	 */
-	Jmol.jsvSyncScript = function(jsvApplet, peakScript) {
-		jsvApplet.syncScript(peakScript);    
+		jsvApplet._applet.reversePlot();
 	}
 
 	/**
@@ -510,11 +505,11 @@
 	 *        the message
 	 */
 	Jmol.jsvWriteStatus = function(jsvApplet, msg) {
-		jsvApplet._applet.writeStatus(msg);    
+		jsvApplet._applet.writeStatus(msg);
 	}
 
 	Jmol.jsvSetVisible = function(jsvApplet, TF) {
-		jsvApplet._applet.setVisible(TF);    
+		jsvApplet._applet.setVisible(TF);
 	}
 
 	Jmol.getJSVAppletHtml = function(applet, Info) {
@@ -524,7 +519,7 @@
 			Jmol._document = null;
 			applet = Jmol.getJSVApplet(applet, Info);
 			Jmol._document = d;
-		}  
+		}
 		return applet._code;
 	}
 

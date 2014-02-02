@@ -148,8 +148,8 @@ Jmol.getJSVApplet("jsv", JSVInfo)
 </script>
 <br />
 <a href="javascript:unhideJSV();Jmol.showInfo(jsv, true);Jmol.showInfo(jmol, true)">info</a>
-<a href="javascript:Jmol.showInfo(jsv, false)">spectrum</a>
-<a href="javascript:Jmol.clearConsole(jsv);Jmol.script(jsv, 'close all')">clear</a>
+<a href="javascript:Jmol.clearConsole(jsv);Jmol.clearConsole(jmol);">clear</a>
+<a href="javascript:Jmol.showInfo(jsv, false);Jmol.showInfo(jmol, false)">spectrum</a>
  (note that OH and NH hydrogens will not be shown)
 <div style="position:absolute;left:745px;top:565px;z-index:9005"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
 </div>
