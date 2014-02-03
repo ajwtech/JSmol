@@ -106,9 +106,10 @@ Jmol = (function(document) {
 		_ajaxTestSite: http + "://google.com",
 		_z:{
 			header:z,
+			rear:z++,
 			main:z++,
 			image:z++,
-			top:z++,
+			front:z++,
 			dialog:z++,
 			menu:z+1000,
 			fileOpener:z+1001,
@@ -965,7 +966,7 @@ Jmol = (function(document) {
 									;messagecallback;pickcallback;animframecallback;appletreadycallback;atommovedcallback;\
 									;echocallback;evalcallback;hovercallback;language;loadstructcallback;measurecallback;\
 									;minimizationcallback;resizecallback;scriptcallback;statusform;statustext;statustextarea;\
-									;synccallback;usecommandthread;syncid;appletid;startupscript;";
+									;synccallback;usecommandthread;syncid;appletid;startupscript;menufile;";
 		for (var i in Info)
 			if(availableValues.indexOf(";" + i.toLowerCase() + ";") >= 0){
 				if (i == "language" && !Jmol.featureDetection.supportsLocalization())
@@ -1626,7 +1627,7 @@ Dialog.setDialog = function(dialog) {
 	Jmol.$remove(dialog.id);
 	//System.out.println("removed " + dialog.id)
 	var id = dialog.id + "_mover";
-	var container = Jmol.$("#" + id);
+	var container = Jmol._$(id);
 	var jd;
 	//System.out.println("JSmolCore.js: setDialog " + dialog.id);
 	if (container[0]) {
@@ -1635,7 +1636,7 @@ Dialog.setDialog = function(dialog) {
 	} else {
 		Jmol.$after("body","<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
 		var jd = new Dialog.JSDialog();
-		container = Jmol.$("#" + id);
+		container = Jmol._$(id);
 		dialog.container = container;
 		jd.applet = dialog.manager.viewer.applet;
 		jd.setContainer(container);
