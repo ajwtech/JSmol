@@ -200,13 +200,14 @@
 		};
 
 		proto._createCanvas2d = function(doReplace) {
-			var canvas = document.createElement( 'canvas' );
 			var container = Jmol.$(this, "appletdiv");
 			if (doReplace) {
 				try {
 				container[0].removeChild(this._canvas);
-				if (this._canvas.topLayer)
-					container[0].removeChild(this._canvas.topLayer);
+				if (this._canvas.frontLayer)
+					container[0].removeChild(this._canvas.frontLayer);
+				if (this._canvas.rearLayer)
+					container[0].removeChild(this._canvas.rearLayer);
 				if (this._canvas.imageLayer)
 					container[0].removeChild(this._canvas.imageLayer);
 				Jmol._jsUnsetMouse(this._mouseInterface);
@@ -214,6 +215,7 @@
 			}
 			var w = Math.round(container.width());
 			var h = Math.round(container.height());
+			var canvas = document.createElement( 'canvas' );
 			canvas.applet = this;
 			this._canvas = canvas;
 			canvas.style.width = "100%";
@@ -222,30 +224,36 @@
 			canvas.height = h; // w and h used in setScreenDimension
 			canvas.id = this._id + "_canvas2d";
 			container.append(canvas);
+			Jmol._$(canvas.id).css({"z-index":Jmol._z.main});
 			if (this._isLayered){
 				var img = document.createElement("div");
 				canvas.imageLayer = img;
 				img.id = this._id + "_imagelayer";
 				container.append(img);
-				$("#" + img.id).css({zIndex:Jmol._z.image,position:"absolute",left:"0px",top:"0px", width:"0px", height:"0px", overflow:"hidden"});
-				var canvas2 = document.createElement("canvas");
-				canvas.topLayer = canvas2;
-				canvas2.style.width = "100%";
-				canvas2.style.height = "100%";
-				canvas2.id = this._id + "_toplayer";
-				canvas2.width = w;
-				canvas2.height = h; // w and h used in setScreenDimension
-				container.append(canvas2);
-				canvas2.applet=this;
-				$("#" + canvas2.id).css({background:"(0,0,0,0.001)", zIndex: Jmol._z.top,position:"absolute",left:"0px",top:"0px",overflow:"hidden"});
-				this._mouseInterface = canvas2;
-				img
+				Jmol._$(img.id).css({zIndex:Jmol._z.image,position:"absolute",left:"0px",top:"0px", width:"0px", height:"0px", overflow:"hidden"});
+				this._mouseInterface = this._getLayer("front", container, w, h, false);
+				//this._getLayer("rear", container, w, h, true);
+				//Jmol._$(canvas.id).css({background:"rgb(0,0,0,0.001)", "z-index":Jmol._z.main}); 
 			} else {
 				this._mouseInterface = canvas;
 			}
 			Jmol._jsSetMouse(this._mouseInterface);
 		}
-
+    
+    proto._getLayer = function(name, container, w, h, isOpaque) {
+  		var c = document.createElement("canvas");
+			this._canvas[name + "Layer"] = c;
+			c.style.width = "100%";
+			c.style.height = "100%";
+			c.id = this._id + "_" + name + "Layer";
+			c.width = w;
+			c.height = h; // w and h used in setScreenDimension
+			container.append(c);
+			c.applet = this;
+			Jmol._$(c.id).css({background:(isOpaque ? "rgb(0,0,0,1)" : "rgb(0,0,0,0.001)"), "z-index": Jmol._z[name],position:"absolute",left:"0px",top:"0px",overflow:"hidden"});
+			return c;	
+    }
+    
 		proto._setupJS = function() {
 			window["j2s.lib"] = {
 				base : this._j2sPath + "/",

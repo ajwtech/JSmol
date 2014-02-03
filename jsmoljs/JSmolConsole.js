@@ -36,7 +36,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	s = s.replace(/\$ID/g,id)
 	Jmol.$after("body", s);
 
-	console.setContainer(Jmol.$("#" + id));
+	console.setContainer(Jmol._$(id));
 	console.setPosition();
 	console.dragBind(true);
 	s = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].setVisible(false)\">close</a>";
