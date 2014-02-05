@@ -171,8 +171,7 @@
   	<copy overwrite="true" todir="src/org/jmol/popup" >
       <fileset dir="${jmol.path}/src/org/jmol/popup">
         <include name="**/*.java" />
-        <exclude name="JmolPopup.java"/>
-        <exclude name="SwingPopup.java"/>
+        <exclude name="*Awt*.java"/>
       </fileset>
     </copy>
  	

@@ -1053,36 +1053,9 @@
         	JSV/dialog/ViewsDialog.js
         	JSV/js2d/JsDialogManager.js
         	JSV/dialog/DialogManager.js
-        	javajs/awt/BorderLayout.js
-        	javajs/awt/LayoutManager.js
-        	javajs/swing/JDialog.js
-        	javajs/swing/JContainer.js
-        	javajs/swing/JComponent.js
-        	javajs/awt/Component.js
-        	javajs/swing/JContentPane.js
-        	javajs/swing/JEditorPane.js
-        	javajs/swing/JPanel.js
-        	javajs/swing/Grid.js
-        	javajs/swing/Cell.js
-        	javajs/swing/GridBagConstraints.js
-        	javajs/swing/Insets.js
-        	javajs/swing/JScrollPane.js
-        	javajs/swing/JTable.js
-        	javajs/swing/ColumnSelectionModel.js
-        	javajs/swing/ListSelectionModel.js
         	JSV/js2d/DialogTableModel.js
-        	javajs/swing/AbstractTableModel.js
-        	javajs/swing/TableColumn.js
         	JSV/js2d/JsDialog.js
         	JSV/api/PlatformDialog.js
-        	javajs/swing/FlowLayout.js
-        	javajs/swing/GridBagLayout.js
-        	javajs/swing/JButton.js
-        	javajs/swing/JCheckBox.js
-        	javajs/swing/JComboBox.js
-        	javajs/swing/JLabel.js
-        	javajs/swing/JSplitPane.js
-        	javajs/swing/JTextField.js
     	" />
     </antcall>
 
@@ -1197,11 +1170,58 @@
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
        		J/popup/JmolAbstractMenu.js
-       		J/popup/GenericPopup.js
-       		J/awtjs2d/JSPopup.js
-       		J/awtjs2d/JSmolPopup.js
+       		J/popup/GenericSwingPopup.js
+       		J/popup/JmolGenericPopup.js
+       		J/popup/JSSwingPopupHelper.js
+       		J/popup/PopupHelper.js
        		J/popup/PopupResource.js
        		J/popup/MainPopupResourceBundle.js
+       		J/awtjs2d/JmolJSPopup.js
+        	" />
+    </antcall>
+   	
+    <antcall target="call-core">
+        <param name="call-core.name" value="swing" />
+        <param name="call-core.list" value="
+        javajs/awt/BorderLayout.js
+        javajs/awt/Component.js
+        javajs/awt/Container.js
+        javajs/awt/LayoutManager.js
+        javajs/swing/AbstractButton.js
+        javajs/swing/AbstractTableModel.js
+        javajs/swing/ButtonGroup.js
+        javajs/swing/Cell.js
+        javajs/swing/ColumnSelectionModel.js
+        javajs/swing/Document.js
+        javajs/swing/FlowLayout.js
+        javajs/swing/Grid.js
+        javajs/swing/GridBagConstraints.js
+        javajs/swing/GridBagLayout.js
+        javajs/swing/Insets.js
+        javajs/swing/JButton.js
+        javajs/swing/JCheckBox.js
+        javajs/swing/JCheckBoxMenuItem.js
+        javajs/swing/JComboBox.js
+        javajs/swing/JComponent.js
+        javajs/swing/JComponentImp.js
+        javajs/swing/JContentPane.js
+        javajs/swing/JDialog.js
+        javajs/swing/JEditorPane.js
+        javajs/swing/JLabel.js
+        javajs/swing/JMenu.js
+        javajs/swing/JMenuItem.js
+        javajs/swing/JPanel.js
+        javajs/swing/JPopupMenu.js
+        javajs/swing/JRadioButtonMenuItem.js
+        javajs/swing/JScrollPane.js
+        javajs/swing/JSplitPane.js
+        javajs/swing/JTable.js
+        javajs/swing/JTextField.js
+        javajs/swing/JTextPane.js
+        javajs/swing/ListSelectionModel.js
+        javajs/swing/SwingConstants.js
+        javajs/swing/TableCellRenderer.js
+        javajs/swing/TableColumn.js
         	" />
     </antcall>
    	
