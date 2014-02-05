@@ -53,12 +53,12 @@ try{
 
 Jmol.Menu || (Jmol.Menu = {_menuCounter: 0})
 
-;(function(M) {
+;(function(M, Swing) {
 
 if (M._getID)return;
 
-M._getID = function(applet, name) {
-	return applet._id + '_' + name + '_' + (++M._menuCounter);
+M._getID = function(popup, type) {
+	return popup.applet._id + '_' + popup.name + "_" + type + '_' + (++M._menuCounter);
 }
 
 M._style = '\
@@ -90,185 +90,93 @@ M._style = '\
 	.jmolPopupMenu .ui-state-disabled a:hover{background-color:transparent!important;border-color:transparent!important}\
 	.jmolPopupMenu .ui-state-disabled .ui-icon{filter:Alpha(Opacity=35)}';
 
-M.PopupMenu = function(applet, name) {
-	M._style && Jmol.$after("head", '<style>'+M._style+'</style>');  
-	M._style = null; // once onl
-	this.applet = applet;
-	this.id = M._getID(applet, name + "_top");
+M.hidePopups = function(a) {
+	for (var i in a)
+		Swing.hideMenu(a[i]);
+}
+
+/*
+M.PopupMenu = function(name) {
 	this.name = name;
 	this.items = [];
 	this.enabled = true;
 	this.tainted = true;
-	this.applet = applet;	
+}
+*/
 
-	applet._popups || (applet._popups = {});
-	applet._popups[name] = this;
-	Jmol.$after("body",'<ul id="' + this.id + '" class="jmolPopupMenu"></ul>');
-	this.setContainer(Jmol.$('#' + this.id));
+
+Swing.getMenuID = function(item) {
+  return Jmol.Menu._getID(item.popupMenu, item.id);
 }
 
-M.PopupMenu.prototype.dispose = function() {
-	this.hide();
-	delete this.applet._popups[this.name]
+Swing.setMenu = function(menu) {
+	M._style && Jmol.$after("head", '<style>'+M._style+'</style>');  
+	M._style = null; // once only
+	menu.tainted = true;
+	menu.id = M._getID(menu, "top");
+	menu.applet._popups || (menu.applet._popups = {});
+	menu.applet._popups[menu.name] = menu;
+	Jmol.$after("body",'<ul id="' + menu.id + '" class="jmolPopupMenu"></ul>');
+	menu.setContainer(Jmol.$('#' + menu.id));
 }
 
+Swing.initMenuItem = function(item) {
+  item.applet = item.popupMenu.applet;
+  item.id = Swing.getMenuID(item);
+  item.icon && (item.icon = '<img src="' + item.applet._j2sPath + '/' + item.icon + '" style="max-height: 20px;" />')
+}
 
-M.PopupMenu.prototype.hide = function() {
-	if (!this.visible)return;
-	this.container.unbind('clickoutjsmol');
-	this.dragBind(false);
-	this.container.hide();
-	this.visible = this.isDragging = false;
-};
-
-M.PopupMenu.prototype.menuShowPopup = function(x,y){
-	if (this.tainted) {
-		var s = this.html();
-		this.container.html(s);
-		this.tainted = false;
-		this.bindActionCommands();
+Swing.showMenu = function(menu, x, y) {
+	if (menu.tainted) {
+		menu.container.html(menu.toHTML());
+		menu.tainted = false;
+		Swing.bindMenuActionCommands(menu);
 	}
-	this.setPosition();
-	this.container.hide().menu().menu('refresh').show();
-	this.visible = true;
-	this.timestamp = System.currentTimeMillis();
-	this.container.unbind('clickoutjsmol');
-	this.dragBind(true);
-	var me = this;
-	this.container.bind('clickoutjsmol', function(evspecial, target, ev) {
-		if (System.currentTimeMillis() - me.timestamp > 100)
-			me.hide();
+	menu.setPosition();
+	menu.container.hide().menu().menu('refresh').show();
+	menu.visible = true;
+	menu.timestamp = System.currentTimeMillis();
+	menu.container.unbind('clickoutjsmol');
+	menu.dragBind(true);
+	menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
+		if (System.currentTimeMillis() - menu.timestamp > 100)
+		  Swing.hideMenu(menu);
 	});
-	this.container.bind("contextmenu", function() {return false;})
+	menu.container.bind("contextmenu", function() {return false;})
+}
+
+Swing.disposeMenu = function(menu) {
+	Swing.hideMenu(menu);
+	delete menu.applet._popups[menu.name];
+}
+
+Swing.hideMenu = function(menu) {
+	if (!menu.visible)return;
+	menu.container.unbind('clickoutjsmol');
+	menu.dragBind(false);
+	menu.container.hide();
+	menu.visible = menu.isDragging = false;
 };
 
-Jmol._setDraggable(M.PopupMenu);
-
-M.SubMenu = function(popupMenu, entry) {
-	this.applet = popupMenu.applet;
-	this.text = entry;
-	this.enabled = true;
-	this.id = M._getID(popupMenu.applet, popupMenu.name + "m");
-	this.popupMenu = popupMenu;
-	this.isMenu = true;
-	this.items = [];
-}
-
-M.MenuItem = function(popupMenu, entry, isCheckBox, isRadio) {
-	this.applet = popupMenu.applet;
-	this.text = entry; // separator is entry=null
-	this.enabled = true;
-	this.id = M._getID(popupMenu.applet, popupMenu.name + (isCheckBox ? "cb" : isRadio ? "rb" : "i"));
-	this.popupMenu = popupMenu;
-	this.isCheckBox = isCheckBox;
-	this.isRadio = isRadio;
-}
-
-M.ButtonGroup = function(popupMenu) {
-	this.id = M._getID(popupMenu.applet, popupMenu.name + "bg");
-	this.add = function(item) {
-		item.htmlName = this.id
-	};
-}
-
-M.setItemProto = function(proto){
-
-	proto.setSelected = function(selected) {
-		this.selected = selected;
-	};
-
-	proto.isSelected = function() {
-		return this.selected;
-	};
-
-	proto.setName = function(name) {
-		this.name = name;
-	};
-
-	proto.getName = function() {
-		return this.name;
-	};
-
-	proto.addActionListener = function(jspopup) {
-	//  (on mouse up)       
-		this.actionListener = jspopup;
-	};
-
-	proto.addItemListener = function(jspopup) {
-	//  (on checkbox/radio click) 
-		this.itemListener = jspopup;
-	};
-
-	proto.addMouseListener = function(jspopup) {
-	// not yet implemented in Jmol, I think.
-	//  (on entry)          this.actionlistener.checkMenuFocus(this.id, this.actionCommand, true);
-	//  (on exit)           this.actionlistener.checkMenuFocus(this.id, this.actionCommand, false);
-		this.mouseListener = jspopup;
-	};
-
-	proto.bindActionCommands = function() {
-		var me = this;
-		Jmol.$documentOff('click', this.id);
-		Jmol.$documentOn('click', this.id, function() {
-			if (me.actionListener) {
-				me.popupMenu.hide();
-				me.actionListener.checkMenuClick(me, me.script);
-			}	else if (me.itemListener) {
-				me.selected = (me.isCheckBox ? Jmol.$prop(me.id + "-cb", "checked") : true); 
-				me.itemListener.checkBoxStateChanged(me);
-			}
-		});
-	};
-
-
-	proto.setEnabled = function(enable) {
-		this.enabled = enable;
-	};	
-
-	proto.setIcon = function(icon) {
-		this.icon = icon;
-	};
-
-	proto.setText = function(entry) {
-		this.text = entry;
-	};	
-
-	proto.setActionCommand = function(script) {
-		this.script = script;
-	};
-
-	proto.getActionCommand = function() {
-		return this.script;
-	};
-
-	proto.html = function() {		
-		var s = '<li id="ID" class="' + (this.enabled ? '' : 'ui-state-disabled') + '">';
-		if (this.text) { s += '<a>'; }
-		if (this.isCheckBox) {
-			s += '<input id="ID-cb" type="checkbox" ' + (this.selected ? 'checked' : '') + ' /><label for="ID-cb">TeXt</label>';
-		} else if (this.isRadio) {
-			s += '<input id="ID-rb" type="radio" name="' + this.htmlName + '" ' 
-				+ (this.selected ? 'checked' : '') + ' /><label for="ID-rb">TeXt</label>';
-		} else if (this.text) {
-			s += "TeXt";
+Swing.bindMenuActionCommands = function(menu) {
+	var n = menu.getComponentCount();
+	for(var i = 0; i < n; i++)
+		Swing.bindMenuActionCommands(menu.getComponent(i));
+	Jmol.$documentOff('click', menu.id);
+	Jmol.$documentOn('click', menu.id, function() {
+	
+		if (menu.itemListener) {
+			menu.selected = (menu.isCheckBox ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
+			Swing.hideMenu(menu.popupMenu);
+			menu.itemListener.itemStateChanged({getSource:function(){return menu}});
+		}	else if (menu.actionListener) {
+			Swing.hideMenu(menu.popupMenu);
+			menu.actionListener.actionPerformed({getSource:function(){return menu},getActionCommand:function(){return menu.actionCommand}});
 		}
-		s = s.replace(/ID/g,this.id);    
-		if (this.text) { s = s.replace(/TeXt/, this.text) + '</a>'; }
-		s += '</li>';
-		return s;
-	};
-
+	});
 }
 
-M.setMenuProto = function(proto){
-
-	M.setItemProto(proto);
-
-	proto.add = function(item) {
-		this.items.push(item);
-		item.parent = this;
-	};
-
+/*
 	proto.removeAll = function(indexFrom) {
 		if (indexFrom == 0) {
 			this.items = [];
@@ -282,7 +190,6 @@ M.setMenuProto = function(proto){
 			this.items = I;
 		}
 	};
-
 	proto.setAutoscrolls = function() {
 		//Sets the autoscrolls property. If true mouse dragged events will be synthetically generated when the mouse 
 		// is dragged outside of the component's bounds and mouse motion has paused (while the button continues to be 
@@ -292,15 +199,9 @@ M.setMenuProto = function(proto){
 		// I have no idea how to implement this!
 		return;
 	};
+*/
 
-	proto.getComponents = function() {
-		return this.items;
-	};
-
-	proto.getItemCount = function() {
-		return this.items.length;
-	};
-
+/*
 	proto.html = function() {
 		var label = (this.text ? this.text : this.icon ? '<img src="' + this.applet._j2sPath + '/' + this.icon + '" style="max-height: 20px;" />' : null);
 
@@ -313,22 +214,12 @@ M.setMenuProto = function(proto){
 			s += '</ul></li>';
 		return s;
 	};
+*/
+//}
 
-	proto.bindActionCommands = function() {
-		for(var i = 0; i < this.items.length; i++)
-			if(this.items[i].bindActionCommands) this.items[i].bindActionCommands();
-	};
+//M.setMenuProto(M.PopupMenu.prototype);
+//M.setMenuProto(M.SubMenu.prototype);
+//M.setItemProto(M.MenuItem.prototype);
 
-}
-
-M.setMenuProto(M.PopupMenu.prototype);
-M.setMenuProto(M.SubMenu.prototype);
-M.setItemProto(M.MenuItem.prototype);
-
-M.hidePopups = function(a) {
-	for (var i in a)
-		a[i].hide();
-}
-
-})(Jmol.Menu);
+})(Jmol.Menu, Jmol.Swing);
 

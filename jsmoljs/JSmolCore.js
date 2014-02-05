@@ -126,8 +126,8 @@ Jmol = (function(document) {
 				"www.rcsb.org": "%URL",
 				"pubchem.ncbi.nlm.nih.gov":"%URL",
 				"http://www.nmrdb.org/tools/jmol/predict.php":"%URL",
-				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
-				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf",
+				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
+				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
 				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
@@ -565,17 +565,64 @@ Jmol = (function(document) {
 				query = ":name/" + encodeURIComponent(query.substring(1));
 			}
 		}
-		query = (call ? call.replace(/\%FILE/, encodeURIComponent(query.substring(pt))) : query);
+		if (call) {
+			query = encodeURIComponent(query.substring(pt));		
+			if (call.indexOf("FILENCI") >= 0) {
+				query = query.replace(/\%2F/g, "/");				
+				query = call.replace(/\%FILENCI/, query);
+			} else {
+				query = call.replace(/\%FILE/, query);
+			}
+		}		
 		return query;
 	}
 
 	Jmol._getRawDataFromServer = function(database,query,fSuccess,fError,asBase64,noScript){
+	  // note that this method is now only enabled for "_"
+	  // server-side processing of database queries was too slow and only useful for 
+	  // the IMAGE option, which has been abandoned.
 		var s = 
 			"?call=getRawDataFromDatabase&database=" + database + (query.indexOf("?POST?") >= 0 ? "?POST?" : "")
 				+ "&query=" + encodeURIComponent(query)
 				+ (asBase64 ? "&encoding=base64" : "")
 				+ (noScript ? "" : "&script=" + encodeURIComponent(Jmol._getScriptForDatabase(database)));
 		return Jmol._contactServer(s, fSuccess, fError);
+	}
+
+	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
+		var isRaw = false;
+		if (Jmol._isDatabaseCall(fileName)) {
+			Jmol._setQueryTerm(applet, fileName);
+			fileName = Jmol._getDirectDatabaseCall(fileName, true);
+			if (Jmol._isDatabaseCall(fileName)) {
+				// xhr2 not supported (MSIE)
+				fileName = Jmol._getDirectDatabaseCall(fileName, false);
+				isRaw = true;
+			}
+		}
+		if (applet._cacheFiles && Jmol._fileCache && !fileName.endsWith(".js")) {
+			var data = Jmol._fileCache[fileName];
+			if (data) {
+				System.out.println("using "  + data.length + " bytes of cached data for "  + fileName);
+				fSuccess(data);
+			} else {
+				fSuccess = function(fileName, data) { fSuccess(Jmol._fileCache[fileName] = data) };     
+			}
+		}
+		if (isRaw) {
+				Jmol._getRawDataFromServer("_",fileName,fSuccess,fError);   
+				return;
+		} 
+		var info = {
+			type: "GET",
+			dataType: "text",
+			url: fileName,
+			async: Jmol._asynchronous,
+			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
+			error: function() {Jmol._loadError(fError)}
+		}
+		Jmol._checkAjaxPost(info);
+		Jmol._ajax(info);
 	}
 
 	Jmol._getInfoFromDatabase = function(applet, database, query){
@@ -614,42 +661,6 @@ Jmol = (function(document) {
 			var url = Jmol._restReportUrl.replace(/IDLIST/,output);
 			Jmol._loadFileData(applet, url, function(data) {Jmol._setInfo(applet, database, data) });   
 		}
-	}
-
-	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
-		var isRaw = false;
-		if (Jmol._isDatabaseCall(fileName)) {
-			Jmol._setQueryTerm(applet, fileName);
-			fileName = Jmol._getDirectDatabaseCall(fileName, true);
-			if (Jmol._isDatabaseCall(fileName)) {
-				// xhr2 not supported (MSIE)
-				fileName = Jmol._getDirectDatabaseCall(fileName, false);
-				isRaw = true;
-			}
-		}
-		if (applet._cacheFiles && Jmol._fileCache && !fileName.endsWith(".js")) {
-			var data = Jmol._fileCache[fileName];
-			if (data) {
-				System.out.println("using "  + data.length + " bytes of cached data for "  + fileName);
-				fSuccess(data);
-			} else {
-				fSuccess = function(fileName, data) { fSuccess(Jmol._fileCache[fileName] = data) };     
-			}
-		}
-		if (isRaw) {
-				Jmol._getRawDataFromServer("_",fileName,fSuccess,fError);   
-				return;
-		} 
-		var info = {
-			type: "GET",
-			dataType: "text",
-			url: fileName,
-			async: Jmol._asynchronous,
-			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
-			error: function() {Jmol._loadError(fError)}
-		}
-		Jmol._checkAjaxPost(info);
-		Jmol._ajax(info);
 	}
 
 	Jmol._checkAjaxPost = function(info) {
@@ -1501,9 +1512,26 @@ Jmol = (function(document) {
 		Jmol._setMouseOwner(null);
 	}
 
-Jmol._setDraggable = function(Obj) {
+
+////// Jmol.Swing interface  for Javascript implementation of Swing dialogs and menus
+
+Jmol.Swing = {
+	// a static class
+	count:0,
+	htDialogs:{}
+};
+
+(function(Swing) {
+
+SwingController = Swing; // see javajs.api.SwingController
+
+Swing.setDraggable = function(Obj) {
+	
 	var proto = Obj.prototype;
-	// for menus and console
+	if (proto.setContainer)
+		return;
+	
+	// for menus, console, and 
 	proto.setContainer = function(container) {
 		this.container = container;
 		container.obj = this;
@@ -1582,32 +1610,23 @@ Jmol._setDraggable = function(Obj) {
 	};
 }
 
-////// Jmol.Dialog interface  for Javascript implementation of Swing dialogs
+// Dialog //
 
-Jmol.Dialog = {
-	// a static class
-	count:0,
-	htDialogs:{}
-};
-
-(function(Dialog) {
- SwingController = Dialog; // see javajs.api.SwingController
-
-Dialog.JSDialog = function () {
+Swing.JSDialog = function () {
 }
 
-Jmol._setDraggable(Dialog.JSDialog);
+Swing.setDraggable(Swing.JSDialog);
 
 ///// calls from javajs and other Java-derived packages /////
 
-Dialog.getScreenDimensions = function(d) {
+Swing.getScreenDimensions = function(d) {
 	d.width = $(window).width();
 	d.height = $(window).height();
 }
 
-Dialog.dispose = function(dialog) {
+Swing.dispose = function(dialog) {
 	Jmol.$remove(dialog.id + "_mover");
-	delete Dialog.htDialogs[dialog.id]
+	delete Swing.htDialogs[dialog.id]
 	dialog.container.obj.dragBind(false);
 //  var btns = $("#" + dialog.id + " *[id^='J']"); // add descendents with id starting with "J"
 //  for (var i = btns.length; --i >= 0;)
@@ -1615,14 +1634,14 @@ Dialog.dispose = function(dialog) {
 	//System.out.println("JSmolCore.js: dispose " + dialog.id)
 }
  
-Dialog.register = function(dialog, type) {
-	dialog.id = type + (++Dialog.count);
-	Dialog.htDialogs[dialog.id] = dialog;
+Swing.register = function(dialog, type) {
+	dialog.id = type + (++Swing.count);
+	Swing.htDialogs[dialog.id] = dialog;
 	//System.out.println("JSmolCore.js: register " + dialog.id)
 
 }
 
-Dialog.setDialog = function(dialog) {
+Swing.setDialog = function(dialog) {
 	Jmol._setMouseOwner(null);
 	Jmol.$remove(dialog.id);
 	//System.out.println("removed " + dialog.id)
@@ -1635,7 +1654,7 @@ Dialog.setDialog = function(dialog) {
 		jd = container[0].jd;
 	} else {
 		Jmol.$after("body","<div id='" + id + "' style='position:absolute;left:0px;top:0px;'>" + dialog.html + "</div>");
-		var jd = new Dialog.JSDialog();
+		var jd = new Swing.JSDialog();
 		container = Jmol._$(id);
 		dialog.container = container;
 		jd.applet = dialog.manager.viewer.applet;
@@ -1655,26 +1674,26 @@ Dialog.setDialog = function(dialog) {
 
 }
  
-Dialog.setSelected = function(chk) {
+Swing.setSelected = function(chk) {
  Jmol.$prop(chk.id, 'checked', !!chk.selected);
 }
 
-Dialog.setSelectedIndex = function(cmb) {
+Swing.setSelectedIndex = function(cmb) {
  Jmol.$prop(cmb.id, 'selectedIndex', cmb.selectedIndex);
 }
 
-Dialog.setText = function(btn) {
+Swing.setText = function(btn) {
  Jmol.$prop(btn.id, 'value', btn.text);
 }
 
-Dialog.setVisible = function(c) {
+Swing.setVisible = function(c) {
 	Jmol.$setVisible(c.id, c.visible);
 }
 
 /// callbacks from the HTML elements ////
  
-Dialog.click = function(element, keyEvent) {
-	var component = Dialog.htDialogs[element.id];
+Swing.click = function(element, keyEvent) {
+	var component = Swing.htDialogs[element.id];
 	if (component) {
 		//System.out.println("click " + element + " " + component)
 		var info = component.toString();
@@ -1689,14 +1708,14 @@ Dialog.click = function(element, keyEvent) {
 				return;
 		}    
 	}
-	var dialog = Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
+	var dialog = Swing.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	var key = (component ? component.name :  dialog.registryKey + "/" + element.id);
 	//System.out.println("JSmolCore.js: click " + key); 
 	dialog.manager.actionPerformed(key);
 }
 
-Dialog.windowClosing = function(element) {
-	var dialog = Jmol.Dialog.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
+Swing.windowClosing = function(element) {
+	var dialog = Swing.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	if (dialog.registryKey) {
 		//System.out.println("JSmolCore.js: windowClosing " + dialog.registryKey); 
 		dialog.manager.processWindowClosing(dialog.registryKey);
@@ -1706,7 +1725,7 @@ Dialog.windowClosing = function(element) {
 	}
 }
 
-})(Jmol.Dialog);
+})(Jmol.Swing);
 
 Jmol._track = function(applet) {
 	// this function inserts an iFrame that can be used to track your page's applet use. 
