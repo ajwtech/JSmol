@@ -73,7 +73,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	}
 }
 
-Jmol._setDraggable(Jmol.Console.JSConsole);
+Jmol.Swing.setDraggable(Jmol.Console.JSConsole);
 
 Jmol.Console.Input = function(console) {
 

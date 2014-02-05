@@ -390,6 +390,8 @@
   proto._getSmiles = function(withStereoChemistry) {
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
 		s = s.replace(/H/g,"").replace(/\[\]/g,"").replace(/@\]/g,"@H]").replace(/\(\)/g,"");
+		if (s.indexOf("\\") == 0 || s.indexOf("/") == 0)
+		  s= "[H]" + s;
 		return s;
   }
 
