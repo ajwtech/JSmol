@@ -300,6 +300,7 @@
     		javajs/api/BytePoster.js
     		javajs/api/EventManager.js
     		javajs/api/FontManager.js
+        	javajs/api/GenericColor.js
     		javajs/api/GenericFileInterface.js
     		javajs/api/GenericMenuInterface.js
     		javajs/api/GenericMouseInterface.js
@@ -308,6 +309,7 @@
     		javajs/api/JSONEncodable.js
     		javajs/api/PlatformViewer.js
     		javajs/api/ZInputStream.js
+			javajs/awt/Color.js
     		javajs/awt/Dimension.js
     		javajs/awt/event/Event.js
     		javajs/awt/Font.js
@@ -368,6 +370,7 @@
     		J/api/JmolStatusListener.js
     		J/api/JmolSyncInterface.js
     		J/api/JmolViewer.js
+        	J/api/Translator.js
     		J/appletjs/Jmol.js
     		J/atomdata/AtomData.js
     		J/atomdata/AtomDataServer.js
@@ -564,6 +567,7 @@
         	javajs/api/FontManager.js
         	javajs/api/GenericColor.js
         	javajs/api/GenericFileInterface.js
+			javajs/api/GenericMenuInterface.js
         	javajs/api/GenericMouseInterface.js
         	javajs/api/GenericPlatform.js
         	javajs/api/JSInterface.js
@@ -809,6 +813,7 @@
 			J/api/JmolStatusListener.js
 			J/api/JmolSyncInterface.js
 			J/api/JmolViewer.js
+        	J/api/Translator.js
 			J/appletjs/Jmol.js
 			J/atomdata/AtomData.js
 			J/atomdata/AtomDataServer.js
@@ -1033,13 +1038,11 @@
         <param name="call-core.name" value="jsvmenu" />
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
+        	javajs/api/GenericMenuInterface.js
+        	JSV/api/JSVPopupMenu.js
         	JSV/js2d/JsPopup.js
         	JSV/popup/JSVGenericPopup.js
-        	JSV/api/JSVAbstractMenu.js
-        	JSV/api/JSVPopupMenu.js
-        	javajs/api/GenericMenuInterface.js
         	JSV/popup/JSVPopupResourceBundle.js
-        	JSV/popup/PopupResource.js
     	" />
     </antcall>
 
@@ -1169,13 +1172,8 @@
         <param name="call-core.name" value="menu" />
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
-       		J/popup/JmolAbstractMenu.js
-       		J/popup/GenericSwingPopup.js
-       		J/popup/JmolGenericPopup.js
-       		J/popup/JSSwingPopupHelper.js
-       		J/popup/PopupHelper.js
-       		J/popup/PopupResource.js
        		J/popup/MainPopupResourceBundle.js
+       		J/popup/JmolGenericPopup.js
        		J/awtjs2d/JmolJSPopup.js
         	" />
     </antcall>
@@ -1222,6 +1220,10 @@
         javajs/swing/SwingConstants.js
         javajs/swing/TableCellRenderer.js
         javajs/swing/TableColumn.js
+    	J/popup/GenericSwingPopup.js
+        J/popup/PopupResource.js
+    	J/popup/JSSwingPopupHelper.js
+        J/popup/PopupHelper.js
         	" />
     </antcall>
    	
