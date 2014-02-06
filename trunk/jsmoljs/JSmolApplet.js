@@ -166,7 +166,7 @@
 		applet._initialize(Info.jarPath, Info.jarFile);
 		var jarFile = applet._jarFile;
 		var jnlp = ""
-		if (Jmol._isLocal && Info.jarPath.indexOf("http") != 0) {
+		if (Jmol._isFile && Info.jarPath.indexOf("http") != 0) {
 			// local installations need jnlp here and should reference JmolApplet(Signed).jar, not JmolApplet(Signed)0.jar  
 			jarFile = jarFile.replace(/0\.jar/,".jar");
 			jnlp = " jnlp_href=\"" + jarFile.replace(/\.jar/,".jnlp") + "\"";
