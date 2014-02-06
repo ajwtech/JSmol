@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 2/6/2014 8:46:25 AM disabled Jmol._tracker for localhost and 127.x.x.x 
 // BH 1/29/2014 8:02:23 AM Jmol.View and Info.viewSet
 // BH 1/21/2014 12:06:59 PM adding Jmol.Info.cacheFiles (applet, true/false) and applet._cacheFiles and Jmol._fileCache
 // BH 1/13/2014 2:12:38 PM adding "http://www.nmrdb.org/tools/jmol/predict.php":"%URL", to _DirectDatabaseCalls
@@ -83,13 +84,17 @@ if(typeof(jQuery)=="undefined") alert ("Note -- JSmoljQuery is required for JSmo
 if (!self.Jmol)
 Jmol = (function(document) {
 	var z=9000;
-	var http = (document.location.href.indexOf("https") == 0 ? "https" : "http"); 
+	var ref = document.location.href;
+	var http = (ref.indexOf("https") == 0 ? "https" : "http"); 
+	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
+	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || href.indexOf("http://127.") == 0);
+
 	return {
-		_version: 'JSmol 13.3.9 11/23/2013 10:51:10 PM',
+		_version: 'JSmol 14.1.8 2/6/2014 11:03:54 AM',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
-		_tracker: (http == "http" && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
-		_isLocal: (document.location.protocol.toLowerCase().indexOf("file:") == 0),
+		_isFile: isFile,
+		_tracker: (http == "http" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
 		/*  By setting the Jmol.allowedJmolSize[] variable in the webpage
 				before calling Jmol.getApplet(), limits for applet size can be overriden.
@@ -1730,16 +1735,23 @@ Swing.windowClosing = function(element) {
 Jmol._track = function(applet) {
 	// this function inserts an iFrame that can be used to track your page's applet use. 
 	// By default it tracks to a page at St. Olaf College, but you can change that. 
-	if (Jmol._tracker && !Jmol._isLocal){
-	try {  
-		var url = Jmol._tracker + "&applet=" + applet._jmolType + "&version=" + Jmol._version 
-			+ "&appver=" + self.___JmolVersion + "&url=" + encodeURIComponent(document.location.href);
-		var s = '<iframe style="display:none" width="0" height="0" frameborder="0" tabindex="-1" src="' + url + '"></iframe>'
-		Jmol.$after("body", s);
-	} catch (e) {
-		// ignore
-	}}
-	delete Jmol._tracker;
+	// and you can use
+	//
+	// delete Jmol._tracker
+	//
+	// yourself to not have you page execute this 
+	//
+	if (Jmol._tracker){
+		try {  
+			var url = Jmol._tracker + "&applet=" + applet._jmolType + "&version=" + Jmol._version 
+				+ "&appver=" + self.___JmolVersion + "&url=" + encodeURIComponent(document.location.href);
+			var s = '<iframe style="display:none" width="0" height="0" frameborder="0" tabindex="-1" src="' + url + '"></iframe>'
+			Jmol.$after("body", s);
+		} catch (e) {
+			// ignore
+		}
+		delete Jmol._tracker;
+	}
 	return applet;
 }
 
