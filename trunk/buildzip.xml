@@ -1,8 +1,26 @@
 <project name="JSmol" default="zip" basedir=".">
 	
+	   <property name="jsv.path" value="../JSpecView" />
 	   <property name="jmol.path" value="../Jmol" />
 	
    <target name="zip" id="zip">
+   	
+ 	<echo>adding Jmol and JSpecView jar and jnlp files</echo>
+  	<copy todir="site/jsmol/java">
+  	  <fileset dir="${jmol.path}/build">
+  	    <include name="JmolApplet*.jar" />
+  	  </fileset>
+  	  <fileset dir="${jsv.path}/build">
+  	    <include name="JSpecViewApplet*.jar" />
+  	  </fileset>
+     	  <fileset dir="jnlp">
+          <include name="*.jnlp" />
+       </fileset>
+   	  <fileset dir="jnlp">
+        <include name="*.jnlp" />
+     </fileset>
+	</copy>
+		
    	<echo>creating distribution zip file jsmol.zip and copying it to Jmol</echo>
   	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
