@@ -87,7 +87,7 @@ Jmol = (function(document) {
 	var ref = document.location.href;
 	var http = (ref.indexOf("https") == 0 ? "https" : "http"); 
 	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
-	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || href.indexOf("http://127.") == 0);
+	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
 
 	return {
 		_version: 'JSmol 14.1.8 2/6/2014 11:03:54 AM',
