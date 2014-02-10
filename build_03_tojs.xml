@@ -1491,6 +1491,16 @@
    		" />
     </antcall>
    	
+   	<echo>JSmol.GLmol.min.js contains GLmol and THREE</echo>
+    <antcall target="call-min">
+        <param name="call-min.fullname" value="GLmol.full" />
+        <param name="call-min.minname" value="GLmol.min" />
+        <param name="call-min.list" value="
+       		JSmolTHREE.js
+       		JSmolGLmol.js
+        " />
+    </antcall>
+
    	<echo>cleaning up files</echo>
    	<echo>creating distribution zip file jsmol.zip and copying it to Jmol</echo>
   	<delete file="dist/*" />
