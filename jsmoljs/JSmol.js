@@ -224,13 +224,13 @@
 			canvas.height = h; // w and h used in setScreenDimension
 			canvas.id = this._id + "_canvas2d";
 			container.append(canvas);
-			Jmol._$(canvas.id).css({"z-index":Jmol._z.main});
+			Jmol._$(canvas.id).css({"z-index":Jmol._getZ(this, "main")});
 			if (this._isLayered){
 				var img = document.createElement("div");
 				canvas.imageLayer = img;
 				img.id = this._id + "_imagelayer";
 				container.append(img);
-				Jmol._$(img.id).css({zIndex:Jmol._z.image,position:"absolute",left:"0px",top:"0px", width:"0px", height:"0px", overflow:"hidden"});
+				Jmol._$(img.id).css({zIndex:Jmol._getZ(this, "image"),position:"absolute",left:"0px",top:"0px", width:"0px", height:"0px", overflow:"hidden"});
 				this._mouseInterface = this._getLayer("front", container, w, h, false);
 				//this._getLayer("rear", container, w, h, true);
 				//Jmol._$(canvas.id).css({background:"rgb(0,0,0,0.001)", "z-index":Jmol._z.main}); 
@@ -250,7 +250,7 @@
 			c.height = h; // w and h used in setScreenDimension
 			container.append(c);
 			c.applet = this;
-			Jmol._$(c.id).css({background:(isOpaque ? "rgb(0,0,0,1)" : "rgb(0,0,0,0.001)"), "z-index": Jmol._z[name],position:"absolute",left:"0px",top:"0px",overflow:"hidden"});
+			Jmol._$(c.id).css({background:(isOpaque ? "rgb(0,0,0,1)" : "rgb(0,0,0,0.001)"), "z-index": Jmol._getZ(this,name),position:"absolute",left:"0px",top:"0px",overflow:"hidden"});
 			return c;	
     }
     
@@ -259,9 +259,8 @@
 				base : this._j2sPath + "/",
 				alias : ".",
 				console : this._console,
-				monitorZIndex : Jmol._z.monitorZIndex
+				monitorZIndex : Jmol._getZ(this, "monitorZIndex")
 			};
-
 			var isFirst = (Jmol.__execStack.length == 0);
 			if (isFirst)
 				Jmol.__addExec([this, Jmol.__loadClazz, null, "loadClazz"]);

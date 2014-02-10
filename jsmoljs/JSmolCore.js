@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 2/10/2014 10:07:14 AM added Info.z and Info.zIndexBase
 // BH 2/9/2014 9:56:06 PM updated JSmolCore.js with option to extend Viewer with code PRIOR to loading Viewer classes
 // BH 2/6/2014 8:46:25 AM disabled Jmol._tracker for localhost and 127.x.x.x 
 // BH 1/29/2014 8:02:23 AM Jmol.View and Info.viewSet
@@ -101,8 +102,22 @@ Jmol = (function(document) {
 	var http = (ref.indexOf("https") == 0 ? "https" : "http"); 
 	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
 	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
+	var getZOrders = function(z) {
+		return {
+			header:z++,
+			rear:z++,
+			main:z++,
+			image:z++,
+			front:z++,
+			fileOpener:z++,
+			coverImage:z++,
+			dialog:z++, // could be several of these, JSV only
+			menu:z+90000, // way front
+			monitorZIndex:z+99999 // way way front
+		}
+	};
 	var j = {
-		_version: 'JSmol 14.1.8 2/9/2014 9:30:12 PM',
+		_version: 'JSmol 14.1.8 2/10/2014 10:07:04 AM',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_isFile: isFile,
@@ -116,22 +131,13 @@ Jmol = (function(document) {
 		_jarFile: null,  // can be set in URL using _JAR=
 		_j2sPath: null,  // can be set in URL using _J2S=
 		_use: null,      // can be set in URL using _USE=
-		_j2sLoadMonitorOpacity: 55, // initial opacity for j2s load monitor message
+		_j2sLoadMonitorOpacity: 90, // initial opacity for j2s load monitor message
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
 		_ajaxTestSite: http + "://google.com",
-		_z:{
-			header:z,
-			rear:z++,
-			main:z++,
-			image:z++,
-			front:z++,
-			dialog:z++,
-			menu:z+1000,
-			fileOpener:z+1001,
-			coverImage:z+2000
-		},
+		_getZOrders: getZOrders,
+		_z:getZOrders(z),
 		_debugCode: true,  // set false in process of minimization
 		db: {
 			_databasePrefixes: "$=:",
@@ -875,12 +881,16 @@ Jmol = (function(document) {
 		return name.substring(0, Math.min(name.length, 3));
 	};
 
+	Jmol._getZ = function(applet, what) {
+		return applet && applet._z && applet._z[what] || Jmol._z[what];
+	}
+	
 	Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
 		// we actually cannot suggest a fileName, I believe.
 		if (!Jmol.featureDetection.hasFileReader)
 				return fileLoadThread.setData("Local file reading is not enabled in your browser", null, appData);
 		if (!applet._localReader) {
-			var div = '<div id="ID" style="z-index:'+Jmol._z.fileOpener + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
+			var div = '<div id="ID" style="z-index:'+Jmol._getZ(applet, "fileOpener") + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
 			Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
 			applet._localReader = Jmol.$(applet, "localReader");
 		}
@@ -1048,13 +1058,13 @@ Jmol = (function(document) {
 			if (applet._coverImage){
 				var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + (applet._coverTitle) + "\"";
 				var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._j2sPath + "/img/play_make_live.jpg\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
-					+ "z-index:" + (Jmol._z.coverImage)+";opacity:0.5;\"" + more + " />"  
-				img = "<div id=\"ID_coverdiv\" style=\"background-color:red;z-index:" + Jmol._z.coverImage+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
+					+ "z-index:" + Jmol._getZ(applet, "coverImage")+";opacity:0.5;\"" + more + " />"  
+				img = "<div id=\"ID_coverdiv\" style=\"background-color:red;z-index:" + Jmol._getZ(applet, "coverImage")+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
 				 + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
 			}
 			s = "\
 ...<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx;position:relative;font-size:14px;text-align:left\">IMG\
-......<div id=\"ID_appletdiv\" style=\"z-index:" + Jmol._z.header + ";width:100%;height:100%;position:absolute;top:0px;left:0px;\">";
+......<div id=\"ID_appletdiv\" style=\"z-index:" + Jmol._getZ(applet, "header") + ";width:100%;height:100%;position:absolute;top:0px;left:0px;\">";
 			var height = applet._height;
 			var width = applet._width;
 			if (typeof height !== "string" || height.indexOf("%") < 0) 
@@ -1176,9 +1186,11 @@ Jmol = (function(document) {
 
 	Jmol._setObject = function(obj, id, Info) {
 		obj._id = id;
-		obj.__Info = {};  
+		obj.__Info = {};
+		Info.z && Info.zIndexBase && (Jmol._z = Jmol._getZOrders(Info.zIndexBase));
 		for (var i in Info)
 			obj.__Info[i] = Info[i];
+		(obj._z = Info.z) || Info.zIndexBase && (obj._z = obj.__Info.z = Jmol._getZOrders(Info.zIndexBase));
 		obj._width = Info.width;
 		obj._height = Info.height;
 		obj._noscript = !obj._isJava && Info.noscript;
