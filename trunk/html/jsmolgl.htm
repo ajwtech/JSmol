@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>JSmol -- Jmol/HTML5 Demo</title>
 <script type="text/javascript" src="JSmol.min.js"></script>
+<script type="text/javascript" src="JSmol.GLmol.min.js"></script>
 
 <script type="text/javascript">
 
@@ -37,7 +38,7 @@ var Info = {
 	color: "0xFFFFFF",
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-	use: "HTML5",
+	use: "WEBGL HTML5",
 	j2sPath: "j2s",
 	readyFunction: jmol_isReady,
 	script: "set antialiasDisplay;load data/caffeine.mol",
@@ -141,8 +142,6 @@ Enter "!" and a command into the search box and press ENTER or open the <a href=
  <a href=jsmol.htm?_USE=SIGNED>JSmol/Java</a>
  <br /> 
  <a href=jsmol.htm?_USE=HTML5>JSmol/HTML5</a> 
- <br /> 
- <a href=jsmolgl.htm>JSmol/WebGL</a> 
  <br /> 
 
 
