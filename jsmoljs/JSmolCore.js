@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 2/9/2014 9:56:06 PM updated JSmolCore.js with option to extend Viewer with code PRIOR to loading Viewer classes
 // BH 2/6/2014 8:46:25 AM disabled Jmol._tracker for localhost and 127.x.x.x 
 // BH 1/29/2014 8:02:23 AM Jmol.View and Info.viewSet
 // BH 1/21/2014 12:06:59 PM adding Jmol.Info.cacheFiles (applet, true/false) and applet._cacheFiles and Jmol._fileCache
@@ -50,23 +51,26 @@
 // provides an object-oriented interface for JSpecView and syncing of Jmol/JSpecView
 
 
-// JSmoljQuery modifies standard jQuery to include binary file transfer
-// If you are using jQuery already on your page and you do not need any
-// binary file transfer, you can  
-
 // required/optional libraries (preferably in the following order):
 
-//    jQuery            -- at least jQuery.1.9
-//    JSmoljQueryext.js -- required for binary file transfer; otherwise standard jQuery should be OK
-//    JSmolCore.js      -- required;
-//    JSmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JSmolCore
-//    JSmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JSmolCore
-//    JSmolApi.js       -- required; all user functions; must be after JSmolCore
-//    JSmolTHREE.js     -- WebGL library required for JSmolGLmol.js
-//    JSmolGLmol.js     -- WebGL version of JSmol.
-//    JSmolJSV.js       -- optional; for creating and interacting with a JSpecView applet 
-//                          (requires JSpecViewApplet.jar or JSpecViewAppletSigned.jar
-//    JSmol.js
+//    jquery/jquery.js     -- at least jQuery.1.9
+//    js/JSmoljQueryext.js -- required for binary file transfer; otherwise standard jQuery should be OK
+//    js/JSmolCore.js      -- required
+//    js/j2sjmol.js        -- required
+//    js/JSmol.js          -- required
+//    js/JSmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JSmolCore
+//    js/JSmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JSmolCore
+//    js/JSmolConsole.js   -- optional; for the pop-up console
+//    js/JSmolApi.js       -- required; all user functions; must be after JSmolCore
+//    js/JSmolTHREE.js     -- optional; WebGL library required for JSmolGLmol.js
+//    js/JSmolGLmol.js     -- optional; WebGL version of JSmol.
+//    js/JSmolJME.js       -- optional; JSME (2D editor)
+//    jsme/jsme/jsme.nocache.js   --  required for JSME 
+//    js/JSmolMenu.js      -- optional; required for menuing in JSV
+//    js/JSmolJSV.js       -- optional; for creating and interacting with a JSpecView applet 
+
+// most of these will be loaded automatically, and for most installations, all you need is JSmol.min.js
+
 
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
 // or applet-challenged (Android/iPhone) platforms, with automatic switching to 
