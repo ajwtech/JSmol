@@ -135,8 +135,7 @@
 
 	Applet._getCanvas = function(id, Info, checkOnly, webGL) {
 		if (webGL && Jmol.featureDetection.supportsWebGL()) {
-			Jmol._Canvas3D.prototype = Jmol._jsSetPrototype(new Applet(id, Info, true));
-			GLmol.setRefresh(Jmol._Canvas3D.prototype);
+			Jmol._Canvas3D.prototype = Jmol.GLmol.extendApplet(Jmol._jsSetPrototype(new Applet(id, Info, true)));
 			return new Jmol._Canvas3D(id, Info, "Jmol", checkOnly);
 		}
 		if (!webGL) {
