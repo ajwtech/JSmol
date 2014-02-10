@@ -276,8 +276,8 @@
 			} else {
 				Jmol.__addCoreFile("jmol", this._j2sPath);
 				if (!this._is2D) {
-			 		Jmol.__addExec([this, Jmol.__loadClass, "J.exportjs.JSExporter","load JSExporter"])
-					Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
+			 		Jmol.__addExec([this, Jmol.__loadClass, "J.export.JSExporter","load JSExporter"])
+			//		Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
 				}			 			
 				if (Jmol._debugCode)
 					Jmol.__addExec([this, Jmol.__loadClass, "J.appletjs.Jmol", "load Jmol"]);
@@ -293,10 +293,10 @@
 			Jmol.__execTimer = setTimeout(Jmol.__nextExecution, Jmol.__execDelayMS);
 		};
 
-		proto.__addExportHook = function(applet) {
-			GLmol.addExportHook(applet);
-			Jmol.__nextExecution();
-		};
+//		proto.__addExportHook = function(applet) {
+	//		Jmol.GLmol.addExportHook(applet);
+		//	Jmol.__nextExecution();
+		//};
 
 		proto.__startAppletJS = function(applet) {
 			var viewerOptions =  new java.util.Hashtable ();
