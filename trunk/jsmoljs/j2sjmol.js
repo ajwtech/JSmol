@@ -101,8 +101,6 @@
 
 	window["j2s.clazzloaded"] = true;
 
-  window["j2s.lib"].monitorZIndex = 10000;
-
 	window["j2s.object.native"] = true;
 
 	 // Clazz changes:

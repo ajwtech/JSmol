@@ -61,8 +61,8 @@ M._getID = function(popup, type) {
 	return popup.applet._id + '_' + popup.name + "_" + type + '_' + (++M._menuCounter);
 }
 
-M._style = '\
-	.jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:'+Jmol._z.menu+'}\
+M._getStyle = function(applet) { return '\
+	.jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:'+Jmol._getZ(applet, "menu")+'}\
 	.jmolPopupMenu,.jmolPopupMenu .ui-corner-all{border-radius:5px}\
 	.jmolPopupMenu,.jmolPopupMenu .ui-widget-content{border:1px solid #a6c9e2;background-color:#fcfdfd;color:#222}\
 	.jmolPopupMenu a{color:#222;font-size:10px;}\
@@ -88,7 +88,7 @@ M._style = '\
 	.jmolPopupMenu .ui-state-highlight a{color:#363636}\
 	.jmolPopupMenu .ui-state-disabled *{color:#d6d6d6!important;font-weight:normal;cursor:default}\
 	.jmolPopupMenu .ui-state-disabled a:hover{background-color:transparent!important;border-color:transparent!important}\
-	.jmolPopupMenu .ui-state-disabled .ui-icon{filter:Alpha(Opacity=35)}';
+	.jmolPopupMenu .ui-state-disabled .ui-icon{filter:Alpha(Opacity=35)}'};
 
 M.hidePopups = function(a) {
 	for (var i in a)
@@ -110,8 +110,8 @@ Swing.getMenuID = function(item) {
 }
 
 Swing.setMenu = function(menu) {
-	M._style && Jmol.$after("head", '<style>'+M._style+'</style>');  
-	M._style = null; // once only
+	M._getStyle && Jmol.$after("head", '<style>'+M._getStyle(menu.applet)+'</style>');  
+	M._getStyle = null; // once only
 	menu.tainted = true;
 	menu.id = M._getID(menu, "top");
 	menu.applet._popups || (menu.applet._popups = {});
