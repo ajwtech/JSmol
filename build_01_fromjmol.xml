@@ -152,7 +152,7 @@
         <exclude name="**/popup/*"/>
       	<!-- unused -->
         <exclude name="**/dialog/**/*"/>
-        <exclude name="**/export/**/*"/>
+        <exclude name="**/exportjs/**/*"/>
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/viewer/*Awt*"/>
       </fileset>
