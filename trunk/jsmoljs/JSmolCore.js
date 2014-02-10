@@ -80,17 +80,25 @@
 
 if(typeof(jQuery)=="undefined") alert ("Note -- JSmoljQuery is required for JSmol, but it's not defined.")
 
+// An example of how to extend Jmol with code PRIOR to JSmolCore.js or JSmol.min.js follows:
+//
+// 
+//	Jmol = {
+//  	z:3000,
+//		extend: function(what, obj) {if (what == "viewer") { obj._testing = true } }
+//	}
 
-if (!self.Jmol)
+self.Jmol || (Jmol = {});
+
+if (!Jmol._version)
 Jmol = (function(document) {
-	var z=9000;
+	var z=Jmol.z || 9000;
 	var ref = document.location.href;
 	var http = (ref.indexOf("https") == 0 ? "https" : "http"); 
 	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
 	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
-
-	return {
-		_version: 'JSmol 14.1.8 2/6/2014 11:03:54 AM',
+	var j = {
+		_version: 'JSmol 14.1.8 2/9/2014 9:30:12 PM',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_isFile: isFile,
@@ -154,7 +162,9 @@ Jmol = (function(document) {
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false
 	}
-})(document);
+	for(var i in Jmol) j[i] = Jmol[i]; // allows pre-definition
+	return j;
+})(document, Jmol);
 
 
 (function (Jmol, $) {
