@@ -885,6 +885,10 @@ Jmol = (function(document) {
 		return applet && applet._z && applet._z[what] || Jmol._z[what];
 	}
 	
+	Jmol._incrZ = function(applet, what) {
+		return applet && applet._z && ++applet._z[what] || ++Jmol._z[what];
+	}
+	
 	Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
 		// we actually cannot suggest a fileName, I believe.
 		if (!Jmol.featureDetection.hasFileReader)
@@ -1745,6 +1749,12 @@ Swing.click = function(element, keyEvent) {
 	dialog.manager.actionPerformed(key);
 }
 
+Swing.setFront = function(dialog) {
+	if (dialog.zIndex != Jmol._getZ(dialog.applet, "dialog"))
+	 dialog.zIndex = Jmol._incrZ(dialog.applet, "dialog");
+	dialog.container && ((dialog.container[0] || dialog.container).style.zIndex = dialog.zIndex);
+
+}
 Swing.windowClosing = function(element) {
 	var dialog = Swing.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	if (dialog.registryKey) {
