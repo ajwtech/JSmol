@@ -1750,8 +1750,9 @@ Swing.click = function(element, keyEvent) {
 }
 
 Swing.setFront = function(dialog) {
-	if (dialog.zIndex != Jmol._getZ(dialog.applet, "dialog"))
-	 dialog.zIndex = Jmol._incrZ(dialog.applet, "dialog");
+  var applet = dialog.manager.viewer.applet;
+	if (dialog.zIndex != Jmol._getZ(applet, "dialog"))
+	 dialog.zIndex = Jmol._incrZ(applet, "dialog");
 	dialog.container && ((dialog.container[0] || dialog.container).style.zIndex = dialog.zIndex);
 
 }
