@@ -143,7 +143,7 @@
 
    	<echo>adding JSV/export/resources files</echo>
    		<copy todir="site/jsmol/j2s/JSV/export/resources" >
-      <fileset dir="${jsv.path}/src/jspecview/export/resources">
+      <fileset dir="${jsv.path}Lib/src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
     </copy>
@@ -300,6 +300,7 @@
     		javajs/api/BytePoster.js
     		javajs/api/EventManager.js
     		javajs/api/FontManager.js
+        	javajs/api/GenericColor.js
     		javajs/api/GenericFileInterface.js
     		javajs/api/GenericMenuInterface.js
     		javajs/api/GenericMouseInterface.js
@@ -308,6 +309,7 @@
     		javajs/api/JSONEncodable.js
     		javajs/api/PlatformViewer.js
     		javajs/api/ZInputStream.js
+			javajs/awt/Color.js
     		javajs/awt/Dimension.js
     		javajs/awt/event/Event.js
     		javajs/awt/Font.js
@@ -368,6 +370,7 @@
     		J/api/JmolStatusListener.js
     		J/api/JmolSyncInterface.js
     		J/api/JmolViewer.js
+        	J/api/Translator.js
     		J/appletjs/Jmol.js
     		J/atomdata/AtomData.js
     		J/atomdata/AtomDataServer.js
@@ -564,6 +567,7 @@
         	javajs/api/FontManager.js
         	javajs/api/GenericColor.js
         	javajs/api/GenericFileInterface.js
+			javajs/api/GenericMenuInterface.js
         	javajs/api/GenericMouseInterface.js
         	javajs/api/GenericPlatform.js
         	javajs/api/JSInterface.js
@@ -598,6 +602,9 @@
         	JU/T3i.js
         	JU/T4.js
         	JU/V3.js
+        	J/adapter/smarter/JmolJDXMOLParser.js
+        	J/adapter/smarter/JmolJDXMOLReader.js
+        	J/jsv/JDXMOLParser.js
         	J/util/DefaultLogger.js
         	J/util/Logger.js
         	J/util/LoggerInterface.js
@@ -618,6 +625,7 @@
         	JSV/api/ScriptInterface.js 
         	JSV/api/XYScaleConverter.js 
         	JSV/app/JSVApp.js
+        	JSV/app/GenericMouse.js
         	JSV/appletjs/JSVApplet.js
         	JSV/common/Annotation.js
         	JSV/common/ColoredAnnotation.js
@@ -664,7 +672,6 @@
         	JSV/js2d/JsParameters.js
         	JSV/js2d/JsPlatform.js
         	JSV/js2d/JsMainPanel.js
-        	JSV/js2d/Mouse.js
         	JSV/source/FileReader.js
         	JSV/source/JDXDataObject.js 
         	JSV/source/JDXDecompressor.js
@@ -784,6 +791,9 @@
 			J/adapter/smarter/Resolver.js
 			J/adapter/smarter/SmarterJmolAdapter.js
 			J/adapter/smarter/StructureIterator.js
+        	J/adapter/smarter/JmolJDXMOLParser.js
+        	J/adapter/smarter/JmolJDXMOLReader.js
+        	J/jsv/JDXMOLParser.js
 			J/api/AtomIndexIterator.js
 			J/api/Interface.js
 			J/api/JmolAdapter.js
@@ -803,6 +813,7 @@
 			J/api/JmolStatusListener.js
 			J/api/JmolSyncInterface.js
 			J/api/JmolViewer.js
+        	J/api/Translator.js
 			J/appletjs/Jmol.js
 			J/atomdata/AtomData.js
 			J/atomdata/AtomDataServer.js
@@ -961,6 +972,7 @@
 			JSV/api/ScriptInterface.js 
 			JSV/api/XYScaleConverter.js 
 			JSV/app/JSVApp.js
+        	JSV/app/GenericMouse.js
 			JSV/appletjs/JSVApplet.js
 			JSV/common/Annotation.js
 			JSV/common/ColoredAnnotation.js
@@ -1007,7 +1019,6 @@
 			JSV/js2d/JsParameters.js
 			JSV/js2d/JsPlatform.js
 			JSV/js2d/JsMainPanel.js
-			JSV/js2d/Mouse.js
 			JSV/source/FileReader.js
 			JSV/source/JDXDataObject.js 
 			JSV/source/JDXDecompressor.js
@@ -1027,13 +1038,11 @@
         <param name="call-core.name" value="jsvmenu" />
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
+        	javajs/api/GenericMenuInterface.js
+        	JSV/api/JSVPopupMenu.js
         	JSV/js2d/JsPopup.js
         	JSV/popup/JSVGenericPopup.js
-        	JSV/api/JSVAbstractMenu.js
-        	JSV/api/JSVPopupMenu.js
-        	javajs/api/GenericMenuInterface.js
         	JSV/popup/JSVPopupResourceBundle.js
-        	JSV/popup/PopupResource.js
     	" />
     </antcall>
 
@@ -1047,36 +1056,9 @@
         	JSV/dialog/ViewsDialog.js
         	JSV/js2d/JsDialogManager.js
         	JSV/dialog/DialogManager.js
-        	javajs/awt/BorderLayout.js
-        	javajs/awt/LayoutManager.js
-        	javajs/swing/JDialog.js
-        	javajs/swing/JContainer.js
-        	javajs/swing/JComponent.js
-        	javajs/awt/Component.js
-        	javajs/swing/JContentPane.js
-        	javajs/swing/JEditorPane.js
-        	javajs/swing/JPanel.js
-        	javajs/swing/Grid.js
-        	javajs/swing/Cell.js
-        	javajs/swing/GridBagConstraints.js
-        	javajs/swing/Insets.js
-        	javajs/swing/JScrollPane.js
-        	javajs/swing/JTable.js
-        	javajs/swing/ColumnSelectionModel.js
-        	javajs/swing/ListSelectionModel.js
         	JSV/js2d/DialogTableModel.js
-        	javajs/swing/AbstractTableModel.js
-        	javajs/swing/TableColumn.js
         	JSV/js2d/JsDialog.js
         	JSV/api/PlatformDialog.js
-        	javajs/swing/FlowLayout.js
-        	javajs/swing/GridBagLayout.js
-        	javajs/swing/JButton.js
-        	javajs/swing/JCheckBox.js
-        	javajs/swing/JComboBox.js
-        	javajs/swing/JLabel.js
-        	javajs/swing/JSplitPane.js
-        	javajs/swing/JTextField.js
     	" />
     </antcall>
 
@@ -1190,12 +1172,58 @@
         <param name="call-core.name" value="menu" />
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
-       		J/popup/JmolAbstractMenu.js
-       		J/popup/GenericPopup.js
-       		J/awtjs2d/JSPopup.js
-       		J/awtjs2d/JSmolPopup.js
-       		J/popup/PopupResource.js
        		J/popup/MainPopupResourceBundle.js
+       		J/popup/JmolGenericPopup.js
+       		J/awtjs2d/JmolJSPopup.js
+        	" />
+    </antcall>
+   	
+    <antcall target="call-core">
+        <param name="call-core.name" value="swing" />
+        <param name="call-core.list" value="
+        javajs/awt/BorderLayout.js
+        javajs/awt/Component.js
+        javajs/awt/Container.js
+        javajs/awt/LayoutManager.js
+        javajs/swing/AbstractButton.js
+        javajs/swing/AbstractTableModel.js
+        javajs/swing/ButtonGroup.js
+        javajs/swing/Cell.js
+        javajs/swing/ColumnSelectionModel.js
+        javajs/swing/Document.js
+        javajs/swing/FlowLayout.js
+        javajs/swing/Grid.js
+        javajs/swing/GridBagConstraints.js
+        javajs/swing/GridBagLayout.js
+        javajs/swing/Insets.js
+        javajs/swing/JButton.js
+        javajs/swing/JCheckBox.js
+        javajs/swing/JCheckBoxMenuItem.js
+        javajs/swing/JComboBox.js
+        javajs/swing/JComponent.js
+        javajs/swing/JComponentImp.js
+        javajs/swing/JContentPane.js
+        javajs/swing/JDialog.js
+        javajs/swing/JEditorPane.js
+        javajs/swing/JLabel.js
+        javajs/swing/JMenu.js
+        javajs/swing/JMenuItem.js
+        javajs/swing/JPanel.js
+        javajs/swing/JPopupMenu.js
+        javajs/swing/JRadioButtonMenuItem.js
+        javajs/swing/JScrollPane.js
+        javajs/swing/JSplitPane.js
+        javajs/swing/JTable.js
+        javajs/swing/JTextField.js
+        javajs/swing/JTextPane.js
+        javajs/swing/ListSelectionModel.js
+        javajs/swing/SwingConstants.js
+        javajs/swing/TableCellRenderer.js
+        javajs/swing/TableColumn.js
+    	J/popup/GenericSwingPopup.js
+        J/popup/PopupResource.js
+    	J/popup/JSSwingPopupHelper.js
+        J/popup/PopupHelper.js
         	" />
     </antcall>
    	
@@ -1463,6 +1491,16 @@
    		" />
     </antcall>
    	
+   	<echo>JSmol.GLmol.min.js contains GLmol and THREE</echo>
+    <antcall target="call-min">
+        <param name="call-min.fullname" value="GLmol.full" />
+        <param name="call-min.minname" value="GLmol.min" />
+        <param name="call-min.list" value="
+       		JSmolTHREE.js
+       		JSmolGLmol.js
+        " />
+    </antcall>
+
    	<echo>cleaning up files</echo>
    	<echo>creating distribution zip file jsmol.zip and copying it to Jmol</echo>
   	<delete file="dist/*" />
@@ -1490,6 +1528,7 @@
    	</concat> 
   	<copy file="site/jsmol/js/core${call-core.name}.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz__" value="Clazz._"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
   	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
    	<concat destfile="site/jsmol/js/core${call-core.name}.js"><filelist dir="site/jsmol/js" files="
@@ -1498,6 +1537,7 @@
    		core/corebottom2.js
    		" />
    	</concat>
+   	<echo>Generating core${call-core.name}.z.js</echo> 	
    	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
    		<arg line="--js core${call-core.name}.js --js_output_file ../j2s/core/core${call-core.name}.z.js" />
     </java>
