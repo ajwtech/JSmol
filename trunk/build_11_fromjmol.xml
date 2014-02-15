@@ -6,15 +6,19 @@
 
 	See Jmol/build.xml for details on building Jmol and JSmol. 
 	
-	1) All source Java code in JSmol is derived from Jmol and JSpecView, 
-	   so you must have all three SourceForge projects checked out. 
+	1) All source Java code in JSmol is derived from Jmol and JSpecView. 
+	   Note that there are TWO JSpecView projects, JSpecView and JSpecViewLib.
+	   You need both of them. 
+	   
+	   So you must have all four SourceForge projects checked out.
 	   Be sure to use the TRUNK of Jmol (Jmol subversion number odd,
-	   not even, such as 13.1.18, not 13.0.18.) 
+	   not even, such as 14.1.8, not 14.0.8.) and the dev2 branch of JSpecView 
 	   
 	   Be sure to set the above property jmol.path to where 
-	   you have checked out the Jmol project both here and in build_03_tojs.xml
+	   you have checked out the Jmol project both here and in build_13_tojs.xml
+	   Do the same with JSpecView for build_12_fromjspecview.xml
 
-		!!Never modify any file in JSmol/src!! - Only work in Jmol. 
+		!!Never modify any file in JSmol/src!! - Only work in Jmol and JSpecView. 
 		
 	   The files that are specific to JSmol and not Jmol are:
 	   
@@ -44,10 +48,11 @@
 		   javajs.awt.Color
 		   javajs.awt.Dimension
 		   javajs.util.*
-		   javajs.swing.*  (JSpecView only)
+		   javajs.swing.*
 	   
 	   
-	2) Do all your coding in Jmol, then run this Ant task (buildfromjmol.xml)
+	2a) Do all your coding in Jmol, then run this Ant task (build_11_fromjmol.xml)
+	2b) Do all your coding in JSpecView, then run Ant task build_12_fromjmol.xml
 	
 	3) Do a REFRESH on the JSmol project (I use right-click on the project folder...refresh.)
 	
@@ -68,10 +73,11 @@
 		JSmol/src/com   - 	www.jcraft.com/jzlib/ files that I have specially optimized for 
 							Jmol and JavaScript.
 							
-	5) Run buildtojs.xml, which creates dist/jsmol.zip. This
+	5) Run build_13_tojs.xml, which creates dist/jsmol.zip. This
 	   Ant task does important renaming of classes:
 	   
 	       org.jmol      		J
+	       org.jmol.util   		JU
 	       com.jcraft.jzlib		JZ
 	       jspecview            JSV
 	       
@@ -81,22 +87,14 @@
 	
 	6) Do a REFRESH on the project (I use right-click on the project folder...refresh.)
 
-	7) To test, unzip dist/jsmol.zip into a test directory.
+	7) To test, go to site/jsmol and try the various test files, particularly jsmol.htm and test2.htm
 	   
-	8) The file test2.htm in the jsmol directory on your test site can be run
-	   using the URL extended with
-	      
-	      ?debugcode
-	      
-	   to bypass the j2s/core files and read those from the actual J, JZ, and java
-	   directories. 
-	   
-	9) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
+	8) Test your compilation in Firefox first, then other browsers. Note that MSIE and Chrome
 	   will probably not allow you to read binary files locally.  
 	
-   10) At some time go to SourceForge and create a release. It is just jsmol.zip.
+    9) At some time go to SourceForge and create a release. It is just jsmol.zip.
        
-            - Bob Hanson March 23, 2013 (revised July 27, 2013, Oct. 17, 2013).
+            - Bob Hanson March 23, 2013 (revised July 27, 2013, Oct. 17, 2013, Feb. 15, 2014).
 	 -->
 
   <target name="fromJmol" id="fromJmol">
@@ -152,7 +150,7 @@
         <exclude name="**/popup/*"/>
       	<!-- unused -->
         <exclude name="**/dialog/**/*"/>
-        <exclude name="**/exportjs/**/*"/>
+        <exclude name="**/export/**/*"/>
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/viewer/*Awt*"/>
       </fileset>
@@ -179,7 +177,7 @@
 	<!-- replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type -->
   	<replace dir="src/org/jmol" includes="**/*.java" token="org.jmol.java.BS" value="javajs.util.BS" />
   	  	
-   	<echo>Now run build_02_fromjspecview.xml</echo>
+   	<echo>Now run build_12_fromjspecview.xml</echo>
 
   </target>
 	

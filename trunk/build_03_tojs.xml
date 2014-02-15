@@ -3,7 +3,7 @@
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-   <property name="jmol.path" value="../Jmol" />
+   <property name="jmol.path" value="../Jmol-14_0" />
    <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJs" id="toJs">
