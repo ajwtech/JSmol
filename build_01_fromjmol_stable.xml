@@ -152,7 +152,7 @@
         <exclude name="**/popup/*"/>
       	<!-- unused -->
         <exclude name="**/dialog/**/*"/>
-        <exclude name="**/export/**/*"/>
+        <exclude name="**/exportjs/**/*"/>
         <exclude name="**/multitouch/**/*"/>
         <exclude name="**/viewer/*Awt*"/>
       </fileset>
@@ -179,7 +179,7 @@
 	<!-- replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type -->
   	<replace dir="src/org/jmol" includes="**/*.java" token="org.jmol.java.BS" value="javajs.util.BS" />
   	  	
-   	<echo>Now run build_12_fromjspecview.xml</echo>
+   	<echo>Now run build_02_fromjspecview.xml</echo>
 
   </target>
 	
