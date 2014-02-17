@@ -3014,6 +3014,7 @@
 	};
 
 	System.setProperty("line.separator", navigator.userAgent.indexOf("Windows")>=0?"\r\n" : "\n") //BH
+	System.setProperty("os.name", navigator.userAgent) //BH
 
 	System.out = new JavaObject ();
 	System.out.__CLASS_NAME__ = "java.io.PrintStream";
