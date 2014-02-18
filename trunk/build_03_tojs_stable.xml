@@ -1412,10 +1412,12 @@
        		J/shape/Object2dShape.js
        		J/shape/TextShape.js
        		J/shape/Labels.js
+       		J/shape/Measures.js
        		J/shape/Echo.js
        		J/shape/Hover.js
        		J/render/TextRenderer.js
-       		J/render/LabelsRenderer.js
+        	J/render/LabelsRenderer.js
+        	J/render/MeasuresRenderer.js
        		J/render/EchoRenderer.js
        		J/render/HoverRenderer.js
         	" />
