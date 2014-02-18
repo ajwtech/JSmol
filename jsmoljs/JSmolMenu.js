@@ -1,6 +1,8 @@
 // JSmolMenu.js
 // author: Bob Hanson, hansonr@stolaf.edu
 
+// BB 2/17/2014 7:52:18 AM Jmol.Menu folded into Jmol.Swing
+
 // BH 1/16/2014 9:20:15 AM allowing second attempt to initiate this library to gracefully skip processing
 
 /*! jQuery UI - v1.9.2 - 2012-12-17
@@ -50,18 +52,23 @@ try{
 * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Lucida%20Grande%2CLucida%20Sans%2CArial%2Csans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=5px&bgColorHeader=5c9ccc&bgTextureHeader=12_gloss_wave.png&bgImgOpacityHeader=55&borderColorHeader=4297d7&fcHeader=ffffff&iconColorHeader=d8e7f3&bgColorContent=fcfdfd&bgTextureContent=06_inset_hard.png&bgImgOpacityContent=100&borderColorContent=a6c9e2&fcContent=222222&iconColorContent=469bdd&bgColorDefault=dfeffc&bgTextureDefault=03_highlight_soft.png&bgImgOpacityDefault=85&borderColorDefault=c5dbec&fcDefault=2e6e9e&iconColorDefault=6da8d5&bgColorHover=d0e5f5&bgTextureHover=03_highlight_soft.png&bgImgOpacityHover=75&borderColorHover=79b7e7&fcHover=1d5987&iconColorHover=217bc0&bgColorActive=f5f8f9&bgTextureActive=06_inset_hard.png&bgImgOpacityActive=100&borderColorActive=79b7e7&fcActive=e17009&iconColorActive=f9bd01&bgColorHighlight=fbec88&bgTextureHighlight=01_flat.png&bgImgOpacityHighlight=55&borderColorHighlight=fad42e&fcHighlight=363636&iconColorHighlight=2e83ff&bgColorError=fef1ec&bgTextureError=02_glass.png&bgImgOpacityError=95&borderColorError=cd0a0a&fcError=cd0a0a&iconColorError=cd0a0a&bgColorOverlay=aaaaaa&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=aaaaaa&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px
 * Copyright (c) 2012 jQuery Foundation and other contributors Licensed MIT */
 
+;(function(Swing) {
 
-Jmol.Menu || (Jmol.Menu = {_menuCounter: 0})
+/*
 
-;(function(M, Swing) {
+Jmol.Swing methods to coordinate with javajs.swing.JPopupMenu && javajs.swing.AbstractButton
+ 
+classes calling SwingController (aka Jmol.Swing in this case)
 
-if (M._getID)return;
+@author: Bob Hanson 2/17/2014 8:21:10 AM
 
-M._getID = function(popup, type) {
-	return popup.applet._id + '_' + popup.name + "_" + type + '_' + (++M._menuCounter);
-}
+*/
 
-M._getStyle = function(applet) { return '\
+if (Swing.menuInitialized)return;
+Swing.menuCounter = 0;
+Swing.menuInitialized = 1;
+
+Swing.__getMenuStyle = function(applet) { return '\
 	.jmolPopupMenu{font-family:Arial,sans-serif;font-size:11px;position:absolute;z-index:'+Jmol._getZ(applet, "menu")+'}\
 	.jmolPopupMenu,.jmolPopupMenu .ui-corner-all{border-radius:5px}\
 	.jmolPopupMenu,.jmolPopupMenu .ui-widget-content{border:1px solid #a6c9e2;background-color:#fcfdfd;color:#222}\
@@ -90,47 +97,27 @@ M._getStyle = function(applet) { return '\
 	.jmolPopupMenu .ui-state-disabled a:hover{background-color:transparent!important;border-color:transparent!important}\
 	.jmolPopupMenu .ui-state-disabled .ui-icon{filter:Alpha(Opacity=35)}'};
 
-M.hidePopups = function(a) {
-	for (var i in a)
-		Swing.hideMenu(a[i]);
-}
-
-/*
-M.PopupMenu = function(name) {
-	this.name = name;
-	this.items = [];
-	this.enabled = true;
-	this.tainted = true;
-}
-*/
-
-
-Swing.getMenuID = function(item) {
-  return Jmol.Menu._getID(item.popupMenu, item.id);
-}
-
 Swing.setMenu = function(menu) {
-	M._getStyle && Jmol.$after("head", '<style>'+M._getStyle(menu.applet)+'</style>');  
-	M._getStyle = null; // once only
+  // called by javajs.swing.JPopupMenu
+  // note that the z-index is only set by the FIRST applet accessing this method
+	Swing.__getMenuStyle && Jmol.$after("head", '<style>'+Swing.__getMenuStyle(menu.applet)+'</style>');  
+	Swing.__getStyle = null; // once only
 	menu.tainted = true;
-	menu.id = M._getID(menu, "top");
+	menu.popupMenu = menu;
+	menu.id = "top";
+	menu.id = Swing.getMenuID(menu);
 	menu.applet._popups || (menu.applet._popups = {});
 	menu.applet._popups[menu.name] = menu;
 	Jmol.$after("body",'<ul id="' + menu.id + '" class="jmolPopupMenu"></ul>');
 	menu.setContainer(Jmol.$('#' + menu.id));
 }
 
-Swing.initMenuItem = function(item) {
-  item.applet = item.popupMenu.applet;
-  item.id = Swing.getMenuID(item);
-  item.icon && (item.icon = '<img src="' + item.applet._j2sPath + '/' + item.icon + '" style="max-height: 20px;" />')
-}
-
 Swing.showMenu = function(menu, x, y) {
+  // called by javajs.swing.JPopupMenu
 	if (menu.tainted) {
 		menu.container.html(menu.toHTML());
 		menu.tainted = false;
-		Swing.bindMenuActionCommands(menu);
+		Swing.bindMenuActionCommands(menu, true);
 	}
 	menu.setPosition();
 	menu.container.hide().menu().menu('refresh').show();
@@ -146,11 +133,27 @@ Swing.showMenu = function(menu, x, y) {
 }
 
 Swing.disposeMenu = function(menu) {
+  // called by javajs.swing.JPopupMenu
 	Swing.hideMenu(menu);
+	Swing.bindMenuActionCommands(menu, false);
 	delete menu.applet._popups[menu.name];
 }
 
+Swing.initMenuItem = function(item) {
+  // called by javajs.swing.AbstractButton
+  item.applet = item.popupMenu.applet;
+  item.id = Swing.getMenuID(item);
+  item.icon && (item.icon = '<img src="' + item.applet._j2sPath + '/' + item.icon + '" style="max-height: 20px;" />')
+}
+
+Swing.getMenuID = function(item) {
+  // called internally
+  var popup = item.popupMenu;
+	return popup.applet._id + '_' + popup.name + "_" + item.id + '_' + (++Swing.menuCounter);
+}
+
 Swing.hideMenu = function(menu) {
+  // called internally
 	if (!menu.visible)return;
 	menu.container.unbind('clickoutjsmol');
 	menu.dragBind(false);
@@ -158,68 +161,23 @@ Swing.hideMenu = function(menu) {
 	menu.visible = menu.isDragging = false;
 };
 
-Swing.bindMenuActionCommands = function(menu) {
+Swing.bindMenuActionCommands = function(menu, isBind) {
+  // called internally
 	var n = menu.getComponentCount();
 	for(var i = 0; i < n; i++)
-		Swing.bindMenuActionCommands(menu.getComponent(i));
+		Swing.bindMenuActionCommands(menu.getComponent(i), isBind);
 	Jmol.$documentOff('click', menu.id);
-	Jmol.$documentOn('click', menu.id, function() {
-	
-		if (menu.itemListener) {
-			menu.selected = (menu.isCheckBox ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
-			Swing.hideMenu(menu.popupMenu);
-			menu.itemListener.itemStateChanged({getSource:function(){return menu}});
-		}	else if (menu.actionListener) {
-			Swing.hideMenu(menu.popupMenu);
-			menu.actionListener.actionPerformed({getSource:function(){return menu},getActionCommand:function(){return menu.actionCommand}});
-		}
-	});
+	if (isBind)
+		Jmol.$documentOn('click', menu.id, function() {	
+			if (menu.itemListener) {
+				menu.selected = (menu.isCheckBox ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
+				Swing.hideMenu(menu.popupMenu);
+				menu.itemListener.itemStateChanged({getSource:function(){return menu}});
+			}	else if (menu.actionListener) {
+				Swing.hideMenu(menu.popupMenu);
+				menu.actionListener.actionPerformed({getSource:function(){return menu},getActionCommand:function(){return menu.actionCommand}});
+			}
+		});
 }
 
-/*
-	proto.removeAll = function(indexFrom) {
-		if (indexFrom == 0) {
-			this.items = [];
-		} else {
-			var I = [];
-			for (var i = 0; i <indexFrom; i++) {
-				var item = this.items[i];
-				I.push(item);
-				item.parent = this;
-			}
-			this.items = I;
-		}
-	};
-	proto.setAutoscrolls = function() {
-		//Sets the autoscrolls property. If true mouse dragged events will be synthetically generated when the mouse 
-		// is dragged outside of the component's bounds and mouse motion has paused (while the button continues to be 
-		// held down). The synthetic events make it appear that the drag gesture has resumed in the direction 
-		// established when the component's boundary was crossed. 
-		//
-		// I have no idea how to implement this!
-		return;
-	};
-*/
-
-/*
-	proto.html = function() {
-		var label = (this.text ? this.text : this.icon ? '<img src="' + this.applet._j2sPath + '/' + this.icon + '" style="max-height: 20px;" />' : null);
-
-		var s = (label ? '<li><a>' + label + '</a>'
-			+ '<ul id="' + this.id + '" class="' + (this.enabled ? '' : 'ui-state-disabled') + '">' : '');
-		for(var i = 0; i < this.items.length; i++)
-			if(this.items[i].html) 
-				s += this.items[i].html();
-		if (label)
-			s += '</ul></li>';
-		return s;
-	};
-*/
-//}
-
-//M.setMenuProto(M.PopupMenu.prototype);
-//M.setMenuProto(M.SubMenu.prototype);
-//M.setItemProto(M.MenuItem.prototype);
-
-})(Jmol.Menu, Jmol.Swing);
-
+})(Jmol.Swing);
