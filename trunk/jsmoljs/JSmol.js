@@ -40,7 +40,9 @@
 	Jmol.showExecLog = function() { return Jmol.__execLog.join("\n") }; 
 
 	Jmol.__addExec = function(e) {
-		Jmol.__execLog.push("load " + e[0]._id + " " + e[3]);   
+		var s = "JSmol load " + e[0]._id + " " + e[3];
+		if (self.console)console.log(s + "...")
+		Jmol.__execLog.push(s);   
 		Jmol.__execStack.push(e);
 	}
 
@@ -65,7 +67,7 @@
 			return;
 		}
 		e.push("done");
-		var s = "exec " + e[0]._id + " " + e[3] + " " + e[2];
+		var s = "JSmol exec " + e[0]._id + " " + e[3] + " " + e[2];
 		if (self.console)console.log(s + " -- OK")
 		Jmol.__execLog.push(s);
 		e[1](e[0],e[2]);	

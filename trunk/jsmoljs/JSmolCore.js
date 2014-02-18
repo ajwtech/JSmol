@@ -196,20 +196,20 @@ Jmol = (function(document) {
 	// There should be no other references to jQuery in all the JSmol libraries.
 
 	Jmol.$ = function(objectOrId, subdiv) {
-	if (objectOrId == null)alert (subdiv + arguments.callee.caller.toString());
-		return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
+		// if a subdivv, then return $("#objectOrId_subdiv") 
+		// or if no subdiv, then just $(objectOrId)
+		if (objectOrId == null)alert (subdiv + arguments.callee.caller.toString());
+			return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
 	} 
 
 	Jmol._$ = function(id) {
+		// either the object or $("#" + id)
 		return (typeof id == "string" ? $("#" + id) : id);
 	}
 
 	/// special functions:
 
 	Jmol.$ajax = function (info) {
-		//if (info.url.indexOf("http:") == 0)
-			//info.url = Jmol.http + info.url.substring(4);
-		// System.out.println(JSON.stringify(info))
 		Jmol._ajaxCall = info.url;
 		info.cache = (info.cache != "NO"); 
 		// don't let jQuery add $_=... to URL unless we 
@@ -221,6 +221,10 @@ Jmol = (function(document) {
 		var o = Jmol.$(app, subdiv); 
 		o.off(evt) && f && o.on(evt, f);
 	}   
+
+	Jmol.$resize = function (f) {
+		return $(window).resize(f);
+	}
 
 	//// full identifier expected (could be "body", for example):
 
@@ -236,7 +240,25 @@ Jmol = (function(document) {
 	return $(what).get(i);
 	}
  
-	//// div id or jQuery object expected:
+	// element id expected
+			 
+	Jmol.$getAncestorDiv = function(id, className) {
+		return $("div." + className + ":has(#" + id + ")")[0];
+	}
+
+	Jmol.$documentOff = function(evt, id) {
+		return $(document).off(evt, "#" + id);
+	}
+
+	Jmol.$documentOn = function(evt, id, f) {
+		return $(document).on(evt, "#" + id, f);
+	}
+
+	Jmol.$supportsIECrossDomainScripting = function() {
+		return $.support.iecors;
+	}
+
+	//// element id or jQuery object expected:
 
 	Jmol.$attr = function (id, a, val) {
 		return Jmol._$(id).attr(a, val);
@@ -249,10 +271,6 @@ Jmol = (function(document) {
 	Jmol.$focus = function(id) {
 		return Jmol._$(id).focus();
 	}
-		 
-	Jmol.$getAncestorDiv = function(id, className) {
-		return $("div." + className + ":has(#" + id + ")")[0];
-	}
 
 	Jmol.$html = function(id, html) {
 		return Jmol._$(id).html(html);
@@ -260,14 +278,6 @@ Jmol = (function(document) {
 	 
 	Jmol.$offset = function(id) {
 		return Jmol._$(id).offset();
-	}
-
-	Jmol.$documentOff = function(evt, id) {
-		return $(document).off(evt, "#" + id);
-	}
-
-	Jmol.$documentOn = function(evt, id, f) {
-		return $(document).on(evt, "#" + id, f);
 	}
 
 	Jmol.$windowOn = function(evt, f) {
@@ -283,13 +293,13 @@ Jmol = (function(document) {
 		return Jmol._$(id).remove();
 	}
 
-	Jmol.$resize = function (f) {
-		return $(window).resize(f);
-	}
-
 	Jmol.$scrollTo = function (id, n) {
 		var o = Jmol._$(id);
 		return o.scrollTop(n < 0 ? o[0].scrollHeight : n);
+	}
+
+	Jmol.$setEnabled = function(id, b) {
+		return Jmol._$(id).attr("disabled", b ? null : "disabled");  
 	}
 
 	Jmol.$setSize = function(id, w, h) {
@@ -303,10 +313,6 @@ Jmol = (function(document) {
 
 	Jmol.$submit = function(id) {
 		return Jmol._$(id).submit();
-	}
-
-	Jmol.$supportsIECrossDomainScripting = function() {
-		return $.support.iecors;
 	}
 
 	Jmol.$val = function (id, v) {
@@ -323,7 +329,7 @@ Jmol = (function(document) {
 		delete jQuery;
 		delete $;
 		delete Jmol;
-
+		delete SwingController;
 		if (!self.Clazz)return; 
 
 		delete J;
@@ -1462,7 +1468,7 @@ Jmol = (function(document) {
 			if(!xym)
 				return false;
 			if (ev.button != 2 && canvas.applet._popups)
-				Jmol.Menu.hidePopups(canvas.applet._popups);
+				Jmol.Swing.hidePopups(canvas.applet._popups);
 
 			canvas.applet._processEvent(501, xym); //J.api.Event.MOUSE_DOWN
 			return false;
@@ -1478,7 +1484,6 @@ Jmol = (function(document) {
 			if(!xym) return false;
 			canvas.applet._processEvent(502, xym);//J.api.Event.MOUSE_UP
 			return false;
-
 		});
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
 			ev.stopPropagation();
@@ -1513,6 +1518,12 @@ Jmol = (function(document) {
 			if (canvas.applet._applet)
 				canvas.applet._applet.viewer.startHoverWatcher(false);
 			canvas.isDragging = false;
+			var xym = Jmol._jsGetXY(canvas, ev);
+			if (!xym)
+				return false;
+			canvas.applet._processEvent(502, xym);//J.api.Event.MOUSE_UP
+			canvas.applet._processEvent(505, xym);//J.api.Event.MOUSE_EXITED
+			return false;
 		});
 
 		Jmol.$bind(canvas, 'mouseenter', function(ev) {
@@ -1521,8 +1532,11 @@ Jmol = (function(document) {
 			if (ev.buttons === 0 || ev.which === 0) {
 				canvas.isDragging = false;
 				var xym = Jmol._jsGetXY(canvas, ev);
-				if (!xym) return false;
+				if (!xym)
+					return false;
+				canvas.applet._processEvent(504, xym);//J.api.Event.MOUSE_ENTERED	
 				canvas.applet._processEvent(502, xym);//J.api.Event.MOUSE_UP
+				return false;
 			}
 		});
 
@@ -1553,6 +1567,8 @@ Jmol = (function(document) {
 Jmol.Swing = {
 	// a static class
 	count:0,
+	menuInitialized:0,
+	menuCounter:0,
 	htDialogs:{}
 };
 
@@ -1725,6 +1741,10 @@ Swing.setVisible = function(c) {
 	Jmol.$setVisible(c.id, c.visible);
 }
 
+Swing.setEnabled = function(c) {
+	Jmol.$setEnabled(c.id, c.enabled);
+}
+
 /// callbacks from the HTML elements ////
  
 Swing.click = function(element, keyEvent) {
@@ -1754,8 +1774,14 @@ Swing.setFront = function(dialog) {
 	if (dialog.zIndex != Jmol._getZ(applet, "dialog"))
 	 dialog.zIndex = Jmol._incrZ(applet, "dialog");
 	dialog.container && ((dialog.container[0] || dialog.container).style.zIndex = dialog.zIndex);
-
 }
+
+Swing.hidePopups = function(a) {
+	// called from LEFT-DOWN mouse event
+	for (var i in a)
+		Swing.hideMenu(a[i]);
+}
+
 Swing.windowClosing = function(element) {
 	var dialog = Swing.htDialogs[Jmol.$getAncestorDiv(element.id, "JDialog").id];
 	if (dialog.registryKey) {
