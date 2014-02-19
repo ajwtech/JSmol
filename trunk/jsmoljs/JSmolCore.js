@@ -117,7 +117,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.1.8 2/10/2014 10:07:04 AM',
+		_version: 'JSmol 14.1.10 2/19/2014 5:58:42 PM',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_isFile: isFile,
