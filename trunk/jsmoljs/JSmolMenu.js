@@ -106,8 +106,8 @@ Swing.setMenu = function(menu) {
 	menu.popupMenu = menu;
 	menu.id = "top";
 	menu.id = Swing.getMenuID(menu);
-	menu.applet._popups || (menu.applet._popups = {});
-	menu.applet._popups[menu.name] = menu;
+	menu.applet._menus || (menu.applet._menus = {});
+	menu.applet._menus[menu.name] = menu;
 	Jmol.$after("body",'<ul id="' + menu.id + '" class="jmolPopupMenu"></ul>');
 	menu.setContainer(Jmol.$('#' + menu.id));
 }
@@ -123,12 +123,13 @@ Swing.showMenu = function(menu, x, y) {
 	menu.container.hide().menu().menu('refresh').show();
 	menu.visible = true;
 	menu.timestamp = System.currentTimeMillis();
-	menu.container.unbind('clickoutjsmol');
+	//menu.container.unbind('clickoutjsmol');
 	menu.dragBind(true);
-	menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
-		if (System.currentTimeMillis() - menu.timestamp > 100)
-		  Swing.hideMenu(menu);
-	});
+	//menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
+	 // System.out.println("clickoutjsmol"+ menu.id)
+	//	if (System.currentTimeMillis() - menu.timestamp > 100)
+	//	  Swing.hideMenu(menu);
+	//});
 	menu.container.bind("contextmenu", function() {return false;})
 }
 
@@ -136,7 +137,7 @@ Swing.disposeMenu = function(menu) {
   // called by javajs.swing.JPopupMenu
 	Swing.hideMenu(menu);
 	Swing.bindMenuActionCommands(menu, false);
-	delete menu.applet._popups[menu.name];
+	delete menu.applet._menus[menu.name];
 }
 
 Swing.initMenuItem = function(item) {
@@ -170,11 +171,11 @@ Swing.bindMenuActionCommands = function(menu, isBind) {
 	if (isBind)
 		Jmol.$documentOn('click', menu.id, function() {	
 			if (menu.itemListener) {
-				menu.selected = (menu.isCheckBox ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
-				Swing.hideMenu(menu.popupMenu);
+				menu.selected = (menu.btnType == javajs.swing.JMenuItem.TYPE_CHECKBOX ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
+				Swing.hideMenus(menu.applet);
 				menu.itemListener.itemStateChanged({getSource:function(){return menu}});
 			}	else if (menu.actionListener) {
-				Swing.hideMenu(menu.popupMenu);
+				Swing.hideMenus(menu.applet);
 				menu.actionListener.actionPerformed({getSource:function(){return menu},getActionCommand:function(){return menu.actionCommand}});
 			}
 		});
