@@ -138,7 +138,7 @@
  * Modified by Bob Hanson for JSmol-specific events and to add parameter reference to actual jQuery event.
  * Used for closing the pop-up menu.
  *   
- */
+ *//*
 
 ;(function($,doc,eventList,id){  
 	// was 'click dblclick mousemove mousedown mouseup mouseover mouseout change select submit keydown keypress keyup'
@@ -187,4 +187,4 @@
 	};
 })(jQuery,document,"click mousemove mouseup touchmove touchend", "outjsmol");
 
-
+*/

@@ -1467,7 +1467,7 @@ Jmol = (function(document) {
 			var xym = Jmol._jsGetXY(canvas, ev);
 			if(!xym)
 				return false;
-			if (ev.button != 2 && canvas.applet._popups)
+			if (ev.button != 2)
 				Jmol.Swing.hideMenus(canvas.applet);
 
 			canvas.applet._processEvent(501, xym); //J.api.Event.MOUSE_DOWN
@@ -1779,8 +1779,10 @@ Swing.setFront = function(dialog) {
 Swing.hideMenus = function(applet) {
 	// called from LEFT-DOWN mouse event
 	var menus = applet._menus;
-	for (var i in menus)
-		Swing.hideMenu(menus[i]);
+	if (menus)
+		for (var i in menus)
+			if (menus[i].visible)
+				Swing.hideMenu(menus[i]);
 }
 
 Swing.windowClosing = function(element) {
