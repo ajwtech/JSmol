@@ -31,10 +31,16 @@
 
 	Jmol._coreFiles = []; // required for package.js
 
+
+  ///////////////////
+ // This section provides an asynchronous loading sequence
+//
+
 	Jmol.__execLog = [];
 	Jmol.__execStack = [];
 	Jmol.__execTimer = 0;
 	Jmol.__coreSet = [];
+	Jmol.__coreMore = [];
 	Jmol.__execDelayMS = 100; // must be > 55 ms for FF
 
 	Jmol.showExecLog = function() { return Jmol.__execLog.join("\n") }; 
@@ -46,12 +52,18 @@
 		Jmol.__execStack.push(e);
 	}
 
-	Jmol.__addCoreFile = function(type, path) {
+	Jmol.__addCoreFile = function(type, path, more) {
 		if (Jmol.__coreSet.join("").indexOf(type) >= 0) return;
 		Jmol.__coreSet.push(type);
 		Jmol.__coreSet.sort();
 		var f = Jmol.__coreSet.join("");
 		Jmol._coreFiles = [path + "/core/core" + (f == "jmol" ? "" : f) + ".z.js" ];
+		if (more && (more = more.split(" ")))
+			for (var i = 0; i < more.length; i++)
+				if (Jmol.__coreMore.join("").indexOf(more[i]) < 0)
+					Jmol.__coreMore.push(path + "/core/core" + more[i] + ".z.js")
+		for (var i = 0; i < Jmol.__coreMore.length; i++)
+			Jmol._coreFiles.push(Jmol.__coreMore[i]);			 
 	}      		
 
 	Jmol.__nextExecution = function(trigger) {
@@ -267,7 +279,7 @@
 			if (isFirst)
 				Jmol.__addExec([this, Jmol.__loadClazz, null, "loadClazz"]);
 			if (this._isJSV) {
-				Jmol.__addCoreFile("jsv", this._j2sPath);
+				Jmol.__addCoreFile("jsv", this._j2sPath, this.__Info.preloadCore);
 				if (Jmol._debugCode) {
 				// no min package for that
 					Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVApplet", "load JSV"]);
@@ -275,7 +287,7 @@
 						Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
 				}
 			} else {
-				Jmol.__addCoreFile("jmol", this._j2sPath);
+				Jmol.__addCoreFile("jmol", this._j2sPath, this.__Info.preloadCore);
 				if (!this._is2D) {
 			 		Jmol.__addExec([this, Jmol.__loadClass, "J.export.JSExporter","load JSExporter"])
 			//		Jmol.__addExec([this, this.__addExportHook, null, "addExportHook"])
