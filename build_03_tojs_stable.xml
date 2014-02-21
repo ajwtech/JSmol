@@ -1184,6 +1184,8 @@
         javajs/awt/BorderLayout.js
         javajs/awt/Component.js
         javajs/awt/Container.js
+    	javajs/awt/event/ActionEvent.js
+        javajs/awt/event/ItemEvent.js
         javajs/awt/LayoutManager.js
         javajs/swing/AbstractButton.js
         javajs/swing/AbstractTableModel.js
