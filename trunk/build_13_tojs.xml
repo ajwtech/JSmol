@@ -1116,9 +1116,6 @@
         <param name="call-core.name" value="script" />
         <param name="call-core.list" value="
        		J/api/JmolScriptManager.js
-            J.script.ScriptError.js
-            J.script.ScriptParam.js
-            J.script.ScriptProcessor.js 
        		J/api/JmolScriptEvaluator.js
     		J/api/JmolScriptFunction.js
     		J/api/JmolParallelProcessor.js
@@ -1126,8 +1123,11 @@
        		J/script/ScriptQueueThread.js
        		J/script/ScriptDelayThread.js
        		J/script/CommandWatcherThread.js
+            J/script/ScriptError.js
+            J/script/ScriptParam.js
+            J/script/ScriptExpr.js 
+            J/script/ScriptEval.js 
        		J/script/ScriptManager.js
-       		J/script/ScriptEvaluator.js
        		J/script/ScriptCompiler.js
        		J/script/ScriptCompilationTokenParser.js
        		J/script/ScriptFlowContext.js
