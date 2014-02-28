@@ -1129,7 +1129,7 @@
             J/script/ScriptEval.js 
        		J/script/ScriptManager.js
        		J/script/ScriptCompiler.js
-       		J/script/ScriptCompilationTokenParser.js
+       		J/script/ScriptTokenParser.js
        		J/script/ScriptFlowContext.js
        		J/script/ScriptFunction.js
        		J/script/ScriptInterruption.js
