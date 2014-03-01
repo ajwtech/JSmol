@@ -1,0 +1,1 @@
+copy core%1.js ../j2s/core/%1.z.core
