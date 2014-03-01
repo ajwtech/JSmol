@@ -3,6 +3,7 @@
 // see http://peter-ertl.com/jsme/JSME_2013-10-13/api_javadoc/index.html
 
 
+// BH 3/1/2014 4:31:18 PM fix for evaluate returning atom sets as arrays
 // BH 1/27/2014 8:37:06 AM adding Info.viewSet  
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
 
@@ -316,8 +317,9 @@
 			} else if (jme != null) {
 				var jmeSMILES = this._getSmiles();
 				// testing here to see that we have the same structure as in the JMOL applet
-				var jmolAtoms = (jmeSMILES ? jmol._evaluate("{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')") : "({})");
-				var isOK = (jmolAtoms != "({})");
+				// feature change here --- evaluation of an atom set returns an array now, not an uninterpretable string
+				var jmolAtoms = (jmeSMILES ? jmol._evaluate("{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')") : []);
+				var isOK = (jmolAtoms.length > 0);
 			}
 			if (!isOK) {
 				if (toJME) {
