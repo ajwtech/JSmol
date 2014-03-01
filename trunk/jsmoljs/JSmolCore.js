@@ -335,6 +335,8 @@ Jmol = (function(document) {
 		delete J;
 		delete JU;
 		delete JSV;
+		delete JV;
+		delete JW;
 		delete JZ;
 		delete java;
 		delete Clazz;
