@@ -36,6 +36,20 @@
    	<copy todir="site/jsmol/j2s/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
+        <exclude name="**/util/*.js" />
+        <exclude name="**/viewer/**/*.js" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JW" >
+      <fileset dir="bin/org/jmol/util">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JV" >
+      <fileset dir="bin/org/jmol/viewer">
+        <include name="**/*.js" />
       </fileset>
     </copy>
    	
@@ -45,21 +59,27 @@
       </fileset>
     </copy>
    	
+   	<copy todir="site/jsmol/j2s/javajs" >
+      <fileset dir="bin/javajs">
+        <include name="**/*.js" />
+        <exclude name="**/util/*.js" />
+      </fileset>
+    </copy>
+
    	<copy todir="site/jsmol/j2s/JU" >
       <fileset dir="bin/javajs/util">
         <include name="**/*.js" />
       </fileset>
     </copy>
    	
-   	<copy todir="site/jsmol/j2s/javajs" >
-      <fileset dir="bin/javajs">
-        <include name="**/*.js" />
-        <exclude name="**/util		/*.js" />
-      </fileset>
-    </copy>
-
    	
   	<!-- modify class names -->		
+
+    <echo>abbreviating class names "org.jmol.util" to "JW"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
+
+    <echo>abbreviating class names "org.jmol.viewer" to "JV"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
 
     <echo>abbreviating class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
@@ -332,6 +352,7 @@
     		JU/P3i.js
     		JU/P4.js
     		JU/PT.js
+    		JU/Quat.js
     		JU/SB.js
     		JU/T3.js
     		JU/T3d.js
@@ -464,54 +485,53 @@
     		J/thread/HoverWatcherThread.js
     		J/thread/JmolThread.js
     		J/thread/TimeoutThread.js
-    		J/util/BoxInfo.js
-    		J/util/BSUtil.js
-    		J/util/C.js
-    		J/util/ColorEncoder.js
-    		J/util/CommandHistory.js
-    		J/util/DefaultLogger.js
-    		J/util/Elements.js
-    		J/util/Escape.js
-    		J/util/GData.js
-    		J/util/GenericApplet.js
-    		J/util/Geodesic.js
-    		J/util/Int2IntHash.js
-    		J/util/JmolEdge.js
-    		J/util/JmolMolecule.js
-    		J/util/JmolNode.js
-    		J/util/Logger.js
-    		J/util/LoggerInterface.js
-    		J/util/Measure.js
-    		J/util/MeshSurface.js
-    		J/util/Normix.js
-    		J/util/Parser.js
-    		J/util/Point3fi.js
-    		J/util/Quaternion.js
-    		J/util/Rectangle.js
-    		J/util/Rgb16.js
-    		J/util/Shader.js
-    		J/util/SimpleUnitCell.js
-    		J/util/TempArray.js
-    		J/util/Txt.js
-    		J/util/Vibration.js
-    		J/viewer/ActionManager.js
-    		J/viewer/AnimationManager.js
-    		J/viewer/binding/Binding.js
-    		J/viewer/binding/DragBinding.js
-    		J/viewer/binding/JmolBinding.js
-    		J/viewer/ColorManager.js
-    		J/viewer/FileManager.js
-    		J/Viewer/GlobalSettings.js
-    		J/viewer/JC.js
-    		J/viewer/ModelManager.js
-    		J/viewer/MouseState.js
-    		J/viewer/SelectionManager.js
-    		J/viewer/ShapeManager.js
-    		J/viewer/StateManager.js
-    		J/viewer/StatusManager.js
-    		J/viewer/TransformManager.js
-    		J/viewer/TransformManager11.js
-    		J/viewer/Viewer.js
+    		JW/BoxInfo.js
+    		JW/BSUtil.js
+    		JW/C.js
+    		JW/ColorEncoder.js
+    		JW/CommandHistory.js
+    		JW/DefaultLogger.js
+    		JW/Elements.js
+    		JW/Escape.js
+    		JW/GData.js
+    		JW/GenericApplet.js
+    		JW/Geodesic.js
+    		JW/Int2IntHash.js
+    		JW/JmolEdge.js
+    		JW/JmolMolecule.js
+    		JW/JmolNode.js
+    		JW/Logger.js
+    		JW/LoggerInterface.js
+    		JW/Measure.js
+    		JW/MeshSurface.js
+    		JW/Normix.js
+    		JW/Parser.js
+    		JW/Point3fi.js
+    		JW/Rectangle.js
+    		JW/Rgb16.js
+    		JW/Shader.js
+    		JW/SimpleUnitCell.js
+    		JW/TempArray.js
+    		JW/Txt.js
+    		JW/Vibration.js
+    		JV/ActionManager.js
+    		JV/AnimationManager.js
+    		JV/binding/Binding.js
+    		JV/binding/DragBinding.js
+    		JV/binding/JmolBinding.js
+    		JV/ColorManager.js
+    		JV/FileManager.js
+    		JV/GlobalSettings.js
+    		JV/JC.js
+    		JV/ModelManager.js
+    		JV/MouseState.js
+    		JV/SelectionManager.js
+    		JV/ShapeManager.js
+    		JV/StateManager.js
+    		JV/StatusManager.js
+    		JV/TransformManager.js
+    		JV/TransformManager11.js
+    		JV/Viewer.js
        		../js/core/corebottom.js
         	" />
     </antcall>
@@ -605,9 +625,9 @@
         	J/adapter/smarter/JmolJDXMOLParser.js
         	J/adapter/smarter/JmolJDXMOLReader.js
         	J/jsv/JDXMOLParser.js
-        	J/util/DefaultLogger.js
-        	J/util/Logger.js
-        	J/util/LoggerInterface.js
+        	JW/DefaultLogger.js
+        	JW/Logger.js
+        	JW/LoggerInterface.js
         	JSV/api/AnnotationData.js 
         	JSV/api/AppletFrame.js 
         	JSV/api/JSVAppInterface.js 
@@ -772,6 +792,7 @@
 			JU/P3i.js
 			JU/P4.js
 			JU/PT.js
+			JU/Quat.js
 			JU/SB.js
 			JU/T3.js
 			JU/T3d.js
@@ -907,54 +928,53 @@
 			J/thread/HoverWatcherThread.js
 			J/thread/JmolThread.js
 			J/thread/TimeoutThread.js
-			J/util/BoxInfo.js
-			J/util/BSUtil.js
-			J/util/C.js
-			J/util/ColorEncoder.js
-			J/util/CommandHistory.js
-			J/util/DefaultLogger.js
-			J/util/Elements.js
-			J/util/Escape.js
-			J/util/GData.js
-			J/util/GenericApplet.js
-			J/util/Geodesic.js
-			J/util/Int2IntHash.js
-			J/util/JmolEdge.js
-			J/util/JmolMolecule.js
-			J/util/JmolNode.js
-			J/util/Logger.js
-			J/util/LoggerInterface.js
-			J/util/Measure.js
-			J/util/MeshSurface.js
-			J/util/Normix.js
-			J/util/Parser.js
-			J/util/Point3fi.js
-			J/util/Quaternion.js
-			J/util/Rectangle.js
-			J/util/Rgb16.js
-			J/util/Shader.js
-			J/util/SimpleUnitCell.js
-			J/util/TempArray.js
-			J/util/Txt.js
-			J/util/Vibration.js
-			J/viewer/ActionManager.js
-			J/viewer/AnimationManager.js
-			J/viewer/binding/Binding.js
-			J/viewer/binding/DragBinding.js
-			J/viewer/binding/JmolBinding.js
-			J/viewer/ColorManager.js
-			J/viewer/FileManager.js
-			J/Viewer/GlobalSettings.js
-			J/viewer/JC.js
-			J/viewer/ModelManager.js
-			J/viewer/MouseState.js
-			J/viewer/SelectionManager.js
-			J/viewer/ShapeManager.js
-			J/viewer/StateManager.js
-			J/viewer/StatusManager.js
-			J/viewer/TransformManager.js
-			J/viewer/TransformManager11.js
-			J/viewer/Viewer.js
+			JW/BoxInfo.js
+			JW/BSUtil.js
+			JW/C.js
+			JW/ColorEncoder.js
+			JW/CommandHistory.js
+			JW/DefaultLogger.js
+			JW/Elements.js
+			JW/Escape.js
+			JW/GData.js
+			JW/GenericApplet.js
+			JW/Geodesic.js
+			JW/Int2IntHash.js
+			JW/JmolEdge.js
+			JW/JmolMolecule.js
+			JW/JmolNode.js
+			JW/Logger.js
+			JW/LoggerInterface.js
+			JW/Measure.js
+			JW/MeshSurface.js
+			JW/Normix.js
+			JW/Parser.js
+			JW/Point3fi.js
+			JW/Rectangle.js
+			JW/Rgb16.js
+			JW/Shader.js
+			JW/SimpleUnitCell.js
+			JW/TempArray.js
+			JW/Txt.js
+			JW/Vibration.js
+			JV/ActionManager.js
+			JV/AnimationManager.js
+			JV/binding/Binding.js
+			JV/binding/DragBinding.js
+			JV/binding/JmolBinding.js
+			JV/ColorManager.js
+			JV/FileManager.js
+			JV/GlobalSettings.js
+			JV/JC.js
+			JV/ModelManager.js
+			JV/MouseState.js
+			JV/SelectionManager.js
+			JV/ShapeManager.js
+			JV/StateManager.js
+			JV/StatusManager.js
+			JV/TransformManager.js
+			JV/TransformManager11.js
+			JV/Viewer.js
 			JSV/api/AnnotationData.js 
 			JSV/api/AppletFrame.js 
 			JSV/api/JSVAppInterface.js 
@@ -1119,6 +1139,9 @@
        		J/api/JmolScriptEvaluator.js
     		J/api/JmolScriptFunction.js
     		J/api/JmolParallelProcessor.js
+       		J/script/JmolCmdExtension.js
+       		J/script/JmolMathExtension.js
+       		J/script/JmolSmilesExtension.js
        		J/script/FileLoadThread.js
        		J/script/ScriptQueueThread.js
        		J/script/ScriptDelayThread.js
@@ -1138,18 +1161,24 @@
     </antcall>
 
     <antcall target="call-core">
-        <param name="call-core.name" value="script2" />
+        <param name="call-core.name" value="scriptcmd" />
         <param name="call-core.list" value="
-       		J/script/JmolScriptExtension.js
-       		J/scriptext/ScriptExt.js
+       		J/scriptext/CmdExt.js
+        	" />
+    </antcall>
+
+    <antcall target="call-core">
+        <param name="call-core.name" value="scriptmath" />
+        <param name="call-core.list" value="
+       		J/scriptext/MathExt.js
         	" />
     </antcall>
 
     <antcall target="call-core">
         <param name="call-core.name" value="state" />
         <param name="call-core.list" value="
-       		J/viewer/JmolStateCreator.js
-       		J/viewer/StateCreator.js
+       		JV/JmolStateCreator.js
+       		JV/StateCreator.js
         	" />
     </antcall>
 
@@ -1157,7 +1186,7 @@
         <param name="call-core.name" value="prop" />
         <param name="call-core.list" value="
        		J/api/JmolPropertyManager.js
-       		J/viewer/PropertyManager.js   	   	
+       		JV/PropertyManager.js   	   	
         	" />
     </antcall>
    	
