@@ -1472,6 +1472,7 @@
    		J/smiles/SmilesBond.js
    		J/smiles/SmilesMeasure.js
    		J/smiles/SmilesParser.js
+        J/scriptext/SmilesExt.js
     	" />
     </antcall>
 
