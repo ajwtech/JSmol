@@ -718,10 +718,10 @@
         	JSV/js2d/JsParameters.js
         	JSV/js2d/JsPlatform.js
         	JSV/js2d/JsMainPanel.js
-        	JSV/source/FileReader.js
         	JSV/source/JDXDataObject.js 
         	JSV/source/JDXDecompressor.js
         	JSV/source/JDXHeader.js 
+        	JSV/source/JDXReader.js
         	JSV/source/JDXSource.js
         	JSV/source/JDXSourceStreamTokenizer.js
         	JSV/tree/SimpleTree.js
@@ -1066,10 +1066,10 @@
 			JSV/js2d/JsParameters.js
 			JSV/js2d/JsPlatform.js
 			JSV/js2d/JsMainPanel.js
-			JSV/source/FileReader.js
 			JSV/source/JDXDataObject.js 
 			JSV/source/JDXDecompressor.js
 			JSV/source/JDXHeader.js 
+			JSV/source/JDXReader.js
 			JSV/source/JDXSource.js
 			JSV/source/JDXSourceStreamTokenizer.js
 			JSV/tree/SimpleTree.js
