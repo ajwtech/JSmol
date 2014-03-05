@@ -497,9 +497,10 @@
     		JW/GenericApplet.js
     		JW/Geodesic.js
     		JW/Int2IntHash.js
-    		JW/JmolEdge.js
+    		JW/Node.js
+    		JW/BNode.js
+    		JW/Edge.js
     		JW/JmolMolecule.js
-    		JW/JmolNode.js
     		JW/Logger.js
     		JW/LoggerInterface.js
     		JW/Measure.js
@@ -940,9 +941,10 @@
 			JW/GenericApplet.js
 			JW/Geodesic.js
 			JW/Int2IntHash.js
-			JW/JmolEdge.js
+    		JW/Edge.js
+    		JW/Node.js
+    		JW/BNode.js
 			JW/JmolMolecule.js
-			JW/JmolNode.js
 			JW/Logger.js
 			JW/LoggerInterface.js
 			JW/Measure.js
