@@ -265,8 +265,9 @@
 			}
 		if (iAtom <= 0)
 			return;
-		var A = [];    
-		A.push(this._currentView.JME.atomMap.toJmol[iAtom]);
+		var A = [];
+		var map = this._currentView.JME.atomMap;    
+		A.push(map == null ? iAtom : map.toJmol[iAtom]);
 		Jmol.View.updateAtomPick(this, A);
 		this._updateAtomPick(A);
 		if (this._atomPickCallback)
@@ -279,11 +280,10 @@
 			return;
 		var B = [];
 		var C = [];
-		//System.out.println("JME updateAtomPick for " + A.join(","));
-		//System.out.println("JME Using " + this._currentView.info.viewID + " atomMap=" + this._currentView.JME.atomMap.toJME.join(","));
 		var j;		
+		var map = this._currentView.JME.atomMap;		
 		for (var i = 0; i < A.length; i++) {
-		 C[j = this._currentView.JME.atomMap.fromJmol[A[i]]] = 1; 
+		 C[j = (map == null ? A[i] : map.fromJmol[A[i]])] = 1; 
 		 B.push(j);
 		 B.push(3);
 		}
@@ -350,7 +350,7 @@
 			if (this._viewSet) {
 			  var v = this._currentView;
 			  v.JME.data = this._molData;
-			  v.JME.atomMap = (v.Jmol && v.Jmol.applet? v.Jmol.applet._getAtomCorrelation(this._molData) : null);
+				v.JME.atomMap = (v.Jmol && v.Jmol.applet? v.Jmol.applet._getAtomCorrelation(this._molData) : null);
 			}
 		} else {
 			this._applet.reset();

@@ -260,6 +260,12 @@
 		if (!molData)
 			return;
 		Jmol.View.updateView(this, {chemID:view.info.chemID, data:molData});
+		this._propagateView(view, molData);
+	}
+
+	proto._propagateView = function(view, molData) {
+		var vJmol = view.Jmol;
+		var vJME = view.JME;
 		if (vJmol) {
 			vJmol.data = molData;
 			if (vJmol.applet)
@@ -272,18 +278,28 @@
 		}
 		this.__selectSpectrum();
 	}
-
-	proto._getAppletInfo = function(key) {
-		return "" + this._applet.getPropertyAsJavaObject(key).get(key)
-	}
-
-	proto.__loadModel = function(data, chemID) {
-	// retun from asynchronous call in loadModelFromView 
-		if (data == null)
+	
+	proto._updateView = function(selectedPanel, peakData, _jsv_updateView) {
+		if (this._viewSet == null || !this._applet)
 			return;
-		Jmol.View.updateView(this, {chemID:chemID, data:data});
+		if (!peakData) {
+			// comming from JSmolCore.js -- view not found; new load
+			// generally we will IGNORE THIS as an actual spectrum load, but if there
+			// is a MOL file, that should be recognized.
+			var msg = selectedPanel;
+			if (msg && (msg.indexOf("http://SIMULATION" >= 0) || msg.indexOf("cache://") >= 0)) {
+				var molData = this._getAppletInfo("DATA_mol");
+				if (molData) {
+					Jmol.View.updateView(this, { chemID: "", viewID: Jmol._getAttr(msg, "file"), data:molData});
+					this._propagateView(this._currentView, molData);
+				}
+			}
+			return;		 
+		}
+ 		// called from file load or panel selection or peak selection
+		Jmol.View.updateFromSync(this, peakData);
 	}
-
+ 
 	proto.__selectSpectrum = function() {
 	// not entirely clear why this should be necessary, but it is, especially
 	// after a peak pick
@@ -301,13 +317,17 @@
 		this.__selectSpectrum();
 	}
 
-	proto._updateView = function(selectedPanel, peakData, _jsv_updateView) {
-	 // called from file load or panel selection or peak selection
-	 if (!peakData)
-		 return;
-	 Jmol.View.updateFromSync(this, peakData);
+	proto._getAppletInfo = function(key) {
+		return "" + this._applet.getPropertyAsJavaObject(key).get(key)
 	}
- 
+
+	proto.__loadModel = function(data, chemID) {
+	// retun from asynchronous call in loadModelFromView 
+		if (data == null)
+			return;
+		Jmol.View.updateView(this, {chemID:chemID, data:data});
+	}
+
 	proto._showStatus = function(msg, title) {
 	 // from JSV
 		title && (msg = title + "\n\n\n" + msg);

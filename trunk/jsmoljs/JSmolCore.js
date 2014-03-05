@@ -1036,7 +1036,7 @@ Jmol = (function(document) {
 	}     
 	 
 	Jmol._registerApplet = function(id, applet) {
-		return window[id] = Jmol._applets[id] = Jmol._applets[applet] = applet;
+		return window[id] = Jmol._applets[id] = Jmol._applets[applet] = Jmol._applets[id + "__" + Jmol._syncId + "__"] = applet;
 	} 
 
 	Jmol._readyCallback = function (appId,fullId,isReady,jmolApp) {
@@ -1325,13 +1325,19 @@ Jmol = (function(document) {
 		setTimeout(s, 50);  
 	}
 
-	Jmol._mySyncCallback = function(app,msg) {
-		if (app._viewSet || !Jmol._syncReady || !Jmol._isJmolJSVSync)
+	Jmol._mySyncCallback = function(appFullName,msg) {
+		app = Jmol._applets[appFullName];
+		if (app._viewSet) {
+			// when can we do this?
+//			if (app._viewType == "JSV" && !app._currentView.JMOL)
+				Jmol.View.updateFromSync(app, msg);
+			return;
+		}
+		if(!Jmol._syncReady || !Jmol._isJmolJSVSync)
 			return 1; // continue processing and ignore me
 		for (var i = 0; i < Jmol._syncedApplets.length; i++) {
-			if (msg.indexOf(Jmol._syncedApplets[i]._syncKeyword) >= 0) {
+			if (msg.indexOf(Jmol._syncedApplets[i]._syncKeyword) >= 0)
 				Jmol._syncedApplets[i]._syncScript(msg);
-			}
 		}
 		return 0 // prevents further Jmol sync processing 
 	}              
@@ -1842,6 +1848,12 @@ Jmol._getInChIKey = function(applet, data) {
 
 }
 
+Jmol._getAttr = function(s, a) {
+	var pt = s.indexOf(a + "=");
+	return (pt >= 0 && (pt = s.indexOf('"', pt)) >= 0 
+		? s.substring(pt+1, s.indexOf('"', pt+1)) : null);
+}
+
 Jmol.User = {
 	viewUpdatedCallback: null
 }
@@ -1877,15 +1889,15 @@ Jmol.View = {
 // methods called from other modules have no "_" in their name
 
 View.updateView = function(applet, Info, _View_updateView) {
+	// Info.chemID, Info.data, possibly Info.viewID if no chemID
 	// return from applet after asynchronous download of new data
 	if (applet._viewSet == null)
 		return;
 	Info.chemID || (applet._searchQuery = null);
 	Info.data || (Info.data = "N/A");
 	Info.type = applet._viewType;
-	if((applet._currentView = View.__findView(applet._viewSet, Info)) == null) {
-		applet._currentView = View.__createViewSet(applet._viewSet, Info.chemID);
-	}
+	if((applet._currentView = View.__findView(applet._viewSet, Info)) == null)
+		applet._currentView = View.__createViewSet(applet._viewSet, Info.chemID, Info.viewID || Info.chemID);
 	applet._currentView[Info.type].data = Info.data;
 	applet._currentView[Info.type].smiles = applet._getSmiles();
 	if (Jmol.User.viewUpdatedCallback)
@@ -1895,17 +1907,19 @@ View.updateView = function(applet, Info, _View_updateView) {
 
 View.updateFromSync = function(applet, msg) {
 	applet._updateMsg = msg;
-	var id = View.__getAttr(msg, "sourceID");
+	var id = Jmol._getAttr(msg, "sourceID") || Jmol._getAttr(msg, "file");
 	if (!id)
 		return;
 	var view = View.__findView(applet._viewSet, {viewID:id});
+	if (view == null)
+		return Jmol.updateView(applet, msg); // JSV has been updated internally
 	if (view != applet._currentView) {
 		View.__setView(view, applet, true);
 	}
-	var A = ((id = View.__getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
+	var A = ((id = Jmol._getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
 		? eval("[" + id + "]") : []);
 	setTimeout(function(){View.updateAtomPick(applet, A)}, 10); 
-	View.updateAtomPick(applet, A);
+//	View.updateAtomPick(applet, A);
 	if (Jmol.User.viewUpdatedCallback)
 		Jmol.User.viewUpdatedCallback(applet, "updateFromSync");
 }
@@ -1948,6 +1962,7 @@ View.dumpViews = function(setID) {
 	return s
 }
 
+
 // methods starting with "__" are "private" to JSmolCore.js
 
 View.__init = function(applet) {
@@ -1955,12 +1970,6 @@ View.__init = function(applet) {
 	var a = View.applets;
 	a[set] || (a[set] = {});
 	a[set][applet._viewType] = applet;
-}
-
-View.__getAttr = function(s, a) {
-	var pt = s.indexOf(a + "=");
-	return (pt >= 0 && (pt = s.indexOf('"', pt)) >= 0 
-		? s.substring(pt+1, s.indexOf('"', pt+1)) : null);
 }
 
 View.__findView = function(set, Info) {
@@ -1987,9 +1996,9 @@ View.__findView = function(set, Info) {
 	return null;  
 }
 
-View.__createViewSet = function(set, chemID, _createViewSet) {
+View.__createViewSet = function(set, chemID, viewID, _createViewSet) {
 	View.count++;
-	var view = {info:{chemID: chemID, viewID: chemID || "model_" + View.count}};
+	var view = {info:{chemID: chemID, viewID: viewID || "model_" + View.count}};
 
 	for (var id in Jmol._applets) {
 		var a = Jmol._applets[id];
