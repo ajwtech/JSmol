@@ -136,17 +136,16 @@
 	proto._readyCallback = function(id, fullid, isReady, applet) {
 	 if (!isReady)
 			return; // ignore -- page is closing
-		var o = self[id];
-		o._ready = true;
-		o._applet = applet;
-		o._readyScript && setTimeout(id + "._script(" + id + "._readyScript)",50);
-		o._showInfo(true);
-		o._showInfo(false);
-		o._readyFunction && o._readyFunction(o);
-			//o._setDragDrop();
-		Jmol._setReady(o);
+		this._ready = true;
+		this._applet = applet;
+		this._readyScript && setTimeout(id + "._script(" + id + "._readyScript)",50);
+		this._showInfo(true);
+		this._showInfo(false);
+		this._readyFunction && this._readyFunction(this);
+		Jmol.Cache.setDragDrop(this);
+		Jmol._setReady(this);
 	}	
-
+		
 	proto._checkDeferred = function(script) {
 		return false;
 	}	

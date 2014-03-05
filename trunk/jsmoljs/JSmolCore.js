@@ -913,7 +913,9 @@ Jmol = (function(document) {
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 					Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
-					fileLoadThread.setData(file.name, Jmol._toBytes(evt.target.result), appData);
+					if (file.name.indexOf(".jdx") >= 0)
+					Jmol.Cache.put("cache://" + file.name, data);
+					fileLoadThread.setData(file.name, data, appData);
 				}
 			};
 			reader.readAsArrayBuffer(file);
@@ -921,7 +923,7 @@ Jmol = (function(document) {
 		Jmol.$appEvent(applet, "localReader_cancel", "click");
 		Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
 			Jmol.$css(Jmol.$(applet, "localReader"), {display: "none"});
-			fileLoadThread.setData(null, "#CANCELED#", appData);
+			fileLoadThread.setData(null, appData);
 		});
 		Jmol.$css(Jmol.$(applet, "localReader"), {display : "block"});
 	}
@@ -2029,4 +2031,43 @@ View.__setView = function(view, applet, isSwitch, _setView) {
 
 }) (Jmol.View);
 
+Jmol.Cache = {fileCache: {}};
+
+Jmol.Cache.get = function(filename) {
+	return Jmol.Cache.fileCache[filename];
+}
+
+Jmol.Cache.put = function(filename, data) {
+  Jmol.Cache.fileCache[filename] = data;
+}
+
+	Jmol.Cache.setDragDrop = function(me) {
+		Jmol.$appEvent(me, "appletdiv", "dragover", function(e) {
+			e = e.originalEvent;
+			e.stopPropagation();
+			e.preventDefault();
+			e.dataTransfer.dropEffect = 'copy';
+		});
+		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
+			var e = e.originalEvent;
+			e.stopPropagation();
+			e.preventDefault();
+			var file = e.dataTransfer.files[0];
+			var reader = new FileReader();
+			reader.onloadend = function(evt) {
+				if (evt.target.readyState == FileReader.DONE) {
+					var cacheName = "cache://DROP_" + file.name;
+					var bytes = Jmol._toBytes(evt.target.result);
+					me._applet.viewer.cacheFileByName("cache://DROP_*",false);
+					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
+						Jmol.Cache.put(cacheName, bytes);
+					else
+						me._applet.viewer.cachePut(cacheName, bytes);
+					me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
+				}
+			};
+			reader.readAsArrayBuffer(file);
+		});
+	}
+  
 })(Jmol, jQuery);

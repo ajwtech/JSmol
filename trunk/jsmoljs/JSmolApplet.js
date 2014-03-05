@@ -265,43 +265,14 @@
 			this._script('load "' + this._src + '"');
 		this._showInfo(true);
 		this._showInfo(false);
-		this._setDragDrop();
-		var me = this;
-		this._readyFunction && this._readyFunction(me);
+		Jmol.Cache.setDragDrop(this);
+		this._readyFunction && this._readyFunction(this);
 		Jmol._setReady(this);
 		var app = this._2dapplet;
-		if (app && app._isEmbedded && app._ready && app.__Info.visible) {
+		if (app && app._isEmbedded && app._ready && app.__Info.visible)
 			this._show2d(true);
-			}
 	}
 
-	proto._setDragDrop = function() {
-		var me = this;
-		Jmol.$appEvent(me, "appletdiv", "dragover", function(e) {
-			e = e.originalEvent;
-			e.stopPropagation();
-			e.preventDefault();
-			e.dataTransfer.dropEffect = 'copy';
-		});
-		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
-			var e = e.originalEvent;
-			e.stopPropagation();
-			e.preventDefault();
-			var file = e.dataTransfer.files[0];
-			var reader = new FileReader();
-			reader.onloadend = function(evt) {
-				if (evt.target.readyState == FileReader.DONE) {
-					var cacheName = "cache://DROP_" + file.name;
-					var bytes = Jmol._toBytes(evt.target.result);
-					me._applet.viewer.cacheFileByName("cache://DROP_*",false);
-					me._applet.viewer.cachePut(cacheName, bytes);
-					me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
-					//Jmol.script(me, "load '" + cacheName + "'");
-				}
-			};
-			reader.readAsArrayBuffer(file);
-		});
-	}	
 	proto._showInfo = function(tf) {
 		if(tf && this._2dapplet)
 			this._2dapplet._show(false);
@@ -329,6 +300,22 @@
 		}
 	}
 
+  proto._getAtomCorrelation = function(molData) {
+    // get the first atom mapping available by loading the model structure into model 2, 
+    this._loadMolData(molData, "atommap = compare({1.1} {2.1} 'MAP' 'H'); zap 2.1", true);
+    var map = jmol._evaluate("atommap");
+    var n = jmol._evaluate("{*}.count");
+    var A = [];
+    var B = [];
+    // these are Jmol atom indexes. The second number will be >= n, and all must be incremented by 1.
+		for (var i = 0; i < map.length; i++) {
+		  var c = map[i];
+		  A[c[0] + 1] = c[1] - n + 1;
+		  B[c[1] - n + 1] = c[0] + 1;
+		}
+		return {fromJmol:A, toJmol:B}; // forward and rev.		
+  }
+  
 	proto._show = function(tf) {
 		var x = (!tf ? 2 : "100%");
 		Jmol.$setSize(Jmol.$(this, "object"), x, x);

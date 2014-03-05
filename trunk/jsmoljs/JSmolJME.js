@@ -283,7 +283,7 @@
 		//System.out.println("JME Using " + this._currentView.info.viewID + " atomMap=" + this._currentView.JME.atomMap.toJME.join(","));
 		var j;		
 		for (var i = 0; i < A.length; i++) {
-		 C[j = this._currentView.JME.atomMap.toJME[A[i]]] = 1; 
+		 C[j = this._currentView.JME.atomMap.fromJmol[A[i]]] = 1; 
 		 B.push(j);
 		 B.push(3);
 		}
@@ -350,30 +350,13 @@
 			if (this._viewSet) {
 			  var v = this._currentView;
 			  v.JME.data = this._molData;
-			  v.JME.atomMap = (v.Jmol && v.Jmol.applet? this.__getAtomCorrelation(v.Jmol.applet) : null);
+			  v.JME.atomMap = (v.Jmol && v.Jmol.applet? v.Jmol.applet._getAtomCorrelation(this._molData) : null);
 			}
 		} else {
 			this._applet.reset();
 			this._molData = "<zapped>";
 		}
 	}
-
-  proto.__getAtomCorrelation = function(jmol) {
-    // get the first atom mapping available by loading the JME structure into model 2, 
-    jmol._loadMolData(this._molData, "jmeMap = compare({1.1} {2.1} 'MAP' 'H'); zap 2.1", true);
-    var map = jmol._evaluate("jmeMap");
-    var n = jmol._evaluate("{*}.count");
-    var A = [];
-    var B = [];
-    // these are Jmol atom indexes. The second number will be >= n, and all must be incremented by 1.
-		for (var i = 0; i < map.length; i++) {
-		  var c = map[i];
-		  A[c[0] + 1] = c[1] - n + 1;
-		  B[c[1] - n + 1] = c[0] + 1;
-		}
-		return {toJME:A, toJmol:B}; // forward and rev.		
-  }
-  
   
 	proto.__showContainer = function(tf, andShow) {
 		var jmol = this._linkedApplet;
