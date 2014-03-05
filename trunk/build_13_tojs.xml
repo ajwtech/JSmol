@@ -36,26 +36,45 @@
    	<copy todir="site/jsmol/j2s/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
-        <exclude name="**/util/*.js" />
-        <exclude name="**/viewer/**/*.js" />
+        <exclude name="util/*" />
+        <exclude name="viewer/**/*" />
+        <exclude name="modelset/**/*" />
+        <exclude name="modelsetbio/**/*" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JM" >
+      <fileset dir="bin/org/jmol/modelset">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JMB" >
+      <fileset dir="bin/org/jmol/modelsetbio">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JW" >
       <fileset dir="bin/org/jmol/util">
-        <include name="**/*.js" />
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JV" >
       <fileset dir="bin/org/jmol/viewer">
-        <include name="**/*.js" />
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JSV" >
       <fileset dir="bin/jspecview">
-        <include name="**/*.js" />
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
@@ -74,6 +93,12 @@
    	
    	
   	<!-- modify class names -->		
+
+    <echo>abbreviating class names "org.jmol.modelsetbio" to "JMB"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
+
+    <echo>abbreviating class names "org.jmol.modelset" to "JM"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
 
     <echo>abbreviating class names "org.jmol.util" to "JW"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
@@ -441,29 +466,29 @@
     		J/io/JmolBinary.js
     		J/io/LimitedLineReader.js
     		J/io/XmlUtil.js
-    		J/modelset/Atom.js
-    		J/modelset/AtomCollection.js
-    		J/modelset/AtomIteratorWithinModel.js
-    		J/modelset/AtomIteratorWithinModelSet.js
-    		J/modelset/Bond.js
-    		J/modelset/BondCollection.js
-    		J/modelset/BondIterator.js
-    		J/modelset/BondIteratorSelected.js
-    		J/modelset/BondSet.js
-    		J/modelset/Chain.js
-    		J/modelset/Group.js
-    		J/modelset/HBond.js
-    		J/modelset/LabelToken.js
-    		J/modelset/Measurement.js
-    		J/modelset/MeasurementData.js
-    		J/modelset/MeasurementPending.js
-    		J/modelset/Model.js
-    		J/modelset/ModelCollection.js
-    		J/modelset/ModelLoader.js
-    		J/modelset/ModelSet.js
-    		J/modelset/Orientation.js
-    		J/modelset/StateScript.js
-    		J/modelset/TickInfo.js
+    		JM/Atom.js
+    		JM/AtomCollection.js
+    		JM/AtomIteratorWithinModel.js
+    		JM/AtomIteratorWithinModelSet.js
+    		JM/Bond.js
+    		JM/BondCollection.js
+    		JM/BondIterator.js
+    		JM/BondIteratorSelected.js
+    		JM/BondSet.js
+    		JM/Chain.js
+    		JM/Group.js
+    		JM/HBond.js
+    		JM/LabelToken.js
+    		JM/Measurement.js
+    		JM/MeasurementData.js
+    		JM/MeasurementPending.js
+    		JM/Model.js
+    		JM/ModelCollection.js
+    		JM/ModelLoader.js
+    		JM/ModelSet.js
+    		JM/Orientation.js
+    		JM/StateScript.js
+    		JM/TickInfo.js
     		J/render/BallsRenderer.js
     		J/render/FontLineShapeRenderer.js
     		J/render/FrankRenderer.js
@@ -885,29 +910,29 @@
 			J/io/JmolBinary.js
 			J/io/LimitedLineReader.js
 			J/io/XmlUtil.js
-			J/modelset/Atom.js
-			J/modelset/AtomCollection.js
-			J/modelset/AtomIteratorWithinModel.js
-			J/modelset/AtomIteratorWithinModelSet.js
-			J/modelset/Bond.js
-			J/modelset/BondCollection.js
-			J/modelset/BondIterator.js
-			J/modelset/BondIteratorSelected.js
-			J/modelset/BondSet.js
-			J/modelset/Chain.js
-			J/modelset/Group.js
-			J/modelset/HBond.js
-			J/modelset/LabelToken.js
-			J/modelset/Measurement.js
-			J/modelset/MeasurementData.js
-			J/modelset/MeasurementPending.js
-			J/modelset/Model.js
-			J/modelset/ModelCollection.js
-			J/modelset/ModelLoader.js
-			J/modelset/ModelSet.js
-			J/modelset/Orientation.js
-			J/modelset/StateScript.js
-			J/modelset/TickInfo.js
+			JM/Atom.js
+			JM/AtomCollection.js
+			JM/AtomIteratorWithinModel.js
+			JM/AtomIteratorWithinModelSet.js
+			JM/Bond.js
+			JM/BondCollection.js
+			JM/BondIterator.js
+			JM/BondIteratorSelected.js
+			JM/BondSet.js
+			JM/Chain.js
+			JM/Group.js
+			JM/HBond.js
+			JM/LabelToken.js
+			JM/Measurement.js
+			JM/MeasurementData.js
+			JM/MeasurementPending.js
+			JM/Model.js
+			JM/ModelCollection.js
+			JM/ModelLoader.js
+			JM/ModelSet.js
+			JM/Orientation.js
+			JM/StateScript.js
+			JM/TickInfo.js
 			J/render/BallsRenderer.js
 			J/render/FontLineShapeRenderer.js
 			J/render/FrankRenderer.js
@@ -1327,24 +1352,24 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-       		J/modelsetbio/Resolver.js
-       		J/modelsetbio/Monomer.js
-       		J/modelsetbio/AlphaMonomer.js
-       		J/modelsetbio/ProteinStructure.js
-       		J/modelsetbio/Helix.js
-       		J/modelsetbio/Sheet.js
-       		J/modelsetbio/Turn.js
-       		J/modelsetbio/BioPolymer.js
-       		J/modelsetbio/AlphaPolymer.js
-       		J/modelsetbio/AminoMonomer.js
-       		J/modelsetbio/AminoPolymer.js
-       		J/modelsetbio/BioModel.js
-       		J/modelsetbio/CarbohydrateMonomer.js
-       		J/modelsetbio/CarbohydratePolymer.js
-       		J/modelsetbio/PhosphorusMonomer.js
-       		J/modelsetbio/NucleicMonomer.js
-       		J/modelsetbio/NucleicPolymer.js
-       		J/modelsetbio/PhosphorusPolymer.js
+       		JMB/Resolver.js
+       		JMB/Monomer.js
+       		JMB/AlphaMonomer.js
+       		JMB/ProteinStructure.js
+       		JMB/Helix.js
+       		JMB/Sheet.js
+       		JMB/Turn.js
+       		JMB/BioPolymer.js
+       		JMB/AlphaPolymer.js
+       		JMB/AminoMonomer.js
+       		JMB/AminoPolymer.js
+       		JMB/BioModel.js
+       		JMB/CarbohydrateMonomer.js
+       		JMB/CarbohydratePolymer.js
+       		JMB/PhosphorusMonomer.js
+       		JMB/NucleicMonomer.js
+       		JMB/NucleicPolymer.js
+       		JMB/PhosphorusPolymer.js
        		J/dssx/Bridge.js
         	J/api/DSSPInterface.js
        		J/dssx/DSSP.js        	
@@ -1443,8 +1468,8 @@
     <antcall target="call-core">
         <param name="call-core.name" value="text" />
         <param name="call-core.list" value="
-       		J/modelset/Object2d.js
-       		J/modelset/Text.js
+       		JM/Object2d.js
+       		JM/Text.js
        		J/shape/Object2dShape.js
        		J/shape/TextShape.js
        		J/shape/Labels.js

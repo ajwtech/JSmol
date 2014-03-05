@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 3/4/2014 8:40:15 PM adds Jmol.Cache for JSV/Jmol sharing files
 // BH 2/10/2014 10:07:14 AM added Info.z and Info.zIndexBase
 // BH 2/9/2014 9:56:06 PM updated JSmolCore.js with option to extend Viewer with code PRIOR to loading Viewer classes
 // BH 2/6/2014 8:46:25 AM disabled Jmol._tracker for localhost and 127.x.x.x 
@@ -333,8 +334,10 @@ Jmol = (function(document) {
 		if (!self.Clazz)return; 
 
 		delete J;
-		delete JU;
+		delete JM;
+		delete JMB;
 		delete JSV;
+		delete JU;
 		delete JV;
 		delete JW;
 		delete JZ;
