@@ -4,8 +4,9 @@
 <title>JSpecView/JSME/nmrdb/NIH-Resolver Demo II</title>
 <meta charset="utf-8" />
 
-<script type="text/javascript" src="JSmol.min.js"></script>
 <!--
+<script type="text/javascript" src="JSmol.min.js"></script>
+-->
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -19,7 +20,6 @@
 
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
 
--->
 
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
@@ -64,8 +64,9 @@ var JMEInfo = {
 	use: "HTML5",
   divId: "jmediv",
   options : "autoez",
+  editOptions: "editDisabled;",
   addSelectionOptions: true,
-  structureChangeCallback: null // Jmol will handle this
+  structureChangedCallback: "testCallback" // Jmol will handle this
 }
 
 Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
@@ -88,7 +89,7 @@ JSVInfo = {
 	height: 500,
 	color: "0xC0C0C0",
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-  preloadScript: "close views;close simulations > 1; DEFAULTNMRNORMALIZATION 100;",
+  preloadScript: "close views;close simulations > 1; DEFAULTNMRNORMALIZATION 1000;",
   script: 'defaultLoadScript "OVERLAYSTACKED true; VIEW *;STACKOFFSETY 50;";',
   disableJ2SLoadMonitor: false,
   disableInitialConsole: true,
@@ -115,6 +116,7 @@ $(document).ready(function() {
 <tr>
 <td valign="top">
 <table><tr><td>
+<label><input type="checkbox" onclick="jme._enableEdit(this.checked)">Enable Editing</label> 
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
 <script>
 Jmol.getJMEApplet("jme", JMEInfo);
@@ -173,6 +175,12 @@ Jmol.getJSVApplet("jsv", JSVInfo)
  (drag to zoom; right-click for menu; note that OH and NH may not be shown)
 <div style="position:absolute;left:745px;top:510px;z-index:9005"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
 </div>
+<a href="javascript:Jmol.script(jsv, 'load data/nmr_assigned.jdx')">1H Example</a>
+<a href="javascript:Jmol.script(jsv, 'load data/c13nmr_assigned.jdx')">13C Example</a>
+<a href="javascript:Jmol.script(jsv, 'load data/tcb-1h.jdx')">TCB 1H Example</a>
+<a href="javascript:Jmol.script(jsv, 'load data/tcb-13c.jdx')">TCB 13C Example</a>
+
+
 <div id="infodiv" style="text-align:center;display:none">
 This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
 <br />along with JSpecView to quickly get a simulated spectrum for a compound of our choice.
