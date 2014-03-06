@@ -63,6 +63,11 @@
 		this._isJava = false;//(Info.use && (Info.use.toUpperCase() != "HTML5"))
 		this._jmolType = "Jmol._JME" + (this._isJava ? "(JAVA)" : "(HTML5)");
 		this._viewType = "JME";
+		this._setCheck(true);
+		this._editEnabled = true;
+		this._editOptions =  Info.editOptions || "editEnabled;";
+		this._setEditOptions();
+		this._editMol = "";
 		if (checkOnly)
 			return this;
 		window[id] = this;
@@ -114,7 +119,8 @@
 			jarPath: "jme",
 			jarFile: "JME.jar",
 			use: "HTML5",
-			structureChangedCallback: null, // could be myFunction(); first parameter will be reference to this object  
+			structureChangedCallback: null, // could be myFunction(); first parameter will be reference to this object
+			editOptions: "editEnabled",  
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button
@@ -142,9 +148,12 @@
 				app._applet.options(app._options);
 				var f = "";
 				if (app._viewSet) {
-					f = "(function(){" + app._id + "._atomPickedCallback()})";
+					f = "(function(){" + app._id + "._myEditCallback()})";
 				} else if (app.__Info.structureChangedCallback) {
-					f = "(function(){"+app.__Info.structureChangedCallback.replace(/\(\)/, "(" + app._id + ")") + "})";
+					var m = app.__Info.structureChangedCallback;
+					if (!m.endsWith(")"))
+						m += "()";
+					f = "(function(a,b,c,d){"+m.replace(/\(\)/, "(" + app._id +",a,b,c,d)") + "})";
 				}
 				if (f) 
 					app._applet.setNotifyStructuralChangeJSfunction(f);
@@ -200,12 +209,12 @@
 		Jmol._loadFileData(this, fileName, function(data){me.__loadModel(data, chemID)}, function() {me.__loadModel(null, chemID)});
 	}
 
-	proto.__loadModel = function(jmeOrMolData, chemID, _jme__loadModel) {
+	proto.__loadModel = function(jmeOrMolData, chemID, viewID, _jme__loadModel) {
 		if (jmeOrMolData == null)
 			return;
 		Jmol.jmeReadMolecule(this, jmeOrMolData);
 		if (this._viewSet != null)
-			Jmol.View.updateView(this, {chemID:chemID, data:jmeOrMolData});      
+			Jmol.View.updateView(this, {chemID:chemID, data:jmeOrMolData, viewID: viewID});      
 	}
 
 	proto._loadModelFromView = function(view, _jme_loadModelFromView) {
@@ -213,28 +222,118 @@
 		var rec = view.JME;
 		this._currentView = view;
 		if (rec.data != null) {
-			this.__loadModel(rec.data, view.info.chemID);
-			return;
-		}
-		if (rec.chemID != null) {
+			this.__loadModel(rec.data, view.info.chemID, view.info.viewID);
+		} else if (rec.chemID != null) {
 			Jmol._searchMol(this, view.info.chemID, null, false);
-			return;
+		} else {
+			rec = view.Jmol;
+			if (rec) {
+				this._show2d(true, rec.applet);
+			}
 		}
-		rec = view.Jmol;
-		if (rec) {
-			this._show2d(true, rec.applet);
-			return;
-		}
-		// NOW WHAT??
+		var me = this;
 	}
 
 	proto._updateView = function(_jme_updateView) {
 		// called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
 		if (this._viewSet != null)
 			this._search("$" + this._getSmiles())
+		var me = this;
 	}
- 
-	proto._atomPickedCallback = function(_jme_viewAtomPicked) {
+
+	proto._setCheck = function(b, why) {
+		this._checkEnabled = b;
+		//if (self.System)	System.out.println("setting enabled " + b + " "	+ why);
+	}
+		 
+	proto._setEditOptions = function(o) {
+		o || (o = this._editOptions);
+		o = o.toLowerCase();
+		if (o.indexOf("edit") >= 0)
+			this._editEnabled = (o.indexOf("editdisable") < 0);
+	}
+	
+	proto._enableEdit = function(tf) {
+	  this._editEnabled = tf;
+	}
+	
+		
+	proto._myEditCallback = function(_jme_myEditCallback) {
+	
+		// direct callback from JSME applet
+		var data = this._applet.jmeFile().replace(/\:1/g,"");
+		//System.out.println("-----------------------------------------editcallback " + this._checkEnabled + " " + this._editEnabled + "\n" + data)
+		this._editMol = this._editMol.replace(/\:1/g,"");
+		if (this._checkEnabled && !this._editEnabled) {
+			// data is not null, and we don't allow editing
+			// data is null, and we don't allow clearing
+			//System.out.println("checking data=\n" + data + "\neditmol=\n" + this._editMol);
+	 		this.editEnabled && data && (this._editMol = data);
+			if (data && data != this._editMol) {
+				var me = this;
+				var m = me._editMol;
+			//System.out.println("failing data=\n" + data + "\neditmol=\n" + this._editMol);
+				setTimeout(
+				function(){
+				me._setCheck(false, "sorry");
+				(m ? me._applet.readMolecule(m) : me._applet.reset());
+				me._editMol = me._applet.jmeFile();
+				//System.out.println ("Sorry \n" + m + "\ndata=\n" + data);
+				},150);
+				return;
+			}
+		}
+		var me = this;
+		setTimeout(function() {me._setCheck(true, "callback")}, 10);
+		data && (this._editMol = data);
+		//System.out.println("continuing data=\n" + data + "\neditmol=\n" + this._editMol);
+		if (this._viewSet == null)
+			return;
+		var a = this._applet.molFile().split("V2000")[1];
+		var b = ("" + this._molData).split("V2000")[1];
+	//	if (!this.checkEnabled)
+		//	a = b = this._molData = this._applet.molFile();
+		if (a != b) {
+			//System.out.println("modified!");
+			this._molData = "<modified>";
+			//System.out.println("a=" + a + "b=" + b)
+			this._thisJmolModel = null;
+			this._applet.resetAtomColors(1);
+			this.__atomSelection = [];
+			return;
+		}
+		// not a structural change
+		var data = this._applet.jmeFile();
+
+		if (data.indexOf(":") < 0) {
+			this.__atomSelection = [];
+			this._applet.resetAtomColors(1);
+			Jmol.View.updateAtomPick(this, []);
+			return;
+		}
+
+		data = data.split(" ");
+		var n = parseInt(data[0]);
+		var iAtom = 0;
+		for (var i = 0; i < n; i++)
+			if (!this.__atomSelection[i + 1] && data[i*3 + 2].indexOf(":") >= 0) {
+				iAtom = i + 1;
+				break;
+			}
+		if (iAtom <= 0)
+			return;
+		var A = [];
+		var map = this._currentView.JME.atomMap;    
+		A.push(map == null ? iAtom : map.toJmol[iAtom]);
+		Jmol.View.updateAtomPick(this, A);
+		this._updateAtomPick(A);
+		if (this._atomPickCallback)
+			setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
+	}
+
+
+/*
+	proto._myEditCallback = function(_jme_myEditCallback) {
 		// direct callback from JSME applet
 		if (this._viewSet == null)
 			return;
@@ -272,9 +371,12 @@
 		this._updateAtomPick(A);
 		if (this._atomPickCallback)
 			setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
-	}
 
+}
+
+*/
 	proto._updateAtomPick = function(A, _jme_updateAtomPick) {
+		//this._setCheck(false, "updatetomcolors");
 		this._applet.resetAtomColors(1);
 		if (A.length == 0)
 			return;
@@ -287,8 +389,9 @@
 		 B.push(j);
 		 B.push(3);
 		}
+		//this._setCheck(false, "updatebackground");
 		this._applet.setAtomBackgroundColors(1, B.join(","));
-		System.out.println("JME setting atom colors " + B.join(","))
+		//System.out.println("JME setting atom colors " + B.join(","))
 		this.__atomSelection = C;
 	}
 
@@ -344,6 +447,7 @@
 
 	proto.__readMolData = function() {
 		if (!this._applet)return;
+		this._setCheck(false, "readmoldata");
 		if (this._molData) {
 			this._applet.readMolFile(this._molData);
 			this._molData = this._applet.molFile();
@@ -356,6 +460,7 @@
 			this._applet.reset();
 			this._molData = "<zapped>";
 		}
+		this._editMol = this._applet.jmeFile();
 	}
   
 	proto.__showContainer = function(tf, andShow) {
@@ -398,11 +503,13 @@
 
 	Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {
 		// JME data is a single line with no line ending
+		jme._setCheck(false, "readmolecule");
 		if (jmeOrMolData.indexOf("\n") < 0 && jmeOrMolData.indexOf("\r") < 0)
 			jme._applet.readMolecule(jmeOrMolData);
 		else 
 			jme._applet.readMolFile(jmeOrMolData);   
 	 jme._molData = jme._applet.molFile();
+	 jme._editMol = jme._applet.jmeFile();
 	}
 
 	Jmol.jmeGetFile = function(jme, asJME) {
