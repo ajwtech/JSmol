@@ -239,6 +239,8 @@
 		}
 		if (!molData && !v && (v = vJME) != null)
 			molData = vJME.data;
+			
+			
 		if (v && !molData) {
 			// complete Jmol or JME needs first
 			v.applet._loadModelFromView(view);
@@ -249,6 +251,7 @@
 			this._applet.runScriptNow("SELECT ID \"" + view.info.viewID + "\"");
 			return;
 		}
+		
 		// get the simulation into JSpecView
 		var script = this.__Info.preloadScript;
 		if (script == null) 
@@ -321,11 +324,11 @@
 		return "" + this._applet.getPropertyAsJavaObject(key).get(key)
 	}
 
-	proto.__loadModel = function(data, chemID) {
+	proto.__loadModel = function(data, chemID, viewID) {
 	// retun from asynchronous call in loadModelFromView 
 		if (data == null)
 			return;
-		Jmol.View.updateView(this, {chemID:chemID, data:data});
+		Jmol.View.updateView(this, {chemID:chemID, data:data, viewID:viewID});
 	}
 
 	proto._showStatus = function(msg, title) {

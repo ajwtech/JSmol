@@ -916,6 +916,7 @@ Jmol = (function(document) {
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 					Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
+					var data = Jmol._toBytes(evt.target.result);
 					if (file.name.indexOf(".jdx") >= 0)
 					Jmol.Cache.put("cache://" + file.name, data);
 					fileLoadThread.setData(file.name, data, appData);
