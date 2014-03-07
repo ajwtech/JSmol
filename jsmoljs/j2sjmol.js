@@ -33,6 +33,8 @@
 
 	 // J2S class changes:
 
+	 // BH 3/7/2014 9:05:06 AM Array.prototype.toString should not be aliased. -- http://sourceforge.net/p/jmol/bugs/560/ with Google Visualization
+
 	 // BH 1/30/2014 12:54:22 PM gave all field variables prefix underscore. This allows Google Closure Compiler to skip them.  
 	 // BH 12/3/2013 3:39:57 PM window["j2s.lib"].base implemented
 	 // BH 12/1/2013 5:34:21 AM removed ClazzLoaderProgressMonitor.initialize and all Clazz.event business; handled by Jmol.clearVars()
@@ -182,12 +184,16 @@
 
 	NullObject = function () {};
 
-	JavaObject = Object;
-
 	/* protected */
 	Clazz._supportsNativeObject = window["j2s.object.native"];
 
-	JavaObject = (Clazz._supportsNativeObject ? function () {} : Object);
+	if (Clazz._supportsNativeObject) {
+		JavaObject = function () {};
+		JavaObject.__CLASS_NAME__ = "Object";
+		JavaObject["getClass"] = function () { return JavaObject; }; 
+	} else {
+		JavaObject = Object;
+	}
 
 	ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = {};
 	Clazz.Console = {};
@@ -268,21 +274,9 @@
 			}
 		});
 
-
-		if (Clazz._supportsNativeObject) {
-			/* protected */
-			Clazz._extendedObjectMethods = [
-					"equals", "hashCode", "getClass", "clone", "finalize", "notify", "notifyAll", "wait", "to$tring", "toString"
-			];
-
-			for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
-				var p = Clazz._extendedObjectMethods[i];
-				Array.prototype[p] = proto[p];
-			}
-			JavaObject.__CLASS_NAME__ = "Object";
-			JavaObject["getClass"] = function () { return JavaObject; }; 
-		}
-
+		Clazz._extendedObjectMethods = [
+				"equals", "hashCode", "getClass", "clone", "finalize", "notify", "notifyAll", "wait", "to$tring", "toString"
+		];
 
 	})(JavaObject.prototype);
 

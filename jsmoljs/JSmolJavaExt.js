@@ -1,6 +1,7 @@
 // JSmolJavaExt.js
 // will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 3/7/2014 9:17:10 AM removing Array.toString; moving that code here from j2sJmol.js
 // BH 1/30/2014 9:04:25 AM adding Throwable.getStackTrace() as a STRING
 // BH 12/4/2013 9:20:44 PM fix for reassigning Date.prototype.toString()
 // BH 12/3/2013 11:43:10 AM bizarre Safari bug in reassigning Boolean (OK, I admit, we shouldn't have done that...) 
@@ -24,18 +25,16 @@
 
 Math.log10||(Math.log10=function(a){return Math.log(a)/2.302585092994046});
 
-var ntsp = Number.prototype.toString; // don't touch this one
-
-java.lang.Number=Number;
 if(Clazz._supportsNativeObject){
-	for(var i=0;i<Clazz._extendedObjectMethods.length;i++){
+	// Number and Array are special -- do not override prototype.toString -- "length - 2" here
+	for(var i=0;i<Clazz._extendedObjectMethods.length - 2;i++){
 		var p=Clazz._extendedObjectMethods[i];
-		Number.prototype[p]=JavaObject.prototype[p];
+		Array.prototype[p] = JavaObject.prototype[p];
+		Number.prototype[p] = JavaObject.prototype[p];
 	}
 }
 
-Number.prototype.toString = ntsp;
-
+java.lang.Number=Number;
 Number.__CLASS_NAME__="Number";
 Clazz.implementOf(Number,java.io.Serializable);
 Number.equals=Clazz._innerFunctions.equals;

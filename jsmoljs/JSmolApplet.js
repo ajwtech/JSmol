@@ -158,6 +158,7 @@
 	Applet._setCommonMethods = function(p) {
 		p._showInfo = proto._showInfo;	
 		p._search = proto._search;
+		p._getName = proto._getName;
 		p._readyCallback = proto._readyCallback;
 	}
 
@@ -333,9 +334,9 @@
 
 
 	proto._addScript = function(script) {      
-		this._readyScript || (this.
-		Script = ";");
-		this._readyScript += ";" + script;
+		this._readyScript || (this.readyScript = "");
+		this._readyScript && (this._readyScript += ";");
+		this._readyScript += script;
 		return true;
 	}
 

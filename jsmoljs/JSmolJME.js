@@ -63,17 +63,18 @@
 		this._isJava = false;//(Info.use && (Info.use.toUpperCase() != "HTML5"))
 		this._jmolType = "Jmol._JME" + (this._isJava ? "(JAVA)" : "(HTML5)");
 		this._viewType = "JME";
-		this._setCheck(true);
-		this._editEnabled = true;
-		this._editOptions =  Info.editOptions || "editEnabled;";
-		this._setEditOptions();
-		this._editMol = "";
 		if (checkOnly)
 			return this;
 		window[id] = this;
 		Jmol._setObject(this, id, Info);
 		this._options = Info.options;
 		(this._options.indexOf("autoez") < 0) && (this._options += ",autoez");
+		this._setCheck(true);
+		this._editEnabled = true;
+		this._editOptions =  Info.editOptions || "editEnabled;";
+		this._setEditOptions();
+		this._editMol = "";
+		this._highlightColor = Info.highlightColor || 1;
 		if (this._viewSet != null) {
 			this._options += ",star";
 		}
@@ -120,7 +121,8 @@
 			jarFile: "JME.jar",
 			use: "HTML5",
 			structureChangedCallback: null, // could be myFunction(); first parameter will be reference to this object
-			editOptions: "editEnabled",  
+			editOptions: "editEnabled",
+			highlightColor: 1,  // 1-6
 			options: "autoez"
 			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
 			// rbutton, norbutton - show / hide R button
@@ -387,7 +389,7 @@
 		for (var i = 0; i < A.length; i++) {
 		 C[j = (map == null ? A[i] : map.fromJmol[A[i]])] = 1; 
 		 B.push(j);
-		 B.push(3);
+		 B.push(this._highlightColor);
 		}
 		//this._setCheck(false, "updatebackground");
 		this._applet.setAtomBackgroundColors(1, B.join(","));

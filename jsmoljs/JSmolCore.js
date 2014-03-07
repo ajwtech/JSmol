@@ -218,6 +218,15 @@ Jmol = (function(document) {
 		return $.ajax(info);
 	}
 
+	Jmol._getNCIInfo = function(identifier, what, fCallback) {
+		if (what == "name")
+			what = "names"
+		url = "http://cactus.nci.nih.gov/chemical/structure/"+identifier +"/" + what; 
+		return Jmol._getFileData(url);
+	}
+	
+
+
 	Jmol.$appEvent = function(app, subdiv, evt, f) {
 		var o = Jmol.$(app, subdiv); 
 		o.off(evt) && f && o.on(evt, f);
@@ -576,6 +585,7 @@ Jmol = (function(document) {
 		return (Jmol.db._databasePrefixes.indexOf(query.substring(0, 1)) >= 0);
 	}
 
+	
 	Jmol._getDirectDatabaseCall = function(query, checkXhr2) {
 		if (checkXhr2 && !Jmol.featureDetection.supportsXhr2())
 			return query;
@@ -857,8 +867,8 @@ Jmol = (function(document) {
 		}
 		var xhr = Jmol.$ajax(info);
 		if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
-			// Safari
-			return xhr.response;
+			// Safari or error 			
+			return xhr.response || xhr.statusText;
 		} 
 		return xhr.responseText;
 	}

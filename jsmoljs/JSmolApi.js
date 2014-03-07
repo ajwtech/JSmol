@@ -423,4 +423,11 @@
 		applet._updateView(param1, param2);
 	}
 
+	Jmol.getChemicalInfo = function(appletOrIdentifier, what, fCallback) {
+		what || (what = "name");
+		if (typeof applet_or_Identifier != "string") 
+			appletOrIdentifier = appletOrIdentifier._getSmiles();
+		return Jmol._getNCIInfo(appletOrIdentifier, what, fCallback);
+	}
+	
 })(Jmol);
