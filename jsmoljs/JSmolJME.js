@@ -479,6 +479,38 @@
 		}
 	}
 
+	proto._script = function(script) {
+	 // a little scripting language for JME!
+	 // print 
+		var list = script.split(";");
+		for (i = 0; i < list.length; i++) {
+			switch (list[i].split(" ")[0].trim().toLowerCase()) {
+			case "print":
+				// only FF and Chrome right now. Maybe Safari
+				var svg = Jmol.$("#" + this._id + "div").find("svg")[0];
+				var canvas = document.createElement("canvas");
+				var ctx = canvas.getContext('2d');
+				ctx.clearRect( 0, 0, (canvas.width = svg.width.animVal.value - 5), (canvas.height = svg.height.animVal.value));
+				var data = "data:image/svg+xml;base64," + btoa(svg.outerHTML);
+				var img = new Image();
+				img.onload = function() {
+					$("body").append(img);
+					ctx.drawImage(img, 0, 0);
+					data = canvas.toDataURL("image/png");
+					var a = document.createElement("a");
+					a.href = data;
+					a.type = "image/png";	
+					a.download = "JME-image.png"
+						$("body").append(a);
+					a.click();
+					a.remove();		
+				}
+				img.src = data;
+				break;
+			}
+		}
+	}
+	
   proto._getSmiles = function(withStereoChemistry) {
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
 		s = s.replace(/H/g,"").replace(/\[\]/g,"").replace(/@\]/g,"@H]").replace(/\(\)/g,"");

@@ -4,8 +4,11 @@
 <title>JSpecView/JSME/nmrdb/NIH-Resolver Demo II</title>
 <meta charset="utf-8" />
 
-<script type="text/javascript" src="JSmol.min.js"></script>
 <!-- for debugging only
+<script type="text/javascript" src="JSmol.min.js"></script>
+-->
+<!-- for debugging only
+-->
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -16,6 +19,7 @@
 <script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolConsole.js"></script>
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
+<!-- for debugging only
 -->
 
 
@@ -24,6 +28,24 @@
 <script type="text/javascript" language="javascript" src="jsme/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
+
+
+
+Jmol.saveImage = function(app) {
+	// see: https://svgopen.org/2010/papers/62-From_SVG_to_Canvas_and_Back/index.html
+	// From SVG to Canvas and Back
+	// Samuli Kaipiainen University of Helsinki, Department of Computer Science samuli.kaipiainen@cs.helsinki.fi
+	// Matti Paksula University of Helsinki, Department of Computer Science matti.paksula@cs.helsinki.fi
+	switch (app._viewType) {
+	case "Jmol":
+		app._script("write PNGJ \"" + app._id + ".png\"");
+		break;
+	case "JSV":
+	case "JME":
+		app._script("print");
+		break;
+	}
+}
 
 function predictSpectrum(isJmol) {
   unhideJSV();
@@ -119,7 +141,12 @@ function nameIt() {
 <tr>
 <td valign="top">
 <table><tr><td>
-<table cellspacing=0 cellpadding=0 style="width:100%"><tr><td><label><input id="enableEdit" type="checkbox" onclick="jme._enableEdit(this.checked)">Enable Editing</label></td><td title="Draw a simple (known!) structure and click here for a list of names." style="text-align:right"><a href="javascript:nameIt()">Name It!</a></span></td></tr></table>
+<table cellspacing=0 cellpadding=0 style="width:100%">
+<tr><td>
+<label><input id="enableEdit" type="checkbox" onclick="jme._enableEdit(this.checked)">Enable Editing</label></td>
+<td title="Draw a simple (known!) structure and click here for a list of names." style="text-align:right"><a href="javascript:nameIt()">Name It!</a>
+<a href="javascript:Jmol.saveImage(jme)">Capture Image</a> 
+</span></td></tr></table>
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
 <script>
 Jmol.getJMEApplet("jme", JMEInfo);
@@ -138,7 +165,7 @@ insert mol file data here
 </td>
 </tr>
 <tr><td><span style="font-size:10pt">
- <a href="javascript:alert($('svg')[0].innerHTML)">SVG test</a> Enter an identifier such as a chemical name or SMILES string, or enable editing and draw a compound. 
+ Enter an identifier such as a chemical name or SMILES string, or enable editing and draw a compound. 
 Then click <input class="btn" type="button" onclick="predictSpectrum(0)" value="&#8594" />
 to see a <b>simulated</b> spectrum. Or load your own spectrum by dragging a file into the blue box or using 
 a right-click to access the pop-up menu.
