@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 3/8/2014 8:43:10 AM moves PubChem access to https
 // BH 3/4/2014 8:40:15 PM adds Jmol.Cache for JSV/Jmol sharing files
 // BH 2/10/2014 10:07:14 AM added Info.z and Info.zIndexBase
 // BH 2/9/2014 9:56:06 PM updated JSmolCore.js with option to extend Viewer with code PRIOR to loading Viewer classes
@@ -100,7 +101,7 @@ if (!Jmol._version)
 Jmol = (function(document) {
 	var z=Jmol.z || 9000;
 	var ref = document.location.href;
-	var http = (ref.indexOf("https") == 0 ? "https" : "http"); 
+	var httpProto = (ref.indexOf("https") == 0 ? "https://" : "http://"); 
 	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
 	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
 	var getZOrders = function(z) {
@@ -122,7 +123,8 @@ Jmol = (function(document) {
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_isFile: isFile,
-		_tracker: (http == "http" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
+		_httpProto: httpProto,
+		_tracker: (httpProto == "http://" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
 		/*  By setting the Jmol.allowedJmolSize[] variable in the webpage
 				before calling Jmol.getApplet(), limits for applet size can be overriden.
@@ -136,7 +138,7 @@ Jmol = (function(document) {
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
-		_ajaxTestSite: http + "://google.com",
+		_ajaxTestSite: httpProto + "google.com",
 		_getZOrders: getZOrders,
 		_z:getZOrders(z),
 		_debugCode: true,  // set false in process of minimization
@@ -212,7 +214,10 @@ Jmol = (function(document) {
 
 	Jmol.$ajax = function (info) {
 		Jmol._ajaxCall = info.url;
-		info.cache = (info.cache != "NO"); 
+		info.cache = (info.cache != "NO");
+		if (info.url.indexOf("http://pubchem.ncbi.nlm.nih") == 0)
+			info.url = "https://" + info.url.substring(7);
+			// fluke at pubchem --- requires https now from all pages 3/8/2014
 		// don't let jQuery add $_=... to URL unless we 
 		// use cache:"NO"; other packages might use $.ajaxSetup() to set this to cache:false 
 		return $.ajax(info);
@@ -852,6 +857,8 @@ Jmol = (function(document) {
 			fileName = "file://" + fileName.substring(5);      /// fixes IE problem
 		var isMyHost = (fileName.indexOf("://") < 0 || fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
 		var isDirectCall = Jmol._isDirectCall(fileName);
+		//if (fileName.indexOf("http://pubchem.ncbi.nlm.nih.gov/") == 0)isDirectCall = false;
+
 		var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
 		if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)
 			return Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
