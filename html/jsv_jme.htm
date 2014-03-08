@@ -4,11 +4,8 @@
 <title>JSpecView/JSME/nmrdb/NIH-Resolver Demo II</title>
 <meta charset="utf-8" />
 
-<!-- for debugging only
 <script type="text/javascript" src="JSmol.min.js"></script>
--->
 <!-- for debugging only
--->
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -19,33 +16,12 @@
 <script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolConsole.js"></script>
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
-<!-- for debugging only
 -->
-
-
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
 <script type="text/javascript" language="javascript" src="jsme/jsme/jsme.nocache.js"></script>
 
 <script type="text/javascript">
-
-
-
-Jmol.saveImage = function(app) {
-	// see: https://svgopen.org/2010/papers/62-From_SVG_to_Canvas_and_Back/index.html
-	// From SVG to Canvas and Back
-	// Samuli Kaipiainen University of Helsinki, Department of Computer Science samuli.kaipiainen@cs.helsinki.fi
-	// Matti Paksula University of Helsinki, Department of Computer Science matti.paksula@cs.helsinki.fi
-	switch (app._viewType) {
-	case "Jmol":
-		app._script("write PNGJ \"" + app._id + ".png\"");
-		break;
-	case "JSV":
-	case "JME":
-		app._script("print");
-		break;
-	}
-}
 
 function predictSpectrum(isJmol) {
   unhideJSV();

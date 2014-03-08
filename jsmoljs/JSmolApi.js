@@ -429,5 +429,23 @@
 			appletOrIdentifier = appletOrIdentifier._getSmiles();
 		return Jmol._getNCIInfo(appletOrIdentifier, what, fCallback);
 	}
-	
+
+	Jmol.saveImage = function(app) {
+		// see: https://svgopen.org/2010/papers/62-From_SVG_to_Canvas_and_Back/index.html
+		// From SVG to Canvas and Back
+		// Samuli Kaipiainen University of Helsinki, Department of Computer Science samuli.kaipiainen@cs.helsinki.fi
+		// Matti Paksula University of Helsinki, Department of Computer Science matti.paksula@cs.helsinki.fi
+		switch (app._viewType) {
+		case "Jmol":
+			app._script("write PNGJ \"" + app._id + ".png\"");
+			break;
+		case "JSV":
+			app._script("write PDF");
+			break;
+		case "JME":
+			app._script("print");
+			break;
+		}
+	}
+		
 })(Jmol);
