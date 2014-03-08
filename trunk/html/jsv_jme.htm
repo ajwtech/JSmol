@@ -4,9 +4,8 @@
 <title>JSpecView/JSME/nmrdb/NIH-Resolver Demo II</title>
 <meta charset="utf-8" />
 
-<!--
 <script type="text/javascript" src="JSmol.min.js"></script>
--->
+<!-- for debugging only
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script type="text/javascript" src="js/JSmoljQueryExt.js"></script>
 <script type="text/javascript" src="js/JSmolCore.js"></script>
@@ -16,9 +15,8 @@
 <script type="text/javascript" src="js/j2sjmol.js"></script>
 <script type="text/javascript" src="js/JSmol.js"></script>
 <script type="text/javascript" src="js/JSmolConsole.js"></script>
-
-
 <script type="text/javascript" src="js/JSmolMenu.js"></script>
+-->
 
 
 <script type="text/javascript" src="js/JSmolJSV.js"></script>
@@ -106,9 +104,14 @@ $(document).ready(function() {
 // $("#jsv_query").val("ethanol");
  $(".btn").css({width:"30px"});
  $("a").css({"text-decoration":"none"});
- 
+ $("#enableEdit").prop('checked', false);
 });
-        
+
+function nameIt() {
+	alert(Jmol.getChemicalInfo(jme, 'names'));
+}
+
+
 </script>
 </head>
 <body>
@@ -116,7 +119,7 @@ $(document).ready(function() {
 <tr>
 <td valign="top">
 <table><tr><td>
-<label><input type="checkbox" onclick="jme._enableEdit(this.checked)">Enable Editing</label> 
+<table cellspacing=0 cellpadding=0 style="width:100%"><tr><td><label><input id="enableEdit" type="checkbox" onclick="jme._enableEdit(this.checked)">Enable Editing</label></td><td title="Draw a simple (known!) structure and click here for a list of names." style="text-align:right"><a href="javascript:nameIt()">Name It!</a></span></td></tr></table>
 <div id="jmediv" style="position:relative;width:300px;height:300px;"></div>
 <script>
 Jmol.getJMEApplet("jme", JMEInfo);
@@ -135,7 +138,7 @@ insert mol file data here
 </td>
 </tr>
 <tr><td><span style="font-size:10pt">
-Enter an identifier such as a chemical name or SMILES string, or draw a compound. 
+ <a href="javascript:alert($('svg')[0].innerHTML)">SVG test</a> Enter an identifier such as a chemical name or SMILES string, or enable editing and draw a compound. 
 Then click <input class="btn" type="button" onclick="predictSpectrum(0)" value="&#8594" />
 to see a <b>simulated</b> spectrum. Or load your own spectrum by dragging a file into the blue box or using 
 a right-click to access the pop-up menu.
@@ -175,11 +178,15 @@ Jmol.getJSVApplet("jsv", JSVInfo)
  (drag to zoom; right-click for menu; note that OH and NH may not be shown)
 <div style="position:absolute;left:745px;top:510px;z-index:9005"><input type="button" value="print" onclick="Jmol.script(jsv, 'write PDF')"/></div>
 </div>
-<a href="javascript:Jmol.script(jsv, 'load data/nmr_assigned.jdx')">1H Example</a>
-<a href="javascript:Jmol.script(jsv, 'load data/c13nmr_assigned.jdx')">13C Example</a>
-<a href="javascript:Jmol.script(jsv, 'load data/tcb-1h.jdx')">TCB 1H Example</a>
-<a href="javascript:Jmol.script(jsv, 'load data/tcb-13c.jdx')">TCB 13C Example</a>
-
+<span style="font-size:10pt">
+<a href="http://www.rsc.org/learn-chemistry/collections/spectroscopy">RSC SpectraSchool</a> Assigned Spectra Examples: 
+<a href="javascript:Jmol.script(jsv, 'load data/nmr_assigned.jdx')">IPA-1HNMR</a>
+<a href="javascript:Jmol.script(jsv, 'load data/c13nmr_assigned.jdx')">IPA-13CNMR</a>
+<a href="javascript:Jmol.script(jsv, 'load data/tcb-1h.jdx')">TCB-1HNMR</a>
+<a href="javascript:Jmol.script(jsv, 'load data/tcb-13c.jdx')">TCB-13CNMR</a>
+<a href="javascript:Jmol.script(jsv, 'load data/ir_assigned.jdx')">carvone-IR</a>
+<a href="javascript:Jmol.script(jsv, 'load data/mass_assigned.jdx')">carvone-MS</a>
+</span>
 
 <div id="infodiv" style="text-align:center;display:none">
 This page illustrates how we can use JSME (the JavaScript Molecular Editor) 
