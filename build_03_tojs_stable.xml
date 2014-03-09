@@ -36,30 +36,75 @@
    	<copy todir="site/jsmol/j2s/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
+        <exclude name="util/*" />
+        <exclude name="viewer/**/*" />
+        <exclude name="modelset/**/*" />
+        <exclude name="modelsetbio/**/*" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JM" >
+      <fileset dir="bin/org/jmol/modelset">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JMB" >
+      <fileset dir="bin/org/jmol/modelsetbio">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JW" >
+      <fileset dir="bin/org/jmol/util">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
+      </fileset>
+    </copy>
+   	
+   	<copy todir="site/jsmol/j2s/JV" >
+      <fileset dir="bin/org/jmol/viewer">
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JSV" >
       <fileset dir="bin/jspecview">
-        <include name="**/*.js" />
-      </fileset>
-    </copy>
-   	
-   	<copy todir="site/jsmol/j2s/JU" >
-      <fileset dir="bin/javajs/util">
-        <include name="**/*.js" />
+        <include name="**/*" />
+        <exclude name="**/*.class" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/javajs" >
       <fileset dir="bin/javajs">
         <include name="**/*.js" />
-        <exclude name="**/util		/*.js" />
+        <exclude name="**/util/*.js" />
       </fileset>
     </copy>
 
+   	<copy todir="site/jsmol/j2s/JU" >
+      <fileset dir="bin/javajs/util">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
+   	
    	
   	<!-- modify class names -->		
+
+    <echo>abbreviating class names "org.jmol.modelsetbio" to "JMB"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
+
+    <echo>abbreviating class names "org.jmol.modelset" to "JM"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
+
+    <echo>abbreviating class names "org.jmol.util" to "JW"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
+
+    <echo>abbreviating class names "org.jmol.viewer" to "JV"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
 
     <echo>abbreviating class names "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
@@ -332,6 +377,7 @@
     		JU/P3i.js
     		JU/P4.js
     		JU/PT.js
+    		JU/Quat.js
     		JU/SB.js
     		JU/T3.js
     		JU/T3d.js
@@ -420,29 +466,29 @@
     		J/io/JmolBinary.js
     		J/io/LimitedLineReader.js
     		J/io/XmlUtil.js
-    		J/modelset/Atom.js
-    		J/modelset/AtomCollection.js
-    		J/modelset/AtomIteratorWithinModel.js
-    		J/modelset/AtomIteratorWithinModelSet.js
-    		J/modelset/Bond.js
-    		J/modelset/BondCollection.js
-    		J/modelset/BondIterator.js
-    		J/modelset/BondIteratorSelected.js
-    		J/modelset/BondSet.js
-    		J/modelset/Chain.js
-    		J/modelset/Group.js
-    		J/modelset/HBond.js
-    		J/modelset/LabelToken.js
-    		J/modelset/Measurement.js
-    		J/modelset/MeasurementData.js
-    		J/modelset/MeasurementPending.js
-    		J/modelset/Model.js
-    		J/modelset/ModelCollection.js
-    		J/modelset/ModelLoader.js
-    		J/modelset/ModelSet.js
-    		J/modelset/Orientation.js
-    		J/modelset/StateScript.js
-    		J/modelset/TickInfo.js
+    		JM/Atom.js
+    		JM/AtomCollection.js
+    		JM/AtomIteratorWithinModel.js
+    		JM/AtomIteratorWithinModelSet.js
+    		JM/Bond.js
+    		JM/BondCollection.js
+    		JM/BondIterator.js
+    		JM/BondIteratorSelected.js
+    		JM/BondSet.js
+    		JM/Chain.js
+    		JM/Group.js
+    		JM/HBond.js
+    		JM/LabelToken.js
+    		JM/Measurement.js
+    		JM/MeasurementData.js
+    		JM/MeasurementPending.js
+    		JM/Model.js
+    		JM/ModelCollection.js
+    		JM/ModelLoader.js
+    		JM/ModelSet.js
+    		JM/Orientation.js
+    		JM/StateScript.js
+    		JM/TickInfo.js
     		J/render/BallsRenderer.js
     		J/render/FontLineShapeRenderer.js
     		J/render/FrankRenderer.js
@@ -464,54 +510,54 @@
     		J/thread/HoverWatcherThread.js
     		J/thread/JmolThread.js
     		J/thread/TimeoutThread.js
-    		J/util/BoxInfo.js
-    		J/util/BSUtil.js
-    		J/util/C.js
-    		J/util/ColorEncoder.js
-    		J/util/CommandHistory.js
-    		J/util/DefaultLogger.js
-    		J/util/Elements.js
-    		J/util/Escape.js
-    		J/util/GData.js
-    		J/util/GenericApplet.js
-    		J/util/Geodesic.js
-    		J/util/Int2IntHash.js
-    		J/util/JmolEdge.js
-    		J/util/JmolMolecule.js
-    		J/util/JmolNode.js
-    		J/util/Logger.js
-    		J/util/LoggerInterface.js
-    		J/util/Measure.js
-    		J/util/MeshSurface.js
-    		J/util/Normix.js
-    		J/util/Parser.js
-    		J/util/Point3fi.js
-    		J/util/Quaternion.js
-    		J/util/Rectangle.js
-    		J/util/Rgb16.js
-    		J/util/Shader.js
-    		J/util/SimpleUnitCell.js
-    		J/util/TempArray.js
-    		J/util/Txt.js
-    		J/util/Vibration.js
-    		J/viewer/ActionManager.js
-    		J/viewer/AnimationManager.js
-    		J/viewer/binding/Binding.js
-    		J/viewer/binding/DragBinding.js
-    		J/viewer/binding/JmolBinding.js
-    		J/viewer/ColorManager.js
-    		J/viewer/FileManager.js
-    		J/Viewer/GlobalSettings.js
-    		J/viewer/JC.js
-    		J/viewer/ModelManager.js
-    		J/viewer/MouseState.js
-    		J/viewer/SelectionManager.js
-    		J/viewer/ShapeManager.js
-    		J/viewer/StateManager.js
-    		J/viewer/StatusManager.js
-    		J/viewer/TransformManager.js
-    		J/viewer/TransformManager11.js
-    		J/viewer/Viewer.js
+    		JW/BoxInfo.js
+    		JW/BSUtil.js
+    		JW/C.js
+    		JW/ColorEncoder.js
+    		JW/CommandHistory.js
+    		JW/DefaultLogger.js
+    		JW/Elements.js
+    		JW/Escape.js
+    		JW/GData.js
+    		JW/GenericApplet.js
+    		JW/Geodesic.js
+    		JW/Int2IntHash.js
+    		JW/Node.js
+    		JW/BNode.js
+    		JW/Edge.js
+    		JW/JmolMolecule.js
+    		JW/Logger.js
+    		JW/LoggerInterface.js
+    		JW/Measure.js
+    		JW/MeshSurface.js
+    		JW/Normix.js
+    		JW/Parser.js
+    		JW/Point3fi.js
+    		JW/Rectangle.js
+    		JW/Rgb16.js
+    		JW/Shader.js
+    		JW/SimpleUnitCell.js
+    		JW/TempArray.js
+    		JW/Txt.js
+    		JW/Vibration.js
+    		JV/ActionManager.js
+    		JV/AnimationManager.js
+    		JV/binding/Binding.js
+    		JV/binding/DragBinding.js
+    		JV/binding/JmolBinding.js
+    		JV/ColorManager.js
+    		JV/FileManager.js
+    		JV/GlobalSettings.js
+    		JV/JC.js
+    		JV/ModelManager.js
+    		JV/MouseState.js
+    		JV/SelectionManager.js
+    		JV/ShapeManager.js
+    		JV/StateManager.js
+    		JV/StatusManager.js
+    		JV/TransformManager.js
+    		JV/TransformManager11.js
+    		JV/Viewer.js
        		../js/core/corebottom.js
         	" />
     </antcall>
@@ -605,9 +651,9 @@
         	J/adapter/smarter/JmolJDXMOLParser.js
         	J/adapter/smarter/JmolJDXMOLReader.js
         	J/jsv/JDXMOLParser.js
-        	J/util/DefaultLogger.js
-        	J/util/Logger.js
-        	J/util/LoggerInterface.js
+        	JW/DefaultLogger.js
+        	JW/Logger.js
+        	JW/LoggerInterface.js
         	JSV/api/AnnotationData.js 
         	JSV/api/AppletFrame.js 
         	JSV/api/JSVAppInterface.js 
@@ -672,10 +718,10 @@
         	JSV/js2d/JsParameters.js
         	JSV/js2d/JsPlatform.js
         	JSV/js2d/JsMainPanel.js
-        	JSV/source/FileReader.js
         	JSV/source/JDXDataObject.js 
         	JSV/source/JDXDecompressor.js
         	JSV/source/JDXHeader.js 
+        	JSV/source/JDXReader.js
         	JSV/source/JDXSource.js
         	JSV/source/JDXSourceStreamTokenizer.js
         	JSV/tree/SimpleTree.js
@@ -772,6 +818,7 @@
 			JU/P3i.js
 			JU/P4.js
 			JU/PT.js
+			JU/Quat.js
 			JU/SB.js
 			JU/T3.js
 			JU/T3d.js
@@ -863,29 +910,29 @@
 			J/io/JmolBinary.js
 			J/io/LimitedLineReader.js
 			J/io/XmlUtil.js
-			J/modelset/Atom.js
-			J/modelset/AtomCollection.js
-			J/modelset/AtomIteratorWithinModel.js
-			J/modelset/AtomIteratorWithinModelSet.js
-			J/modelset/Bond.js
-			J/modelset/BondCollection.js
-			J/modelset/BondIterator.js
-			J/modelset/BondIteratorSelected.js
-			J/modelset/BondSet.js
-			J/modelset/Chain.js
-			J/modelset/Group.js
-			J/modelset/HBond.js
-			J/modelset/LabelToken.js
-			J/modelset/Measurement.js
-			J/modelset/MeasurementData.js
-			J/modelset/MeasurementPending.js
-			J/modelset/Model.js
-			J/modelset/ModelCollection.js
-			J/modelset/ModelLoader.js
-			J/modelset/ModelSet.js
-			J/modelset/Orientation.js
-			J/modelset/StateScript.js
-			J/modelset/TickInfo.js
+			JM/Atom.js
+			JM/AtomCollection.js
+			JM/AtomIteratorWithinModel.js
+			JM/AtomIteratorWithinModelSet.js
+			JM/Bond.js
+			JM/BondCollection.js
+			JM/BondIterator.js
+			JM/BondIteratorSelected.js
+			JM/BondSet.js
+			JM/Chain.js
+			JM/Group.js
+			JM/HBond.js
+			JM/LabelToken.js
+			JM/Measurement.js
+			JM/MeasurementData.js
+			JM/MeasurementPending.js
+			JM/Model.js
+			JM/ModelCollection.js
+			JM/ModelLoader.js
+			JM/ModelSet.js
+			JM/Orientation.js
+			JM/StateScript.js
+			JM/TickInfo.js
 			J/render/BallsRenderer.js
 			J/render/FontLineShapeRenderer.js
 			J/render/FrankRenderer.js
@@ -907,54 +954,54 @@
 			J/thread/HoverWatcherThread.js
 			J/thread/JmolThread.js
 			J/thread/TimeoutThread.js
-			J/util/BoxInfo.js
-			J/util/BSUtil.js
-			J/util/C.js
-			J/util/ColorEncoder.js
-			J/util/CommandHistory.js
-			J/util/DefaultLogger.js
-			J/util/Elements.js
-			J/util/Escape.js
-			J/util/GData.js
-			J/util/GenericApplet.js
-			J/util/Geodesic.js
-			J/util/Int2IntHash.js
-			J/util/JmolEdge.js
-			J/util/JmolMolecule.js
-			J/util/JmolNode.js
-			J/util/Logger.js
-			J/util/LoggerInterface.js
-			J/util/Measure.js
-			J/util/MeshSurface.js
-			J/util/Normix.js
-			J/util/Parser.js
-			J/util/Point3fi.js
-			J/util/Quaternion.js
-			J/util/Rectangle.js
-			J/util/Rgb16.js
-			J/util/Shader.js
-			J/util/SimpleUnitCell.js
-			J/util/TempArray.js
-			J/util/Txt.js
-			J/util/Vibration.js
-			J/viewer/ActionManager.js
-			J/viewer/AnimationManager.js
-			J/viewer/binding/Binding.js
-			J/viewer/binding/DragBinding.js
-			J/viewer/binding/JmolBinding.js
-			J/viewer/ColorManager.js
-			J/viewer/FileManager.js
-			J/Viewer/GlobalSettings.js
-			J/viewer/JC.js
-			J/viewer/ModelManager.js
-			J/viewer/MouseState.js
-			J/viewer/SelectionManager.js
-			J/viewer/ShapeManager.js
-			J/viewer/StateManager.js
-			J/viewer/StatusManager.js
-			J/viewer/TransformManager.js
-			J/viewer/TransformManager11.js
-			J/viewer/Viewer.js
+			JW/BoxInfo.js
+			JW/BSUtil.js
+			JW/C.js
+			JW/ColorEncoder.js
+			JW/CommandHistory.js
+			JW/DefaultLogger.js
+			JW/Elements.js
+			JW/Escape.js
+			JW/GData.js
+			JW/GenericApplet.js
+			JW/Geodesic.js
+			JW/Int2IntHash.js
+    		JW/Edge.js
+    		JW/Node.js
+    		JW/BNode.js
+			JW/JmolMolecule.js
+			JW/Logger.js
+			JW/LoggerInterface.js
+			JW/Measure.js
+			JW/MeshSurface.js
+			JW/Normix.js
+			JW/Parser.js
+			JW/Point3fi.js
+			JW/Rectangle.js
+			JW/Rgb16.js
+			JW/Shader.js
+			JW/SimpleUnitCell.js
+			JW/TempArray.js
+			JW/Txt.js
+			JW/Vibration.js
+			JV/ActionManager.js
+			JV/AnimationManager.js
+			JV/binding/Binding.js
+			JV/binding/DragBinding.js
+			JV/binding/JmolBinding.js
+			JV/ColorManager.js
+			JV/FileManager.js
+			JV/GlobalSettings.js
+			JV/JC.js
+			JV/ModelManager.js
+			JV/MouseState.js
+			JV/SelectionManager.js
+			JV/ShapeManager.js
+			JV/StateManager.js
+			JV/StatusManager.js
+			JV/TransformManager.js
+			JV/TransformManager11.js
+			JV/Viewer.js
 			JSV/api/AnnotationData.js 
 			JSV/api/AppletFrame.js 
 			JSV/api/JSVAppInterface.js 
@@ -1019,10 +1066,10 @@
 			JSV/js2d/JsParameters.js
 			JSV/js2d/JsPlatform.js
 			JSV/js2d/JsMainPanel.js
-			JSV/source/FileReader.js
 			JSV/source/JDXDataObject.js 
 			JSV/source/JDXDecompressor.js
 			JSV/source/JDXHeader.js 
+			JSV/source/JDXReader.js
 			JSV/source/JDXSource.js
 			JSV/source/JDXSourceStreamTokenizer.js
 			JSV/tree/SimpleTree.js
@@ -1119,14 +1166,20 @@
        		J/api/JmolScriptEvaluator.js
     		J/api/JmolScriptFunction.js
     		J/api/JmolParallelProcessor.js
+       		J/script/JmolCmdExtension.js
+       		J/script/JmolMathExtension.js
+       		J/script/JmolSmilesExtension.js
        		J/script/FileLoadThread.js
        		J/script/ScriptQueueThread.js
        		J/script/ScriptDelayThread.js
        		J/script/CommandWatcherThread.js
+            J/script/ScriptError.js
+            J/script/ScriptParam.js
+            J/script/ScriptExpr.js 
+            J/script/ScriptEval.js 
        		J/script/ScriptManager.js
-       		J/script/ScriptEvaluator.js
        		J/script/ScriptCompiler.js
-       		J/script/ScriptCompilationTokenParser.js
+       		J/script/ScriptTokenParser.js
        		J/script/ScriptFlowContext.js
        		J/script/ScriptFunction.js
        		J/script/ScriptInterruption.js
@@ -1135,18 +1188,24 @@
     </antcall>
 
     <antcall target="call-core">
-        <param name="call-core.name" value="script2" />
+        <param name="call-core.name" value="scriptcmd" />
         <param name="call-core.list" value="
-       		J/script/JmolScriptExtension.js
-       		J/scriptext/ScriptExt.js
+       		J/scriptext/CmdExt.js
+        	" />
+    </antcall>
+
+    <antcall target="call-core">
+        <param name="call-core.name" value="scriptmath" />
+        <param name="call-core.list" value="
+       		J/scriptext/MathExt.js
         	" />
     </antcall>
 
     <antcall target="call-core">
         <param name="call-core.name" value="state" />
         <param name="call-core.list" value="
-       		J/viewer/JmolStateCreator.js
-       		J/viewer/StateCreator.js
+       		JV/JmolStateCreator.js
+       		JV/StateCreator.js
         	" />
     </antcall>
 
@@ -1154,7 +1213,7 @@
         <param name="call-core.name" value="prop" />
         <param name="call-core.list" value="
        		J/api/JmolPropertyManager.js
-       		J/viewer/PropertyManager.js   	   	
+       		JV/PropertyManager.js   	   	
         	" />
     </antcall>
    	
@@ -1184,9 +1243,9 @@
         javajs/awt/BorderLayout.js
         javajs/awt/Component.js
         javajs/awt/Container.js
-    	javajs/awt/event/ActionEvent.js
-        javajs/awt/event/ItemEvent.js
         javajs/awt/LayoutManager.js
+        javajs/awt/event/ActionEvent.js
+        javajs/awt/event/ItemEvent.js
         javajs/swing/AbstractButton.js
         javajs/swing/AbstractTableModel.js
         javajs/swing/ButtonGroup.js
@@ -1293,24 +1352,24 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-       		J/modelsetbio/Resolver.js
-       		J/modelsetbio/Monomer.js
-       		J/modelsetbio/AlphaMonomer.js
-       		J/modelsetbio/ProteinStructure.js
-       		J/modelsetbio/Helix.js
-       		J/modelsetbio/Sheet.js
-       		J/modelsetbio/Turn.js
-       		J/modelsetbio/BioPolymer.js
-       		J/modelsetbio/AlphaPolymer.js
-       		J/modelsetbio/AminoMonomer.js
-       		J/modelsetbio/AminoPolymer.js
-       		J/modelsetbio/BioModel.js
-       		J/modelsetbio/CarbohydrateMonomer.js
-       		J/modelsetbio/CarbohydratePolymer.js
-       		J/modelsetbio/PhosphorusMonomer.js
-       		J/modelsetbio/NucleicMonomer.js
-       		J/modelsetbio/NucleicPolymer.js
-       		J/modelsetbio/PhosphorusPolymer.js
+       		JMB/Resolver.js
+       		JMB/Monomer.js
+       		JMB/AlphaMonomer.js
+       		JMB/ProteinStructure.js
+       		JMB/Helix.js
+       		JMB/Sheet.js
+       		JMB/Turn.js
+       		JMB/BioPolymer.js
+       		JMB/AlphaPolymer.js
+       		JMB/AminoMonomer.js
+       		JMB/AminoPolymer.js
+       		JMB/BioModel.js
+       		JMB/CarbohydrateMonomer.js
+       		JMB/CarbohydratePolymer.js
+       		JMB/PhosphorusMonomer.js
+       		JMB/NucleicMonomer.js
+       		JMB/NucleicPolymer.js
+       		JMB/PhosphorusPolymer.js
        		J/dssx/Bridge.js
         	J/api/DSSPInterface.js
        		J/dssx/DSSP.js        	
@@ -1409,8 +1468,8 @@
     <antcall target="call-core">
         <param name="call-core.name" value="text" />
         <param name="call-core.list" value="
-       		J/modelset/Object2d.js
-       		J/modelset/Text.js
+       		JM/Object2d.js
+       		JM/Text.js
        		J/shape/Object2dShape.js
        		J/shape/TextShape.js
        		J/shape/Labels.js
@@ -1440,6 +1499,7 @@
    		J/smiles/SmilesBond.js
    		J/smiles/SmilesMeasure.js
    		J/smiles/SmilesParser.js
+        J/scriptext/SmilesExt.js
     	" />
     </antcall>
 
