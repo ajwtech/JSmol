@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 3/8/2014 5:50:51 PM adds support for dataURI download in FF and Chrome
 // BH 3/8/2014 8:43:10 AM moves PubChem access to https
 // BH 3/4/2014 8:40:15 PM adds Jmol.Cache for JSV/Jmol sharing files
 // BH 2/10/2014 10:07:14 AM added Info.z and Info.zIndexBase
@@ -37,7 +38,7 @@
 // 11/21/2012 BH: restructuring of files as JS... instead of J...
 // 11/20/2012 BH: MSIE9 cannot do a synchronous file load cross-domain. See Jmol._getFileData
 // 11/4/2012 BH: RCSB REST format change "<structureId>" to "<dimStructure.structureId>"
-// 9/13/2012 BH: JmolCore.js chfanges for JSmol doAjax() method -- _3ata()
+// 9/13/2012 BH: JmolCore.js changes for JSmol doAjax() method -- _3ata()
 // 6/12/2012 BH: JmolApi.js: adds Jmol.setInfo(applet, info, isShown) -- third parameter optional 
 // 6/12/2012 BH: JmolApi.js: adds Jmol.getInfo(applet) 
 // 6/12/2012 BH: JmolApplet.js: Fixes for MSIE 8
@@ -100,10 +101,6 @@ self.Jmol || (Jmol = {});
 if (!Jmol._version)
 Jmol = (function(document) {
 	var z=Jmol.z || 9000;
-	var ref = document.location.href;
-	var httpProto = (ref.indexOf("https") == 0 ? "https://" : "http://"); 
-	var isFile = (document.location.protocol.toLowerCase().indexOf("file:") == 0);
-	var isLocal = (isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
 	var getZOrders = function(z) {
 		return {
 			header:z++,
@@ -122,9 +119,6 @@ Jmol = (function(document) {
 		_version: 'JSmol 14.1.11 Mar 1, 2014',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
-		_isFile: isFile,
-		_httpProto: httpProto,
-		_tracker: (httpProto == "http://" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1'),
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
 		/*  By setting the Jmol.allowedJmolSize[] variable in the webpage
 				before calling Jmol.getApplet(), limits for applet size can be overriden.
@@ -138,7 +132,6 @@ Jmol = (function(document) {
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
-		_ajaxTestSite: httpProto + "google.com",
 		_getZOrders: getZOrders,
 		_z:getZOrders(z),
 		_debugCode: true,  // set false in process of minimization
@@ -164,7 +157,6 @@ Jmol = (function(document) {
 		},
 		_debugAlert: false,
 		_document: document,
-		_isMsie: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		_isXHTML: false,
 		_lastAppletID: null,
 		_mousePageX: null,
@@ -175,6 +167,19 @@ Jmol = (function(document) {
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false
 	}
+	
+	var ref = document.location.href.toLowerCase();
+	j._httpProto = (ref.indexOf("https") == 0 ? "https://" : "http://"); 
+	j._isFile = (ref.indexOf("file:") == 0);
+	j._ajaxTestSite = j._httpProto + "google.com";
+	var isLocal = (j._isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
+	j._tracker = (j._httpProto == "http://" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1');
+	
+	j._isChrome = (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0);
+	j._isSafari = (!j._isChrome && navigator.userAgent.toLowerCase().indexOf("safari") >= 0);
+	j._isMsie = (window.ActiveXObject !== undefined);
+	j._useDataURI = !j._isSafari && !j._isMsie; // safari may be OK here -- untested
+
 	for(var i in Jmol) j[i] = Jmol[i]; // allows pre-definition
 	return j;
 })(document, Jmol);
@@ -219,7 +224,7 @@ Jmol = (function(document) {
 			info.url = "https://" + info.url.substring(7);
 			// fluke at pubchem --- requires https now from all pages 3/8/2014
 		// don't let jQuery add $_=... to URL unless we 
-		// use cache:"NO"; other packages might use $.ajaxSetup() to set this to cache:false 
+		// use cache:"NO"; other packages might use $.ajaxSetup() to set this to cache:false
 		return $.ajax(info);
 	}
 
@@ -640,27 +645,41 @@ Jmol = (function(document) {
 		return Jmol._contactServer(s, fSuccess, fError);
 	}
 
-	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
-		var isRaw = false;
+	Jmol._checkFileName = function(applet, fileName, isRawRet) {
 		if (Jmol._isDatabaseCall(fileName)) {
-			Jmol._setQueryTerm(applet, fileName);
+			if (isRawRet)
+				Jmol._setQueryTerm(applet, fileName);
 			fileName = Jmol._getDirectDatabaseCall(fileName, true);
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
 				fileName = Jmol._getDirectDatabaseCall(fileName, false);
-				isRaw = true;
+				alert("filename is " + fileName);
+				alert(isRawRet)
+				isRawRet && (isRawRet[0] = true);
 			}
 		}
+		return fileName;
+	}
+	
+	Jmol._checkCache = function(applet, fileName, fSuccess) {
 		if (applet._cacheFiles && Jmol._fileCache && !fileName.endsWith(".js")) {
 			var data = Jmol._fileCache[fileName];
 			if (data) {
 				System.out.println("using "  + data.length + " bytes of cached data for "  + fileName);
 				fSuccess(data);
+				return null;
 			} else {
 				fSuccess = function(fileName, data) { fSuccess(Jmol._fileCache[fileName] = data) };     
 			}
 		}
-		if (isRaw) {
+		return fSuccess;
+	}
+	
+	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
+		var isRaw = [];
+		fileName = Jmol._checkFileName(applet, fileName, isRaw);
+		fSuccess = Jmol._checkCache(applet, fileName, fSuccess);
+		if (isRaw[0]) {
 				Jmol._getRawDataFromServer("_",fileName,fSuccess,fError);   
 				return;
 		} 
@@ -841,7 +860,7 @@ Jmol = (function(document) {
 		return false;
 	}
 
-	Jmol._getFileData = function(fileName) {
+	Jmol._getFileData = function(fileName, fSuccess) {
 		// use host-server PHP relay if not from this host
 		var type = (Jmol._isBinaryUrl(fileName) ? "binary" : "text");
 		var isPDB = (fileName.indexOf("pdb.gz") >= 0 && fileName.indexOf("http://www.rcsb.org/pdb/files/") == 0);
@@ -860,10 +879,11 @@ Jmol = (function(document) {
 		//if (fileName.indexOf("http://pubchem.ncbi.nlm.nih.gov/") == 0)isDirectCall = false;
 
 		var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
-		if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)
-			return Jmol._getRawDataFromServer("_",fileName, null, null, asBase64, true);
+		if (!fSuccess || asBase64)
+			if (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)
+				return Jmol._getRawDataFromServer("_",fileName, fSuccess, fSuccess, asBase64, true);
 		fileName = fileName.replace(/file:\/\/\/\//, "file://"); // opera
-		var info = {dataType:type,async:false};
+		var info = {dataType:type,async:!!fSuccess};
 		if (isPost) {
 			info.type = "POST";
 			info.url = fileName.split("?POST?")[0]
@@ -872,9 +892,18 @@ Jmol = (function(document) {
 			info.type = "GET";
 			info.url = fileName;
 		}
-		var xhr = Jmol.$ajax(info);
+		if (fSuccess) {
+			info.success = function(data) { fSuccess(Jmol._xhrReturn(info.xhr))};
+			info.error = function() { fSuccess(xhr.statusText)};
+		}
+		info.xhr = Jmol.$ajax(info);
+		if (!fSuccess) 
+			return Jmol._xhrReturn(info.xhr);			
+	}
+	
+	Jmol._xhrReturn = function(xhr){
 		if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
-			// Safari or error 			
+			// Safari or error 
 			return xhr.response || xhr.statusText;
 		} 
 		return xhr.responseText;
@@ -918,6 +947,13 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
+		if (fileName.indexOf("?") != 0) {
+			// LOAD ASYNC command
+			fileName = Jmol._checkFileName(applet, fileName);
+			var fSuccess = function(data) {Jmol._setData(fileLoadThread, fileName, data, appData)};
+			fSuccess = Jmol._checkCache(applet, fileName, fSuccess);
+			return (fSuccess == null ? null : Jmol._getFileData(fileName, fSuccess));		
+		}
 		// we actually cannot suggest a fileName, I believe.
 		if (!Jmol.featureDetection.hasFileReader)
 				return fileLoadThread.setData("Local file reading is not enabled in your browser", null, appData);
@@ -933,10 +969,7 @@ Jmol = (function(document) {
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 					Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
-					var data = Jmol._toBytes(evt.target.result);
-					if (file.name.indexOf(".jdx") >= 0)
-					Jmol.Cache.put("cache://" + file.name, data);
-					fileLoadThread.setData(file.name, data, appData);
+					Jmol._setData(fileLoadThread, file.name, evt.target.result, appData);
 				}
 			};
 			reader.readAsArrayBuffer(file);
@@ -949,7 +982,18 @@ Jmol = (function(document) {
 		Jmol.$css(Jmol.$(applet, "localReader"), {display : "block"});
 	}
 
+  Jmol._setData = function(fileLoadThread, filename, data, appData) {
+  	data = Jmol._strToBytes(data);
+		if (filename.indexOf(".jdx") >= 0)
+			Jmol.Cache.put("cache://" + filename, data);
+		fileLoadThread.setData(filename, data, appData);
+  }
+  
 	Jmol._toBytes = function(data) {
+	//alert(typeof data + " " + data)
+	if (typeof data == "string") 
+		return data.getBytes();
+	// ArrayBuffer assumed here
 	data = new Uint8Array(data);
 	var b = Clazz.newByteArray(data.length, 0);
 		for (var i = data.length; --i >= 0;)
@@ -971,41 +1015,52 @@ Jmol = (function(document) {
 
 	// Jmol._localFileSaveFunction --  // do something local here; Maybe try the FileSave interface? return true if successful
 	 
-	Jmol._saveFile = function(filename, data) {
-		var url = Jmol._serverUrl;
+	Jmol._saveFile = function(filename, data, mimetype, encoding) {
 		if (Jmol._localFileSaveFunction && Jmol._localFileSaveFunction(filename, data))
 			return "OK";
-		if (!url)
-			return "Jmol._serverUrl is not defined";
-
+		var filename = filename.substring(filename.lastIndexOf("/") + 1);
+		mimetype || (mimetype = (filename.indexOf(".pdf") >= 0 ? "application/pdf" : filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : ""));
 		var isString = (typeof data == "string");
-		var encoding = (isString ? "" : "base64");
 		if (!isString)
 			data = (JU ? JU : J.util).Base64.getBase64(data).toString();
-		var filename = filename.substring(filename.lastIndexOf("/") + 1);
-		var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
-		// Asynchronous output - to be reflected as a download
-		if (!Jmol._formdiv) {
-				var sform = '<div id="__jsmolformdiv__" style="display:none">\
-					<form id="__jsmolform__" method="post" target="_blank" action="">\
-					<input name="call" value="saveFile"/>\
-					<input id="__jsmolmimetype__" name="mimetype" value=""/>\
-					<input id="__jsmolencoding__" name="encoding" value=""/>\
-					<input id="__jsmolfilename__" name="filename" value=""/>\
-					<textarea id="__jsmoldata__" name="data"></textarea>\
-					</form>\
-					</div>'
-			Jmol.$after("body", sform);
-			Jmol._formdiv = "__jsmolform__";
+		encoding || (encoding = (isString ? "" : "base64"));
+		var url = Jmol._serverUrl;
+		url && url.indexOf("your.server") >= 0 && (url = "");
+		if (Jmol._useDataURI || !url) {
+			// Asynchronous output generated using an anchor tag
+			encoding || (data = btoa(data));
+			var a = document.createElement("a");
+			a.href = "data:" + mimetype + ";base64," + data;
+			a.type = mimetype || (mimetype = "text/plain");	
+			a.download = filename;
+			a.target = "_blank";
+				$("body").append(a);
+			a.click();
+			a.remove();		
+		} else {
+		// Asynchronous outputto be reflected as a download
+			if (!Jmol._formdiv) {
+					var sform = '<div id="__jsmolformdiv__" style="display:none">\
+						<form id="__jsmolform__" method="post" target="_blank" action="">\
+						<input name="call" value="saveFile"/>\
+						<input id="__jsmolmimetype__" name="mimetype" value=""/>\
+						<input id="__jsmolencoding__" name="encoding" value=""/>\
+						<input id="__jsmolfilename__" name="filename" value=""/>\
+						<textarea id="__jsmoldata__" name="data"></textarea>\
+						</form>\
+						</div>'
+				Jmol.$after("body", sform);
+				Jmol._formdiv = "__jsmolform__";
+			}
+			Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
+			Jmol.$val("__jsmoldata__", data);
+			Jmol.$val("__jsmolfilename__", filename);
+			Jmol.$val("__jsmolmimetype__", mimetype);
+			Jmol.$val("__jsmolencoding__", encoding);
+			Jmol.$submit("__jsmolform__");
+			Jmol.$val("__jsmoldata__", "");
+			Jmol.$val("__jsmolfilename__", "");
 		}
-		Jmol.$attr(Jmol._formdiv, "action", url + "?" + (new Date()).getMilliseconds());
-		Jmol.$val("__jsmoldata__", data);
-		Jmol.$val("__jsmolfilename__", filename);
-		Jmol.$val("__jsmolmimetype__", mimetype);
-		Jmol.$val("__jsmolencoding__", encoding);
-		Jmol.$submit("__jsmolform__");
-		Jmol.$val("__jsmoldata__", "");
-		Jmol.$val("__jsmolfilename__", "");
 		return "OK";
 	}
 
@@ -1019,15 +1074,17 @@ Jmol = (function(document) {
 		// JU.SB is for Jmol 13.3+; J.util.SB is for Jmol.13.2
 		if (!isBinary)
 			return (self.JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
-		var b;
-	if (Clazz.instanceOf(data, self.ArrayBuffer))
-		return Jmol._toBytes(data);
-		b = Clazz.newByteArray(data.length, 0);
-		for (var i = data.length; --i >= 0;)
-			b[i] = data.charCodeAt(i) & 0xFF;
-		return b;
+		return Jmol._strToBytes(data);
 	};
 
+	Jmol._strToBytes = function(s) {
+		if (Clazz.instanceOf(s, self.ArrayBuffer))
+			return Jmol._toBytes(s);
+		var b = Clazz.newByteArray(s.length, 0);
+		for (var i = s.length; --i >= 0;)
+			b[i] = s.charCodeAt(i) & 0xFF;
+		return b;
+	}
 
 	////////////// applet start-up functionality //////////////
 
