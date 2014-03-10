@@ -42,14 +42,25 @@
 		$.ajaxTransport('binary', function(s) {
 			var callback;
 			return {
-				// synchronous binary transfer only
+				// synchronous or asynchronous binary transfer only
 				send: function( headers, complete ) {        
 					var xhr = s.xhr();
-					xhr.open( s.type, s.url, false ); // not asynchronous
-					if (xhr.hasOwnProperty("responseType")) {
-						xhr.responseType = "arraybuffer";
-					} else if (xhr.overrideMimeType) {
-						xhr.overrideMimeType('text/plain; charset=x-user-defined');
+					xhr.open( s.type, s.url, s.async );					
+					var isOK = false;
+					try {
+						if (xhr.hasOwnProperty("responseType")) {
+								xhr.responseType = "arraybuffer";
+								isOK = true;
+						} 
+					} catch(e) {
+					  //
+					}
+					try {
+						if (!isOK && xhr.overrideMimeType) {
+							xhr.overrideMimeType('text/plain; charset=x-user-defined');
+						}
+					} catch(e) {
+							//
 					}
 					if ( !s.crossDomain && !headers["X-Requested-With"] ) {
 						headers["X-Requested-With"] = "XMLHttpRequest";
@@ -119,7 +130,19 @@
 						complete( -1, e );
 					}
 					};
-					callback();          
+					
+					if ( !s.async ) {
+						// if we're in sync mode we fire the callback
+						callback();
+					} else if ( xhr.readyState === 4 ) {
+						// (IE6 & IE7) if it's in cache and has been
+						// retrieved directly we need to fire the callback
+						setTimeout( callback );
+					} else {
+						// Add to the list of active xhr callbacks
+						xhr.onreadystatechange = callback;
+					}
+					
 				},
 				abort: function() {}
 			};

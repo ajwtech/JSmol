@@ -1,5 +1,6 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
+// BH 3/10/2014 10:35:25 AM adds Jmol.saveImage(applet)
 // BH 1/22/2014 7:31:59 AM Jmol._Image removed -- just never found useful to have
 //    a server-side process with only a client-side image. Response time is too slow.
 // BH 12/13/2013 8:39:00 AM Jmol.evaulate is DEPRECATED -- use Jmol.evaluateVar
@@ -7,9 +8,9 @@
 // BH 9/3/2013 5:48:03 PM simplification of Jmol.getAppletHTML()
 // BH 5/16/2013 9:01:41 AM checkbox group fix
 // BH 1/15/2013 10:55:06 AM updated to default to HTML5 not JAVA
- 
-// along with this file you need at least JmolCore.js and JmolApplet.js. Also, if you want buttons, JmolControls.js
-// in that order. Then include JmolApi.js. 
+
+// This file is part of JSmol.min.js. 
+// If you do not use that, then along with this file you need several other files. See JSmolCore.js for details.
 
 // default settings are below. Generally you would do something like this:
 

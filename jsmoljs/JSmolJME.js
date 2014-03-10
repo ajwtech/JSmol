@@ -488,29 +488,22 @@
 			case "print":
 				// only FF and Chrome right now. Maybe Safari
 				var svg = Jmol.$("#" + this._id + "div").find("svg")[0];
-				var canvas = document.createElement("canvas");
-				var ctx = canvas.getContext('2d');
-				ctx.clearRect( 0, 0, (canvas.width = svg.width.animVal.value - 5), (canvas.height = svg.height.animVal.value));
-				var data = "data:image/svg+xml;base64," + btoa(svg.outerHTML);
 				var img = new Image();
+				var me = this;
 				img.onload = function() {
-					$("body").append(img);
+					var canvas = document.createElement("canvas");
+					var ctx = canvas.getContext('2d');
+					ctx.clearRect( 0, 0, (canvas.width = svg.width.animVal.value - 5), (canvas.height = svg.height.animVal.value));
 					ctx.drawImage(img, 0, 0);
-					data = canvas.toDataURL("image/png");
-					var a = document.createElement("a");
-					a.href = data;
-					a.type = "image/png";	
-					a.download = "JME-image.png"
-						$("body").append(a);
-					a.click();
-					a.remove();		
+					// throw out "data:image/png;base64," because we will reconstruct that if we need to, and we might not
+					Jmol._saveFile(me._id + ".png", canvas.toDataURL("image/png").substring(22), "image/png", "base64");
 				}
-				img.src = data;
+				img.src = "data:image/svg+xml;base64," + btoa(svg.outerHTML);
 				break;
 			}
 		}
 	}
-	
+
   proto._getSmiles = function(withStereoChemistry) {
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
 		s = s.replace(/H/g,"").replace(/\[\]/g,"").replace(/@\]/g,"@H]").replace(/\(\)/g,"");

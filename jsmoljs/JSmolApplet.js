@@ -562,13 +562,14 @@
 	}
 					 
 	proto._scriptLoad = function(file, script, _jmol_scriptLoad) {
-		var doscript = (this._isJava || !this._noscript || script.length > 1);
+		script || (script = "");
+		var doscript = (this._isJava || !this._noscript);
 		if (doscript)
 			this._script("zap;set echo middle center;echo Retrieving data...");
 		if (!this._isSigned || this._viewSet != null)
 			return false;
 		if (doscript)
-			this._script("load \"" + file + "\";" + script);
+			this._script("load async \"" + file + "\";" + script);
 		else
 			this._applet.viewer.openFile(file);
 		this._checkDeferred("");
