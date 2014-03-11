@@ -256,22 +256,26 @@ Jmol = (function(document) {
 		return (f ? $(what).bind(list, f) : $(what).unbind(list));
 	}
 
+	Jmol.$closest = function(what, d) {
+		return $(what).closest(d);
+	}
+	
 	Jmol.$get = function(what, i) {
 	return $(what).get(i);
 	}
  
 	// element id expected
 			 
-	Jmol.$getAncestorDiv = function(id, className) {
-		return $("div." + className + ":has(#" + id + ")")[0];
-	}
-
 	Jmol.$documentOff = function(evt, id) {
 		return $(document).off(evt, "#" + id);
 	}
 
 	Jmol.$documentOn = function(evt, id, f) {
 		return $(document).on(evt, "#" + id, f);
+	}
+
+	Jmol.$getAncestorDiv = function(id, className) {
+		return $("div." + className + ":has(#" + id + ")")[0];
 	}
 
 	Jmol.$supportsIECrossDomainScripting = function() {
@@ -288,6 +292,10 @@ Jmol = (function(document) {
 		return Jmol._$(id).css(style);
 	}
 	 
+	Jmol.$find = function(id, d) {
+		return Jmol._$(id).find(d);
+	}
+	
 	Jmol.$focus = function(id) {
 		return Jmol._$(id).focus();
 	}

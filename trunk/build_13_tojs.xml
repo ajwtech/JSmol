@@ -252,10 +252,11 @@
   	    <include name="**/*" />
   	  </fileset>
     </copy>
-	   	
+   	<echo>adding jsme event hooks</echo>
+  	<replace dir="site/jsmol/jsme/jsme" includes="*.html" token="var c=arguments,d;" value="var c=arguments,d;if(!(!c||!c[0]||!$wnd.Jmol||!(d=c[0].target)||!(d._applet||(d=$wnd.Jmol.$closest(d,'div')[0]))||!d||!d._applet||d._applet._allowEvent(c[0])))return;"/>
    	<echo>adding js subdirectory</echo>
    	<copy todir="site/jsmol/js">
-  	  <fileset dir="jsmoljs">
+  	  <fileset dir="jsmoljs">		
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
