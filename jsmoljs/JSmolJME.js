@@ -89,6 +89,7 @@
 		Jmol._setConsoleDiv(this._console);
 		this._isEmbedded = !Info.divId;
 		this._divId = Info.divId || this._id + "_jmeappletdiv";
+		this._xxdivId = Info.divId || this._id + "_jmeappletdiv";
  		if (Jmol._document) {
 			if (jmol) {
 				jmol._2dapplet = this;
@@ -137,7 +138,6 @@
 			// depict - the applet will appear without editing butons,this is used for structure display only
 		};		
 		Jmol._addDefaultInfo(Info, DefaultInfo);
-		if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
 		var applet = new Jmol._JMEApplet(id, Info, linkedApplet, checkOnly);
 		return (checkOnly ? applet : Jmol._registerApplet(id, applet));  
 	}
@@ -163,6 +163,7 @@
 				if (app._isEmbedded && app._linkedApplet._ready && app.__Info.visible)
 					app._linkedApplet.show2d(true);
 				Jmol._setReady(app);
+				app._setSVG();
 			}
 		}
 	}   
@@ -255,13 +256,49 @@
 			this._editEnabled = (o.indexOf("editdisable") < 0);
 	}
 	
-	proto._enableEdit = function(tf) {
-	  this._editEnabled = tf;
+	proto._setSVG = function() {
+		var me = this;
+		Jmol._$(this._divId).find("div").each(function(){this._applet = me})
+		this._starPressed = false;
 	}
 	
-		
-	proto._myEditCallback = function(_jme_myEditCallback) {
+	proto._enableEdit = function(tf) {
+	  this._editEnabled = tf;
+		this._setSVG();
+	}
 	
+	proto._allowEvent = function(e){
+	// called from within JSME code
+		var t;
+		if(!e || !(t = e.target) || "DIV rect line text polygon ellipse path".indexOf("" + t.tagName) < 0){
+			// cancel only these specific tags
+			return true;
+		}
+		
+		var doCheck = !this._editEnabled;		
+		var isKey = (e.type.indexOf("key") >= 0);
+		if  (doCheck && isKey) {
+			// cancel all keyboard events
+			return false;
+		}
+		if ("dblclick mousedown mouseup".indexOf(e.type) < 0) {
+			// cancel only these specific events
+			//console.log("passsing " + e.type + " for " + t.outerHTML);
+			return true;
+		}	
+		var x = (t.textContent ? t.x.baseVal[0].value : t.points ? t.animatedPoints[0].x : isKey || !t.x && !t.x1 ? 200 : (t.x || t.x1).baseVal.value);
+		var y = (t.textContent ? t.y.baseVal[0].value : t.points ? t.animatedPoints[0].y : isKey || !t.x && !t.x1 ? 200 : (t.y || t.y1).baseVal.value);
+		// when editing is disabled, only the star key and main-panel clicking will be allowed
+		var isStar = (x >= 100 && x < 124 && y < 24);
+		var isMain = (x > 25 && y > 50 || x == 0 && y == 0 && t.width.baseVal.value > 50 && t.height.baseVal.value > 50);
+		if (isStar || !doCheck && !isMain)
+			this._starPressed = isStar;
+	  document.title=isStar + " " + this._starPressed + " " + isMain + " " + x + " " + y + " " + e.target + " " + e.type
+	  xxt = t
+		return (isStar || !doCheck || isMain && this._starPressed);
+	}
+			
+	proto._myEditCallback = function(_jme_myEditCallback) {
 		// direct callback from JSME applet
 		var data = this._applet.jmeFile().replace(/\:1/g,"");
 		//System.out.println("-----------------------------------------editcallback " + this._checkEnabled + " " + this._editEnabled + "\n" + data)
@@ -270,7 +307,7 @@
 			// data is not null, and we don't allow editing
 			// data is null, and we don't allow clearing
 			//System.out.println("checking data=\n" + data + "\neditmol=\n" + this._editMol);
-	 		this.editEnabled && data && (this._editMol = data);
+	 		this._editEnabled && data && (this._editMol = data); /// was .editEnabled
 			if (data && data != this._editMol) {
 				var me = this;
 				var m = me._editMol;
@@ -279,6 +316,7 @@
 				function(){
 				me._setCheck(false, "sorry");
 				(m ? me._applet.readMolecule(m) : me._applet.reset());
+				me._setSVG();
 				me._editMol = me._applet.jmeFile();
 				//System.out.println ("Sorry \n" + m + "\ndata=\n" + data);
 				},150);
@@ -463,6 +501,7 @@
 			this._molData = "<zapped>";
 		}
 		this._editMol = this._applet.jmeFile();
+		this._setSVG();
 	}
   
 	proto.__showContainer = function(tf, andShow) {
@@ -487,7 +526,7 @@
 			switch (list[i].split(" ")[0].trim().toLowerCase()) {
 			case "print":
 				// only FF and Chrome right now. Maybe Safari
-				var svg = Jmol.$("#" + this._id + "div").find("svg")[0];
+				var svg = Jmol.$("#" + this._divId).find("svg")[0];
 				var img = new Image();
 				var me = this;
 				img.onload = function() {
@@ -537,6 +576,7 @@
 			jme._applet.readMolFile(jmeOrMolData);   
 	 jme._molData = jme._applet.molFile();
 	 jme._editMol = jme._applet.jmeFile();
+	 jme._setSVG();
 	}
 
 	Jmol.jmeGetFile = function(jme, asJME) {

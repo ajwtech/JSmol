@@ -1,10 +1,23 @@
 // JSmoljQueryExt.js
 // 9/2/2013 7:43:12 AM BH Opera/Safari fix for binary file reading
+// 3/11/2014 6:31:01 AM BH fix for MSIE not working locally
 
 ;(function($) {
 
-	// adds support for synchronous binary file reading
-	// incorporates jquery.iecors MSIE asynchronous cross-domain request
+	function createXHR(isMSIE) {
+		try {
+			return (isMSIE ? new window.ActiveXObject( "Microsoft.XMLHTTP" ) : new window.XMLHttpRequest());
+		} catch( e ) {}
+	}
+
+ $.ajaxSettings.xhr = (window.ActiveXObject === undefined ? createXHR :  
+	function() {
+		return (this.url == document.location || this.url.indexOf("http") == 0 || !this.isLocal) &&  // BH MSIE fix
+			/^(get|post|head|put|delete|options)$/i.test( this.type ) &&
+			createXHR() || createXHR(1);
+	});
+ 
+	// incorporates jquery.iecors MSIE asynchronous cross-domain request for MSIE < 10
 
 	$.extend( $.support, { iecors: !!window.XDomainRequest });
 
@@ -33,7 +46,11 @@
 				}
 			};
 		});
+
 	} else {
+
+	// adds support for synchronous binary file reading
+
 		$.ajaxSetup({
 			accepts: { binary: "text/plain; charset=x-user-defined" },
 			responseFields: { binary: "response" }
