@@ -1996,13 +1996,11 @@ View.updateFromSync = function(applet, msg) {
 	var view = View.__findView(applet._viewSet, {viewID:id});
 	if (view == null)
 		return Jmol.updateView(applet, msg); // JSV has been updated internally
-	if (view != applet._currentView) {
+	if (view != applet._currentView)
 		View.__setView(view, applet, true);
-	}
 	var A = ((id = Jmol._getAttr(msg, "atoms")) && msg.indexOf("selectionhalos ON") >= 0  
 		? eval("[" + id + "]") : []);
-	setTimeout(function(){View.updateAtomPick(applet, A)}, 10); 
-//	View.updateAtomPick(applet, A);
+	setTimeout(function(){if (applet._currentView == view)View.updateAtomPick(applet, A)}, 10);
 	if (Jmol.User.viewUpdatedCallback)
 		Jmol.User.viewUpdatedCallback(applet, "updateFromSync");
 }

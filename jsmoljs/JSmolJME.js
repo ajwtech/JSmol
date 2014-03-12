@@ -89,7 +89,6 @@
 		Jmol._setConsoleDiv(this._console);
 		this._isEmbedded = !Info.divId;
 		this._divId = Info.divId || this._id + "_jmeappletdiv";
-		this._xxdivId = Info.divId || this._id + "_jmeappletdiv";
  		if (Jmol._document) {
 			if (jmol) {
 				jmol._2dapplet = this;
@@ -213,6 +212,7 @@
 	}
 
 	proto.__loadModel = function(jmeOrMolData, chemID, viewID, _jme__loadModel) {
+		System.out.println("__loadModel")
 		if (jmeOrMolData == null)
 			return;
 		Jmol.jmeReadMolecule(this, jmeOrMolData);
@@ -246,7 +246,6 @@
 
 	proto._setCheck = function(b, why) {
 		this._checkEnabled = b;
-		//if (self.System)	System.out.println("setting enabled " + b + " "	+ why);
 	}
 		 
 	proto._setEditOptions = function(o) {
@@ -266,59 +265,58 @@
 	  this._editEnabled = tf;
 		this._setSVG();
 	}
+
+	Jmol._jmeHook = function(a, e) {
+		// called from within function C(a) in JSME code
+		// a is the function to send this event to using apply
+		var d;
+		return (!(d = e.target) || !(d._applet || (d = Jmol.$closest(d, 'div')[0])) || !d || !d._applet ? a : d._applet.__allowEvent(a, e));
+	}
 	
-	proto._allowEvent = function(e){
-	// called from within JSME code
+	proto.__allowEvent = function(a, e){
 		var t;
 		if(!e || !(t = e.target) || "DIV rect line text polygon ellipse path".indexOf("" + t.tagName) < 0){
 			// cancel only these specific tags
-			return true;
+			return a;
 		}
 		
-		var doCheck = !this._editEnabled;		
 		var isKey = (e.type.indexOf("key") >= 0);
-		if  (doCheck && isKey) {
+		if  (!this._editEnabled && isKey) {
 			// cancel all keyboard events
-			return false;
+			return 0;
 		}
 		if ("dblclick mousedown mouseup".indexOf(e.type) < 0) {
 			// cancel only these specific events
-			//console.log("passsing " + e.type + " for " + t.outerHTML);
-			return true;
+			return a;
 		}	
 		var x = (t.textContent ? t.x.baseVal[0].value : t.points ? t.animatedPoints[0].x : isKey || !t.x && !t.x1 ? 200 : (t.x || t.x1).baseVal.value);
 		var y = (t.textContent ? t.y.baseVal[0].value : t.points ? t.animatedPoints[0].y : isKey || !t.x && !t.x1 ? 200 : (t.y || t.y1).baseVal.value);
 		// when editing is disabled, only the star key and main-panel clicking will be allowed
-		var isStar = (x >= 100 && x < 124 && y < 24);
-		var isMain = (x > 25 && y > 50 || x == 0 && y == 0 && t.width.baseVal.value > 50 && t.height.baseVal.value > 50);
-		if (isStar || !doCheck && !isMain)
-			this._starPressed = isStar;
-	  document.title=isStar + " " + this._starPressed + " " + isMain + " " + x + " " + y + " " + e.target + " " + e.type
-	  xxt = t
-		return (isStar || !doCheck || isMain && this._starPressed);
+		var isStar = (x >= 100 && x < 124 && y < 24); // fifth icon from the left on top row
+		var isMain = (x > 25 && y > 50 || x == 0 && y == 0 && t.width.baseVal.value > 100 && t.height.baseVal.value > 100);
+		if (isStar || this._editEnabled && !isMain)
+			this._starPressed = isStar;			
+		var ok = (isStar || this._editEnabled || isMain && this._starPressed);
+		return (ok ? a : 0);
 	}
 			
 	proto._myEditCallback = function(_jme_myEditCallback) {
 		// direct callback from JSME applet
 		var data = this._applet.jmeFile().replace(/\:1/g,"");
-		//System.out.println("-----------------------------------------editcallback " + this._checkEnabled + " " + this._editEnabled + "\n" + data)
+		System.out.println("myEditCallback " + data)
 		this._editMol = this._editMol.replace(/\:1/g,"");
 		if (this._checkEnabled && !this._editEnabled) {
 			// data is not null, and we don't allow editing
 			// data is null, and we don't allow clearing
-			//System.out.println("checking data=\n" + data + "\neditmol=\n" + this._editMol);
 	 		this._editEnabled && data && (this._editMol = data); /// was .editEnabled
 			if (data && data != this._editMol) {
 				var me = this;
 				var m = me._editMol;
-			//System.out.println("failing data=\n" + data + "\neditmol=\n" + this._editMol);
-				setTimeout(
-				function(){
-				me._setCheck(false, "sorry");
-				(m ? me._applet.readMolecule(m) : me._applet.reset());
-				me._setSVG();
-				me._editMol = me._applet.jmeFile();
-				//System.out.println ("Sorry \n" + m + "\ndata=\n" + data);
+				setTimeout(function(){
+					me._setCheck(false, "sorry");
+					(m ? me._applet.readMolecule(m) : me._applet.reset());
+					me._setSVG();
+					me._editMol = me._applet.jmeFile();
 				},150);
 				return;
 			}
@@ -326,32 +324,19 @@
 		var me = this;
 		setTimeout(function() {me._setCheck(true, "callback")}, 10);
 		data && (this._editMol = data);
-		//System.out.println("continuing data=\n" + data + "\neditmol=\n" + this._editMol);
 		if (this._viewSet == null)
 			return;
 		var a = this._applet.molFile().split("V2000")[1];
 		var b = ("" + this._molData).split("V2000")[1];
-	//	if (!this.checkEnabled)
-		//	a = b = this._molData = this._applet.molFile();
 		if (a != b) {
-			//System.out.println("modified!");
 			this._molData = "<modified>";
-			//System.out.println("a=" + a + "b=" + b)
 			this._thisJmolModel = null;
-			this._applet.resetAtomColors(1);
-			this.__atomSelection = [];
-			return;
+			return this.__clearAtomSelection(false);
 		}
 		// not a structural change
 		var data = this._applet.jmeFile();
-
-		if (data.indexOf(":") < 0) {
-			this.__atomSelection = [];
-			this._applet.resetAtomColors(1);
-			Jmol.View.updateAtomPick(this, []);
-			return;
-		}
-
+		if (data.indexOf(":") < 0) 
+			return this.__clearAtomSelection(true);
 		data = data.split(" ");
 		var n = parseInt(data[0]);
 		var iAtom = 0;
@@ -371,52 +356,15 @@
 			setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
 	}
 
-
-/*
-	proto._myEditCallback = function(_jme_myEditCallback) {
-		// direct callback from JSME applet
-		if (this._viewSet == null)
-			return;
-		if (this._applet.molFile().split("V2000")[1] != ("" + this._molData).split("V2000")[1]) {
-			this._molData = "<modified>";
-			this._thisJmolModel = null;
-			this._applet.resetAtomColors(1);
-			this.__atomSelection = [];
-			return;
-		}
-		// not a structural change
-		var data = this._applet.jmeFile();
-
-		if (data.indexOf(":") < 0) {
-			this.__atomSelection = [];
-			this._applet.resetAtomColors(1);
+	proto.__clearAtomSelection = function(andUpdate) {
+		System.out.println("clearAtomSelection");
+		this.__atomSelection = [];
+		this._applet.resetAtomColors(1);
+		if (andUpdate)
 			Jmol.View.updateAtomPick(this, []);
-			return;
-		}
+	}	
 
-		data = data.split(" ");
-		var n = parseInt(data[0]);
-		var iAtom = 0;
-		for (var i = 0; i < n; i++)
-			if (!this.__atomSelection[i + 1] && data[i*3 + 2].indexOf(":") >= 0) {
-				iAtom = i + 1;
-				break;
-			}
-		if (iAtom <= 0)
-			return;
-		var A = [];
-		var map = this._currentView.JME.atomMap;    
-		A.push(map == null ? iAtom : map.toJmol[iAtom]);
-		Jmol.View.updateAtomPick(this, A);
-		this._updateAtomPick(A);
-		if (this._atomPickCallback)
-			setTimeout(this._atomPickCallback+"([" + iAtom + "])",10);    
-
-}
-
-*/
 	proto._updateAtomPick = function(A, _jme_updateAtomPick) {
-		//this._setCheck(false, "updatetomcolors");
 		this._applet.resetAtomColors(1);
 		if (A.length == 0)
 			return;
@@ -429,9 +377,8 @@
 		 B.push(j);
 		 B.push(this._highlightColor);
 		}
-		//this._setCheck(false, "updatebackground");
+		System.out.println("JME setting atom colors " + B.join(","))
 		this._applet.setAtomBackgroundColors(1, B.join(","));
-		//System.out.println("JME setting atom colors " + B.join(","))
 		this.__atomSelection = C;
 	}
 
