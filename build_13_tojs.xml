@@ -685,7 +685,7 @@
         	JSV/common/Integral.js
         	JSV/common/IntegralComparator.js
         	JSV/common/IntegralData.js
-        	JSV/common/JDXSpectrum.js 
+        	JSV/common/Spectrum.js 
         	JSV/common/JSVersion.js
         	JSV/common/JSVFileManager.js
         	JSV/common/JSViewer.js
@@ -1033,7 +1033,7 @@
 			JSV/common/Integral.js
 			JSV/common/IntegralComparator.js
 			JSV/common/IntegralData.js
-			JSV/common/JDXSpectrum.js 
+			JSV/common/Spectrum.js 
 			JSV/common/JSVersion.js
 			JSV/common/JSVFileManager.js
 			JSV/common/JSViewer.js
