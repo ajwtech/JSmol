@@ -9,7 +9,7 @@
 	//   
 	// 1. an array with null elements cannot be typed and must be avoided.
 	// 2. instances of Java "instance of" involving arrays must be found and convered to calls to Clazz.isA...
-	// 3. new int[n][] must not be used. Use instead J.util.ArrayUtil.newInt2(n);
+	// 3. new int[n][] must not be used. Use instead JU.AU.newInt2(n);
 	// 4. new int[] { 1, 2, 3 } has problems because it creates simply [ ] and not IntArray32
 	//   
 	//   numbers:
@@ -25,7 +25,13 @@
 	//
 	// 1. j2sRequireImport xxxx is needed if xxxx is a method used in a static function
 	// 2. URL.getContent() is not supported. Use other means based on URL.toString()
-	// 3. 
+	// 3. It is critical for performance to avoid any significant amount of function overloading.
+	//    In particular, methods such as xxx(int a, int b) and xxx(float a, int b) MUST be renamed,
+	//    because JavaScript only has Number, and there is absolutely no way to tell these apart.
+	//    It's probably bad Java programming, anyway.
+	// 4. Calls to super(...) can almost always be avoided. These trigger the SAEM
+	//    (searchAndExecuteMethod) call, and it is very destructive to performance.
+	//    Just find another way to do it.   
 
 	 // NOTES by Bob Hanson: 
 	 

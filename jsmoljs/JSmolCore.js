@@ -1919,8 +1919,8 @@ Jmol._track = function(applet) {
 
 Jmol.getProfile = function() {
 	window["j2s.doProfile"] = true;
-	if (self.Clazz) {
-		Clazz._profile = self.JSON && {};
+	if (self.Clazz && self.JSON) {
+		Clazz._profile || (Clazz._profile = {});
 		return Clazz.getProfile();
 	}
 }
