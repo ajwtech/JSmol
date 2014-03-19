@@ -612,25 +612,26 @@ Jmol = (function(document) {
 		var call = Jmol.db._DirectDatabaseCalls[query.substring(0,pt)];
 		if (!call)
 			call = Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
-		if (call && db == ":") {
-			var ql = query.toLowerCase();
-			if (!isNaN(parseInt(query.substring(1)))) {
-				query = ":cid/" + query.substring(1);
-			} else if (ql.indexOf(":smiles:") == 0) {
-				call += "?POST?smiles=" + query.substring(8);
-				query = ":smiles";
-			} else if (ql.indexOf(":cid:") == 0) {
-				query = ":cid/" + query.substring(5);
-			} else {
-				if (ql.indexOf(":name:") == 0)
-					query = query.substring(5);
-				else if (ql.indexOf(":cas:") == 0)
-					query = query.substring(4);
-				query = ":name/" + encodeURIComponent(query.substring(1));
-			}
-		}
 		if (call) {
-			query = encodeURIComponent(query.substring(pt));		
+			if (db == ":") {
+				var ql = query.toLowerCase();
+				if (!isNaN(parseInt(query.substring(1)))) {
+					query = "cid/" + query.substring(1);
+				} else if (ql.indexOf(":smiles:") == 0) {
+					call += "?POST?smiles=" + query.substring(8);
+					query = "smiles";
+				} else if (ql.indexOf(":cid:") == 0) {
+					query = "cid/" + query.substring(5);
+				} else {
+					if (ql.indexOf(":name:") == 0)
+						query = query.substring(5);
+					else if (ql.indexOf(":cas:") == 0)
+						query = query.substring(4);
+					query = "name/" + encodeURIComponent(query.substring(pt));
+				}
+			} else {
+				query = encodeURIComponent(query.substring(pt));		
+			}
 			if (call.indexOf("FILENCI") >= 0) {
 				query = query.replace(/\%2F/g, "/");				
 				query = call.replace(/\%FILENCI/, query);

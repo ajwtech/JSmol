@@ -4179,8 +4179,9 @@
 	 		try {
 				eval(js);
 			} catch (e) {
-			alert(e)
-				Clazz.alert ("[Java2Script] Script error: " + e.message);
+				var s = "[Java2Script] Script error: " + e.message + " \n" + file + "\n\n" + js;
+				alert(s)
+				Clazz.alert (s);
 				throw e;
 			}
 			ClazzLoader.scriptLoaded (file);
