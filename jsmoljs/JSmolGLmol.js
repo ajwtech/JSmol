@@ -68,7 +68,7 @@ GLmol.extendApplet = function(applet) {
 
 	applet._refresh = function() {
 	
-		// Called by org.jmol.viewer.Viewer.refresh
+		// Called by org.jmol.Viewer.viewer.refresh
 			
 		// pixelsPerAngstrom can be used to calculate the new camera position.
 		// modelRadius is half the distance across the screen. 

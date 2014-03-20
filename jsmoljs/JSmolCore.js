@@ -1805,7 +1805,7 @@ Swing.setDialog = function(dialog) {
 		var jd = new Swing.JSDialog();
 		container = Jmol._$(id);
 		dialog.container = container;
-		jd.applet = dialog.manager.viewer.applet;
+		jd.applet = dialog.manager.vwr.applet;
 		jd.setContainer(container);
 		jd.dialog = dialog;
 		jd.setPosition();  
@@ -1867,7 +1867,7 @@ Swing.click = function(element, keyEvent) {
 }
 
 Swing.setFront = function(dialog) {
-  var applet = dialog.manager.viewer.applet;
+  var applet = dialog.manager.vwr.applet;
 	if (dialog.zIndex != Jmol._getZ(applet, "dialog"))
 	 dialog.zIndex = Jmol._incrZ(applet, "dialog");
 	dialog.container && ((dialog.container[0] || dialog.container).style.zIndex = dialog.zIndex);
