@@ -465,6 +465,7 @@
     		J/io/CifDataReader.js
     		J/io/FileReader.js
     		J/io/JmolBinary.js
+    		J/io/Binary.js
     		J/io/LimitedLineReader.js
     		J/io/XmlUtil.js
     		JM/Atom.js
@@ -524,6 +525,7 @@
     		JW/Geodesic.js
     		JW/Int2IntHash.js
     		JW/Node.js
+    		JW/BArray.js
     		JW/BNode.js
     		JW/Edge.js
     		JW/JmolMolecule.js
@@ -908,7 +910,10 @@
 			J/i18n/Resource.js
 			J/io/CifDataReader.js
 			J/io/FileReader.js
+	        J/io/JmolZipTools.js
+	        J/io/JmolZipUtilities.js
 			J/io/JmolBinary.js
+			J/io/Binary.js
 			J/io/LimitedLineReader.js
 			J/io/XmlUtil.js
 			JM/Atom.js
@@ -969,6 +974,7 @@
 			JW/Int2IntHash.js
     		JW/Edge.js
     		JW/Node.js
+    		JW/BArray.js
     		JW/BNode.js
 			JW/JmolMolecule.js
 			JW/Logger.js
@@ -1316,8 +1322,9 @@
     <antcall target="call-core">
         <param name="call-core.name" value="zip" />
         <param name="call-core.list" value="
-       		J/api/JmolZipUtility.js
+       		J/io2/JmolUtil.js
        		J/io2/ZipUtil.js
+       		J/io2/ZipTools.js
        		java/io/FileInputStream.js
        		JZ/Checksum.js
        		JZ/CRC32.js
@@ -1343,6 +1350,7 @@
        		java/util/zip/ZipConstants64.js
        		java/util/zip/ZipInputStream.js
        		java/io/PushbackInputStream.js
+        	J/io2/ZipTools.js
        		J/io2/JmolZipInputStream.js
         	" />
     </antcall>
