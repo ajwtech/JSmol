@@ -385,9 +385,10 @@
         javajs/api/GenericZipTools.js
     	javajs/api/Interface.js
     	JU/BArray.js
-    	JU/Rdr.js
+		JU.LimitedLineReader.js
     	JU/Matrix.js
     	JU/Quat.js
+    	JU/Rdr.js
     	JU/T3d.js
     	JU/V3d.js
     	J/adapter/readers/molxyz/MolReader.js
@@ -468,7 +469,6 @@
 		J/io/FileReader.js
 		J/io/JmolBinary.js
     	J/io/JmolZipUtilities.js
-		J/io/LimitedLineReader.js
 		JM/Atom.js
 		JM/AtomCollection.js
 		JM/AtomIteratorWithinModel.js
