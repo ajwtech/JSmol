@@ -471,6 +471,30 @@
 		J/i18n/Resource.js
 		J/io/FileReader.js
 		J/io/JmolBinary.js
+		J/render/BallsRenderer.js
+		J/render/FontLineShapeRenderer.js
+		J/render/FrankRenderer.js
+		J/render/RepaintManager.js
+		J/render/ShapeRenderer.js
+		J/render/SticksRenderer.js
+		J/script/ContextToken.js
+		J/script/ScriptContext.js
+		J/script/ScriptException.js
+    	J/script/ScriptParallelProcessor.js
+    	J/script/ScriptProcess.js
+    	J/script/ScriptProcessRunnable.js
+		J/script/SV.js
+		J/script/T.js
+		J/shape/AtomShape.js
+		J/shape/Balls.js
+		J/shape/FontLineShape.js
+		J/shape/FontShape.js
+		J/shape/Frank.js
+		J/shape/Shape.js
+		J/shape/Sticks.js
+		J/thread/HoverWatcherThread.js
+		J/thread/JmolThread.js
+		J/thread/TimeoutThread.js
 		JM/Atom.js
 		JM/AtomCollection.js
 		JM/AtomIteratorWithinModel.js
@@ -494,27 +518,6 @@
 		JM/Orientation.js
 		JM/StateScript.js
 		JM/TickInfo.js
-		J/render/BallsRenderer.js
-		J/render/FontLineShapeRenderer.js
-		J/render/FrankRenderer.js
-		J/render/RepaintManager.js
-		J/render/ShapeRenderer.js
-		J/render/SticksRenderer.js
-		J/script/ContextToken.js
-		J/script/ScriptContext.js
-		J/script/ScriptException.js
-		J/script/SV.js
-		J/script/T.js
-		J/shape/AtomShape.js
-		J/shape/Balls.js
-		J/shape/FontLineShape.js
-		J/shape/FontShape.js
-		J/shape/Frank.js
-		J/shape/Shape.js
-		J/shape/Sticks.js
-		J/thread/HoverWatcherThread.js
-		J/thread/JmolThread.js
-		J/thread/TimeoutThread.js
 		JW/BoxInfo.js
 		JW/BSUtil.js
 		JW/C.js
