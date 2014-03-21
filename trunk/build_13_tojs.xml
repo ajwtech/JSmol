@@ -385,7 +385,7 @@
         javajs/api/GenericZipTools.js
     	javajs/api/Interface.js
     	JU/BArray.js
-    	JU/Binary.js
+    	JU/Rdr.js
     	JU/Matrix.js
     	JU/Quat.js
     	JU/T3d.js
@@ -465,7 +465,6 @@
 		J/i18n/GT.js
 		J/i18n/Language.js
 		J/i18n/Resource.js
-		J/io/CifDataReader.js
 		J/io/FileReader.js
 		J/io/JmolBinary.js
     	J/io/JmolZipUtilities.js
