@@ -444,15 +444,15 @@
 		J/bspt/Element.js
 		J/bspt/Leaf.js
 		J/bspt/Node.js
-		J/constant/EnumAnimationMode.js
-		J/constant/EnumAxesMode.js
-		J/constant/EnumCallback.js
-		J/constant/EnumFileStatus.js
-		J/constant/EnumPalette.js
-		J/constant/EnumQuantumShell.js
-		J/constant/EnumStereoMode.js
-		J/constant/EnumStructure.js
-		J/constant/EnumVdw.js
+		J/c/ANIM.js
+		J/c/AXES.js
+		J/c/CBK.js
+		J/c/FIL.js
+		J/c/PAL.js
+		J/c/QS.js
+		J/c/STER.js
+		J/c/STR.js
+		J/c/VDW.js
 		J/g3d/CylinderRenderer.js
 		J/g3d/G3DRenderer.js
 		J/g3d/Graphics3D.js
