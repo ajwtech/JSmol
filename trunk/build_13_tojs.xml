@@ -806,7 +806,7 @@
        		JZ/InfTree.js
        		JZ/InfBlocks.js
        		JZ/InfCodes.js
-       		J/io2/JmolUtil.js
+       		J/io/JmolUtil.js
         	" />
     </antcall>
    	
