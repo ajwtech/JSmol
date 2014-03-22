@@ -123,12 +123,12 @@ Swing.showMenu = function(menu, x, y) {
 	menu.visible = true;
 	menu.timestamp = System.currentTimeMillis();
 	menu.dragBind(true);
-	//menu.container.unbind('clickoutjsmol');
-	//menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
-	 // System.out.println("clickoutjsmol"+ menu.id)
-	//	if (System.currentTimeMillis() - menu.timestamp > 100)
-	//	  Swing.hideMenu(menu);
-	//});
+	menu.container.unbind('clickoutjsmol');
+	menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
+	  //System.out.println("clickoutjsmol"+ menu.id)
+		if (System.currentTimeMillis() - menu.timestamp > 100)
+		  Swing.hideMenu(menu);
+	});
 	menu.container.bind("contextmenu", function() {return false;})
 }
 
