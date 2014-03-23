@@ -94,33 +94,33 @@
    	
   	<!-- modify class names -->		
 
-    <echo>abbreviating class names "org.jmol.modelsetbio" to "JMB"</echo>
+    <echo>abbreviating class name "org.jmol.modelsetbio" to "JMB"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
 
-    <echo>abbreviating class names "org.jmol.modelset" to "JM"</echo>
+    <echo>abbreviating class name "org.jmol.modelset" to "JM"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
 
-    <echo>abbreviating class names "org.jmol.util" to "JW"</echo>
+    <echo>abbreviating class name "org.jmol.util" to "JW"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
 
-    <echo>abbreviating class names "org.jmol.viewer" to "JV"</echo>
+    <echo>abbreviating class name "org.jmol.viewer" to "JV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
 
-    <echo>abbreviating class names "org.jmol" to "J"</echo>
+    <echo>abbreviating class name "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 
-    <echo>abbreviating class names "javajs.util" to "JU"</echo>
+    <echo>abbreviating class name "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
 
-  	<echo>abbreviating class names "com.jcraft.jzlib" to "JZ"</echo>
+  	<echo>abbreviating class name "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
    	
-  	<echo>modifying class names "jspecview" to "JSV"</echo>
+  	<echo>abbreviating class name "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
-    <echo>abbreviating method names "Clazz.defineMethod " to "$_M"</echo>
+    <echo>abbreviating method name "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
-    <echo>abbreviating method names "Clazz.overrideMethod " to "$_V"</echo>
+    <echo>abbreviating method name "Clazz.overrideMethod " to "$_V"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
    	  	
    	  	
