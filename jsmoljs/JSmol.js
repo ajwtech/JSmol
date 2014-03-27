@@ -316,7 +316,7 @@
 			Jmol._setJmolParams(viewerOptions, applet.__Info, true);
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
 			viewerOptions.put("applet", true);
-			viewerOptions.put("name", applet._id + "_object");
+			viewerOptions.put("name", applet._id);// + "_object");
 			viewerOptions.put("syncId", Jmol._syncId);      
 			if (applet._color) 
 				viewerOptions.put("bgcolor", applet._color);
