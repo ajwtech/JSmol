@@ -282,14 +282,15 @@
 		this.__selectSpectrum();
 	}
 	
-	proto._updateView = function(selectedPanel, peakData, _jsv_updateView) {
-		if (this._viewSet == null || !this._applet)
+	proto._updateView = function(msgOrPanel, peakData, _jsv_updateView) {
+		if (this._viewSet == null || !this._applet || msgOrPanel && msgOrPanel.vwr)
 			return;
+		// JSV applet will call this, but we don't care for now 
 		if (!peakData) {
 			// comming from JSmolCore.js -- view not found; new load
 			// generally we will IGNORE THIS as an actual spectrum load, but if there
 			// is a MOL file, that should be recognized.
-			var msg = selectedPanel;
+			var msg = msgOrPanel;			
 			if (msg && (msg.indexOf("http://SIMULATION" >= 0) || msg.indexOf("cache://") >= 0)) {
 				var molData = this._getAppletInfo("DATA_mol");
 				if (molData) {
@@ -544,5 +545,49 @@
 		}
 		return applet._code;
 	}
+	
+Jmol._newGrayScaleImage = function(context, image, width, height, grayBuffer) {
+	var c;
+	if (image == null) {
+		var id = ("" + Math.random()).substring(3);
+		c = document.createElement("canvas");
+		c.id = id;
+		c.style.width = width + "px";
+		c.style.height = height + "px";
+		c.width = width;
+		c.height = height;
+		var appId = context.canvas.applet._id;
+		var layer = document.getElementById(appId + "_imagelayer");
+		image = new Image();
+		image.canvas = c;
+		image.appId = appId;
+		image.id = appId + "_image";
+		image.layer = layer;
+		image.w = width;
+		image.h = height;
+		image.onload = function(e) {
+			try {
+			  URL.revokeObjectURL(image.src);
+			} catch (e) {}
+		};
+		var div = document.createElement("div");
+		image.div = div;
+		div.style.position="relative";
+		layer.appendChild(div);
+		div.appendChild(image);
+	}
+	c = image.canvas.getContext("2d");
+	var imageData = c.getImageData(0, 0, width, height);
+	var buf = imageData.data;
+	var ng = grayBuffer.length;
+	var pt = 0;
+	for (var i = 0; i < ng; i++) {
+		buf[pt++] = buf[pt++] = buf[pt++] = grayBuffer[i];
+		buf[pt++] = 0xFF;
+	}
+	c.putImageData(imageData, 0, 0);
+	image.canvas.toBlob(function(blob){image.src = URL.createObjectURL(blob)});
+	return image;
+}
 
 })(Jmol, document, jQuery);
