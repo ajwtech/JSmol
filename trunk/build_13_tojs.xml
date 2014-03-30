@@ -583,7 +583,6 @@
 		JSV/api/JSVZipReader.js
 		JSV/api/PanelListener.js 
 		JSV/api/ScriptInterface.js 
-		JSV/api/XYScaleConverter.js 
 		JSV/app/JSVApp.js
     	JSV/app/GenericMouse.js
 		JSV/appletjs/JSVApplet.js
@@ -619,6 +618,7 @@
 		JSV/common/ScriptTokenizer.js
 		JSV/common/SubSpecChangeEvent.js
 		JSV/common/ViewData.js
+		JSV/common/XYScaleConverter.js 
 		JSV/common/ZoomEvent.js
 		JSV/dialog/JSVDialog.js
 		JSV/exception/JSVException.js
