@@ -94,33 +94,33 @@
    	
   	<!-- modify class names -->		
 
-    <echo>abbreviating class names "org.jmol.modelsetbio" to "JMB"</echo>
+    <echo>abbreviating class name "org.jmol.modelsetbio" to "JMB"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
 
-    <echo>abbreviating class names "org.jmol.modelset" to "JM"</echo>
+    <echo>abbreviating class name "org.jmol.modelset" to "JM"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
 
-    <echo>abbreviating class names "org.jmol.util" to "JW"</echo>
+    <echo>abbreviating class name "org.jmol.util" to "JW"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
 
-    <echo>abbreviating class names "org.jmol.viewer" to "JV"</echo>
+    <echo>abbreviating class name "org.jmol.viewer" to "JV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
 
-    <echo>abbreviating class names "org.jmol" to "J"</echo>
+    <echo>abbreviating class name "org.jmol" to "J"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 
-    <echo>abbreviating class names "javajs.util" to "JU"</echo>
+    <echo>abbreviating class name "javajs.util" to "JU"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
 
-  	<echo>abbreviating class names "com.jcraft.jzlib" to "JZ"</echo>
+  	<echo>abbreviating class name "com.jcraft.jzlib" to "JZ"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
    	
-  	<echo>modifying class names "jspecview" to "JSV"</echo>
+  	<echo>abbreviating class name "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
-    <echo>abbreviating method names "Clazz.defineMethod " to "$_M"</echo>
+    <echo>abbreviating method name "Clazz.defineMethod " to "$_M"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
-    <echo>abbreviating method names "Clazz.overrideMethod " to "$_V"</echo>
+    <echo>abbreviating method name "Clazz.overrideMethod " to "$_V"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
    	  	
    	  	
@@ -252,10 +252,11 @@
   	    <include name="**/*" />
   	  </fileset>
     </copy>
-	   	
+   	<echo>adding jsme event hooks</echo>
+  	<replace dir="site/jsmol/jsme/jsme" includes="*.html" token="var c=arguments,d;" value="var c=arguments,d;if(!(d=(!c||!c[0]||!$wnd.Jmol?a:$wnd.Jmol._jmeHook(a, c[0]))))return;"/>
    	<echo>adding js subdirectory</echo>
    	<copy todir="site/jsmol/js">
-  	  <fileset dir="jsmoljs">
+  	  <fileset dir="jsmoljs">		
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
@@ -295,6 +296,354 @@
    	             in package.js -->
    	
    	<echo>creating and compressing core files - warnings are OK; "does not exist" is trouble</echo>
+
+    <property name="javaCoreFiles" value="
+    	java/lang/AbstractStringBuilder.js
+    	java/lang/Enum.js
+    	java/lang/StringBuffer.js
+    	java/lang/StringBuilder.js
+    	java/lang/Thread.js
+    	java/lang/ThreadGroup.js
+    	java/io/BufferedInputStream.js
+    	java/io/BufferedReader.js
+    	java/io/BufferedWriter.js
+    	java/io/ByteArrayInputStream.js
+    	java/io/ByteArrayOutputStream.js
+    	java/io/FilterInputStream.js
+    	java/io/InputStream.js
+    	java/io/InputStreamReader.js
+    	java/io/OutputStream.js
+    	java/io/Reader.js
+    	java/io/StringReader.js
+    	java/io/Writer.js 
+    	java/net/MalformedURLException.js
+    	java/net/URL.js
+    	java/net/URLConnection.js
+    	java/net/URLEncoder.js
+    	java/net/URLStreamHandler.js
+    	java/net/URLStreamHandlerFactory.js
+    	java/text/MessageFormat.js
+    	java/util/AbstractCollection.js
+    	java/util/AbstractList.js
+    	java/util/AbstractMap.js
+    	java/util/AbstractSet.js
+    	java/util/ArrayList.js
+    	java/util/Arrays.js
+    	java/util/Collections.js
+    	java/util/Dictionary.js
+    	java/util/Hashtable.js
+    	java/util/MapEntry.js
+    	java/util/Properties.js
+    	java/util/Random.js
+    	java/util/SortedMap.js
+    	java/util/SortedSet.js
+    	java/util/StringTokenizer.js
+    	javajs/api/BytePoster.js
+    	javajs/api/EventManager.js
+    	javajs/api/FontManager.js
+    	javajs/api/GenericColor.js
+    	javajs/api/GenericFileInterface.js
+		javajs/api/GenericMenuInterface.js
+    	javajs/api/GenericMouseInterface.js
+    	javajs/api/GenericPlatform.js
+    	javajs/api/JSInterface.js
+		javajs/api/JSONEncodable.js
+    	javajs/api/PlatformViewer.js
+    	javajs/api/ZInputStream.js
+    	javajs/awt/Color.js
+    	javajs/awt/Dimension.js
+    	javajs/awt/event/Event.js
+    	javajs/awt/Font.js
+    	JU/A4.js
+    	JU/AjaxURLConnection.js
+    	JU/AjaxURLStreamHandler.js
+    	JU/AjaxURLStreamHandlerFactory.js
+    	JU/AU.js
+    	JU/Base64.js
+    	JU/BS.js
+    	JU/CU.js
+    	JU/DF.js
+    	JU/Encoding.js
+    	JU/List.js
+		JU/M34.js
+    	JU/M3.js
+    	JU/M4.js
+    	JU/OC.js
+    	JU/P3.js
+    	JU/P3i.js
+    	JU/P4.js
+    	JU/PT.js
+    	JU/SB.js
+    	JU/T3.js
+    	JU/T3i.js
+    	JU/T4.js
+    	JU/V3.js
+    	" />
+
+    <property name="jmolCoreFiles" value="
+    	javajs/api/GenericBinaryDocument.js
+        javajs/api/GenericZipTools.js
+        javajs/api/GenericLineReader.js
+        javajs/api/GenericCifDataParser.js
+    	javajs/api/Interface.js
+    	JU/BArray.js
+		JU/LimitedLineReader.js
+    	JU/Matrix.js
+    	JU/Quat.js
+    	JU/Rdr.js
+    	JU/T3d.js
+    	JU/V3d.js
+    	J/adapter/readers/molxyz/MolReader.js
+		J/adapter/readers/molxyz/XyzReader.js
+		J/adapter/smarter/Atom.js
+		J/adapter/smarter/AtomIterator.js
+		J/adapter/smarter/AtomSetCollection.js
+		J/adapter/smarter/AtomSetCollectionReader.js
+		J/adapter/smarter/AtomSetObject.js
+		J/adapter/smarter/Bond.js
+		J/adapter/smarter/BondIterator.js
+		J/adapter/smarter/Resolver.js
+		J/adapter/smarter/SmarterJmolAdapter.js
+		J/adapter/smarter/StructureIterator.js
+		J/api/AtomIndexIterator.js
+		J/api/Interface.js
+		J/api/JmolAdapter.js
+		J/api/JmolAdapterAtomIterator.js
+		J/api/JmolAdapterBondIterator.js
+		J/api/JmolAdapterStructureIterator.js
+		J/api/JmolAppConsoleInterface.js
+		J/api/JmolAppletInterface.js
+		J/api/JmolCallbackListener.js
+		J/api/JmolGraphicsInterface.js
+		J/api/JmolMeasurementClient.js
+		J/api/JmolModulationSet.js
+		J/api/JmolNavigatorInterface.js
+		J/api/JmolRendererInterface.js
+		J/api/JmolRepaintManager.js
+		J/api/JmolStatusListener.js
+		J/api/JmolSyncInterface.js
+		J/api/JmolViewer.js
+    	J/api/JmolZipUtilities.js
+    	J/api/Translator.js
+		J/appletjs/Jmol.js
+		J/atomdata/AtomData.js
+    	J/atomdata/AtomDataServer.js
+		J/atomdata/RadiusData.js
+		J/awtjs/Image.js
+		J/awtjs/JSFont.js
+		J/awtjs/Platform.js
+		J/awtjs2d/Display.js
+		J/awtjs2d/Image.js
+		J/awtjs2d/JSFile.js
+		J/awtjs2d/JSFont.js
+		J/awtjs2d/Mouse.js
+		J/awtjs2d/Platform.js
+		J/bspt/Bspf.js
+		J/bspt/Bspt.js
+		J/bspt/CubeIterator.js
+		J/bspt/Element.js
+		J/bspt/Leaf.js
+		J/bspt/Node.js
+		J/c/ANIM.js
+		J/c/AXES.js
+		J/c/CBK.js
+		J/c/FIL.js
+		J/c/PAL.js
+		J/c/QS.js
+		J/c/STER.js
+		J/c/STR.js
+		J/c/VDW.js
+		J/g3d/CylinderRenderer.js
+		J/g3d/G3DRenderer.js
+		J/g3d/Graphics3D.js
+		J/g3d/ImageRenderer.js
+		J/g3d/LineRenderer.js
+		J/g3d/Pixelator.js
+		J/g3d/PixelatorShaded.js
+		J/g3d/Platform3D.js
+		J/g3d/SphereRenderer.js
+		J/g3d/TextRenderer.js
+		J/g3d/TextSorter.js
+		J/g3d/TextString.js
+		J/g3d/TriangleRenderer.js
+		J/i18n/GT.js
+		J/i18n/Language.js
+		J/i18n/Resource.js
+		J/io/FileReader.js
+		J/io/JmolBinary.js
+		J/render/BallsRenderer.js
+		J/render/FontLineShapeRenderer.js
+		J/render/FrankRenderer.js
+		J/render/RepaintManager.js
+		J/render/ShapeRenderer.js
+		J/render/SticksRenderer.js
+		J/script/ContextToken.js
+		J/script/ScriptContext.js
+		J/script/ScriptException.js
+		J/script/SV.js
+		J/script/T.js
+		J/shape/AtomShape.js
+		J/shape/Balls.js
+		J/shape/FontLineShape.js
+		J/shape/FontShape.js
+		J/shape/Frank.js
+		J/shape/Shape.js
+		J/shape/Sticks.js
+		J/thread/HoverWatcherThread.js
+		J/thread/JmolThread.js
+		J/thread/TimeoutThread.js
+		JM/Atom.js
+		JM/AtomCollection.js
+		JM/AtomIteratorWithinModel.js
+		JM/AtomIteratorWithinModelSet.js
+		JM/Bond.js
+		JM/BondCollection.js
+		JM/BondIterator.js
+		JM/BondIteratorSelected.js
+		JM/BondSet.js
+		JM/Chain.js
+		JM/Group.js
+		JM/HBond.js
+		JM/LabelToken.js
+		JM/Measurement.js
+		JM/MeasurementData.js
+		JM/MeasurementPending.js
+		JM/Model.js
+		JM/ModelCollection.js
+		JM/ModelLoader.js
+		JM/ModelSet.js
+		JM/Orientation.js
+		JM/StateScript.js
+		JM/TickInfo.js
+		JW/BoxInfo.js
+		JW/BSUtil.js
+		JW/C.js
+		JW/ColorEncoder.js
+		JW/CommandHistory.js
+		JW/DefaultLogger.js
+		JW/Elements.js
+		JW/Escape.js
+		JW/GData.js
+		JW/GenericApplet.js
+		JW/Geodesic.js
+		JW/Int2IntHash.js
+		JW/Node.js
+		JW/BNode.js
+		JW/Edge.js
+    	JW/JmolMolecule.js
+		JW/Logger.js
+		JW/LoggerInterface.js
+		JW/Measure.js
+		JW/MeshSurface.js
+		JW/Normix.js
+		JW/Parser.js
+		JW/Point3fi.js
+		JW/Rectangle.js
+		JW/Rgb16.js
+		JW/Shader.js
+		JW/SimpleUnitCell.js
+		JW/TempArray.js
+		JW/Txt.js
+		JW/Vibration.js
+		JV/ActionManager.js
+		JV/AnimationManager.js
+		JV/binding/Binding.js
+		JV/binding/DragBinding.js
+		JV/binding/JmolBinding.js
+		JV/ColorManager.js
+		JV/FileManager.js
+		JV/GlobalSettings.js
+		JV/JC.js
+		JV/ModelManager.js
+		JV/MouseState.js
+		JV/SelectionManager.js
+		JV/ShapeManager.js
+		JV/StateManager.js
+		JV/StatusManager.js
+		JV/TransformManager.js
+		JV/Viewer.js
+    	" />
+
+    <property name="jsvCoreFiles" value="
+    	J/adapter/smarter/JmolJDXMOLParser.js
+    	J/adapter/smarter/JmolJDXMOLReader.js
+    	J/jsv/JDXMOLParser.js
+		JSV/api/AnnotationData.js 
+		JSV/api/AppletFrame.js 
+		JSV/api/JSVAppInterface.js 
+		JSV/api/JSVAppletInterface.js 
+		JSV/api/JSVFileHelper.js
+		JSV/api/JSVGraphics.js
+		JSV/api/JSVMainPanel.js
+		JSV/api/JSVPanel.js 
+		JSV/api/JSVTree.js
+		JSV/api/JSVTreeNode.js
+		JSV/api/JSVTreePath.js
+		JSV/api/JSVViewPanel.js
+		JSV/api/JSVZipReader.js
+		JSV/api/PanelListener.js 
+		JSV/api/ScriptInterface.js 
+		JSV/app/JSVApp.js
+    	JSV/app/GenericMouse.js
+		JSV/appletjs/JSVApplet.js
+		JSV/common/Annotation.js
+		JSV/common/ColoredAnnotation.js
+		JSV/common/ColorParameters.js
+		JSV/common/CoordComparator.js 
+		JSV/common/Coordinate.js
+		JSV/common/ExportType.js
+		JSV/common/GraphSet.js
+		JSV/common/ImageView.js
+		JSV/common/Integral.js
+		JSV/common/IntegralComparator.js
+		JSV/common/IntegralData.js
+		JSV/common/Spectrum.js 
+		JSV/common/JSVersion.js
+		JSV/common/JSVFileManager.js
+		JSV/common/JSViewer.js
+		JSV/common/Measurement.js 
+		JSV/common/MeasurementData.js
+		JSV/common/PanelData.js
+		JSV/common/PanelNode.js
+		JSV/common/Parameters.js
+		JSV/common/PeakData.js
+		JSV/common/PeakInfo.js
+		JSV/common/PeakPick.js
+		JSV/common/PeakPickEvent.js
+		JSV/common/PlotWidget.js
+		JSV/common/PrintLayout.js
+		JSV/common/RepaintManager.js
+		JSV/common/ScaleData.js
+		JSV/common/ScriptToken.js
+		JSV/common/ScriptTokenizer.js
+		JSV/common/SubSpecChangeEvent.js
+		JSV/common/ViewData.js
+		JSV/common/XYScaleConverter.js 
+		JSV/common/ZoomEvent.js
+		JSV/dialog/JSVDialog.js
+		JSV/exception/JSVException.js
+		JSV/js2d/Display.js
+		JSV/js2d/Image.js
+		JSV/js2d/JsFile.js
+		JSV/js2d/JsFileHelper.js
+		JSV/js2d/JsFont.js
+		JSV/js2d/JsG2D.js
+		JSV/js2d/JsPanel.js
+		JSV/js2d/JsParameters.js
+		JSV/js2d/JsPlatform.js
+		JSV/js2d/JsMainPanel.js
+		JSV/source/JDXDataObject.js 
+		JSV/source/JDXDecompressor.js
+		JSV/source/JDXHeader.js 
+		JSV/source/JDXReader.js
+		JSV/source/JDXSource.js
+		JSV/source/JDXSourceStreamTokenizer.js
+		JSV/tree/SimpleTree.js
+		JSV/tree/SimpleTreeEnumeration.js
+		JSV/tree/SimpleTreeModel.js
+		JSV/tree/SimpleTreeNode.js
+		JSV/tree/SimpleTreePath.js
+    	" />
    	
     <antcall target="call-core">
         <param name="call-core.name" value="" />
@@ -302,262 +651,8 @@
        		../../../Jmol.properties
        		../js/JSmolJavaExt.js
        		../js/core/coretop.js
-    		java/lang/AbstractStringBuilder.js
-    		java/lang/Enum.js
-    		java/lang/StringBuffer.js
-    		java/lang/StringBuilder.js
-    		java/lang/Thread.js
-    		java/lang/ThreadGroup.js
-    		java/io/BufferedInputStream.js
-    		java/io/BufferedReader.js
-    		java/io/ByteArrayInputStream.js
-    		java/io/ByteArrayOutputStream.js
-    		java/io/FilterInputStream.js
-    		java/io/InputStream.js
-    		java/io/InputStreamReader.js
-    		java/io/OutputStream.js
-    		java/io/Reader.js
-    		java/io/StringReader.js
-    		java/net/MalformedURLException.js
-    		java/net/Parts.js
-    		java/net/URL.js
-    		java/net/URLConnection.js
-    		java/net/URLDecoder.js
-    		java/net/URLEncoder.js
-    		java/net/URLStreamHandler.js
-    		java/net/URLStreamHandlerFactory.js
-    		java/text/MessageFormat.js
-    		java/util/AbstractCollection.js
-    		java/util/AbstractList.js
-    		java/util/AbstractMap.js
-    		java/util/AbstractSet.js
-    		java/util/ArrayList.js
-    		java/util/Arrays.js
-    		java/util/Collections.js
-    		java/util/Dictionary.js
-    		java/util/Hashtable.js
-    		java/util/MapEntry.js
-    		java/util/Properties.js
-    		java/util/Random.js
-    		java/util/SortedMap.js
-    		java/util/SortedSet.js
-    		java/util/StringTokenizer.js
-    		javajs/api/BytePoster.js
-    		javajs/api/EventManager.js
-    		javajs/api/FontManager.js
-        	javajs/api/GenericColor.js
-    		javajs/api/GenericFileInterface.js
-    		javajs/api/GenericMenuInterface.js
-    		javajs/api/GenericMouseInterface.js
-    		javajs/api/GenericPlatform.js
-    		javajs/api/JSInterface.js
-    		javajs/api/JSONEncodable.js
-    		javajs/api/PlatformViewer.js
-    		javajs/api/ZInputStream.js
-			javajs/awt/Color.js
-    		javajs/awt/Dimension.js
-    		javajs/awt/event/Event.js
-    		javajs/awt/Font.js
-    		JU/A4.js
-    		JU/AjaxURLConnection.js
-    		JU/AjaxURLStreamHandler.js
-    		JU/AjaxURLStreamHandlerFactory.js
-    		JU/AU.js
-    		JU/Base64.js
-    		JU/BS.js
-    		JU/CU.js
-    		JU/DF.js
-    		JU/Encoding.js
-    		JU/List.js
-    		JU/Matrix.js
-    		JU/M34.js
-    		JU/M3.js
-    		JU/M4.js
-    		JU/P3.js
-    		JU/P3i.js
-    		JU/P4.js
-    		JU/PT.js
-    		JU/Quat.js
-    		JU/SB.js
-    		JU/T3.js
-    		JU/T3d.js
-    		JU/T3i.js
-    		JU/T4.js
-    		JU/V3.js
-    		JU/V3d.js
-    		J/adapter/readers/molxyz/MolReader.js
-    		J/adapter/readers/molxyz/XyzReader.js
-    		J/adapter/smarter/Atom.js
-    		J/adapter/smarter/AtomIterator.js
-    		J/adapter/smarter/AtomSetCollection.js
-    		J/adapter/smarter/AtomSetCollectionReader.js
-    		J/adapter/smarter/AtomSetObject.js
-    		J/adapter/smarter/Bond.js
-    		J/adapter/smarter/BondIterator.js
-    		J/adapter/smarter/Resolver.js
-    		J/adapter/smarter/SmarterJmolAdapter.js
-    		J/adapter/smarter/StructureIterator.js
-    		J/api/AtomIndexIterator.js
-    		J/api/Interface.js
-    		J/api/JmolAdapter.js
-    		J/api/JmolAdapterAtomIterator.js
-    		J/api/JmolAdapterBondIterator.js
-    		J/api/JmolAdapterStructureIterator.js
-    		J/api/JmolAppConsoleInterface.js
-    		J/api/JmolAppletInterface.js
-    		J/api/JmolCallbackListener.js
-    		J/api/JmolDocument.js
-    		J/api/JmolGraphicsInterface.js
-    		J/api/JmolMeasurementClient.js
-    		J/api/JmolModulationSet.js
-    		J/api/JmolNavigatorInterface.js
-    		J/api/JmolRendererInterface.js
-    		J/api/JmolRepaintManager.js
-    		J/api/JmolStatusListener.js
-    		J/api/JmolSyncInterface.js
-    		J/api/JmolViewer.js
-        	J/api/Translator.js
-    		J/appletjs/Jmol.js
-    		J/atomdata/AtomData.js
-    		J/atomdata/AtomDataServer.js
-    		J/atomdata/RadiusData.js
-    		J/awtjs/Image.js
-    		J/awtjs/JSFont.js
-    		J/awtjs/Platform.js
-    		J/awtjs2d/Display.js
-    		J/awtjs2d/Image.js
-    		J/awtjs2d/JSFile.js
-    		J/awtjs2d/JSFont.js
-    		J/awtjs2d/Mouse.js
-    		J/awtjs2d/Platform.js
-    		J/bspt/Bspf.js
-    		J/bspt/Bspt.js
-    		J/bspt/CubeIterator.js
-    		J/bspt/Element.js
-    		J/bspt/Leaf.js
-    		J/bspt/Node.js
-    		J/constant/EnumAnimationMode.js
-    		J/constant/EnumAxesMode.js
-    		J/constant/EnumCallback.js
-    		J/constant/EnumFileStatus.js
-    		J/constant/EnumPalette.js
-    		J/constant/EnumQuantumShell.js
-    		J/constant/EnumStereoMode.js
-    		J/constant/EnumStructure.js
-    		J/constant/EnumVdw.js
-    		J/g3d/CylinderRenderer.js
-    		J/g3d/G3DRenderer.js
-    		J/g3d/Graphics3D.js
-    		J/g3d/ImageRenderer.js
-    		J/g3d/LineRenderer.js
-    		J/g3d/Pixelator.js
-    		J/g3d/PixelatorShaded.js
-    		J/g3d/Platform3D.js
-    		J/g3d/SphereRenderer.js
-    		J/g3d/TextRenderer.js
-    		J/g3d/TextSorter.js
-    		J/g3d/TextString.js
-    		J/g3d/TriangleRenderer.js
-    		J/i18n/GT.js
-    		J/i18n/Language.js
-    		J/i18n/Resource.js
-    		J/io/CifDataReader.js
-    		J/io/FileReader.js
-    		J/io/JmolBinary.js
-    		J/io/LimitedLineReader.js
-    		J/io/XmlUtil.js
-    		JM/Atom.js
-    		JM/AtomCollection.js
-    		JM/AtomIteratorWithinModel.js
-    		JM/AtomIteratorWithinModelSet.js
-    		JM/Bond.js
-    		JM/BondCollection.js
-    		JM/BondIterator.js
-    		JM/BondIteratorSelected.js
-    		JM/BondSet.js
-    		JM/Chain.js
-    		JM/Group.js
-    		JM/HBond.js
-    		JM/LabelToken.js
-    		JM/Measurement.js
-    		JM/MeasurementData.js
-    		JM/MeasurementPending.js
-    		JM/Model.js
-    		JM/ModelCollection.js
-    		JM/ModelLoader.js
-    		JM/ModelSet.js
-    		JM/Orientation.js
-    		JM/StateScript.js
-    		JM/TickInfo.js
-    		J/render/BallsRenderer.js
-    		J/render/FontLineShapeRenderer.js
-    		J/render/FrankRenderer.js
-    		J/render/RepaintManager.js
-    		J/render/ShapeRenderer.js
-    		J/render/SticksRenderer.js
-    		J/script/ContextToken.js
-    		J/script/ScriptContext.js
-    		J/script/ScriptException.js
-    		J/script/SV.js
-    		J/script/T.js
-    		J/shape/AtomShape.js
-    		J/shape/Balls.js
-    		J/shape/FontLineShape.js
-    		J/shape/FontShape.js
-    		J/shape/Frank.js
-    		J/shape/Shape.js
-    		J/shape/Sticks.js
-    		J/thread/HoverWatcherThread.js
-    		J/thread/JmolThread.js
-    		J/thread/TimeoutThread.js
-    		JW/BoxInfo.js
-    		JW/BSUtil.js
-    		JW/C.js
-    		JW/ColorEncoder.js
-    		JW/CommandHistory.js
-    		JW/DefaultLogger.js
-    		JW/Elements.js
-    		JW/Escape.js
-    		JW/GData.js
-    		JW/GenericApplet.js
-    		JW/Geodesic.js
-    		JW/Int2IntHash.js
-    		JW/Node.js
-    		JW/BNode.js
-    		JW/Edge.js
-    		JW/JmolMolecule.js
-    		JW/Logger.js
-    		JW/LoggerInterface.js
-    		JW/Measure.js
-    		JW/MeshSurface.js
-    		JW/Normix.js
-    		JW/Parser.js
-    		JW/Point3fi.js
-    		JW/Rectangle.js
-    		JW/Rgb16.js
-    		JW/Shader.js
-    		JW/SimpleUnitCell.js
-    		JW/TempArray.js
-    		JW/Txt.js
-    		JW/Vibration.js
-    		JV/ActionManager.js
-    		JV/AnimationManager.js
-    		JV/binding/Binding.js
-    		JV/binding/DragBinding.js
-    		JV/binding/JmolBinding.js
-    		JV/ColorManager.js
-    		JV/FileManager.js
-    		JV/GlobalSettings.js
-    		JV/JC.js
-    		JV/ModelManager.js
-    		JV/MouseState.js
-    		JV/SelectionManager.js
-    		JV/ShapeManager.js
-    		JV/StateManager.js
-    		JV/StatusManager.js
-    		JV/TransformManager.js
-    		JV/TransformManager11.js
-    		JV/Viewer.js
+         	${javaCoreFiles}
+        	${jmolCoreFiles}
        		../js/core/corebottom.js
         	" />
     </antcall>
@@ -568,167 +663,11 @@
        		../../../Jmol.properties
        		../js/JSmolJavaExt.js
        		../js/core/coretop.js
-        	java/lang/AbstractStringBuilder.js
-        	java/lang/Enum.js
-        	java/lang/StringBuffer.js
-        	java/lang/StringBuilder.js
-        	java/lang/Thread.js
-        	java/lang/ThreadGroup.js
-        	java/io/BufferedInputStream.js
-        	java/io/BufferedReader.js
-        	java/io/BufferedWriter.js
-        	java/io/ByteArrayInputStream.js
-        	java/io/ByteArrayOutputStream.js
-        	java/io/FilterInputStream.js
-        	java/io/InputStream.js
-        	java/io/InputStreamReader.js
-        	java/io/OutputStream.js
-        	java/io/Reader.js
-        	java/io/StringReader.js
-        	java/io/Writer.js 
-        	java/net/MalformedURLException.js
-        	java/net/URL.js
-        	java/net/URLConnection.js
-        	java/net/URLEncoder.js
-        	java/net/URLStreamHandler.js
-        	java/net/URLStreamHandlerFactory.js
-        	java/text/MessageFormat.js
-        	java/util/AbstractCollection.js
-        	java/util/AbstractList.js
-        	java/util/AbstractMap.js
-        	java/util/AbstractSet.js
-        	java/util/ArrayList.js
-        	java/util/Arrays.js
-        	java/util/Collections.js
-        	java/util/Dictionary.js
-        	java/util/Hashtable.js
-        	java/util/MapEntry.js
-        	java/util/Properties.js
-        	java/util/Random.js
-        	java/util/SortedMap.js
-        	java/util/SortedSet.js
-        	java/util/StringTokenizer.js
-        	javajs/api/BytePoster.js
-        	javajs/api/EventManager.js
-        	javajs/api/FontManager.js
-        	javajs/api/GenericColor.js
-        	javajs/api/GenericFileInterface.js
-			javajs/api/GenericMenuInterface.js
-        	javajs/api/GenericMouseInterface.js
-        	javajs/api/GenericPlatform.js
-        	javajs/api/JSInterface.js
-    		javajs/api/JSONEncodable.js
-        	javajs/api/PlatformViewer.js
-        	javajs/api/ZInputStream.js
-        	javajs/awt/Color.js
-        	javajs/awt/Dimension.js
-        	javajs/awt/event/Event.js
-        	javajs/awt/Font.js
-        	JU/A4.js
-        	JU/AjaxURLConnection.js
-        	JU/AjaxURLStreamHandler.js
-        	JU/AjaxURLStreamHandlerFactory.js
-        	JU/AU.js
-        	JU/Base64.js
-        	JU/BS.js
-        	JU/CU.js
-        	JU/DF.js
-        	JU/Encoding.js
-        	JU/List.js
-    		JU/M34.js
-        	JU/M3.js
-        	JU/M4.js
-        	JU/OC.js
-        	JU/P3.js
-        	JU/P3i.js
-        	JU/P4.js
-        	JU/PT.js
-        	JU/SB.js
-        	JU/T3.js
-        	JU/T3i.js
-        	JU/T4.js
-        	JU/V3.js
-        	J/adapter/smarter/JmolJDXMOLParser.js
-        	J/adapter/smarter/JmolJDXMOLReader.js
-        	J/jsv/JDXMOLParser.js
+         	${javaCoreFiles}
         	JW/DefaultLogger.js
         	JW/Logger.js
         	JW/LoggerInterface.js
-        	JSV/api/AnnotationData.js 
-        	JSV/api/AppletFrame.js 
-        	JSV/api/JSVAppInterface.js 
-        	JSV/api/JSVAppletInterface.js 
-        	JSV/api/JSVFileHelper.js
-        	JSV/api/JSVGraphics.js
-        	JSV/api/JSVMainPanel.js
-        	JSV/api/JSVPanel.js 
-        	JSV/api/JSVTree.js
-        	JSV/api/JSVTreeNode.js
-        	JSV/api/JSVTreePath.js
-        	JSV/api/JSVViewPanel.js
-        	JSV/api/JSVZipReader.js
-        	JSV/api/PanelListener.js 
-        	JSV/api/ScriptInterface.js 
-        	JSV/api/XYScaleConverter.js 
-        	JSV/app/JSVApp.js
-        	JSV/app/GenericMouse.js
-        	JSV/appletjs/JSVApplet.js
-        	JSV/common/Annotation.js
-        	JSV/common/ColoredAnnotation.js
-        	JSV/common/ColorParameters.js
-        	JSV/common/CoordComparator.js 
-        	JSV/common/Coordinate.js
-        	JSV/common/ExportType.js
-        	JSV/common/GraphSet.js
-        	JSV/common/ImageView.js
-        	JSV/common/Integral.js
-        	JSV/common/IntegralComparator.js
-        	JSV/common/IntegralData.js
-        	JSV/common/JDXSpectrum.js 
-        	JSV/common/JSVersion.js
-        	JSV/common/JSVFileManager.js
-        	JSV/common/JSViewer.js
-        	JSV/common/Measurement.js 
-        	JSV/common/MeasurementData.js
-        	JSV/common/PanelData.js
-        	JSV/common/PanelNode.js
-        	JSV/common/Parameters.js
-        	JSV/common/PeakData.js
-        	JSV/common/PeakInfo.js
-        	JSV/common/PeakPick.js
-        	JSV/common/PeakPickEvent.js
-        	JSV/common/PlotWidget.js
-        	JSV/common/PrintLayout.js
-        	JSV/common/RepaintManager.js
-        	JSV/common/ScaleData.js
-        	JSV/common/ScriptToken.js
-        	JSV/common/ScriptTokenizer.js
-        	JSV/common/SubSpecChangeEvent.js
-        	JSV/common/ViewData.js
-        	JSV/common/ZoomEvent.js
-        	JSV/dialog/JSVDialog.js
-        	JSV/exception/JSVException.js
-        	JSV/js2d/Display.js
-        	JSV/js2d/Image.js
-        	JSV/js2d/JsFile.js
-        	JSV/js2d/JsFileHelper.js
-        	JSV/js2d/JsFont.js
-        	JSV/js2d/JsG2D.js
-        	JSV/js2d/JsPanel.js
-        	JSV/js2d/JsParameters.js
-        	JSV/js2d/JsPlatform.js
-        	JSV/js2d/JsMainPanel.js
-        	JSV/source/JDXDataObject.js 
-        	JSV/source/JDXDecompressor.js
-        	JSV/source/JDXHeader.js 
-        	JSV/source/JDXReader.js
-        	JSV/source/JDXSource.js
-        	JSV/source/JDXSourceStreamTokenizer.js
-        	JSV/tree/SimpleTree.js
-        	JSV/tree/SimpleTreeEnumeration.js
-        	JSV/tree/SimpleTreeModel.js
-        	JSV/tree/SimpleTreeNode.js
-        	JSV/tree/SimpleTreePath.js
+        	${jsvCoreFiles}
        		../js/core/corebottom.js
     	" />
     	
@@ -740,343 +679,9 @@
        		../../../Jmol.properties
        		../js/JSmolJavaExt.js
        		../js/core/coretop.js
-			java/io/BufferedInputStream.js
-			java/io/BufferedReader.js
-			java/io/BufferedWriter.js
-			java/io/ByteArrayInputStream.js
-			java/io/ByteArrayOutputStream.js
-			java/io/FilterInputStream.js
-			java/io/InputStream.js
-			java/io/InputStreamReader.js
-			java/io/OutputStream.js
-			java/io/Reader.js
-			java/io/StringReader.js
-			java/io/Writer.js 
-			java/lang/AbstractStringBuilder.js
-			java/lang/Enum.js
-			java/lang/StringBuffer.js
-			java/lang/StringBuilder.js
-			java/lang/Thread.js
-			java/lang/ThreadGroup.js
-			java/net/MalformedURLException.js
-			java/net/Parts.js
-			java/net/URL.js
-			java/net/URLConnection.js
-			java/net/URLDecoder.js
-			java/net/URLEncoder.js
-			java/net/URLStreamHandler.js
-			java/net/URLStreamHandlerFactory.js
-			java/text/MessageFormat.js
-			java/util/AbstractCollection.js
-			java/util/AbstractList.js
-			java/util/AbstractMap.js
-			java/util/AbstractSet.js
-			java/util/ArrayList.js
-			java/util/Arrays.js
-			java/util/Collections.js
-			java/util/Dictionary.js
-			java/util/Hashtable.js
-			java/util/MapEntry.js
-			java/util/Properties.js
-			java/util/Random.js
-			java/util/SortedMap.js
-			java/util/SortedSet.js
-			java/util/StringTokenizer.js
-			javajs/api/BytePoster.js
-			javajs/api/EventManager.js
-			javajs/api/FontManager.js
-			javajs/api/GenericColor.js
-			javajs/api/GenericFileInterface.js
-			javajs/api/GenericMenuInterface.js
-			javajs/api/GenericMouseInterface.js
-			javajs/api/GenericPlatform.js
-			javajs/api/JSInterface.js
-			javajs/api/JSONEncodable.js
-			javajs/api/PlatformViewer.js
-			javajs/api/ZInputStream.js
-			javajs/awt/Color.js
-			javajs/awt/Dimension.js
-			javajs/awt/event/Event.js
-			javajs/awt/Font.js
-			JU/A4.js
-			JU/AjaxURLConnection.js
-			JU/AjaxURLStreamHandler.js
-			JU/AjaxURLStreamHandlerFactory.js
-			JU/AU.js
-			JU/Base64.js
-			JU/BS.js
-			JU/CU.js
-			JU/DF.js
-			JU/Encoding.js
-			JU/List.js
-    		JU/Matrix.js
-    		JU/M34.js
-			JU/M3.js
-			JU/M4.js
-			JU/OC.js
-			JU/P3.js
-			JU/P3i.js
-			JU/P4.js
-			JU/PT.js
-			JU/Quat.js
-			JU/SB.js
-			JU/T3.js
-			JU/T3d.js
-			JU/T3i.js
-			JU/T4.js
-			JU/V3.js
-			JU/V3d.js
-			J/adapter/readers/molxyz/MolReader.js
-			J/adapter/readers/molxyz/XyzReader.js
-			J/adapter/smarter/Atom.js
-			J/adapter/smarter/AtomIterator.js
-			J/adapter/smarter/AtomSetCollection.js
-			J/adapter/smarter/AtomSetCollectionReader.js
-			J/adapter/smarter/AtomSetObject.js
-			J/adapter/smarter/Bond.js
-			J/adapter/smarter/BondIterator.js
-			J/adapter/smarter/Resolver.js
-			J/adapter/smarter/SmarterJmolAdapter.js
-			J/adapter/smarter/StructureIterator.js
-        	J/adapter/smarter/JmolJDXMOLParser.js
-        	J/adapter/smarter/JmolJDXMOLReader.js
-        	J/jsv/JDXMOLParser.js
-			J/api/AtomIndexIterator.js
-			J/api/Interface.js
-			J/api/JmolAdapter.js
-			J/api/JmolAdapterAtomIterator.js
-			J/api/JmolAdapterBondIterator.js
-			J/api/JmolAdapterStructureIterator.js
-			J/api/JmolAppConsoleInterface.js
-			J/api/JmolAppletInterface.js
-			J/api/JmolCallbackListener.js
-			J/api/JmolDocument.js
-			J/api/JmolGraphicsInterface.js
-			J/api/JmolMeasurementClient.js
-			J/api/JmolModulationSet.js
-			J/api/JmolNavigatorInterface.js
-			J/api/JmolRendererInterface.js
-			J/api/JmolRepaintManager.js
-			J/api/JmolStatusListener.js
-			J/api/JmolSyncInterface.js
-			J/api/JmolViewer.js
-        	J/api/Translator.js
-			J/appletjs/Jmol.js
-			J/atomdata/AtomData.js
-			J/atomdata/AtomDataServer.js
-			J/atomdata/RadiusData.js
-			J/awtjs/Image.js
-			J/awtjs/JSFont.js
-			J/awtjs/Platform.js
-			J/awtjs2d/Display.js
-			J/awtjs2d/Image.js
-			J/awtjs2d/JSFile.js
-			J/awtjs2d/JSFont.js
-			J/awtjs2d/Mouse.js
-			J/awtjs2d/Platform.js
-			J/bspt/Bspf.js
-			J/bspt/Bspt.js
-			J/bspt/CubeIterator.js
-			J/bspt/Element.js
-			J/bspt/Leaf.js
-			J/bspt/Node.js
-			J/constant/EnumAnimationMode.js
-			J/constant/EnumAxesMode.js
-			J/constant/EnumCallback.js
-			J/constant/EnumFileStatus.js
-			J/constant/EnumPalette.js
-			J/constant/EnumQuantumShell.js
-			J/constant/EnumStereoMode.js
-			J/constant/EnumStructure.js
-			J/constant/EnumVdw.js
-			J/g3d/CylinderRenderer.js
-			J/g3d/G3DRenderer.js
-			J/g3d/Graphics3D.js
-			J/g3d/ImageRenderer.js
-			J/g3d/LineRenderer.js
-			J/g3d/Pixelator.js
-			J/g3d/PixelatorShaded.js
-			J/g3d/Platform3D.js
-			J/g3d/SphereRenderer.js
-			J/g3d/TextRenderer.js
-			J/g3d/TextSorter.js
-			J/g3d/TextString.js
-			J/g3d/TriangleRenderer.js
-			J/i18n/GT.js
-			J/i18n/Language.js
-			J/i18n/Resource.js
-			J/io/CifDataReader.js
-			J/io/FileReader.js
-			J/io/JmolBinary.js
-			J/io/LimitedLineReader.js
-			J/io/XmlUtil.js
-			JM/Atom.js
-			JM/AtomCollection.js
-			JM/AtomIteratorWithinModel.js
-			JM/AtomIteratorWithinModelSet.js
-			JM/Bond.js
-			JM/BondCollection.js
-			JM/BondIterator.js
-			JM/BondIteratorSelected.js
-			JM/BondSet.js
-			JM/Chain.js
-			JM/Group.js
-			JM/HBond.js
-			JM/LabelToken.js
-			JM/Measurement.js
-			JM/MeasurementData.js
-			JM/MeasurementPending.js
-			JM/Model.js
-			JM/ModelCollection.js
-			JM/ModelLoader.js
-			JM/ModelSet.js
-			JM/Orientation.js
-			JM/StateScript.js
-			JM/TickInfo.js
-			J/render/BallsRenderer.js
-			J/render/FontLineShapeRenderer.js
-			J/render/FrankRenderer.js
-			J/render/RepaintManager.js
-			J/render/ShapeRenderer.js
-			J/render/SticksRenderer.js
-			J/script/ContextToken.js
-			J/script/ScriptContext.js
-			J/script/ScriptException.js
-			J/script/SV.js
-			J/script/T.js
-			J/shape/AtomShape.js
-			J/shape/Balls.js
-			J/shape/FontLineShape.js
-			J/shape/FontShape.js
-			J/shape/Frank.js
-			J/shape/Shape.js
-			J/shape/Sticks.js
-			J/thread/HoverWatcherThread.js
-			J/thread/JmolThread.js
-			J/thread/TimeoutThread.js
-			JW/BoxInfo.js
-			JW/BSUtil.js
-			JW/C.js
-			JW/ColorEncoder.js
-			JW/CommandHistory.js
-			JW/DefaultLogger.js
-			JW/Elements.js
-			JW/Escape.js
-			JW/GData.js
-			JW/GenericApplet.js
-			JW/Geodesic.js
-			JW/Int2IntHash.js
-    		JW/Edge.js
-    		JW/Node.js
-    		JW/BNode.js
-			JW/JmolMolecule.js
-			JW/Logger.js
-			JW/LoggerInterface.js
-			JW/Measure.js
-			JW/MeshSurface.js
-			JW/Normix.js
-			JW/Parser.js
-			JW/Point3fi.js
-			JW/Rectangle.js
-			JW/Rgb16.js
-			JW/Shader.js
-			JW/SimpleUnitCell.js
-			JW/TempArray.js
-			JW/Txt.js
-			JW/Vibration.js
-			JV/ActionManager.js
-			JV/AnimationManager.js
-			JV/binding/Binding.js
-			JV/binding/DragBinding.js
-			JV/binding/JmolBinding.js
-			JV/ColorManager.js
-			JV/FileManager.js
-			JV/GlobalSettings.js
-			JV/JC.js
-			JV/ModelManager.js
-			JV/MouseState.js
-			JV/SelectionManager.js
-			JV/ShapeManager.js
-			JV/StateManager.js
-			JV/StatusManager.js
-			JV/TransformManager.js
-			JV/TransformManager11.js
-			JV/Viewer.js
-			JSV/api/AnnotationData.js 
-			JSV/api/AppletFrame.js 
-			JSV/api/JSVAppInterface.js 
-			JSV/api/JSVAppletInterface.js 
-			JSV/api/JSVFileHelper.js
-			JSV/api/JSVGraphics.js
-			JSV/api/JSVMainPanel.js
-			JSV/api/JSVPanel.js 
-			JSV/api/JSVTree.js
-			JSV/api/JSVTreeNode.js
-			JSV/api/JSVTreePath.js
-			JSV/api/JSVViewPanel.js
-			JSV/api/JSVZipReader.js
-			JSV/api/PanelListener.js 
-			JSV/api/ScriptInterface.js 
-			JSV/api/XYScaleConverter.js 
-			JSV/app/JSVApp.js
-        	JSV/app/GenericMouse.js
-			JSV/appletjs/JSVApplet.js
-			JSV/common/Annotation.js
-			JSV/common/ColoredAnnotation.js
-			JSV/common/ColorParameters.js
-			JSV/common/CoordComparator.js 
-			JSV/common/Coordinate.js
-			JSV/common/ExportType.js
-			JSV/common/GraphSet.js
-			JSV/common/ImageView.js
-			JSV/common/Integral.js
-			JSV/common/IntegralComparator.js
-			JSV/common/IntegralData.js
-			JSV/common/JDXSpectrum.js 
-			JSV/common/JSVersion.js
-			JSV/common/JSVFileManager.js
-			JSV/common/JSViewer.js
-			JSV/common/Measurement.js 
-			JSV/common/MeasurementData.js
-			JSV/common/PanelData.js
-			JSV/common/PanelNode.js
-			JSV/common/Parameters.js
-			JSV/common/PeakData.js
-			JSV/common/PeakInfo.js
-			JSV/common/PeakPick.js
-			JSV/common/PeakPickEvent.js
-			JSV/common/PlotWidget.js
-			JSV/common/PrintLayout.js
-			JSV/common/RepaintManager.js
-			JSV/common/ScaleData.js
-			JSV/common/ScriptToken.js
-			JSV/common/ScriptTokenizer.js
-			JSV/common/SubSpecChangeEvent.js
-			JSV/common/ViewData.js
-			JSV/common/ZoomEvent.js
-			JSV/dialog/JSVDialog.js
-			JSV/exception/JSVException.js
-			JSV/js2d/Display.js
-			JSV/js2d/Image.js
-			JSV/js2d/JsFile.js
-			JSV/js2d/JsFileHelper.js
-			JSV/js2d/JsFont.js
-			JSV/js2d/JsG2D.js
-			JSV/js2d/JsPanel.js
-			JSV/js2d/JsParameters.js
-			JSV/js2d/JsPlatform.js
-			JSV/js2d/JsMainPanel.js
-			JSV/source/JDXDataObject.js 
-			JSV/source/JDXDecompressor.js
-			JSV/source/JDXHeader.js 
-			JSV/source/JDXReader.js
-			JSV/source/JDXSource.js
-			JSV/source/JDXSourceStreamTokenizer.js
-			JSV/tree/SimpleTree.js
-			JSV/tree/SimpleTreeEnumeration.js
-			JSV/tree/SimpleTreeModel.js
-			JSV/tree/SimpleTreeNode.js
-			JSV/tree/SimpleTreePath.js
+         	${javaCoreFiles}
+        	${jmolCoreFiles}
+        	${jsvCoreFiles}
        		../js/core/corebottom.js
     	" />
     </antcall>
@@ -1160,30 +765,78 @@
    	<echo>Continuing to create j2s/core files</echo>
 
     <antcall target="call-core">
+        <param name="call-core.name" value="binary" />
+        <param name="call-core.list" value="
+       		java/io/PushbackInputStream.js
+       		java/io/DataInputStream.js
+       		JU/BC.js
+       		JU/BinaryDocument.js
+        	" />
+    </antcall>
+   	
+   	
+    <antcall target="call-core">
+        <param name="call-core.name" value="zip" />
+        <param name="call-core.list" value="
+       		java/io/PushbackInputStream.js
+       		java/io/FileInputStream.js
+       		java/util/zip/CheckedInputStream.js
+       		java/util/zip/Inflater.js
+       		java/util/zip/ZipException.js
+       		java/util/zip/ZipConstants.js
+       		java/util/zip/ZipEntry.js
+       		java/util/zip/ZipConstants64.js
+       		java/util/zip/ZipInputStream.js
+       		java/util/zip/CRC32.js
+       		java/util/zip/InflaterInputStream.js
+       		java/util/zip/GZIPInputStream.js
+       		javajs/api/GenericZipInputStream.js
+        	JU/ZipTools.js
+       		JZ/Checksum.js
+       		JZ/CRC32.js
+       		JZ/InflaterInputStream.js
+       		JZ/ZStream.js
+       		JZ/Inflater.js
+       		JZ/Adler32.js
+       		JZ/Tree.js
+       		JZ/StaticTree.js
+       		JZ/GZIPHeader.js
+       		JZ/Inflate.js
+       		JZ/InfTree.js
+       		JZ/InfBlocks.js
+       		JZ/InfCodes.js
+       		J/io/JmolUtil.js
+        	" />
+    </antcall>
+   	
+    <antcall target="call-core">
         <param name="call-core.name" value="script" />
         <param name="call-core.list" value="
-       		J/api/JmolScriptManager.js
-       		J/api/JmolScriptEvaluator.js
-    		J/api/JmolScriptFunction.js
-    		J/api/JmolParallelProcessor.js
-       		J/script/JmolCmdExtension.js
-       		J/script/JmolMathExtension.js
-       		J/script/JmolSmilesExtension.js
-       		J/script/FileLoadThread.js
-       		J/script/ScriptQueueThread.js
-       		J/script/ScriptDelayThread.js
-       		J/script/CommandWatcherThread.js
-            J/script/ScriptError.js
-            J/script/ScriptParam.js
-            J/script/ScriptExpr.js 
-            J/script/ScriptEval.js 
-       		J/script/ScriptManager.js
-       		J/script/ScriptCompiler.js
-       		J/script/ScriptTokenParser.js
-       		J/script/ScriptFlowContext.js
-       		J/script/ScriptFunction.js
-       		J/script/ScriptInterruption.js
-       		J/script/ScriptMathProcessor.js
+        	J/api/JmolParallelProcessor.js
+        	J/api/JmolScriptEvaluator.js
+        	J/api/JmolScriptFunction.js
+        	J/api/JmolScriptManager.js
+        	J/script/CommandWatcherThread.js
+        	J/script/FileLoadThread.js
+        	J/script/JmolCmdExtension.js
+        	J/script/JmolMathExtension.js
+        	J/script/JmolSmilesExtension.js
+        	J/script/ScriptCompiler.js
+        	J/script/ScriptDelayThread.js
+        	J/script/ScriptError.js
+        	J/script/ScriptEval.js 
+        	J/script/ScriptExpr.js 
+        	J/script/ScriptFlowContext.js
+        	J/script/ScriptFunction.js
+        	J/script/ScriptInterruption.js
+        	J/script/ScriptManager.js
+        	J/script/ScriptMathProcessor.js
+        	J/script/ScriptParallelProcessor.js
+        	J/script/ScriptParam.js
+        	J/script/ScriptProcess.js
+        	J/script/ScriptProcessRunnable.js
+        	J/script/ScriptQueueThread.js
+        	J/script/ScriptTokenParser.js
         	" />
     </antcall>
 
@@ -1307,42 +960,20 @@
        		J/minimize/forcefield/Calculations.js
        		J/minimize/forcefield/CalculationsMMFF.js
        		J/minimize/forcefield/CalculationsUFF.js
+       		J/minimize/forcefield/MMFFAngleCalc.js
+       		J/minimize/forcefield/MMFFDistanceCalc.js
+       		J/minimize/forcefield/MMFFESCalc.js
+       		J/minimize/forcefield/MMFFOOPCalc.js
+       		J/minimize/forcefield/MMFFSBCalc.js
+       		J/minimize/forcefield/MMFFTorsionCalc.js
+       		J/minimize/forcefield/MMFFVDWCalc.js
+       		J/minimize/forcefield/UFFAngleCalc.js
+       		J/minimize/forcefield/UFFDistanceCalc.js
+       		J/minimize/forcefield/UFFOOPCalc.js
+       		J/minimize/forcefield/UFFTorsionCalc.js
+       		J/minimize/forcefield/UFFVDWCalc.js
        		J/minimize/forcefield/FFParam.js
        		J/minimize/MinimizationThread.js
-        	" />
-    </antcall>
-   	
-    <antcall target="call-core">
-        <param name="call-core.name" value="zip" />
-        <param name="call-core.list" value="
-       		J/api/JmolZipUtility.js
-       		J/io2/ZipUtil.js
-       		java/io/FileInputStream.js
-       		JZ/Checksum.js
-       		JZ/CRC32.js
-       		java/util/zip/CRC32.js
-       		JZ/InflaterInputStream.js
-       		java/util/zip/InflaterInputStream.js
-       		java/util/zip/GZIPInputStream.js
-       		JZ/ZStream.js
-       		JZ/Inflater.js
-       		JZ/Adler32.js
-       		JZ/Tree.js
-       		JZ/StaticTree.js
-       		JZ/GZIPHeader.js
-       		JZ/Inflate.js
-       		JZ/InfTree.js
-       		JZ/InfBlocks.js
-       		JZ/InfCodes.js
-       		java/util/zip/CheckedInputStream.js
-       		java/util/zip/Inflater.js
-       		java/util/zip/ZipException.js
-       		java/util/zip/ZipConstants.js
-       		java/util/zip/ZipEntry.js
-       		java/util/zip/ZipConstants64.js
-       		java/util/zip/ZipInputStream.js
-       		java/io/PushbackInputStream.js
-       		J/io2/JmolZipInputStream.js
         	" />
     </antcall>
    	
@@ -1389,13 +1020,15 @@
        		J/renderbio/RocketsRenderer.js
        		J/renderbio/CartoonRenderer.js
        		J/renderbio/BackboneRenderer.js
-       		J/renderbio/TraceRenderer.js
+       		J/renderbio/TraceRenderer.js        	
         	" />
     </antcall>
    	
     <antcall target="call-core">
         <param name="call-core.name" value="surface" />
         <param name="call-core.list" value="
+    		JW/Triangulator.js
+    		JW/TriangleData.js
        		J/api/VolumeDataInterface.js
        		J/jvxl/api/VertexDataServer.js
        		J/jvxl/api/MeshDataServer.js
@@ -1439,17 +1072,6 @@
         	" />
     </antcall>
 
-    <antcall target="call-core">
-        <param name="call-core.name" value="binary" />
-        <param name="call-core.list" value="
-       		java/io/PushbackInputStream.js
-       		java/io/DataInputStream.js
-       		JU/BC.js
-       		J/io2/BinaryDocument.js
-        	" />
-    </antcall>
-   	
-   	
     <antcall target="call-core">
         <param name="call-core.name" value="pymol" />
         <param name="call-core.list" value="
