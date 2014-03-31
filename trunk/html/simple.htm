@@ -28,7 +28,7 @@ jmol_isReady = function(applet) {
 }		
 
 var xxxx = document.location.search
-if (xxxx.indexOf("USE=") > 0)xxxx = "";
+if (xxxx.indexOf("_USE=") > 0)xxxx = xxxx.substring(0, xxxx.indexOf("_USE=") - 1);
 if (xxxx.length == 5 || xxxx.length == 0) { 
 	xxxx = (xxxx + "?1crn").substring(1,5)
 	script = 'h2oOn=true;set animframecallback "jmolscript:if (!selectionHalos) {select model=_modelNumber}";'
