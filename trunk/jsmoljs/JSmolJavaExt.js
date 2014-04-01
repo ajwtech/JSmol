@@ -1,6 +1,7 @@
 // JSmolJavaExt.js
 // will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 4/1/2014 7:51:46 AM removing java.lang.B00lean
 // BH 3/7/2014 9:17:10 AM removing Array.toString; moving that code here from j2sJmol.js
 // BH 1/30/2014 9:04:25 AM adding Throwable.getStackTrace() as a STRING
 // BH 12/4/2013 9:20:44 PM fix for reassigning Date.prototype.toString()
@@ -631,7 +632,7 @@ return s.valueOf()==this.valueOf();
 },"Object");
 
 
-java.lang.B00lean = Boolean;
+//java.lang.B00lean = Boolean; ?? BH why this?
 Boolean = java.lang.Boolean = Boolean || function () {Clazz.instantialize (this, arguments);};
 if (Clazz._supportsNativeObject) {
 	for (var i = 0; i < Clazz._extendedObjectMethods.length; i++) {
