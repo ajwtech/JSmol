@@ -39,6 +39,9 @@
 
 	 // J2S class changes:
 
+   // BH 4/1/2014 6:40:08 AM removing ClassLoader -- equals ClazzLoader
+   // BH 4/1/2014 6:40:08 AM removing ClassLoaderProgressMonitor -- equals ClazzLoaderProgressMonitor
+   // BH 4/1/2014 6:17:21 AM removing Class  -- only used for "Class.forName" in Jmol, which ANT will now change to "Clazz.forName"
 	 // BH 3/7/2014 9:05:06 AM Array.prototype.toString should not be aliased. -- http://sourceforge.net/p/jmol/bugs/560/ with Google Visualization
 
 	 // BH 1/30/2014 12:54:22 PM gave all field variables prefix underscore. This allows Google Closure Compiler to skip them.  
@@ -103,7 +106,7 @@
 	LoadClazz = function() {
 
 	if (!window["j2s.clazzloaded"])
-	window["j2s.clazzloaded"] = false;
+		window["j2s.clazzloaded"] = false;
 
 	if (window["j2s.clazzloaded"])return;
 
@@ -155,12 +158,21 @@
 	 * Class Clazz. All the methods are static in this class.
 	 */
 	/* static */
-	Class = Clazz = function () {};
+	/*Class = */ Clazz = function () {};
 
 	;(function(Clazz) {
 
 	Clazz.__debuggingBH = false;
-
+  Clazz._globals = ["j2s.clazzloaded", "j2s.object.native"];
+	Clazz.setGlobal = function(a, v) {
+		Clazz._globals.push(a);
+		window[a] = v;
+	}
+	
+	Clazz.getGlobals = function() {
+		return Clazz._globals.sort().join("\n");
+	}
+	
 	// BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
 	// which could be a bottle-neck for function calling.
 
@@ -201,7 +213,7 @@
 		JavaObject = Object;
 	}
 
-	ClazzLoaderProgressMonitor = ClassLoaderProgressMonitor = {};
+	ClazzLoaderProgressMonitor = {};
 	Clazz.Console = {};
 	Clazz.dateToString = Date.prototype.toString;
 
@@ -1517,7 +1529,7 @@
 					// pkg[pkgFrags[i]] = {};
 					if (i == 0) {
 						// eval ...
-						window[pkgFrags[i]] = pkg[pkgFrags[i]];
+						Clazz.setGlobal(pkgFrags[i], pkg[pkgFrags[i]]);
 					}
 				}
 				pkg = pkg[pkgFrags[i]]
@@ -1590,7 +1602,7 @@
 				// already defined! Should throw exception!
 				return window[qClazzName];
 			}
-			window[qClazzName] = clazzFun;
+			Clazz.setGlobal(qClazzName, clazzFun);
 		}
 		Clazz.decorateAsType (clazzFun, qClazzName, clazzParent, interfacez);
 		/*# {$no.javascript.support} >>x #*/
@@ -1723,7 +1735,7 @@
 			} else {
 				baseFolder = ClazzLoader.getClasspathFor (clazzName, true);
 			}
-			var loader = ClassLoader.requireLoaderByBase (baseFolder);
+			var loader = ClazzLoader.requireLoaderByBase (baseFolder);
 			loader.getResourceAsStream = Clazz._innerFunctions.getResourceAsStream;
 			loader.getResource = Clazz._innerFunctions.getResource; // BH
 			return loader;
@@ -1878,14 +1890,14 @@
 			// e.g. Clazz.declareInterface (null, "ICorePlugin", 
 			//		org.eclipse.ui.IPlugin);
 			qName = name;
-			window[name] = clazzFun;
+			Clazz.setGlobal(name, clazzFun);
 		} else if (prefix.__PKG_NAME__ != null) {
 			// e.g. Clazz.declareInterface (org.eclipse.ui, "ICorePlugin", 
 			//		org.eclipse.ui.IPlugin);
 			qName = prefix.__PKG_NAME__ + "." + name;
 			prefix[name] = clazzFun;
 			if (prefix === java.lang) {
-				window[name] = clazzFun;
+				Clazz.setGlobal(name, clazzFun);
 			}
 		} else {
 			// e.g. Clazz.declareInterface (org.eclipse.ui.Plugin, "ICorePlugin", 
@@ -6192,7 +6204,7 @@
 	};
 
 
-	ClassLoader = ClazzLoader;
+	//ClassLoader = ClazzLoader;
 
 	})(Clazz, ClazzLoader, ClazzNode);
 
@@ -6247,7 +6259,7 @@
 	};
 	/* private */ clpm.attached = false;
 	/* private */ clpm.cleanup = function () {
-		var oThis = ClassLoaderProgressMonitor;
+		var oThis = ClazzLoaderProgressMonitor;
 		//if (oThis.monitorEl != null) {
 		//	oThis.monitorEl.onmouseover = null;
 		//}
@@ -6276,13 +6288,13 @@
 		if (this.monitorEl.style.display == "none") return;
 		if (this.fadeAlpha == this.DEFAULT_OPACITY) {
 			this.fadeOutTimer = window.setTimeout (function () {
-						ClassLoaderProgressMonitor.fadeOut ();
+						ClazzLoaderProgressMonitor.fadeOut ();
 					}, 750);
 			this.fadeAlpha -= 5;
 		} else if (this.fadeAlpha - 10 >= 0) {
 			this.setAlpha (this.fadeAlpha - 10);
 			this.fadeOutTimer = window.setTimeout (function () {
-						ClassLoaderProgressMonitor.fadeOut ();
+						ClazzLoaderProgressMonitor.fadeOut ();
 					}, 40);
 		} else {
 			this.monitorEl.style.display = "none";
@@ -6776,7 +6788,7 @@
 				"util.zip",
 				"net", "text"]);
 
-		window["reflect"] = java.lang.reflect;
+		//window["reflect"] = java.lang.reflect;
 
 		ClazzLoader.ignore([
 			"net.sf.j2s.ajax.HttpRequest",

@@ -91,12 +91,12 @@
 			Jmol.__clazzLoaded = true;
 			LoadClazz();
 			if (applet._noMonitor)
-				ClassLoaderProgressMonitor.showStatus = function() {}
+				ClazzLoaderProgressMonitor.showStatus = function() {}
 			LoadClazz = null;
 
 			ClazzLoader.globalLoaded = function (file) {
 			 // not really.... just nothing more yet to do yet
-				ClassLoaderProgressMonitor.showStatus ("Application loaded.", true);
+				ClazzLoaderProgressMonitor.showStatus ("Application loaded.", true);
 				if (!Jmol._debugCode || !Jmol.haveCore) {
 					Jmol.haveCore = true;
 					Jmol.__nextExecution();
