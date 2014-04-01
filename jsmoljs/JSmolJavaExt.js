@@ -1,6 +1,7 @@
 // JSmolJavaExt.js
 // will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 4/1/2014 12:23:41 PM Encoding moved to Clazz._Encoding; 
 // BH 4/1/2014 7:51:46 AM removing java.lang.B00lean
 // BH 3/7/2014 9:17:10 AM removing Array.toString; moving that code here from j2sJmol.js
 // BH 1/30/2014 9:04:25 AM adding Throwable.getStackTrace() as a STRING
@@ -720,7 +721,10 @@ Boolean.FALSE=Boolean.prototype.FALSE=new Boolean(false);
 Boolean.TYPE=Boolean.prototype.TYPE=Boolean;
 
 
-Encoding=new Object();
+Clazz._Encoding=new Object();
+
+(function(Encoding) {
+
 Encoding.UTF8="utf-8";
 Encoding.UTF16="utf-16";
 Encoding.ASCII="ascii";
@@ -1458,14 +1462,14 @@ case 1:
 		return new String(x);
 	}
 	if(x instanceof Array || x instanceof Int32Array){
-		if(x.length>0&&typeof x[0]=="number"){
-			var arr=new Array(x.length);
-			for(var i=0;i<x.length;i++){
-				arr[i]=String.fromCharCode(x[i]&0xff);
-			}
-			return Encoding.readUTF8(arr.join(''));
-		}
-		return x.join('');
+		if(x.length == 0)
+			return "";
+		if(typeof x[0]!="number")
+			return x.join('');
+		var arr=new Array(x.length);
+		for(var i=0;i<x.length;i++)
+			arr[i]=String.fromCharCode(x[i]&0xff);
+		return Encoding.readUTF8(arr.join(''));
 	}
 	if(x.__CLASS_NAME__=="StringBuffer"||x.__CLASS_NAME__=="java.lang.StringBuffer"){
 		var value=x.shareValue();
@@ -1553,14 +1557,16 @@ default:
 }
 };
 
-
 if(navigator.userAgent.toLowerCase().indexOf("chrome")!=-1){
-String.prototype.toString=function(){
-return this;
-};
+	String.prototype.toString=function(){return this;};
 }
 
 }
+
+})(Clazz._Encoding);
+
+
+
 c$=$_C(function(){
 this.value=0;
 $_Z(this,arguments);

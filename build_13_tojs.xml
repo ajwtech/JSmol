@@ -94,8 +94,8 @@
    	
   	<!-- modify class names -->		
 
-    <echo>replaciing Class.forName with Clazz.forName</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Class.forName" value="Clazz.forName"/>
+    <echo>replacing Class.forName with Clazz._4Name</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Class.forName" value="Clazz._4Name"/>
 
     <echo>abbreviating class name "org.jmol.modelsetbio" to "JMB"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
@@ -1217,7 +1217,6 @@
    	</concat> 
   	<copy file="site/jsmol/js/core${call-core.name}.js" tofile="site/jsmol/js/core2.js" />
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
-  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz_forName" value="Clazz.forName"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz__" value="Clazz._"/>
   	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
   	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
