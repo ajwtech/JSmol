@@ -4,7 +4,6 @@
 // BH 12/6/2013 10:12:30 AM adding corejmoljsv.z.js
 // BH 9/17/2013 10:18:40 AM  file transfer functions moved to JSmolCore 
 // BH 3/5/2013 9:54:16 PM added support for a cover image: Info.coverImage, coverScript, coverTitle, deferApplet, deferUncover
-
 // BH 1/3/2013 4:54:01 AM mouse binding should return false -- see d.bind(...), and d.bind("contextmenu") is not necessary
 
 // JSmol.js -- Jmol pure JavaScript version
@@ -91,25 +90,25 @@
 			Jmol.__clazzLoaded = true;
 			LoadClazz();
 			if (applet._noMonitor)
-				ClazzLoaderProgressMonitor.showStatus = function() {}
+				Clazz._LoaderProgressMonitor.showStatus = function() {}
 			LoadClazz = null;
 
-			ClazzLoader.globalLoaded = function (file) {
+			Clazz._Loader.globalLoaded = function (file) {
 			 // not really.... just nothing more yet to do yet
-				ClazzLoaderProgressMonitor.showStatus ("Application loaded.", true);
+				Clazz._LoaderProgressMonitor.showStatus ("Application loaded.", true);
 				if (!Jmol._debugCode || !Jmol.haveCore) {
 					Jmol.haveCore = true;
 					Jmol.__nextExecution();
 				}
 			};
-			ClazzLoader.packageClasspath ("java", null, true);
+			Clazz._Loader.packageClasspath ("java", null, true);
 			return;
 		}
 		Jmol.__nextExecution();
 	};
 
 	Jmol.__loadClass = function(applet, javaClass) {
-		ClazzLoader.loadClass(javaClass, function() {Jmol.__nextExecution()});
+		Clazz._Loader.loadClass(javaClass, function() {Jmol.__nextExecution()});
 	};
 
 	Jmol._Canvas2D = function(id, Info, type, checkOnly){
@@ -503,7 +502,7 @@
 
 			if (bytes != null) {      
 				bytes = J.io.Base64.getBase64(bytes).toString();      
-				var filename = path.substring(url.lastIndexOf("/") + 1);                                                           
+				var filename = path.substring(url.lastIndexOf("/") + 1);                                    
 				var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
 				 // now what?
 			}

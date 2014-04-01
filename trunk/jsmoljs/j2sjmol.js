@@ -39,9 +39,9 @@
 
 	 // J2S class changes:
 
-   // BH 4/1/2014 6:40:08 AM removing ClassLoader -- equals ClazzLoader
+   // BH 4/1/2014 6:40:08 AM removing ClassLoader -- equals Clazz._Loader
    // BH 4/1/2014 6:40:08 AM removing ClassLoaderProgressMonitor -- equals ClazzLoaderProgressMonitor
-   // BH 4/1/2014 6:17:21 AM removing Class  -- only used for "Class.forName" in Jmol, which ANT will now change to "Clazz.forName"
+   // BH 4/1/2014 6:17:21 AM removing Class  -- only used for "Class.forName" in Jmol, which ANT will now change to "Clazz._4Name"
 	 // BH 3/7/2014 9:05:06 AM Array.prototype.toString should not be aliased. -- http://sourceforge.net/p/jmol/bugs/560/ with Google Visualization
 
 	 // BH 1/30/2014 12:54:22 PM gave all field variables prefix underscore. This allows Google Closure Compiler to skip them.  
@@ -213,7 +213,6 @@
 		JavaObject = Object;
 	}
 
-	ClazzLoaderProgressMonitor = {};
 	Clazz.Console = {};
 	Clazz.dateToString = Date.prototype.toString;
 
@@ -1728,14 +1727,14 @@
 		},
 		getClassLoader : function () {
 			var clazzName = this.__CLASS_NAME__;
-			var baseFolder = ClazzLoader.getClasspathFor (clazzName);
+			var baseFolder = Clazz._Loader.getClasspathFor (clazzName);
 			var x = baseFolder.lastIndexOf (clazzName.replace (/\./g, "/"));
 			if (x != -1) {
 				baseFolder = baseFolder.substring (0, x);
 			} else {
-				baseFolder = ClazzLoader.getClasspathFor (clazzName, true);
+				baseFolder = Clazz._Loader.getClasspathFor (clazzName, true);
 			}
-			var loader = ClazzLoader.requireLoaderByBase (baseFolder);
+			var loader = Clazz._Loader.requireLoaderByBase (baseFolder);
 			loader.getResourceAsStream = Clazz._innerFunctions.getResourceAsStream;
 			loader.getResource = Clazz._innerFunctions.getResource; // BH
 			return loader;
@@ -1770,10 +1769,10 @@
 				if (arguments.length == 2) { // additional argument
 					baseFolder = arguments[1];
 					if (baseFolder == null) {
-						baseFolder = ClazzLoader.binaryFolders[0];
+						baseFolder = Clazz._Loader.binaryFolders[0];
 					}
-				} else if (window["ClazzLoader"] != null) {
-					baseFolder = ClazzLoader.getClasspathFor (clazzName, true);
+				} else if (Clazz._Loader != null) {
+					baseFolder = Clazz._Loader.getClasspathFor (clazzName, true);
 				}
 				if (baseFolder == null || baseFolder.length == 0) {
 					is.url = name.substring (1);
@@ -1789,8 +1788,8 @@
 			} else {
 				if (this.base != null) {
 					baseFolder = this.base;
-				} else if (window["ClazzLoader"] != null) {
-					baseFolder = ClazzLoader.getClasspathFor (clazzName);
+				} else if (Clazz._Loader != null) {
+					baseFolder = Clazz._Loader.getClasspathFor (clazzName);
 					var x = baseFolder.lastIndexOf (clazzName.replace (/\./g, "/"));
 					if (x != -1) {
 						baseFolder = baseFolder.substring (0, x);
@@ -1815,7 +1814,7 @@
 								}
 							}
 						} else {
-							baseFolder = ClazzLoader.getClasspathFor (clazzName, true);
+							baseFolder = Clazz._Loader.getClasspathFor (clazzName, true);
 						}
 					}
 				} else {
@@ -1881,9 +1880,9 @@
 	/* private */
 	/*-# decorateFunction -> dF #-*/
 	Clazz.decorateFunction = function (clazzFun, prefix, name) {
-		if (window["ClazzLoader"] != null) {
+		if (Clazz._Loader != null) {
 			//alert ("decorate " + name);
-			ClazzLoader.checkInteractive ();
+			Clazz._Loader.checkInteractive ();
 		}
 		var qName = null;
 		if (prefix == null) {
@@ -1912,19 +1911,19 @@
 			clazzFun[inF[i]] = Clazz._innerFunctions[inF[i]];
 		}
 
-		if (window["ClazzLoader"] != null) {
+		if (Clazz._Loader != null) {
 			/*-# findClass -> fC #-*/
-			var node = ClazzLoader.findClass (qName);
+			var node = Clazz._Loader.findClass (qName);
 			/*-#
 			 # ClazzNode.STATUS_KNOWN -> 1
 			 #-*/
-			if (node != null && node.status == ClazzNode.STATUS_KNOWN) {
+			if (node != null && node.status == Clazz._Node.STATUS_KNOWN) {
 				/*-# 
 				 # updateNode -> uN 
 				 #-*/
 				window.setTimeout((function(nnn) {
 					return function() {
-						ClazzLoader.updateNode (nnn);
+						Clazz._Loader.updateNode (nnn);
 					};
 				})(node), 1);
 				/*
@@ -3271,13 +3270,13 @@
 	})();
 
 	/* public */
-	Clazz.forName = function (clazzName) {
+	Clazz._4Name = function (clazzName) {
 		if (Clazz.isClassDefined (clazzName)) {
 			return Clazz.evalType (clazzName);
 		}
-		if (window["ClazzLoader"] != null) {
-			ClazzLoader.setLoadingMode ("xhr.sync");
-			ClazzLoader.loadClass (clazzName);
+		if (Clazz._Loader != null) {
+			Clazz._Loader.setLoadingMode ("xhr.sync");
+			Clazz._Loader.loadClass (clazzName);
 			//alert("TESTING HERE in Clazz.forName")
 			return Clazz.evalType (clazzName);
 		} else {
@@ -3351,8 +3350,8 @@
 				Clazz.cleanDelegateMethod (cc.prototype[m]);
 			}
 
-			if (window["ClazzLoader"] != null) {
-				ClazzLoader.unloadClassExt (qClazzName);
+			if (Clazz._Loader != null) {
+				Clazz._Loader.unloadClassExt (qClazzName);
 			}
 
 			return true;
@@ -3484,15 +3483,15 @@
 	/**
 	 * Static class loader class
 	 */
-	ClazzLoader = function () {};
+	Clazz._Loader = function () {};
 
 
 	/**
 	 * Class dependency tree node
 	 */
 	/* private */
-	ClazzNode = function () {
-		ClazzLoader.initNode(this);
+	Clazz._Node = function () {
+		Clazz._Loader.initNode(this);
 	};
 
 	;(function(Clazz, ClazzLoader, ClazzNode) {
@@ -6206,7 +6205,7 @@
 
 	//ClassLoader = ClazzLoader;
 
-	})(Clazz, ClazzLoader, ClazzNode);
+	})(Clazz, Clazz._Loader, Clazz._Node);
 
 	//}
 	/******************************************************************************
@@ -6223,6 +6222,8 @@
 	 * @author zhou renjian
 	 * @create Jan 11, 2007
 	 *******/
+
+	Clazz._LoaderProgressMonitor = function() {};
 
 	;(function(clpm) {
 	clpm.fadeOutTimer = null;
@@ -6259,7 +6260,7 @@
 	};
 	/* private */ clpm.attached = false;
 	/* private */ clpm.cleanup = function () {
-		var oThis = ClazzLoaderProgressMonitor;
+		var oThis = clpm;
 		//if (oThis.monitorEl != null) {
 		//	oThis.monitorEl.onmouseover = null;
 		//}
@@ -6288,13 +6289,13 @@
 		if (this.monitorEl.style.display == "none") return;
 		if (this.fadeAlpha == this.DEFAULT_OPACITY) {
 			this.fadeOutTimer = window.setTimeout (function () {
-						ClazzLoaderProgressMonitor.fadeOut ();
+						clpm.fadeOut ();
 					}, 750);
 			this.fadeAlpha -= 5;
 		} else if (this.fadeAlpha - 10 >= 0) {
 			this.setAlpha (this.fadeAlpha - 10);
 			this.fadeOutTimer = window.setTimeout (function () {
-						ClazzLoaderProgressMonitor.fadeOut ();
+						clpm.fadeOut ();
 					}, 40);
 		} else {
 			this.monitorEl.style.display = "none";
@@ -6379,7 +6380,7 @@
 		}
 	}
 
-	})(ClazzLoaderProgressMonitor);
+	})(Clazz._LoaderProgressMonitor);
 
 	//}
 	/******************************************************************************
@@ -6775,9 +6776,9 @@
 
 	// moved here from package.js
 
-		Clazz.binaryFolders =  ClazzLoader.binaryFolders = [ ClazzLoader.getJ2SLibBase() ];
+		Clazz.binaryFolders =  Clazz._Loader.binaryFolders = [ Clazz._Loader.getJ2SLibBase() ];
 
-		ClazzLoader.registerPackages ("java", [
+		Clazz._Loader.registerPackages ("java", [
 				"io", "lang", 
 				//"lang.annotation", 
 				"lang.reflect",
@@ -6790,7 +6791,7 @@
 
 		//window["reflect"] = java.lang.reflect;
 
-		ClazzLoader.ignore([
+		Clazz._Loader.ignore([
 			"net.sf.j2s.ajax.HttpRequest",
 			"java.util.MapEntry.Type",
 			"java.net.UnknownServiceException",
