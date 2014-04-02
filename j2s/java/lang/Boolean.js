@@ -48,11 +48,11 @@ Clazz.defineMethod (Boolean, "toString",
 function () {
 return this.valueOf () ? "true" : "false";
 });
-$_V (Boolean, "hashCode", 
+Clazz.overrideMethod(Boolean, "hashCode", 
 function () {
 return this.valueOf () ? 1231 : 1237;
 });
-$_V (Boolean, "equals", 
+Clazz.overrideMethod(Boolean, "equals", 
 function (obj) {
 if (Clazz.instanceOf (obj, Boolean)) {
 return this.value == (obj).booleanValue ();
@@ -72,7 +72,7 @@ throw e;
 }
 return result;
 }, "~S");
-$_V (Boolean, "compareTo", 
+Clazz.overrideMethod(Boolean, "compareTo", 
 function (b) {
 return (b.value == this.value ? 0 : (this.value ? 1 : -1));
 }, "Boolean");

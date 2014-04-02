@@ -180,13 +180,13 @@ Clazz.defineMethod (c$, "getRef",
 function () {
 return this.ref;
 });
-$_V (c$, "equals", 
+Clazz.overrideMethod(c$, "equals", 
 function (obj) {
 if (!(Clazz.instanceOf (obj, java.net.URL))) return false;
 var u2 = obj;
 return this.handler.equals (this, u2);
 }, "~O");
-$_V (c$, "hashCode", 
+Clazz.overrideMethod(c$, "hashCode", 
 function () {
 if (this.$hashCode != -1) return this.$hashCode;
 this.$hashCode = this.handler.hashCode (this);
@@ -196,7 +196,7 @@ Clazz.defineMethod (c$, "sameFile",
 function (other) {
 return this.handler.sameFile (this, other);
 }, "java.net.URL");
-$_V (c$, "toString", 
+Clazz.overrideMethod(c$, "toString", 
 function () {
 return this.toExternalForm ();
 });

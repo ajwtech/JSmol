@@ -79,7 +79,7 @@ return !isFinite (num);
 }, "Number");
 Float.isInfinite = Float.prototype.isInfinite;
 
-$_V (Float, "equals", 
+Clazz.overrideMethod(Float, "equals", 
 function (s) {
 if(s == null || ! Clazz.instanceOf(s, Float) ){
 	return false;

@@ -29,7 +29,7 @@ if (minCapacity < 0) throw  new OutOfMemoryError ();
 newCapacity = 2147483647;
 }this.buf = J.util.ArrayUtil.arrayCopyByte (this.buf, newCapacity);
 }, $fz.isPrivate = true, $fz), "~N");
-$_V (c$, "writeByteAsInt", 
+Clazz.overrideMethod(c$, "writeByteAsInt", 
 function (b) {
 this.ensureCapacity (this.count + 1);
 this.buf[this.count] = b;
@@ -59,11 +59,11 @@ Clazz.defineMethod (c$, "size",
 function () {
 return this.count;
 });
-$_V (c$, "toString", 
+Clazz.overrideMethod(c$, "toString", 
 function () {
 return  String.instantialize (this.buf, 0, this.count);
 });
-$_V (c$, "close", 
+Clazz.overrideMethod(c$, "close", 
 function () {
 });
 });

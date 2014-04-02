@@ -369,11 +369,13 @@ Jmol = (function(document) {
 		delete JW;
 		delete JZ;
 		delete java;
+		delete javajs;
 		delete Clazz;
+		delete c$; // used in p0p; could be gotten rid of
+		/*
 		delete ClassLoader;
 		delete ClassLoaderProgressMonitor;
 		delete JavaObject;
-		delete c$; // used in p0p; could be gotten rid of
 		delete $_A;
 		delete $_AB;
 		delete $_AC;
@@ -411,6 +413,7 @@ Jmol = (function(document) {
 		delete $_k;
 		delete $_s;
 		delete $t$;
+		*/
 	}
 
 	////////////// feature detection ///////////////

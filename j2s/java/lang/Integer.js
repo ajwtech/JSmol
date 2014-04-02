@@ -81,7 +81,7 @@ return new Integer(Integer.parseInt (s, r));
 }, "String, Number");
 
 Integer.$valueOf = Integer.prototype.$valueOf;
-$_V(Integer, "equals", 
+Clazz.overrideMethod(Integer, "equals", 
 function (s) {
 if(s == null || ! Clazz.instanceOf(s, Integer) ){
 	return false;
@@ -131,7 +131,7 @@ throw e;
 return result;
 }, "~S");
 
-$_V (Integer, "hashCode", 
+Clazz.overrideMethod(Integer, "hashCode", 
 function () {
 return this.valueOf ();
 });

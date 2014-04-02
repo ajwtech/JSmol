@@ -1,41 +1,41 @@
-$_L(["java.util.AbstractList","$.List","$.RandomAccess"],"java.util.ArrayList",["java.lang.IllegalArgumentException","$.IndexOutOfBoundsException","java.lang.reflect.Array","java.util.Arrays"],function(){
-c$=$_C(function(){
+Clazz.load(["java.util.AbstractList","$.List","$.RandomAccess"],"java.util.ArrayList",["java.lang.IllegalArgumentException","$.IndexOutOfBoundsException","java.lang.reflect.Array","java.util.Arrays"],function(){
+c$=Clazz.decorateAsClass(function(){
 this.firstIndex=0;
 this.lastIndex=0;
 this.array=null;
-$_Z(this,arguments);
+Clazz.instantialize(this,arguments);
 },java.util,"ArrayList",java.util.AbstractList,[java.util.List,Cloneable,java.io.Serializable,java.util.RandomAccess]);
-$_K(c$,
+Clazz.makeConstructor(c$,
 function(){
 this.construct(0);
 });
-$_K(c$,
+Clazz.makeConstructor(c$,
 function(capacity){
-$_R(this,java.util.ArrayList,[]);
+Clazz.superConstructor(this,java.util.ArrayList,[]);
 this.firstIndex=this.lastIndex=0;
 try{
 this.array=this.newElementArray(capacity);
 }catch(e){
-if($_O(e,NegativeArraySizeException)){
+if(Clazz.instanceOf(e,NegativeArraySizeException)){
 throw new IllegalArgumentException();
 }else{
 throw e;
 }
 }
 },"~N");
-$_K(c$,
+Clazz.makeConstructor(c$,
 function(collection){
-$_R(this,java.util.ArrayList,[]);
+Clazz.superConstructor(this,java.util.ArrayList,[]);
 var size=collection.size();
 this.firstIndex=this.lastIndex=0;
 this.array=this.newElementArray(size+(Math.floor(size/10)));
 this.addAll(collection);
 },"java.util.Collection");
-$_M(c$,"newElementArray",
+Clazz.defineMethod(c$,"newElementArray",
 ($fz=function(size){
 return new Array(size);
 },$fz.isPrivate=true,$fz),"~N");
-$_M(c$,"add",
+Clazz.defineMethod(c$,"add",
 function(location,object){
 var size=this.size();
 if(0<location&&location<size){
@@ -60,7 +60,7 @@ this.growAtEnd(1);
 throw new IndexOutOfBoundsException();
 }this.modCount++;
 },"~N,~O");
-$_M(c$,"add",
+Clazz.defineMethod(c$,"add",
 function(object){
 if(this.lastIndex==this.array.length){
 this.growAtEnd(1);
@@ -68,7 +68,7 @@ this.growAtEnd(1);
 this.modCount++;
 return true;
 },"~O");
-$_M(c$,"addAll",
+Clazz.defineMethod(c$,"addAll",
 function(location,collection){
 var size=this.size();
 if(location<0||location>size){
@@ -108,7 +108,7 @@ this.modCount++;
 return true;
 }return false;
 },"~N,java.util.Collection");
-$_M(c$,"addAll",
+Clazz.defineMethod(c$,"addAll",
 function(collection){
 var growSize=collection.size();
 if(growSize>0){
@@ -123,28 +123,28 @@ this.modCount++;
 return true;
 }return false;
 },"java.util.Collection");
-$_V(c$,"clear",
+Clazz.overrideMethod(c$,"clear",
 function(){
 if(this.firstIndex!=this.lastIndex){
 java.util.Arrays.fill(this.array,this.firstIndex,this.lastIndex,null);
 this.firstIndex=this.lastIndex=0;
 this.modCount++;
 }});
-$_M(c$,"clone",
+Clazz.defineMethod(c$,"clone",
 function(){
 try{
-var newList=$_U(this,java.util.ArrayList,"clone",[]);
+var newList=Clazz.superCall(this,java.util.ArrayList,"clone",[]);
 newList.array=this.array.clone();
 return newList;
 }catch(e){
-if($_O(e,CloneNotSupportedException)){
+if(Clazz.instanceOf(e,CloneNotSupportedException)){
 return null;
 }else{
 throw e;
 }
 }
 });
-$_V(c$,"contains",
+Clazz.overrideMethod(c$,"contains",
 function(object){
 if(object!=null){
 for(var i=this.firstIndex;i<this.lastIndex;i++){
@@ -158,7 +158,7 @@ return true;
 }}
 }return false;
 },"~O");
-$_M(c$,"ensureCapacity",
+Clazz.defineMethod(c$,"ensureCapacity",
 function(minimumCapacity){
 if(this.array.length<minimumCapacity){
 if(this.firstIndex>0){
@@ -166,13 +166,13 @@ this.growAtFront(minimumCapacity-this.array.length);
 }else{
 this.growAtEnd(minimumCapacity-this.array.length);
 }}},"~N");
-$_V(c$,"get",
+Clazz.overrideMethod(c$,"get",
 function(location){
 if(0<=location&&location<this.size()){
 return this.array[this.firstIndex+location];
 }throw new IndexOutOfBoundsException();
 },"~N");
-$_M(c$,"growAtEnd",
+Clazz.defineMethod(c$,"growAtEnd",
 ($fz=function(required){
 var size=this.size();
 if(this.firstIndex>=required-(this.array.length-this.lastIndex)){
@@ -194,7 +194,7 @@ if(size>0){
 System.arraycopy(this.array,this.firstIndex,newArray,this.firstIndex,size);
 }this.array=newArray;
 }},$fz.isPrivate=true,$fz),"~N");
-$_M(c$,"growAtFront",
+Clazz.defineMethod(c$,"growAtFront",
 ($fz=function(required){
 var size=this.size();
 if(this.array.length-this.lastIndex>=required){
@@ -218,7 +218,7 @@ System.arraycopy(this.array,this.firstIndex,newArray,newArray.length-size,size);
 this.lastIndex=newArray.length;
 this.array=newArray;
 }},$fz.isPrivate=true,$fz),"~N");
-$_M(c$,"growForInsert",
+Clazz.defineMethod(c$,"growForInsert",
 ($fz=function(location,required){
 var size=this.size();
 var increment=Math.floor(size/2);
@@ -240,7 +240,7 @@ this.firstIndex=0;
 this.lastIndex+=required;
 }this.array=newArray;
 },$fz.isPrivate=true,$fz),"~N,~N");
-$_V(c$,"indexOf",
+Clazz.overrideMethod(c$,"indexOf",
 function(object){
 if(object!=null){
 for(var i=this.firstIndex;i<this.lastIndex;i++){
@@ -254,11 +254,11 @@ return i-this.firstIndex;
 }}
 }return-1;
 },"~O");
-$_V(c$,"isEmpty",
+Clazz.overrideMethod(c$,"isEmpty",
 function(){
 return this.lastIndex==this.firstIndex;
 });
-$_V(c$,"lastIndexOf",
+Clazz.overrideMethod(c$,"lastIndexOf",
 function(object){
 if(object!=null){
 for(var i=this.lastIndex-1;i>=this.firstIndex;i--){
@@ -272,7 +272,7 @@ return i-this.firstIndex;
 }}
 }return-1;
 },"~O");
-$_M(c$,"remove",
+Clazz.defineMethod(c$,"remove",
 function(location){
 var result;
 var size=this.size();
@@ -297,7 +297,7 @@ throw new IndexOutOfBoundsException();
 }this.modCount++;
 return result;
 },"~N");
-$_V(c$,"removeRange",
+Clazz.overrideMethod(c$,"removeRange",
 function(start,end){
 if(start>=0&&start<=end&&end<=this.size()){
 if(start==end){
@@ -318,7 +318,7 @@ this.lastIndex=newLast;
 }else{
 throw new IndexOutOfBoundsException();
 }},"~N,~N");
-$_V(c$,"set",
+Clazz.overrideMethod(c$,"set",
 function(location,object){
 if(0<=location&&location<this.size()){
 var result=this.array[this.firstIndex+location];
@@ -326,18 +326,18 @@ this.array[this.firstIndex+location]=object;
 return result;
 }throw new IndexOutOfBoundsException();
 },"~N,~O");
-$_V(c$,"size",
+Clazz.overrideMethod(c$,"size",
 function(){
 return this.lastIndex-this.firstIndex;
 });
-$_M(c$,"toArray",
+Clazz.defineMethod(c$,"toArray",
 function(){
 var size=this.size();
 var result=new Array(size);
 System.arraycopy(this.array,this.firstIndex,result,0,size);
 return result;
 });
-$_M(c$,"toArray",
+Clazz.defineMethod(c$,"toArray",
 function(contents){
 var size=this.size();
 if(size>contents.length){
@@ -348,7 +348,7 @@ if(size<contents.length){
 contents[size]=null;
 }return contents;
 },"~A");
-$_M(c$,"trimToSize",
+Clazz.defineMethod(c$,"trimToSize",
 function(){
 var size=this.size();
 var newArray=this.newElementArray(size);

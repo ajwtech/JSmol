@@ -1,28 +1,28 @@
-$_L(["java.io.Reader"],"java.io.StringReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException"],function(){
-c$=$_C(function(){
+Clazz.load(["java.io.Reader"],"java.io.StringReader",["java.io.IOException","java.lang.ArrayIndexOutOfBoundsException","$.IllegalArgumentException"],function(){
+c$=Clazz.decorateAsClass(function(){
 this.str=null;
 this.markpos=-1;
 this.pos=0;
 this.count=0;
-$_Z(this,arguments);
+Clazz.instantialize(this,arguments);
 },java.io,"StringReader",java.io.Reader);
-$_K(c$,
+Clazz.makeConstructor(c$,
 function(str){
-$_R(this,java.io.StringReader,[str]);
+Clazz.superConstructor(this,java.io.StringReader,[str]);
 this.str=str;
 this.count=str.length;
 },"~S");
-$_V(c$,"close",
+Clazz.overrideMethod(c$,"close",
 function(){
 {
 if(this.isOpen()){
 this.str=null;
 }}});
-$_M(c$,"isOpen",
+Clazz.defineMethod(c$,"isOpen",
 ($fz=function(){
 return this.str!=null;
 },$fz.isPrivate=true,$fz));
-$_V(c$,"mark",
+Clazz.overrideMethod(c$,"mark",
 function(readLimit){
 if(readLimit>=0){
 {
@@ -33,11 +33,11 @@ throw new java.io.IOException(("K0083"));
 }}}else{
 throw new IllegalArgumentException();
 }},"~N");
-$_V(c$,"markSupported",
+Clazz.overrideMethod(c$,"markSupported",
 function(){
 return true;
 });
-$_M(c$,"read",
+Clazz.defineMethod(c$,"read",
 function(){
 {
 if(this.isOpen()){
@@ -46,7 +46,7 @@ return this.str.charAt(this.pos++);
 }return-1;
 }throw new java.io.IOException(("K0083"));
 }});
-$_M(c$,"read",
+Clazz.defineMethod(c$,"read",
 function(buf,offset,len){
 if(0<=offset&&offset<=buf.length&&0<=len&&len<=buf.length-offset){
 {
@@ -61,14 +61,14 @@ return read;
 }throw new java.io.IOException(("K0083"));
 }}throw new ArrayIndexOutOfBoundsException();
 },"~A,~N,~N");
-$_V(c$,"ready",
+Clazz.overrideMethod(c$,"ready",
 function(){
 {
 if(this.isOpen()){
 return true;
 }throw new java.io.IOException(("K0083"));
 }});
-$_V(c$,"reset",
+Clazz.overrideMethod(c$,"reset",
 function(){
 {
 if(this.isOpen()){
@@ -76,7 +76,7 @@ this.pos=this.markpos!=-1?this.markpos:0;
 }else{
 throw new java.io.IOException(("K0083"));
 }}});
-$_V(c$,"skip",
+Clazz.overrideMethod(c$,"skip",
 function(ns){
 {
 if(this.isOpen()){
