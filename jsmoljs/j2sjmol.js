@@ -6777,41 +6777,8 @@ Clazz.setConsoleDiv = function(d) {
 	window["j2s.lib"] && (window["j2s.lib"].console = d);
 };
 
+Clazz.binaryFolders =  Clazz._Loader.binaryFolders = [ Clazz._Loader.getJ2SLibBase() ];
+
 })(Clazz);
-
-// moved here from package.js
-
-	Clazz.binaryFolders =  Clazz._Loader.binaryFolders = [ Clazz._Loader.getJ2SLibBase() ];
-
-	Clazz._Loader.registerPackages ("java", [
-			"io", "lang", 
-			//"lang.annotation", 
-			"lang.reflect",
-			"util", 
-			//"util.concurrent", "util.concurrent.atomic", "util.concurrent.locks",
-			//"util.jar", "util.logging", "util.prefs", 
-			"util.regex",
-			"util.zip",
-			"net", "text"]);
-
-	//window["reflect"] = java.lang.reflect;
-
-	Clazz._Loader.ignore([
-		"net.sf.j2s.ajax.HttpRequest",
-		"java.util.MapEntry.Type",
-		"java.net.UnknownServiceException",
-		"java.lang.Runtime",
-		"java.security.AccessController",
-		"java.security.PrivilegedExceptionAction",
-		"java.io.File",
-		"java.io.FileInputStream",
-		"java.io.FileWriter",
-		"java.io.OutputStreamWriter",
-		"java.util.Calendar", // bypassed in ModelCollection
-		"java.text.SimpleDateFormat", // not used
-		"java.text.DateFormat", // not used
-		"java.util.concurrent.Executors"
-	])
-
 
 };
