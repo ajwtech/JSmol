@@ -44,7 +44,7 @@ function () {
 return this.valueOf();
 });
 
-$_V (Number, "hashCode", 
+Clazz.overrideMethod(Number, "hashCode", 
 function () {
 return this.valueOf ();
 });

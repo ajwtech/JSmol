@@ -77,7 +77,7 @@ return new Byte(Byte.parseByte (s, r));
 }, "String, Number");
 
 Byte.$valueOf = Byte.prototype.$valueOf;
-$_V(Byte, "equals", 
+Clazz.overrideMethod(Byte, "equals", 
 function (s) {
 if(s == null || !Clazz.instanceOf(s, Byte) ){
 	return false;

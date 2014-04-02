@@ -76,7 +76,7 @@ return new Double(v);
 
 Double.$valueOf = Double.prototype.$valueOf;
 
-$_V(Double, "equals", 
+Clazz.overrideMethod(Double, "equals", 
 function (s) {
 if(s == null || ! Clazz.instanceOf(s, Double) ){
 	return false;

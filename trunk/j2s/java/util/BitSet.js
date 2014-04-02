@@ -84,7 +84,7 @@ throw e;
 }
 }
 });
-$_V (c$, "equals", 
+Clazz.overrideMethod(c$, "equals", 
 function (obj) {
 if (!(Clazz.instanceOf (obj, java.util.BitSet))) return false;
 var bs = obj;
@@ -147,7 +147,7 @@ if ((to & 4) > lo_bit) bs.bits[i++] = this.bits[lo_offset] >>> lo_bit;
 if (hi_offset < this.bits.length) bs.bits[i - 1] &= (1 << (to - from)) - 1;
 return bs;
 }, "~N,~N");
-$_V (c$, "hashCode", 
+Clazz.overrideMethod(c$, "hashCode", 
 function () {
 var h = 1234;
 for (var i = this.bits.length; i > 0; ) h ^= i * this.bits[--i];
@@ -253,7 +253,7 @@ Clazz.defineMethod (c$, "size",
 function () {
 return this.bits.length * 32;
 });
-$_V (c$, "toString", 
+Clazz.overrideMethod(c$, "toString", 
 function () {
 var r =  new StringBuffer ("{");
 var first = true;

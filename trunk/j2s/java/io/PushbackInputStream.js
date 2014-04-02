@@ -84,18 +84,18 @@ n -= pskip;
 pskip += Clazz.superCall (this, java.io.PushbackInputStream, "skip", [n]);
 }return pskip;
 }, "~N");
-$_V (c$, "markSupported", 
+Clazz.overrideMethod(c$, "markSupported", 
 function () {
 return false;
 });
-$_V (c$, "mark", 
+Clazz.overrideMethod(c$, "mark", 
 function (readlimit) {
 }, "~N");
-$_V (c$, "reset", 
+Clazz.overrideMethod(c$, "reset", 
 function () {
 throw  new java.io.IOException ("mark/reset not supported");
 });
-$_V (c$, "close", 
+Clazz.overrideMethod(c$, "close", 
 function () {
 if (this.$in == null) return;
 this.$in.close ();

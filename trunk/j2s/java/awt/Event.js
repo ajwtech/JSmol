@@ -119,7 +119,7 @@ str += ",target=" + this.target;
 str += ",arg=" + this.arg;
 }return str;
 });
-$_V (c$, "toString", 
+Clazz.overrideMethod(c$, "toString", 
 function () {
 return this.getClass ().getName () + "[" + this.paramString () + "]";
 });

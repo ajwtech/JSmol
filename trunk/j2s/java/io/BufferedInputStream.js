@@ -46,7 +46,7 @@ buffer = this.buf = nbuf;
 var n = this.getInIfOpen ().read (buffer, this.pos, buffer.length - this.pos);
 if (n > 0) this.count = n + this.pos;
 }, $fz.isPrivate = true, $fz));
-$_V (c$, "readByteAsInt", 
+Clazz.overrideMethod(c$, "readByteAsInt", 
 function () {
 if (this.pos >= this.count) {
 this.fill ();
@@ -67,7 +67,7 @@ System.arraycopy (this.getBufIfOpen (), this.pos, b, off, cnt);
 this.pos += cnt;
 return cnt;
 }, $fz.isPrivate = true, $fz), "~A,~N,~N");
-$_V (c$, "read", 
+Clazz.overrideMethod(c$, "read", 
 function (b, off, len) {
 this.getBufIfOpen ();
 if ((off | len | (off + len) | (b.length - (off + len))) < 0) {
@@ -84,7 +84,7 @@ var input = this.$in;
 if (input != null && input.available () <= 0) return n;
 }
 }, "~A,~N,~N");
-$_V (c$, "skip", 
+Clazz.overrideMethod(c$, "skip", 
 function (n) {
 this.getBufIfOpen ();
 if (n <= 0) {
@@ -99,28 +99,28 @@ if (avail <= 0) return 0;
 this.pos += skipped;
 return skipped;
 }, "~N");
-$_V (c$, "available", 
+Clazz.overrideMethod(c$, "available", 
 function () {
 var n = this.count - this.pos;
 var avail = this.getInIfOpen ().available ();
 return n > (2147483647 - avail) ? 2147483647 : n + avail;
 });
-$_V (c$, "mark", 
+Clazz.overrideMethod(c$, "mark", 
 function (readlimit) {
 this.marklimit = readlimit;
 this.markpos = this.pos;
 }, "~N");
-$_V (c$, "reset", 
+Clazz.overrideMethod(c$, "reset", 
 function () {
 this.getBufIfOpen ();
 if (this.markpos < 0) throw  new java.io.IOException ("Resetting to invalid mark");
 this.pos = this.markpos;
 });
-$_V (c$, "markSupported", 
+Clazz.overrideMethod(c$, "markSupported", 
 function () {
 return true;
 });
-$_V (c$, "close", 
+Clazz.overrideMethod(c$, "close", 
 function () {
 var input = this.$in;
 this.$in = null;

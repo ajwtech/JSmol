@@ -105,7 +105,7 @@ var ref1 = u1.getRef ();
 var ref2 = u2.getRef ();
 return (ref1 === ref2 || (ref1 != null && ref1.equals (ref2))) && this.sameFile (u1, u2);
 }, "java.net.URL,java.net.URL");
-$_V(c$, "hashcode", 
+Clazz.overrideMethod(c$, "hashcode", 
 function (u) {
 var h = 0;
 var protocol = u.getProtocol ();

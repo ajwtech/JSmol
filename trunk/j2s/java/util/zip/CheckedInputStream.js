@@ -9,21 +9,21 @@ function ($in, cksum) {
 Clazz.superConstructor (this, java.util.zip.CheckedInputStream, [$in]);
 this.cksum = cksum;
 }, "java.io.InputStream,com.jcraft.jzlib.Checksum");
-$_V (c$, "readByteAsInt", 
+Clazz.overrideMethod(c$, "readByteAsInt", 
 function () {
 var b = this.$in.readByteAsInt ();
 if (b != -1) {
 this.cksum.updateByteAsInt (b);
 }return b;
 });
-$_V (c$, "read", 
+Clazz.overrideMethod(c$, "read", 
 function (buf, off, len) {
 len = this.$in.read (buf, off, len);
 if (len != -1) {
 this.cksum.update (buf, off, len);
 }return len;
 }, "~A,~N,~N");
-$_V (c$, "skip", 
+Clazz.overrideMethod(c$, "skip", 
 function (n) {
 var buf =  Clazz.newByteArray (512, 0);
 var total = 0;

@@ -97,6 +97,9 @@
     <echo>replacing Class.forName with Clazz._4Name</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Class.forName" value="Clazz._4Name"/>
 
+    <echo>replacing JavaObject with Clazz._O</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token=" JavaObject" value=" Clazz._O"/>
+
     <echo>abbreviating class name "org.jmol.modelsetbio" to "JMB"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
 
@@ -121,12 +124,16 @@
    	
   	<echo>abbreviating class name "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
-    <echo>abbreviating method name "Clazz.defineMethod " to "$_M"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.defineMethod " value="$_M"/>
-    <echo>abbreviating method name "Clazz.overrideMethod " to "$_V"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.overrideMethod " value="$_V"/>
-   	  	
-   	  	
+   	  	   	  	
+  	<echo>removing all $fz references for sub/superclass common private function names</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="($fz =" value=""/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token=", $fz.isPrivate = true, $fz)" value=""/>
+   	
+  	<echo>changing Clazz.pu$h() to Clazz.pu$h(self.c$)</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.pu$h()" value="Clazz.pu$h(self.c$)"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.pu$h ()" value="Clazz.pu$h(self.c$)"/>
+   	
+   	
   	<!-- get version information  -->		
     <copy todir="site/jsmol/j2s" >
   	  <fileset dir="">

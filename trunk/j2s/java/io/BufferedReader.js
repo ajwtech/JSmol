@@ -137,7 +137,7 @@ Clazz.defineMethod (c$, "readLine",
 function () {
 return this.readLine1 (false);
 });
-$_V (c$, "skip", 
+Clazz.overrideMethod(c$, "skip", 
 function (n) {
 if (n < 0) {
 throw  new IllegalArgumentException ("skip value is negative");
@@ -173,11 +173,11 @@ if (this.cb[this.nextChar] == '\n') this.nextChar++;
 this.skipLF = false;
 }}return (this.nextChar < this.nChars) || this.$in.ready ();
 }});
-$_V (c$, "markSupported", 
+Clazz.overrideMethod(c$, "markSupported", 
 function () {
 return true;
 });
-$_V (c$, "mark", 
+Clazz.overrideMethod(c$, "mark", 
 function (readAheadLimit) {
 if (readAheadLimit < 0) {
 throw  new IllegalArgumentException ("Read-ahead limit < 0");
@@ -187,7 +187,7 @@ this.readAheadLimit = readAheadLimit;
 this.markedChar = this.nextChar;
 this.markedSkipLF = this.skipLF;
 }}, "~N");
-$_V (c$, "reset", 
+Clazz.overrideMethod(c$, "reset", 
 function () {
 {
 this.ensureOpen ();
