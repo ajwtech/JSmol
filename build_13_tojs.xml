@@ -13,7 +13,7 @@
   	<echo>Deleting the site directory.</echo>
    	 	<delete quiet="true" dir="site" />
 
-   	<echo>creating site/jsmol/j2s</echo>
+   	<echo>transferring bin/*.js files to site/jsmol/j2s</echo>
 
    	<copy todir="site/jsmol/j2s/java" >
       <fileset dir="j2s/java">
@@ -27,70 +27,66 @@
       </fileset>
     </copy>
 
-    <copy todir="site/jsmol/j2s/JZ" >
-      <fileset dir="bin/com/jcraft/jzlib">
-        <include name="**/*.js" />
-      </fileset>
+   	<copy todir="site/jsmol/j2s/javajs" >
+        <fileset dir="bin/javajs">
+          <include name="**/*.js" />
+          <exclude name="**/util/**/*" />
+        </fileset>
     </copy>
-    
-   	<copy todir="site/jsmol/j2s/J" >
+   	
+  	<copy todir="site/jsmol/j2s/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
-        <exclude name="util/*" />
-        <exclude name="viewer/**/*" />
         <exclude name="modelset/**/*" />
         <exclude name="modelsetbio/**/*" />
+        <exclude name="script/**/*" />
+        <exclude name="scriptext/**/*" />
+        <exclude name="util/**/*" />
+        <exclude name="viewer/**/*" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JM" >
       <fileset dir="bin/org/jmol/modelset">
-        <include name="**/*" />
-        <exclude name="**/*.class" />
+        <include name="**/*.js" />
       </fileset>
+        <fileset dir="bin/org/jmol/modelsetbio">
+            <include name="**/*.js" />
+        </fileset>
     </copy>
    	
-   	<copy todir="site/jsmol/j2s/JMB" >
-      <fileset dir="bin/org/jmol/modelsetbio">
-        <include name="**/*" />
-        <exclude name="**/*.class" />
+   	<copy todir="site/jsmol/j2s/JS" >
+      <fileset dir="bin/org/jmol/script">
+        <include name="**/*.js" />
       </fileset>
+        <fileset dir="bin/org/jmol/scriptext">
+            <include name="**/*.js" />
+        </fileset>
     </copy>
    	
-   	<copy todir="site/jsmol/j2s/JW" >
-      <fileset dir="bin/org/jmol/util">
-        <include name="**/*" />
-        <exclude name="**/*.class" />
+   	<copy todir="site/jsmol/j2s/JU" >
+      <fileset dir="bin/javajs/util">
+        <include name="**/*.js" />
       </fileset>
+        <fileset dir="bin/org/jmol/util">
+            <include name="**/*.js" />
+        </fileset>
+        <fileset dir="bin/com/jcraft/jzlib">
+          <include name="**/*.js" />
+        </fileset>
     </copy>
-   	
+   	   	
    	<copy todir="site/jsmol/j2s/JV" >
       <fileset dir="bin/org/jmol/viewer">
-        <include name="**/*" />
-        <exclude name="**/*.class" />
+        <include name="**/*.js" />
       </fileset>
     </copy>
    	
    	<copy todir="site/jsmol/j2s/JSV" >
       <fileset dir="bin/jspecview">
-        <include name="**/*" />
-        <exclude name="**/*.class" />
-      </fileset>
-    </copy>
-   	
-   	<copy todir="site/jsmol/j2s/javajs" >
-      <fileset dir="bin/javajs">
-        <include name="**/*.js" />
-        <exclude name="**/util/*.js" />
-      </fileset>
-    </copy>
-
-   	<copy todir="site/jsmol/j2s/JU" >
-      <fileset dir="bin/javajs/util">
         <include name="**/*.js" />
       </fileset>
     </copy>
-   	
    	
   	<!-- modify class names -->		
 
@@ -100,15 +96,21 @@
     <echo>replacing JavaObject with Clazz._O</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token=" JavaObject" value=" Clazz._O"/>
 
-    <echo>abbreviating class name "org.jmol.modelsetbio" to "JMB"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JMB"/>
-
-    <echo>abbreviating class name "org.jmol.modelset" to "JM"</echo>
+    <echo>abbreviating class name "org.jmol.modelsetbio" and "org.jmol.modelset" to "JM"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JM"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
 
-    <echo>abbreviating class name "org.jmol.util" to "JW"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JW"/>
+    <echo>abbreviating class name "org.jmol.script" and "org.jmol.scriptext" to "JS"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.scriptext" value="JS"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.script" value="JS"/>
 
+    <echo>abbreviating class name "org.jmol.util" to "JU"</echo>
+    <echo>abbreviating class name "javajs.util" to "JU"</echo>
+  	<echo>abbreviating class name "com.jcraft.jzlib" to "JU"</echo>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JU"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
+  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JU"/>
+   	
     <echo>abbreviating class name "org.jmol.viewer" to "JV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
 
@@ -116,16 +118,13 @@
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
 
-    <echo>abbreviating class name "javajs.util" to "JU"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
-
-  	<echo>abbreviating class name "com.jcraft.jzlib" to "JZ"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JZ"/>
-   	
   	<echo>abbreviating class name "jspecview" to "JSV"</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
    	  	   	  	
-  	<echo>removing all $fz references for sub/superclass common private function names</echo>
+
+  	<!-- adjust Clazz methods -->		
+
+    <echo>removing all $fz references for sub/superclass common private function names</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="($fz =" value=""/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token=", $fz.isPrivate = true, $fz)" value=""/>
    	
@@ -374,7 +373,7 @@
     	JU/CU.js
     	JU/DF.js
     	JU/Encoding.js
-    	JU/List.js
+    	JU/Lst.js
 		JU/M34.js
     	JU/M3.js
     	JU/M4.js
@@ -487,11 +486,11 @@
 		J/render/RepaintManager.js
 		J/render/ShapeRenderer.js
 		J/render/SticksRenderer.js
-		J/script/ContextToken.js
-		J/script/ScriptContext.js
-		J/script/ScriptException.js
-		J/script/SV.js
-		J/script/T.js
+		JS/ContextToken.js
+		JS/ScriptContext.js
+		JS/ScriptException.js
+		JS/SV.js
+		JS/T.js
 		J/shape/AtomShape.js
 		J/shape/Balls.js
 		J/shape/FontLineShape.js
@@ -525,36 +524,36 @@
 		JM/Orientation.js
 		JM/StateScript.js
 		JM/TickInfo.js
-		JW/BoxInfo.js
-		JW/BSUtil.js
-		JW/C.js
-		JW/ColorEncoder.js
-		JW/CommandHistory.js
-		JW/DefaultLogger.js
-		JW/Elements.js
-		JW/Escape.js
-		JW/GData.js
-		JW/GenericApplet.js
-		JW/Geodesic.js
-		JW/Int2IntHash.js
-		JW/Node.js
-		JW/BNode.js
-		JW/Edge.js
-    	JW/JmolMolecule.js
-		JW/Logger.js
-		JW/LoggerInterface.js
-		JW/Measure.js
-		JW/MeshSurface.js
-		JW/Normix.js
-		JW/Parser.js
-		JW/Point3fi.js
-		JW/Rectangle.js
-		JW/Rgb16.js
-		JW/Shader.js
-		JW/SimpleUnitCell.js
-		JW/TempArray.js
-		JW/Txt.js
-		JW/Vibration.js
+		JU/BoxInfo.js
+		JU/BSUtil.js
+		JU/C.js
+		JU/ColorEncoder.js
+		JU/CommandHistory.js
+		JU/DefaultLogger.js
+		JU/Elements.js
+		JU/Escape.js
+		JU/GData.js
+		JU/GenericApplet.js
+		JU/Geodesic.js
+		JU/Int2IntHash.js
+		JU/Node.js
+		JU/BNode.js
+		JU/Edge.js
+    	JU/JmolMolecule.js
+		JU/Logger.js
+		JU/LoggerInterface.js
+		JU/Measure.js
+		JU/MeshSurface.js
+		JU/Normix.js
+		JU/Parser.js
+		JU/Point3fi.js
+		JU/Rectangle.js
+		JU/Rgb16.js
+		JU/Shader.js
+		JU/SimpleUnitCell.js
+		JU/TempArray.js
+		JU/Txt.js
+		JU/Vibration.js
 		JV/ActionManager.js
 		JV/AnimationManager.js
 		JV/binding/Binding.js
@@ -674,9 +673,9 @@
        		../js/JSmolJavaExt.js
        		../js/core/coretop.js
          	${javaCoreFiles}
-        	JW/DefaultLogger.js
-        	JW/Logger.js
-        	JW/LoggerInterface.js
+        	JU/DefaultLogger.js
+        	JU/Logger.js
+        	JU/LoggerInterface.js
         	${jsvCoreFiles}
        		../js/core/corebottom.js
     	" />
@@ -736,17 +735,17 @@
         	javajs/export/PDFObject.js
         	java/util/zip/Deflater.js
         	java/util/zip/DeflaterOutputStream.js
-        	JZ/Deflater.js
-        	JZ/DeflaterOutputStream.js
-        	JZ/ZStream.js
-        	JZ/Deflate.js
+        	JU/Deflater.js
+        	JU/DeflaterOutputStream.js
+        	JU/ZStream.js
+        	JU/Deflate.js
         	java/io/FilterOutputStream.js
-        	JZ/Adler32.js
-        	JZ/Tree.js
-        	JZ/CRC32.js
-        	JZ/GZIPHeader.js
-        	JZ/StaticTree.js
-        	JZ/Checksum.js
+        	JU/Adler32.js
+        	JU/Tree.js
+        	JU/CRC32.js
+        	JU/GZIPHeader.js
+        	JU/StaticTree.js
+        	JU/Checksum.js
     	" />
     </antcall>
         	
@@ -800,21 +799,21 @@
        		java/util/zip/CRC32.js
        		java/util/zip/InflaterInputStream.js
        		java/util/zip/GZIPInputStream.js
-       		javajs/api/GenericZipInputStream.js
+       		JU/GenericZipInputStream.js
         	JU/ZipTools.js
-       		JZ/Checksum.js
-       		JZ/CRC32.js
-       		JZ/InflaterInputStream.js
-       		JZ/ZStream.js
-       		JZ/Inflater.js
-       		JZ/Adler32.js
-       		JZ/Tree.js
-       		JZ/StaticTree.js
-       		JZ/GZIPHeader.js
-       		JZ/Inflate.js
-       		JZ/InfTree.js
-       		JZ/InfBlocks.js
-       		JZ/InfCodes.js
+       		JU/Checksum.js
+       		JU/CRC32.js
+       		JU/InflaterInputStream.js
+       		JU/ZStream.js
+       		JU/Inflater.js
+       		JU/Adler32.js
+       		JU/Tree.js
+       		JU/StaticTree.js
+       		JU/GZIPHeader.js
+       		JU/Inflate.js
+       		JU/InfTree.js
+       		JU/InfBlocks.js
+       		JU/InfCodes.js
        		J/io/JmolUtil.js
         	" />
     </antcall>
@@ -826,41 +825,41 @@
         	J/api/JmolScriptEvaluator.js
         	J/api/JmolScriptFunction.js
         	J/api/JmolScriptManager.js
-        	J/script/CommandWatcherThread.js
-        	J/script/FileLoadThread.js
-        	J/script/JmolCmdExtension.js
-        	J/script/JmolMathExtension.js
-        	J/script/JmolSmilesExtension.js
-        	J/script/ScriptCompiler.js
-        	J/script/ScriptDelayThread.js
-        	J/script/ScriptError.js
-        	J/script/ScriptEval.js 
-        	J/script/ScriptExpr.js 
-        	J/script/ScriptFlowContext.js
-        	J/script/ScriptFunction.js
-        	J/script/ScriptInterruption.js
-        	J/script/ScriptManager.js
-        	J/script/ScriptMathProcessor.js
-        	J/script/ScriptParallelProcessor.js
-        	J/script/ScriptParam.js
-        	J/script/ScriptProcess.js
-        	J/script/ScriptProcessRunnable.js
-        	J/script/ScriptQueueThread.js
-        	J/script/ScriptTokenParser.js
+        	JS/CommandWatcherThread.js
+        	JS/FileLoadThread.js
+        	JS/JmolCmdExtension.js
+        	JS/JmolMathExtension.js
+        	JS/JmolSmilesExtension.js
+        	JS/ScriptCompiler.js
+        	JS/ScriptDelayThread.js
+        	JS/ScriptError.js
+        	JS/ScriptEval.js 
+        	JS/ScriptExpr.js 
+        	JS/ScriptFlowContext.js
+        	JS/ScriptFunction.js
+        	JS/ScriptInterruption.js
+        	JS/ScriptManager.js
+        	JS/ScriptMathProcessor.js
+        	JS/ScriptParallelProcessor.js
+        	JS/ScriptParam.js
+        	JS/ScriptProcess.js
+        	JS/ScriptProcessRunnable.js
+        	JS/ScriptQueueThread.js
+        	JS/ScriptTokenParser.js
         	" />
     </antcall>
 
     <antcall target="call-core">
         <param name="call-core.name" value="scriptcmd" />
         <param name="call-core.list" value="
-       		J/scriptext/CmdExt.js
+       		JS/CmdExt.js
         	" />
     </antcall>
 
     <antcall target="call-core">
         <param name="call-core.name" value="scriptmath" />
         <param name="call-core.list" value="
-       		J/scriptext/MathExt.js
+       		JS/MathExt.js
         	" />
     </antcall>
 
@@ -993,24 +992,24 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-       		JMB/Resolver.js
-       		JMB/Monomer.js
-       		JMB/AlphaMonomer.js
-       		JMB/ProteinStructure.js
-       		JMB/Helix.js
-       		JMB/Sheet.js
-       		JMB/Turn.js
-       		JMB/BioPolymer.js
-       		JMB/AlphaPolymer.js
-       		JMB/AminoMonomer.js
-       		JMB/AminoPolymer.js
-       		JMB/BioModel.js
-       		JMB/CarbohydrateMonomer.js
-       		JMB/CarbohydratePolymer.js
-       		JMB/PhosphorusMonomer.js
-       		JMB/NucleicMonomer.js
-       		JMB/NucleicPolymer.js
-       		JMB/PhosphorusPolymer.js
+       		JM/Resolver.js
+       		JM/Monomer.js
+       		JM/AlphaMonomer.js
+       		JM/ProteinStructure.js
+       		JM/Helix.js
+       		JM/Sheet.js
+       		JM/Turn.js
+       		JM/BioPolymer.js
+       		JM/AlphaPolymer.js
+       		JM/AminoMonomer.js
+       		JM/AminoPolymer.js
+       		JM/BioModel.js
+       		JM/CarbohydrateMonomer.js
+       		JM/CarbohydratePolymer.js
+       		JM/PhosphorusMonomer.js
+       		JM/NucleicMonomer.js
+       		JM/NucleicPolymer.js
+       		JM/PhosphorusPolymer.js
        		J/dssx/Bridge.js
         	J/api/DSSPInterface.js
        		J/dssx/DSSP.js        	
@@ -1037,8 +1036,8 @@
     <antcall target="call-core">
         <param name="call-core.name" value="surface" />
         <param name="call-core.list" value="
-    		JW/Triangulator.js
-    		JW/TriangleData.js
+    		JU/Triangulator.js
+    		JU/TriangleData.js
        		J/api/VolumeDataInterface.js
        		J/jvxl/api/VertexDataServer.js
        		J/jvxl/api/MeshDataServer.js
@@ -1131,7 +1130,7 @@
    		J/smiles/SmilesBond.js
    		J/smiles/SmilesMeasure.js
    		J/smiles/SmilesParser.js
-        J/scriptext/SmilesExt.js
+        JS/SmilesExt.js
     	" />
     </antcall>
 
