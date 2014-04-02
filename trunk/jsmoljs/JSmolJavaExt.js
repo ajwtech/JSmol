@@ -25,6 +25,39 @@
 // BH 9/10/2012 6:27:21 AM added java.net.URL... classes
 // BH 1/7/2013 7:40:06 AM added Clazz.dateToString
 
+;(function(Clazz) {
+
+// moved here from package.js
+// these classes will be created as objects prior to any others
+// and are then available immediately
+
+	Clazz._Loader.registerPackages("java", [ "io", "lang", "lang.reflect", "util" ]);
+
+  var sJU = "java.util";
+
+  //var sJU = "JU";  
+	//Clazz._Loader.registerPackages (sJU, ["regex", "zip"]);
+	//var javautil = JU;
+
+  var javautil = java.util;
+
+	Clazz._Loader.ignore([
+		"net.sf.j2s.ajax.HttpRequest",
+		sJU + ".MapEntry.Type",
+		"java.net.UnknownServiceException",
+		"java.lang.Runtime",
+		"java.security.AccessController",
+		"java.security.PrivilegedExceptionAction",
+		"java.io.File",
+		"java.io.FileInputStream",
+		"java.io.FileWriter",
+		"java.io.OutputStreamWriter",
+		sJU + ".Calendar", // bypassed in ModelCollection
+		"java.text.SimpleDateFormat", // not used
+		"java.text.DateFormat", // not used
+		sJU + ".concurrent.Executors"
+	])
+
 Math.log10||(Math.log10=function(a){return Math.log(a)/2.302585092994046});
 
 if(Clazz._supportsNativeObject){
@@ -1688,39 +1721,39 @@ function(componentType,size){
 return Clazz.newArray(length);
 },"Class,~N");
 
-java.util.Date=Date;
-Date.TYPE="java.util.Date";
+javautil.Date=Date;
+Date.TYPE="javautil.Date";
 Date.__CLASS_NAME__="Date";
 Clazz.implementOf(Date,[java.io.Serializable,java.lang.Comparable]);
 
-Clazz.defineMethod(java.util.Date,"clone",
+Clazz.defineMethod(javautil.Date,"clone",
 function(){
 return new Date(this.getTime());
 });
 
-Clazz.defineMethod(java.util.Date,"before",
+Clazz.defineMethod(javautil.Date,"before",
 function(when){
 return this.getTime()<when.getTime();
-},"java.util.Date");
-Clazz.defineMethod(java.util.Date,"after",
+},"javautil.Date");
+Clazz.defineMethod(javautil.Date,"after",
 function(when){
 return this.getTime()>when.getTime();
-},"java.util.Date");
-Clazz.defineMethod(java.util.Date,"equals",
+},"javautil.Date");
+Clazz.defineMethod(javautil.Date,"equals",
 function(obj){
-return Clazz.instanceOf(obj,java.util.Date)&&this.getTime()==(obj).getTime();
+return Clazz.instanceOf(obj,javautil.Date)&&this.getTime()==(obj).getTime();
 },"Object");
-Clazz.defineMethod(java.util.Date,"compareTo",
+Clazz.defineMethod(javautil.Date,"compareTo",
 function(anotherDate){
 var thisTime=this.getTime();
 var anotherTime=anotherDate.getTime();
 return(thisTime<anotherTime?-1:(thisTime==anotherTime?0:1));
-},"java.util.Date");
-Clazz.defineMethod(java.util.Date,"compareTo",
+},"javautil.Date");
+Clazz.defineMethod(javautil.Date,"compareTo",
 function(o){
 return this.compareTo(o);
 },"Object");
-Clazz.overrideMethod(java.util.Date,"hashCode",
+Clazz.overrideMethod(javautil.Date,"hashCode",
 function(){
 var ht=this.getTime();
 return parseInt(ht)^parseInt((ht>>32));
@@ -1729,7 +1762,7 @@ return parseInt(ht)^parseInt((ht>>32));
 c$=Clazz.decorateAsClass(function(){
 this.source=null;
 Clazz.instantialize(this,arguments);
-},java.util,"EventObject",null,java.io.Serializable);
+},javautil,"EventObject",null,java.io.Serializable);
 Clazz.makeConstructor(c$,
 function(source){
 if(source!=null)this.source=source;
@@ -1743,34 +1776,34 @@ Clazz.overrideMethod(c$,"toString",
 function(){
 return this.getClass().getName()+"[source="+String.valueOf(this.source)+']';
 });
-Clazz.declareInterface(java.util,"EventListener");
+Clazz.declareInterface(javautil,"EventListener");
 
 c$=Clazz.decorateAsClass(function(){
 this.listener=null;
 Clazz.instantialize(this,arguments);
-},java.util,"EventListenerProxy",null,java.util.EventListener);
+},javautil,"EventListenerProxy",null,javautil.EventListener);
 Clazz.makeConstructor(c$,
 function(listener){
 this.listener=listener;
-},"java.util.EventListener");
+},"javautil.EventListener");
 Clazz.defineMethod(c$,"getListener",
 function(){
 return this.listener;
 });
-Clazz.declareInterface(java.util,"Iterator");
+Clazz.declareInterface(javautil,"Iterator");
 
-Clazz.declareInterface(java.util,"ListIterator",java.util.Iterator);
-Clazz.declareInterface(java.util,"Enumeration");
-Clazz.declareInterface(java.util,"Collection",Iterable);
+Clazz.declareInterface(javautil,"ListIterator",javautil.Iterator);
+Clazz.declareInterface(javautil,"Enumeration");
+Clazz.declareInterface(javautil,"Collection",Iterable);
 
-Clazz.declareInterface(java.util,"Set",java.util.Collection);
-Clazz.declareInterface(java.util,"Map");
-Clazz.declareInterface(java.util.Map,"Entry");
+Clazz.declareInterface(javautil,"Set",javautil.Collection);
+Clazz.declareInterface(javautil,"Map");
+Clazz.declareInterface(javautil.Map,"Entry");
 
-Clazz.declareInterface(java.util,"List",java.util.Collection);
+Clazz.declareInterface(javautil,"List",javautil.Collection);
 
-Clazz.declareInterface(java.util,"Queue",java.util.Collection);
-Clazz.declareInterface(java.util,"RandomAccess");
+Clazz.declareInterface(javautil,"Queue",javautil.Collection);
+Clazz.declareInterface(javautil,"RandomAccess");
 c$=Clazz.decorateAsClass(function(){
 this.detailMessage=null;
 this.cause=null;
@@ -2316,22 +2349,22 @@ function(){
 return this.detail;
 });
 
-c$=Clazz.declareType(java.util,"ConcurrentModificationException",RuntimeException);
+c$=Clazz.declareType(javautil,"ConcurrentModificationException",RuntimeException);
 Clazz.makeConstructor(c$,
 function(){
-Clazz.superConstructor(this,java.util.ConcurrentModificationException,[]);
+Clazz.superConstructor(this,javautil.ConcurrentModificationException,[]);
 });
 
-c$=Clazz.declareType(java.util,"EmptyStackException",RuntimeException);
+c$=Clazz.declareType(javautil,"EmptyStackException",RuntimeException);
 
 c$=Clazz.decorateAsClass(function(){
 this.className=null;
 this.key=null;
 Clazz.instantialize(this,arguments);
-},java.util,"MissingResourceException",RuntimeException);
+},javautil,"MissingResourceException",RuntimeException);
 Clazz.makeConstructor(c$,
 function(detailMessage,className,resourceName){
-Clazz.superConstructor(this,java.util.MissingResourceException,[detailMessage]);
+Clazz.superConstructor(this,javautil.MissingResourceException,[detailMessage]);
 this.className=className;
 this.key=resourceName;
 },"~S,~S,~S");
@@ -2344,9 +2377,9 @@ function(){
 return this.key;
 });
 
-c$=Clazz.declareType(java.util,"NoSuchElementException",RuntimeException);
+c$=Clazz.declareType(javautil,"NoSuchElementException",RuntimeException);
 
-c$=Clazz.declareType(java.util,"TooManyListenersException",Exception);
+c$=Clazz.declareType(javautil,"TooManyListenersException",Exception);
 
 c$=Clazz.declareType(java.lang,"Void");
 Clazz.defineStatics(c$,
@@ -2765,4 +2798,5 @@ function(){
 return null;
 });
 
+})(Clazz);
 

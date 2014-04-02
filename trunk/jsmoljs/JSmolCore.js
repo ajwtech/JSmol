@@ -1083,10 +1083,7 @@ Jmol = (function(document) {
 		}
 		if (isBinary)
 			isBinary = Jmol._canSyncBinary();
-		// JU.SB is for Jmol 13.3+; J.util.SB is for Jmol.13.2
-		if (!isBinary)
-			return (self.JU && JU.SB ? JU.SB.newS(data) : J.util.SB.newS(data));
-		return Jmol._strToBytes(data);
+		return (isBinary ? Jmol._strToBytes(data) : JU.SB.newS(data));
 	};
 
 	Jmol._strToBytes = function(s) {
