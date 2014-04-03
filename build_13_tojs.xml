@@ -114,7 +114,6 @@
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Class.forName" value="Clazz._4Name"/>
     <echo>...replacing JavaObject with Clazz._O</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token=" JavaObject" value=" Clazz._O"/>
-    <echo>replacing Class.forName with Clazz._4Name</echo>
     <echo>...removing all $fz references for sub/superclass common private function names</echo>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token="($fz =" value=""/>
   	<replace dir="site/jsmol/j2s" includes="**/*.js" token=", $fz.isPrivate = true, $fz)" value=""/>
