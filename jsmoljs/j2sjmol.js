@@ -2696,9 +2696,10 @@ Clazz.makeFunction = function (jsr) {
 
 /* protected */
 Clazz.defineStatics = function (clazz) {
-	for (var i = 0; i < (arguments.length - 1) / 2; i++) {
-		var name = arguments[i + i + 1];
-		clazz[name] = clazz.prototype[name] = arguments[i + i + 2];
+	for (var j = arguments.length, i = (j - 1) / 2; --i >= 0;) {
+		var val = arguments[--j]
+		var name = arguments[--j];
+		clazz[name] = clazz.prototype[name] = val;
 	}
 };
 

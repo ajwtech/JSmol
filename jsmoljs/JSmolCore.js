@@ -358,62 +358,16 @@ Jmol = (function(document) {
 		delete $;
 		delete Jmol;
 		delete SwingController;
-		if (!self.Clazz)return; 
-
 		delete J;
 		delete JM;
-		delete JMB;
+		delete JS;
 		delete JSV;
 		delete JU;
 		delete JV;
-		delete JW;
-		delete JZ;
 		delete java;
 		delete javajs;
 		delete Clazz;
 		delete c$; // used in p0p; could be gotten rid of
-		/*
-		delete ClassLoader;
-		delete ClassLoaderProgressMonitor;
-		delete JavaObject;
-		delete $_A;
-		delete $_AB;
-		delete $_AC;
-		delete $_AD;
-		delete $_AF;
-		delete $_AI;
-		delete $_AL;
-		delete $_AS;
-		delete $_Ab;
-		delete $_B;
-		delete $_C;
-		delete $_D;
-		delete $_E;
-		delete $_F;
-		delete $_G;
-		delete $_H;
-		delete $_I;
-		delete $_J;
-		delete $_K;
-		delete $_L;
-		delete $_M;
-		delete $_N;
-		delete $_O;
-		delete $_P;
-		delete $_Q;
-		delete $_R;
-		delete $_S;
-		delete $_T;
-		delete $_U;
-		delete $_V;
-		delete $_W;
-		delete $_X;
-		delete $_Y;
-		delete $_Z;
-		delete $_k;
-		delete $_s;
-		delete $t$;
-		*/
 	}
 
 	////////////// feature detection ///////////////
