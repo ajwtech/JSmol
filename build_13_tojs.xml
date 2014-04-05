@@ -592,8 +592,8 @@
     	" />
 
     <property name="jsvCoreFiles" value="
-    	J/adapter/smarter/JmolJDXMOLParser.js
-    	J/adapter/smarter/JmolJDXMOLReader.js
+    	J/api/JmolJDXMOLParser.js
+    	J/api/JmolJDXMOLReader.js
     	J/jsv/JDXMOLParser.js
 		JSV/api/AnnotationData.js 
 		JSV/api/AppletFrame.js 
