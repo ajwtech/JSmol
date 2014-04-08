@@ -441,6 +441,7 @@
 		J/api/JmolAppConsoleInterface.js
 		J/api/JmolAppletInterface.js
 		J/api/JmolCallbackListener.js
+    	J/api/JmolDSSRParser.js
 		J/api/JmolGraphicsInterface.js
 		J/api/JmolMeasurementClient.js
 		J/api/JmolModulationSet.js
@@ -1029,8 +1030,10 @@
        		JM/CarbohydrateMonomer.js
        		JM/CarbohydratePolymer.js
        		JM/PhosphorusMonomer.js
+       		JM/BasePair.js
        		JM/NucleicMonomer.js
        		JM/NucleicPolymer.js
+       		JM/BasePair.js
        		JM/PhosphorusPolymer.js
        		J/dssx/Bridge.js
         	J/api/DSSPInterface.js
