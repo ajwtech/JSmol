@@ -1862,7 +1862,7 @@ return(message ? s+": "+message : s);
 });
 Clazz.defineMethod(c$,"printStackTrace",
 function(){
-System.err.println(this.getStackTrace());
+System.err.println(this.getStackTrace ? this.getStackTrace() : this.message + " " + Clazz.getStackTrace());
 });
 
 Clazz.defineMethod(c$,"getStackTrace",
@@ -2036,7 +2036,7 @@ buf.append(lineNum);
 }buf.append(')');
 }}return buf.toString();
 });
-TypeError.prototype.getMessage || (TypeError.prototype.getMessage = function(){ return (this.message || this.toString()) + this.getStackTrace()});
+TypeError.prototype.getMessage || (TypeError.prototype.getMessage = function(){ return (this.message || this.toString()) + (this.getStackTrace ? this.getStackTrace() : Clazz.getStackTrace())});
 c$=Clazz.declareType(java.lang,"Error",Throwable);
 
 c$=Clazz.declareType(java.lang,"LinkageError",Error);
