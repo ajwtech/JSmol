@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  12/6/2013 6:18:48 PM
+// JSmolCore.js -- Jmol core capability  4/27/2014 6:32:42 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/27/2014 6:31:52 PM allows _USE=SIGNED HTML5 as well as _USE=JAVA HTML5
 // BH 3/8/2014 5:50:51 PM adds support for dataURI download in FF and Chrome
 // BH 3/8/2014 8:43:10 AM moves PubChem access to https
 // BH 3/4/2014 8:40:15 PM adds Jmol.Cache for JSV/Jmol sharing files
@@ -116,7 +117,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.1.11 Mar 1, 2014',
+		_version: 'JSmol 14.1.14 Apr 27, 2014',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -428,10 +429,14 @@ Jmol = (function(document) {
 	features.supportsJava = function() {
 		if (!Jmol.featureDetection._javaEnabled) {
 			if (Jmol._isMsie) {
-				return true;
-					// sorry just can't deal with intentionally turning off Java in MSIE
+				if (!navigator.javaEnabled()) {
+					Jmol.featureDetection._javaEnabled = -1;
+				} else {
+					//more likely -- would take huge testing
+					Jmol.featureDetection._javaEnabled = 1;
+				}
 			} else {
-				Jmol.featureDetection._javaEnabled = (navigator.javaEnabled() ? 1 : -1);
+				Jmol.featureDetection._javaEnabled = (navigator.javaEnabled() && (!navigator.mimeTypes || navigator.mimeTypes["application/x-java-applet"]) ? 1 : -1);
 			}
 		}
 		return (Jmol.featureDetection._javaEnabled > 0);
@@ -619,8 +624,6 @@ Jmol = (function(document) {
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
 				fileName = Jmol._getDirectDatabaseCall(fileName, false);
-				alert("filename is " + fileName);
-				alert(isRawRet)
 				isRawRet && (isRawRet[0] = true);
 			}
 		}
@@ -956,7 +959,6 @@ Jmol = (function(document) {
   }
   
 	Jmol._toBytes = function(data) {
-	//alert(typeof data + " " + data)
 	if (typeof data == "string") 
 		return data.getBytes();
 	// ArrayBuffer assumed here
@@ -1295,10 +1297,10 @@ Jmol = (function(document) {
 			if (typeof Info[x] == "undefined")
 				Info[x] = DefaultInfo[x];
 		Jmol._use && (Info.use = Jmol._use);
-		if (Info.use == "SIGNED") {
+		if (Info.use.indexOf("SIGNED") >= 0) {
 			if (Info.jarFile.indexOf("Signed") < 0)
 				Info.jarFile = Info.jarFile.replace(/Applet/,"AppletSigned");
-			Info.use = "JAVA";
+			Info.use = Info.use.replace(/SIGNED/, "JAVA");
 			Info.isSigned = true;
 		}
 	}

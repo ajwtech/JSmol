@@ -647,9 +647,9 @@
 			this._script(A.length == 0 ? "select none" : "select on visible and (@" + A.join(",@") + ")");
 	}
 
-	proto._isDeferred = function () {
-		return this._cover && this._isCovered && this._deferApplet
-	}
+  proto._isDeferred = function () {
+      return !this._canvas && this._cover && this._isCovered && this._deferApplet
+  }
 
 	proto._checkDeferred = function(script) {
 		if (this._isDeferred()) {
