@@ -1,5 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 5/8/2014 11:20:21 AM trying to fix AH nd JG problem with multiple applets
 // BH 1/27/2014 8:36:43 AM adding Info.viewSet
 // BH 12/13/2013 9:04:53 AM _evaluate DEPRECATED (see JSmolApi.js Jmol.evaulateVar
 // BH 11/24/2013 11:41:31 AM streamlined createApplet, with added JNLP for local reading
