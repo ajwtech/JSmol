@@ -1,5 +1,6 @@
 // JSmolControls.js
 //
+// BH 5/15/2014 -- removed script check prior to execution
 // BH 12/3/2013 12:39:48 PM added up/down arrow key-driven command history for commandInput (changed keypress to keydown)
 // BH 5/16/2013 8:14:47 AM fix for checkbox groups and default radio names
 // BH 8:36 AM 7/27/2012  adds name/id for cmd button 
@@ -118,7 +119,7 @@
 	switch (keycode) {
 	case 13:
 		var v = d.value;
-		if (c.__checkScript(applet, d) && (c._scriptExecute(d, [appId, v]) || 1)) {
+		if ((c._scriptExecute(d, [appId, v]) || 1)) {
 			 if (!d._cmds){
 				 d._cmds = [];
 				 d._cmddir = 0;

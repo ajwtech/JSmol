@@ -1,3 +1,4 @@
+// BH 5/8/2014 11:16:40 AM j2sPath starting with "/" fails to add idiom
 // BH 1/16/2014 8:44:03 PM   Jmol.__execDelayMS = 100; // FF bug when loading into a tab that is not 
 //                           immediately focused and not using jQuery for adding the applet and having  
 //                           multiple applets.
@@ -10,16 +11,16 @@
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
-// This library requires jQuery and 
-//
+// This library requires prior inclusion of 
+
+//  jQuery 
 //	JSmoljQueryExt.js
 //	JSmolCore.js
 //  JSmolApplet.js
 //  JSmolApi.js
 //  j2sjmol.js    (Clazz and associated classes)
-// prior to JSmol.js
 
-// these two:
+// these:
 //
 //  JSmolThree.js
 //  JSmolGLmol.js
@@ -157,7 +158,7 @@
 			if (this._deferApplet) {
 			} else if (Jmol._document) {
 				Jmol._documentWrite(t);
-				this._getCanvas(false);				        
+				this._newCanvas(false);				        
 				t = "";
 			} else {
 				this._deferApplet = true;
@@ -184,7 +185,11 @@
 			this._script(s, true);
 			if (this._deferUncover && this._coverTitle == "activate 3D model")
 				Jmol._getElement(this, "coverimage").title = "3D model is loading...";
-			this._start();
+			if (this._deferApplet)
+				this._newCanvas(false);
+			if (this._defaultModel)	
+				Jmol._search(this, this._defaultModel);
+			this._showInfo(false);
 			if (!this._deferUncover)
 				this._displayCoverImage(doCover);
 			if (this._init)
@@ -197,15 +202,7 @@
 			Jmol._getElement(this, "coverdiv").style.display = (TF ? "block" : "none");
 		};
 
-		proto._start = function() {
-			if (this._deferApplet)
-				this._getCanvas(false);      
-			if (this._defaultModel)
-				Jmol._search(this, this._defaultModel);
-			this._showInfo(false);
-		};                      
-
-		proto._getCanvas = function(doReplace) {
+		proto._newCanvas = function(doReplace) {
 			if (this._is2D)
 				this._createCanvas2d(doReplace);
 			else
@@ -214,7 +211,7 @@
 
 		proto._createCanvas2d = function(doReplace) {
 			var container = Jmol.$(this, "appletdiv");
-			if (doReplace) {
+			//if (doReplace) {
 				try {
 				container[0].removeChild(this._canvas);
 				if (this._canvas.frontLayer)
@@ -225,7 +222,7 @@
 					container[0].removeChild(this._canvas.imageLayer);
 				Jmol._jsUnsetMouse(this._mouseInterface);
 				} catch (e) {}
-			}
+			//}
 			var w = Math.round(container.width());
 			var h = Math.round(container.height());
 			var canvas = document.createElement( 'canvas' );
@@ -337,7 +334,10 @@
 			var codePath = applet._j2sPath + "/";
 			if (codePath.indexOf("://") < 0) {
 				var base = document.location.href.split("#")[0].split("?")[0].split("/");
-				base[base.length - 1] = codePath;
+				if (codePath.indexOf("/") == 0)
+					base = [base[0], codePath.substring(1)];
+				else
+					base[base.length - 1] = codePath;
 				codePath = base.join("/");
 			}
 			viewerOptions.put ("codePath", codePath);
@@ -455,7 +455,7 @@
 		var w = Math.round(container.width());
 		var h = Math.round(container.height());
 		if (applet._is2D && (applet._canvas.width != w || applet._canvas.height != h)) {
-			applet._getCanvas(true);
+			applet._newCanvas(true);
 			applet._applet.viewer.setDisplay(applet._canvas);
 		}
 		applet._applet.viewer.setScreenDimension(w, h);
