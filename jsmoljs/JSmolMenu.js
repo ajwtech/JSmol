@@ -1,7 +1,10 @@
 // JSmolMenu.js
 // author: Bob Hanson, hansonr@stolaf.edu
 
-// BB 2/17/2014 7:52:18 AM Jmol.Menu folded into Jmol.Swing
+// BH 5/26/2014 allow for a user callback for customization of menu
+//    using Jmol._showMenuCallback(menu, x, y);
+
+// BH 2/17/2014 7:52:18 AM Jmol.Menu folded into Jmol.Swing
 
 // BH 1/16/2014 9:20:15 AM allowing second attempt to initiate this library to gracefully skip processing
 
@@ -113,6 +116,9 @@ Swing.setMenu = function(menu) {
 
 Swing.showMenu = function(menu, x, y) {
   // called by javajs.swing.JPopupMenu
+  // allow for a user callback for customization of menu
+  if (Jmol._showMenuCallback)
+		Jmol._showMenuCallback(menu, x, y);
 	if (menu.tainted) {
 		menu.container.html(menu.toHTML());
 		menu.tainted = false;
