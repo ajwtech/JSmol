@@ -39,6 +39,7 @@
 
  // J2S class changes:
 
+ // BH 5/26/2014 5:19:29 PM removing superConstructor call in creating Enum constants
  // BH 4/1/2014 7:55:54 PM removing all $fz references and instances where sub/super classes have same private function names
  // BH 4/1/2014 4:47:30 PM all $_X removed; this is taken care of by Google Closure Compiler
  // BH 4/1/2014 6:40:08 AM removing ClassLoader -- equals Clazz._Loader
@@ -2422,7 +2423,10 @@ Clazz.defineEnumConstant = function (clazzEnum, enumName, enumOrdinal, initialPa
 	} else {
 		o = new clazzEnum ();
 	}
-	Clazz.superConstructor (o, clazzEnum, [enumName, enumOrdinal]);
+	// BH avoids unnecessary calls to SAEM
+	o.$name = enumName;
+	o.$ordinal = enumOrdinal;
+	//Clazz.superConstructor (o, clazzEnum, [enumName, enumOrdinal]);
 	if (initialParams != null && initialParams.length != 0) {
 		o.construct.apply (o, initialParams);
 	}
