@@ -1,6 +1,7 @@
 // JSmolJavaExt.js
 // will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// BH 5/27/2014 6:29:59 AM ensure floats and doubles have decimal point in toString
 // BH 4/1/2014 12:23:41 PM Encoding moved to Clazz._Encoding; 
 // BH 4/1/2014 7:51:46 AM removing java.lang.B00lean
 // BH 3/7/2014 9:17:10 AM removing Array.toString; moving that code here from j2sJmol.js
@@ -520,6 +521,13 @@ function(n){
 return new Byte(n);
 },"~S");
 
+Clazz._floatToString = function(f) {
+ var s = ""+f
+ if (s.indexOf(".") < 0 && s.indexOf("e") < 0)
+ 	 s += ".0";
+ return s;
+}
+
 java.lang.Float=Float=function(){
 Clazz.instantialize(this,arguments);
 };
@@ -527,11 +535,11 @@ Clazz.decorateAsType(Float,"Float",Number,Comparable,null,true);
 Float.prototype.valueOf=function(){return 0;};
 Float.toString=Float.prototype.toString=function(){
 if(arguments.length!=0){
-return""+arguments[0];
+return Clazz._floatToString(arguments[0]);
 }else if(this===Float){
 return"class java.lang.Float";
 }
-return""+this.valueOf();
+return Clazz._floatToString(this.valueOf());
 };
 
 Clazz.overrideConstructor(Float, function(v){
@@ -596,11 +604,11 @@ Clazz.decorateAsType(Double,"Double",Number,Comparable,null,true);
 Double.prototype.valueOf=function(){return 0;};
 Double.toString=Double.prototype.toString=function(){
 if(arguments.length!=0){
-return""+arguments[0];
+return Clazz._floatToString(arguments[0]);
 }else if(this===Double){
 return"class java.lang.Double";
 }
-return""+this.valueOf();
+return Clazz._floatToString(this.valueOf());
 };
 
 Clazz.overrideConstructor(Double, function(v){
