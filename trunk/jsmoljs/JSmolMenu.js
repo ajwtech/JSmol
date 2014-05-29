@@ -1,6 +1,7 @@
 // JSmolMenu.js
 // author: Bob Hanson, hansonr@stolaf.edu
 
+// BH 5/27/2014 11:01:46 PM frank menu fix; better event handling
 // BH 5/26/2014 allow for a user callback for customization of menu
 //    using Jmol._showMenuCallback(menu, x, y);
 
@@ -130,9 +131,9 @@ Swing.showMenu = function(menu, x, y) {
 	menu.timestamp = System.currentTimeMillis();
 	menu.dragBind(true);
 	menu.container.unbind('clickoutjsmol');
-	menu.container.bind('clickoutjsmol', function(evspecial, target, ev) {
-	  //System.out.println("clickoutjsmol"+ menu.id)
-		if (System.currentTimeMillis() - menu.timestamp > 100)
+	menu.container.bind('clickoutjsmol mousemoveoutjsmol', function(evspecial, target, ev) {
+	  document.title=(menu.id)
+		if (System.currentTimeMillis() - menu.timestamp > 1000)
 		  Swing.hideMenu(menu);
 	});
 	menu.container.bind("contextmenu", function() {return false;})

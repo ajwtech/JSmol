@@ -1423,6 +1423,7 @@ Jmol = (function(document) {
 	//////////////////// mouse events //////////////////////
 
 	Jmol._setMouseOwner = function(who, tf) {
+	//alert(who + " " + arguments.callee.caller.toString())
 		if (who == null || tf)
 			Jmol._mouseOwner = who;
 		else if (Jmol._mouseOwner == who)
@@ -1539,6 +1540,10 @@ Jmol = (function(document) {
 			return false;
 		});
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
+			return Jmol._drag(canvas, ev);
+		});
+		
+		Jmol._drag = function(canvas, ev) {
 			ev.stopPropagation();
 			ev.preventDefault();
 			var isTouch = (ev.type == "touchmove");
@@ -1550,7 +1555,8 @@ Jmol = (function(document) {
 				xym[2] = 0;
 			canvas.applet._processEvent((canvas.isDragging ? 506 : 503), xym); // J.api.Event.MOUSE_DRAG : J.api.Event.MOUSE_MOVE
 			return false;
-		});
+		}
+		
 		Jmol.$bind(canvas, 'DOMMouseScroll mousewheel', function(ev) { // Zoom
 			ev.stopPropagation();
 			ev.preventDefault();
@@ -1570,12 +1576,12 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mouseout', function(ev) {
 			if (canvas.applet._applet)
 				canvas.applet._applet.viewer.startHoverWatcher(false);
-			canvas.isDragging = false;
+			//canvas.isDragging = false;
 			var xym = Jmol._jsGetXY(canvas, ev);
 			if (!xym)
 				return false;
-			canvas.applet._processEvent(502, xym);//J.api.Event.MOUSE_UP
-			canvas.applet._processEvent(505, xym);//J.api.Event.MOUSE_EXITED
+			//canvas.applet._processEvent(502, xym);//J.api.Event.MOUSE_UP
+			//canvas.applet._processEvent(505, xym);//J.api.Event.MOUSE_EXITED
 			return false;
 		});
 
@@ -1592,6 +1598,12 @@ Jmol = (function(document) {
 				return false;
 			}
 		});
+
+	Jmol.$bind(canvas, 'mousemoveoutjsmol', function(evspecial, target, ev) {
+		if (Jmol._mouseOwner && Jmol._mouseOwner.isDragging) {
+			return Jmol._drag(Jmol._mouseOwner, ev);
+		}
+	});
 
 		if (canvas.applet._is2D)
 			Jmol.$resize(function() {
