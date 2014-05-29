@@ -1,5 +1,6 @@
 // JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
 
+// BH 5/29/2014 8:14:06 AM added default command for command input box
 // BH 3/10/2014 10:35:25 AM adds Jmol.saveImage(applet)
 // BH 1/22/2014 7:31:59 AM Jmol._Image removed -- just never found useful to have
 //    a server-side process with only a client-side image. Response time is too slow.
@@ -281,8 +282,8 @@
 	}
 
 
-	Jmol.jmolCommandInput = function(appletOrId, label, size, id, title) {
-		return Jmol.controls._getCommandInput(appletOrId, label, size, id, title);
+	Jmol.jmolCommandInput = function(appletOrId, label, size, id, title, cmd0) {
+		return Jmol.controls._getCommandInput(appletOrId, label, size, id, title, cmd0);
 	}
 
 	Jmol.jmolHtml = function(html) {
