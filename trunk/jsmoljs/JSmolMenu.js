@@ -132,8 +132,7 @@ Swing.showMenu = function(menu, x, y) {
 	menu.dragBind(true);
 	menu.container.unbind('clickoutjsmol');
 	menu.container.bind('clickoutjsmol mousemoveoutjsmol', function(evspecial, target, ev) {
-	  document.title=(menu.id)
-		if (System.currentTimeMillis() - menu.timestamp > 1000)
+	  if (System.currentTimeMillis() - menu.timestamp > 1000)
 		  Swing.hideMenu(menu);
 	});
 	menu.container.bind("contextmenu", function() {return false;})
