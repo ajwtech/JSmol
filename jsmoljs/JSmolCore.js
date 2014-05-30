@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 5/30/2014 7:20:07 AM better dragging for console and menu
 // BH 4/27/2014 6:31:52 PM allows _USE=SIGNED HTML5 as well as _USE=JAVA HTML5
 // BH 3/8/2014 5:50:51 PM adds support for dataURI download in FF and Chrome
 // BH 3/8/2014 8:43:10 AM moves PubChem access to https
@@ -113,6 +114,7 @@ Jmol = (function(document) {
 			coverImage:z++,
 			dialog:z++, // could be several of these, JSV only
 			menu:z+90000, // way front
+			console:z+91000, // even more front
 			monitorZIndex:z+99999 // way way front
 		}
 	};
@@ -1423,7 +1425,6 @@ Jmol = (function(document) {
 	//////////////////// mouse events //////////////////////
 
 	Jmol._setMouseOwner = function(who, tf) {
-	//alert(who + " " + arguments.callee.caller.toString())
 		if (who == null || tf)
 			Jmol._mouseOwner = who;
 		else if (Jmol._mouseOwner == who)
@@ -1540,6 +1541,11 @@ Jmol = (function(document) {
 			return false;
 		});
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
+		  // defer to console or menu when dragging within this canvas
+			if (Jmol._mouseOwner && Jmol._mouseOwner != canvas && Jmol._mouseOwner.isDragging) {
+				Jmol._mouseOwner.mouseMove(ev);
+				return false;
+			}
 			return Jmol._drag(canvas, ev);
 		});
 		
@@ -1600,8 +1606,8 @@ Jmol = (function(document) {
 		});
 
 	Jmol.$bind(canvas, 'mousemoveoutjsmol', function(evspecial, target, ev) {
-		if (Jmol._mouseOwner && Jmol._mouseOwner.isDragging) {
-			return Jmol._drag(Jmol._mouseOwner, ev);
+		if (canvas == Jmol._mouseOwner && canvas.isDragging) {
+			return Jmol._drag(canvas, ev);
 		}
 	});
 
@@ -1702,6 +1708,7 @@ Swing.setDraggable = function(Obj) {
 
 	proto.mouseMove = function(ev) {
 		if (this.isDragging && Jmol._mouseOwner == this) {
+			this.timestamp = System.currentTimeMillis(); // used for menu closure
 			var x = this.pageX0 + (ev.pageX - this.pageX);
 			var y = this.pageY0 + (ev.pageY - this.pageY);
 			this.container.css({ top: y + 'px', left: x + 'px' })
@@ -1709,6 +1716,7 @@ Swing.setDraggable = function(Obj) {
 	};
 
 	proto.dragBind = function(isBind) {
+		this.applet._ignoreMouse = !isBind;
 		this.container.unbind('mousemoveoutjsmol');
 		this.container.unbind('touchmoveoutjsmol');
 		this.container.unbind('mouseupoutjsmol');

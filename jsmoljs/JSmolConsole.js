@@ -1,4 +1,8 @@
 // coreconsole.z.js
+
+// Note that this was written before I had Swing working. But this works fine. -- BH
+
+// BH 5/30/2014 7:42:48 AM added Help button; better mouse/keypress handling
 // BH 1/5/2013 12:45:19 PM
 
 Jmol.Console = {
@@ -20,13 +24,11 @@ Jmol.Console.JSConsole = function(appletConsole) {
 
 	// set up this.appletConsole.input, this.appletconsole.output
 	// set up buttons, which are already made by this time: 	
-
 	// I would prefer NOT to use jQueryUI for this - just simple buttons with simple actions
 
-	// create and insert HTML code here
-
-	var s = '<div id="$ID" class="jmolConsole" style="display:block;background-color:yellow;width:600px;height:362px;position:absolute;z-index:9999"><div id=$ID_title></div><div id=$ID_label1></div><div id=$ID_outputdiv style="position:relative;left:2px"></div><div id=$ID_inputdiv style="position:relative;left:2px"></div><div id=$ID_buttondiv></div></div>'
-
+	// create and insert HTML code
+	var s = '<div id="$ID" class="jmolConsole" style="display:block;background-color:yellow;width:600px;height:362px;position:absolute;z-index:'
+		+ Jmol._z.console +'"><div id=$ID_title></div><div id=$ID_label1></div><div id=$ID_outputdiv style="position:relative;left:2px"></div><div id=$ID_inputdiv style="position:relative;left:2px"></div><div id=$ID_buttondiv></div></div>'
 	var setBtn = function(console, btn) {
 		btn.console = console;
 		btn.id = id + "_" + btn.label.replace(/\s/g,"_");
@@ -40,6 +42,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	console.setPosition();
 	console.dragBind(true);
 	s = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].setVisible(false)\">close</a>";
+	s += "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.script("+console.applet._id+",'help')\">help</a>";
 	Jmol.$html(id + "_label1", s);
 	Jmol.$html(id + "_inputdiv", '<textarea id="' + id + '_input" style="width:590px;height:100px"></textarea>');
 	Jmol.$html(id + "_outputdiv", '<textarea id="' + id + '_output" style="width:590px;height:200px"></textarea>');
@@ -93,11 +96,13 @@ Jmol.Console.Input = function(console) {
 	}
 
 	this.keyPressed = function(ev) {
+	  // ev.which is 0 for press and ev.keyCode for release
+	  // for up and down arrows (38,40), but not for left/right (37,39)
 		var kcode = ev.which;
 		var isCtrl = ev.ctrlKey;
 		if (kcode == 13)kcode=10;
 		var mode = this.console.appletConsole.processKey(kcode, 401/*java.awt.event.KeyEvent.KEY_PRESSED*/, isCtrl);
-
+				
 			if (isCtrl && kcode == 10)
 				this.setText(this.getText() + "\n")
 
@@ -107,12 +112,8 @@ Jmol.Console.Input = function(console) {
 				setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.id)},10);	
 			}
 
-		if ((mode & 1) == 1 || kcode == 0)
+		if ((mode & 1) == 1 || ev.which == 0 && !(ev.keyCode == 37 || ev.keyCode == 39))
 			ev.preventDefault();
-		//if ((mode & 2) == 2) {
-		//}
-
-
 	}
 
 	this.keyReleased = function(ev) {
