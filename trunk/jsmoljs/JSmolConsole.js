@@ -2,7 +2,7 @@
 
 // Note that this was written before I had Swing working. But this works fine. -- BH
 
-// BH 5/30/2014 7:42:48 AM added Help button; better mouse/keypress handling
+// BH 6/1/2014 8:32:12 AM added Help button; better mouse/keypress handling
 // BH 1/5/2013 12:45:19 PM
 
 Jmol.Console = {
@@ -98,22 +98,37 @@ Jmol.Console.Input = function(console) {
 	this.keyPressed = function(ev) {
 	  // ev.which is 0 for press and ev.keyCode for release
 	  // for up and down arrows (38,40), but not for left/right (37,39)
-		var kcode = ev.which;
+
+		var kcode = (ev.keyCode !=8 && ev.keyCode != 9 && ev.keyCode != 10 && ev.keyCode != 13 && ev.which == ev.keyCode ? 0 : ev.keyCode);
 		var isCtrl = ev.ctrlKey;
 		if (kcode == 13)kcode=10;
+		
 		var mode = this.console.appletConsole.processKey(kcode, 401/*java.awt.event.KeyEvent.KEY_PRESSED*/, isCtrl);
 				
 			if (isCtrl && kcode == 10)
 				this.setText(this.getText() + "\n")
 
+//document.title=mode + " " + ev.which + " " + ev.keyCode + " " + kcode
+
 			if (ev.keyCode == 9 || kcode == 9) {
 			// tab         
-				var me = this;
-				setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.id)},10);	
+				ev.preventDefault();
+				if (mode == 0) {
+					var me = this;
+					setTimeout(function(){me.setText(me.getText() + "\t"); Jmol.$focus(me.id)},10);
+				}
+				return;	
 			}
 
-		if ((mode & 1) == 1 || ev.which == 0 && !(ev.keyCode == 37 || ev.keyCode == 39))
+// which, keyCode
+// standard key: n 0
+// left arrow    0 37
+// up arrow      0 38, then 38 38 upon release
+// backspace:    8 8
+
+		if ((mode & 1) == 1 || ev.which == ev.keyCode && kcode != 8 && kcode != 10 || ev.keyCode == 38 || ev.keyCode == 40) {
 			ev.preventDefault();
+		}
 	}
 
 	this.keyReleased = function(ev) {
@@ -135,7 +150,7 @@ Jmol.Console.Input = function(console) {
 
 
 	this.getCaretPosition = function() {
-		var el = Jmol.$get(this.id)[0];
+		var el = Jmol._$(this.id)[0];
 		if('selectionStart' in el)
 			return el.selectionStart;
 		if(!('selection' in document))
