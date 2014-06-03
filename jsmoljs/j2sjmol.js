@@ -39,6 +39,7 @@
 
  // J2S class changes:
 
+ // BH 6/1/2014 10:58:46 AM fix for Clazz.isAP() not working
  // BH 5/26/2014 5:19:29 PM removing superConstructor call in creating Enum constants
  // BH 4/1/2014 7:55:54 PM removing all $fz references and instances where sub/super classes have same private function names
  // BH 4/1/2014 4:47:30 PM all $_X removed; this is taken care of by Google Closure Compiler
@@ -2635,7 +2636,7 @@ Clazz.isASS = function(a) {
 }
 
 Clazz.isAP = function(a) {
-	return (a && Clazz.getClassName(a[0]) == "J.util.Point3f");
+	return (a && Clazz.getClassName(a[0]) == "JU.P3");
 }
 
 Clazz.isAI = function(a) {
