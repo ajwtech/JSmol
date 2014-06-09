@@ -34,7 +34,7 @@
       	<exclude name="**/unused/*"/>
       </fileset>
     </copy>
-   	<echo>Now run build_13_tojs.xml to compile JSmol with JSpecView</echo>
+   	<echo>Now run build_03_tojs.xml to compile JSmol with JSpecView</echo>
 
   </target>
 	
