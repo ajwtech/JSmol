@@ -1460,6 +1460,9 @@ Jmol = (function(document) {
 		var offsets = Jmol.$offset(canvas.id);
 		var x, y;
 		var oe = ev.originalEvent;
+		// drag-drop jQuery event is missing pageX
+		ev.pageX || (ev.pageX = oe.pageX);
+		ev.pageY || (ev.pageY = oe.pageY);
 		Jmol._mousePageX = ev.pageX;
 		Jmol._mousePageY = ev.pageY;
 		if (oe.targetTouches && oe.targetTouches[0]) {
@@ -2122,7 +2125,23 @@ Jmol.Cache.put = function(filename, data) {
 			var e = e.originalEvent;
 			e.stopPropagation();
 			e.preventDefault();
-			var file = e.dataTransfer.files[0];
+			var file = ev.dataTransfer.files[0];
+			if (file == null) {
+				// FF and Chrome will drop an image here
+				// but it will be only a URL, not an actual file. 
+				try {
+				  file = "" + ev.dataTransfer.getData("text");
+				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0) {
+				  	me._script("load \"" + file + "\"");
+				  	return;
+			  	}
+				} catch(e) {
+				  return;
+				}
+			  // some other format
+			  return;
+			}
+			// MSIE will drop an image this way, though, and load it!
 			var reader = new FileReader();
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) {
@@ -2133,7 +2152,10 @@ Jmol.Cache.put = function(filename, data) {
 						Jmol.Cache.put(cacheName, bytes);
 					else
 						me._applet.viewer.cachePut(cacheName, bytes);
-					me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
+					var xym = Jmol._jsGetXY(me._canvas, e);
+					if(xym && (!me._applet.viewer.setStatusDragDropped || me._applet.viewer.setStatusDragDropped(0, xym[0], xym[1], cacheName))) {
+						me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
+					}
 				}
 			};
 			reader.readAsArrayBuffer(file);
