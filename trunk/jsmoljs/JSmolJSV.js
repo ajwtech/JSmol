@@ -482,16 +482,17 @@
 	 * @param x2
 	 *        the ending x value
 	 * @param r
-	 *        the red portion of the highlight color
+	 *        the red portion of the highlight color or -1
 	 * @param g
-	 *        the green portion of the highlight color
+	 *        the green portion of the highlight color or -1
 	 * @param b
-	 *        the blue portion of the highlight color
+	 *        the blue portion of the highlight color or -1
 	 * @param a
-	 *        the alpha portion of the highlight color
+	 *        the alpha portion of the highlight color or -1
 	 */
 	Jmol.jsvAddHighlight = function(jsvApplet, x1, x2, r, g, b, a) {
-		jsvApplet._applet.addHighlight(x1, x2, r, g, b, a);
+		if (arguments.length == 7)
+			jsvApplet._applet.addHighlight(x1, x2, r, g, b, a);
 	}
 
 	/**
