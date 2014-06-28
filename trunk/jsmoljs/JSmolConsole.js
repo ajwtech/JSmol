@@ -2,6 +2,7 @@
 
 // Note that this was written before I had Swing working. But this works fine. -- BH
 
+// BH 6/27/2014 8:23:49 AM 14.2.0 console broken for Safari and Chrome
 // BH 6/1/2014 8:32:12 AM added Help button; better mouse/keypress handling
 // BH 1/5/2013 12:45:19 PM
 
@@ -126,7 +127,8 @@ Jmol.Console.Input = function(console) {
 // up arrow      0 38, then 38 38 upon release
 // backspace:    8 8
 
-		if ((mode & 1) == 1 || ev.which == ev.keyCode && kcode != 8 && kcode != 10 || ev.keyCode == 38 || ev.keyCode == 40) {
+// safari/chrome: ev.which == ev.keyCode for standard letters
+		if ((mode & 1) == 1 || ev.which == ev.keyCode && kcode != 8 && kcode != 10 && ev.keyCode < 32 || ev.keyCode == 38 || ev.keyCode == 40) {
 			ev.preventDefault();
 		}
 	}
