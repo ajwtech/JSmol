@@ -1,8 +1,8 @@
-// JSmolCore.js -- Jmol core capability  4/27/2014 6:32:42 PM
+// JSmolCore.js -- Jmol core capability  
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
-// BH 7/2/2014 4:47:55 AM adding pdbe.org to direct database calls
+// BH 7/3/2014 12:30:28 AM lost drag-drop of models
 // BH 5/30/2014 7:20:07 AM better dragging for console and menu
 // BH 4/27/2014 6:31:52 PM allows _USE=SIGNED HTML5 as well as _USE=JAVA HTML5
 // BH 3/8/2014 5:50:51 PM adds support for dataURI download in FF and Chrome
@@ -120,7 +120,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.1.14 Apr 27, 2014',
+		_version: 'JSmol 14.2.2 June 3, 2014',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -145,7 +145,7 @@ Jmol = (function(document) {
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
 			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
-				"cactus.nci.nih.gov": "%URL", 
+				"cactus.nci.nih.gov": "%URL",
 				"www.rcsb.org": "%URL",
 				"pdbe.org": "%URL", 
 				"pubchem.ncbi.nlm.nih.gov":"%URL",
@@ -2124,9 +2124,9 @@ Jmol.Cache.put = function(filename, data) {
 			e.dataTransfer.dropEffect = 'copy';
 		});
 		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
-			var e = e.originalEvent;
-			e.stopPropagation();
-			e.preventDefault();
+			var ev = e.originalEvent;
+			ev.stopPropagation();
+			ev.preventDefault();
 			var file = ev.dataTransfer.files[0];
 			if (file == null) {
 				// FF and Chrome will drop an image here

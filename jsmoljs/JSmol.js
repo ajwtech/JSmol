@@ -139,6 +139,18 @@
 		return this;
 	};
 
+	Jmol._setAppletParams = function(availableParams, params, Info, isHashtable) {
+		for (var i in Info)
+			if(!availableParams || availableParams.indexOf(";" + i.toLowerCase() + ";") >= 0){
+				if (i == "language" && !Jmol.featureDetection.supportsLocalization())
+					continue;
+				if (isHashtable)
+					params.put(i, (Info[i] === true ? Boolean.TRUE: Info[i] === false ? Boolean.FALSE : Info[i]))
+				else
+					params[i] = Info[i];
+			}
+	}     
+	 
 	Jmol._jsSetPrototype = function(proto) {
 		proto._init = function() {
 	 		this._setupJS();
@@ -309,7 +321,7 @@
 
 		proto.__startAppletJS = function(applet) {
 			var viewerOptions =  new java.util.Hashtable ();
-			Jmol._setJmolParams(viewerOptions, applet.__Info, true);
+			Jmol._setAppletParams(viewerOptions, applet.__Info, true);
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
 			viewerOptions.put("applet", true);
 			viewerOptions.put("name", applet._id);// + "_object");

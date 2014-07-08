@@ -1,35 +1,30 @@
-// JmolApplet.js -- Jmol._Applet and Jmol._Image
+// JmolAstex.js -- for the AstexViewer
 
-// BH 5/8/2014 11:20:21 AM trying to fix AH nd JG problem with multiple applets
-// BH 1/27/2014 8:36:43 AM adding Info.viewSet
-// BH 12/13/2013 9:04:53 AM _evaluate DEPRECATED (see JSmolApi.js Jmol.evaulateVar
-// BH 11/24/2013 11:41:31 AM streamlined createApplet, with added JNLP for local reading
-// BH 10/11/2013 7:17:10 AM streamlined and made consistent with JSV and JSME
-// BH 7/16/2012 1:50:03 PM adds server-side scripting for image
-// BH 8/11/2012 11:00:01 AM adds Jmol._readyCallback for MSIE not in Quirks mode
-// BH 8/12/2012 3:56:40 AM allows .min.png to be replaced by .all.png in Image file name
-// BH 8/13/2012 6:16:55 PM fix for no-java message not displaying
-// BH 11/18/2012 1:06:39 PM adds option ">" in database query box for quick command execution
-// BH 12/17/2012 6:25:00 AM change ">" option to "!"
+/*
+<applet
+	width="100%" height="100%" name="av"
+	code="MoleculeViewerApplet.class"
+	archive="/pdbe-srv/view/openastex/OpenAstexViewer.jar">
+<param name="scriptFile" value="/pdbe-srv/view/openastex/default.script">
+<param name="molecule1" value="/pdbe-srv/view/files/2x9t.pdb">
+</applet>
+*/
 
 ;(function (Jmol, document) {
 
 	// _Applet -- the main, full-featured, Jmol object
 
-	Jmol._Applet = function(id, Info, checkOnly){
+	Jmol._Astex = function(id, Info, checkOnly){
+	
 		window[id] = this;
-		this._jmolType = "Jmol._Applet" + (Info.isSigned ? " (signed)" : "");
-		this._viewType = "Jmol";
+		this._jmolType = "Jmol._Astex";
+		this._viewType = "Astex";
 		this._isJava = true;
-		this._syncKeyword = "Select:";
-		this._availableParams = ";progressbar;progresscolor;boxbgcolor;boxfgcolor;allowjavascript;boxmessage;\
-									;messagecallback;pickcallback;animframecallback;appletreadycallback;atommovedcallback;\
-									;echocallback;evalcallback;hovercallback;language;loadstructcallback;measurecallback;\
-									;minimizationcallback;resizecallback;scriptcallback;statusform;statustext;statustextarea;\
-									;synccallback;usecommandthread;syncid;appletid;startupscript;menufile;";
+		this._syncKeyword = "Astex:";
+		this._availableParams = ";molecule1;scriptfile;";
 		if (checkOnly)
 			return this;
-		this._isSigned = Info.isSigned;
+		this._isSigned = true;
 		this._readyFunction = Info.readyFunction;
 		this._ready = false;
 		this._isJava = true; 
@@ -40,9 +35,9 @@
 		this._savedOrientations = [];
 		this._initialize = function(jarPath, jarFile) {
 			var doReport = false;
-			Jmol._jarFile && (jarFile = Jmol._jarFile);
-			if(this._jarFile) {
-				var f = this._jarFile;
+			Jmol._jarFileAstex && (jarFile = Jmol._jarFileAstex);
+			if(this._jarFileAstex) {
+				var f = this._jarFileAstex;
 				if(f.indexOf("/") >= 0) {
 					alert ("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
 					var ok = prompt("Do you want to use applet " + f + "? ", "yes or no")
@@ -55,10 +50,9 @@
 				} else {
 					jarFile = f;
 				}
-				this_isSigned = Info.isSigned = (jarFile.indexOf("Signed") >= 0);
 			}
  			this._jarPath = Info.jarPath = jarPath || ".";
-			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+			this._jarFile = Info.jarFile = (typeof(jarFile) == "string" ? jarFile : "OpenAstexViewer.jar" );
 			if (doReport)
 				alert ("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
@@ -69,7 +63,6 @@
 
 	;(function(Applet, proto) {
 	Applet._get = function(id, Info, checkOnly) {
-
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes
 	// applet = Jmol.getApplet("applet", Info)
 
@@ -84,11 +77,13 @@
 			defaultModel: "",
 			script: null,
 			src: null,
+			//scriptFile: "http://www.ebi.ac.uk/pdbe/pdbe-srv/view/openastex/default.script",
+			//molecule1: "http://www.ebi.ac.uk/pdbe/entry-files/pdb1crn.ent",
 			readyFunction: null,
 			use: "HTML5",//other options include JAVA, WEBGL, and IMAGE
 			jarPath: "java",
-			jarFile: "JmolApplet0.jar",
-			isSigned: false,
+			jarFile: "OpenAstexViewer.jar",
+			isSigned: true,
 			j2sPath: "j2s",
 			coverImage: null,     // URL for image to display
 			coverTitle: "",       // tip that is displayed before model starts to load
@@ -140,6 +135,7 @@
 	}
 
 	Applet._getCanvas = function(id, Info, checkOnly, webGL) {
+		webGL = false;
 		if (webGL && Jmol.featureDetection.supportsWebGL()) {
 			Jmol._Canvas3D.prototype = Jmol.GLmol.extendApplet(Jmol._jsSetPrototype(new Applet(id, Info, true)));
 			return new Jmol._Canvas3D(id, Info, "Jmol", checkOnly);
@@ -175,7 +171,7 @@
 		if (Jmol._isFile) {
 			// local installations need jnlp here and should reference JmolApplet(Signed).jar, not JmolApplet(Signed)0.jar  
 			jarFile = jarFile.replace(/0\.jar/,".jar");
-			//jnlp = " jnlp_href=\"" + jarFile.replace(/\.jar/,".jnlp") + "\"";
+			jnlp = ""//" jnlp_href=\"" + jarFile.replace(/\.jar/,".jnlp") + "\"";
 		}
 		// size is set to 100% of containers' size, but only if resizable. 
 		// Note that resizability in MSIE requires: 
@@ -221,7 +217,7 @@
 		}	
 		t = Jmol._getWrapper(applet, true) + t + Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
-		if (Jmol._debugAlert)
+//		if (Jmol._debugAlert)
 			alert (t);
 		applet._code = Jmol._documentWrite(t);
 	}
@@ -234,12 +230,13 @@
 			progresscolor: "blue",
 			boxbgcolor: this._color || "black",
 			boxfgcolor: "white",
-			boxmessage: "Downloading JmolApplet ...",
-			script: (this._color ? "background \"" + this._color +"\"": ""),
-			code: "JmolApplet.class"
+			boxmessage: "Downloading OpenAstexViewer ...",
+			script: "",//(this._color ? "background \"" + this._color +"\"": ""),
+			code: "astex.MoleculeViewerApplet.class"
 		};
 
 		Jmol._setAppletParams(this._availableParams, params, Info);
+		
 		function sterilizeInline(model) {
 			model = model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
 			if(Jmol._debugAlert)
@@ -298,7 +295,7 @@
 		Jmol.$setVisible(Jmol.$(this, "infoheaderdiv"), tf);
 		this._show(!tf);
 	}
-
+/*
 	proto._show2d = function(tf) {
 		this._2dapplet._show2d(tf);
 		if (this._2dapplet._isEmbedded) {
@@ -322,7 +319,7 @@
 		}
 		return {fromJmol:A, toJmol:B}; // forward and rev.		
   }
-  
+  */
 	proto._show = function(tf) {
 		var x = (!tf ? 2 : "100%");
 		Jmol.$setSize(Jmol.$(this, "object"), x, x);
@@ -330,6 +327,7 @@
 			Jmol.$setVisible(Jmol.$(this, "appletdiv"), tf);
 	}
 
+/*
 	proto._clearConsole = function () {
 			if (this._console == this._id + "_infodiv")
 				this.info = "";
@@ -337,7 +335,7 @@
 			Jmol._setConsoleDiv(this._console);
 			Clazz.Console.clear();
 		}
-
+*/
 
 	proto._addScript = function(script) {      
 		this._readyScript || (this.readyScript = "");
@@ -352,7 +350,7 @@
 		Jmol._setConsoleDiv(this._console);
 		this._applet.script(script);
 	}
-
+/*
 	proto._syncScript = function(script) {
 		this._applet.syncScript(script);
 	}
@@ -452,20 +450,7 @@
 
   }
 
-	proto._evaluateDEPRECATED = function(molecularMath) {   // DEPRECATED!!!	
-	// DEPRECATED!!!	
-		//carries out molecular math on a model
-		var result = "" + this._getPropertyAsJavaObject("evaluate", molecularMath);
-		var s = result.replace(/\-*\d+/, "");
-		if(s == "" && !isNaN(parseInt(result)))
-			return parseInt(result);
-		var s = result.replace(/\-*\d*\.\d*/, "")
-		if(s == "" && !isNaN(parseFloat(result)))
-			return parseFloat(result);
-		return result;
-	// DEPRECATED!!!	
-	}
-
+	
 	proto._saveOrientation = function(id) {	
 		return this._savedOrientations[id] = this._getPropertyAsArray("orientationInfo","info").moveTo;
 	}
@@ -485,7 +470,7 @@
 			return s = s.replace(/1\.0/, delay);
 		return this._scriptWait(s);
 	}
-
+*/
 	proto._resizeApplet = function(size) {
 		// See _jmolGetAppletSize() for the formats accepted as size [same used by jmolApplet()]
 		//  Special case: an empty value for width or height is accepted, meaning no change in that dimension.
@@ -665,7 +650,7 @@
 		}
 		return false;
 	}
-
+/*
   proto._getSmiles = function() {
 		return this._evaluate("{visible}.find('SMILES')");   
   }
@@ -678,146 +663,12 @@
 		return jmol._evaluate("script('select visible;show chemical sdf')"); // 2D equivalent
   }
   
-  
-})(Jmol._Applet, Jmol._Applet.prototype);
-
-/* ****************************************
-
-
-	// _Image -- an alternative to _Applet
-	// commented out here, as it has found no use
-
-	Jmol._Image = function(id, Info, checkOnly){
-		this._jmolType = "image";
-		if (checkOnly)
-			return this;
-		this._create(id, Info);
-		return this;
-	}
-
-;(function (Image, proto) {
-
-	Jmol._Applet._setCommonMethods(proto);
-
-	proto._create = function(id, Info) {
-		Jmol._setObject(this, id, Info);
-		this._src || (this._src = "");
-		var t = Jmol._getWrapper(this, true) 
-			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
-		 	+	Jmol._getWrapper(this, false)
-			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this) : "");
-		if (Jmol._debugAlert)
-			alert (t);
-		this._code = Jmol._documentWrite(t);
-		this._ready = false;
-		if (Jmol._document)
-			this._readyCallback(id, null, this._ready = true, null);
-	}
-
-	proto._canScript = function(script) {
-		var slc = script.toLowerCase().replace(/[\",\']/g, '');
-		var ipt = slc.length;
-		return (script.indexOf("#alt:LOAD") >= 0 || slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
-			&& (slc.indexOf("script ") == 0 || slc.indexOf("load ") == 0)
-			&& (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".jpg") == ipt - 4));
-	}
-
-	proto._script = function(script) {
-		var slc = script.toLowerCase().replace(/[\",\']/g, '');
-		// single command only
-		// "script ..." or "load ..." only
-		// PNG or PNGJ or JPG only
-		// automatically switches to .all.png(j) from .min.png(j)
-		var ipt = slc.length;
-		if (slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
-			&& (slc.indexOf("script ") == 0 || slc.indexOf("load ") == 0)
-			&& (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".pngj") == ipt - 5 || slc.indexOf(".jpg") == ipt - 4)) {
-			var imageFile = script.substring(script.indexOf(" ") + 1);
-			ipt = imageFile.length;
-			for (var i = 0; i < ipt; i++) {
-				switch (imageFile.charAt(i)) {
-				case " ":
-					continue;
-				case '"':
-					imageFile = imageFile.substring(i + 1, imageFile.indexOf('"', i + 1))
-					i = ipt;
-					continue;
-				case "'":
-					imageFile = imageFile.substring(i + 1, imageFile.indexOf("'", i + 1))
-					i = ipt;
-					continue;
-				default:
-					imageFile = imageFile.substring(i)
-					i = ipt;
-					continue;
-				}
-			}
-			imageFile = imageFile.replace(/\.min\.png/,".all.png")
-			document.getElementById(this._id + "_image").src = imageFile
-		} else if (script.indexOf("#alt:LOAD ") >= 0) {
-			imageFile = script.split("#alt:LOAD ")[1]
-			if (imageFile.indexOf("??") >= 0) {
-				var db = imageFile.split("??")[0];
-				imageFile = prompt(imageFile.split("??")[1], "");
-				if (!imageFile)
-					return;
-				if (!Jmol.db._DirectDatabaseCalls[imageFile.substring(0,1)])
-					imageFile = db + imageFile;
-			}
-			this._loadFile(imageFile);
-		}
-	}
-
-	proto._show = function(tf) {
-		Jmol._getElement(this, "appletdiv").style.display = (tf ? "block" : "none");
-	}
-
-	proto._loadFile = function(fileName, params){
-		this._showInfo(false);
-		this._thisJmolModel = "" + Math.random();
-		params = (params ? params : "");
-		var database = "";
-		if (Jmol._isDatabaseCall(fileName)) {
-			database = fileName.substring(0, 1); 
-			fileName = Jmol._getDirectDatabaseCall(fileName, false);
-		} else if (fileName.indexOf("://") < 0) {
-			var ref = document.location.href
-			var pt = ref.lastIndexOf("/");
-			fileName = ref.substring(0, pt + 1) + fileName;
-		}
-
-		var src = Jmol._serverUrl 
-				+ "?call=getImageForFileLoad"
-				+ "&file=" + escape(fileName)
-				+ "&width=" + this._width
-				+ "&height=" + this._height
-				+ "&params=" + encodeURIComponent(params + ";frank off;");
-		Jmol._getElement(this, "image").src = src;
-	}
-
-	proto._searchDatabase = function(query, database, script){
-		if (query.indexOf("?") == query.length - 1) {
-			Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
-			return;
-		}
-		this._showInfo(false);
-		script || (script = Jmol._getScriptForDatabase(database));
-		var src = Jmol._serverUrl 
-			+ "?call=getImageFromDatabase"
-			+ "&database=" + database
-			+ "&query=" + query
-			+ "&width=" + this._width
-			+ "&height=" + this._height
-			+ "&script=" + encodeURIComponent(script + ";frank off;");
-		Jmol._getElement(this, "image").src = src;
-	}
-})(Jmol._Image, Jmol._Image.prototype);
-
-************************************ */
-
-	Jmol.jmolSmiles = function(jmol, withStereoChemistry) {
-		return jmol._getSmiles();
-	}
+  */
+})(Jmol._Astex, Jmol._Astex.prototype);
 
 
 })(Jmol, document);
+
+	Jmol.getAstexApplet = function(id, Info, checkOnly) {
+		return Jmol._Astex._get(id, Info, checkOnly);
+	}
