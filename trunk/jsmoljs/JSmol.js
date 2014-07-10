@@ -128,6 +128,9 @@
 			this._isLayered = true;
 			this._platform = "JSV.awtjs2d.Platform";
 			break;
+		case "Astex":
+			this._isAstex = true;
+			this._platform = "astex.awtjs2d.Platform";
 		}
 		if (checkOnly)
 			return this;
@@ -294,6 +297,12 @@
 					if (this._isPro)
 						Jmol.__addExec([this, Jmol.__loadClass, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
 				}
+			} else if (this._isAstex) {
+				Jmol.__addCoreFile("astex", this._j2sPath, this.__Info.preloadCore);
+				if (Jmol._debugCode) {
+				// no min package for that
+					Jmol.__addExec([this, Jmol.__loadClass, "astex.MoleculeViewerAppletJS", "load Astex"]);
+				}
 			} else {
 				Jmol.__addCoreFile("jmol", this._j2sPath, this.__Info.preloadCore);
 				if (!this._is2D) {
@@ -321,7 +330,7 @@
 
 		proto.__startAppletJS = function(applet) {
 			var viewerOptions =  new java.util.Hashtable ();
-			Jmol._setAppletParams(viewerOptions, applet.__Info, true);
+			Jmol._setAppletParams(applet._availableParams, viewerOptions, applet.__Info, true);
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
 			viewerOptions.put("applet", true);
 			viewerOptions.put("name", applet._id);// + "_object");
