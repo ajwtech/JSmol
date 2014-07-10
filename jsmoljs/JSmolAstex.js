@@ -111,13 +111,8 @@
 					applet = new Applet(id, Info, checkOnly);
 				break;
 			case "WEBGL":
-				applet = Applet._getCanvas(id, Info, checkOnly, true);
-				break;
 			case "HTML5":
-				applet = Applet._getCanvas(id, Info, checkOnly, false);
-				break;
-			case "IMAGE":
-				applet = new Jmol._Image(id, Info, checkOnly);
+				applet = Applet._getCanvas(id, Info, checkOnly);
 				break;
 			}
 			if (applet != null)
@@ -136,15 +131,8 @@
 
 	Applet._getCanvas = function(id, Info, checkOnly, webGL) {
 		webGL = false;
-		if (webGL && Jmol.featureDetection.supportsWebGL()) {
-			Jmol._Canvas3D.prototype = Jmol.GLmol.extendApplet(Jmol._jsSetPrototype(new Applet(id, Info, true)));
-			return new Jmol._Canvas3D(id, Info, "Jmol", checkOnly);
-		}
-		if (!webGL) {
-			Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Applet(id, Info, true));
-			return new Jmol._Canvas2D(id, Info, "Jmol", checkOnly);
-		}
-		return null;
+		Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Applet(id, Info, true));
+		return new Jmol._Canvas2D(id, Info, "Astex", checkOnly);
 	};
 
 
