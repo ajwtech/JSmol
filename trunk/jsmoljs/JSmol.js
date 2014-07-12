@@ -289,6 +289,7 @@
 			var isFirst = (Jmol.__execStack.length == 0);
 			if (isFirst)
 				Jmol.__addExec([this, Jmol.__loadClazz, null, "loadClazz"]);
+				
 			if (this._isJSV) {
 				Jmol.__addCoreFile("jsv", this._j2sPath, this.__Info.preloadCore);
 				if (Jmol._debugCode) {
@@ -364,7 +365,8 @@
 			viewerOptions.put ("codePath", codePath);
 
 			Jmol._registerApplet(applet._id, applet);
-			applet._applet = (!applet._isJSV ? new J.appletjs.Jmol(viewerOptions) 
+			applet._applet = (applet._isAstex ? new astex.MoleculeViewerAppletJS(viewerOptions) 
+			  : !applet._isJSV ? new J.appletjs.Jmol(viewerOptions) 
 				: applet._isPro ? new JSV.appletjs.JSVAppletPro(viewerOptions) 
 				: new JSV.appletjs.JSVApplet(viewerOptions));
 

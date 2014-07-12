@@ -1,6 +1,12 @@
 // JSmolJavaExt.js
-// will be wrapped by anonymous function using ANT in build_03_tojs.xml
 
+// This library will be wrapped by an additional anonymous function using ANT in 
+// build_03_tojs.xml. This task will also modify variable names. References 
+// to Clazz._ will not be changed, but other Clazz.xxx will be changed to 
+// (local scope) Clazz_xxx, allowing them to be further compressed using
+// Google Closure Compiler in that same ANT task.
+
+// BH 7/11/2014 4:17:22 PM fix for Boolean.valueOf("false") not being false 
 // BH 5/27/2014 6:29:59 AM ensure floats and doubles have decimal point in toString
 // BH 4/1/2014 12:23:41 PM Encoding moved to Clazz._Encoding; 
 // BH 4/1/2014 7:51:46 AM removing java.lang.B00lean
@@ -711,7 +717,7 @@ return this.valueOf();
 });
 Boolean.$valueOf=Clazz.overrideMethod(Boolean,"$valueOf",
 function(b){
-return(b?Boolean.TRUE:Boolean.FALSE);
+return((typeof b == "string"? "true".equalsIgnoreCase(b) : b)?Boolean.TRUE:Boolean.FALSE);
 });
 
 /*
