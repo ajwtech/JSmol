@@ -543,14 +543,14 @@
 	proto._scriptLoad = function(file, script, _jmol_scriptLoad) {
 		script || (script = "");
 		var doscript = (this._isJava || !this._noscript);
-		if (doscript)
-			this._script("zap;set echo middle center;echo Retrieving data...");
+		//if (doscript)
+		//	this._script("zap;set echo middle center;echo Retrieving data...");
 		if (!this._isSigned || this._viewSet != null)
 			return false;
 		if (doscript)
-			this._script("load async \"" + file + "\";" + script);
+			this._script("load \"" + file + "\";" + script);
 		else
-			this._applet.viewer.openFile(file);
+			this._applet.openFile(file);
 		this._checkDeferred("");
 		return true;
 	}
@@ -564,7 +564,7 @@
 			script += ";if ({*}.molecule.max > 1 || {*}.modelindex.max > 0){ delete molecule > 1 or modelindex > 0;x = getProperty('extractModel',{*});load inline @x};"
 		}
 		if (!script && this._noscript) {
-			this._applet.viewer.loadInline(mol, '\0');
+			this._applet.loadInline(mol, '\0');
 		} else {
 		  this._loadMolData(mol, script, false);
 		}

@@ -382,7 +382,7 @@
 				// applet div can be not the same size as the canvas if there
 				// is a border in place.
 				var d = Jmol._getElement(this, (this._is2D ? "canvas2d" : "canvas"));
-				this._applet.viewer.setScreenDimension(
+				this._applet.setScreenDimension(
 				d.width, d.height);
 // Math.floor(Jmol.$(this, "appletdiv").height()));
 
@@ -446,11 +446,11 @@
 
 
 		proto._processGesture = function(touches) {
-			return this._applet.viewer.mouse.processTwoPointGesture(touches);
+			return this._applet.mouse.processTwoPointGesture(touches);
 		}
 
 		proto._processEvent = function(type, xym) {
-			this._applet.viewer.processMouseEvent(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
+			this._applet.processMouseEvent(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
 		}
 
 		proto._resize = function() {
@@ -468,7 +468,7 @@
 	Jmol._repaint = function(applet, asNewThread) {
 		// asNewThread: true is from RepaintManager.repaintNow()
 		// false is from Repaintmanager.requestRepaintAndWait()
-		//
+		// called from apiPlatform Display.repaint()
 
 		// alert("_repaint " + arguments.callee.caller.caller.exName)
 		if (!applet || !applet._applet)return;
@@ -479,16 +479,16 @@
 		var h = Math.round(container.height());
 		if (applet._is2D && (applet._canvas.width != w || applet._canvas.height != h)) {
 			applet._newCanvas(true);
-			applet._applet.viewer.setDisplay(applet._canvas);
+			applet._applet.setDisplay(applet._canvas);
 		}
-		applet._applet.viewer.setScreenDimension(w, h);
+		applet._applet.setScreenDimension(w, h);
 
 		if (asNewThread) {
-			setTimeout(function(){ applet._applet && applet._applet.viewer.updateJS(0,0)});
+			setTimeout(function(){ applet._applet && applet._applet.update()});
 		} else {
-			applet._applet.viewer.updateJS(0,0);
+			applet._applet.update();
 		}
-		// System.out.println(applet._applet.fullName)
+		// System.out.println(applet._applet.getFullName())
 	}
 
 	Jmol._getHiddenCanvas = function(applet, id, width, height, forceNew) {

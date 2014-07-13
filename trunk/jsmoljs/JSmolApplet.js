@@ -577,7 +577,7 @@
 		if (doscript)
 			this._script("load async \"" + file + "\";" + script);
 		else
-			this._applet.viewer.openFile(file);
+			this._applet.openFile(file);
 		this._checkDeferred("");
 		return true;
 	}
@@ -591,7 +591,7 @@
 			script += ";if ({*}.molecule.max > 1 || {*}.modelindex.max > 0){ delete molecule > 1 or modelindex > 0;x = getProperty('extractModel',{*});load inline @x};"
 		}
 		if (!script && this._noscript) {
-			this._applet.viewer.loadInline(mol, '\0');
+			this._applet.loadInlineString(mol, "", false);
 		} else {
 		  this._loadMolData(mol, script, false);
 		}
@@ -701,6 +701,7 @@
 
 	proto._create = function(id, Info) {
 		Jmol._setObject(this, id, Info);
+		thisnfo);
 		this._src || (this._src = "");
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'

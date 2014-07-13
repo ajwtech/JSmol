@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 7/3/2014 12:30:28 AM lost drag-drop of models
 // BH 7/2/2014 4:47:55 AM adding pdbe.org to direct database calls
 // BH 5/30/2014 7:20:07 AM better dragging for console and menu
 // BH 4/27/2014 6:31:52 PM allows _USE=SIGNED HTML5 as well as _USE=JAVA HTML5
@@ -120,7 +121,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.1.14 Apr 27, 2014',
+		_version: 'JSmol 14.2.3 July 13, 2014',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -153,6 +154,7 @@ Jmol = (function(document) {
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
 				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
+				"*": "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
 				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
 			},
@@ -492,7 +494,8 @@ Jmol = (function(document) {
 	Jmol._grabberOptions = [
 		["$", "NCI(small molecules)"],
 		[":", "PubChem(small molecules)"],
-		["=", "RCSB(macromolecules)"]
+		["=", "RCSB(macromolecules)"],
+		["*", "PDBe(macromolecules)"]
 	];
 
 	Jmol._getGrabberOptions = function(applet) {
@@ -1586,7 +1589,7 @@ Jmol = (function(document) {
 
 		Jmol.$bind(canvas, 'mouseout', function(ev) {
 			if (canvas.applet._applet)
-				canvas.applet._applet.viewer.startHoverWatcher(false);
+				canvas.applet._applet.startHoverWatcher(false);
 			//canvas.isDragging = false;
 			var xym = Jmol._jsGetXY(canvas, ev);
 			if (!xym)
@@ -1598,7 +1601,7 @@ Jmol = (function(document) {
 
 		Jmol.$bind(canvas, 'mouseenter', function(ev) {
 			if (canvas.applet._applet)
-				canvas.applet._applet.viewer.startHoverWatcher(true);
+				canvas.applet._applet.startHoverWatcher(true);
 			if (ev.buttons === 0 || ev.which === 0) {
 				canvas.isDragging = false;
 				var xym = Jmol._jsGetXY(canvas, ev);
@@ -2127,12 +2130,12 @@ Jmol.Cache.put = function(filename, data) {
 			var e = e.originalEvent;
 			e.stopPropagation();
 			e.preventDefault();
-			var file = ev.dataTransfer.files[0];
+			var file = e.dataTransfer.files[0];
 			if (file == null) {
 				// FF and Chrome will drop an image here
 				// but it will be only a URL, not an actual file. 
 				try {
-				  file = "" + ev.dataTransfer.getData("text");
+				  file = "" + e.dataTransfer.getData("text");
 				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0) {
 				  	me._script("load \"" + file + "\"");
 				  	return;
@@ -2149,14 +2152,14 @@ Jmol.Cache.put = function(filename, data) {
 				if (evt.target.readyState == FileReader.DONE) {
 					var cacheName = "cache://DROP_" + file.name;
 					var bytes = Jmol._toBytes(evt.target.result);
-					me._applet.viewer.cacheFileByName("cache://DROP_*",false);
+					me._applet.cacheFileByName("cache://DROP_*",false);
 					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
 						Jmol.Cache.put(cacheName, bytes);
 					else
-						me._applet.viewer.cachePut(cacheName, bytes);
+						me._applet.cachePut(cacheName, bytes);
 					var xym = Jmol._jsGetXY(me._canvas, e);
-					if(xym && (!me._applet.viewer.setStatusDragDropped || me._applet.viewer.setStatusDragDropped(0, xym[0], xym[1], cacheName))) {
-						me._applet.viewer.openFileAsyncSpecial(cacheName, 1);
+					if(xym && (!me._applet.setStatusDragDropped || me._applet.setStatusDragDropped(0, xym[0], xym[1], cacheName))) {
+						me._applet.openFileAsyncSpecial(cacheName, 1);
 					}
 				}
 			};
