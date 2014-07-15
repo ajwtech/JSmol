@@ -149,6 +149,7 @@ Jmol = (function(document) {
 				"cactus.nci.nih.gov": "%URL", 
 				"www.rcsb.org": "%URL",
 				"pdbe.org": "%URL", 
+				"www.ebi.ac.uk": "%URL", 
 				"pubchem.ncbi.nlm.nih.gov":"%URL",
 				"http://www.nmrdb.org/tools/jmol/predict.php":"%URL",
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
