@@ -34,7 +34,7 @@
     </copy>
   	<copy overwrite="true" todir="src" >
       <fileset dir="${astex.path}/src">
-        <include name="com/globalphasing/startools/*.java"/>
+        <include name="com/**/*.java"/>
         <include name="java_cup/runtime/*.java"/>
         <include name="java/awt/*.java"/>
       </fileset>
