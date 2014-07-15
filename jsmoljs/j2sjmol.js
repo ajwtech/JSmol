@@ -3043,12 +3043,14 @@ System.out.__CLASS_NAME__ = "java.io.PrintStream";
 System.out.print = function () {};
 System.out.printf = function () {};
 System.out.println = function () {};
+System.out.write = function () {};
 
 System.err = new Clazz._O ();
 System.err.__CLASS_NAME__ = "java.io.PrintStream";
 System.err.print = function () {};
 System.err.printf = function () {};
 System.err.println = function () {};
+System.err.write = function () {};
 
 Clazz.popup = Clazz.assert = Clazz.log = Clazz.error = window.alert;
 
@@ -6754,6 +6756,12 @@ Clazz.alert = function (s) {
 		}
 		Console.consoleOutput (s);
 	};
+	
+	System.out.write = function (buf, offset, len) {
+		System.out.print(String.instantialize(buf).substring(offset, offset+len));
+	};
+	
+	
 
 	/* public */
 	System.err.__CLASS_NAME__ = "java.io.PrintStream";
@@ -6775,6 +6783,9 @@ Clazz.alert = function (s) {
 		Console.consoleOutput (s, "red");
 	};
 
+	System.err.write = function (buf, offset, len) {
+		System.err.print(String.instantialize(buf).substring(offset, offset+len));
+	};
 
 
 })(Clazz.Console, System);

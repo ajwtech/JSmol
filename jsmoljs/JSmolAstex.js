@@ -315,20 +315,18 @@
 			Jmol.$setVisible(Jmol.$(this, "appletdiv"), tf);
 	}
 
-/*
 	proto._clearConsole = function () {
-			if (this._console == this._id + "_infodiv")
-				this.info = "";
-			if (!self.Clazz)return;
-			Jmol._setConsoleDiv(this._console);
-			Clazz.Console.clear();
-		}
-*/
+		if (this._console == this._id + "_infodiv")
+			this.info = "";
+		if (!self.Clazz)return;
+		Jmol._setConsoleDiv(this._console);
+		Clazz.Console.clear();
+	}
 
 	proto._addScript = function(script) {      
 		this._readyScript || (this.readyScript = "");
 		this._readyScript && (this._readyScript += ";");
-		this._readyScript += script;
+		this._readyScript += script + ";";
 		return true;
 	}
 
@@ -336,7 +334,7 @@
 		if (!this._ready)
 				return this._addScript(script);
 		Jmol._setConsoleDiv(this._console);
-		this._applet.script(script);
+		this._applet.script(script + ";");
 	}
 /*
 	proto._syncScript = function(script) {
