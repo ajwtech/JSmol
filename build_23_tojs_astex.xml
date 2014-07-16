@@ -212,8 +212,8 @@
    	<echo>...adding astex resources files</echo>
     <copy todir="site/jsmol/j2s" >
       <fileset dir="${astex.path}/src">
-        <include name="fonts/**" />
-        <include name="images/**" />
+        <include name="astex/fonts/**" />
+        <include name="asteximages/**" />
         <include name="astex/properties/**" />
       </fileset>
     </copy>
@@ -398,8 +398,99 @@
     	JU/T3i.js
     	JU/T4.js
     	JU/V3.js
-    	" />
+	" />
 
+   	
+   	<property name="astexCoreFiles" value="
+   		java/util/Vector.js
+   		java/util/Stack.js
+   		java/util/HashSet.js
+   		javajs/api/GenericLineReader
+   		java/awt/Color.js
+   		java/util/HashMap.js
+	   	java/awt/event/InputEvent.js
+	   	java/awt/event/MouseEvent.js
+   		java_cup/runtime/lr_parser.js
+   		java_cup/runtime/virtual_parse_stack.js
+   		java_cup/runtime/Scanner.js
+   		java_cup/runtime/Symbol.js
+   		javajs/api/Interface.js
+   		javajs/api/GenericBinaryDocument.js
+   		javajs/util/Rdr.js
+   		astex/api/AstexCanvas.js
+	   	astex/api/AstexViewerAPI.js
+	   	astex/api/Interface.js
+	   	astex/awtjs2d/Display.js
+	   	astex/awtjs2d/Image.js
+	   	astex/awtjs2d/JSCanvas.js
+	   	astex/awtjs2d/JSFile.js
+	   	astex/awtjs2d/JSFont.js
+	   	astex/awtjs2d/Mouse.js
+	   	astex/awtjs2d/Platform.js
+	   	astex/awtjs2d/ViewerJS.js
+	   	astex/cmds/PdbeCommand.js
+	   	astex/cmds/ViewCommand.js
+	   	astex/generic/Generic.js
+	   	astex/generic/GenericInterface.js
+	   	astex/GenericApplet.js
+	   	astex/io/FILE.js
+	   	astex/io/MoleculeReader.js
+	   	astex/map/GraphicalObject.js
+	   	astex/map/VolumeMap.js
+	   	astex/model/Angle.js
+	   	astex/model/Atom.js
+	   	astex/model/Bond.js
+	   	astex/model/Chain.js
+	   	astex/model/Distance.js
+	   	astex/model/Molecule.js
+	   	astex/model/Residue.js
+	   	astex/model/ResidueIterator.js
+	   	astex/model/Ring.js
+	   	astex/model/SecondaryStructure.js
+	   	astex/model/Selectable.js
+	   	astex/model/Selection.js
+	   	astex/model/Symmetry.js
+	   	astex/MoleculeViewerAppletJS.js
+	   	astex/parser/NewActions.js
+	   	astex/parser/NewParser.js
+	   	astex/parser/NewYylex.js
+	   	astex/render/AstexLogo.js
+	   	astex/render/MoleculeRenderer.js
+	   	astex/render/MoleculeRendererListener.js
+	   	astex/render/PdbeLogo.js
+	   	astex/render/Renderer.js
+	   	astex/render/RendererEvent.js
+	   	astex/render/Texture.js
+	   	astex/render/Tmesh.js
+	   	astex/render/Vertex.js
+	   	astex/util/Arguments.js
+	   	astex/util/AtomicElement.js
+	   	astex/util/AtomIterator.js
+	   	astex/util/BondIterator.js
+	   	astex/util/Color32.js
+	   	astex/util/DefaultLogger.js
+	   	astex/util/DoubleArray.js
+	   	astex/util/DynamicArray.js
+	   	astex/util/FloatArray.js
+	   	astex/util/Format.js
+	   	astex/util/Geometry.js
+	   	astex/util/Improper.js
+	   	astex/util/IntArray.js
+	   	astex/util/Lattice.js
+	   	astex/util/Light.js
+	   	astex/util/Log.js
+	   	astex/util/Logger.js
+	   	astex/util/LoggerInterface.js
+	   	astex/util/match.js
+	   	astex/util/Matrix.js
+	   	astex/util/PeriodicTable.js
+	   	astex/util/Point3d.js
+	   	astex/util/Properties.js
+	   	astex/util/Settings.js
+	   	astex/util/Util.js
+	   	astex/viewer/Viewer.js
+	" />
+   	
     <property name="jmolCoreFiles" value="
     	javajs/api/GenericBinaryDocument.js
         javajs/api/GenericZipTools.js
@@ -665,34 +756,6 @@
 		JSV/tree/SimpleTreePath.js
     	" />
    	
-    <property name="astexCoreFiles" value="
-    	astex/MoleculeViewerAppletJS.js
-    	astex/applet/GenericApplet.js
-    	astex/util/Format.js
-    	astex/applet/JS.js
-    	astex/io/FILE.js
-    	astex/io/MoleculeReader.js
-    	astex/map/Surface.js
-    	astex/map/VolumeMap.js
-    	astex/parser/parser.js
-    	astex/render/Tmesh.js
-    	astex/api/Interface.js
-    	astex/model/Atom.js
-    	astex/model/Molecule.js
-    	astex/util/Logger.js
-    	astex/generic/GenericInterface.js
-    	astex/model/Selectable.js
-    	astex/util/Point3d.js
-    	astex/util/Color32.js
-    	astex/util/DynamicArray.js
-    	astex/util/DefaultLogger.js
-    	astex/util/LoggerInterface.js
-    	astex/util/Log.js
-    	java/awt/Color.js
-    	astex/util/PeriodicTable.js
-    	astex/util/AtomicElement.js
-    	astex/util/Settings.js
-    	" />
    	
     <antcall target="call-core">
         <param name="call-core.name" value="" />
@@ -730,7 +793,8 @@
        		../../../Jmol.properties
        		../js/JSmolJavaExt.js
        		../js/core/coretop.js
-     	
+         	${javaCoreFiles}
+         	${astexCoreFiles}     	
        		../js/core/corebottom.js
     	" />
     	
