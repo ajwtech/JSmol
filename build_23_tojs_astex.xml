@@ -213,7 +213,7 @@
     <copy todir="site/jsmol/j2s" >
       <fileset dir="${astex.path}/src">
         <include name="astex/fonts/**" />
-        <include name="asteximages/**" />
+        <include name="astex/images/**" />
         <include name="astex/properties/**" />
       </fileset>
     </copy>
