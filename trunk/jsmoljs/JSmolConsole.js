@@ -15,7 +15,7 @@ Jmol.Console = {
 }
 
 Jmol.Console.JSConsole = function(appletConsole) {
-	this.applet = appletConsole.vwr.applet;
+	this.applet = appletConsole.vwr.html5Applet;
 	var id = this.id = this.applet._id+"_console";
 	var console = this;
 	Jmol.Console.buttons[console.id] = console;

@@ -1,4 +1,6 @@
 })(Clazz
+,Clazz.newLongArray
+,Clazz.doubleToByte
 ,Clazz.doubleToInt
 ,Clazz.declarePackage
 ,Clazz.instanceOf
