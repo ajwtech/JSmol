@@ -4519,7 +4519,7 @@ ClazzLoader.loadScript = function (file, why) {
 		}
 	}
 
-	System.out.println("loading... " + file + (why ? " -- required by " + why : ""))
+	System.out.println("\t" + file.substring(4) + (why ? "\n -- required by " + why : ""))
 
 	if (ClazzLoader.isUsingXMLHttpRequest) {
 		ClazzLoader.scriptLoading (file);

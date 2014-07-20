@@ -1,4 +1,6 @@
 (function(Clazz
+,Clazz_newLongArray
+,Clazz_doubleToByte
 ,Clazz_doubleToInt
 ,Clazz_declarePackage
 ,Clazz_instanceOf

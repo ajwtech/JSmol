@@ -535,7 +535,7 @@
 		var width = image.width;
 		var height = image.height; 
 		var id = "echo_" + echoNameAndPath[0];
-		var canvas = Jmol._getHiddenCanvas(platform.vwr.applet, id, width, height, true);
+		var canvas = Jmol._getHiddenCanvas(platform.vwr.html5Applet, id, width, height, true);
 		canvas.imageWidth = width;
 		canvas.imageHeight = height;
 		canvas.id = id;
