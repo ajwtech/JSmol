@@ -2,6 +2,7 @@
 ,Clazz_newLongArray
 ,Clazz_doubleToByte
 ,Clazz_doubleToInt
+,Clazz_doubleToLong
 ,Clazz_declarePackage
 ,Clazz_instanceOf
 ,Clazz_load
