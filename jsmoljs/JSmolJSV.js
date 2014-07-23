@@ -150,6 +150,19 @@
 		return false;
 	}	
 
+	proto._scriptLoad = function(file, script, _jsv_scriptLoad) {
+		script || (script = "");
+		var doscript = (this._isJava || !this._noscript);
+		if (!this._isSigned || this._viewSet != null)
+			return false;
+		if (doscript)
+			this._script("load \"" + file + "\";" + script);
+		else
+			this._applet.openFile(file);
+		this._checkDeferred("");
+		return true;
+	}
+
 	proto._clearConsole = Jmol._Applet.prototype._clearConsole;
 	proto._showInfo = Jmol._Applet.prototype._showInfo;
 	proto._show = Jmol._Applet.prototype._show;

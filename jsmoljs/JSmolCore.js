@@ -2138,7 +2138,7 @@ Jmol.Cache.put = function(filename, data) {
 				try {
 				  file = "" + e.dataTransfer.getData("text");
 				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0) {
-				  	me._script("load \"" + file + "\"");
+				  	me._scriptLoad(file);
 				  	return;
 			  	}
 				} catch(e) {

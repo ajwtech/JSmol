@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>HTML5-only and WebGL Jmol Demo</title>
+<title>HTML5-only AstexViewer test</title>
 <head>
 <meta charset="utf-8">
 <!-- breaking out the library for debugging -->
@@ -57,18 +57,7 @@ Info = {
 </head>
 <body>
 <table width=1000 cellpadding=10>
-<tr><td colspan=2 style="font-size:8pt">
-For a zip file containing all the files in this directory, 
-see <a href=http://chemapps.stolaf.edu/jmol/zip/Jmol.zip>http://chemapps.stolaf.edu/jmol/zip/Jmol.zip</a>. 
-
-This test page uses unminified files and can implement the signed Jmol applet, the unsigned Jmol applet, or just JavaScript and HTML5 with or without WebGL. 
-
-Credits: 
-WebGL interface written by <b>Takanori Nakane</b>. 
-Java2Script written by <b>Zhou Renjian, et al.</b>
-Jzlib written by <b>Atsuhiko Yamanaka</b>.
-Jmol code conversion to JavaScript by <b>Bob Hanson</b>. 
-
+<tr><td colspan=2>
 </td></tr>
 <tr><td valign=top>
 
@@ -134,21 +123,11 @@ labels <a href="javascript:Jmol.script(astex0,'if (_fileType == &quot;Pdb&quot;)
 <a href="javascript:Jmol.script(astex0,'if (!fsize){fsize=20};fsize -= 4;if (fsize < 10){fsize = 10};font echo @fsize serif')">smaller</a>
 
 </td><td valign=top>
-<b>Try various buttons. If anything doesn't work please <a href=mailto:hansonr@stolaf.edu>let me know</a>.</b> 
 <br /><br /> 
 
-<span style="font-size:8pt">
-Current status: 7 SEP 2013 - 
-<b>Jmol is working completely Java-free, requiring only HTML5.</b>
-The <b>platformSpeed</b> option (set 1 to 10) allows for rapid rotation of models for platforms that have limited JavaScript capability (iPad/iPhone, tablets). 
-
-Popup menu, script queuing, animation, spin, vibration, move, moveto, hover, and (guided) navigation, pause/resume are all working;
-echos/labels working; antialiasDisplay working;
-synchronous binary and XML file reading working; 
-cartoons, translucency, surfaces -- all are working in a simple HTML5 2D canvas. WebGL is less developed, with just basic shapes and no text. 
-
-
-Enter "!" and a command into the search box and press ENTER to execute a <a target=_blank href=http://chemapps.stolaf.edu/jmol/docs>script command</a>.
+<span style=color:red>
+This page is under development. It is a test of porting AstexViewer to JavaScript.
+Enter "!" and a command into the search box and press ENTER to execute a <a target=_blank href=http://openastexviewer.net/web/scripting.html>script command</a>.
    </span>
 <br /><br /> 
 <table cellpadding=5><tr><td valign=top>

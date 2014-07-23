@@ -16,6 +16,11 @@
 
 	Jmol._Astex = function(id, Info, checkOnly){
 	
+	alert("The JavaScript implementation of AstexViewer is in development; not all functionality is available.")
+	
+		Jmol.db._fileLoadScript = ";secstruc all;schematic -name 'cartoons' -colorbyss true all;display lines off all;";
+		Jmol.db._nciLoadScript = "";
+		
 		window[id] = this;
 		this._jmolType = "Jmol._Astex";
 		this._viewType = "Astex";
@@ -254,7 +259,7 @@
 		else if (script)
 			this._script(script);
 		else if (this._src)
-			this._script('load "' + this._src + '"');
+			this._script('molecule remove *; molecule load "' + this._src + '"');
 		this._showInfo(true);
 		this._showInfo(false);
 		Jmol.Cache.setDragDrop(this);
@@ -541,12 +546,10 @@
 	proto._scriptLoad = function(file, script, _jmol_scriptLoad) {
 		script || (script = "");
 		var doscript = (this._isJava || !this._noscript);
-		//if (doscript)
-		//	this._script("zap;set echo middle center;echo Retrieving data...");
 		if (!this._isSigned || this._viewSet != null)
 			return false;
 		if (doscript)
-			this._script("load \"" + file + "\";" + script);
+			this._script("molecule remove *; molecule load \"" + file + "\";" + script);
 		else
 			this._applet.openFile(file);
 		this._checkDeferred("");
