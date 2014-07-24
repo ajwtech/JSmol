@@ -1,7 +1,8 @@
-// JSmolCore.js -- Jmol core capability  4/27/2014 6:32:42 PM
+// JSmolCore.js -- Jmol core capability  7/23/2014 5:34:47 PM
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 7/23/2014 5:34:08 PM setting a parameter such as readyFunction to null stops file loading
 // BH 7/3/2014 12:30:28 AM lost drag-drop of models
 // BH 7/2/2014 4:47:55 AM adding pdbe.org to direct database calls
 // BH 5/30/2014 7:20:07 AM better dragging for console and menu
@@ -121,7 +122,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.2.3 July 13, 2014',
+		_version: 'JSmol 14.2.3 July 23, 2014',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -1066,23 +1067,6 @@ Jmol = (function(document) {
 		Clazz.setConsoleDiv(d);
 	}
 
-	Jmol._setJmolParams = function(params, Info, isHashtable) {
-		var availableValues = ";progressbar;progresscolor;boxbgcolor;boxfgcolor;allowjavascript;boxmessage;\
-									;messagecallback;pickcallback;animframecallback;appletreadycallback;atommovedcallback;\
-									;echocallback;evalcallback;hovercallback;language;loadstructcallback;measurecallback;\
-									;minimizationcallback;resizecallback;scriptcallback;statusform;statustext;statustextarea;\
-									;synccallback;usecommandthread;syncid;appletid;startupscript;menufile;";
-		for (var i in Info)
-			if(availableValues.indexOf(";" + i.toLowerCase() + ";") >= 0){
-				if (i == "language" && !Jmol.featureDetection.supportsLocalization())
-					continue;
-				if (isHashtable)
-					params.put(i, (Info[i] === true ? Boolean.TRUE: Info[i] === false ? Boolean.FALSE : Info[i]))
-				else
-					params[i] = Info[i];
-			}
-	}     
-	 
 	Jmol._registerApplet = function(id, applet) {
 		return window[id] = Jmol._applets[id] = Jmol._applets[applet] = Jmol._applets[id + "__" + Jmol._syncId + "__"] = applet;
 	} 

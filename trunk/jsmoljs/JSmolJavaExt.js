@@ -1045,6 +1045,8 @@ return s1==s2;
 
 
 sp.$plit=function(regex,limit){
+if (!limit && regex == " ")
+	return this.split(regex);
 
 if(limit!=null&&limit>0){
 if(limit==1){
