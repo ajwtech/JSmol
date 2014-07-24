@@ -19,7 +19,8 @@
 	alert("The JavaScript implementation of AstexViewer is in development; not all functionality is available.")
 	
 		Jmol.db._fileLoadScript = ";secstruc all;schematic -name 'cartoons' -colorbyss true all;display lines off all;";
-		Jmol.db._nciLoadScript = "";
+		Jmol.db._nciLoadScript = "display sticks all; display lines nonel;";
+		Jmol.db._pubChemLoadScript = "display sticks all; display lines nonel;";
 		
 		window[id] = this;
 		this._jmolType = "Jmol._Astex";
@@ -259,7 +260,7 @@
 		else if (script)
 			this._script(script);
 		else if (this._src)
-			this._script('molecule remove *; molecule load "' + this._src + '"');
+			this._script('molecule remove *; object remove *;molecule load "' + this._src + '"');
 		this._showInfo(true);
 		this._showInfo(false);
 		Jmol.Cache.setDragDrop(this);
@@ -521,8 +522,8 @@
 			return;
 		}
 		script || (script = Jmol._getScriptForDatabase(database));
-		var dm = database + query;
 		this._currentView = null;
+		var dm = database + query;
 		this._searchQuery = dm;
  		this._loadFile(dm, script, dm);
 	}
@@ -531,6 +532,7 @@
 		this._showInfo(false);
 		script || (script = "");
 		this._thisJmolModel = "" + Math.random();
+		fileName = Jmol._getDirectDatabaseCall(fileName);
 		this._fileName = fileName;
 		if (!this._scriptLoad(fileName, script)) {
 			// we load the data here instead of in Jmol in the case of
@@ -549,7 +551,7 @@
 		if (!this._isSigned || this._viewSet != null)
 			return false;
 		if (doscript)
-			this._script("molecule remove *; molecule load \"" + file + "\";" + script);
+			this._script("molecule remove *; object remove *;molecule load \"" + file + "\";" + script);
 		else
 			this._applet.openFile(file);
 		this._checkDeferred("");
@@ -561,8 +563,6 @@
 			return;
 		if (this._viewSet != null) {
 			script || (script = ""); 
-			// first component only
-			script += ";if ({*}.molecule.max > 1 || {*}.modelindex.max > 0){ delete molecule > 1 or modelindex > 0;x = getProperty('extractModel',{*});load inline @x};"
 		}
 		if (!script && this._noscript) {
 			this._applet.loadInline(mol, '\0');
