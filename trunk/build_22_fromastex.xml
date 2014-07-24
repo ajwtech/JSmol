@@ -39,6 +39,11 @@
         <include name="java/awt/*.java"/>
       </fileset>
     </copy>
+  	
+	<echo>replacing "return yy_buffer["  with "return (int)yy_buffer[" in Yylex.java </echo>
+  	<replace dir="src/astex/parser" includes="Yylex.java" token="return yy_buffer[" value="return (int) yy_buffer[" />
+
+
    	<echo>Now run build_23_tojs_astex.xml to compile JSmol with JSpecView and Astex</echo>
 
   </target>
