@@ -145,7 +145,7 @@
 	Jmol._setAppletParams = function(availableParams, params, Info, isHashtable) {
 		for (var i in Info)
 			if(!availableParams || availableParams.indexOf(";" + i.toLowerCase() + ";") >= 0){
-				if (i == "language" && !Jmol.featureDetection.supportsLocalization())
+				if (Info[i] == null || i == "language" && !Jmol.featureDetection.supportsLocalization())
 					continue;
 				if (isHashtable)
 					params.put(i, (Info[i] === true ? Boolean.TRUE: Info[i] === false ? Boolean.FALSE : Info[i]))
