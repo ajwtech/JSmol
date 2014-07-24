@@ -1,9 +1,5 @@
-// BH: Note that the code produced by java_cup must be modified for JavaScript:
-//     2) NewParser.java: one reference to CUP$parser$actions changed to "NewActions"
-//     3) Yylex.java: rename as NewYylex and replace two references to "return yy_buffer[" with "return (int) yy_buffer["
-script ::=
-command ::=
-definition ::=
+General Astex Commands
+
 selection_command ::=
 	| SELECT selection:selectedAtoms
 	| APPEND selection:selectedAtoms

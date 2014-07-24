@@ -6,6 +6,7 @@
 // (local scope) Clazz_xxx, allowing them to be further compressed using
 // Google Closure Compiler in that same ANT task.
 
+// BH 7/24/2014 9:02:18 AM most browsers do not support String.codePointAt()
 // BH 7/11/2014 4:17:22 PM fix for Boolean.valueOf("false") not being false 
 // BH 5/27/2014 6:29:59 AM ensure floats and doubles have decimal point in toString
 // BH 4/1/2014 12:23:41 PM Encoding moved to Clazz._Encoding; 
@@ -1341,6 +1342,9 @@ return String.instantialize(arguments[0]);
 return String.instantialize(arguments[0],arguments[1],arguments[2]);
 }
 };
+
+sp.codePointAt || (sp.codePointAt = sp.charCodeAt); // Firefox only
+
 
 })(String.prototype);
 
