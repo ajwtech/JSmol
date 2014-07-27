@@ -1,0 +1,240 @@
+{
+    "1blu": {
+        "bond_angles": [
+            {
+                "units": [
+                    "|1|A|TYR|44|CB|||",
+                    "|1|A|TYR|44|CG|||",
+                    "|1|A|TYR|44|CD1|||"
+                ],
+                "value": 5.57
+            },
+            {
+                "units": [
+                    "|1|A|GLU|65|CA|||",
+                    "|1|A|GLU|65|CB|||",
+                    "|1|A|GLU|65|CG|||"
+                ],
+                "value": 5.64
+            },
+            {
+                "units": [
+                    "|1|A|ARG|72|NE|||",
+                    "|1|A|ARG|72|CZ|||",
+                    "|1|A|ARG|72|NH2|||"
+                ],
+                "value": 7.71
+            },
+            {
+                "units": [
+                    "|1|A|ASP|27|CB|||",
+                    "|1|A|ASP|27|CA|||",
+                    "|1|A|ASP|27|C|||"
+                ],
+                "value": 6.9
+            },
+            {
+                "units": [
+                    "|1|A|ASP|12|CB|||",
+                    "|1|A|ASP|12|CG|||",
+                    "|1|A|ASP|12|OD1|||"
+                ],
+                "value": 7.27
+            },
+            {
+                "units": [
+                    "|1|A|ARG|72|CD|||",
+                    "|1|A|ARG|72|NE|||",
+                    "|1|A|ARG|72|CZ|||"
+                ],
+                "value": -5.21
+            },
+            {
+                "units": [
+                    "|1|A|ARG|72|NE|||",
+                    "|1|A|ARG|72|CZ|||",
+                    "|1|A|ARG|72|NH1|||"
+                ],
+                "value": -11.98
+            },
+            {
+                "units": [
+                    "|1|A|ARG|77|NE|||",
+                    "|1|A|ARG|77|CZ|||",
+                    "|1|A|ARG|77|NH2|||"
+                ],
+                "value": -8.04
+            },
+            {
+                "units": [
+                    "|1|A|GLU|33|OE1|||",
+                    "|1|A|GLU|33|CD|||",
+                    "|1|A|GLU|33|OE2|||"
+                ],
+                "value": 5.16
+            },
+            {
+                "units": [
+                    "|1|A|ASP|56|CB|||",
+                    "|1|A|ASP|56|CG|||",
+                    "|1|A|ASP|56|OD2|||"
+                ],
+                "value": 6.17
+            }
+        ],
+        "chirals": [],
+        "rsrz": {
+            "outliers": [
+                {
+                    "units": [
+                        "|1|A|ASP|27||||"
+                    ],
+                    "value": 2.138
+                }
+            ]
+        },
+        "symm_clashes": [],
+        "RNA_suite": {},
+        "clashes": [
+            {
+                "units": [
+                    "|1|A|ILE|32|HG12|||",
+                    "|1|A|ILE|23|HG12|||"
+                ],
+                "value": 0.42
+            },
+            {
+                "units": [
+                    "|1|A|PRO|34|O|||",
+                    "|1|A|LYS|74|NZ|||"
+                ],
+                "value": 0.43
+            },
+            {
+                "units": [
+                    "|1|A|LYS|60|HB3|||",
+                    "|1|A|HOH|117|O|||"
+                ],
+                "value": 0.41
+            },
+            {
+                "units": [
+                    "|1|A|GLN|25|HG2|||",
+                    "|1|A|TYR|30|CE1|||"
+                ],
+                "value": 0.5
+            },
+            {
+                "units": [
+                    "|1|A|TYR|30|CZ|||",
+                    "|1|A|GLN|25|HG2|||"
+                ],
+                "value": 0.92
+            },
+            {
+                "units": [
+                    "|1|A|TYR|30|CE2|||",
+                    "|1|A|GLN|25|HG2|||"
+                ],
+                "value": 0.45
+            },
+            {
+                "units": [
+                    "|1|A|GLN|25|CG|||",
+                    "|1|A|TYR|30|CZ|||"
+                ],
+                "value": 0.49
+            },
+            {
+                "units": [
+                    "|1|A|HOH|163|O|||",
+                    "|1|A|ASP|6|HB3|||"
+                ],
+                "value": 0.88
+            },
+            {
+                "units": [
+                    "|1|A|TYR|30|OH|||",
+                    "|1|A|ASP|12|OD1|||"
+                ],
+                "value": 0.43
+            },
+            {
+                "units": [
+                    "|1|A|GLU|15|HB3|||",
+                    "|1|A|PRO|16|HD3|||"
+                ],
+                "value": 0.57
+            },
+            {
+                "units": [
+                    "|1|A|THR|38|O|||",
+                    "|1|A|VAL|41|HG13|||"
+                ],
+                "value": 0.61
+            },
+            {
+                "units": [
+                    "|1|A|GLU|45|H|||",
+                    "|1|A|GLU|45|HG3|||"
+                ],
+                "value": 0.46
+            },
+            {
+                "units": [
+                    "|1|A|ILE|58|HG12|||",
+                    "|1|A|ILE|4|HG12|||"
+                ],
+                "value": 0.51
+            }
+        ],
+        "bond_lengths": [],
+        "RNA_pucker": {},
+        "planes": [],
+        "sidechains": {
+            "outliers": [
+                {
+                    "units": [
+                        "|1|A|VAL|13||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|GLU|15||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|GLN|25||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|GLU|45||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|THR|46||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|ASP|56||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|LYS|60||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|ASP|69||||"
+                    ]
+                }
+            ]
+        },
+        "rama": {}
+    }
+}
