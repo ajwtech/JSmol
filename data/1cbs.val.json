@@ -1,0 +1,97 @@
+{
+    "1cbs": {
+        "bond_angles": [],
+        "chirals": [],
+        "rsrz": {},
+        "symm_clashes": [],
+        "RNA_suite": {},
+        "clashes": [
+            {
+                "units": [
+                    "|1|A|LEU|100|CD2|||",
+                    "|1|A|LYS|82|HG2|||"
+                ],
+                "value": 0.59
+            },
+            {
+                "units": [
+                    "|1|A|LYS|82|HG2|||",
+                    "|1|A|LEU|100|HD21|||"
+                ],
+                "value": 0.87
+            },
+            {
+                "units": [
+                    "|1|A|REA|200|C8|||",
+                    "|1|A|REA|200|H181|||"
+                ],
+                "value": 0.51
+            },
+            {
+                "units": [
+                    "|1|A|REA|200|H8|||",
+                    "|1|A|REA|200|H181|||"
+                ],
+                "value": 0.61
+            },
+            {
+                "units": [
+                    "|1|A|VAL|76|HG23|||",
+                    "|1|A|HOH|310|O|||"
+                ],
+                "value": 0.46
+            },
+            {
+                "units": [
+                    "|1|A|LEU|113|HD12|||",
+                    "|1|A|PRO|1|HB2|||"
+                ],
+                "value": 0.47
+            },
+            {
+                "units": [
+                    "|1|A|CYS|95|SG|||",
+                    "|1|A|SER|83|HB3|||"
+                ],
+                "value": 0.44
+            },
+            {
+                "units": [
+                    "|1|A|ARG|29|NH2|||",
+                    "|1|A|HOH|387|O|||"
+                ],
+                "value": 0.45
+            },
+            {
+                "units": [
+                    "|1|A|THR|110|HG22|||",
+                    "|1|A|VAL|94|HG22|||"
+                ],
+                "value": 0.41
+            }
+        ],
+        "bond_lengths": [],
+        "RNA_pucker": {},
+        "planes": [],
+        "sidechains": {
+            "outliers": [
+                {
+                    "units": [
+                        "|1|A|ASN|14||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|MET|27||||"
+                    ]
+                },
+                {
+                    "units": [
+                        "|1|A|ASP|127||||"
+                    ]
+                }
+            ]
+        },
+        "rama": {}
+    }
+}
