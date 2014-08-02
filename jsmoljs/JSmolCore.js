@@ -147,10 +147,12 @@ Jmol = (function(document) {
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
 			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
+				// these sites are known to implement access-control-allow-origin * 
 				"cactus.nci.nih.gov": "%URL", 
 				"www.rcsb.org": "%URL",
 				"pdbe.org": "%URL", 
 				"www.ebi.ac.uk": "%URL", 
+				"wwwdev.ebi.ac.uk": "%URL", 
 				"pubchem.ncbi.nlm.nih.gov":"%URL",
 				"http://www.nmrdb.org/tools/jmol/predict.php":"%URL",
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
