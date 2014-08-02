@@ -544,7 +544,7 @@
 		J/api/JmolAppConsoleInterface.js
 		J/api/JmolAppletInterface.js
 		J/api/JmolCallbackListener.js
-    	J/api/JmolDSSRParser.js
+    	J/api/JmolAnnotationParser.js
 		J/api/JmolGraphicsInterface.js
 		J/api/JmolMeasurementClient.js
 		J/api/JmolModulationSet.js
