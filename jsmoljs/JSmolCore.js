@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 8/2/2014 5:22:40 PM drag-drop broken in JSmol/HTML5 
 // BH 7/23/2014 5:34:08 PM setting a parameter such as readyFunction to null stops file loading
 // BH 7/3/2014 12:30:28 AM lost drag-drop of models
 // BH 7/2/2014 4:47:55 AM adding pdbe.org to direct database calls
@@ -2114,15 +2115,15 @@ Jmol.Cache.put = function(filename, data) {
 			e.dataTransfer.dropEffect = 'copy';
 		});
 		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
-			var e = e.originalEvent;
-			e.stopPropagation();
-			e.preventDefault();
-			var file = e.dataTransfer.files[0];
+			var oe = e.originalEvent;
+			oe.stopPropagation();
+			oe.preventDefault();
+			var file = oe.dataTransfer.files[0];
 			if (file == null) {
 				// FF and Chrome will drop an image here
 				// but it will be only a URL, not an actual file. 
 				try {
-				  file = "" + e.dataTransfer.getData("text");
+				  file = "" + oe.dataTransfer.getData("text");
 				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0) {
 				  	me._scriptLoad(file);
 				  	return;
