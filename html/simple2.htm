@@ -70,58 +70,24 @@ var Info = {
 
 	}
 
-
-var jmol = "jmol"; // the JavaScript applet object
-
 // The actual applet will be jmol._applet (if it turns out to be an actual Applet),
 // but we will never access that directly.
 
 $(document).ready(function(){	
-	
-	// set Jmol to simply create the code and not use document.write
-	
-	Jmol.setDocument(0);
-	// now we have a JavaScript Object "jmol" and jmol._code is the HTML
-	// we will need later
-	
+		
 	// This demonstration shows that
 	// what is put on the page can depend upon the platform.
 
-  // It may seem strange or uncessary in what is below to use the syntax  
-	// 
-	//  Jmol.jmolXXXX(jmol,...)
-	//
-	// instead of just 
-	//
-	//  jmol.XXXX(...)
-	//
-	// This was an intentional design decision. 
-	// The reason has to do with flexibility, organization, and legacy:
-	// 
-	// It allows us to be much more flexible in that jmol is allowed to be just the string "jmol"
-	// (which allows us to create controls on the page before the applet wrapper object is created
-	//  when using more traditional in-body scripting if we are not interested in platforms).
-	//
-	// It allowed me to put all the controls in (optional) Jmol.controls, which is a bit cleaner
-	// than just having all the controls in the jmol applet wrapper prototype (which would be OK, 
-	// but would require copying, possibly with modification, in the case we have other 
-	// related prototypes such as glMol, ChemDoodle, JSpecView, or JME
-	//
-	// It allows users of Jmol.js to easily migrate to this system -- just add "Jmol." in front of 
-	// the legacy call jmolXXXX(...) and add the applet reference as the first parameter.
-	// 
-	// Note that the use of $(document.ready()) is completely optional. 
+	// Note that the use of $(document.ready()) is optional but preferred. 
 	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
 	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
 	// as well use it for more than that. 
-	// If you do not use $(document.ready()), be sure to define jmol this way:
-	//
-	// jmol = "jmol"
-	//
-	// prior to calling any of the methods that create controls -- jmolButton, jmolLink, etc.
-	// and, if you do that, realize that you cannot implement any platform-aware features. 
-	//
   
+  // note that we create the applet first, before the controls, because
+  // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
+  
+  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
   var radios = [
 		["set background white", "white", true],
 		["set background black", "black"]
@@ -152,11 +118,6 @@ $(document).ready(function(){
 			+ "<br />Background: "
 			+ Jmol.jmolRadioGroup(jmol, radios)
 		);
-
-  // the HTML code is in jmol._code since we are using Jmol.setDocument(0)
-			Jmol.getApplet("jmol", Info);
-
-  	$("#middlepanel").html(Jmol.getAppletHtml(jmol));
 
   // right panel
   
