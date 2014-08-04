@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 8/4/2014 5:06:59 AM  added $(document).ready(function(){Jmol.setDocument(0)});
 // BH 8/2/2014 5:22:40 PM drag-drop broken in JSmol/HTML5 
 // BH 7/23/2014 5:34:08 PM setting a parameter such as readyFunction to null stops file loading
 // BH 7/3/2014 12:30:28 AM lost drag-drop of models
@@ -214,6 +215,9 @@ Jmol = (function(document) {
 
 	// hooks to jQuery -- if you have a different AJAX tool, feel free to adapt.
 	// There should be no other references to jQuery in all the JSmol libraries.
+
+	// automatically switch to returning HTML after the page is loaded
+	$(document).ready(function(){ Jmol._document = null });
 
 	Jmol.$ = function(objectOrId, subdiv) {
 		// if a subdivv, then return $("#objectOrId_subdiv") 
