@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 	<title>JSmol -- platform-aware Jmol using jQuery</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -8,7 +7,6 @@
 <script type="text/javascript" src="JSmol.min.js"></script>
 
 <script type="text/javascript">
-//<![CDATA[
 
 // simple2.htm: demonstration of using platform-aware Jmol with jQuery
 // author: Bob Hanson hansonr@stolaf.edu 8/11/2012 8:21:03 AM
@@ -87,6 +85,17 @@ $(document).ready(function(){
   // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
   
   $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
+  // alternatively, you can use
+  //
+  //   jmol = "jmol"
+  //
+  // and then create the buttons before the applet itself. 
+  // Just make sure if you do that to use the name of the applet you are
+  // actually going to be using. So, perhaps:
+  //
+  //   jmolApplet0 = "jmolApplet0"
+  //
 
   var radios = [
 		["set background white", "white", true],
