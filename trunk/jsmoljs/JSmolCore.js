@@ -125,7 +125,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.2.4_2014.08.05',
+		_version: 'JSmol 14.3.5_2014.08.12',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
