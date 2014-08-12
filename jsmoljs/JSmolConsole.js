@@ -145,12 +145,16 @@ Jmol.Console.Input = function(console) {
 		var key = (isKeydown ? (ev.key || ev.originalEvent.keyIdentifier) : "");
 
 		switch (kcode) {
+		case 38: // up-arrow, possibly
+		case 40: // down-arrow, possibly
+			// must be keydown, not keypress to be arrow key				
+			if (!isKeydown)
+				kcode = 0;
+			break;
 		case 8: // bs
 		case 9: // tab
 		case 10: // CR
 		case 27: // esc
-		case 38: // up-arrow, possibly
-		case 40: // down-arrow, possibly				
 		// only these are of interest to Jmol
 			break;
 		default:
