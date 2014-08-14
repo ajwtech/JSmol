@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 8/14/2014 2:52:38 PM drag-drop cache should not be cleared if SPT file is dropped
 // BH 8/5/2014 6:39:54 AM unnecessary messages about binary for PDB finally removed
 // BH 8/4/2014 5:30:00 AM automatically switch to no document after page loading
 // BH 8/2/2014 5:22:40 PM drag-drop broken in JSmol/HTML5 
@@ -125,7 +126,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.3.5_2014.08.12',
+		_version: 'JSmol 14.3.6_2014.08.14',
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -2141,7 +2142,8 @@ Jmol.Cache.put = function(filename, data) {
 				if (evt.target.readyState == FileReader.DONE) {
 					var cacheName = "cache://DROP_" + file.name;
 					var bytes = Jmol._toBytes(evt.target.result);
-					me._applet.cacheFileByName("cache://DROP_*",false);
+					if (!cacheName.endsWith(".spt"))
+						me._applet.cacheFileByName("cache://DROP_*",false);
 					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
 						Jmol.Cache.put(cacheName, bytes);
 					else
