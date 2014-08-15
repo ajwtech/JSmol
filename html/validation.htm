@@ -99,8 +99,8 @@ var types = [
 	["aromatic ring planarity", "planes"],
 	null,
 	["Ramachandran issues", "rama"],
-	["RNA_suite", "RNA_suite"],
-	["RNA_pucker", "RNA_pucker"]
+	["RNA suite", "RNA_suite"],
+	["RNA pucker", "RNA_pucker"]
 	];
 	
 // the left-panel buttons run the highlightValidation() function within Jmol
@@ -109,10 +109,12 @@ function createButtons() {
 	Jmol.setButtonCss(null,"style='width:180px'")
 	for (var i = 0; i < types.length; i++) {
 		var type = types[i];
-		if (type)
-			Jmol.jmolButton("jmolApplet0", "highlightValidation('" + type[1]+"')", type[0], type[1]);
+		if (type) {
+			Jmol.jmolButton("jmolApplet0", "highlightValidation('" + type[1]+"')", type[0], "val_" + type[1]);
+		}
 		jmolBr();
 	}
+	$("input[id^='val_']").prop("disabled",true)
 }
 function fileLoaded() {
 // enable only the relevant buttons, and label them with counts
@@ -123,8 +125,8 @@ function fileLoaded() {
 		if (!type)
 			continue;
 		var n = x.split('"'+type[1]+'"').length - 1;
-		$("#"+type[1]).prop("disabled",(n == 0))
-		$("#"+type[1]).val(type[0] + (n == 0 ? "" : " (" + n + ")"));
+		$("#val_"+type[1]).prop("disabled",(n == 0))
+		$("#val_"+type[1]).val(type[0] + (n == 0 ? "" : " (" + n + ")"));
 	}
 }
 
