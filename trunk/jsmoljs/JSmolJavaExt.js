@@ -1678,11 +1678,12 @@ return (c >= 0x1c && c <= 0x20 || c >= 0x9 && c <= 0xd || c == 0x1680
 },"~N");
 c$.isLetter=Clazz.defineMethod(c$,"isLetter",
 function(c){
- var c = c.charCodeAt(0);
+c = c.charCodeAt(0);
 return (65 <= c && c <= 90 || 97 <= c && c <= 122);
 },"~N");
 c$.isLetterOrDigit=Clazz.defineMethod(c$,"isLetterOrDigit",
 function(c){
+c = c.charCodeAt(0);
 return (65 <= c && c <= 90 || 97 <= c && c <= 122 || 48 <= c && c <= 57);
 },"~N");
 c$.isSpaceChar=Clazz.defineMethod(c$,"isSpaceChar",
