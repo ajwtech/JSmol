@@ -445,6 +445,7 @@ ClazzLoader._loadZJars(0);
 					return null;
 					// this did not work. return function() {setTimeout(function(){System.out.println("for " + clazzName + " restarting ");applet.__startAppletJS(applet)},10)};
 				}
+				
 				//if (vwr.rm.repaintPending)
 					//return function() {setTimeout(function(){vwr.refresh(2)},10)};
 				if (vwr && vwr.isScriptExecuting && vwr.isScriptExecuting()) {
@@ -455,8 +456,8 @@ ClazzLoader._loadZJars(0);
 					System.out.println("sc.pc = " + sc.pc);
 					Jmol._asyncCallbacks[clazzName] = function() {vwr.eval.resumeEval(sc)};
 					vwr.eval.pc = vwr.eval.pcEnd;
-					System.out.println("setting " + sc.pc + " " + clazzName + Clazz.getStackTrace())
-					return function() {setTimeout(function(){System.out.println("resuming" + clazzName);Jmol._asyncCallbacks[clazzName]()},10)};					
+					System.out.println("setting " + sc.pc + " " + clazzName + " to " + Jmol._asyncCallbacks[clazzName] + "//" )
+					return function() {setTimeout(function(){System.out.println("resuming" + clazzName + Jmol._asyncCallbacks[clazzName]);Jmol._asyncCallbacks[clazzName]()},10)};					
 				}
 						
 			//alert(clazzName + "?" + state + " "+ Clazz.getStackTrace())
