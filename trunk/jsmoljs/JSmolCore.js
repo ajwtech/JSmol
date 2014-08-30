@@ -878,7 +878,7 @@ Jmol = (function(document) {
 			}
 			if (fSuccess) {
 				info.success = function(data) { fSuccess(Jmol._xhrReturn(info.xhr))};
-				info.error = function() { fSuccess(xhr.statusText)};
+				info.error = function() { xxi = info;fSuccess(info.xhr.statusText)};
 			}
 			info.xhr = Jmol.$ajax(info);
 			if (!fSuccess) {
@@ -943,14 +943,15 @@ Jmol = (function(document) {
 	Jmol._loadFileAsynchronously = function(fileLoadThread, applet, fileName, appData) {
 		if (fileName.indexOf("?") != 0) {
 			// LOAD ASYNC command
+			var fileName0 = fileName;
 			fileName = Jmol._checkFileName(applet, fileName);
-			var fSuccess = function(data) {Jmol._setData(fileLoadThread, fileName, data, appData)};
+			var fSuccess = function(data) {Jmol._setData(fileLoadThread, fileName, fileName0, data, appData)};
 			fSuccess = Jmol._checkCache(applet, fileName, fSuccess);
 			return (fSuccess == null ? null : Jmol._getFileData(fileName, fSuccess));		
 		}
 		// we actually cannot suggest a fileName, I believe.
 		if (!Jmol.featureDetection.hasFileReader)
-				return fileLoadThread.setData("Local file reading is not enabled in your browser", null, appData);
+				return fileLoadThread.setData("Local file reading is not enabled in your browser", null, null, appData);
 		if (!applet._localReader) {
 			var div = '<div id="ID" style="z-index:'+Jmol._getZ(applet, "fileOpener") + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
 			Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
@@ -963,7 +964,7 @@ Jmol = (function(document) {
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 					Jmol.$css(Jmol.$(applet, "localReader"), {display : "none"});
-					Jmol._setData(fileLoadThread, file.name, evt.target.result, appData);
+					Jmol._setData(fileLoadThread, file.name, file.name, evt.target.result, appData);
 				}
 			};
 			reader.readAsArrayBuffer(file);
@@ -971,16 +972,16 @@ Jmol = (function(document) {
 		Jmol.$appEvent(applet, "localReader_cancel", "click");
 		Jmol.$appEvent(applet, "localReader_cancel", "click", function(evt) {
 			Jmol.$css(Jmol.$(applet, "localReader"), {display: "none"});
-			fileLoadThread.setData(null, appData);
+			fileLoadThread.setData(null, null, null, appData);
 		});
 		Jmol.$css(Jmol.$(applet, "localReader"), {display : "block"});
 	}
 
-  Jmol._setData = function(fileLoadThread, filename, data, appData) {
+  Jmol._setData = function(fileLoadThread, filename, filename0, data, appData) {
   	data = Jmol._strToBytes(data);
 		if (filename.indexOf(".jdx") >= 0)
 			Jmol.Cache.put("cache://" + filename, data);
-		fileLoadThread.setData(filename, data, appData);
+		fileLoadThread.setData(filename, filename0, data, appData);
   }
   
 	Jmol._toBytes = function(data) {

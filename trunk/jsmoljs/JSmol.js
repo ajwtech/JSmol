@@ -29,6 +29,9 @@
 
 ;(function (Jmol) {
 
+	Jmol._isAsync = true; // testing only
+	Jmol._asyncCallbacks = {};
+	
 	Jmol._coreFiles = []; // required for package.js
 
 
@@ -66,6 +69,37 @@
 			Jmol._coreFiles.push(Jmol.__coreMore[i]);			 
 	}      		
 
+  Jmol._loadZJars = function(i) {
+    if (i < Jmol._coreFiles.length) {
+		  Clazz._Loader.loadZJar(Jmol._coreFiles[i], Clazz._Loader.runtimeKeyClass, function() {Jmol._loadZJars(i + 1)});
+		} else {
+			window["java.registered"] = true;
+			Jmol._nextExecution();
+		}
+	}
+	
+	    /*
+ClazzLoader._loadZJars = function(i) { 
+	if (Jmol._isAsync) {
+		if (i < Jmol._coreFiles.length) {
+		  ClazzLoader.loadZJar(Jmol._coreFiles[i], ClazzLoader.runtimeKeyClass, function() {ClazzLoader._loadZJars(i + 1)});
+		} else {
+			Jmol._nextExecution();
+		}
+		return;	
+	} else {
+		for (var i = 0; i < Jmol._coreFiles.length; i++)
+		  ClazzLoader.loadZJar(Jmol._coreFiles[i], ClazzLoader.runtimeKeyClass);
+		window["java.registered"] = true;
+	}
+}
+
+ClazzLoader._loadZJars(0);
+
+    */
+    
+
+
 	Jmol.__nextExecution = function(trigger) {
 		delete Jmol.__execTimer;
 		var es = Jmol.__execStack;
@@ -74,12 +108,15 @@
 			es.shift();
 		if (es.length == 0)
 			return;
-		if (!trigger) {
+		if (!Jmol._isAsync && !trigger) {
 			setTimeout("Jmol.__nextExecution(true)",10)
 			return;
 		}
 		e.push("done");
 		var s = "JSmol exec " + e[0]._id + " " + e[3] + " " + e[2];
+		if (self.System)
+			System.out.println(s);
+			//alert(s)
 		if (self.console)console.log(s + " -- OK")
 		Jmol.__execLog.push(s);
 		e[1](e[0],e[2]);	
@@ -94,15 +131,16 @@
 				Clazz._LoaderProgressMonitor.showStatus = function() {}
 			LoadClazz = null;
 
-			Clazz._Loader.globalLoaded = function (file) {
+			Clazz._Loader.onGlobalLoaded = function (file) {
 			 // not really.... just nothing more yet to do yet
-				Clazz._LoaderProgressMonitor.showStatus ("Application loaded.", true);
+				Clazz._LoaderProgressMonitor.showStatus("Application loaded.", true);
 				if (!Jmol._debugCode || !Jmol.haveCore) {
 					Jmol.haveCore = true;
 					Jmol.__nextExecution();
 				}
 			};
-			Clazz._Loader.packageClasspath ("java", null, true);
+		
+			Clazz._Loader.loadPackageClasspath("java", null, true, Jmol.__nextExecution);
 			return;
 		}
 		Jmol.__nextExecution();
@@ -279,6 +317,7 @@
 			return c;	
     }
     
+    
 		proto._setupJS = function() {
 			window["j2s.lib"] = {
 				base : this._j2sPath + "/",
@@ -328,14 +367,15 @@
 	//		Jmol.GLmol.addExportHook(applet);
 		//	Jmol.__nextExecution();
 		//};
-
 		proto.__startAppletJS = function(applet) {
-			var viewerOptions =  new java.util.Hashtable ();
+			var viewerOptions = Clazz._4Name("java.util.Hashtable").newInstance();
 			Jmol._setAppletParams(applet._availableParams, viewerOptions, applet.__Info, true);
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
 			viewerOptions.put("applet", true);
 			viewerOptions.put("name", applet._id);// + "_object");
-			viewerOptions.put("syncId", Jmol._syncId);      
+			viewerOptions.put("syncId", Jmol._syncId);
+			if (Jmol._isAsync)
+				viewerOptions.put("async", true);
 			if (applet._color) 
 				viewerOptions.put("bgcolor", applet._color);
 			if (!applet._is2D)  
@@ -365,16 +405,70 @@
 			viewerOptions.put ("codePath", codePath);
 
 			Jmol._registerApplet(applet._id, applet);
-			applet._applet = (applet._isAstex ? new astex.MoleculeViewerAppletJS(viewerOptions) 
-			  : !applet._isJSV ? new J.appletjs.Jmol(viewerOptions) 
-				: applet._isPro ? new JSV.appletjs.JSVAppletPro(viewerOptions) 
-				: new JSV.appletjs.JSVApplet(viewerOptions));
-
-			if (!applet._is2D)
-				applet._GLmol.applet = applet;
+			//if (!applet._is2D)
+				//applet._GLmol.applet = applet;
+			try {
+				applet._newApplet(viewerOptions);
+			} catch (e) {
+				System.out.println((Jmol._isAsync ? "normal async abort from " : "") + e);
+				return;
+			}
 			applet._jsSetScreenDimensions();      
 			Jmol.__nextExecution();
 		};
+
+		proto._restoreState = function(clazzName, state) {
+			System.out.println("restore state for " + clazzName + " " + state)
+			var applet = this;
+			var vwr = applet._applet && applet._applet.viewer;
+			switch (state) {
+			case "setOptions":
+				return function() {setTimeout(function(){applet.__startAppletJS(applet)},10)};
+			case "render":
+				return function() {setTimeout(function(){vwr.refresh(2)},10)};
+			default:
+				switch (clazzName) {
+				case "xJ.shapebio.Cartoon":
+					if (vwr && vwr.isScriptExecuting && vwr.isScriptExecuting()) {
+						if (Jmol._asyncCallbacks[clazzName])
+							return 1;
+						var sc = vwr.getEvalContextAndHoldQueue(vwr.eval);
+						sc.pc--;
+						Jmol._asyncCallbacks[clazzName] = function() {vwr.eval.resumeEval(sc)};
+						vwr.eval.pc = vwr.eval.pcEnd;
+						return function() {setTimeout(function(){System.out.println("resumingCartoon");Jmol._asyncCallbacks[clazzName]()},10)};					
+					}
+				break;				
+				case "J.shape.Balls":
+				case "J.shape.Sticks":
+				case "J.shape.Frank":
+					return null;
+					// this did not work. return function() {setTimeout(function(){System.out.println("for " + clazzName + " restarting ");applet.__startAppletJS(applet)},10)};
+				}
+				//if (vwr.rm.repaintPending)
+					//return function() {setTimeout(function(){vwr.refresh(2)},10)};
+				if (vwr && vwr.isScriptExecuting && vwr.isScriptExecuting()) {
+					if (Jmol._asyncCallbacks[clazzName])
+						return 1;
+					var sc = vwr.getEvalContextAndHoldQueue(vwr.eval);
+					sc.pc--;
+					System.out.println("sc.pc = " + sc.pc);
+					Jmol._asyncCallbacks[clazzName] = function() {vwr.eval.resumeEval(sc)};
+					vwr.eval.pc = vwr.eval.pcEnd;
+					System.out.println("setting " + sc.pc + " " + clazzName + Clazz.getStackTrace())
+					return function() {setTimeout(function(){System.out.println("resuming" + clazzName);Jmol._asyncCallbacks[clazzName]()},10)};					
+				}
+						
+			//alert(clazzName + "?" + state + " "+ Clazz.getStackTrace())
+			System.out.println(clazzName + "?" + state)
+	//Using Java reflection: J.adapter.readers.molxyz.MolReader
+	//Using Java reflection: J.render.BallsRenderer
+	//Using Java reflection: J.render.SticksRenderer
+	//Using Java reflection: J.render.FrankRenderer
+				return null;
+			}
+		}
+	
 
 		proto._jsSetScreenDimensions = function() {
 				if (!this._applet)return
