@@ -29,7 +29,7 @@
 
 ;(function (Jmol) {
 
-	Jmol._isAsync = true; // testing only
+	Jmol._isAsync = false; // testing only
 	Jmol._asyncCallbacks = {};
 	
 	Jmol._coreFiles = []; // required for package.js
