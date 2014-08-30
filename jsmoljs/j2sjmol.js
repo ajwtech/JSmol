@@ -35,10 +35,17 @@
 
  // NOTES by Bob Hanson: 
  
- // This version of j2slib requires jQuery and works in both Chrome and MSIE locally.
+ // This version of j2slib requires jQuery and works in both Chrome and MSIE locally,
+ // though Chrome cannot read local data files, and MSIE cannot read local binary data files.
 
  // J2S class changes:
 
+ // BH 8/29/2014 9:15:57 AM total reworking of Java2Script in preparation for all-asynchronous loading
+ //                         (currently sync loading is only for 
+ // 												   LOAD command and load() function without ASYNC
+ //                            getInterface() 
+ //                         see JSmol.js and Jmol._isAsync flag
+ 
  // BH 8/23/2014 10:04:19 AM cleaning up a few general methods; Clazz.removeArrayItem
  // BH 6/1/2014 10:58:46 AM fix for Clazz.isAP() not working
  // BH 5/26/2014 5:19:29 PM removing superConstructor call in creating Enum constants
@@ -136,29 +143,7 @@ window["j2s.object.native"] = true;
  * @create Nov 5, 2005
  *******/
  
-//if (window["Clazz"] == null) {
 
-/*
- * The following *-# are used to compress the JavaScript file into small file.
- * For more details, please read /net.sf.j2s.lib/build/build.xml
- */
-/*-#
- # _x_CLASS_NAME__ -> C$N
- # _x_PKG_NAME__ -> P$N
- #
- # clazzThis -> Tz
- # objThis -> To
- # clazzHost -> Hz
- # hostThis -> Th
- # hostSuper -> Sh
- # clazzFun -> Fc
- # clazzName -> Nc
- # funName -> Nf
- # funBody -> Bf
- # objType -> oT
- #  
- # qClazzName ->Nq
- #-*/
 /**
  * Class Clazz. All the methods are static in this class.
  */
@@ -177,6 +162,10 @@ Clazz.setGlobal = function(a, v) {
 Clazz.getGlobals = function() {
 	return Clazz._globals.sort().join("\n");
 }
+
+Clazz.setConsoleDiv = function(d) {
+	window["j2s.lib"] && (window["j2s.lib"].console = d);
+};
 
 // BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
 // which could be a bottle-neck for function calling.
@@ -410,10 +399,9 @@ Clazz.getClass = function (clazzHost) {
 };
 
 /*
- * Be used to copy members of class
+ * Copy members of class
  */
 /* protected */
-/*-# extendsProperties -> eP #-*/
 Clazz.extendsProperties = function (hostThis, hostSuper) {
 	for (var o in hostSuper) {
 		if (o != "b$" && o != "prototype" && o != "superClazz"
@@ -425,7 +413,6 @@ Clazz.extendsProperties = function (hostThis, hostSuper) {
 };
 
 /* private */
-/*-# checkInnerFunction -> cIF #-*/
 Clazz.checkInnerFunction = function (hostSuper, funName) {
 	for (var k = 0; k < Clazz.innerFunctionNames.length; k++)
 		if (funName == Clazz.innerFunctionNames[k] && 
@@ -435,30 +422,18 @@ Clazz.checkInnerFunction = function (hostSuper, funName) {
 };
 
 /*
- * Be used to copy members of interface
+ * Copy members of interface
  */
 /* protected */
-/*-# implementsProperties -> ip #-*/
 Clazz.implementsProperties = function (hostThis, hostSuper) {
-	for (var o in hostSuper) {
-		if (o != "b$" && o != "prototype" && o != "superClazz"
-				&& o != "__CLASS_NAME__" && o != "implementz") {
-			if (typeof hostSuper[o] == "function") {
-				/*
-				 * static final member of interface may be a class, which may
-				 * be function.
-				 */
-				if (Clazz.checkInnerFunction (hostSuper, o)) {
-					continue;
-				}
-			}
-			hostThis[o] = hostSuper[o];
-			hostThis.prototype[o] = hostSuper[o];
-		}
-	}
+	for (var o in hostSuper)
+		if (o != "b$" 
+				&& o != "prototype" && o != "superClazz"
+				&& o != "__CLASS_NAME__" && o != "implementz"
+				&& (typeof hostSuper[o] != "function" || !Clazz.checkInnerFunction(hostSuper, o)))
+			hostThis[o] = hostThis.prototype[o] = hostSuper[o];
 };
 
-/*-# args4InheritClass -> aIC #-*/
 Clazz.args4InheritClass = function () {};
 Clazz.inheritArgs = new Clazz.args4InheritClass ();
 
@@ -472,11 +447,6 @@ Clazz.inheritArgs = new Clazz.args4InheritClass ();
  * @param objSuper super class instance
  */
 /* protected */
-/*-#
- # inheritClass -> xic 
- #
- # objSuper -> oSp
- #-*/
 Clazz.inheritClass = function (clazzThis, clazzSuper, objSuper) {
 	//var thisClassName = Clazz.getClassName (clazzThis);
 	Clazz.extendsProperties (clazzThis, clazzSuper);
@@ -529,10 +499,9 @@ Clazz.implementOf = function (clazzThis, interfacez) {
 				}
 			}
 		} else {
-		alert("check this")
 			for (var i = 1; i < arguments.length; i++) {
 				impls.push(arguments[i]);
-				Clazz.implementsProperties (clazzThis, arguments[i]);
+				Clazz.implementsProperties(clazzThis, arguments[i]);
 			}
 		}
 	}
@@ -545,11 +514,6 @@ Clazz.implementOf = function (clazzThis, interfacez) {
 Clazz.extendInterface = Clazz.implementOf;
 
 /* protected */
-/*-#
- # equalsOrExtendsLevel -> eOE 
- #
- # clazzAncestor -> anc
- #-*/
 Clazz.equalsOrExtendsLevel = function (clazzThis, clazzAncestor) {
 	if (clazzThis === clazzAncestor)
 		return 0;
@@ -565,12 +529,6 @@ Clazz.equalsOrExtendsLevel = function (clazzThis, clazzAncestor) {
 };
 
 /* protected */
-/*-#
- # getInheritedLevel -> gIL 
- #
- # clazzBase -> bs
- # clazzTarget -> tg
- #-*/
 Clazz.getInheritedLevel = function (clazzTarget, clazzBase) {
 	if (clazzTarget === clazzBase)
 		return 0;
@@ -700,7 +658,6 @@ Clazz.superCall = function (objThis, clazzThis, funName, funParams) {
 						 * by Java2Script
 						 */
 						fx = stacks[0].prototype[funName]["\\unknown"];
-						//if (funName == "clone")alert("fx=" + fx) 
 					}
 					break;
 				} else if (Clazz.getInheritedLevel (clazzThis, stacks[i]) > 0) {
@@ -712,7 +669,7 @@ Clazz.superCall = function (objThis, clazzThis, funName, funParams) {
 	} // end of clazzFun
 	if (!fx) {
 		if (funName != "construct") {
-			Clazz.alert(["j2slib","no class found",(funParams).typeString])
+			Clazz.alert (["j2slib","no class found",(funParams).typeString])
 			throw new Clazz.MethodNotFoundException (objThis, clazzThis, funName, 
 					Clazz.getParamsType (funParams).typeString);	
 		}
@@ -854,7 +811,6 @@ Clazz.MethodNotFoundException = function () {
 };
 
 /* private */
-/*x-# getParamsType -> gPT #-x*/
 Clazz.getParamsType = function (funParams) {
 	// bh: optimization here for very common cases
 	var n = funParams.length;
@@ -904,33 +860,19 @@ Clazz.getParamsType = function (funParams) {
  * @throws Clazz.MethodNotFoundException if no matched method is found
  */
 /* protected */
-/*-# searchAndExecuteMethod -> saem #-*/
-
-
 Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 	var fx = objThis[fxName];
 	var params = Clazz.getParamsType (funParams);
 	Clazz._profile && Clazz.addProfile(claxxRef, fxName, params);
-
-	/*
-	 * Cache last matched method
-	 */
+	// Cache last matched method
 	if (fx.lastParams == params.typeString && fx.lastClaxxRef === claxxRef) {
 		var methodParams;
 		if (params.hasCastedNull) {
 			methodParams = [];
-			for (var k = 0; k < funParams.length; k++) {
-				if (funParams[k] instanceof Clazz.CastedNull) {
-					/*
-					 * For Clazz.CastedNull instances, the type name is
-					 * already used to indentified the method in Clazz#
-					 * searchMethod.
-					 */
-					methodParams[k] = null;
-				} else {
-					methodParams[k] = funParams[k];
-				}
-			}
+			// For Clazz.CastedNull instances, the type name is
+			// already used to indentified the method in Clazz#searchMethod.
+			for (var k = 0; k < funParams.length; k++)
+				methodParams[k] = (funParams[k] instanceof Clazz.CastedNull ? null : funParams[k]);
 		} else {
 			methodParams = funParams;
 		}
@@ -990,20 +932,12 @@ Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 };
 
 
-/*# {$no.debug.support} >>x #*/
-//not used in Jmol Clazz.tracingCalling = false;
-/*# x<< #*/
-
 /* private */
-/*-# tryToSearchAndExecute -> tsae #-*/
 Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funParams/*, 
 		isSuper, clazzThis*/, fx) {
-		//if (fxName != "construct")System.out.println("tsae " + fxName + " " + funParams);
 	var methods = [];
-	//var xfparams = null;
 	var generic = true;
 	for (var fn in clazzFun) {
-		//if (fn.indexOf ('\\') == 0) {
 		if (fn.charCodeAt (0) == 92) { // 92 == '\\'.charCodeAt (0)
 			var ps = fn.substring (1).split ("\\");
 			if (ps.length == params.length) {
@@ -1028,19 +962,15 @@ Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funPa
 		 * See Clazz#defineMethod --Mar 10, 2006, josson
 		 */
 		if (generic && fn == "funParams" && clazzFun.funParams) {
-			//xfparams = clazzFun.funParams;
 			fn = clazzFun.funParams;
 			var ps = fn.substring (1).split ("\\");
-			if (ps.length == params.length) {
+			if (ps.length == params.length)
 				methods[0] = ps;
-			}
 			break;
 		}
 	}
-	if (methods.length == 0) {
-		//throw new Clazz.MethodException ();
+	if (methods.length == 0)
 		return new Clazz.MethodException ();
-	}
 	var method = Clazz.searchMethod (methods, params);
 	if (method) {
 		var f = null;
@@ -1135,9 +1065,7 @@ Clazz.tryToSearchAndExecute = function (fxName, objThis, clazzFun, params, funPa
 	return new Clazz.MethodException ();
 };
 
-/*# {$no.debug.support} >>x #*/
 Clazz._initializingException = false;
-/*# x<< #*/
 
 /**
  * Search the existed polymorphic methods to get the matched method with
@@ -1148,21 +1076,11 @@ Clazz._initializingException = false;
  * @return string of method parameters seperated by "\\"
  */
 /* private */
-/*-# 
- # searchMethod -> sM 
- #
- # roundOne -> rO
- # paramTypes -> pts
- #-*/
 Clazz.searchMethod = function (roundOne, paramTypes) {
-	/*
-	 * Filter out all the fitted methods for the given parameters
-	 */
-	/*-# roundTwo -> rT #-*/
+	// Filter out all the fitted methods for the given parameters
 	var roundTwo = [];
 	var len = roundOne.length;
 	for (var i = 0; i < len; i++) {
-		/*-# fittedLevel -> fL #-*/
 		var fittedLevel = [];
 		var isFitted = true;
 		var len2 = roundOne[i].length;
@@ -1179,17 +1097,12 @@ Clazz.searchMethod = function (roundOne, paramTypes) {
 			roundTwo.push(fittedLevel);
 		}
 	}
-	if (roundTwo.length == 0) {
+	if (roundTwo.length == 0)
 		return null;
-	}
-	/*
-	 * Find out the best method according to the inheritance.
-	 */
-	/*-# resultTwo -> rtT #-*/
+	// Find out the best method according to the inheritance.
 	var resultTwo = roundTwo;
 	var min = resultTwo[0];
 	for (var i = 1; i < resultTwo.length; i++) {
-		/*-# isVectorLesser -> vl #-*/
 		var isVectorLesser = true;
 		for (var j = 0; j < paramTypes.length; j++) {
 			if (min[j] < resultTwo[i][j]) {
@@ -1197,9 +1110,8 @@ Clazz.searchMethod = function (roundOne, paramTypes) {
 				break;
 			}
 		}
-		if (isVectorLesser) {
+		if (isVectorLesser)
 			min = resultTwo[i];
-		}
 	}
 	var index = min[paramTypes.length]; // Get the previously stored index
 	/*
@@ -1218,8 +1130,6 @@ Clazz.searchMethod = function (roundOne, paramTypes) {
  * from the given class by the parameters
  */
 /* private */
-/*-# generateDelegatingMethod -> gDM #-*/
-
 Clazz.generateDelegatingMethod = function (claxxRef, funName, fCall) {
 	/*
 	 * Delegating method.
@@ -1227,8 +1137,8 @@ Clazz.generateDelegatingMethod = function (claxxRef, funName, fCall) {
 	 * function object.
 	 */
 	var delegating = function () {
-			var r = arguments;
-			return SAEM (this, r.callee.claxxReference, r.callee.methodName, r);
+		var r = arguments;
+		return SAEM (this, r.callee.claxxReference, r.callee.methodName, r);
 	};
 	delegating.methodName = funName;
 	delegating.claxxReference = claxxRef;
@@ -1346,22 +1256,10 @@ Clazz.defineMethod = function (clazzThis, funName, funBody, funParams) {
 	 * method will be searched through first. And if no method fitted,
 	 * it will then try to search method in the super class stacks.
 	 */
-	/* method has not been defined yet */
-	/* method is not defined by Clazz.defineMethod () */
-	/* method is defined in super class */
 	if (!f$.stacks || f$.claxxReference !== clazzThis) {
-			//if (funName == "hashCode") {
-				//alert(f$.claxxReference + " " + clazzThis)
-			//}
-		/*
-		 * Generate a new delegating method for the class
-		 */
+		//Generate a new delegating method for the class
 		f$ = Clazz.getSignature(proto, funName, Clazz.generateDelegatingMethod (clazzThis, funName, f$), true);				
-		//if (funName != "construct" && Clazz.__debuggingBH)
-			// System.out.println("delegating " + clazzThis.__CLASS_NAME__ + " " + funName + " " + funParams);
-		/*
-		 * Keep the class inheritance stacks
-		 */
+		// Keep the class inheritance stacks
 		var arr = [];
 		for (var i = 0; i < oldStacks.length; i++)
 			arr[i] = oldStacks[i];
@@ -1473,7 +1371,6 @@ Clazz.declarePackage = function (pkgName) {
 };
 
 /* protected */
-/*x-# evalType -> eT  #-x*/
 Clazz.evalType = function (typeStr, isQualified) {
 	var idx = typeStr.lastIndexOf(".");
 	if (idx != -1) {
@@ -1553,10 +1450,10 @@ Clazz.isSafari = (navigator.userAgent.indexOf ("Safari") != -1);
 Clazz.isSafari4Plus = false;
 if (Clazz.isSafari) {
 	var ua = navigator.userAgent;
-	var verIdx = ua.indexOf ("Version/");
+	var verIdx = ua.indexOf("Version/");
 	if (verIdx  != -1) {
-		var verStr = ua.substring (verIdx + 8);
-		var verNumber = parseFloat (verStr);
+		var verStr = ua.substring(verIdx + 8);
+		var verNumber = parseFloat(verStr);
 		Clazz.isSafari4Plus = verNumber >= 4.0;
 	}
 }
@@ -1629,7 +1526,6 @@ Clazz.instantialize = function (objThis, args) {
  * be function.
  */
 /* protected */
-/*-# innerFunctionNames -> iFN #-*/
 Clazz.innerFunctionNames = [
 	"equals", "hashCode", /*"toString",*/ "getName", "getClassLoader", "getResource", "getResourceAsStream" /*# {$no.javascript.support} >>x #*/, "defineMethod", "defineStaticMethod",
 	"makeConstructor" /*# x<< #*/
@@ -1638,7 +1534,6 @@ Clazz.innerFunctionNames = [
 /*
  * Static methods
  */
-/*x-# innerFunctions -> inF #-x*/
 Clazz._innerFunctions = {
 	/*
 	 * Similar to Object#equals
@@ -1693,7 +1588,6 @@ Clazz._innerFunctions = {
 		}
 		is.read = function () { return 0; };
 		name = name.replace (/\\/g, '/');
-		/*-# baseFolder -> bFr #-*/
 		var baseFolder = null;
 		var clazzName = this.__CLASS_NAME__;
 		if (arguments.length == 2 && name.indexOf ('/') != 0) { // additional argument
@@ -1811,12 +1705,7 @@ Clazz._innerFunctions = {
 };
 
 /* private */
-/*-# decorateFunction -> dF #-*/
 Clazz.decorateFunction = function (clazzFun, prefix, name) {
-	if (Clazz._Loader) {
-		//alert ("decorate " + name);
-		Clazz._Loader.checkInteractive ();
-	}
 	var qName;
 	if (!prefix) {
 		// e.g. Clazz.declareInterface (null, "ICorePlugin", org.eclipse.ui.IPlugin);
@@ -1840,25 +1729,13 @@ Clazz.decorateFunction = function (clazzFun, prefix, name) {
 	}
 
 	if (Clazz._Loader) {
-		/*-# findClass -> fC #-*/
-		var node = Clazz._Loader.findClass (qName);
-		/*-#
-		 # ClazzNode.STATUS_KNOWN -> 1
-		 #-*/
+		var node = Clazz._Loader.findClass(qName);
 		if (node && node.status == Clazz._Node.STATUS_KNOWN) {
-			/*-# 
-			 # updateNode -> uN 
-			 #-*/
 			window.setTimeout((function(nnn) {
 				return function() {
-					Clazz._Loader.updateNode (nnn);
+					Clazz._Loader.updateNode(nnn);
 				};
 			})(node), 1);
-			/*
-			 * #updateNode should be delayed! Or the class itself won't
-			 * be initialized completely before marking itself as loaded.
-			 */
-			// ClazzLoader.updateNode (node);
 		}
 	}
 };
@@ -1874,10 +1751,6 @@ Clazz.declareInterface = function (prefix, name, interfacez) {
 };
 
 /* protected */
-/*-# 
- # parentClazzInstance -> pi
- # clazzParent -> pc
- #-*/
 Clazz.decorateAsClass = function (clazzFun, prefix, name, clazzParent, 
 		interfacez, parentClazzInstance, fromWhere) {
 	var prefixName = null;
@@ -2005,7 +1878,7 @@ Clazz.exceptionOf=function(e, clazz) {
 		return Clazz.instanceOf(e, clazz);
 	if(clazz == Error) {
 		if (("" + e).indexOf("Error") >= 0) {
-			System.out.println(Clazz.getStackTrace());
+			System.out.println (Clazz.getStackTrace());
 		}
 		return (("" + e).indexOf("Error") >= 0);
 		// everything here is a Java Exception, not a Java Error
@@ -2127,7 +2000,6 @@ Clazz.MethodNotFoundException = function (obj, clazz, method, params) {
 /* protected */
 Clazz.prepareCallback = function (innerObj, args) {
 	var outerObj = args[0];
-//System.out.println("!!!!!!" + Clazz.getClassName(outerObj, true))
 	var cbName = "b$"; // "callbacks";
 	if (innerObj && outerObj && outerObj !== window) {
 		var className = Clazz.getClassName(outerObj, true);		
@@ -2406,7 +2278,7 @@ Clazz.newArray32 = function(args, isInt32) {
 	switch (args.length) {
 	case 0:
 	case 1:
-		alert("ERROR IN newArray32 -- args length < 2");
+		alert ("ERROR IN newArray32 -- args length < 2");
 		return new Array(0);
 	case 2:
 		if (val < 0)
@@ -2422,7 +2294,7 @@ Clazz.newArray32 = function(args, isInt32) {
 		try {
 			return (isInt32 ? new Int32Array(dim) : new Float64Array(dim));
 		}catch (e) {
-			alert(dim + " " + arguments.callee.caller.arguments.callee.caller + e)
+			alert (dim + " " + arguments.callee.caller.arguments.callee.caller + e)
 		}
 	}
 	var xargs = new Array(len);
@@ -2555,16 +2427,13 @@ Clazz.defineStatics = function (clazz) {
 /* protected */
 Clazz.prepareFields = function (clazz, fieldsFun) {
 	var stacks = [];
- //System.out.println(fieldsFun)
 	if (clazz.con$truct) {
 		var ss = clazz.con$truct.stacks;
 		var idx = 0;//clazz.con$truct.index;
-		//System.out.println("clazz index = " + idx + " sslen=" + ss.length)
 		for (var i = idx; i < ss.length; i++) {
 			stacks[i] = ss[i];
 		}
 	}
-	//System.out.println(JSON.stringify(stacks))
 	Clazz.addProto(clazz.prototype, "con$truct", clazz.con$truct = function () {
 		var stacks = arguments.callee.stacks;
 		if (stacks) {
@@ -2622,7 +2491,6 @@ Clazz.registerSerializableFields = function (clazz) {
  * Clazz.searchAndExecuteMethod or is called directly.
  */
 /* protected */
-/*-# getMixedCallerMethod -> gMCM  #-*/
 Clazz.getMixedCallerMethod = function (args) {
 	var o = {};
 	var argc = args.callee.caller; // Clazz.tryToSearchAndExecute
@@ -2710,7 +2578,6 @@ Clazz.checkPrivateMethod = function (args) {
 *****/
 //$fz = null; // for private method declaration
 c$ = null;
-/*-# cla$$$tack -> cst  #-*/
 Clazz.cStack = [];
 Clazz.pu$h = function (c) {
 	c && Clazz.cStack.push(c);
@@ -3103,21 +2970,6 @@ Clazz._innerFunctions.newInstance = function () {
 	};
 })();
 
-/* public */
-Clazz._4Name = function (clazzName) {
-	if (Clazz.isClassDefined (clazzName)) {
-		return Clazz.evalType (clazzName);
-	}
-	if (Clazz._Loader) {
-		Clazz._Loader.setLoadingMode ("xhr.sync");
-		Clazz._Loader.loadClass (clazzName);
-		//alert("TESTING HERE in Clazz.forName")
-		return Clazz.evalType (clazzName);
-	} else {
-		Clazz.alert ("[Java2Script] Error: No ClassLoader!");
-	}
-};
-
 /* For hotspot and unloading */
 
 /* private */
@@ -3295,21 +3147,6 @@ Clazz.unloadClass = function (qClazzName) {
  *
  * @see net.sf.j2s.lib/src/net/sf/j2s/lib/build/SmartJSCompressor.java
  */
-/*-#
- # ClazzNode -> $CN$
- # ClazzLoader -> $CL$
- # <<< ClazzLoader = $CL$;
- #-*/
- 
-/*-#
- # parents -> sp
- # musts -> sm
- # xxxoptionals -> so
- # declaration -> dcl
- # onRequiredLoaded -> oled
- # qClazzName ->Nq
- #-*/
- 
 /**
  * Static class loader class
  */
@@ -3325,16 +3162,6 @@ Clazz._Node = function () {
 };
 
 ;(function(Clazz, ClazzLoader, ClazzNode) {
-/*-#
- # ClazzNode.STATUS_UNKNOWN = 0
- # ClazzNode.STATUS_KNOWN -> 1
- # ClazzNode.STATUS_CONTENT_LOADED -> 2
- # ClazzNode.STATUS_MUSTS_LOADED -> 3
- # ClazzNode.STATUS_DECLARED -> 4
- # ClazzNode.STATUS_OPTIONALS_LOADED -> 5
- #-*/
-/*# >>x #*/
-
 ClazzLoader.initNode = function(node) {
 	node.parents = [];
 	node.musts = [];
@@ -3379,21 +3206,18 @@ ClazzLoader.requireLoaderByBase = function (base) {
 /**
  * Class dependency tree
  */
-/*-# clazzTreeRoot -> tr #-*/
 ClazzLoader.clazzTreeRoot = new ClazzNode ();
 
 /**
  * Used to keep the status whether a given *.js path is loaded or not.
  */
 /* private */
-/*-# loadedScripts -> ls #-*/
 ClazzLoader.loadedScripts = {};
 
 /**
  * Multiple threads are used to speed up *.js loading.
  */
 /* private */
-/*-# inLoadingThreads -> ilt #-*/
 ClazzLoader.inLoadingThreads = 0;
 
 /**
@@ -3436,172 +3260,24 @@ if (ClazzLoader.isOpera) {
 if (window["Clazz"] && Clazz.isClassDefined) {
 	ClazzLoader.isClassDefined = Clazz.isClassDefined;
 } else {
-	/*-# definedClasses -> dC #-*/
 	ClazzLoader.definedClasses = {};
 	ClazzLoader.isClassDefined = function (clazzName) {
 		return ClazzLoader.definedClasses[clazzName] == true;
 	};
 }
 
-/*
- * binaryFolders will be used for ResourceBundle to check *.properties
- * files. The default should always be "bin/"!
- */
-
-/***
- * 
-	if (window["Clazz"] && Clazz.binaryFolders) {
-	ClazzLoader.binaryFolders = Clazz.binaryFolders;
-} else {
-	ClazzLoader.binaryFolders = ["bin/", "", "j2slib/"];
-}
-
-ClazzLoader.addBinaryFolder = function (bin) {
-	if (bin) {
-		var bins = ClazzLoader.binaryFolders;
-		for (var i = 0; i < bins.length; i++) {
-			if (bins[i] == bin) {
-				return;
-			}
-		}
-		bins[bins.length] = bin;
-	}
-};
-ClazzLoader.removeBinaryFolder = function (bin) {
-	if (bin) {
-		var bins = ClazzLoader.binaryFolders;
-		for (var i = 0; i < bins.length; i++) {
-			if (bins[i] == bin) {
-				for (var j = i; j < bins.length - 1; j++) {
-					bins[j] = bins[j + 1];
-				}
-				bins.length--;
-				return bin;
-			}
-		}
-	}
-	return null;
-};
-ClazzLoader.setPrimaryFolder = function (bin) {
-	if (bin) {
-		ClazzLoader.removeBinaryFolder (bin);
-		var bins = ClazzLoader.binaryFolders;
-		for (var i = bins.length - 1; i >= 0; i--) {
-			bins[i + 1] = bins[i];
-		}
-		bins[0] = bin;
-	}
-};
-
-***/
-
-/*# x<<
- # ClazzLoader.addBinaryFolder = Clazz.addBinaryFolder;
- # ClazzLoader.removeBinaryFolder = Clazz.removeBinaryFolder;
- # ClazzLoader.setPrimaryFolder = Clazz.setPrimaryFolder;
- #*/
-
 /**
- * Indicate whether ClazzLoader is loading script synchronously or 
- * asynchronously.
- */
-/* protected */
-/*-# isAsynchronousLoading -> async #-*/
-ClazzLoader.isAsynchronousLoading = true;
-
-/* protected */
-/*-# isUsingXMLHttpRequest -> xhr #-*/
-ClazzLoader.isUsingXMLHttpRequest = false;
-
-/* protected */
-/*-# loadingTimeLag -> ltl #-*/
-ClazzLoader.loadingTimeLag = -1;
-
-/**
- * String mode:
- * asynchronous modes:
- * async(...).script, async(...).xhr, async(...).xmlhttprequest,
- * script.async(...), xhr.async(...), xmlhttprequest.async(...),
- * script
- * 
- * synchronous modes:
- * sync(...).xhr, sync(...).xmlhttprequest,
- * xhr.sync(...), xmlhttprequest.sync(...),
- * xmlhttprequest, xhr
- *                                                    
- * Integer mode:
- * Script/XHR bit: 1, 
- * 0: Script, 1: XHR
- * Asynchronous/Synchronous bit: 2
- * 0: Asynchronous, 2: Synchronous
- *
- * 0: Script & Asynchronous
- * 1: XHR & Asynchronous
- * 2: Script & Synchronous [Never]
- * 3: XHR & Synchronous
- */
-/* public */
-ClazzLoader.setLoadingMode = function (mode, timeLag) {
-	if (!mode) {
-		if (ClazzLoader.isAsynchronousLoading && timeLag >= 0) {
-			ClazzLoader.loadingTimeLag = timeLag;
-		} else {
-			ClazzLoader.loadingTimeLag = -1;
-		}
-		return;
-	}
-	if (typeof mode == "string") {
-		mode = mode.toLowerCase ();
-		if (mode.indexOf("script") >= 0) {
-			ClazzLoader.isUsingXMLHttpRequest = false;
-			ClazzLoader.isAsynchronousLoading = true;
-		} else {
-			ClazzLoader.isUsingXMLHttpRequest = true;
-			ClazzLoader.isAsynchronousLoading = (mode.indexOf("async") >=0);
-		}
-		ClazzLoader.isAsynchronousLoading = false; // BH
-	/*# {$no.clazzloader.mode} >>x #*/
-	} else {
-		if (mode == ClazzLoader.MODE_SCRIPT) {
-			ClazzLoader.isUsingXMLHttpRequest = false;
-			ClazzLoader.isAsynchronousLoading = true;
-		} else {
-			ClazzLoader.isUsingXMLHttpRequest = true;
-			ClazzLoader.isAsynchronousLoading = (mode == ClazzLoader.MODE_XHR_ASYNC);
-		}
-	/*# x<< #*/
-	}
-	if (ClazzLoader.isAsynchronousLoading && timeLag >= 0) {
-		ClazzLoader.loadingTimeLag = timeLag;
-	} else {
-		ClazzLoader.loadingTimeLag = -1;
-	}
-};
-
-/*# {$no.clazzloader.mode} >>x #*/
-ClazzLoader.MODE_SCRIPT = 0;
-ClazzLoader.MODE_SCRIPT_ASYNC = 0;
-ClazzLoader.MODE_XHR = 3;
-ClazzLoader.MODE_XHR_SYNC = 3;
-ClazzLoader.MODE_XHR_ASYNC = 1;
-
-
-/*# x<< #*/
-/**
- * Expand the shorten list of class names.
+ * Expand the shortened list of class names.
  * For example:
- * $wt.widgets.Shell, $.Display, $.Decorations
+ * J.util.Log, $.Display, $.Decorations
  * will be expanded to 
- * org.eclipse.swt.widgets.Shell, org.eclipse.swt.widgets.Display, 
- * org.eclipse.swt.widgets.Decorations ....
- * in which "$wt." stands for "org.eclipse.swt.", and "$." stands for
- * the previous class name's package.
+ * J.util.Log, J.util.Display, J.util.Decorations
+ * where "$." stands for the previous class name's package.
  *
  * This method will be used to unwrap the required/optional classes list and 
  * the ignored classes list.
  */
 /* private */
-/*x-# unwrapArray -> uA #-x*/
 ClazzLoader.unwrapArray = function (arr) {
 	if (!arr || arr.length == 0)
 		return [];
@@ -3631,18 +3307,17 @@ ClazzLoader.unwrapArray = function (arr) {
  * Used to keep to-be-loaded classes.
  */
 /* private */
-/*-# classQueue -> cq #-*/
 ClazzLoader.classQueue = [];
 
 /* private */
-/*-# classpathMap -> cm #-*/
-
-//System.out.println("resetting classpathMap")
 ClazzLoader.classpathMap = {};
 
 /* public */
-ClazzLoader.packageClasspath = function (pkg, base, index) {
+ClazzLoader.loadPackageClasspath = function (pkg, base, isIndex, fSuccess, mode, pt) {
 	var map = ClazzLoader.classpathMap;
+	mode || (mode = 0);
+	fSuccess || (fSuccess = null);
+	pt || (pt = 0);
 
 	/*
 	 * In some situation, maybe,
@@ -3657,49 +3332,201 @@ ClazzLoader.packageClasspath = function (pkg, base, index) {
 	 * #packageClasspath call before that line! And later that line
 	 * should never initialize "java/package.js" again!
 	 */
-	var isPkgDeclared = (index && map["@" + pkg]);
-	if (index && !map["@java"] && pkg.indexOf ("java") != 0) {
-		ClazzLoader.assurePackageClasspath ("java");
+	var isPkgDeclared = (isIndex && map["@" + pkg]);
+	if (mode == 0 && isIndex && !map["@java"] && pkg.indexOf ("java") != 0 && ClazzLoader.needPackage("java")) {
+		ClazzLoader.loadPackage("java", fSuccess ? function(){ClazzLoader.loadPackageClasspath(pkg, base, isIndex, fSuccess, 1)} : null);
+		if (fSuccess)
+			return;
 	}
 	if (pkg instanceof Array) {
-		ClazzLoader.unwrapArray (pkg);
-		for (var i = 0; i < pkg.length; i++) {
-			ClazzLoader.packageClasspath (pkg[i], base, index);
+		ClazzLoader.unwrapArray(pkg);
+		if (fSuccess) {
+			if (pt < pkg.length)
+				ClazzLoader.loadPackageClasspath (pkg[pt], base, isIndex, function(){ClazzLoader.loadPackageClasspath(pkg, base, isIndex, fSuccess, 1, pt + 1)}, 1);
+			else
+				fSuccess();
+		} else {
+			for (var i = 0; i < pkg.length; i++)
+				ClazzLoader.loadPackageClasspath (pkg[i], base, isIndex, null);
 		}
 		return;
 	}
-	if (pkg == "java" || pkg == "java.*") {
-		// support ajax for default
-		var key = "@net.sf.j2s.ajax";
-		if (map[key] == null && base) {
-			map[key] = base;
-		}
-		key = "@net.sf.j2s";
-		if (map[key] == null && base) {
-			map[key] = base;
-		}
-	} else if (pkg == "swt") { //abbrev
+	switch (pkg) {
+	case "java.*":
+		pkg = "java";
+		// fall through
+	case "java":
+		if (base) {
+			// support ajax for default
+			var key = "@net.sf.j2s.ajax";
+			if (!map[key])
+				map[key] = base;
+			key = "@net.sf.j2s";
+			if (!map[key])
+				map[key] = base;
+		}		
+		break;
+	case "swt":
 		pkg = "org.eclipse.swt";
-	} else if (pkg == "ajax") { //abbrev
+		break;
+	case "ajax":
 		pkg = "net.sf.j2s.ajax";
-	} else if (pkg == "j2s") { //abbrev
+		break;
+	case "j2s":
 		pkg = "net.sf.j2s";
-	}
-	if (pkg.lastIndexOf (".*") == pkg.length - 2) {
-		pkg = pkg.substring (0, pkg.length - 2);
+		break;
+	default:
+		if (pkg.lastIndexOf(".*") == pkg.length - 2)
+			pkg = pkg.substring(0, pkg.length - 2);
+		break;
 	}
 	if (base) // critical for multiple applets
 		map["@" + pkg] = base;
-	if (index && !isPkgDeclared && !window[pkg + ".registered"]) {
+	if (isIndex && !isPkgDeclared && !window[pkg + ".registered"]) {
 		ClazzLoader.pkgRefCount++;
-		if (pkg == "java")pkg = "core" // JSmol -- moves java/package.js to core/package.js
-		ClazzLoader.loadClass (pkg + ".package", function () {
-					ClazzLoader.pkgRefCount--;
-					if (ClazzLoader.pkgRefCount == 0) {
-						ClazzLoader.runtimeLoaded ();
-					}
-				}, true);
+		if (pkg == "java")
+			pkg = "core" // JSmol -- moves java/package.js to core/package.js
+		ClazzLoader.loadClass(pkg + ".package", function () {
+					if (--ClazzLoader.pkgRefCount == 0)
+						ClazzLoader.runtimeLoaded();
+					fSuccess && fSuccess();
+				}, true, true, 1);
+		return;
 	}
+	fSuccess && fSuccess();
+};
+
+/**
+ * Load the given class ant its related classes.
+ */
+/* public */
+ClazzLoader.loadClass = function (name, onRequiredLoaded, forced, async, mode) {
+
+  mode || (mode = 0);
+  (async == null) && (async = false);
+  
+ 	if (typeof onRequiredLoaded == "boolean")
+		return Clazz.evalType(name);
+
+	// Make sure that ClazzLoader.packageClasspath ("java", base, true); 
+	// is called before any ClazzLoader#loadClass is called.
+
+	if (ClazzLoader.needPackage("java"))
+		ClazzLoader.loadPackage("java");
+	if (ClazzLoader.needPackage("core"))
+		ClazzLoader.loadPackage("core");	
+
+//	var swtPkg = "org.eclipse.swt";
+//	if (name.indexOf (swtPkg) == 0 || name.indexOf ("$wt") == 0) {
+//		ClazzLoader.assurePackageClasspath (swtPkg);
+//	}
+//	if (name.indexOf ("junit") == 0) {
+//		ClazzLoader.assurePackageClasspath ("junit");
+//	}
+
+	// Any ClazzLoader#loadClass calls will be queued until java.* core classes are loaded.
+
+	ClazzLoader.keepOnLoading = true;
+	
+	if (!forced && (ClazzLoader.pkgRefCount && name.lastIndexOf(".package") != name.length - 8
+			|| name.indexOf("java.") != 0 && !ClazzLoader.isClassDefined(ClazzLoader.runtimeKeyClass)
+		 )) {	
+		ClazzLoader.queueBe4KeyClazz.push([name, onRequiredLoaded]);
+		return;
+	}
+	var b;
+	if ((b = ClazzLoader.isClassDefined(name)) || ClazzLoader.isClassExcluded(name)) {
+		if (b && onRequiredLoaded) {
+			var nn = ClazzLoader.findClass(name);
+			if (!nn || nn.status >= ClazzNode.STATUS_OPTIONALS_LOADED) {
+				if (async) {
+					window.setTimeout(onRequiredLoaded, 25);
+				} else {
+					onRequiredLoaded();
+				}
+			}
+		}
+		return;
+	}
+	
+	var path = ClazzLoader.getClasspathFor(name);
+	var existed = ClazzLoader.loadedScripts[path];
+	var qq = ClazzLoader.classQueue;
+	if (!existed)
+		for (var i = qq.length; --i >= 0;)
+			if (qq[i].path == path || qq[i].name == name) {
+				existed = true;
+				break;
+			}
+	if (existed) {
+		if (onRequiredLoaded) {
+			var n = ClazzLoader.findClass(name);
+			if (n) {
+				if (!n.onRequiredLoaded) {
+					n.onRequiredLoaded = onRequiredLoaded;
+				} else if (onRequiredLoaded != n.onRequiredLoaded) {
+					n.onRequiredLoaded = (function (nF, oF) { return function () { nF(); oF() };	}) (n.onRequiredLoaded, onRequiredLoaded);
+				}
+			}
+		}
+		return;
+	}
+
+	var n = (Clazz.unloadedClasses[name] && ClazzLoader.findClass(name) || new ClazzNode());
+	n.name = name;
+	n.path = path;
+	n.isPackage = (path.lastIndexOf("package.js") == path.length - 10);
+	ClazzLoader.mappingPathNameNode(path, name, n);
+	n.onRequiredLoaded = onRequiredLoaded;
+	n.status = ClazzNode.STATUS_KNOWN;
+	var needBeingQueued = false;
+	for (var i = qq.length; --i >= 0;) {
+		if (qq[i].status != ClazzNode.STATUS_OPTIONALS_LOADED) {
+			needBeingQueued = true;
+			break;
+		}
+	}
+	
+	if (n.isPackage) {//forced
+		// push class to queue
+		var pt = qq.length;
+		for (; --pt >= 0;) {
+			if (qq[pt].isPackage) 
+				break;
+			qq[pt + 1] = qq[pt];
+		}
+		qq[++pt] = n;
+	} else if (needBeingQueued) {
+		qq.push(n);
+	}
+	if (!needBeingQueued) { // can be loaded directly
+		var bSave = false;
+		if (onRequiredLoaded) {	
+			bSave = ClazzLoader.isLoadingEntryClass;
+			ClazzLoader.isLoadingEntryClass = true;
+		}
+		ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, true);
+		ClazzLoader.loadScript(n.path, n.requiredBy, false, onRequiredLoaded ? function(){ ClazzLoader.isLoadingEntryClass = bSave; onRequiredLoaded()}: null);
+	}
+};
+
+/*
+ * Check whether given package's classpath is setup or not.
+ * Only "java" and "org.eclipse.swt" are accepted in argument.
+ */
+/* private */
+ClazzLoader.needPackage = function(pkg) {
+  // note that false != null and true != null
+	return (window[pkg + ".registered"] != null && !ClazzLoader.classpathMap["@" + pkg]);
+}
+
+/* private */
+ClazzLoader.loadPackage = function(pkg, fSuccess) {
+	fSuccess || (fSuccess = null);
+	window[pkg + ".registered"] = false;
+	ClazzLoader.loadPackageClasspath(pkg, 
+		(ClazzLoader.J2SLibBase || (ClazzLoader.J2SLibBase = (ClazzLoader.getJ2SLibBase() || "j2s/"))), 
+		true, fSuccess);
 };
 
 ClazzLoader.pkgRefCount = 0;
@@ -3709,14 +3536,12 @@ ClazzLoader.pkgRefCount = 0;
  * for all those classes.
  */
 /* public */
-/*-# clazzes -> zs #-*/
 ClazzLoader.jarClasspath = function (jar, clazzes) {
 	if (!(clazzes instanceof Array))
 		clazzes = [classes];
-	ClazzLoader.unwrapArray (clazzes);
-	for (var i = 0; i < clazzes.length; i++) {
+	ClazzLoader.unwrapArray(clazzes);
+	for (var i = clazzes.length; --i >= 0;)
 		ClazzLoader.classpathMap["#" + clazzes[i]] = jar;
-	}
 	ClazzLoader.classpathMap["$" + jar] = clazzes;
 };
 
@@ -3726,15 +3551,13 @@ ClazzLoader.jarClasspath = function (jar, clazzes) {
  */
 /* public */
 ClazzLoader.registerPackages = function (prefix, pkgs) {
-	//System.out.println("package " + prefix);
-	ClazzLoader.checkInteractive ();
+	//ClazzLoader.checkInteractive ();
 	var base = ClazzLoader.getClasspathFor (prefix + ".*", true);
-	//System.out.println(base);
 	for (var i = 0; i < pkgs.length; i++) {
 		if (window["Clazz"]) {
 			Clazz.declarePackage (prefix + "." + pkgs[i]);
 		}
-		ClazzLoader.packageClasspath (prefix + "." + pkgs[i], base);
+		ClazzLoader.loadPackageClasspath (prefix + "." + pkgs[i], base);
 	}
 };
 
@@ -3751,6 +3574,7 @@ ClazzLoader.registerPackages = function (prefix, pkgs) {
  * 6. http://yrchive.java2script.org or http://y.java2script.org
  */
 /* protected */
+	/*
 ClazzLoader.multipleSites = function (path) {
 	var deltas = window["j2s.update.delta"];
 	if (deltas && deltas instanceof Array && deltas.length >= 3) {
@@ -3778,7 +3602,7 @@ ClazzLoader.multipleSites = function (path) {
 	if (ClazzLoader.maxLoadingThreads > 1 
 			&& ((length > 15 && path.substring (0, 15) == "http://archive.")
 			|| (length > 9 && path.substring (0, 9) == "http://a."))) {
-		var index = path.lastIndexOf ("/");
+		var index = path.lastIndexOf("/");
 		if (index < length - 3) {
 			var arr = ['a', 'e', 'i', 'o', 'u', 'y'];
 			var c1 = path.charCodeAt (index + 1);
@@ -3789,6 +3613,7 @@ ClazzLoader.multipleSites = function (path) {
 	}
 	return path;
 };
+	*/
 
 /**
  * Return the *.js path of the given class. Maybe the class is contained
@@ -3802,119 +3627,39 @@ ClazzLoader.multipleSites = function (path) {
  */
 /* public */
 ClazzLoader.getClasspathFor = function (clazz, forRoot, ext) {
-
-
-	//System.out.println("check js path : " + arguments.callee.caller);
-	//System.out.println("gcf " + clazz + " "  + forRoot + " " + ext);
 	var path = ClazzLoader.classpathMap["#" + clazz];
-	//System.out.println(path);
-	var base = null;
-
-	if (path) {
-	//System.out.println("testing" + clazz + " " + forRoot + " " + ext)
-		if (!forRoot && ext == null) { // return directly
-			return ClazzLoader.multipleSites (path);
-		} else {
-			var idx = path.lastIndexOf (clazz.replace (/\./g, "/"));
-			if (idx != -1) {
-				base = path.substring (0, idx);
-			} else {
-				/*
-				 * Check more: Maybe the same class' *.css is located
-				 * in the same folder.
-				 */
-				idx = clazz.lastIndexOf (".");
-				if (idx != -1) {
-					idx = path.lastIndexOf (clazz.substring (0, idx)
-							.replace (/\./g, "/"));
-					if (idx != -1) {
-						base = path.substring (0, idx);
-					}
-				}
-			}
-		}
-	} else {
-		/*
-		path = ClazzLoader.classpathMap["@" + clazz]; // package
+	if (!path || forRoot || ext) {
+		var base;
+		var idx;
 		if (path) {
-			return ClazzLoader.assureBase (path) + clazz.replace (/\./g, "/") + "/";
-		}
-		*/
-		//System.out.println("path was null")
-
-		var idx = clazz.lastIndexOf (".");
-		//*
-		while (idx != -1) {
-			var pkg = clazz.substring (0, idx);
-			base = ClazzLoader.classpathMap["@" + pkg];
-			//for (var jj in ClazzLoader.classpathMap)System.out.println("map[" + jj + "]=" + ClazzLoader.classpathMap[jj])
-			//System.out.println("found " + base + " for @" + pkg)
-			if (base) {
-				break;
-			}
-			idx = clazz.lastIndexOf (".", idx - 2);
-		}
-		//*/
-		/*
-		if (idx != -1) {
-			var pkg = clazz.substring (0, idx);
-			base = ClazzLoader.classpathMap["@" + pkg];
-		}
-		//*/
-	}
-
-
-
-	//alert("gcf2 base=" + base);
-	base = ClazzLoader.assureBase (base);
-	//alert("gcf2za assurebase=" + base);
-	if (forRoot) {
-		return ClazzLoader.multipleSites (base);
-	}
-	if (clazz.lastIndexOf (".*") == clazz.length - 2) {
-		var s = base + clazz.substring (0, idx + 1)
-				.replace (/\./g, "/");
-		//System.out.println("gcf2b " + s)
-		return ClazzLoader.multipleSites (s);
-	}
-	if (ext == null) {
-		ext = ".js";
-	} else if (ext.charAt (0) != '.') {
-		ext = "." + ext;
-	}
-	var jsPath = base + clazz.replace (/\./g, "/") + ext;
-
-			//System.out.println("gcf2xx base=" + base + " clazz=" + clazz + " jsPath=" + jsPath)
-
-	return ClazzLoader.multipleSites (jsPath);
-};
-
-/* private */
-/*-# assureBase -> aB #-*/
-ClazzLoader.assureBase = function (base) {
-
-	if (base == null) {
-		// Try to be compatiable with Clazz system.
-		var bins = "binaryFolders";
-		if (window["Clazz"] && Clazz[bins]
-				&& Clazz[bins].length != 0) {
-			base = Clazz[bins][0];
-		} else if (ClazzLoader[bins] 
-				&& ClazzLoader[bins].length != 0) {
-			base = ClazzLoader[bins][0];
+			clazz = clazz.replace(/\./g, "/");	
+			if ((idx = path.lastIndexOf(clazz)) >= 0 
+				|| (idx = clazz.lastIndexOf("/")) >= 0 
+					&& (idx = path.lastIndexOf(clazz.substring(0, idx))) >= 0)
+				base = path.substring(0, idx);
 		} else {
-			base = "j2s";
+			idx = clazz.length + 2;
+			while ((idx = clazz.lastIndexOf(".", idx - 2)) >= 0)
+				if ((base = ClazzLoader.classpathMap["@" + clazz.substring(0, idx)]))
+					break;
+			if (!forRoot)
+				clazz = clazz.replace (/\./g, "/");	
 		}
-	}
-	if (base.lastIndexOf ("/") != base.length - 1) {
-		base += "/";
-	}
-	return base;
+		if (base == null) {
+			var bins = "binaryFolders";
+			base = (window["Clazz"] && Clazz[bins] && Clazz[bins].length ? Clazz[bins][0] 
+				: ClazzLoader[bins]	&& ClazzLoader[bins].length ? ClazzLoader[bins][0]
+				: "j2s");
+		}
+		path = (base.lastIndexOf("/") == base.length - 1 ? base : base + "/") + (forRoot ? ""
+			: clazz.lastIndexOf("/*") == clazz.length - 2 ? clazz.substring(0, idx + 1)
+			: clazz + (!ext ? ".js" : ext.charAt(0) != '.' ? "." + ext : ext));
+	}		
+	return path;//ClazzLoader.multipleSites(path);
 };
 
 /* Used to keep ignored classes */
 /* private */
-/*-# excludeClassMap -> exmap #-*/
 ClazzLoader.excludeClassMap = {};
 
 /**
@@ -3922,12 +3667,8 @@ ClazzLoader.excludeClassMap = {};
  */
 /* public */
 ClazzLoader.ignore = function () {
-	var clazzes = null;
-	if (arguments.length == 1) {
-		if (arguments[0] instanceof Array) {
-			clazzes = arguments[0];
-		}
-	}
+	var clazzes = (arguments.length == 1 && arguments[0] instanceof Array ?
+			clazzes = arguments[0] : null);
 	var n = (clazzes ? clazzes.length : arguments.length);
 	if (!clazzes) {
 		clazzes = new Array(n);
@@ -3935,15 +3676,13 @@ ClazzLoader.ignore = function () {
 			clazzes[i] = arguments[i];
 	}
 	ClazzLoader.unwrapArray(clazzes);
-	for (var i = 0; i < n; i++) {
-		ClazzLoader.excludeClassMap["@" + clazzes[i]] = true;
-	}
+	for (var i = 0; i < n; i++)
+		ClazzLoader.excludeClassMap["@" + clazzes[i]] = 1;
 };
 
 /* private */
-/*-# isClassExcluded -> isEx #-*/
 ClazzLoader.isClassExcluded = function (clazz) {
-	return ClazzLoader.excludeClassMap["@" + clazz] == true;
+	return ClazzLoader.excludeClassMap["@" + clazz];
 };
 
 /**
@@ -3953,117 +3692,63 @@ ClazzLoader.isClassExcluded = function (clazz) {
  * TODO: There should be a Java interface with name like INativeLoaderStatus
  */
 /* protected */
-ClazzLoader.scriptLoading = function (file) {};
+ClazzLoader.onScriptLoading = function (file){};
 
 /* protected */
-ClazzLoader.scriptLoaded = function (file) {};
+ClazzLoader.onScriptLoaded = function (file){};
 
 /* protected */
-ClazzLoader.scriptInited = function (file) {
-};
+ClazzLoader.onScriptInitialized = function (file){};
 
 /* protected */
-ClazzLoader.scriptCompleted = function (file) {};
+ClazzLoader.onScriptCompleted = function (file){};
 
 /* protected */
-ClazzLoader.classUnloaded = function (clazz) {};
-
-/* protected */
-ClazzLoader.classReloaded = function (clazz) {};
+ClazzLoader.onClassUnloaded = function (clazz){};
 
 /**
  * After all the classes are loaded, this method will be called.
  * Should be overriden to run *.main([]).
  */
 /* protected */
-ClazzLoader.globalLoaded = function () {};
+ClazzLoader.onGlobalLoaded = function () {};
 
 /* protected */
 ClazzLoader.keepOnLoading = true;
 
 /* private */
-/*-# mapPath2ClassNode -> p2node #-*/
 ClazzLoader.mapPath2ClassNode = {};
-
-/* private */
-ClazzLoader.xhrOnload = function (transport, file) {
-
-	if (transport.status >= 400 || !transport.responseText) { // error
-			Clazz.alert("xhronload error" + transport.responseText);
-		var fs = ClazzLoader.failedScripts;
-		if (fs[file] == null) {
-			// Silently take another try for bad network
-			fs[file] = 1;
-			ClazzLoader.loadedScripts[file] = false;
-			ClazzLoader.loadScript (file, "xhrOnload 2nd try");
-			return;
-		} else {
-			Clazz.alert ("[Java2Script] ClazzLoader.xhrOnload Error in loading " + file + "!");
-		}
-		ClazzLoader.tryToLoadNext (file);
-	} else {
-		ClazzLoader.evaluate(file, transport.responseText);
-	}
-};
 
 ClazzLoader.evaluate = function(file, js) {
  		try {
 			eval(js);
 		} catch (e) {
 			var s = "[Java2Script] Script error: " + e.message + " \n" + file + "\n\n" + js;
-			alert(s)
+			alert (s)
 			Clazz.alert (s);
 			throw e;
 		}
-		ClazzLoader.scriptLoaded (file);
-		ClazzLoader.tryToLoadNext (file);
+		ClazzLoader.onScriptLoaded(file);
+		ClazzLoader.tryToLoadNext(file);
 }
-/**
- * Empty onreadystatechange for fixing IE's memeory leak on XMLHttpRequest
- */
-/* private */
-/*-# emptyOnRSC -> rsc #-*/
-ClazzLoader.emptyOnRSC = function () {
-};
 
 /* protected */
-/*-# failedScripts -> fss #-*/
-ClazzLoader.failedScripts = {};
-
-/* protected */
-/*-# failedHandles -> fhs #-*/
 ClazzLoader.failedHandles = {};
 
-/* protected */
-ClazzLoader.takeAnotherTry = true;
-
 /* private */
-/*-# generateRemovingFunction -> gRF #-*/
 ClazzLoader.generateRemovingFunction = function (node) {
 	return function () {
 		if (node.readyState != "interactive") {
 			try {
-				if (node.parentNode) {
-					//alert("removing script " + node.src);
+				if (node.parentNode)
 					node.parentNode.removeChild (node);
-				}
 			} catch (e) { }
 			node = null;
 		}
 	};
 };
 
-/*
- * Dynamically SCRIPT elements are removed after they are parsed into memory.
- * And removed *.js may not be fetched again by "Refresh" action. And it will
- * save loading time for Java2Script applications.
- *
- * This may disturb debugging tools such as Firebug. Setting
- * window["j2s.script.debugging"] = true;
- * will ignore removing SCRIPT elements requests.
- */
 /* private */
-/*-# removeScriptNode -> RsN #-*/
 ClazzLoader.removeScriptNode = function (n) {
 	if (window["j2s.script.debugging"]) {
 		return;
@@ -4072,426 +3757,91 @@ ClazzLoader.removeScriptNode = function (n) {
 	window.setTimeout (ClazzLoader.generateRemovingFunction (n), 1);
 };
 
-/* private */
-/*-# generatingXHROnload -> gXOd #-*/
-ClazzLoader.generatingXHROnload = function (transport, file) {
-	return function () {
-		ClazzLoader.xhrOnload (transport, file);
-		transport = null;
-		file = null;
-	};
-};
-
-/* private */
-/*-# generatingXHRCallback -> gXcb #-*/
-ClazzLoader.generatingXHRCallback = function (transport, file) {
-	return function () {
-		if (transport.readyState == 4) {
-			if (ClazzLoader.inLoadingThreads > 0) {
-				ClazzLoader.inLoadingThreads--;
-			}
-			var lazyFun = ClazzLoader.generatingXHROnload (transport, file);
-			if (isActiveX) {
-				transport.onreadystatechange = ClazzLoader.emptyOnRSC;
-				// For IE, try to avoid stack overflow errors
-				window.setTimeout (lazyFun,
-						ClazzLoader.loadingTimeLag < 0 ? 0 : ClazzLoader.loadingTimeLag);
-			} else {
-				transport.onreadystatechange = null;
-				if (ClazzLoader.loadingTimeLag >= 0) {
-					window.setTimeout (lazyFun, ClazzLoader.loadingTimeLag);
-				} else {
-					ClazzLoader.xhrOnload (transport, file);
-				}
-			}
-			transport = null;
-			file = null;
-		}
-	};
-};
-
-/* private */
-/*-# loadingNextByPath -> lNBP #-*/
-ClazzLoader.loadingNextByPath = function (path) {
-	if (ClazzLoader.loadingTimeLag >= 0) {
-		window.setTimeout (function () {
-					ClazzLoader.tryToLoadNext (path);
-				}, ClazzLoader.loadingTimeLag);
-	} else {
-		ClazzLoader.tryToLoadNext (path);
+/* public */
+Clazz._4Name = function(clazzName, applet, state) {
+	if (Clazz.isClassDefined(clazzName))
+		return Clazz.evalType(clazzName);
+	var f = (Jmol._isAsync && applet ? applet._restoreState(clazzName, state) : null);
+	if (f == 1)
+		return null; // must be already being created
+	if (ClazzLoader.setLoadingMode(f ? ClazzLoader.MODE_SCRIPT : "xhr.sync")) {
+		ClazzLoader.loadClass(clazzName, f, false, true, 1);
+		return null; // this will surely throw an error, but that is OK
 	}
+	//alert ("Using Java reflection: " + clazzName + " for " + applet._id + " \n"+ Clazz.getStackTrace());
+	ClazzLoader.loadClass(clazzName);
+	return Clazz.evalType(clazzName);
 };
-
-/* private */
-/*-# ieToLoadScriptAgain -> iTLA #-*/
-ClazzLoader.ieToLoadScriptAgain = function (path, local) {
-	var fun = function () {
-		if (!ClazzLoader.takeAnotherTry) {
-			return;
-		}
-		// next time in "loading" state won't get waiting!
-		ClazzLoader.failedScripts[path] = 0;
-		ClazzLoader.loadedScripts[path] = false;
-		// failed count down!
-		if (ClazzLoader.inLoadingThreads > 0) {
-			ClazzLoader.inLoadingThreads--;
-		}
-		// Take another try!
-		// log ("re - loading ... " + path);
-		ClazzLoader.loadScript (path, "ietoloadscriptAgain");
-	};
-	// consider 30 seconds available after failing!
-	/*
-	 * Set 1s waiting in local file system. Is it 1s enough?
-	 * What about big *.z.js need more than 1s to initialize?
-	 */
-	var waitingTime = (local ? 500 : 15000); // 0.5s : 15s
-	//alert ("waiting:" + waitingTime + " . " + path);
-	return window.setTimeout (fun, waitingTime);
-};
-
-/* private */
-/*-# w3cFailedLoadingTest -> wFLT #-*/
-ClazzLoader.w3cFailedLoadingTest = function (script) {
-	return window.setTimeout (function () {
-				script.onerror ();
-				script.timeoutHandle = null;
-				script = null;
-			}, 500); // 0.5s for loading a local file is considered enough long
-};
-
-/* private */
-/*-# generatingW3CScriptOnCallback -> gWSC #-*/
-ClazzLoader.generatingW3CScriptOnCallback = function (path, forError) {
-	return function () {
-	if (forError && Clazz.__debuggingBH)Clazz.alert("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
-
-		if (ClazzLoader.isGecko && this.timeoutHandle) {
-			window.clearTimeout (this.timeoutHandle);
-			this.timeoutHandle = null;
-		}
-		if (ClazzLoader.inLoadingThreads > 0) {
-			ClazzLoader.inLoadingThreads--;
-		}
-		this.onload = null;
-		this.onerror = null;
-		var checkOpera = false;   // BH - disabled this for Opera 10
-		if (!forError && checkOpera && ClazzLoader.isOpera // Opera only
-				&& !ClazzLoader.innerLoadedScripts[this.src]) {
-			ClazzLoader.checkInteractive();
-		}
-		if (forError || (checkOpera && ClazzLoader.isOpera && !ClazzLoader.innerLoadedScripts[this.src])) { 
-			// Opera will not take another try.
-			var fss = ClazzLoader.failedScripts;
-			if (fss[path] == null && ClazzLoader.takeAnotherTry) {
-				// silently take another try for bad network
-				//alert ("re loading " + path + " ... ");
-				fss[path] = 1;
-				if (!forError) {
-					ClazzLoader.innerLoadedScripts[this.src] = false;
-				}
-				ClazzLoader.loadedScripts[path] = false;
-				ClazzLoader.loadScript (path, "w3c script failed");
-				ClazzLoader.removeScriptNode (this);
-				//alert("............[Java2Script] "  + " inLoadingThreads=" + ClazzLoader.inLoadingThreads + " ClazzLoader.generatingW3CScriptOnCallback loading " + path);
-				return;
-			} else {
-				//alert("[Java2Script] ClazzLoader.generatingW3CScriptOnCallback Error in loading " + path + "! inLoadingThreads=" + ClazzLoader.inLoadingThreads);
-			}
-			if (forError) {
-				ClazzLoader.scriptLoaded (path);
-			}
-		} else {
-			//System.out.println("path loaded: " + path)
-			ClazzLoader.scriptLoaded (path);
-		}
-		ClazzLoader.loadingNextByPath (path);
-		ClazzLoader.removeScriptNode (this);
-	};
-};
-
-/* private */
-/*-# generatingIEScriptOnCallback -> gISC #-*/
-ClazzLoader.generatingIEScriptOnCallback = function (path) {
-	return function () {
-		var fhs = ClazzLoader.failedHandles;
-		var fss = ClazzLoader.failedScripts;
-		var state = "" + this.readyState;
-
-
-		var local = state == "loading" 
-				&& (this.src.indexOf ("file:") == 0 
-				|| (window.location.protocol == "file:"
-				&& this.src.indexOf ("http") != 0));
-
-		// alert (state + "/" + this.src);
-		if (state != "loaded" && state != "complete") {
-			/*
-			 * When no such *.js existed, IE will be
-			 * stuck here without loaded event!
-			 */
-			/*
-			if ((window.location.protocol != "file:" 
-					&& this.src.indexOf ("file:") != 0)
-					|| this.readyState != "loading") {
-				return;
-			}
-			*/
-			if (fss[path] == null) {
-				fhs[path] = ClazzLoader.ieToLoadScriptAgain (path, local);
-				return;
-			}
-			if (fss[path] == 1) { // above function will be executed?!
-				return;
-			}
-		}
-		if (fhs[path]) {
-			window.clearTimeout (fhs[path]);
-			fhs[path] = null;
-		}
-		if ((local || state == "loaded")
-				&& !ClazzLoader.innerLoadedScripts[this.src]) {
-			if (!local && (fss[path] == null || fss[path] == 0)
-					&& ClazzLoader.takeAnotherTry) {
-				// failed! count down
-				if (ClazzLoader.inLoadingThreads > 0) {
-					ClazzLoader.inLoadingThreads--;
-				}
-				// silently take another try for bad network
-				fss[path] = 1;
-				// log ("reloading ... " + path);
-				ClazzLoader.loadedScripts[path] = false;
-				ClazzLoader.loadScript (path, "local or loaded failed");
-				ClazzLoader.removeScriptNode (this);
-				return;
-			} else {
-				Clazz.alert ("[Java2Script] generatingIEScriptOnCallback Error in loading " + path + "!");
-			}
-		}
-		if (ClazzLoader.inLoadingThreads > 0) {
-			ClazzLoader.inLoadingThreads--;
-		}
-		ClazzLoader.scriptLoaded (path);
-		// Unset onreadystatechange, leaks mem in IE
-		this.onreadystatechange = null; 
-		ClazzLoader.loadingNextByPath (path);
-		ClazzLoader.removeScriptNode (this);
-	};
-};
-
-/*
- * There is another thread trying to remove j2slib.z.js or similar SCRIPT.
- * See the end of this file.
- */
-
-
-		Clazz.transport = null;
 
 /**
  * Load *.js by adding script elements into head. Hook the onload event to
  * load the next class in dependency tree.
  */
 /* protected */
-/*-#
- # loadScript -> xrpt
- #
- # transport -> tt
- # isActiveX -> iX
- # ignoreOnload -> iol
- #-*/
-ClazzLoader.loadScript = function (file, why, ignoreOnload) {
+ClazzLoader.loadScript = function (file, why, ignoreOnload, fSuccess) {
 		Clazz.currentPath = file;
-		//alert("loadScript" + file)
-		//System.out.println(("call loadScript " + file.replace(/\//g,"\\") + " Z").replace(/j2s[\\\.]/g,""))
 	// maybe some scripts are to be loaded without needs to know onload event.
-
-
 	if (!ignoreOnload && ClazzLoader.loadedScripts[file]) {
-		ClazzLoader.tryToLoadNext (file);
+		ClazzLoader.tryToLoadNext(file);
 		return;
 	}
 	ClazzLoader.loadedScripts[file] = true;
-	/* also remove from those queue */
+	// also remove from queue
 	Clazz.removeArrayItem(ClazzLoader.classQueue, file);
 
-	System.out.println("\t" + file + (why ? "\n -- required by " + why : ""))
-
-	if (ClazzLoader.isUsingXMLHttpRequest) {
-		ClazzLoader.scriptLoading (file);
-		//var transport = null;
-
-		if (!ClazzLoader.isAsynchronousLoading) {
-		 if (self.Jmol) {
-			// works in MSIE locally :)
-			 var data = Jmol._getFileData(file);
-			} else {
-				var info = {type:"GET",dataType:"text",async:false,url:file,cached:true};
-				var xhr = jQuery.ajax(info);
-				var data = xhr.responseText;
-				if (data == null && xhr.state)
-					data = "alert('error loading file " + file + " state=" + xhr.state() + "')";
-			}
-			ClazzLoader.evaluate(file, data); 
-			return;
-		}
-
-		var isActiveX = false;
-		if (!Clazz.transport) {
-		if (window.XMLHttpRequest) {
-			Clazz.transport = new XMLHttpRequest();
-		} else {
-			isActiveX = true;
-			try {
-				Clazz.transport = new ActiveXObject("Msxml2.XMLHTTP");
-			} catch (e) {
-				Clazz.transport = new ActiveXObject("Microsoft.XMLHTTP");
-			}
-		}
-
-		if (Clazz.transport == null) { // should never happen in modern browsers.
-			Clazz.alert ("[Java2Script] XMLHttpRequest not supported!");
-			return;
-		}
-	}
-	var transport = Clazz.transport
-
-	//alert("transport=" + transport + " " + file)
+	System.out.println("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + ClazzLoader.isUsingXMLHttpRequest + " async=" + ClazzLoader.isAsynchronousLoading)
 
 
-	try{
-
-		transport.open ("GET", file, ClazzLoader.isAsynchronousLoading);
-
-	} catch (e) { alert(e + " " + file)}
-
-
-		// transport.setRequestHeader ("User-Agent",
-		// 		"Java2Script-Pacemaker/1.0 (+http://j2s.sourceforge.net)");
-//		if (ClazzLoader.isAsynchronousLoading) {
-			transport.onreadystatechange = ClazzLoader.generatingXHRCallback (
-					transport, file);
-			ClazzLoader.inLoadingThreads++;
-			try {
-				transport.send (null);
-			} catch (e) {
-				Clazz.alert ("[Java2Script] Loading file error: " + e.message);
-				ClazzLoader.xhrOnload (transport, file);
-				//throw e;
-			}
-//		} else {
-//			try {
-//				transport.send (null);
-//			} catch (e) {
-//				Clazz.alert ("[Java2Script] Loading file error: " + e.message);
-//				//throw e;
-//			}
-//			ClazzLoader.xhrOnload (transport, file);
-//		}
+	ClazzLoader.onScriptLoading(file);
+	if (ClazzLoader.isUsingXMLHttpRequest && !ClazzLoader.isAsynchronousLoading) {
+		// alert("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + ClazzLoader.isUsingXMLHttpRequest + " async=" + ClazzLoader.isAsynchronousLoading + " " + Clazz.getStackTrace())
+		// synchronous loading
+		// works in MSIE locally unless a binary file :)
+		// from Jmol.api.Interface only
+		
+		var data = Jmol._getFileData(file);
+		ClazzLoader.evaluate(file, data); 
 		return;
 	}
-	// Create script DOM element
-	var script = document.createElement ("SCRIPT");
-	script.type = "text/javascript";
-
-
-	if (ClazzLoader.isChrome && ClazzLoader.reloadingClasses[file]) {
-		script.src = file + "?" + Math.floor (100000 * Math.random ());
-	} else {
-		script.src = file;
-	}
-
-	var head = document.getElementsByTagName ("HEAD")[0];
-	if (ignoreOnload) {
-		head.appendChild (script);
-		// ignore onload event and no call of ClazzLoader.scriptLoading
-		return;
-	}
-	script.defer = true;
-	// Alert when the script is loaded
-	if (typeof (script.onreadystatechange) == "undefined" || !ClazzLoader.isIE) { // W3C
-		if (ClazzLoader.isGecko && (file.indexOf ("file:") == 0 
-				|| (window.location.protocol == "file:" && file.indexOf ("http") != 0))) {
-			script.timeoutHandle = ClazzLoader.w3cFailedLoadingTest (script);
-		}
-
-		/*
-		 * What about Safari and Google Chrome?
-		 */
-		/*
-		 * Opera will trigger onload event even there are no *.js existed
-		 */
-		script.onload = ClazzLoader.generatingW3CScriptOnCallback (file, false);
-
-		/*
-		 * For Firefox/Mozilla, unexisted *.js will result in errors.
-		 */
-		script.onerror = ClazzLoader.generatingW3CScriptOnCallback (file, true);
-		if (ClazzLoader.isOpera) {
-			ClazzLoader.needOnloadCheck = true;
-		}
-	} else { // IE
-		ClazzLoader.needOnloadCheck = true;
-		script.onreadystatechange = ClazzLoader.generatingIEScriptOnCallback (file);
-	}
+	var info = {
+		dataType:"script",
+		async:true, 
+		type:"GET", 
+		url:file,
+		success:ClazzLoader.W3CScriptOnCallback(file, false, fSuccess),
+		error:function(e){ClazzLoader.W3CScriptOnCallback(file, true, fSuccess)}
+	};
 	ClazzLoader.inLoadingThreads++;
-	//alert("threads:"+ClazzLoader.inLoadingThreads);
-	// Add script DOM element to document tree
-	head.appendChild (script);
-	ClazzLoader.scriptLoading (file);
-};
-
-/* protected */
-ClazzLoader.isResourceExisted = function (id, path, base) {
-	if (id && document.getElementById (id)) {
-		return true;
-	}
-	if (path) {
-		var key = path;
-		if (base) {
-			if (path.indexOf (base) == 0) {
-				key = path.substring (base.length);
-			}
-		}
-		if (path.lastIndexOf (".css") == path.length - 4) {
-			var resLinks = document.getElementsByTagName ("LINK");
-			for (var i = 0; i < resLinks.length; i++) {
-				var cssPath = resLinks[i].href;
-				var idx = cssPath.lastIndexOf (key);
-				if (idx != -1 && idx == cssPath.length - key.length) {
-					return true;
-				}
-			}
-			if (window["css." + id] == true) {
-				return true;
-			}
-		} else if (path.lastIndexOf (".js") == path.length - 4) {
-			var resScripts = document.getElementsByTagName ("SCRIPT");
-			for (var i = 0; i < resScripts.length; i++) {
-				var jsPath = resScripts[i].src;
-				var idx = jsPath.lastIndexOf (key);
-				if (idx != -1 && idx == jsPath.length - key.length) {
-					return true;
-				}
-			}
-		}
-	}
-	return false;
+	Jmol.$ajax(info);
 };
 
 /* private */
-/*-# queueBe4SWT -> q4T #-*/
-ClazzLoader.queueBe4SWT = [];
+ClazzLoader.W3CScriptOnCallback = function (path, forError, fSuccess) {
+	return function () {
+		if (forError && Clazz.__debuggingBH)Clazz.alert ("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
+		if (ClazzLoader.isGecko && this.timeoutHandle)
+			window.clearTimeout(this.timeoutHandle), this.timeoutHandle = null;
+		if (ClazzLoader.inLoadingThreads > 0)
+			ClazzLoader.inLoadingThreads--;
+		//System.out.println("w3ccalback for " + path + " " + ClazzLoader.inLoadingThreads + " threads")
+		this.onload = null;
+		this.onerror = null;
+		if (forError) 
+			alert ("There was a problem loading " + path);
+		ClazzLoader.onScriptLoaded(path);
+		var node = this;			
+		var f = function(){	ClazzLoader.removeScriptNode(node); fSuccess && fSuccess()};
+		if (ClazzLoader.loadingTimeLag >= 0)
+			window.setTimeout(function() { ClazzLoader.tryToLoadNext(path, f); }, ClazzLoader.loadingTimeLag);
+		else
+			ClazzLoader.tryToLoadNext(path, f);
+	};
+};
 
 /* private */
-/*-# lockQueueBe4SWT -> l4T #-*/
-ClazzLoader.lockQueueBe4SWT = true;
-
-/* private */
-/*-# isLoadingEntryClass -> lec #-*/
 ClazzLoader.isLoadingEntryClass = true;
 
 /* private */
-/*-# besidesJavaPackage -> bJP #-*/
 ClazzLoader.besidesJavaPackage = false;
 
 /**
@@ -4499,20 +3849,7 @@ ClazzLoader.besidesJavaPackage = false;
  * are classes in the dependency tree that need to be loaded.
  */
 /* private */
-/*-# tryToLoadNext -> next #-*/
-ClazzLoader.tryToLoadNext = function (file) {
-	/*
-	 * Try to check whether current status is in SWT lazy loading mode. If
-	 * yes, try to keep ClazzLoader#tryToLoadNext in queue and wait until
-	 * all SWT core is loaded.
-	 */
-	if (ClazzLoader.lockQueueBe4SWT && ClazzLoader.pkgRefCount != 0 
-			&& file.lastIndexOf ("package.js") != file.length - 10
-			&& !ClazzLoader.isOpera) { // No Opera! Opera is in single thread.
-		ClazzLoader.queueBe4SWT.push(file);
-		return;
-	}
-
+ClazzLoader.tryToLoadNext = function (file, fSuccess) {
 	var node = ClazzLoader.mapPath2ClassNode["@" + file];
 	if (!node) // maybe class tree root
 		return;
@@ -4531,7 +3868,7 @@ ClazzLoader.tryToLoadNext = function (file) {
 				n.name = name;
 				var pp = ClazzLoader.classpathMap["#" + name];
 				if (!pp) {
-					alert(name + " J2S error in tryToLoadNext");
+					alert (name + " J2S error in tryToLoadNext");
 					error("Java2Script implementation error! Please report this bug!");
 				}
 				n.path = pp;
@@ -4549,26 +3886,24 @@ ClazzLoader.tryToLoadNext = function (file) {
 				ClazzLoader.updateNode(node[i]);
 			}
 		}
-	} else {
-		if (node.status < ClazzNode.STATUS_CONTENT_LOADED) {
-			var stillLoading = false;
-			var ss = document.getElementsByTagName ("SCRIPT");
-			for (var i = 0; i < ss.length; i++) {
-				if (ClazzLoader.isIE) {
-					if (ss[i].onreadystatechange && ss[i].onreadystatechange.path == node.path
-							&& ss[i].readyState == "interactive") {
-						stillLoading = true;
-						break;
-					}
-				} else if (ss[i].onload && ss[i].onload.path == node.path) {
+	} else if (node.status < ClazzNode.STATUS_CONTENT_LOADED) {
+		var stillLoading = false;
+		var ss = document.getElementsByTagName ("SCRIPT");
+		for (var i = 0; i < ss.length; i++) {
+			if (ClazzLoader.isIE) {
+				if (ss[i].onreadystatechange && ss[i].onreadystatechange.path == node.path
+						&& ss[i].readyState == "interactive") {
 					stillLoading = true;
 					break;
 				}
+			} else if (ss[i].onload && ss[i].onload.path == node.path) {
+				stillLoading = true;
+				break;
 			}
-			if (!stillLoading) {
-				node.status = ClazzNode.STATUS_CONTENT_LOADED;
-				ClazzLoader.updateNode (node);
-			}
+		}
+		if (!stillLoading) {
+			node.status = ClazzNode.STATUS_CONTENT_LOADED;
+			ClazzLoader.updateNode(node);
 		}
 	}
 	/*
@@ -4577,11 +3912,11 @@ ClazzLoader.tryToLoadNext = function (file) {
 	 * classes), so here check to stop.
 	 */
 	 
-	if (!ClazzLoader.keepOnLoading) {
+	if (!ClazzLoader.keepOnLoading)
 		return;
-	}
 
-	var loadFurther = false;
+	var cq;
+	var working = true;
 	if ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_KNOWN))) {
 		ClazzLoader.loadClassNode(n);
 		while (ClazzLoader.inLoadingThreads < ClazzLoader.maxLoadingThreads) {
@@ -4589,114 +3924,91 @@ ClazzLoader.tryToLoadNext = function (file) {
 				break;
 			ClazzLoader.loadClassNode(n); // will increase inLoadingThreads!
 		}
+	} else if ((cq = ClazzLoader.classQueue).length != 0) { 
+		/* queue must be loaded in order! */
+		n = cq.shift();
+		if (!ClazzLoader.loadedScripts[n.path] 
+				|| cq.length != 0 
+				|| !ClazzLoader.isLoadingEntryClass
+				|| n.musts.length
+				|| n.optionals.length) {
+			ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, true);
+			ClazzLoader.loadScript (n.path, n.requiredBy);
+		} else if (ClazzLoader.isLoadingEntryClass) {
+			/*
+			 * The first time reaching here is the time when ClassLoader
+			 * is trying to load entry class. Class with #main method and
+			 * is to be executed is called Entry Class.
+			 *
+			 * Here when loading entry class, ClassLoader should not call
+			 * the next following loading script. This is because, those
+			 * scripts will try to mark the class as loaded directly and
+			 * then continue to call #onRequiredLoaded callback method,
+			 * which results in an script error!
+			 */
+			ClazzLoader.isLoadingEntryClass = false;
+		}
+	} else if ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_KNOWN))) {
+		ClazzLoader.loadClassNode(n);
+		while (ClazzLoader.inLoadingThreads < ClazzLoader.maxLoadingThreads) {
+			if (!(n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_KNOWN)))
+				break;
+			ClazzLoader.loadClassNode(n); // will increase inLoadingThreads!
+		}
 	} else {
-		var cq = ClazzLoader.classQueue;
-		if (cq.length != 0) { 
-			/* queue must be loaded in order! */
-			n = cq.shift();
-			if (!ClazzLoader.loadedScripts[n.path] 
-					|| cq.length != 0 
-					|| !ClazzLoader.isLoadingEntryClass
-					|| n.musts.length
-					|| n.optionals.length) {
-				ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, true);
-				ClazzLoader.loadScript (n.path, n.requiredBy);
-			} else {
-				if (ClazzLoader.isLoadingEntryClass) {
-					/*
-					 * The first time reaching here is the time when ClassLoader
-					 * is trying to load entry class. Class with #main method and
-					 * is to be executed is called Entry Class.
-					 *
-					 * Here when loading entry class, ClassLoader should not call
-					 * the next following loading script. This is because, those
-					 * scripts will try to mark the class as loaded directly and
-					 * then continue to call #onRequiredLoaded callback method,
-					 * which results in an script error!
-					 */
-					ClazzLoader.isLoadingEntryClass = false;
-				}
-			}
-		} else { // check for required classes
-			if ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_KNOWN))) {
-				ClazzLoader.loadClassNode(n);
-				while (ClazzLoader.inLoadingThreads < ClazzLoader.maxLoadingThreads) {
-					if (!(n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_KNOWN)))
-						break;
-					ClazzLoader.loadClassNode(n); // will increase inLoadingThreads!
-				}
-			} else {
-				loadFurther = true;
-			}
-		}
+		working = false;
 	}
-	/*
-	 * The following codes still need more tests, e.g. cyclic tests.
-	 * And they also need optimization.
-	 */
-	if (loadFurther && ClazzLoader.inLoadingThreads == 0) {
-		while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_CONTENT_LOADED)))
-			ClazzLoader.updateNode(n);
-		var lastNode = null;
-		while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_CONTENT_LOADED))) {
-			if (lastNode === n) // Already existed cycle ?
-				n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-			ClazzLoader.updateNode(n);
-			lastNode = n;
-		}
-		while (true) {
-			ClazzLoader.tracks = [];
-			if (!ClazzLoader.checkOptionalCycle(ClazzLoader.clazzTreeRoot))
-				break;
-		}
-		lastNode = null;
-		while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED))) {
-			if (lastNode === n) 
-				break;
-			ClazzLoader.updateNode(n);
-			lastNode = n;
-		}
-		lastNode = null;
-		while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED))) {
-			if (lastNode === n) 
-				break;
-			ClazzLoader.updateNode(n);
-			lastNode = n;
-		}
-		var dList = [];
-		while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED))) {
-			dList.push(n);
+	if (working || ClazzLoader.inLoadingThreads > 0)
+		return;
+	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_CONTENT_LOADED)))
+		ClazzLoader.updateNode(n);
+	var lastNode = null;
+	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_CONTENT_LOADED))) {
+		if (lastNode === n) // Already existed cycle ?
 			n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-		}
-		while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED))) {
-			dList.push(n);
-			n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-		}
-		for (var i = 0; i < dList.length; i++)
-			ClazzLoader.destroyClassNode (dList[i]);
-		for (var i = 0; i < dList.length; i++) {
-			var optLoaded = dList[i].onRequiredLoaded;
-			if (optLoaded) {
-				dList[i].onRequiredLoaded = null;
-				optLoaded();
-			}
-		}
-		/*
-		 * It seems ClazzLoader#globalLoaded is seldom overridden.
-		 */
-		ClazzLoader.globalLoaded();
+		ClazzLoader.updateNode(n);
+		lastNode = n;
 	}
+	while (true) {
+		ClazzLoader.tracks = [];
+		if (!ClazzLoader.checkCycle(ClazzLoader.clazzTreeRoot))
+			break;
+	}
+	lastNode = null;
+	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED))) {
+		if (lastNode === n) 
+			break;
+		ClazzLoader.updateNode(lastNode = n);
+	}
+	lastNode = null;
+	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED))) {
+		if (lastNode === n) 
+			break;
+		ClazzLoader.updateNode(lastNode = n);
+	}
+	var done = [];
+	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED)))
+		done.push(n), n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
+	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED)))
+		done.push(n), n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
+	for (var i = 0; i < done.length; i++)
+		ClazzLoader.destroyClassNode(done[i]);
+	var f;
+	for (var i = 0; i < done.length; i++)
+		if ((f = done[i].onRequiredLoaded))
+			done[i].onRequiredLoaded = null, f();
+	System.out.println("loaded completely" + ClazzLoader.onGlobalLoaded + "\n\n")
+	ClazzLoader.onGlobalLoaded();
+	fSuccess && fSuccess();
 };
 
 ClazzLoader.tracks = [];
 
 /*
  * There are classes reference cycles. Try to detect and break those cycles.
- * TODO: Reference cycles should be broken down carefully. Or there will be 
- * bugs!
  */
 /* protected */
-ClazzLoader.checkOptionalCycle = function (node) {
+ClazzLoader.checkCycle = function (node) {
 	var ts = ClazzLoader.tracks;
 	var length = ts.length;
 	var i = length;
@@ -4705,37 +4017,26 @@ ClazzLoader.checkOptionalCycle = function (node) {
 			break;
 	ts.push(node);
 	if (i >= 0) {
-		/*
-		for (var i = cycleFound; i < ts.length; i++) {
-			//alert (ts[i].name + ":::" + ts[i].status);
-		}
-		//alert ("===");
-		*/
+		var f;
 		for (; i < ts.length; i++) {
 			ts[i].status = ClazzNode.STATUS_OPTIONALS_LOADED;
-			//ClazzLoader.updateNode (ts[i]);
 			ClazzLoader.destroyClassNode (ts[i]); // Same as above
-			for (var k = 0; k < ts[i].parents.length; k++) {
-				//log ("updating parent ::" + ts[i].parents[k].name);
+			for (var k = 0; k < ts[i].parents.length; k++)
 				ClazzLoader.updateNode (ts[i].parents[k]);
-			}
 			ts[i].parents = [];
-			var optLoaded = ts[i].onRequiredLoaded;
-			if (optLoaded) {
+			if ((f = ts[i].onRequiredLoaded)) {
 				ts[i].onRequiredLoaded = null;
-				//alert ("check cycle.");
-				//window.setTimeout (optLoaded, 25);
-				optLoaded ();
+				f();
 			}
 		}
 		ts.length = 0;
 		return true;
 	}
-	for (var i = 0; i < node.musts.length; i++)
-		if (node.musts[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkOptionalCycle (node.musts[i])) 
+	for (var i = node.musts.length; --i >= 0;)
+		if (node.musts[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkCycle(node.musts[i])) 
 			return true;
-	for (var i = 0; i < node.optionals.length; i++)
-		if (node.optionals[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkOptionalCycle (node.optionals[i]))
+	for (var i = node.optionals.length; --i >= 0;)
+		if (node.optionals[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkCycle(node.optionals[i]))
 			return true;
 	ts.length = length;
 	return false;
@@ -4746,41 +4047,30 @@ ClazzLoader.checkOptionalCycle = function (node) {
  * Update the dependency tree nodes recursively.
  */
 /* private */
-/*-# 
- # updateNode -> uN 
- #
- # isMustsOK -> mOK
- # isOptionsOK -> oOK
- #-*/
 ClazzLoader.updateNode = function (node) {
 	if (!node.name || node.status >= ClazzNode.STATUS_OPTIONALS_LOADED) {
-		//System.out.println("destroying node " + node.name + " " + node.path)
-		ClazzLoader.destroyClassNode (node);
+		ClazzLoader.destroyClassNode(node);
 		return;
 	}
-	var isMustsOK = true;
+	var ready = true;
 	if (node.musts.length && node.declaration) {
-		var mustLength = node.musts.length;
-		for (var i = mustLength; --i >= 0;) {
+		for (var mustLength = node.musts.length, i = mustLength; --i >= 0;) {
 			var n = node.musts[i];
 			n.requiredBy = node;
 			if (n.status < ClazzNode.STATUS_DECLARED && ClazzLoader.isClassDefined (n.name)) {
 				var nns = []; // for optional loaded events!
 				n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
 				ClazzLoader.destroyClassNode(n); // Same as above
-				// For those classes within one *.js file, 
-				//   update them synchronously.
 				if (n.declaration	&& n.declaration.clazzList) {
-					var list = n.declaration.clazzList;
-					for (var j = 0; j < list.length; j++) {
+					// For those classes within one *.js file, update them synchronously.
+					for (var j = 0, list = n.declaration.clazzList, l = list.length; j < l; j++) {
 						var nn = ClazzLoader.findClass (list[j]);
 						if (nn && nn.status != ClazzNode.STATUS_OPTIONALS_LOADED
 								&& nn !== n) {
 							nn.status = n.status;
 							nn.declaration = null;
 							ClazzLoader.destroyClassNode(nn);
-							if (nn.onRequiredLoaded)
-								nns.push(nn);
+							nn.onRequiredLoaded && nns.push(nn);
 						}
 					}
 					n.declaration = null;
@@ -4791,97 +4081,66 @@ ClazzLoader.updateNode = function (node) {
 					var optLoaded = nns[j].onRequiredLoaded;
 					if (optLoaded) {
 						nns[j].onRequiredLoaded = null;
-						//window.setTimeout (optLoaded, 25);
-						optLoaded ();
+						optLoaded();
 					}
 				}
-			} else { // why not break? -Zhou Renjian @ Nov 28, 2006
-				if (n.status == ClazzNode.STATUS_CONTENT_LOADED) {
-					// lazy loading script doesn't work! - 2/26/2007
-					ClazzLoader.updateNode (n); // musts may be changed
-				}
-				if (n.status < ClazzNode.STATUS_DECLARED) {
-					isMustsOK = false;
-				}
+			} else {
+				n.status == ClazzNode.STATUS_CONTENT_LOADED && ClazzLoader.updateNode(n); // musts may be changed
+				if (n.status < ClazzNode.STATUS_DECLARED)
+					ready = false;
 			}
-			// fix the above strange bug
 			if (node.musts.length != mustLength) {
-				// length changed!
-				mustLength = node.musts.length;
-				i = mustLength; // -1
-				isMustsOK = true;
+				// length changed -- restart!
+				i = mustLength = node.musts.length;
+				ready = true;
 			}
 		}
 	}
-	/*
-	var scripts = document.getElementsByTagName ("SCRIPT");
-	var count = 0;
-	for (var i = 0; i < scripts.length; i++) {
-		var s = scripts[i];
-		if (s.onload) {
-			log ("---:---" + s.src);
-			count++;
-		}
-	}
-	//alert ("There are " + count + " script loading ...");
-	*/
-	//System.out.println("testing " + node.name + " " + isMustsOK + " " + node.status + " " +  ClazzNode.STATUS_DECLARED + "isnull?" + (node.declaration == null))
-
-	if (isMustsOK) {
-		if (node.status < ClazzNode.STATUS_DECLARED) {
-			var decl = node.declaration;
-			if (decl) {
-				decl ();
-				decl.executed = true;
-			}
-			node.status = ClazzNode.STATUS_DECLARED;
-			if (ClazzLoader.definedClasses)
-				ClazzLoader.definedClasses[node.name] = true;
-			ClazzLoader.scriptInited (node.path);
-			/*
-			 * For those classes within one *.js file, update
-			 * them synchronously.
-			 */
-			if (node.declaration && node.declaration.clazzList) {
-				var list = node.declaration.clazzList;
-				for (var j = 0; j < list.length; j++) {
-					var nn = ClazzLoader.findClass (list[j]);
-					if (nn && nn.status != ClazzNode.STATUS_DECLARED
-							&& nn !== node) {
-						nn.status = ClazzNode.STATUS_DECLARED;
-						if (ClazzLoader.definedClasses)
-							ClazzLoader.definedClasses[nn.name] = true;
-						ClazzLoader.scriptInited(nn.path);
-					}
+	if (!ready)
+		return;
+	if (node.status < ClazzNode.STATUS_DECLARED) {
+		var decl = node.declaration;
+		if (decl)
+			decl(), decl.executed = true;
+		node.status = ClazzNode.STATUS_DECLARED;
+		if (ClazzLoader.definedClasses)
+			ClazzLoader.definedClasses[node.name] = true;
+		ClazzLoader.onScriptInitialized(node.path);
+		if (node.declaration && node.declaration.clazzList) {
+			// For those classes within one *.js file, update them synchronously.
+			for (var j = 0, list = node.declaration.clazzList, l = list.length; j < l; j++) {
+				var nn = ClazzLoader.findClass(list[j]);
+				if (nn && nn.status != ClazzNode.STATUS_DECLARED
+						&& nn !== node) {
+					nn.status = ClazzNode.STATUS_DECLARED;
+					if (ClazzLoader.definedClasses)
+						ClazzLoader.definedClasses[nn.name] = true;
+					ClazzLoader.onScriptInitialized(nn.path);
 				}
 			}
 		}
-		var level = ClazzNode.STATUS_DECLARED;
-		if (node.optionals.length == 0 && node.musts.length == 0
-				|| node.status > ClazzNode.STATUS_KNOWN && !node.declaration
-				|| ClazzLoader.checkStatusIs(node.musts, ClazzNode.STATUS_OPTIONALS_LOADED)
-						&& ClazzLoader.checkStatusIs(node.optionals, ClazzNode.STATUS_OPTIONALS_LOADED)) { 
-			level = ClazzNode.STATUS_OPTIONALS_LOADED;
-			if (!ClazzLoader.doneLoading(node, level))
-				return false;
-					/*
-					 * For those classes within one *.js file, update
-					 * them synchronously.
-					 */
-			if (node.declaration && node.declaration.clazzList) {
-				var list = node.declaration.clazzList;
-				for (var j = list.length; --j >= 0;) {
-					var nn = ClazzLoader.findClass(list[j]);
-					if (nn && nn.status != level && nn !== node) {
-						nn.declaration = null;
-						if (!ClazzLoader.doneLoading(nn, level))
-							return false;
-					}
+	}
+	var level = ClazzNode.STATUS_DECLARED;
+	if (node.optionals.length == 0 && node.musts.length == 0
+			|| node.status > ClazzNode.STATUS_KNOWN && !node.declaration
+			|| ClazzLoader.checkStatusIs(node.musts, ClazzNode.STATUS_OPTIONALS_LOADED)
+					&& ClazzLoader.checkStatusIs(node.optionals, ClazzNode.STATUS_OPTIONALS_LOADED)) { 
+		level = ClazzNode.STATUS_OPTIONALS_LOADED;
+		if (!ClazzLoader.doneLoading(node, level))
+			return false;
+			// For those classes within one *.js file, update them synchronously.
+		if (node.declaration && node.declaration.clazzList) {
+			for (var j = 0, list = node.declaration.clazzList, l = list.length; j < l; j++) {
+				var nn = ClazzLoader.findClass(list[j]);
+				if (nn && nn.status != level && nn !== node) {
+					nn.declaration = null;
+					if (!ClazzLoader.doneLoading(nn, level))
+						return false;
 				}
 			}
 		}
-		ClazzLoader.updateParents(node, level);
 	}
+	ClazzLoader.updateParents(node, level);
 };
 
 /* private */
@@ -4894,7 +4153,7 @@ ClazzLoader.checkStatusIs = function(arr, status){
 /* private */
 ClazzLoader.doneLoading = function(node, level) {
 	node.status = level;
-	ClazzLoader.scriptCompleted (node.path);
+	ClazzLoader.onScriptCompleted(node.path);
 	var onLoaded = node.onRequiredLoaded;
 	if (onLoaded) {
 		node.onRequiredLoaded = null;
@@ -4907,7 +4166,6 @@ ClazzLoader.doneLoading = function(node, level) {
 }
 
 /* private */
-/*-# updateParents -> uP #-*/
 ClazzLoader.updateParents = function (node, level) {
 	if (!node.parents || node.parents.length == 0)
 		return;
@@ -4925,7 +4183,6 @@ ClazzLoader.updateParents = function (node, level) {
  * number should not be in the property set.
  */
 /* private */
-/*-# usedRandoms -> Rms #-*/
 ClazzLoader.usedRandoms = {};
 ClazzLoader.usedRandoms["r" + 0.13412] = 1;
 
@@ -4948,7 +4205,7 @@ ClazzLoader.findClass = function(clazzName) {
 /* private */
 ClazzLoader.findNextRequiredClass = function(status) {
 	ClazzLoader.getRnd();
-	return ClazzLoader.findNodeNextRequiredClass (ClazzLoader.clazzTreeRoot, status);
+	return ClazzLoader.findNodeNextRequiredClass(ClazzLoader.clazzTreeRoot, status);
 };
 
 /* private */
@@ -4958,19 +4215,17 @@ ClazzLoader.findNextMustClass = function(status) {
 
 /* private */
 ClazzLoader.findClassUnderNode = function(clazzName, node) {
-	if (node.name == clazzName)
-		return node;
-	var rnd = ClazzLoader.clazzTreeRoot.random;
 	var n;
-	// musts first
-	// optionals second
-	return ((n = ClazzLoader.findNodeClassUnderNode(clazzName, node.musts, rnd))
-		|| (n = ClazzLoader.findNodeClassUnderNode(clazzName, node.optionals, rnd)) 
+	// node, then musts then optionals
+	return (node.name == clazzName ? node 
+		: (n = ClazzLoader.findNodeClassUnderNode(clazzName, node.musts))
+		|| (n = ClazzLoader.findNodeClassUnderNode(clazzName, node.optionals)) 
 		? n : null);
 };
 
 /* private */
-ClazzLoader.findNodeClassUnderNode = function(name, arr, rnd) {
+ClazzLoader.findNodeClassUnderNode = function(name, arr) {
+	var rnd = ClazzLoader.clazzTreeRoot.random;
 	for (var i = arr.length; --i >= 0;) {
 		var n = arr[i];
 		if (n.name == name)
@@ -5002,31 +4257,31 @@ ClazzLoader.findNodeNextMustClass = function(node, status) {
 };
 
 /* private */
-/*-# findNodeNextRequiredClass -> fNNO #-*/
 ClazzLoader.findNodeNextRequiredClass = function (node, status) {
 	// search musts first
 	// search optionals second
 	// search itself last
-	var rnd = ClazzLoader.clazzTreeRoot.random;
 	var n;
-	return ((n = ClazzLoader.searchClassArray(node.musts, rnd, status))
-		|| (n = ClazzLoader.searchClassArray(node.optionals, rnd, status))
+	return ((n = ClazzLoader.searchClassArray(node.musts, status))
+		|| (n = ClazzLoader.searchClassArray(node.optionals, status))
 		|| ClazzLoader.checkStatus(n = node, status) ? n : null);
 };
 
 /* private */
-ClazzLoader.searchClassArray = function (arr, rnd, status) {
-	if (arr)
+ClazzLoader.searchClassArray = function (arr, status) {
+	if (arr) {
+		var rnd = ClazzLoader.clazzTreeRoot.random;
 		for (var i = 0; i < arr.length; i++) {
 			var n = arr[i];
 			if (ClazzLoader.checkStatus(n, status))
 				return n;
 			if (n.random != rnd) {
 				n.random = rnd; // mark as visited!
-				if ((n = ClazzLoader.findNodeNextRequiredClass (n, status)))
+				if ((n = ClazzLoader.findNodeNextRequiredClass(n, status)))
 					return n;
 			}
 		}
+	}
 	return null;
 };
 
@@ -5036,52 +4291,7 @@ ClazzLoader.searchClassArray = function (arr, rnd, status) {
  * loaded or not, so inner loading mark is used for detecting.
  */
 /* private */
-/*-# innerLoadedScripts -> ilss #-*/
 ClazzLoader.innerLoadedScripts = {};
-
-/**
- * This variable is used to keep the latest interactive SCRIPT element.
- */
-/* private */
-/*-# interactiveScript -> itst #-*/
-ClazzLoader.interactiveScript = null;
-
-/**
- * IE and Firefox/Mozilla are different in using <SCRIPT> tag to load *.js.
- */
-/* private */
-ClazzLoader.needOnloadCheck = false;
-
-/**
- * Check the interactive status of SCRIPT elements to determine whether a
- * *.js file is correctly loaded or not.
- *
- * Only make senses for IE.
- */
-/* protected */
-ClazzLoader.checkInteractive = function () {
-	//alert ("checking...");
-	if (!ClazzLoader.needOnloadCheck) {
-		return;
-	}
-	var is = ClazzLoader.interactiveScript;
-	if (is && is.readyState == "interactive") { // IE
-		return;
-	}
-	ClazzLoader.interactiveScript = null;
-	var ss = document.getElementsByTagName ("SCRIPT");
-	for (var i = 0; i < ss.length; i++) {
-		if (ss[i].readyState == "interactive"
-				&& ss[i].onreadystatechange) { // IE
-			ClazzLoader.interactiveScript = ss[i];
-			ClazzLoader.innerLoadedScripts[ss[i].src] = true;
-		} else if (ClazzLoader.isOpera) { // Opera
-			if (ss[i].readyState == "loaded" && ss[i].src) {
-				ClazzLoader.innerLoadedScripts[ss[i].src] = true;
-			}
-		}
-	}
-};
 
 /**
  * This method will be called in almost every *.js generated by Java2Script
@@ -5090,7 +4300,6 @@ ClazzLoader.checkInteractive = function () {
 /* protected */
 ClazzLoader.load = function (musts, clazz, optionals, declaration) {
   // called as Clazz.load in Jmol
-	ClazzLoader.checkInteractive ();
 
 	if (clazz instanceof Array) {
 		ClazzLoader.unwrapArray (clazz);
@@ -5182,7 +4391,6 @@ if (window["Clazz"]) {
  * @node ClazzNode object
  */
 /* private */
-/*-# mappingPathNameNode -> mpp #-*/
 ClazzLoader.mappingPathNameNode = function (path, name, node) {
 	var map = ClazzLoader.mapPath2ClassNode;
 	var keyPath = "@" + path;
@@ -5208,7 +4416,6 @@ ClazzLoader.mappingPathNameNode = function (path, name, node) {
 };
 
 /* protected */
-/*-# loadClassNode -> lCN #-*/
 ClazzLoader.loadClassNode = function (node) {
 	var name = node.name;
 	if (!ClazzLoader.isClassDefined (name) 
@@ -5238,257 +4445,74 @@ ClazzLoader.queueBe4KeyClazz = [];
  * Return J2SLib base path from existed SCRIPT src attribute.
  */
 /* private */
-/*-# getJ2SLibBase -> gLB #-*/
 ClazzLoader.getJ2SLibBase = function () {
 	var o = window["j2s.lib"];
-	if (o) {
-	 if (o.base == null)
-			o.base = "http://archive.java2script.org/";
-		return o.base + (o.alias == "." ? "" : (o.alias ? o.alias : (o.version ? o.version : "1.0.0")) + "/");
-	}
-	var ss = document.getElementsByTagName ("SCRIPT");
-	for (var i = 0; i < ss.length; i++) {
-		var src = ss[i].src;
-		var idx = src.indexOf ("j2slib.z.js"); // consider it as key string!
-		if (idx != -1) {
-			return src.substring (0, idx);
-		}
-		idx = src.indexOf ("j2slibcore.z.js"); // consider it as key string!
-		if (idx != -1) {
-			return src.substring (0, idx);
-		}
-		var base = ClazzLoader.classpathMap["@java"];
-		if (base) {
-			return base;
-		}
-		idx = src.indexOf ("java/lang/ClassLoader.js"); // may be not packed yet
-		if (idx != -1) {
-			return src.substring (0, idx);
-		}
-	}
-	return null;
-};
-
-/* private static */
-/*-# J2SLibBase -> JLB #-*/
-ClazzLoader.J2SLibBase = null;
-/*-# fastGetJ2SLibBase -> fgLB #-*/
-ClazzLoader.fastGetJ2SLibBase = function () {
-	if (ClazzLoader.J2SLibBase == null) {
-		ClazzLoader.J2SLibBase = ClazzLoader.getJ2SLibBase ();
-	}
-	return ClazzLoader.J2SLibBase;
-};
-
-/*
- * Check whether given package's classpath is setup or not.
- * Only "java" and "org.eclipse.swt" are accepted in argument.
- */
-/* private */
-/*-# assurePackageClasspath -> acp #-*/
-ClazzLoader.assurePackageClasspath = function (pkg) {
-	var r = window[pkg + ".registered"];
-	if (r != false && r != true && !ClazzLoader.classpathMap["@" + pkg]) {
-		window[pkg + ".registered"] = false;
-		var base = ClazzLoader.fastGetJ2SLibBase();
-		ClazzLoader.packageClasspath(pkg, base == null ? "j2s" : base, true);
-	}
+	return (o ? o.base + (o.alias == "." ? "" : (o.alias ? o.alias : (o.version ? o.version : "1.0.0")) + "/") : null);
 };
 
 /**
- * Load the given class ant its related classes.
+ * Indicate whether ClazzLoader is loading script synchronously or 
+ * asynchronously.
  */
-/* public */
-ClazzLoader.loadClass = function (name, onRequiredLoaded, forced, async) {
+/* protected */
+ClazzLoader.isAsynchronousLoading = true;
 
- 	if (typeof onRequiredLoaded == "boolean") {
-		return Clazz.evalType (name);
-	}
+/* protected */
+ClazzLoader.isUsingXMLHttpRequest = false;
 
-	/*
-	 * Make sure that
-	 * ClazzLoader.packageClasspath ("java", base, true); 
-	 * is called before any ClazzLoader#loadClass is called.
-	 */
-	ClazzLoader.assurePackageClasspath ("java");
-	ClazzLoader.assurePackageClasspath ("core"); // JSmol uses j2s/core, not j2s/java for package.js
+/* protected */
+ClazzLoader.loadingTimeLag = -1;
 
-	var swtPkg = "org.eclipse.swt";
-	if (name.indexOf (swtPkg) == 0 || name.indexOf ("$wt") == 0) {
-		ClazzLoader.assurePackageClasspath (swtPkg);
-	}
-	if (name.indexOf ("junit") == 0) {
-		ClazzLoader.assurePackageClasspath ("junit");
-	}
-
-	/*
-	 * Any ClazzLoader#loadClass calls will be queued until java.* core classes
-	 * is loaded.
-	 */
-	ClazzLoader.keepOnLoading = true;
-	if (!forced && (
-			 ClazzLoader.pkgRefCount != 0 && name.lastIndexOf (".package") != name.length - 8
-		|| !ClazzLoader.isClassDefined (ClazzLoader.runtimeKeyClass) && name.indexOf ("java.") != 0
-	)) {
-		var qbs = ClazzLoader.queueBe4KeyClazz;
-		qbs.push([name, onRequiredLoaded]);
-		return;
-	}
-	if (!ClazzLoader.isClassDefined (name) 
-			&& !ClazzLoader.isClassExcluded (name)) {
-		var path = ClazzLoader.getClasspathFor (name/*, true*/);
-		var existed = ClazzLoader.loadedScripts[path];
-		var qq = ClazzLoader.classQueue;
-		if (!existed) {
-			for (var i = qq.length; --i >= 0;) {
-				if (qq[i].path == path || qq[i].name == name) {
-					existed = true;
-					break;
-				}
-			}
-		}
-		//alert("@#@#@#@# " + name);
-		if (!existed) {
-			var n = (Clazz.unloadedClasses[name] && ClazzLoader.findClass (name) || new ClazzNode ());
-			n.name = name;
-			n.path = path;
-			n.isPackage = (path.lastIndexOf("package.js") == path.length - 10);
-			ClazzLoader.mappingPathNameNode (path, name, n);
-			n.onRequiredLoaded = onRequiredLoaded;
-			n.status = ClazzNode.STATUS_KNOWN;
-			/*-# needBeingQueued -> nQ #-*/
-			var needBeingQueued = false;
-			//error (qq.length + ":" + qq);
-			//error (path);
-			for (var i = qq.length; --i >= 0;) {
-				if (qq[i].status != ClazzNode.STATUS_OPTIONALS_LOADED) {
-					needBeingQueued = true;
-					break;
-				}
-			}
-			if (n.isPackage) {//forced
-				// push class to queue
-				var pt = qq.length;
-				for (; --pt >= 0;) {
-					if (qq[pt].isPackage) 
-						break;
-					qq[pt + 1] = qq[pt];
-				}
-				qq[++pt] = n;
-			} else if (needBeingQueued) {
-				qq.push(n);
-			}
-//alert(["-------------"]);
-			if (!needBeingQueued) { // can be loaded directly
-				/*-# bakEntryClassLoading -> bkECL #-*/
-				var bakEntryClassLoading = false;
-				if (onRequiredLoaded) {	
-					bakEntryClassLoading = ClazzLoader.isLoadingEntryClass;
-					ClazzLoader.isLoadingEntryClass = true;
-				}
-				ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, true);
-				//System.out.println("Clazz loading " + n.path)
-				ClazzLoader.loadScript (n.path, n.requiredBy);
-				if (onRequiredLoaded) {
-					ClazzLoader.isLoadingEntryClass = bakEntryClassLoading;
-				}
-			}
-		} else if (onRequiredLoaded) {
-			var n = ClazzLoader.findClass(name);
-			if (n) {
-				if (!n.onRequiredLoaded) {
-					n.onRequiredLoaded = onRequiredLoaded;
-				} else if (onRequiredLoaded != n.onRequiredLoaded) {
-					n.onRequiredLoaded = (function (oF, nF) { return function () { oF(); nF() };	}) (n.onRequiredLoaded, onRequiredLoaded);
-				}
-			}
-		}
-	} else if (onRequiredLoaded && ClazzLoader.isClassDefined (name)) {
-		var nn = ClazzLoader.findClass (name);
-		if (!nn || nn.status >= ClazzNode.STATUS_OPTIONALS_LOADED) {
-			/*if (nn) {
-				ClazzLoader.destroyClassNode (nn);
-			}*/
-			if (async) {
-				window.setTimeout(onRequiredLoaded, 25);
-			} else {
-				onRequiredLoaded();
-			}
-		} // else ... should be called later
-	}
-};
+ClazzLoader.MODE_SCRIPT = 4;
+ClazzLoader.MODE_XHR = 2;
+ClazzLoader.MODE_SYNC = 1;
 
 /**
- * Load the application by the given class name and run its static main method.
+ * String mode:
+ * asynchronous modes:
+ * async(...).script, async(...).xhr, async(...).xmlhttprequest,
+ * script.async(...), xhr.async(...), xmlhttprequest.async(...),
+ * script
+ * 
+ * synchronous modes:
+ * sync(...).xhr, sync(...).xmlhttprequest,
+ * xhr.sync(...), xmlhttprequest.sync(...),
+ * xmlhttprequest, xhr
+ *                                                    
+ * Integer mode:
+ * Script 4; XHR 2; SYNC bit 1; 
  */
 /* public */
-ClazzLoader.loadJ2SApp = function (clazz, args, loaded) {
-	if (clazz == null) {
-		return;
-	}
-	var clazzStr = clazz;
-	if (clazz.charAt (0) == '$') {
-		clazzStr = "org.eclipse.s" + clazz.substring (1);
-	}
-	var idx = -1;
-	if ((idx = clazzStr.indexOf ("@")) != -1) {
-		var path = clazzStr.substring (idx + 1);
-		ClazzLoader.setPrimaryFolder (path); // BH JSmol will not use this
-		clazzStr = clazzStr.substring (0, idx);
-		idx = clazzStr.lastIndexOf (".");
-		if (idx != -1) {
-			var pkgName = clazzStr.substring (0, idx);
-			ClazzLoader.packageClasspath (pkgName, path);
-		}
-	}
-	var agmts = args;
-	if (!(agmts instanceof Array))
-		agmts = [];
-	var afterLoaded = loaded;
-	if (!afterLoaded) {
-		afterLoaded = (function (clazzName, argv) {
-			return function () {
-				Clazz.evalType (clazzName).main (argv);
-			};
-		}) (clazzStr, agmts);
+ClazzLoader.setLoadingMode = function (mode, timeLag) {
+	var async = true;
+	var ajax = true;
+	if (typeof mode == "string") {
+		mode = mode.toLowerCase();
+		if (mode.indexOf("script") >= 0)
+			ajax = false;
+		else
+			async = (mode.indexOf("async") >=0);
+		async = false; // BH
 	} else {
-		afterLoaded = loaded (clazzStr, agmts);
+		if (mode & ClazzLoader.MODE_SCRIPT)
+			ajax = false;
+		else
+			async = !(mode & ClazzLoader.MODE_SYNC);
 	}
-	ClazzLoader.loadClass (clazzStr, afterLoaded);
-};
-/**
- * Load JUnit tests by the given class name.
- */
-/* public */
-ClazzLoader.loadJUnit = function (clazz, args) {
-	var afterLoaded = function (clazzName, argv) {
-		return function () {
-			ClazzLoader.loadClass ("junit.textui.TestRunner", function () {
-				junit.textui.TestRunner.run (Clazz.evalType (clazzName));
-			});
-		};
-	};
-	ClazzLoader.loadJ2SApp (clazz, args, afterLoaded);
+	ClazzLoader.isUsingXMLHttpRequest = ajax;
+	ClazzLoader.isAsynchronousLoading = async;
+	ClazzLoader.loadingTimeLag = (async && timeLag >= 0 ? timeLag: -1);
+	return async;
 };
 
 /* private */
 ClazzLoader.runtimeLoaded = function () {
-	if (ClazzLoader.pkgRefCount != 0 
-			|| !ClazzLoader.isClassDefined (ClazzLoader.runtimeKeyClass)) {
+	if (ClazzLoader.pkgRefCount	|| !ClazzLoader.isClassDefined(ClazzLoader.runtimeKeyClass))
 		return;
-	}
 	var qbs = ClazzLoader.queueBe4KeyClazz;
-	for (var i = 0; i < qbs.length; i++) {
+	for (var i = 0; i < qbs.length; i++)
 		ClazzLoader.loadClass (qbs[i][0], qbs[i][1]);
-	}
 	ClazzLoader.queueBe4KeyClazz = [];
-	/*
-	 * Should not set to empty function! Some later package may need this
-	 * runtimeLoaded function. For example, lazily loading SWT package may
-	 * require this runtimeLoaded function. 
-	 * -- zhou renjian @ Dec 17, 2006
-	 */
-	// ClazzLoader.runtimeLoaded = function () {};
 };
 
 /*
@@ -5496,23 +4520,26 @@ ClazzLoader.runtimeLoaded = function () {
  * queued *.js.
  */
 /* public */
-ClazzLoader.loadZJar = function (zjarPath, keyClazz) {
-	var keyClass = keyClazz;
-	var isArr = (keyClazz instanceof Array);
+ClazzLoader.loadZJar = function (zjarPath, keyClass) {
+// used only by package.js for core.z.js
+	var f =	null;
+	var isArr = (keyClass instanceof Array);
 	if (isArr)
-		keyClass = keyClazz[keyClazz.length - 1];
-	ClazzLoader.jarClasspath(zjarPath, isArr ? keyClazz : [keyClazz]);
-	// ClazzLoader.runtimeKeyClass is java.lang.String	
-	ClazzLoader.loadClass(keyClass, keyClazz == ClazzLoader.runtimeKeyClass ? ClazzLoader.runtimeLoaded : null, true);
+		keyClass = keyClass[keyClass.length - 1];
+	else
+		f = (keyClass == ClazzLoader.runtimeKeyClass ? ClazzLoader.runtimeLoaded : null);			
+	ClazzLoader.jarClasspath(zjarPath, isArr ? keyClass : [keyClass]);
+	// BH note: ClazzLoader.runtimeKeyClass is java.lang.String	
+	ClazzLoader.loadClass(keyClass, f, true);
 };
 
 ClazzLoader._nodeMap = {};
 ClazzLoader._allNodes = [];
+
 /**
  * The method help constructing the multiple-binary class dependency tree.
  */
 /* private */
-/*-# addChildClassNode -> addCCN #-*/
 ClazzLoader.addChildClassNode = function (parent, child, isMust) {
 	var existed = false;
 	var arr;
@@ -5543,59 +4570,37 @@ ClazzLoader.addChildClassNode = function (parent, child, isMust) {
 	}
 	if (!existed) {
 		arr.push(child);
-		var swtPkg = "org.eclipse.swt";
-		if (child.name.indexOf (swtPkg) == 0 
-				|| child.name.indexOf ("$wt") == 0) {
-			window["swt.lazy.loading.callback"] = ClazzLoader.swtLazyLoading;
-			ClazzLoader.assurePackageClasspath (swtPkg);
-		}
 		if (ClazzLoader.isLoadingEntryClass 
-				&& child.name.indexOf ("java") != 0 
-				&& child.name.indexOf ("net.sf.j2s.ajax") != 0) {
-			if (ClazzLoader.besidesJavaPackage) {
+				&& child.name.indexOf("java") != 0 
+				&& child.name.indexOf("net.sf.j2s.ajax") != 0) {
+			if (ClazzLoader.besidesJavaPackage)
 				ClazzLoader.isLoadingEntryClass = false;
-			}
 			ClazzLoader.besidesJavaPackage = true;
+//		} else if (child.name.indexOf("org.eclipse.swt") == 0 
+//				|| child.name.indexOf("$wt") == 0) {
+//			window["swt.lazy.loading.callback"] = ClazzLoader.swtLazyLoading;
+//			if (ClazzLoader.needPackage("org.eclipse.swt"))
+//				return ClazzLoader.loadPackage("org.eclipse.swt", function() {ClazzLoader.addParentClassNode(child, parent)});
 		}
 	}
-	existed = false;
-	for (var i = 0; i < child.parents.length; i++) {
-		if (child.parents[i].name == parent.name) {
-			existed = true;
-			break;
-		}
-	}
-	if (!existed && parent.name && parent != ClazzLoader.clazzTreeRoot
-			&& parent != child)
-		child.parents.push(parent);
+	ClazzLoader.addParentClassNode(child, parent);
 };
 
-/*
- * Some SWT classes may already skip ClazzLoader#tryToLoadNext when it's
- * detected that SWT is in lazy loading mode. Here it will try to re-execute
- * those ClazzLoader#tryToLoadNext
- */
-/* private */
-ClazzLoader.swtLazyLoading = function () {
-	ClazzLoader.lockQueueBe4SWT = false;
-	var qbs = ClazzLoader.queueBe4SWT;
-	for (var i = 0; i < qbs.length; i++) {
-		ClazzLoader.tryToLoadNext (qbs[i]);
-	}
-	ClazzLoader.queueBe4SWT  = [];
-};
+ClazzLoader.addParentClassNode = function(child, parent) {
+	if (parent.name && parent != ClazzLoader.clazzTreeRoot && parent != child)
+		for (var i = 0; i < child.parents.length; i++)
+			if (child.parents[i].name == parent.name)
+				return;
+	child.parents.push(parent);
+}
 
 /* private */
-/*-# destroyClassNode -> dCN #-*/
 ClazzLoader.destroyClassNode = function (node) {
-	//log (node.name + " // " + node.path);
 	var parents = node.parents;
 	if (parents)
-		for (var k = 0; k < parents.length; k++)
+		for (var k = parents.length; --k >= 0;)
 			Clazz.removeArrayItem(parents[k].musts, node) || Clazz.removeArrayItem(parents[k].optionals, node);
 };
-
-/* For hotspot and unloading */
 
 /* protected */
 ClazzLoader.unloadClassExt = function (qClazzName) {
@@ -5615,51 +4620,38 @@ ClazzLoader.unloadClassExt = function (qClazzName) {
 	var path = ClazzLoader.getClasspathFor (qClazzName);
 	ClazzLoader.loadedScripts[path] = false;
 	ClazzLoader.innerLoadedScripts[path] && (ClazzLoader.innerLoadedScripts[path] = false);
-	ClazzLoader.classUnloaded (qClazzName);
+	ClazzLoader.onClassUnloaded(qClazzName);
 };
 
-/* protected */ /* Clazz#assureInnerClass */
+/* protected */
 ClazzLoader.assureInnerClass = function (clzz, fun) {
-	var clzzName = clzz.__CLASS_NAME__;
-	if (Clazz.unloadedClasses[clzzName]) {
-		if (clzzName.indexOf ("$") != -1) return;
+	clzz = clzz.__CLASS_NAME__;
+	if (Clazz.unloadedClasses[clzz]) {
+		if (clzz.indexOf("$") >= 0)
+			return;
 		var list = [];
-		var key = clzzName + "$";
+		var key = clzz + "$";
 		for (var s in Clazz.unloadedClasses)
 			if (Clazz.unloadedClasses[s] && s.indexOf(key) == 0)
 				list.push(s);
-		if (list.length == 0) return;
-		var funStr = "" + fun;
-		var idx1 = funStr.indexOf (key);
-		if (idx1 == -1) return;
-		var idx2 = funStr.indexOf ("\"", idx1 + key.length);
-		if (idx2 == -1) return; // idx2 should never be -1;
-		var anonyClazz = funStr.substring (idx1, idx2);
-		if (!Clazz.unloadedClasses[anonyClazz])
+		if (!list.length) 
 			return;
-		var idx3 = funStr.indexOf ("{", idx2);
-		if (idx3 == -1) return;
-		idx3++;
-		var idx4 = funStr.indexOf ("(" + anonyClazz + ",", idx3 + 3);
-		if (idx4 == -1) return; // idx3 should never be -1;
-		var idx5 = funStr.lastIndexOf ("}", idx4 - 1);
-		if (idx5 == -1) return;
-		var innerClazzStr = funStr.substring (idx3, idx5);
-		eval (innerClazzStr);
-		Clazz.unloadedClasses[anonyClazz] = null;
-		/*
-		window.setTimeout ((function (clz, str) {
-			return function () {
-				eval (str);
-				Clazz.unloadedClasses[clz] = null;
-			};
-		}) (anonyClazz, innerClazzStr), 10);
-		*/
+		fun = "" + fun;
+		var idx1, idx2;
+		if ((idx1 = fun.indexOf(key)) < 0 || (idx2 = fun.indexOf("\"", idx1 + key.length)) < 0) 
+			return;
+		clzz = fun.substring(idx1, idx2);
+		if (!Clazz.unloadedClasses[clzz] || (idx1 = fun.indexOf("{", idx2) + 1) == 0)
+			return;
+		if ((idx2 = fun.indexOf("(" + clzz + ",", idx1 + 3)) < 0
+			|| (idx2 = fun.lastIndexOf("}", idx2 - 1)) < 0)
+				return;
+		eval(fun.substring(idx1, idx2));
+		Clazz.unloadedClasses[clzz] = null;
 	}
 };
 
-
-//ClassLoader = ClazzLoader;
+Clazz.binaryFolders =  ClazzLoader.binaryFolders = [ ClazzLoader.getJ2SLibBase() ];
 
 })(Clazz, Clazz._Loader, Clazz._Node);
 
@@ -5688,7 +4680,9 @@ clpm.monitorEl = null;
 clpm.lastScrollTop = 0;
 clpm.bindingParent = null;
 clpm.DEFAULT_OPACITY = (self.Jmol && Jmol._j2sLoadMonitorOpacity ? Jmol._j2sLoadMonitorOpacity : 55);
-/* private static */ clpm.clearChildren = function (el) {
+
+/* private static */ 
+clpm.clearChildren = function (el) {
 	if (!el)
 		return;
 	for (var i = el.childNodes.length; --i >= 0;) {
@@ -5775,7 +4769,6 @@ clpm.DEFAULT_OPACITY = (self.Jmol && Jmol._j2sLoadMonitorOpacity ? Jmol._j2sLoad
 };
 /* public */
 /*clpm.initialize = function (parent) {
-alert("clpm.innit")
 	this.bindingParent = parent;
 	if (parent && !this.attached) {
 		this.attached = true;
@@ -5811,26 +4804,18 @@ clpm.showStatus = function (msg, fading) {
 };
 
 if (window["ClazzLoader"]) {
-	ClazzLoader.scriptLoading = function (file) {
-		clpm.showStatus ("Loading " + file + "...");
+	ClazzLoader.onScriptLoading = function(file) {
+		clpm.showStatus("Loading " + file + "...");
 	};
-	ClazzLoader.scriptLoaded = function (file) {
-		clpm.showStatus (file + " loaded.", true);
+	ClazzLoader.onScriptLoaded = function(file) {
+		clpm.showStatus(file + " loaded.", true);
 	};
-	ClazzLoader.globalLoaded = function (file) {
-		clpm.showStatus ("Application loaded.", true);
+	ClazzLoader.onGlobalLoaded = function(file) {
+		clpm.showStatus("Application loaded.", true);
 	};
-	ClazzLoader.classUnloaded = function (clazz) {
-		clpm.showStatus ("Class " + clazz + " is unloaded.", true);
+	ClazzLoader.onClassUnloaded = function(clazz) {
+		clpm.showStatus("Class " + clazz + " is unloaded.", true);
 	};
-	ClazzLoader.classReloaded = function (clazz) {
-		clpm.showStatus ("Class " + clazz + " is reloaded.", true);
-	};
-
-	var ua = navigator.userAgent.toLowerCase ();
-	if (ua.indexOf ("msie") != -1 && ua.indexOf ("opera") == -1) {
-		ClazzLoader.setLoadingMode ("script", 5);
-	}
 }
 
 })(Clazz._LoaderProgressMonitor);
@@ -5851,12 +4836,11 @@ if (window["ClazzLoader"]) {
  * @create Nov 5, 2005
  *******/
 
-(function(Con) {
+(function(Con, Sys) {
 /**
  * Setting maxTotalLines to -1 will not limit the console result
  */
 /* protected */
-/*-# maxTotalLines -> mtl #-*/
 Con.maxTotalLines =	10000;
 
 /* protected */
@@ -5865,7 +4849,6 @@ Con.setMaxTotalLines = function (lines) {
 }
 
 /* protected */
-/*-# maxLatency -> mlc #-*/
 Con.maxLatency = 40;
 
 /* protected */
@@ -5874,7 +4857,6 @@ Con.setMaxLatency = function (latency) {
 };
 
 /* protected */
-/*-# pinning -> pi #-*/
 Con.pinning  = false;
 
 /* protected */
@@ -5883,69 +4865,10 @@ Con.enablePinning = function (enabled) {
 };
 
 /* private */
-/*-# linesCount -> lc #-*/
 Con.linesCount = 0;
 
 /* private */
-/*-# metLineBreak -> mbr #-*/
 Con.metLineBreak = false;
-
-/* private */
-Con.splitNeedFixed = "\n".split (/\n/).length != 2; // IE
-
-/**
- * For IE to get a correct split result.
- */
-/* private */
-Con.splitIntoLineByR = function(s, arr) {
-	var i = 0;
-	var last = -1;
-	while (true) {
-		i = s.indexOf('\r', last + 1);
-		if (i >= 0) {
-			arr.push(s.substring(last + 1, i));
-			last = i;
-			if (i == s.length - 1) {
-				arr.push("");
-				break;
-			}
-		} else {
-			arr.push(s.substring(last + 1));
-			break;
-		}
-	}
-	return arr;
-};
-
-/**
- * For IE to get a correct split result.
- */
-/* private */
-Con.splitIntoLines = function (s) {
-	var arr = [];
-	if (s == null)
-		return arr;
-	var last = -1;
-	var len = s.length();
-	var haveR = (s.indexOf('\r') >= 0);
-	while (true) {
-		var i = s.indexOf('\n', last + 1);
-		var pt = (i < 0 ? len : haveR && i > 0 && s.charAt(i - 1) == '\r' ? i - 1 : i);
-		var str = s.substring(last + 1, pt);
-		last = i;
-		if (haveR)
-			Con.splitIntoLineByR(str, arr);
-		else
-			arr.push(str);
-		if (i < 0) 
-			break;
-		if (last == len - 1) {
-			arr.push("");
-			break;
-		}
-	}
-	return arr;
-};
 
 
 /*
@@ -5981,6 +4904,7 @@ Con.consoleOutput = function (s, color) {
 
 	var willMeetLineBreak = false;
 	s = (typeof s == "undefined" ? "" : s == null ? "null" : "" + s);
+	s = s.replace (/\t/g, Con.c160);
 	if (s.length > 0)
 		switch (s.charAt(s.length - 1)) {
 		case '\n':
@@ -5992,17 +4916,8 @@ Con.consoleOutput = function (s, color) {
 
 	var lines = null;
 	s = s.replace (/\t/g, Con.c160);
-	if (Con.splitNeedFixed) { // IE
-		try {
-			lines = Con.splitIntoLines (s);
-		} catch (e) {
-			window.popup (e.message);
-		}
-	} else { // Mozilla/Firefox, Opera
-		lines = s.split (/\r\n|\r|\n/g);
-	}
-	for (var i = 0; i < lines.length; i++) {
-		/*-# lastLineEl -> lE #-*/
+	lines = s.split(/\r\n|\r|\n/g);
+	for (var i = 0, last = lines.length - 1; i <= last; i++) {
 		var lastLineEl = null;
 		if (Con.metLineBreak || Con.linesCount == 0 
 				|| console.childNodes.length < 1) {
@@ -6025,12 +4940,13 @@ Con.consoleOutput = function (s, color) {
 		el.style.whiteSpace = "nowrap";
 		if (color)
 			el.style.color = color;
-		if (lines[i].length == 0)
-			lines[i] = String.fromCharCode(160);
-		el.appendChild (document.createTextNode (lines[i]));
+		var l = lines[i]
+		if (l.length == 0)
+			l = Con.c160;
+		el.appendChild(document.createTextNode(l));
 		if (!Con.pinning)
 			console.scrollTop += 100;
-		Con.metLineBreak = (i == lines.length - 1 ? willMeetLineBreak : true);
+		Con.metLineBreak = (i != last || willMeetLineBreak);
 	}
 
 	var cssClazzName = console.parentNode.className;
@@ -6064,51 +4980,42 @@ Clazz.alert = function (s) {
 	Con.consoleOutput (s + "\r\n");
 };
 
-	Con.c160 = String.fromCharCode (160); //nbsp;
-	Con.c160 += Con.c160+Con.c160+Con.c160;
+Con.c160 = String.fromCharCode(160); //nbsp;
+Con.c160 += Con.c160+Con.c160+Con.c160;
 
 
-	/* public */
-	System.out.print = function (s) { 
-		Con.consoleOutput (s);
-	};
-
-	/* public */
-	System.out.println = function (s) {
-		Con.consoleOutput (typeof s == "undefined" ? "\r\n" : s == null ?  s = "null\r\n" : s + "\r\n");
-	};
-	
-	System.out.write = function (buf, offset, len) {
-		System.out.print(String.instantialize(buf).substring(offset, offset+len));
-	};
-	
-	
-
-	/* public */
-	System.err.__CLASS_NAME__ = "java.io.PrintStream";
-
-	/* public */
-	System.err.print = function (s) { 
-		Con.consoleOutput (s, "red");
-	};
-
-	/* public */
-	System.err.println = function (s) {
-		Con.consoleOutput (typeof s == "undefined" ? "\r\n" : s == null ?  s = "null\r\n" : s + "\r\n", "red");
-	};
-
-	System.err.write = function (buf, offset, len) {
-		System.err.print(String.instantialize(buf).substring(offset, offset+len));
-	};
-
-
-})(Clazz.Console, System);
-
-Clazz.setConsoleDiv = function(d) {
-	window["j2s.lib"] && (window["j2s.lib"].console = d);
+/* public */
+Sys.out.print = function (s) { 
+	Con.consoleOutput (s);
 };
 
-Clazz.binaryFolders =  Clazz._Loader.binaryFolders = [ Clazz._Loader.getJ2SLibBase() ];
+/* public */
+Sys.out.println = function(s) {
+	Con.consoleOutput(typeof s == "undefined" ? "\r\n" : s == null ?  s = "null\r\n" : s + "\r\n");
+};
+
+Sys.out.write = function (buf, offset, len) {
+	Sys.out.print(String.instantialize(buf).substring(offset, offset+len));
+};
+
+/* public */
+Sys.err.__CLASS_NAME__ = "java.io.PrintStream";
+
+/* public */
+Sys.err.print = function (s) { 
+	Con.consoleOutput (s, "red");
+};
+
+/* public */
+Sys.err.println = function (s) {
+	Con.consoleOutput (typeof s == "undefined" ? "\r\n" : s == null ?  s = "null\r\n" : s + "\r\n", "red");
+};
+
+Sys.err.write = function (buf, offset, len) {
+	Sys.err.print(String.instantialize(buf).substring(offset, offset+len));
+};
+
+})(Clazz.Console, System);
 
 })(Clazz);
 
