@@ -309,6 +309,8 @@
 		if (this._2dapplet._isEmbedded) {
 			this._showInfo(false);
 			this._show(!tf);
+			// for whatever reason this must be here
+			this._2dapplet.__showContainer(true, true);
 		}
 	}
 
