@@ -126,7 +126,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: 'JSmol 14.3.6_2014.08.14',
+		_version: "$Date$",
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -1882,7 +1882,7 @@ Jmol._track = function(applet) {
 	if (Jmol._tracker){
 		try {  
 			var url = Jmol._tracker + "&applet=" + applet._jmolType + "&version=" + Jmol._version 
-				+ "&appver=" + self.___JmolVersion + "&url=" + encodeURIComponent(document.location.href);
+				+ "&appver=" + Jmol.___JmolVersion + "&url=" + encodeURIComponent(document.location.href);
 			var s = '<iframe style="display:none" width="0" height="0" frameborder="0" tabindex="-1" src="' + url + '"></iframe>'
 			Jmol.$after("body", s);
 		} catch (e) {

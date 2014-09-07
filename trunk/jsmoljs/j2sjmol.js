@@ -1464,14 +1464,6 @@ Clazz.instantialize = function (objThis, args) {
 			&& args[0] instanceof Clazz.args4InheritClass) {
 		return;
 	}
-	/*
-	if (objThis.con$truct) {
-		objThis.con$truct.apply (objThis, args);
-	}
-	if (objThis.construct) {
-		objThis.construct.apply (objThis, args);
-	}
-	*/
 	if (objThis instanceof Number) {
 		objThis.valueOf = function () {
 			return this;
@@ -1659,12 +1651,6 @@ Clazz._innerFunctions = {
 			if (lastChar != '/') {
 				baseFolder += "/";
 			}
-			/*
-			 * FIXME: bug here for "/"
-			 */
-			//if (baseFolder.indexOf ('/') == 0) {
-			//	baseFolder = baseFolder.substring (1);
-			//}
 			if (this.base) {
 				is.url = baseFolder + name;
 			} else {
@@ -1705,7 +1691,7 @@ Clazz._innerFunctions = {
 };
 
 /* private */
-Clazz.decorateFunction = function (clazzFun, prefix, name) {
+Clazz.decorateFunction = function (clazzFun, prefix, name, _decorateFunction) {
 	var qName;
 	if (!prefix) {
 		// e.g. Clazz.declareInterface (null, "ICorePlugin", org.eclipse.ui.IPlugin);
@@ -1741,9 +1727,9 @@ Clazz.decorateFunction = function (clazzFun, prefix, name) {
 };
 Clazz.currentPath= "";
 /* proected */
-Clazz.declareInterface = function (prefix, name, interfacez) {
+Clazz.declareInterface = function (prefix, name, interfacez, _declareInterface) {
 	var clazzFun = function () {};
-	Clazz.decorateFunction (clazzFun, prefix, name, "Clazz.declareInterface");
+	Clazz.decorateFunction (clazzFun, prefix, name);
 	if (interfacez) {
 		Clazz.implementOf (clazzFun, interfacez);
 	}
@@ -1752,7 +1738,7 @@ Clazz.declareInterface = function (prefix, name, interfacez) {
 
 /* protected */
 Clazz.decorateAsClass = function (clazzFun, prefix, name, clazzParent, 
-		interfacez, parentClazzInstance, fromWhere) {
+		interfacez, parentClazzInstance, _decorateAsClass) {
 	var prefixName = null;
 	if (prefix) {
 		prefixName = prefix.__PKG_NAME__;
@@ -1765,7 +1751,7 @@ Clazz.decorateAsClass = function (clazzFun, prefix, name, clazzParent,
 		clazzFun = cf;
 	}
 	var qName = null;
-	Clazz.decorateFunction (clazzFun, prefix, name, fromWhere + "...Clazz.decorateAsClass");
+	Clazz.decorateFunction (clazzFun, prefix, name);
 	if (parentClazzInstance) {
 		Clazz.inheritClass (clazzFun, clazzParent, parentClazzInstance);
 	} else if (clazzParent) {
@@ -1779,28 +1765,28 @@ Clazz.decorateAsClass = function (clazzFun, prefix, name, clazzParent,
 
 /* public */
 Clazz.declareType = function (prefix, name, clazzParent, interfacez, 
-		parentClazzInstance) {
+		parentClazzInstance, _declareType) {
 	var f = function () {
 		Clazz.instantialize (this, arguments);
 	};
 	return Clazz.decorateAsClass (f, prefix, name, clazzParent, interfacez, 
-			parentClazzInstance, "Clazz.declareType");
+			parentClazzInstance);
 };
 
 /* public */
 Clazz.declareAnonymous = function (prefix, name, clazzParent, interfacez, 
-		parentClazzInstance) {
+		parentClazzInstance, _declareAnonymous) {
 	var f = function () {
 		Clazz.prepareCallback(this, arguments);
 		Clazz.instantialize (this, arguments);
 	};
 	return Clazz.decorateAsClass (f, prefix, name, clazzParent, interfacez, 
-			parentClazzInstance, "Clazz.declareAnonymous");
+			parentClazzInstance);
 };
 
 /* protected */
 Clazz.decorateAsType = function (clazzFun, qClazzName, clazzParent, 
-		interfacez, parentClazzInstance, inheritClazzFuns) {
+		interfacez, parentClazzInstance, inheritClazzFuns, _decorateAsType) {
 	Clazz.extendJO(clazzFun, qClazzName);
 	clazzFun.equals = Clazz._innerFunctions.equals;
 	clazzFun.getName = Clazz._innerFunctions.getName;
@@ -3389,7 +3375,7 @@ ClazzLoader.loadPackageClasspath = function (pkg, base, isIndex, fSuccess, mode,
 		ClazzLoader.loadClass(pkg + ".package", function () {
 					if (--ClazzLoader.pkgRefCount == 0)
 						ClazzLoader.runtimeLoaded();
-					fSuccess && fSuccess();
+					//fSuccess && fSuccess();
 				}, true, true, 1);
 		return;
 	}
@@ -3960,44 +3946,40 @@ ClazzLoader.tryToLoadNext = function (file, fSuccess) {
 	}
 	if (working || ClazzLoader.inLoadingThreads > 0)
 		return;
-	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_CONTENT_LOADED)))
-		ClazzLoader.updateNode(n);
+	var f = [ClazzLoader.findNextMustClass,ClazzLoader.findNextRequiredClass];
 	var lastNode = null;
-	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_CONTENT_LOADED))) {
-		if (lastNode === n) // Already existed cycle ?
-			n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-		ClazzLoader.updateNode(n);
-		lastNode = n;
-	}
+	for (var i = 0; i < 2; i++)
+		while ((n = f[i](ClazzNode.STATUS_CONTENT_LOADED))) {
+			if (i == 1 && lastNode === n) // Already existed cycle ?
+				n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
+			ClazzLoader.updateNode(n);
+			lastNode = n;
+		}
 	while (true) {
 		ClazzLoader.tracks = [];
 		if (!ClazzLoader.checkCycle(ClazzLoader.clazzTreeRoot))
 			break;
 	}
-	lastNode = null;
-	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED))) {
-		if (lastNode === n) 
-			break;
-		ClazzLoader.updateNode(lastNode = n);
-	}
-	lastNode = null;
-	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED))) {
-		if (lastNode === n) 
-			break;
-		ClazzLoader.updateNode(lastNode = n);
+	for (var i = 0; i < 2; i++) {
+		lastNode = null;
+		while ((n = f[i](ClazzNode.STATUS_DECLARED))) {
+			if (lastNode === n) 
+				break;
+			ClazzLoader.updateNode(lastNode = n);
+		}
 	}
 	var done = [];
-	while ((n = ClazzLoader.findNextMustClass(ClazzNode.STATUS_DECLARED)))
-		done.push(n), n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-	while ((n = ClazzLoader.findNextRequiredClass(ClazzNode.STATUS_DECLARED)))
-		done.push(n), n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
-	for (var i = 0; i < done.length; i++)
-		ClazzLoader.destroyClassNode(done[i]);
-	var f;
-	for (var i = 0; i < done.length; i++)
-		if ((f = done[i].onRequiredLoaded))
-			done[i].onRequiredLoaded = null, f();
-	System.out.println("loaded completely" + ClazzLoader.onGlobalLoaded + "\n\n")
+	for (var i = 0; i < 2; i++) 
+		while ((n = f[i](ClazzNode.STATUS_DECLARED)))
+			done.push(n), n.status = ClazzNode.STATUS_OPTIONALS_LOADED;
+	if (done.length) {
+		for (var i = 0; i < done.length; i++)
+			ClazzLoader.destroyClassNode(done[i]);
+		for (var i = 0; i < done.length; i++)
+			if ((f = done[i].onRequiredLoaded))
+				done[i].onRequiredLoaded = null, f();
+	}
+	//System.out.println(node.name + " loaded completely" + ClazzLoader.onGlobalLoaded + "\n\n")
 	ClazzLoader.onGlobalLoaded();
 	fSuccess && fSuccess();
 };
@@ -4007,11 +3989,11 @@ ClazzLoader.tracks = [];
 /*
  * There are classes reference cycles. Try to detect and break those cycles.
  */
-/* protected */
+/* private */
 ClazzLoader.checkCycle = function (node) {
 	var ts = ClazzLoader.tracks;
-	var length = ts.length;
-	var i = length;
+	var len = ts.length;
+	var i = len;
 	for (; --i >= 0;)
 		if (ts[i] === node && ts[i].status >= ClazzNode.STATUS_DECLARED) 
 			break;
@@ -4024,21 +4006,18 @@ ClazzLoader.checkCycle = function (node) {
 			for (var k = 0; k < ts[i].parents.length; k++)
 				ClazzLoader.updateNode (ts[i].parents[k]);
 			ts[i].parents = [];
-			if ((f = ts[i].onRequiredLoaded)) {
-				ts[i].onRequiredLoaded = null;
-				f();
-			}
+			if ((f = ts[i].onRequiredLoaded))
+				ts[i].onRequiredLoaded = null, f();
 		}
 		ts.length = 0;
 		return true;
 	}
-	for (var i = node.musts.length; --i >= 0;)
-		if (node.musts[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkCycle(node.musts[i])) 
-			return true;
-	for (var i = node.optionals.length; --i >= 0;)
-		if (node.optionals[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkCycle(node.optionals[i]))
-			return true;
-	ts.length = length;
+	var a = [node.musts, node.optionals];
+	for (var j = 0; j < 2; j++)
+		for (var r = a[j], i = r.length; --i >= 0;)
+			if (r[i].status == ClazzNode.STATUS_DECLARED && ClazzLoader.checkCycle(r[i])) 
+				return true;
+	ts.length = len;
 	return false;
 };
 
@@ -4047,7 +4026,7 @@ ClazzLoader.checkCycle = function (node) {
  * Update the dependency tree nodes recursively.
  */
 /* private */
-ClazzLoader.updateNode = function (node) {
+ClazzLoader.updateNode = function(node) {
 	if (!node.name || node.status >= ClazzNode.STATUS_OPTIONALS_LOADED) {
 		ClazzLoader.destroyClassNode(node);
 		return;
@@ -4186,6 +4165,7 @@ ClazzLoader.updateParents = function (node, level) {
 ClazzLoader.usedRandoms = {};
 ClazzLoader.usedRandoms["r" + 0.13412] = 1;
 
+/* private */
 ClazzLoader.getRnd = function() {
 	while (true) { // get a unique random number
 		var rnd = Math.random();
@@ -4194,7 +4174,6 @@ ClazzLoader.getRnd = function() {
 			return (ClazzLoader.usedRandoms[s] = 1, ClazzLoader.clazzTreeRoot.random = rnd);
 	}
 }
-
 
 /* protected */
 ClazzLoader.findClass = function(clazzName) {
@@ -4205,12 +4184,12 @@ ClazzLoader.findClass = function(clazzName) {
 /* private */
 ClazzLoader.findNextRequiredClass = function(status) {
 	ClazzLoader.getRnd();
-	return ClazzLoader.findNodeNextRequiredClass(ClazzLoader.clazzTreeRoot, status);
+	return ClazzLoader.findNextRequiredNode(ClazzLoader.clazzTreeRoot, status);
 };
 
 /* private */
 ClazzLoader.findNextMustClass = function(status) {
-	return ClazzLoader.findNodeNextMustClass(ClazzLoader.clazzTreeRoot, status);
+	return ClazzLoader.findNextMustNode(ClazzLoader.clazzTreeRoot, status);
 };
 
 /* private */
@@ -4218,13 +4197,13 @@ ClazzLoader.findClassUnderNode = function(clazzName, node) {
 	var n;
 	// node, then musts then optionals
 	return (node.name == clazzName ? node 
-		: (n = ClazzLoader.findNodeClassUnderNode(clazzName, node.musts))
-		|| (n = ClazzLoader.findNodeClassUnderNode(clazzName, node.optionals)) 
+		: (n = ClazzLoader.findNodeUnderNode(clazzName, node.musts))
+		|| (n = ClazzLoader.findNodeUnderNode(clazzName, node.optionals)) 
 		? n : null);
 };
 
 /* private */
-ClazzLoader.findNodeClassUnderNode = function(name, arr) {
+ClazzLoader.findNodeUnderNode = function(name, arr) {
 	var rnd = ClazzLoader.clazzTreeRoot.random;
 	for (var i = arr.length; --i >= 0;) {
 		var n = arr[i];
@@ -4247,17 +4226,17 @@ ClazzLoader.checkStatus = function(n, status) {
 }
 
 /* private */
-ClazzLoader.findNodeNextMustClass = function(node, status) {
+ClazzLoader.findNextMustNode = function(node, status) {
 	for (var i = node.musts.length; --i >= 0;) {
 		var n = node.musts[i];
-		if (ClazzLoader.checkStatus(n, status) || (n = ClazzLoader.findNodeNextMustClass(n, status)))
+		if (ClazzLoader.checkStatus(n, status) || (n = ClazzLoader.findNextMustNode(n, status)))
 			return n;	
 	}
 	return (ClazzLoader.checkStatus(node, status) ? node : null); 
 };
 
 /* private */
-ClazzLoader.findNodeNextRequiredClass = function (node, status) {
+ClazzLoader.findNextRequiredNode = function (node, status) {
 	// search musts first
 	// search optionals second
 	// search itself last
@@ -4277,7 +4256,7 @@ ClazzLoader.searchClassArray = function (arr, status) {
 				return n;
 			if (n.random != rnd) {
 				n.random = rnd; // mark as visited!
-				if ((n = ClazzLoader.findNodeNextRequiredClass(n, status)))
+				if ((n = ClazzLoader.findNextRequiredNode(n, status)))
 					return n;
 			}
 		}
@@ -4300,17 +4279,14 @@ ClazzLoader.innerLoadedScripts = {};
 /* protected */
 ClazzLoader.load = function (musts, clazz, optionals, declaration) {
   // called as Clazz.load in Jmol
-
 	if (clazz instanceof Array) {
-		ClazzLoader.unwrapArray (clazz);
-		for (var i = 0; i < clazz.length; i++) {
-			ClazzLoader.load (musts, clazz[i], optionals, declaration, clazz);
-		}
+		ClazzLoader.unwrapArray(clazz);
+		for (var i = 0; i < clazz.length; i++)
+			ClazzLoader.load(musts, clazz[i], optionals, declaration, clazz);
 		return;
-	}
-	if (clazz.charAt (0) == '$') {
-		clazz = "org.eclipse.s" + clazz.substring (1);
-	}
+	}	
+//	if (clazz.charAt (0) == '$')
+//		clazz = "org.eclipse.s" + clazz.substring (1);
 	var node = ClazzLoader.mapPath2ClassNode["#" + clazz];
 	if (!node) { // ClazzLoader.load called inside *.z.js?
 		var n = ClazzLoader.findClass(clazz);
@@ -4321,22 +4297,7 @@ ClazzLoader.load = function (musts, clazz, optionals, declaration) {
 		node.status = ClazzNode.STATUS_KNOWN;
 		ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, node, false);
 	}
-	var ok = ClazzLoader.processRequired(node, musts, true);
-	/*
-	 * The following lines are commented intentionally.
-	 * So lots of class is not declared until there is a must?
-	 *
-	 * TODO: Test the commented won't break up the dependency tree.
-	 */
-	/*
-	if (ok) {
-		declaration ();
-		node.declaration = null;
-		node.status = ClazzNode.STATUS_DECLARED;
-	} else {
-		node.declaration = declaration;
-	}
-	*/
+	ClazzLoader.processRequired(node, musts, true);
 	if (arguments.length == 5 && declaration) {
 		declaration.status = node.status;
 		declaration.clazzList = arguments[4];
@@ -4344,12 +4305,11 @@ ClazzLoader.load = function (musts, clazz, optionals, declaration) {
 	node.declaration = declaration;
 	if (declaration) 
 		node.status = ClazzNode.STATUS_CONTENT_LOADED;
-	ok = ClazzLoader.processRequired(node, optionals, false);
+	ClazzLoader.processRequired(node, optionals, false);
 };
 
 /* private */
 ClazzLoader.processRequired = function(node, arr, isMust) {
-	var ok = true;
 	if (arr && arr.length) {
 		ClazzLoader.unwrapArray(arr);
 		for (var i = 0; i < arr.length; i++) {
@@ -4359,7 +4319,6 @@ ClazzLoader.processRequired = function(node, arr, isMust) {
 			if (ClazzLoader.isClassDefined(name)
 					|| ClazzLoader.isClassExcluded(name))
 				continue;
-			ok = false;
 			var n = ClazzLoader.findClass(name);
 			if (!n) {
 				n = new ClazzNode();
@@ -4370,7 +4329,6 @@ ClazzLoader.processRequired = function(node, arr, isMust) {
 			ClazzLoader.addChildClassNode(node, n, isMust);
 		}
 	}
-	return ok;
 }
 
 /*

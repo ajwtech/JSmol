@@ -1,3 +1,4 @@
+// BH 9/6/2014 5:42:32 PM  two-point gestures broken
 // BH 5/8/2014 11:16:40 AM j2sPath starting with "/" fails to add idiom
 // BH 1/16/2014 8:44:03 PM   Jmol.__execDelayMS = 100; // FF bug when loading into a tab that is not 
 //                           immediately focused and not using jQuery for adding the applet and having  
@@ -123,9 +124,9 @@ ClazzLoader._loadZJars(0);
 	};
 
 	Jmol.__loadClazz = function(applet) {
-		// problems with multiple applets?
 		if (!Jmol.__clazzLoaded) {
 			Jmol.__clazzLoaded = true;
+			// create the Clazz object
 			LoadClazz();
 			if (applet._noMonitor)
 				Clazz._LoaderProgressMonitor.showStatus = function() {}
@@ -139,7 +140,7 @@ ClazzLoader._loadZJars(0);
 					Jmol.__nextExecution();
 				}
 			};
-		
+		  // load package.js and j2s/core/core.z.js
 			Clazz._Loader.loadPackageClasspath("java", null, true, Jmol.__nextExecution);
 			return;
 		}
@@ -541,7 +542,7 @@ ClazzLoader._loadZJars(0);
 
 
 		proto._processGesture = function(touches) {
-			return this._applet.mouse.processTwoPointGesture(touches);
+			return this._applet.processTwoPointGesture(touches);
 		}
 
 		proto._processEvent = function(type, xym) {
