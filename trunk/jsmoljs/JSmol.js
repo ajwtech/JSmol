@@ -369,6 +369,8 @@ ClazzLoader._loadZJars(0);
 		//	Jmol.__nextExecution();
 		//};
 		proto.__startAppletJS = function(applet) {
+			if (Jmol._version.indexOf("$Date: ") == 0)
+				Jmol._version = (Jmol._version.substring(7) + " -").split(" -")[0] + " (JSmol/j2s)"
 			var viewerOptions = Clazz._4Name("java.util.Hashtable").newInstance();
 			Jmol._setAppletParams(applet._availableParams, viewerOptions, applet.__Info, true);
 			viewerOptions.put("appletReadyCallback","Jmol._readyCallback");
@@ -419,59 +421,44 @@ ClazzLoader._loadZJars(0);
 		};
 
 		proto._restoreState = function(clazzName, state) {
-			System.out.println("restore state for " + clazzName + " " + state)
+			System.out.println("\n\nasynchronous restore state for " + clazzName + " " + state)
 			var applet = this;
 			var vwr = applet._applet && applet._applet.viewer;
 			switch (state) {
 			case "setOptions":
-				return function() {setTimeout(function(){applet.__startAppletJS(applet)},10)};
+				return function(_setOptions) {applet.__startAppletJS(applet)};
 			case "render":
 				return function() {setTimeout(function(){vwr.refresh(2)},10)};
 			default:
 				switch (clazzName) {
-				case "xJ.shapebio.Cartoon":
-					if (vwr && vwr.isScriptExecuting && vwr.isScriptExecuting()) {
-						if (Jmol._asyncCallbacks[clazzName])
-							return 1;
-						var sc = vwr.getEvalContextAndHoldQueue(vwr.eval);
-						sc.pc--;
-						Jmol._asyncCallbacks[clazzName] = function() {vwr.eval.resumeEval(sc)};
-						vwr.eval.pc = vwr.eval.pcEnd;
-						return function() {setTimeout(function(){System.out.println("resumingCartoon");Jmol._asyncCallbacks[clazzName]()},10)};					
-					}
-				break;				
+				// debug mode only, when core.z.js has not been loaded and prior to start
 				case "J.shape.Balls":
 				case "J.shape.Sticks":
 				case "J.shape.Frank":
 					return null;
-					// this did not work. return function() {setTimeout(function(){System.out.println("for " + clazzName + " restarting ");applet.__startAppletJS(applet)},10)};
 				}
 				
 				//if (vwr.rm.repaintPending)
 					//return function() {setTimeout(function(){vwr.refresh(2)},10)};
 				if (vwr && vwr.isScriptExecuting && vwr.isScriptExecuting()) {
-					if (Jmol._asyncCallbacks[clazzName])
+					if (Jmol._asyncCallbacks[clazzName]) {
+						System.out.println("...ignored");
 						return 1;
+					}
 					var sc = vwr.getEvalContextAndHoldQueue(vwr.eval);
-					sc.pc--;
-					System.out.println("sc.pc = " + sc.pc);
-					Jmol._asyncCallbacks[clazzName] = function() {vwr.eval.resumeEval(sc)};
+					var pc = sc.pc - 1;
+					sc.asyncID = clazzName;
+					Jmol._asyncCallbacks[clazzName] = function(pc) {sc.pc=pc; System.out.println("sc.asyncID="+sc.asyncID+" sc.pc = " + sc.pc);vwr.eval.resumeEval(sc)};
 					vwr.eval.pc = vwr.eval.pcEnd;
-					System.out.println("setting " + sc.pc + " " + clazzName + " to " + Jmol._asyncCallbacks[clazzName] + "//" )
-					return function() {setTimeout(function(){System.out.println("resuming" + clazzName + Jmol._asyncCallbacks[clazzName]);Jmol._asyncCallbacks[clazzName]()},10)};					
+					System.out.println("setting resume for pc=" + sc.pc + " " + clazzName + " to " + Jmol._asyncCallbacks[clazzName] + "//" )
+					return function() {System.out.println("resuming " + clazzName + " " + Jmol._asyncCallbacks[clazzName]);Jmol._asyncCallbacks[clazzName](pc)};					
 				}
-						
-			//alert(clazzName + "?" + state + " "+ Clazz.getStackTrace())
-			System.out.println(clazzName + "?" + state)
-	//Using Java reflection: J.adapter.readers.molxyz.MolReader
-	//Using Java reflection: J.render.BallsRenderer
-	//Using Java reflection: J.render.SticksRenderer
-	//Using Java reflection: J.render.FrankRenderer
+				alert("ohoh" + clazzName)
+				System.out.println(clazzName + "?" + state)
 				return null;
 			}
 		}
 	
-
 		proto._jsSetScreenDimensions = function() {
 				if (!this._applet)return
 				// strangely, if CTRL+/CTRL- are used repeatedly, then the

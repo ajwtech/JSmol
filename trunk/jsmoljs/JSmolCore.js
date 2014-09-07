@@ -126,7 +126,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: "$Date$",
+		_version: "$Date$", // svn.keywords:lastUpdated
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -947,6 +947,8 @@ Jmol = (function(document) {
 			fileName = Jmol._checkFileName(applet, fileName);
 			var fSuccess = function(data) {Jmol._setData(fileLoadThread, fileName, fileName0, data, appData)};
 			fSuccess = Jmol._checkCache(applet, fileName, fSuccess);
+			if (fileName.indexOf("|") >= 0)
+				fileName = fileName.split("|")[0];
 			return (fSuccess == null ? null : Jmol._getFileData(fileName, fSuccess));		
 		}
 		// we actually cannot suggest a fileName, I believe.

@@ -110,11 +110,12 @@
 	      <comment value="#" />
 	    </striplinecomments>
 	    <linecontains>
-	      <contains value="___" />
+	      <contains value="Jmol.___" />
 	    </linecontains>
 	  </filterchain>
 	</copy>
-  	
+    <property file="Jmol.properties" prefix="Jmol.properties" />
+    <echo message="version=${Jmol.properties.Jmol.___JmolVersion}" />
   	<echo>deleting all files in src and bin</echo>
     <delete quiet="true">
       <fileset dir="bin" includes="**/*"/>
