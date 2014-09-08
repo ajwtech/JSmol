@@ -453,7 +453,6 @@ ClazzLoader._loadZJars(0);
 					System.out.println("setting resume for pc=" + sc.pc + " " + clazzName + " to " + Jmol._asyncCallbacks[clazzName] + "//" )
 					return function() {System.out.println("resuming " + clazzName + " " + Jmol._asyncCallbacks[clazzName]);Jmol._asyncCallbacks[clazzName](pc)};					
 				}
-				alert("ohoh" + clazzName)
 				System.out.println(clazzName + "?????????????????????" + state)
 				return function() {setTimeout(function(){vwr.refresh(2)},10)};
 				//return null;
