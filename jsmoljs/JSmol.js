@@ -454,8 +454,9 @@ ClazzLoader._loadZJars(0);
 					return function() {System.out.println("resuming " + clazzName + " " + Jmol._asyncCallbacks[clazzName]);Jmol._asyncCallbacks[clazzName](pc)};					
 				}
 				alert("ohoh" + clazzName)
-				System.out.println(clazzName + "?" + state)
-				return null;
+				System.out.println(clazzName + "?????????????????????" + state)
+				return function() {setTimeout(function(){vwr.refresh(2)},10)};
+				//return null;
 			}
 		}
 	
