@@ -39,7 +39,7 @@ var Info = {
 	use: "HTML5",
 	jarPath: "java",
 	j2sPath: "j2s",
-	jarFile: "JmolApplet.jar",
+	jarFile: "JmolAppletSigned.jar",
 	isSigned: false,
 	addSelectionOptions: false,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
@@ -97,6 +97,7 @@ $(document).ready(function(){
   //   jmolApplet0 = "jmolApplet0"
   //
 
+	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA");  
   var radios = [
 		["set background white", "white", true],
 		["set background black", "black"]
@@ -104,8 +105,8 @@ $(document).ready(function(){
 
 		$("#leftpanel").html(
 		  '<a target="_blank" href="data/chairflip.png">images</a> '
-			+ '<a target="_blank" href="simple2.htm?script%20data/cyclflip2.spt;//&_USE=' + Info.use + '">cyclohexane ring flip</a> '
-			+ '<a href="simple2.htm?_USE=' + Info.use + '">back</a><br />'
+			+ '<a target="_blank" href="simple2.htm?script%20data/cyclflip2.spt;//&_USE=' + use + '">cyclohexane ring flip</a> '
+			+ '<a href="simple2.htm?_USE=' + use + '">back</a><br />'
 			+ (true || isApplet ? 
 			'Drag-Minimize '
 			+ Jmol.jmolLink(jmol,"set picking dragMinimize", "on")  

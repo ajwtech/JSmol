@@ -2,6 +2,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 9/13/2014 2:15:51 PM embedded JSME loads from SEARCH when Jmol should 
 // BH 8/14/2014 2:52:38 PM drag-drop cache should not be cleared if SPT file is dropped
 // BH 8/5/2014 6:39:54 AM unnecessary messages about binary for PDB finally removed
 // BH 8/4/2014 5:30:00 AM automatically switch to no document after page loading

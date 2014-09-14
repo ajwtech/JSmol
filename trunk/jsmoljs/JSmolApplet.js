@@ -544,7 +544,7 @@
 	}
 
 	proto._searchDatabase = function(query, database, script, _jmol_searchDatabase){
-		if (this._2dapplet && this._2dapplet._isEmbedded && Jmol.$(this, "2dappletdiv:visible")[0])
+		if (this._2dapplet && this._2dapplet._isEmbedded && !Jmol.$(this, "appletdiv:visible")[0])
 			return this._2dapplet._searchDatabase(query, database, script); 
 		this._showInfo(false);
 		if (query.indexOf("?") >= 0) {

@@ -3,6 +3,7 @@
 // see http://peter-ertl.com/jsme/JSME_2013-10-13/api_javadoc/index.html
 
 
+// BH 9/13/2014 2:24:29 PM SMILES fix again
 // BH 9/2/2014 6:56:42 PM  SMILES fix for quaternary carbon with stereochemistry
 // BH 3/1/2014 4:31:18 PM fix for evaluate returning atom sets as arrays
 // BH 1/27/2014 8:37:06 AM adding Info.viewSet  
@@ -99,6 +100,9 @@
 				var d = Jmol._document;
 				Jmol._document = null;
 				Jmol.$html(this._divId, this.create());
+				if (this._isEmbedded) {
+					Jmol.$("#"+id)[0].style.zIndex = Jmol._z.header - 1;
+					}
 				Jmol._document = d;
 				this.__showContainer(false, false);
 			} else {
@@ -493,7 +497,7 @@
 
   proto._getSmiles = function(withStereoChemistry) {
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
-		s = s.replace(/@H/g,"@~").replace(/H/g,"").replace(/\(\)/g,"").replace(/@~/g,"@H");
+		s = s.replace(/@H/g,"@~").replace(/H/g,"").replace(/\[\]/g,"").replace(/\(\)/g,"").replace(/@~/g,"@H");
 		if (s.indexOf("\\") == 0 || s.indexOf("/") == 0)
 		  s= "[H]" + s;
 		return s;
