@@ -816,6 +816,7 @@ Jmol = (function(document) {
 	Jmol._syncBinaryOK="?";
 
 	Jmol._canSyncBinary = function(isSilent) {
+		if (Jmol._isAsync) return true;
 		if (self.VBArray) return (Jmol._syncBinaryOK = false);
 		if (Jmol._syncBinaryOK != "?") return Jmol._syncBinaryOK;
 		Jmol._syncBinaryOK = true;
