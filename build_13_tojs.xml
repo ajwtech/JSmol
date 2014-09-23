@@ -1163,7 +1163,7 @@
 
    	<echo>JSmol.min.nojq.js is the standard set but does not include jQuery</echo>
     <antcall target="call-min">
-        <param name="call-min.fullname" value="nojq" />
+        <param name="call-min.fullname" value="full.nojq" />
         <param name="call-min.minname" value="min.nojq" />
         <param name="call-min.list" value="
        	../Jmol.properties
