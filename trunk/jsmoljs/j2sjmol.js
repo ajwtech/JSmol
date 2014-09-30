@@ -40,6 +40,7 @@
 
  // J2S class changes:
 
+ // BH 9/29/2014 11:34:19 PM removing support for getClass().isArray() 
  // BH 8/29/2014 9:15:57 AM total reworking of Java2Script in preparation for all-asynchronous loading
  //                         (currently sync loading is only for 
  // 												   LOAD command and load() function without ASYNC
@@ -2877,7 +2878,7 @@ Clazz.declarePackage ("java.security");
 
 Clazz.innerFunctionNames = Clazz.innerFunctionNames.concat (["getSuperclass",
 		"isAssignableFrom", "getMethods", "getMethod", "getDeclaredMethods", 
-		"getDeclaredMethod", "getConstructor", "getModifiers", "isArray", "newInstance"]);
+		"getDeclaredMethod", "getConstructor", "getModifiers", /*"isArray",*/ "newInstance"]);
 
 Clazz._innerFunctions.getSuperclass = function () {
 	return this.superClazz;	
@@ -2936,9 +2937,9 @@ Clazz._innerFunctions.getDeclaredMethod = Clazz._innerFunctions.getMethod = func
 Clazz._innerFunctions.getModifiers = function () {
 	return java.lang.reflect.Modifier.PUBLIC;
 };
-Clazz._innerFunctions.isArray = function () {
-	return false;
-};
+//Clazz._innerFunctions.isArray = function () {
+//	return false;
+//};
 Clazz._innerFunctions.newInstance = function () {
 	var clz = this;
 	return new clz ();
@@ -2951,9 +2952,9 @@ Clazz._innerFunctions.newInstance = function () {
 		Clazz._O[inF[i]] = Clazz._innerFunctions[inF[i]];
 		Array[inF[i]] = Clazz._innerFunctions[inF[i]];
 	}
-	Array["isArray"] = function () {
-		return true;
-	};
+	//Array["isArray"] = function () {
+	//	return true;
+	//};
 })();
 
 /* For hotspot and unloading */
