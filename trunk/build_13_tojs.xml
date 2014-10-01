@@ -1166,7 +1166,6 @@
         <param name="call-min.fullname" value="full.nojq" />
         <param name="call-min.minname" value="min.nojq" />
         <param name="call-min.list" value="
-       	../Jmol.properties
    		JSmoljQueryExt.js
    		JSmolCore.js
    		JSmolDebugOff.js
@@ -1175,6 +1174,7 @@
    		JSmolControls.js
    		JSmolApi.js
    		j2sjmol.js
+        ../Jmol.properties
    		" />
     </antcall>
    	<!--
