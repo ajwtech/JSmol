@@ -218,7 +218,9 @@
 				+ " code='" + params.code + "' codebase='" + applet._jarPath + "' archive='" + jarFile + "' mayscript='true'>\n"
 				+ t + "<table bgcolor='yellow'><tr><td align='center' valign='middle' " + widthAndHeight + ">\n"
 				+ Applet._noJavaMsg + "</td></tr></table></applet>\n";
-		}	
+		}
+		if (applet._deferApplet)
+			applet._javaCode = t, t="";
 		t = Jmol._getWrapper(applet, true) + t + Jmol._getWrapper(applet, false) 
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet) : "");
 		if (Jmol._debugAlert)

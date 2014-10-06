@@ -223,7 +223,7 @@ Jmol = (function(document) {
 	$(document).ready(function(){ Jmol._document = null });
 
 	Jmol.$ = function(objectOrId, subdiv) {
-		// if a subdivv, then return $("#objectOrId_subdiv") 
+		// if a subdiv, then return $("#objectOrId._id_subdiv") 
 		// or if no subdiv, then just $(objectOrId)
 		if (objectOrId == null)alert (subdiv + arguments.callee.caller.toString());
 			return $(subdiv ? "#" + objectOrId._id + "_" + subdiv : objectOrId);
@@ -1272,8 +1272,8 @@ Jmol = (function(document) {
 		Jmol._j2sPath && (Info.j2sPath = Jmol._j2sPath);
 		obj._j2sPath = Info.j2sPath;
 		obj._deferApplet = Info.deferApplet;
-		obj._deferUncover = Info.deferUncover;
-		obj._coverImage = !obj._isJava && Info.coverImage;
+		obj._deferUncover = !obj._isJava && Info.deferUncover;
+		obj._coverImage = Info.coverImage;
 		obj._isCovered = !!obj._coverImage; 
 		obj._coverScript = Info.coverScript;
 		obj._coverTitle = Info.coverTitle;

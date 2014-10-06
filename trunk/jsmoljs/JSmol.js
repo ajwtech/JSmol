@@ -239,13 +239,15 @@ ClazzLoader._loadZJars(0);
 			this._script(s, true);
 			if (this._deferUncover && this._coverTitle == "activate 3D model")
 				Jmol._getElement(this, "coverimage").title = "3D model is loading...";
-			if (this._deferApplet)
+			if (!this._isJava)
 				this._newCanvas(false);
 			if (this._defaultModel)	
 				Jmol._search(this, this._defaultModel);
 			this._showInfo(false);
 			if (!this._deferUncover)
-				this._displayCoverImage(doCover);
+				this._displayCoverImage(false);
+			if (this._isJava)
+				Jmol.$html(Jmol.$(this, "appletdiv"), this._javaCode);
 			if (this._init)
 				this._init();
 		};
