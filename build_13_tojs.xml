@@ -1227,7 +1227,7 @@
    	<copy file="dist/jsmol.zip" tofile="${jmol.path}/appletweb/jsmol.zip" />
  	<delete file="temp.js" />
    	<copy file="README-DOWNLOAD.TXT" tofile="dist/README.TXT" />
-   	<echo>${jmol.path}/appletweb/jsmol.zip had been updated. 
+   	<echo>${jmol.path}/appletweb/jsmol.zip has been updated. 
    		site/jsmol is available for testing</echo>
   </target>
 
