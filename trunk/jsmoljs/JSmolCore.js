@@ -1271,10 +1271,10 @@ Jmol = (function(document) {
 		obj._noMonitor = Info.disableJ2SLoadMonitor;
 		Jmol._j2sPath && (Info.j2sPath = Jmol._j2sPath);
 		obj._j2sPath = Info.j2sPath;
-		obj._deferApplet = Info.deferApplet;
-		obj._deferUncover = !obj._isJava && Info.deferUncover;
 		obj._coverImage = Info.coverImage;
 		obj._isCovered = !!obj._coverImage; 
+		obj._deferApplet = Info.deferApplet || obj._isCovered && obj._isJava; // must do this if covered in Java
+		obj._deferUncover = Info.deferUncover && !obj._isJava; // can't do this with Java
 		obj._coverScript = Info.coverScript;
 		obj._coverTitle = Info.coverTitle;
 
