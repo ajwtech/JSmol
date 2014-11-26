@@ -1061,6 +1061,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="surface" />
         <param name="call-core.list" value="
+        	JS/IsoExt.js
     		JU/Triangulator.js
     		JU/TriangleData.js
        		J/api/VolumeDataInterface.js
