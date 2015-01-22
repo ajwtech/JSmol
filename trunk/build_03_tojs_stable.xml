@@ -472,12 +472,9 @@
 		J/bspt/Element.js
 		J/bspt/Leaf.js
 		J/bspt/Node.js
-		J/c/ANIM.js
-		J/c/AXES.js
 		J/c/CBK.js
 		J/c/FIL.js
 		J/c/PAL.js
-		J/c/QS.js
 		J/c/STER.js
 		J/c/STR.js
 		J/c/VDW.js
@@ -601,7 +598,6 @@
 		JSV/api/JSVAppInterface.js 
 		JSV/api/JSVAppletInterface.js 
 		JSV/api/JSVFileHelper.js
-		JSV/api/JSVGraphics.js
 		JSV/api/JSVMainPanel.js
 		JSV/api/JSVPanel.js 
 		JSV/api/JSVTree.js
@@ -1061,6 +1057,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="surface" />
         <param name="call-core.list" value="
+        	JS/IsoExt.js
     		JU/Triangulator.js
     		JU/TriangleData.js
        		J/api/VolumeDataInterface.js
