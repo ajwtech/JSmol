@@ -102,7 +102,6 @@
 		};	 
 		Jmol._addDefaultInfo(Info, DefaultInfo);
 		Jmol._debugAlert = Info.debug;
-			if (!Jmol.featureDetection.allowHTML5)Info.use = "JAVA";
 
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 
@@ -119,8 +118,12 @@
 			case "WEBGL":
 				applet = Applet._getCanvas(id, Info, checkOnly, true);
 				break;
-			case "HTML5":
-				applet = Applet._getCanvas(id, Info, checkOnly, false);
+			case "HTML5":               
+  			if (Jmol.featureDetection.allowHTML5){
+				  applet = Applet._getCanvas(id, Info, checkOnly, false);
+        } else {
+          List.push("JAVA");
+        }
 				break;
 			case "IMAGE":
 				applet = new Jmol._Image(id, Info, checkOnly);
