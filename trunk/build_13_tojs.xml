@@ -490,7 +490,6 @@
 		J/g3d/Platform3D.js
 		J/g3d/SphereRenderer.js
 		J/g3d/TextRenderer.js
-		J/g3d/TextSorter.js
 		J/g3d/TextString.js
 		J/g3d/TriangleRenderer.js
 		J/i18n/GT.js
