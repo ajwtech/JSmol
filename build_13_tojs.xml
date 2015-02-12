@@ -1023,6 +1023,7 @@
        		JM/AlphaPolymer.js
        		JM/AminoMonomer.js
        		JM/AminoPolymer.js
+       		JM/JmolBioModelSet.js
        		JM/BioModel.js
        		JM/CarbohydrateMonomer.js
        		JM/CarbohydratePolymer.js
@@ -1048,6 +1049,7 @@
        		J/renderbio/StrandsRenderer.js
        		J/renderbio/RibbonsRenderer.js
        		J/renderbio/MeshRibbonRenderer.js
+       		J/renderbio/RocketRenderer.js
        		J/renderbio/RocketsRenderer.js
        		J/renderbio/CartoonRenderer.js
        		J/renderbio/BackboneRenderer.js
