@@ -1012,7 +1012,9 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-       		JM/Resolver.js
+	    	JM/JmolBioModel.js
+       		JM/JmolBioModelSet.js
+        	JM/Resolver.js
        		JM/Monomer.js
        		JM/AlphaMonomer.js
        		JM/ProteinStructure.js
@@ -1023,7 +1025,6 @@
        		JM/AlphaPolymer.js
        		JM/AminoMonomer.js
        		JM/AminoPolymer.js
-       		JM/JmolBioModelSet.js
        		JM/BioModel.js
        		JM/CarbohydrateMonomer.js
        		JM/CarbohydratePolymer.js
