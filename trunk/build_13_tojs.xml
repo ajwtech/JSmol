@@ -1049,7 +1049,6 @@
        		J/renderbio/StrandsRenderer.js
        		J/renderbio/RibbonsRenderer.js
        		J/renderbio/MeshRibbonRenderer.js
-       		J/renderbio/RocketRenderer.js
        		J/renderbio/RocketsRenderer.js
        		J/renderbio/CartoonRenderer.js
        		J/renderbio/BackboneRenderer.js
