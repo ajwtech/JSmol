@@ -142,6 +142,8 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	console.setTitle = function(title) {
 		//Jmol.$html(this.id + "_title", title);
 	}
+  
+  console.setVisible(false);
 }
 
 Jmol.Swing.setDraggable(Jmol.Console.JSConsole);
