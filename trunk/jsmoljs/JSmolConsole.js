@@ -2,6 +2,7 @@
 
 // Note that this was written before I had Swing working. But this works fine. -- BH
 
+// BH 2/24/2015 4:07:57 PM 14.3.12 adds Jmol.Console.Image (for show IMAGE)
 // BH 8/12/2014 12:35:07 PM 14.2.5 console problems with key events
 // BH 6/27/2014 8:23:49 AM 14.2.0 console broken for Safari and Chrome
 // BH 6/1/2014 8:32:12 AM added Help button; better mouse/keypress handling
@@ -13,6 +14,77 @@ Jmol.Console = {
 	click:function(id) {
 		Jmol.Console.buttons[id].console.appletConsole.doAction(Jmol.Console.buttons[id]);
 	}	
+}
+
+Jmol.Console.Image = function(vwr, title, imageMap) {
+  this.vwr = vwr;
+  this.title = title;
+  this.imageMap = imageMap;
+  imageMap.put(title, this);
+	this.applet = vwr.html5Applet;
+  var id = this.id = vwr.html5Applet._id + "_Image_" + title.replace(/\W/g,"_");
+	Jmol.Console.buttons[id] = this;
+	var s = '<div id="$ID" class="jmolImage" style="display:block;background-color:yellow;position:absolute;z-index:' + ++Jmol._z.consoleImage +'">'
+    + '<div id="$ID_title"></div>'
+    + '<div id="$ID_label1"></div>'
+    + '<div id="$ID_image0" style="position:relative"><div id="$ID_canvas"></div></div>'
+    + '</div>'
+  Jmol.Console.createDOM(this, id, s);
+  this.label = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].closeMe()\">close</a>";
+
+}
+
+Jmol.Console.Image.prototype.closeMe = function() {
+  this.dragBind(false);  
+  Jmol.$remove(this.id);
+  this.imageMap.remove(this.title);
+}
+
+Jmol.Console.Image.prototype.setImage = function(canvas) {
+  if (this.cid)
+    Jmol.$remove(this.cid);
+  if (this.title == "") { 
+    var c = document.createElement("canvas");
+    c.width = canvas.width;
+    c.height = canvas.height;
+    var cdx = c.getContext("2d");
+    if (canvas.id) {
+      cdx.drawImage(canvas,0,0);
+      c.id = canvas.id;
+    } else {
+    
+    	var imgData = cdx.getImageData(0, 0, c.width, c.height);
+      var buf8 = imgData.data;
+      var buf32 = canvas.buf32;
+      var n = buf8.length >> 2;
+      for (var i = 0, j = 0; i < n; i++) {
+        buf8[j++] = (buf32[i] >> 16) & 0xFF;
+        buf8[j++] = (buf32[i] >> 8) & 0xFF;
+        buf8[j++] = buf32[i] & 0xFF;
+        buf8[j++] = 0xFF;
+      }
+      cdx.putImageData(imgData, 0, 0);
+      c.id = this.id;
+    }
+    c.id += "_image";
+    canvas = c;
+  }
+  
+  this.cid = canvas.id;
+	Jmol.$after(xxxid = Jmol._$(this.id + "_canvas"), xxxc2 = canvas);
+  var s = this.title.substring(this.title.lastIndexOf("/") + 1) + " [" + canvas.width + " x " + canvas.height + "]";
+  s = "<table style='width:100%'><tr><td>" + this.label + "</td><td align=right>" + s + "</td></tr></table>";
+	Jmol.$html(this.id + "_label1", s);
+  }
+
+Jmol.Swing.setDraggable(Jmol.Console.Image);
+
+Jmol.Console.createDOM = function(console, id, s) {
+	s = s.replace(/\$ID/g,id);
+	Jmol.$after("body", s);
+	console.setContainer(Jmol._$(id));
+	console.setPosition();
+	console.dragBind(true);
 }
 
 Jmol.Console.JSConsole = function(appletConsole) {
@@ -31,24 +103,19 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	// create and insert HTML code
 	var s = '<div id="$ID" class="jmolConsole" style="display:block;background-color:yellow;width:600px;height:362px;position:absolute;z-index:'
 		+ Jmol._z.console +'"><div id=$ID_title></div><div id=$ID_label1></div><div id=$ID_outputdiv style="position:relative;left:2px"></div><div id=$ID_inputdiv style="position:relative;left:2px"></div><div id=$ID_buttondiv></div></div>'
-	var setBtn = function(console, btn) {
-		btn.console = console;
-		btn.id = id + "_" + btn.label.replace(/\s/g,"_");
-		Jmol.Console.buttons[btn.id] = btn;
-		return btn.html();
-	}
-	s = s.replace(/\$ID/g,id)
-	Jmol.$after("body", s);
-
-	console.setContainer(Jmol._$(id));
-	console.setPosition();
-	console.dragBind(true);
+  Jmol.Console.createDOM(this, id, s);    
 	s = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].setVisible(false)\">close</a>";
 	s += "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.script("+console.applet._id+",'help')\">help</a>";
 	Jmol.$html(id + "_label1", s);
 	Jmol.$html(id + "_inputdiv", '<textarea id="' + id + '_input" style="width:590px;height:100px"></textarea>');
 	Jmol.$html(id + "_outputdiv", '<textarea id="' + id + '_output" style="width:590px;height:200px"></textarea>');
 
+	var setBtn = function(console, btn) {
+		btn.console = console;
+		btn.id = id + "_" + btn.label.replace(/\s/g,"_");
+		Jmol.Console.buttons[btn.id] = btn;
+		return btn.html();
+	}
 	s = setBtn(console, appletConsole.runButton)
 		+ setBtn(console, appletConsole.loadButton)
 		+ setBtn(console, appletConsole.clearInButton)

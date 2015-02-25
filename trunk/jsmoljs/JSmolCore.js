@@ -127,6 +127,7 @@ Jmol = (function(document) {
 			dialog:z++, // could be several of these, JSV only
 			menu:z+90000, // way front
 			console:z+91000, // even more front
+      consoleImage:z+91001, // bit more front; increments
 			monitorZIndex:z+99999 // way way front
 		}
 	};
@@ -886,7 +887,7 @@ Jmol = (function(document) {
 			}
 			if (fSuccess) {
 				info.success = function(data) { fSuccess(Jmol._xhrReturn(info.xhr))};
-				info.error = function() { xxi = info;fSuccess(info.xhr.statusText)};
+				info.error = function() { info;fSuccess(info.xhr.statusText)};
 			}
 			info.xhr = Jmol.$ajax(info);
 			if (!fSuccess) {
