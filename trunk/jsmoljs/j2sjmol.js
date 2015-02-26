@@ -40,6 +40,7 @@
 
  // J2S class changes:
 
+ // BH 2/26/2015 7:01:53 AM  adds Clazz.newIntArray()
  // BH 9/29/2014 11:34:19 PM removing support for getClass().isArray() 
  // BH 8/29/2014 9:15:57 AM total reworking of Java2Script in preparation for all-asynchronous loading
  //                         (currently sync loading is only for 
@@ -2264,25 +2265,17 @@ Clazz.newArray32 = function(args, isInt32) {
 	var val = args[len];
 	switch (args.length) {
 	case 0:
-	case 1:
-		alert ("ERROR IN newArray32 -- args length < 2");
+		alert ("ERROR IN newArray32 -- args.length == 0");
 		return new Array(0);
+	case 1:  
+    // BH 2/26/2015 6:59:56 AM for static int[] { ..... } 
+  	dim = val.length;
+    var a = (isInt32 ? new Int32Array(dim) : new Float64Array(dim));
+    for (var i = dim; --i >= 0;)
+      a[i] = val[i];
+    return a;
 	case 2:
-		if (val < 0)
-			return new Array(dim);
-	//  if (isInt32 ? !Clazz.haveInt32 : !Clazz.haveFloat64 ) {
-			// no support for Int32Array in MSIE or Float64Array in Safari 5.1
-			// so we must initialize ourselves
-	//    var f = (isInt32 ? new Int32Array() : new Float64Array());
-	//    for (var i = dim; --i >= 0;)
-	//      f[i] = 0;
-	//    return f;
-	//  }
-		try {
-			return (isInt32 ? new Int32Array(dim) : new Float64Array(dim));
-		}catch (e) {
-			alert (dim + " " + arguments.callee.caller.arguments.callee.caller + e)
-		}
+		return (val < 0 ? new Array(dim) : isInt32 ? new Int32Array(dim) : new Float64Array(dim));
 	}
 	var xargs = new Array(len);
 	for (var i = len; --i >= 0;) {
