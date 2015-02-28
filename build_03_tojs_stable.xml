@@ -484,8 +484,9 @@
 		J/g3d/ImageRenderer.js
 		J/g3d/LineRenderer.js
 		J/g3d/Pixelator.js
-		J/g3d/PixelatorScreened.js
+		J/g3d/PixelatorT.js
 		J/g3d/PixelatorShaded.js
+		J/g3d/PixelatorScreened.js
 		J/g3d/Platform3D.js
 		J/g3d/SphereRenderer.js
 		J/g3d/TextRenderer.js
