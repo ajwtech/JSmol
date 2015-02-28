@@ -40,7 +40,10 @@
 
  // J2S class changes:
 
- // BH 2/26/2015 7:01:53 AM  adds Clazz.newIntArray()
+ // BH 2/28/2015 7:30:25 AM corrects newIntArray32() and newArray() for pre-defined arrays 
+ //   		int[] a =  new int[] {1,2,3,343};
+ //   		int[][] b = new int[][] {new int[]{4,5},new int[]{5,6}}; 
+
  // BH 9/29/2014 11:34:19 PM removing support for getClass().isArray() 
  // BH 8/29/2014 9:15:57 AM total reworking of Java2Script in preparation for all-asynchronous loading
  //                         (currently sync loading is only for 
@@ -171,6 +174,7 @@ Clazz.setConsoleDiv = function(d) {
 
 // BH Clazz.getProfile monitors exactly what is being delegated with SAEM,
 // which could be a bottle-neck for function calling.
+// This is critical for performance optimization.
 
 // Jmol.getProfile()
 
@@ -218,19 +222,6 @@ Clazz.getSignature = function(proto, name, func, isNew) {
 	// would only make SAEM somewhat faster; not worth it? 
 	// better to just avoid SAEM altogether
 	return (isNew ? proto[name] = func : proto[name]);
-/*
-	if (!isNew) return proto[name];
-	if (proto[name])
-		func.sigs = proto[name].sigs;
-	proto[name] = func;
-	if (!func.sigs) func.sigs = [];
-	var n = (func.arguments ? func.arguments.length : 0);
-	if (func.sigs[n])
-		func.sigs[n] == -1; // overloaded for this number of parameters
-	else                  // unique for this function
-		func.sigs[n] = func;
-	return func;
-*/
 };
 
 
@@ -255,17 +246,13 @@ Clazz.addProto = function(proto, name, func) {
 		}
 	});
 
-	Clazz.addProto(proto, "getClass", function () {
-	 return Clazz.getClass (this);
-	});
+	Clazz.addProto(proto, "getClass", function () { return Clazz.getClass (this); });
 
-	Clazz.addProto(proto, "clone", function () {
-		return Clazz.clone(this);
-	});
+	Clazz.addProto(proto, "clone", function () { return Clazz.clone(this); });
 
 	Clazz.clone = function(me) {
 		// BH allows @j2sNative access without super constructor
-		var o = new me.constructor ();
+		var o = new me.constructor();
 		for (var i in me)
 			o[i] = me[i];
 		return o;
@@ -277,15 +264,9 @@ Clazz.addProto = function(proto, name, func) {
 	Clazz.addProto(proto, "notify", function () {});
 	Clazz.addProto(proto, "notifyAll", function () {});
 	Clazz.addProto(proto, "wait", function () {});
-
 	Clazz.addProto(proto, "to$tring", Object.prototype.toString);
-	Clazz.addProto(proto, "toString", function () {
-		return (this.__CLASS_NAME__ ? "[" + this.__CLASS_NAME__ + " object]" : this.to$tring.apply(this, arguments));
-	});
-
-	Clazz._extendedObjectMethods = [
-			"equals", "hashCode", "getClass", "clone", "finalize", "notify", "notifyAll", "wait", "to$tring", "toString"
-	];
+	Clazz.addProto(proto, "toString", function () { return (this.__CLASS_NAME__ ? "[" + this.__CLASS_NAME__ + " object]" : this.to$tring.apply(this, arguments)); });
+	Clazz._extendedObjectMethods = [ "equals", "hashCode", "getClass", "clone", "finalize", "notify", "notifyAll", "wait", "to$tring", "toString" ];
 
 })(Clazz._O.prototype);
 
@@ -346,10 +327,9 @@ Clazz.getClassName = function (obj) {
 			return "Object";
 		s = s.substring (idx1, idx2);
 		if (s.indexOf("Array") >= 0)
-			return "Array";  // BH -- for Float64Array and Int32Array
-		s = s.replace (/^\s+/, "").replace (/\s+$/, ""); // .trim ()
+			return "Array"; 
+		s = s.replace (/^\s+/, "").replace (/\s+$/, "");
 		return (s == "anonymous" || s == "" ? "Function" : s);
-		 // BH -- for general functions, clazzName may be ""
 	case "object":
 		if (obj.__CLASS_NAME__) // user defined class name
 			return obj.__CLASS_NAME__;
@@ -363,11 +343,14 @@ Clazz.getClassName = function (obj) {
 			if (obj instanceof Array)
 				return "Array";
 			var s = obj.toString();
+      // "[object Int32Array]"
 			if (s.charAt(0) == '[')
 				return Clazz.extractClassName(s);
 		}
+  	return Clazz.getClassName (obj.constructor, true);
 	}
-	return Clazz.getClassName (obj.constructor, true);
+  // some new, unidentified class
+  return "Object";
 };
 /**
  * Return the class of the given class or object.
@@ -893,12 +876,6 @@ Clazz.searchAndExecuteMethod = function (objThis, claxxRef, fxName, funParams) {
 	 */
 	var began = false; // began to search its super classes
 	for (var i = length; --i >= 0;) {
-		//if (Clazz.getInheritedLevel (claxxRef, stacks[i]) >= 0) {
-		/*
-		 * No need to calculate the inherited level as there always exist a 
-		 * right claxxRef in the stacks, and the inherited level of stacks
-		 * are in order.
-		 */
 		if (began || stacks[i] === claxxRef) {
 			/*
 			 * First try to search method within the same class scope
@@ -1235,7 +1212,6 @@ Clazz.defineMethod = function (clazzThis, funName, funBody, funParams) {
 		funBody.funParams = fpName; 
 		funBody.claxxOwner = clazzThis;
 		funBody.exClazz = clazzThis; // make it traceable
-		//delete $fz;           // BH -- delete global variables when no longer needed
 		return Clazz.getSignature(proto, funName, funBody, true);
 	}
 	var oldFun = null;
@@ -1288,7 +1264,6 @@ Clazz.defineMethod = function (clazzThis, funName, funBody, funParams) {
 	}
 	funBody.exClazz = clazzThis; // make it traceable
 	f$[fpName] = funBody;
-	//delete $fz;           // BH -- delete global variables when no longer needed
 	return f$;
 };                                                
 
@@ -2225,36 +2200,38 @@ Clazz.newArray  = function () {
 		var args = arguments;
 		var f = Array;
 	}
-	if (args.length <= 1) 
-		return []; // maybe never?
 	var dim = args[0];
 	if (typeof dim == "string") {
 		dim = dim.charCodeAt (0); // char
 	}
 	var len = args.length - 1;
 	var val = args[len];
-	if (args.length == 2) {
+  switch (args.length) {
+  case 0: // never
+  case 1:
+		return []; // maybe never?
+  case 2:
 		if (val == null)
-			return new Array(dim);
-		if (f === true && Clazz.haveInt32) return new Int32Array(dim);
-		if (f === false && Clazz.haveFloat64) return new Float64Array(dim);
-		if (f == Array && val == null) return new Array(dim);
-		var arr = (f === true ? new Int32Array() : f === false ? new Float64Array() : new Array(dim));
+   		return new Array(dim);
+	  if (f === true && Clazz.haveInt32) return new Int32Array(dim);
+	  if (f === false && Clazz.haveFloat64) return new Float64Array(dim);
+		var arr = (f === true ? new Int32Array() : f === false ? new Float64Array() : dim < 0 ? val : new Array(dim));
 		for (var i = dim; --i >= 0;)
-			arr[i] = val;
-		return arr;
+   		arr[i] = val;
+	  return arr;
+  default:
+  	var xargs = new Array (len);
+  	for (var i = 0; i < len; i++) {
+  		xargs[i] = args[i + 1];
+  	}
+  	var arr = new Array (dim);
+  	if (val == null || val >= 0 || len > 2)
+  		for (var i = 0; i < dim; i++) {
+  	 	// Call recursively!
+  			arr[i] = Clazz.newArray (xargs, f);
+  		}
+  	return arr;
 	}
-	var xargs = new Array (len);
-	for (var i = 0; i < len; i++) {
-		xargs[i] = args[i + 1];
-	}
-	var arr = new Array (dim);
-	if (val == null || val >= 0 || len > 2)
-		for (var i = 0; i < dim; i++) {
-	 	// Call recursively!
-			arr[i] = Clazz.newArray (xargs, f);
-		}
-	return arr;
 };
 
 Clazz.newArray32 = function(args, isInt32) {
@@ -2265,17 +2242,18 @@ Clazz.newArray32 = function(args, isInt32) {
 	var val = args[len];
 	switch (args.length) {
 	case 0:
-		alert ("ERROR IN newArray32 -- args.length == 0");
-		return new Array(0);
 	case 1:  
-    // BH 2/26/2015 6:59:56 AM for static int[] { ..... } 
-  	dim = val.length;
-    var a = (isInt32 ? new Int32Array(dim) : new Float64Array(dim));
-    for (var i = dim; --i >= 0;)
-      a[i] = val[i];
-    return a;
+		alert ("ERROR IN newArray32 -- args.length < 2");
+		return new Array(0);
 	case 2:
-		return (val < 0 ? new Array(dim) : isInt32 ? new Int32Array(dim) : new Float64Array(dim));
+    var isDefined = (dim < 0);
+    if (isDefined)
+      dim = val.length;
+    var a = (val < 0 ? new Array(dim) : isInt32 ? new Int32Array(dim) : new Float64Array(dim));
+    if (isDefined)
+      for (var i = dim; --i >= 0;)
+        a[i] = val[i];
+    return a;
 	}
 	var xargs = new Array(len);
 	for (var i = len; --i >= 0;) {
