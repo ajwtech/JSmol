@@ -26,6 +26,7 @@ Jmol.Console.Image = function(vwr, title, imageMap) {
   // <appletID>_Image_<cleaned id or filename>_holder  for IMAGE ID "xxx" ... or IMAGE "xxx"
   //   where cleaning is with .replace(/\W/g,"_")
   // <appletID>_Image_holder for all images not identified as above
+  // if a page div is not identified, then the image will be placed in a new floating div
   
   this.vwr = vwr;
   this.title = title;
