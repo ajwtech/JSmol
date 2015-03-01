@@ -2,6 +2,8 @@
 
 // Note that this was written before I had Swing working. But this works fine. -- BH
 
+// BH 2/28/2015 3:10:58 PM adds Jmol.Console.Image user-settable divs 
+//   jmolApplet0_Image_holder, jmolApplet0_Image_app_holder, jmolApplet0_Image_xxxx_holder
 // BH 2/24/2015 4:07:57 PM 14.3.12 adds Jmol.Console.Image (for show IMAGE)
 // BH 8/12/2014 12:35:07 PM 14.2.5 console problems with key events
 // BH 6/27/2014 8:23:49 AM 14.2.0 console broken for Safari and Chrome
@@ -17,30 +19,56 @@ Jmol.Console = {
 }
 
 Jmol.Console.Image = function(vwr, title, imageMap) {
+
+  // page designer may indicate one of three divs for images on the page:
+  
+  // <appletID>_Image_app_holder for IMAGE command by itself (current app image)
+  // <appletID>_Image_<cleaned id or filename>_holder  for IMAGE ID "xxx" ... or IMAGE "xxx"
+  //   where cleaning is with .replace(/\W/g,"_")
+  // <appletID>_Image_holder for all images not identified as above
+  
   this.vwr = vwr;
   this.title = title;
   this.imageMap = imageMap;
-  imageMap.put(title, this);
 	this.applet = vwr.html5Applet;
-  var id = this.id = vwr.html5Applet._id + "_Image_" + title.replace(/\W/g,"_");
-	Jmol.Console.buttons[id] = this;
-	var s = '<div id="$ID" class="jmolImage" style="display:block;background-color:yellow;position:absolute;z-index:' + ++Jmol._z.consoleImage +'">'
-    + '<div id="$ID_title"></div>'
-    + '<div id="$ID_label1"></div>'
-    + '<div id="$ID_image0" style="position:relative"><div id="$ID_canvas"></div></div>'
-    + '</div>'
-  Jmol.Console.createDOM(this, id, s);
-  this.label = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].closeMe()\">close</a>";
-
+  var id = this.applet._id + "_Image";
+  this.id = id + "_" + (title == "" ? "app" : title).replace(/\W/g,"_");
+  var jqobj = Jmol._$(this.id + "_holder");
+  if (!jqobj[0] && (jqobj = Jmol._$(id + "_holder"))[0])
+    this.id = id;
+  if (jqobj[0])
+    this.div = jqobj;
+  else
+    Jmol.Console.createDOM(this, '<div id="$ID" class="jmolImage" style="display:block;background-color:yellow;position:absolute;z-index:' + ++Jmol._z.consoleImage +'"><div id="$ID_title"></div><div id="$ID_holder"></div></div>');
+  System.out.println("image " + this.id + " created");
+  var obj = imageMap.get(this.id);
+  if (obj)
+    obj.closeMe();
+  imageMap.put(this.id, this);
+  imageMap.put(title, this);
 }
 
-Jmol.Console.Image.prototype.closeMe = function() {
-  this.dragBind(false);  
-  Jmol.$remove(this.id);
-  this.imageMap.remove(this.title);
+Jmol.Console.Image.setCanvas = function(obj, canvas) {
+  // this method can be customized as desired
+  // it puts the canvas into a holder div 
+	Jmol.$append(Jmol._$(obj.id + "_holder"), canvas);
+	Jmol.$html(obj.id + "_title", "<table style='width:100%'><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+obj.id+"'].closeMe()\">close</a></td><td align=right>" + obj.title + " [" + canvas.width + " x " + canvas.height + "]</td></tr></table>");
+}
+
+Jmol.Console.Image.closeImage = function(obj) {
+  // this method can be customized as desired
+  obj.imageMap.remove(obj.title);
+  obj.imageMap.remove(obj.id);
+  if (obj.div) {
+    Jmol.$remove(obj.cid);
+  } else {
+    obj.dragBind(false);  
+    Jmol.$remove(obj.id);
+  }
 }
 
 Jmol.Console.Image.prototype.setImage = function(canvas) {
+  // called by Jmol asynchronously after image is loaded
   if (this.cid)
     Jmol.$remove(this.cid);
   if (this.title == "") { 
@@ -49,10 +77,11 @@ Jmol.Console.Image.prototype.setImage = function(canvas) {
     c.height = canvas.height;
     var cdx = c.getContext("2d");
     if (canvas.id) {
+      // asynchronous load of image from file
       cdx.drawImage(canvas,0,0);
-      c.id = canvas.id;
-    } else {
-    
+    } else {    
+      // image buffer from current view
+      // (note that buf32.length will be the same as buf8.length when images are antialiased) 
     	var imgData = cdx.getImageData(0, 0, c.width, c.height);
       var buf8 = imgData.data;
       var buf32 = canvas.buf32;
@@ -64,34 +93,34 @@ Jmol.Console.Image.prototype.setImage = function(canvas) {
         buf8[j++] = 0xFF;
       }
       cdx.putImageData(imgData, 0, 0);
-      c.id = this.id;
     }
-    c.id += "_image";
     canvas = c;
   }
-  
-  this.cid = canvas.id;
-	Jmol.$after(xxxid = Jmol._$(this.id + "_canvas"), xxxc2 = canvas);
-  var s = this.title.substring(this.title.lastIndexOf("/") + 1) + " [" + canvas.width + " x " + canvas.height + "]";
-  s = "<table style='width:100%'><tr><td>" + this.label + "</td><td align=right>" + s + "</td></tr></table>";
-	Jmol.$html(this.id + "_label1", s);
-  }
+  this.cid = canvas.id = this.id + "_image"; 
+  Jmol.Console.Image.setCanvas(this, canvas);
+}
+
+Jmol.Console.Image.prototype.closeMe = function() {
+  // called by Jmol
+  Jmol.Console.Image.closeImage(this);
+}
 
 Jmol.Swing.setDraggable(Jmol.Console.Image);
 
-Jmol.Console.createDOM = function(console, id, s) {
+Jmol.Console.createDOM = function(obj, s) {
+  var id = obj.id;
+  Jmol.Console.buttons[id] = obj;
 	s = s.replace(/\$ID/g,id);
 	Jmol.$after("body", s);
-	console.setContainer(Jmol._$(id));
-	console.setPosition();
-	console.dragBind(true);
+	obj.setContainer(Jmol._$(id));
+	obj.setPosition();
+	obj.dragBind(true);
 }
 
 Jmol.Console.JSConsole = function(appletConsole) {
 	this.applet = appletConsole.vwr.html5Applet;
 	var id = this.id = this.applet._id+"_console";
 	var console = this;
-	Jmol.Console.buttons[console.id] = console;
 	console.appletConsole = appletConsole;
 	console.input = appletConsole.input = new Jmol.Console.Input(console);
 	console.output = appletConsole.output = new Jmol.Console.Output(console);
@@ -103,7 +132,7 @@ Jmol.Console.JSConsole = function(appletConsole) {
 	// create and insert HTML code
 	var s = '<div id="$ID" class="jmolConsole" style="display:block;background-color:yellow;width:600px;height:362px;position:absolute;z-index:'
 		+ Jmol._z.console +'"><div id=$ID_title></div><div id=$ID_label1></div><div id=$ID_outputdiv style="position:relative;left:2px"></div><div id=$ID_inputdiv style="position:relative;left:2px"></div><div id=$ID_buttondiv></div></div>'
-  Jmol.Console.createDOM(this, id, s);    
+  Jmol.Console.createDOM(this, s);    
 	s = "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.Console.buttons['"+id+"'].setVisible(false)\">close</a>";
 	s += "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:Jmol.script("+console.applet._id+",'help')\">help</a>";
 	Jmol.$html(id + "_label1", s);

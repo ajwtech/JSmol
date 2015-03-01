@@ -275,6 +275,10 @@ Jmol = (function(document) {
 		return $(what).after(s);
 	}
 
+	Jmol.$append = function (what, s) {
+		return $(what).append(s);
+	}
+
 	Jmol.$bind = function(what, list, f) {
 		return (f ? $(what).bind(list, f) : $(what).unbind(list));
 	}
@@ -1726,6 +1730,8 @@ Swing.setDraggable = function(Obj) {
 			this.timestamp = System.currentTimeMillis(); // used for menu closure
 			var x = this.pageX0 + (ev.pageX - this.pageX);
 			var y = this.pageY0 + (ev.pageY - this.pageY);
+      Jmol._mousePageX = x;
+      Jmol._mousePageY = y;
 			this.container.css({ top: y + 'px', left: x + 'px' })
 		}
 	};
