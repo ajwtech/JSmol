@@ -847,9 +847,6 @@
         	J/api/JmolScriptManager.js
         	JS/CommandWatcherThread.js
         	JS/FileLoadThread.js
-        	JS/JmolCmdExtension.js
-        	JS/JmolMathExtension.js
-        	JS/JmolSmilesExtension.js
         	JS/ScriptCompiler.js
         	JS/ScriptDelayThread.js
         	JS/ScriptError.js

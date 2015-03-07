@@ -3,7 +3,7 @@
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-   <property name="jmol.path" value="../Jmol-14_2" />
+    <property name="jmol.path" value="../Jmol-14_2" />
    <property name="jsv.path" value="../JSpecView" />
 
    <target name="toJs" id="toJs">
@@ -847,9 +847,6 @@
         	J/api/JmolScriptManager.js
         	JS/CommandWatcherThread.js
         	JS/FileLoadThread.js
-        	JS/JmolCmdExtension.js
-        	JS/JmolMathExtension.js
-        	JS/JmolSmilesExtension.js
         	JS/ScriptCompiler.js
         	JS/ScriptDelayThread.js
         	JS/ScriptError.js
@@ -1012,7 +1009,9 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-       		JM/Resolver.js
+	    	JM/JmolBioModel.js
+       		JM/JmolBioModelSet.js
+        	JM/Resolver.js
        		JM/Monomer.js
        		JM/AlphaMonomer.js
        		JM/ProteinStructure.js
