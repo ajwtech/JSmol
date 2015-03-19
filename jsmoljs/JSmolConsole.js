@@ -2,7 +2,7 @@
 
 // Note that this was written before I had Swing working. But this works fine. -- BH
 
-// BH 2/28/2015 3:10:58 PM adds Jmol.Console.Image user-settable divs 
+// BH 3/7/2015 1:16:00 PM adds Jmol.Console.Image user-settable divs 
 //   jmolApplet0_Image_holder, jmolApplet0_Image_app_holder, jmolApplet0_Image_xxxx_holder
 // BH 2/24/2015 4:07:57 PM 14.3.12 adds Jmol.Console.Image (for show IMAGE)
 // BH 8/12/2014 12:35:07 PM 14.2.5 console problems with key events
@@ -72,33 +72,30 @@ Jmol.Console.Image.prototype.setImage = function(canvas) {
   // called by Jmol asynchronously after image is loaded
   if (this.cid)
     Jmol.$remove(this.cid);
-  if (this.title == "") { 
-    var c = document.createElement("canvas");
-    c.width = canvas.width;
-    c.height = canvas.height;
-    var cdx = c.getContext("2d");
-    if (canvas.id) {
-      // asynchronous load of image from file
-      cdx.drawImage(canvas,0,0);
-    } else {    
-      // image buffer from current view
-      // (note that buf32.length will be the same as buf8.length when images are antialiased) 
-    	var imgData = cdx.getImageData(0, 0, c.width, c.height);
-      var buf8 = imgData.data;
-      var buf32 = canvas.buf32;
-      var n = buf8.length >> 2;
-      for (var i = 0, j = 0; i < n; i++) {
-        buf8[j++] = (buf32[i] >> 16) & 0xFF;
-        buf8[j++] = (buf32[i] >> 8) & 0xFF;
-        buf8[j++] = buf32[i] & 0xFF;
-        buf8[j++] = 0xFF;
-      }
-      cdx.putImageData(imgData, 0, 0);
+  var c = document.createElement("canvas");
+  c.width = canvas.width;
+  c.height = canvas.height;
+  var cdx = c.getContext("2d");
+  if (canvas.buf32) {
+    // image buffer from current view
+    // (note that buf32.length will be the same as buf8.length when images are antialiased) 
+  	var imgData = cdx.getImageData(0, 0, c.width, c.height);
+    var buf8 = imgData.data;
+    var buf32 = canvas.buf32;
+    var n = buf8.length >> 2;
+    for (var i = 0, j = 0; i < n; i++) {
+      buf8[j++] = (buf32[i] >> 16) & 0xFF;
+      buf8[j++] = (buf32[i] >> 8) & 0xFF;
+      buf8[j++] = buf32[i] & 0xFF;
+      buf8[j++] = 0xFF;
     }
-    canvas = c;
-  }
-  this.cid = canvas.id = this.id + "_image"; 
-  Jmol.Console.Image.setCanvas(this, canvas);
+    cdx.putImageData(imgData, 0, 0);
+  } else {
+    // asynchronous load of image from file
+    cdx.drawImage(canvas,0,0);
+  }    
+  this.cid = c.id = this.id + "_image"; 
+  Jmol.Console.Image.setCanvas(this, c);
 }
 
 Jmol.Console.Image.prototype.closeMe = function() {
