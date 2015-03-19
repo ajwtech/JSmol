@@ -17,6 +17,21 @@
 //
 
 
+// BH 3/17/2015 3:47:31 PM  very simple scripting:
+//   image      (open a new window of the image in PNG format)
+//   spin on 
+//   spin off
+//   load $caffeine   (open a file -- can use : or $ or other known shortcuts)
+//
+//  These can be entered into the search box (see lite2.htm) with a preceding "!":
+//
+//   !image 
+//
+//  and concatenated with ";":
+// 
+//  spin off;image;spin on
+
+   
 Jmol._grabberOptions = [
 	["$", "NCI(small molecules)"],
 	[":", "PubChem(small molecules)"]
@@ -279,7 +294,21 @@ proto._resize = function() {
 	Jmol[s] = setTimeout(function() {me._draw();Jmol[s]=null}, 100);
 }
 
-proto._canScript = function(script) {return false};
+proto._canScript = function(script) {return true};
+
+proto._script = function(cmd) {
+  var s = cmd.split(";");
+  for (var i = 0; i < s.length; i++) {
+    cmd = s[i].trim();
+    if (cmd == "image") {
+            window.open(this._canvas.toDataURL("image/png"));
+    } else if (cmd.indexOf("load ") == 0) {
+      this._loadFile(cmd.substring(5).trim());
+    } else if (cmd.indexOf("spin ") == 0) {
+      this.spin(cmd.toLowerCase().indexOf("off") < 0);
+    }
+  }
+}
 
 proto._loadFile = function(fileName){
 	this._showInfo(false);
