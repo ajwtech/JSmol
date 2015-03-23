@@ -17,6 +17,8 @@
 //
 
 
+// BH  3/19/2015 7:34:56 AM  Info.defaultModel not working
+//
 // BH 3/17/2015 3:47:31 PM  very simple scripting:
 //   image      (open a new window of the image in PNG format)
 //   spin on 
@@ -170,7 +172,6 @@ proto._setAtomShades = function() {
 	for (var i = this.atoms.length; --i >= 0;)
 		this.atoms[i].color50 = this._getColor(this.atoms[i].color, 0.5);
 }
-
 proto._createCanvas = function(id, Info) {
 	Jmol._setObject(this, id, Info);
 	this._color = this._color.replace(/0x/,"#");
@@ -188,24 +189,6 @@ proto._createCanvas = function(id, Info) {
 	if (Jmol._debugAlert && !Jmol._document)
 		alert(t);    
 	this._code = Jmol._documentWrite(t);
-};
-
-proto._readyCallback = function(id, fullid, isReady, applet) {
-	if (!isReady)
-		return; // ignore -- page is closing
-	var me = this;
-	Jmol._setDestroy(me);
-	me._ready = true;
-	var script = me._readyScript;
-	me._applet = applet;
-	if (me._defaultModel) 
-		me._search(me._defaultModel, (script ? ";" + script : ""));
-	else if (me._src)
-		me._loadFile(me._src);
-	me._showInfo(true);
-	me._showInfo(false);
-	me._readyFunction && me._readyFunction(me);
-	Jmol._setReady(this);
 };
 
 proto._createCanvas2d = function(doReplace) {
@@ -229,9 +212,9 @@ proto._createCanvas2d = function(doReplace) {
 }
 
 proto._start = function() {
-	Jmol._jsSetMouse(this._canvas);
+	Jmol._jsSetMouse(this._canvas);  
 	if (this._defaultModel)
-		Jmol._search(this, this._defaultModel);
+		Jmol._search(this, this._defaultModel, (this._readyScript ? this._readyScript : ""));
 	else if (this._src)
 		this._loadFile(this._src);
 	this._showInfo(true);
