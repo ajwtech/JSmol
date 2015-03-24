@@ -40,6 +40,7 @@
 
  // J2S class changes:
 
+ // BH 3/24/2015 4:11:26 AM better file load failure message in ClazzLoader.evaluate 
  // BH 2/28/2015 7:30:25 AM corrects newIntArray32() and newArray() for pre-defined arrays 
  //   		int[] a =  new int[] {1,2,3,343};
  //   		int[][] b = new int[][] {new int[]{4,5},new int[]{5,6}}; 
@@ -3355,12 +3356,28 @@ ClazzLoader.loadPackageClasspath = function (pkg, base, isIndex, fSuccess, mode,
 };
 
 /**
+ * BH: allows user/developer to load classes even though wrapping and Google
+ * Closure Compiler has not been run on the class.
+ *   
+ */
+Clazz.loadClass = function (name, onRequiredLoaded, forced, async) {
+  if (!self.Class) {
+      Class = Clazz;
+      Class.forName = Clazz._4Name;
+      // maybe more here
+  }
+  if (!name)
+    return;
+  return ClazzLoader.loadClass(name, onRequiredLoaded, forced, async, 1);
+}
+
+/**
  * Load the given class ant its related classes.
  */
 /* public */
 ClazzLoader.loadClass = function (name, onRequiredLoaded, forced, async, mode) {
 
-  mode || (mode = 0);
+  mode || (mode = 0); // BH: not implemented
   (async == null) && (async = false);
   
  	if (typeof onRequiredLoaded == "boolean")
@@ -3408,6 +3425,8 @@ ClazzLoader.loadClass = function (name, onRequiredLoaded, forced, async, mode) {
 	}
 	
 	var path = ClazzLoader.getClasspathFor(name);
+  
+
 	var existed = ClazzLoader.loadedScripts[path];
 	var qq = ClazzLoader.classQueue;
 	if (!existed)
@@ -3464,6 +3483,7 @@ ClazzLoader.loadClass = function (name, onRequiredLoaded, forced, async, mode) {
 			ClazzLoader.isLoadingEntryClass = true;
 		}
 		ClazzLoader.addChildClassNode(ClazzLoader.clazzTreeRoot, n, true);
+    
 		ClazzLoader.loadScript(n.path, n.requiredBy, false, onRequiredLoaded ? function(){ ClazzLoader.isLoadingEntryClass = bSave; onRequiredLoaded()}: null);
 	}
 };
@@ -3678,10 +3698,13 @@ ClazzLoader.keepOnLoading = true;
 ClazzLoader.mapPath2ClassNode = {};
 
 ClazzLoader.evaluate = function(file, js) {
+
  		try {
 			eval(js);
 		} catch (e) {
-			var s = "[Java2Script] Script error: " + e.message + " \n" + file + "\n\n" + js;
+			var s = "[Java2Script] The required class file \n\n" + file + (js.indexOf("[Exception") == 0 && js.indexOf("data: no") ? 
+         "\nwas not found.\n"
+        : "\ncould not be loaded. Script error: " + e.message + " \n\ndata:\n\n" + js) + "\n\n" + Clazz.getStackTrace();
 			alert (s)
 			Clazz.alert (s);
 			throw e;
@@ -3738,8 +3761,10 @@ Clazz._4Name = function(clazzName, applet, state) {
 /* protected */
 ClazzLoader.loadScript = function (file, why, ignoreOnload, fSuccess) {
 		Clazz.currentPath = file;
+	
 	// maybe some scripts are to be loaded without needs to know onload event.
 	if (!ignoreOnload && ClazzLoader.loadedScripts[file]) {
+
 		ClazzLoader.tryToLoadNext(file);
 		return;
 	}
@@ -3756,11 +3781,14 @@ ClazzLoader.loadScript = function (file, why, ignoreOnload, fSuccess) {
 		// synchronous loading
 		// works in MSIE locally unless a binary file :)
 		// from Jmol.api.Interface only
-		
+
+
 		var data = Jmol._getFileData(file);
+
 		ClazzLoader.evaluate(file, data); 
 		return;
 	}
+
 	var info = {
 		dataType:"script",
 		async:true, 
