@@ -3,6 +3,7 @@
 // see http://peter-ertl.com/jsme/JSME_2013-10-13/api_javadoc/index.html
 
 
+// BH 3/26/2015 6:13:01 PM  SMILES fix for stereochem in rings losing H atoms
 // BH 9/13/2014 2:24:29 PM SMILES fix again
 // BH 9/2/2014 6:56:42 PM  SMILES fix for quaternary carbon with stereochemistry
 // BH 3/1/2014 4:31:18 PM fix for evaluate returning atom sets as arrays
@@ -245,8 +246,9 @@
 
 	proto._updateView = function(_jme_updateView) {
 		// called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
-		if (this._viewSet != null)
+		if (this._viewSet != null) {
 			this._search("$" + this._getSmiles())
+    }
 		var me = this;
 	}
 
@@ -497,8 +499,16 @@
 	}
 
   proto._getSmiles = function(withStereoChemistry) {
-  	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles()).replace(/\:1/g,"");
-		s = s.replace(/@H/g,"@~").replace(/H/g,"").replace(/\[\]/g,"").replace(/\(\)/g,"").replace(/@~/g,"@H");
+  	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles());
+    s = s.replace(/\:1/g,"");
+		s = s.replace(/@H/g,"@~").replace(/H/g,"")
+    s = s.replace(/\[\]/g,"")
+    // but change [C@][H] to [C@H] and [C@]1[H] to [C@@H]1 
+    s = s.replace(/\@\]\(\)/g,"@H]")
+    s = s.replace(/\@\](\d+)\(\)/g,"@@H]$1")
+    s = s.replace(/\@\@\@/g,"@")
+    s = s.replace(/\(\)/g,"");
+    s = s.replace(/@~/g,"@H");
 		if (s.indexOf("\\") == 0 || s.indexOf("/") == 0)
 		  s= "[H]" + s;
 		return s;
