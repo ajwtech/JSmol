@@ -123,6 +123,16 @@
 				: new JSV.appletjs.JSVApplet(viewerOptions));
 	}
 
+	proto._addCoreFiles = function() {
+		Jmol._addCoreFile("jsv", this._j2sPath, this.__Info.preloadCore);
+		if (Jmol._debugCode) {
+		// no min package for that
+			Jmol._addExec([this, null, "JSV.appletjs.JSVApplet", "load JSV"]);
+			if (this._isPro)
+				Jmol._addExec([this, null, "JSV.appletjs.JSVAppletPro", "load JSV(signed)"]);
+		}
+  }
+
 	proto._create = function(id, Info){
 
 		Jmol._setObject(this, id, Info);

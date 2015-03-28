@@ -220,6 +220,14 @@
 		return new astex.MoleculeViewerAppletJS(viewerOptions);
 	}
 
+	proto._addCoreFiles = function() {
+		Jmol._addCoreFile("astex", this._j2sPath, this.__Info.preloadCore);
+		if (Jmol._debugCode) {
+		// no min package for that
+			Jmol._addExec([this, null, "astex.MoleculeViewerAppletJS", "load Astex"]);
+		}
+  }
+  
 	proto._create = function(id, Info){
 		Jmol._setObject(this, id, Info);
 		var params = {
