@@ -671,7 +671,7 @@
     	" />
    	
     <antcall target="call-core">
-        <param name="call-core.name" value="" />
+        <param name="call-core.name" value="jmol" />
         <param name="call-core.list" value="
        		../../../Jmol.properties
        		../js/JSmolJavaExt.js
@@ -682,7 +682,7 @@
         	" />
     </antcall>
    	<antcall target="call-corechop">
-	   	<param name="call-corechop.name" value="" />
+	   	<param name="call-corechop.name" value="jmol" />
     </antcall>
     <antcall target="call-core">
         <param name="call-core.name" value="jsv" />
