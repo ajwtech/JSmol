@@ -52,6 +52,7 @@
  //                            getInterface() 
  //                         see JSmol.js and Jmol._isAsync flag
  
+ // BH 3/29/2015 8:12:44 PM System.getProperty(x, "") does not return ""
  // BH 8/23/2014 10:04:19 AM cleaning up a few general methods; Clazz.removeArrayItem
  // BH 6/1/2014 10:58:46 AM fix for Clazz.isAP() not working
  // BH 5/26/2014 5:19:29 PM removing superConstructor call in creating Enum constants
@@ -2099,12 +2100,16 @@ Clazz.isClassDefined = Clazz.isDefinedClass = function (clazzName) {
 		return false;		/* consider null or empty name as non-defined class */
 	if (Clazz.allClasses[clazzName])
 		return true;
+
+  
+
 	var pkgFrags = clazzName.split (/\./);
 	var pkg = null;
 	for (var i = 0; i < pkgFrags.length; i++)
-		if (!(pkg = (pkg ? pkg[pkgFrags[i]] : Clazz.allPackage[pkgFrags[0]])))
+		if (!(pkg = (pkg ? pkg[pkgFrags[i]] : Clazz.allPackage[pkgFrags[0]]))) {
 			return false;
-	return (pkg && (Clazz.allClasses[clazzName] = true));
+    }
+  return (pkg && (Clazz.allClasses[clazzName] = true));
 };
 /**
  * Define the enum constant.
@@ -2683,7 +2688,8 @@ System = {
 		if (System.props)
 			return System.props.getProperty (key, def);
 		var v = System.$props[key];
-		return (v ? v : arguments.length == 1 ? null : def ? def : key); // BH
+    
+		return (typeof v != "undefined" ? v : arguments.length == 1 ? null : def == null ? key : def); // BH
 	},
 	getSecurityManager : function() { return null },  // bh
 	setProperties : function (props) {
@@ -2698,6 +2704,19 @@ System = {
 
 System.setProperty("line.separator", navigator.userAgent.indexOf("Windows")>=0?"\r\n" : "\n") //BH
 System.setProperty("os.name", navigator.userAgent) //BH
+System.identityHashCode=function(obj){
+  if(obj==null)
+    return 0;
+  try{
+    return obj.toString().hashCode();
+  }catch(e){
+    var str=":";
+    for(var s in obj){
+     str+=s+":"
+    }
+    return str.hashCode();
+  }
+}
 
 System.out = new Clazz._O ();
 System.out.__CLASS_NAME__ = "java.io.PrintStream";
@@ -3127,6 +3146,11 @@ Clazz._Node = function () {
 };
 
 ;(function(Clazz, ClazzLoader, ClazzNode) {
+
+ClazzLoader._fileCheckOnly = self.Jmol && Jmol._fileCheckOnly;
+
+
+
 ClazzLoader.initNode = function(node, _initNode) {
 	node.parents = [];
 	node.musts = [];
@@ -3779,7 +3803,13 @@ ClazzLoader.loadScript = function (file, why, ignoreOnload, fSuccess) {
 	// also remove from queue
 	Clazz.removeArrayItem(ClazzLoader.classQueue, file);
 
-	System.out.println("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + ClazzLoader.isUsingXMLHttpRequest + " async=" + ClazzLoader.isAsynchronousLoading)
+if (ClazzLoader._fileCheckOnly) {
+  // forces not-found message
+  ClazzLoader.isAsynchronousLoading = false;
+  ClazzLoader.isUsingXMLHttpRequest = true;
+}
+	if (ClazzLoader._fileCheckOnly)
+    System.out.println("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + ClazzLoader.isUsingXMLHttpRequest + " async=" + ClazzLoader.isAsynchronousLoading)
 
 
 	ClazzLoader.onScriptLoading(file);
@@ -4088,6 +4118,8 @@ ClazzLoader.updateNode = function(node, _updateNode) {
 		var decl = node.declaration;
 		if (decl)
 			decl(), decl.executed = true;
+    if(ClazzLoader._fileCheckOnly)
+        System.out.println("OK FOR " + node.name)
 		node.status = ClazzNode.STATUS_DECLARED;
 		if (ClazzLoader.definedClasses)
 			ClazzLoader.definedClasses[node.name] = true;
@@ -4288,6 +4320,9 @@ ClazzLoader.load = function (musts, clazz, optionals, declaration) {
 			ClazzLoader.load(musts, clazz[i], optionals, declaration, clazz);
 		return;
 	}	
+//  System.out.println("ClazzLoader loading " + clazz)
+  
+  
 //	if (clazz.charAt (0) == '$')
 //		clazz = "org.eclipse.s" + clazz.substring (1);
 	var node = ClazzLoader.mapPath2ClassNode["#" + clazz];
