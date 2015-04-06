@@ -891,7 +891,7 @@ Jmol = (function(document) {
 			}
 			if (fSuccess) {
 				info.success = function(data) { fSuccess(Jmol._xhrReturn(info.xhr))};
-				info.error = function() { info;fSuccess(info.xhr.statusText)};
+				info.error = function() { fSuccess(info.xhr.statusText)};
 			}
 			info.xhr = Jmol.$ajax(info);
 			if (!fSuccess) {
