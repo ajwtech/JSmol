@@ -42,7 +42,8 @@
  // NOTES by Bob Hanson: 
  
  // J2S class changes:
-
+ // BH 4/12/2015 11:48:03 AM added Clazz.getStackTrace(-n) -- reports actual parameter values for n levels
+ // BH 4/10/2015 8:23:05 AM adding Int32Array.prototype.clone and Float64.prototype.clone
  // BH 4/5/2015 8:12:57 AM refactoring j2slib (this file) to make private functions really private using var
  // BH 4/3/2015 6:14:34 AM adding anonymous local "ClazzLoader" (Clazz._Loader) --> "_Loader"
  // BH 4/3/2015 6:14:34 AM adding Clazz._Loader._classPending, Clazz._Loader._classCount
@@ -835,6 +836,9 @@ Clazz.getStackTrace = function(n) {
   // updateNode and updateParents cause infinite loop here
 	var s = "\n";
 	var c = arguments.callee;
+  var showParams = (n < 0);
+  if (showParams)
+    n = -n;
 	for (var i = 0; i < n; i++) {
 		if (!(c = c.caller))
       break;
@@ -843,6 +847,15 @@ Clazz.getStackTrace = function(n) {
 		if (c == c.caller) {
       s += "<recursing>\n";
       break;
+    }
+    if (showParams) {
+      var args = c.arguments;
+      for (var j = 0; j < args.length; j++) {
+        var sa = "" + args[j];
+        if (sa.length > 60)
+          sa = sa.substring(0, 60) + "...";
+        s += " args[" + j + "]=" + sa.replace(/\s+/g," ") + "\n";
+      }
     }
 	}
 	return s;
@@ -1199,6 +1212,8 @@ var searchAndExecuteMethod = function (id, objThis, claxxRef, fxName, args) {
 //  }
 	fx = objThis[fxName];
 	var params = Clazz.getParamsType(args);
+  if (!fx) 
+    System.out.println(Clazz.getStackTrace())
 	_profile && addProfile(claxxRef, fxName, params, id);
 	// Cache last matched method
 	if (fx.lastParams == params.typeString && fx.lastClaxxRef === claxxRef) {
@@ -2181,10 +2196,23 @@ Clazz.doubleToChar = Clazz.floatToChar;
 //
 //
 
+var getArrayClone = function(nbits) {
+  return function() {
+    var me = this;
+    var n = me.length;
+    var a = (nbits == 32 ? new Int32Array(n) : new Float64Array(n));
+    for (var i = n; --i >= 0;)
+      a[i] = me[i];
+    return a; 
+  }
+}
+
 if (self.Int32Array && self.Int32Array != Array) {
 	Clazz.haveInt32 = true;
 	if (!Int32Array.prototype.sort)
 		Int32Array.prototype.sort = Array.prototype.sort
+	if (!Int32Array.prototype.clone)
+		Int32Array.prototype.clone = getArrayClone(32);
 } else {
 	Int32Array = function(n) {
 		if (!n) n = 0;
@@ -2195,6 +2223,7 @@ if (self.Int32Array && self.Int32Array != Array) {
 	}
 	Clazz.haveInt32 = false;
 	Int32Array.prototype.sort = Array.prototype.sort
+	Int32Array.prototype.clone = getArrayClone(32);
 	Int32Array.prototype.int32Fake = function(){};
 }
 
@@ -2202,6 +2231,8 @@ if (self.Float64Array && self.Float64Array != Array) {
 	Clazz.haveFloat64 = true;
 	if (!Float64Array.prototype.sort)
 		Float64Array.prototype.sort = Array.prototype.sort
+	if (!Float64Array.prototype.clone)
+		Float64Array.prototype.clone = getArrayClone(64);
 } else {
 	Clazz.haveFloat64 = false;
 	Float64Array = function(n) {
@@ -2211,6 +2242,7 @@ if (self.Float64Array && self.Float64Array != Array) {
 		return b;
 	};
 	Float64Array.prototype.sort = Array.prototype.sort
+	Float64Array.prototype.clone = getArrayClone(64);
 	Float64Array.prototype.float64Fake = function() {}; // "present"
 	Float64Array.prototype.toString = function() {return "[object Float64Array]"};
 // Darn! Mozilla makes this a double, not a float. It's 64-bit.
@@ -3161,7 +3193,7 @@ var cleanDelegateMethod = function (m) {
 /**
  * Static class loader class
  */
-Clazz._Loader = function () {};
+Clazz._Loader = Clazz.ClazzLoader = function () {};
 
 /**
  * Class dependency tree node
@@ -3292,9 +3324,9 @@ if (self.Clazz && Clazz.isClassDefined) {
 /**
  * Expand the shortened list of class names.
  * For example:
- * J.util.Log, $.Display, $.Decorations
+ * JU.Log, $.Display, $.Decorations
  * will be expanded to 
- * J.util.Log, J.util.Display, J.util.Decorations
+ * JU.Log, JU.Display, JU.Decorations
  * where "$." stands for the previous class name's package.
  *
  * This method will be used to unwrap the required/optional classes list and 
@@ -4095,9 +4127,9 @@ var tryToLoadNext = function (file, fSuccess) {
     //System.out.println("tryToLoadNext firing " + _Loader._classCountOK + "/" + _Loader._classCountPending + " "   + fSuccess.toString() + " " + Clazz.getStackTrace())
 	  fSuccess();
   } else if (_Loader._classCountPending) {
-    alert(Clazz.getStackTrace(-1));
     for (var name in _Loader._classPending) {
       var n = findNode(name);
+      System.out.println("class left pending " + name + " " + n);
       if (n) {
         updateNode(n);
         break;
@@ -4109,12 +4141,12 @@ var tryToLoadNext = function (file, fSuccess) {
   // + _Loader._classCountOK + "/" + _Loader._classCountPending + " " 
    //+ _Loader.onGlobalLoaded.toString() + " " + Clazz.getStackTrace()
  //  )
-  if (_Loader._checkLoad) {
-    System.out.println("I think I'm done: SAEM call count: " + SAEMid);
-    Clazz.showDuplicates(true);
+    if (_Loader._checkLoad) {
+      System.out.println("I think I'm done: SAEM call count: " + SAEMid);
+      Clazz.showDuplicates(true);
+    }
   }
 	_Loader.onGlobalLoaded();
-}
 };
 
 
@@ -4601,8 +4633,10 @@ var loadClassNode = function (node) {
 };
 
 
-/* private */
-var runtimeKeyClass = "java.lang.String";
+/**
+ * Used in package
+/* public */
+var runtimeKeyClass = _Loader.runtimeKeyClass = "java.lang.String";
 
 /**
  * Queue used to store classes before key class is loaded.
