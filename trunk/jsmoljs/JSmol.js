@@ -148,22 +148,11 @@
 		this._is2D = true;
 		this._isJava = false;
 		this._jmolType = "Jmol._Canvas2D (" + type + ")";
-		switch (type) {
-		case "Jmol":
-			this._platform = "J.awtjs2d.Platform";
-			break;
-		case "JSV":
-			this._isJSV = true;
-			this._isLayered = true;
-			this._platform = "JSV.awtjs2d.Platform";
-			break;
-		case "Astex":
-			this._isAstex = true;
-			this._platform = "astex.awtjs2d.Platform";
-      break;
-    default:
-      this._platform = "";
-		}
+    this._isLayered = Info._isLayered || false;
+    this._isSwing = Info._isSwing || false;
+    this._isJSV = Info._isJSV || false;
+    this._isAstex = Info._isAstex || false;            
+    this._platform = Info._platform || "";
 		if (checkOnly)
 			return this;
 		window[id] = this;
@@ -225,6 +214,8 @@
 			else
 				this._GLmol.create();
 		};
+    
+    proto._getHtml5Canvas = function() { return this._canvas }; 
 
 		proto._createCanvas2d = function(doReplace) {
 			var container = Jmol.$(this, "appletdiv");
@@ -459,11 +450,16 @@
 			applet._appletPanel.setDisplay(applet._canvas);
 		}
 		applet._appletPanel.setScreenDimension(w, h);
-
+    var f = function(){
+      if (applet._appletPanel.paint)
+        applet._appletPanel.paint(null);
+      else
+        applet._appletPanel.update(null)
+    };
 		if (asNewThread) {
-			setTimeout(function(){ applet._appletPanel && applet._appletPanel.update()});
+			setTimeout(f);
 		} else {
-			applet._appletPanel.update();
+      f();
 		}
 		// System.out.println(applet._appletPanel.getFullName())
 	}

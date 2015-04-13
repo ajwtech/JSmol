@@ -94,6 +94,9 @@
 				break;
 			case "WEBGL":
 			case "HTML5":
+      	Info._isLayered = true;
+  			Info._isJSV = true;
+			  Info._platform = "JSV.awtjs2d.Platform";
 				Jmol._Canvas2D.prototype = Jmol._jsSetPrototype(new Applet(id,Info, true));
 			 	applet = new Jmol._Canvas2D(id, Info, "JSV", checkOnly);
 				break;
@@ -156,11 +159,10 @@
 		this._init();
 	};
 
-	proto._readyCallback = function(id, fullid, isReady, applet) {
+	proto._readyCallback = function(id, fullid, isReady) {
 	 if (!isReady)
 			return; // ignore -- page is closing
 		this._ready = true;
-		this._applet = applet;
 		this._readyScript && setTimeout(id + "._script(" + id + "._readyScript)",50);
 		this._showInfo(true);
 		this._showInfo(false);

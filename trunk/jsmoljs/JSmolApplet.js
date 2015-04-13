@@ -144,6 +144,8 @@
 	}
 
 	Applet._getCanvas = function(id, Info, checkOnly, webGL) {
+    Info._isLayered = false;
+    Info._platform = "J.awtjs2d.Platform";
 		if (webGL && Jmol.featureDetection.supportsWebGL()) {
 			Jmol._Canvas3D.prototype = Jmol.GLmol.extendApplet(Jmol._jsSetPrototype(new Applet(id, Info, true)));
 			return new Jmol._Canvas3D(id, Info, "Jmol", checkOnly);
@@ -319,13 +321,13 @@
 		}
 	}
 
-	proto._readyCallback = function(id, fullid, isReady, applet) {
+	proto._readyCallback = function(id, fullid, isReady, jmolApplet) {
 		if (!isReady)
 			return; // ignore -- page is closing
 		Jmol._setDestroy(this);
 		this._ready = true;
 		var script = this._readyScript;
-		this._applet = applet;
+		this._applet = jmolApplet;
 		if (this._defaultModel)
 			Jmol._search(this, this._defaultModel, (script ? ";" + script : ""));
 		else if (script)
