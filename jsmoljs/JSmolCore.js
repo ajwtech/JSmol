@@ -117,8 +117,8 @@ Jmol = (function(document) {
 	var z=Jmol.z || 9000;
 	var getZOrders = function(z) {
 		return {
-			header:z++,
 			rear:z++,
+			header:z++,
 			main:z++,
 			image:z++,
 			front:z++,
