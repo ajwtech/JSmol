@@ -1,6 +1,7 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
-// BY 10/19/2014 8:08:51 PM moved applet._cover and applet._displayCoverImage to 
+// BH 4/17/2015 2:33:32 PM update for SwingJS 
+// BH 10/19/2014 8:08:51 PM moved applet._cover and applet._displayCoverImage to 
 // BH 5/8/2014 11:20:21 AM trying to fix AH nd JG problem with multiple applets
 // BH 1/27/2014 8:36:43 AM adding Info.viewSet
 // BH 12/13/2013 9:04:53 AM _evaluate DEPRECATED (see JSmolApi.js Jmol.evaulateVar
@@ -321,13 +322,12 @@
 		}
 	}
 
-	proto._readyCallback = function(id, fullid, isReady, jmolApplet) {
+	proto._readyCallback = function(id, fullid, isReady) {
 		if (!isReady)
 			return; // ignore -- page is closing
 		Jmol._setDestroy(this);
 		this._ready = true;
 		var script = this._readyScript;
-		this._applet = jmolApplet;
 		if (this._defaultModel)
 			Jmol._search(this, this._defaultModel, (script ? ";" + script : ""));
 		else if (script)
