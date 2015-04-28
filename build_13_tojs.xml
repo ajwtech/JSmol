@@ -80,7 +80,7 @@
         </fileset>
     </copy>
    	
-   	<echo>...JU (javajs/utl, org/jmol/util, com/jcraft/jzlib</echo>
+   	<echo>...JU (javajs/util, org/jmol/util, com/jcraft/jzlib</echo>
    	<copy todir="site/jsmol/j2s/JU" >
       <fileset dir="bin/javajs/util">
         <include name="**/*.js" />
