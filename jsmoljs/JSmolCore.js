@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 5/9/2015 3:38:52 PM adds data-ignoreMouse attribute for JTextField
 // BH 3/30/2015 9:46:53 PM adds JSAppletPanel for ready callback
 // BH 12/6/2014 3:32:54 PM Jmol.setAppletCss() broken
 // BH 9/13/2014 2:15:51 PM embedded JSME loads from SEARCH when Jmol should 
@@ -1536,6 +1537,9 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
 			Jmol._setMouseOwner(canvas, true);
 			ev.stopPropagation();
+      var ui = ev.target["data-UI"];
+      if (ui && ui.handleJSEvent("mouse_down", ev))
+        return true;
 			ev.preventDefault();
 			canvas.isDragging = true;
 			if ((ev.type == "touchstart") && Jmol._gestureUpdate(canvas, ev))
@@ -1553,6 +1557,9 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mouseup touchend', function(ev) {
 			Jmol._setMouseOwner(null);
 			ev.stopPropagation();
+      var ui = ev.target["data-UI"];
+      if (ui && ui.handleJSEvent("mouse_up", ev))
+        return true;
 			ev.preventDefault();
 			canvas.isDragging = false;
 			if (ev.type == "touchend" && Jmol._gestureUpdate(canvas, ev))
