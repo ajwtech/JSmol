@@ -80,7 +80,7 @@
         </fileset>
     </copy>
    	
-   	<echo>...JU (javajs/utl, org/jmol/util, com/jcraft/jzlib</echo>
+   	<echo>...JU (javajs/util, org/jmol/util, com/jcraft/jzlib</echo>
    	<copy todir="site/jsmol/j2s/JU" >
       <fileset dir="bin/javajs/util">
         <include name="**/*.js" />
@@ -869,6 +869,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="scriptcmd" />
         <param name="call-core.list" value="
+        	JS/ScriptExt.js
        		JS/CmdExt.js
         	" />
     </antcall>
@@ -1057,6 +1058,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="surface" />
         <param name="call-core.list" value="
+        	JS/ScriptExt.js
         	JS/IsoExt.js
     		JU/Triangulator.js
     		JU/TriangleData.js
