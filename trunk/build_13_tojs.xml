@@ -481,7 +481,6 @@
 		J/g3d/CylinderRenderer.js
 		J/g3d/G3DRenderer.js
 		J/g3d/Graphics3D.js
-		J/g3d/ImageRenderer.js
 		J/g3d/LineRenderer.js
 		J/g3d/Pixelator.js
 		J/g3d/PixelatorT.js
@@ -496,7 +495,6 @@
 		J/i18n/Language.js
 		J/i18n/Resource.js
 		J/io/FileReader.js
-		J/io/JmolBinary.js
 		J/render/BallsRenderer.js
 		J/render/FontLineShapeRenderer.js
 		J/render/FrankRenderer.js
