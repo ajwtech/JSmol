@@ -2,6 +2,7 @@
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
+// BH 6/10/2015 12:33:55 AM image loading from PNGJ file bytes using data uri not working
 // BH 3/28/2015 6:18:33 AM refactoring to generalize for non-Jmol-related SwingJS applications
 // BH 9/6/2014 5:42:32 PM  two-point gestures broken
 // BH 5/8/2014 11:16:40 AM j2sPath starting with "/" fails to add idiom
@@ -484,19 +485,11 @@
 
 	Jmol._getHiddenCanvas = function(applet, id, width, height, forceNew) {
 		id = applet._id + "_" + id;
-		var d = document.getElementById(id);
-		if (d && forceNew) {
-			d = null;
-		}
-		if (!d)
-			d = document.createElement( 'canvas' );
+		var d = document.createElement( 'canvas' );
 			// for some reason both these need to be set, or maybe just d.width?
 		d.width = d.style.width = width;
 		d.height = d.style.height = height;
-		// d.style.display = "none";
-		if (d.id != id) {
-			d.id = id;
-		}
+		d.id = id;
 		return d;
 	}
 
@@ -511,17 +504,18 @@
 		var path = echoNameAndPath[1];
 
 		if (image == null) {
-			var image = new Image();
-			image.onload = function() {Jmol._loadImage(platform, echoNameAndPath, null, fOnload, image)};
-
-			if (bytes != null) {      
-				bytes = J.io.Base64.getBase64(bytes).toString();      
-				var filename = path.substring(url.lastIndexOf("/") + 1);                                    
+			image = new Image();
+      if (bytes == null) {
+        image.onload = function() {Jmol._loadImage(platform, echoNameAndPath, null, fOnload, image)};
+      } else {
+				bytes = JU.Base64.getBase64(bytes).toString();      
+				var filename = path.substring(path.lastIndexOf("/") + 1);                                    
 				var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
-				 // now what?
+        path = "data:" + mimetype + ";base64," + bytes
 			}
 			image.src = path;
-			return true; // as far as we can tell!
+      if (bytes == null)
+        return;
 		}
 		var width = image.width;
 		var height = image.height; 
