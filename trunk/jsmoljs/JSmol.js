@@ -2,7 +2,7 @@
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
-// BH 6/10/2015 12:33:55 AM image loading from PNGJ file bytes using data uri not working
+// BH 6/12/2015 6:08:08 AM image loading from PNGJ file bytes using data uri not working
 // BH 3/28/2015 6:18:33 AM refactoring to generalize for non-Jmol-related SwingJS applications
 // BH 9/6/2014 5:42:32 PM  two-point gestures broken
 // BH 5/8/2014 11:16:40 AM j2sPath starting with "/" fails to add idiom
@@ -381,52 +381,6 @@
 		};
 
 		proto._canScript = function(script) {return true};
-
-//		proto._delay = function(eval, sc, millis) {
-//    alert("_delay???")
-//		// does not take into account that scripts may be added after this and
-//		// need to be cached.
-//			this._delayID = setTimeout(function(){eval.resumeEval(sc,false)}, millis);		
-//		}
-/*
-		proto._createDomNode = function(id, data) { // moved to org.jmol.adapter.readers.xml.XmlReader.java
-			id = this._id + "_" + id;
-			var d = document.getElementById(id);
-			if (d)
-				document.body.removeChild(d);
-			if (!data)
-				return;
-			if (data.indexOf("<?") == 0)
-				data = data.substring(data.indexOf("<", 1));
-			if (data.indexOf("/>") >= 0) {
-				// no doubt there is a more efficient way to do this.
-				// Firefox, at least, does not recognize "/>" in HTML blocks
-				// that are added this way.
-				var D = data.split("/>");
-				for (var i = D.length - 1; --i >= 0;) {
-					var s = D[i];
-					var pt = s.lastIndexOf("<") + 1;
-					var pt2 = pt;
-					var len = s.length;
-					var name = "";
-					while (++pt2 < len) {
-						if (" \t\n\r".indexOf(s.charAt(pt2))>= 0) {
-							var name = s.substring(pt, pt2);
-							D[i] = s + "></"+name+">";
-							break;
-						}	  	
-					}
-				}
-				data = D.join('');
-			}
-			d = document.createElement("_xml")
-			d.id = id;
-			d.innerHTML = data;
-			d.style.display = "none";
-			document.body.appendChild(d);
-			return d;
-		}		
-*/
 		proto.equals = function(a) { return this == a };
 		proto.clone = function() { return this };
 		proto.hashCode = function() { return parseInt(this._uniqueId) };  
@@ -453,6 +407,7 @@
 	};
 
 	Jmol._repaint = function(applet, asNewThread) {
+    // JmolObjectInterface 
 		// asNewThread: true is from RepaintManager.repaintNow()
 		// false is from Repaintmanager.requestRepaintAndWait()
 		// called from apiPlatform Display.repaint()
@@ -483,52 +438,67 @@
 		// System.out.println(applet._appletPanel.getFullName())
 	}
 
-	Jmol._getHiddenCanvas = function(applet, id, width, height, forceNew) {
-		id = applet._id + "_" + id;
-		var d = document.createElement( 'canvas' );
-			// for some reason both these need to be set, or maybe just d.width?
-		d.width = d.style.width = width;
-		d.height = d.style.height = height;
-		d.id = id;
-		return d;
-	}
-
-	Jmol._loadImage = function(platform, echoNameAndPath, bytes, fOnload, image) {
-	// bytes would be from a ZIP file -- will have to reflect those back from
-	// server as an image after conversion to base64
-	// ah, but that's a problem, because that image would be needed to be
-	// posted, but you can't post an image call.
-	// so we would have to go with <image data:> which does not work in all
-	// browsers. Hmm.
-
-		var path = echoNameAndPath[1];
-
-		if (image == null) {
-			image = new Image();
-      if (bytes == null) {
-        image.onload = function() {Jmol._loadImage(platform, echoNameAndPath, null, fOnload, image)};
-      } else {
-				bytes = JU.Base64.getBase64(bytes).toString();      
-				var filename = path.substring(path.lastIndexOf("/") + 1);                                    
-				var mimetype = (filename.indexOf(".png") >= 0 ? "image/png" : filename.indexOf(".jpg") >= 0 ? "image/jpg" : "");
-        path = "data:" + mimetype + ";base64," + bytes
-			}
-			image.src = path;
-      if (bytes == null)
-        return;
-		}
-		var width = image.width;
-		var height = image.height; 
-		var id = "echo_" + echoNameAndPath[0];  
-		var canvas = Jmol._getHiddenCanvas(platform.vwr.html5Applet, id, width, height, true);
-		canvas.imageWidth = width;
-		canvas.imageHeight = height;
-		canvas.id = id;
-		canvas.image=image;
-		Jmol._setCanvasImage(canvas, width, height);
+  /**
+   * _loadImage is called for asynchronous image loading.   
+   * If bytes are not null, they are from a ZIP file. They are processed sychronously
+   * here using an image data URI. Can all browsers handle MB of data in data URI?
+   *
+   */        
+	Jmol._loadImage = function(platform, echoName, path, bytes, fOnload, image) {
+    // JmolObjectInterface  
+		var id = "echo_" + echoName + path + (bytes ? "_" + bytes.length : "");
+		var canvas = Jmol._getHiddenCanvas(platform.vwr.html5Applet, id, 0, 0, false, true);
+//    System.out.println(["JSmol.js loadImage ",id,path,canvas,image])
+    if (canvas == null) { 
+  		if (image == null) {
+  			image = new Image();
+        if (bytes == null) {
+          image.onload = function() {Jmol._loadImage(platform, echoName, path, null, fOnload, image)};
+    			image.src = path;
+          return null;
+        } else {
+              System.out.println("Jsmol.js Jmol._loadImage using data URI for " + id) 
+        }
+        var mimetype = JU.Rdr.guessMimeTypeForBytes(bytes);
+  			var filename = path.substring(path.lastIndexOf("/") + 1);
+        if (filename.length == 3)
+          filename = "." + filename; // was a mime type 
+        image.src = "data:" + mimetype + ";base64," + JU.Base64.getBase64(bytes);
+      }
+  		var width = image.width;
+  		var height = image.height; 
+		  canvas = Jmol._getHiddenCanvas(platform.vwr.html5Applet, id, width, height, true, false);
+  		canvas.imageWidth = width;
+  		canvas.imageHeight = height;
+  		canvas.id = id;
+  		canvas.image=image;
+  		Jmol._setCanvasImage(canvas, width, height);
 		// return a null canvas and the error in path if there is a problem
-		fOnload(canvas,path);
+    } else {
+      System.out.println("Jsmol.js Jmol._loadImage reading cached image for " + id) 
+    }
+    return (bytes == null? fOnload(canvas,path) : canvas);
 	};
+
+Jmol._canvasCache = {};
+
+	Jmol._getHiddenCanvas = function(applet, id, width, height, forceNew, checkOnly) {
+		id = applet._id + "_" + id;
+    var d = Jmol._canvasCache[id];
+    if (checkOnly)
+      return d; 
+    if (forceNew || !d || d.width != width || d.height != height) {
+      d = document.createElement( 'canvas' );
+  			// for some reason both these need to be set, or maybe just d.width?
+  		d.width = d.style.width = width;
+  		d.height = d.style.height = height;
+  		d.id = id;
+      Jmol._canvasCache[id] = d;
+      //System.out.println("JSmol.js loadImage setting cache" + id + " to " + d)
+    }
+    
+		return d;
+   	}
 
 	Jmol._setCanvasImage = function(canvas, width, height) {
     // called from org.jmol.awtjs2d.Platform
@@ -537,5 +507,10 @@
 		canvas.height = height;
 		canvas.getContext("2d").drawImage(canvas.image, 0, 0, width, height);
 	};
-
+  
+  Jmol._apply = function(f,a) {
+    // JmolObjectInterface
+    return f(a);
+  }
+  
 })(Jmol);

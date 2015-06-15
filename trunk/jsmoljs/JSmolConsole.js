@@ -18,6 +18,11 @@ Jmol.Console = {
 	}	
 }
 
+Jmol._consoleGetImageDialog = function(vwr, title, imageMap) {
+  // JmolObjectInterface
+  return new Jmol.Console.Image(vwr, title, imageMap);
+}
+
 Jmol.Console.Image = function(vwr, title, imageMap) {
 
   // page designer may indicate one of three divs for images on the page:
