@@ -1536,7 +1536,7 @@ Jmol = (function(document) {
 
 	Jmol._jsSetMouse = function(canvas) {
 
-    var doIgnore = function(ev) { return (ev.target.className.indexOf("swingjs-ui") >= 0) };
+    var doIgnore = function(ev) { return (!ev.target || ev.target.className.indexOf("swingjs-ui") >= 0) };
          
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
       if (doIgnore(ev))

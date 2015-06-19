@@ -373,6 +373,7 @@
 		javajs/api/GenericMenuInterface.js
     	javajs/api/GenericMouseInterface.js
     	javajs/api/GenericPlatform.js
+    	javajs/api/JmolObjectInterface.js
     	javajs/api/JSInterface.js
 		javajs/api/JSONEncodable.js
     	javajs/api/PlatformViewer.js
