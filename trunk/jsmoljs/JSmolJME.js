@@ -3,6 +3,7 @@
 // see http://peter-ertl.com/jsme/JSME_2013-10-13/api_javadoc/index.html
 
 
+// BH 6/19/2015 5:36:23 PM fix for Jmol mouse hook t.x.baseVal not implemented fully on iOS
 // BH 3/26/2015 6:13:01 PM  SMILES fix for stereochem in rings losing H atoms
 // BH 9/13/2014 2:24:29 PM SMILES fix again
 // BH 9/2/2014 6:56:42 PM  SMILES fix for quaternary carbon with stereochemistry
@@ -297,8 +298,13 @@
 			// cancel only these specific events
 			return a;
 		}	
-		var x = (t.textContent ? t.x.baseVal[0].value : t.points ? t.animatedPoints[0].x : isKey || !t.x && !t.x1 ? 200 : (t.x || t.x1).baseVal.value);
-		var y = (t.textContent ? t.y.baseVal[0].value : t.points ? t.animatedPoints[0].y : isKey || !t.x && !t.x1 ? 200 : (t.y || t.y1).baseVal.value);
+    var x = 200;
+    var y = 200;
+    try {
+		x = parseInt(t.getAttribute("x"));//(t.textContent ? t.x.baseVal[0].value : t.points ? t.animatedPoints[0].x : isKey || !t.x && !t.x1 ? 200 : (t.x || t.x1).baseVal.value);
+		y = parseInt(t.getAttribute("y"));//(t.textContent ? t.y.baseVal[0].value : t.points ? t.animatedPoints[0].y : isKey || !t.x && !t.x1 ? 200 : (t.y || t.y1).baseVal.value);
+    } catch(e) {
+    }
 		// when editing is disabled, only the star key and main-panel clicking will be allowed
 		var isStar = (x >= 100 && x < 124 && y < 24); // fifth icon from the left on top row
 		var isMain = (x > 25 && y > 50 || x == 0 && y == 0 && t.width.baseVal.value > 100 && t.height.baseVal.value > 100);
