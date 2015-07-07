@@ -131,6 +131,7 @@ Swing.showMenu = function(menu, x, y) {
 	menu.timestamp = System.currentTimeMillis();
 	menu.dragBind(true);
 	menu.container.unbind('clickoutjsmol');
+  if (!Jmol._persistentMenu)
 	menu.container.bind('clickoutjsmol mousemoveoutjsmol', function(evspecial, target, ev) {
 	  if (System.currentTimeMillis() - menu.timestamp > 1000)
 		  Swing.hideMenu(menu);
@@ -140,7 +141,9 @@ Swing.showMenu = function(menu, x, y) {
 
 Swing.disposeMenu = function(menu) {
   // called by javajs.swing.JPopupMenu
-	Swing.hideMenu(menu);
+  if (Jmol._persistentMenu)
+  	return
+  Swing.hideMenu(menu);
 	Swing.bindMenuActionCommands(menu, false);
 	delete menu.applet._menus[menu.name];
 }
