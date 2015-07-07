@@ -458,8 +458,6 @@
 		J/atomdata/AtomData.js
     	J/atomdata/AtomDataServer.js
 		J/atomdata/RadiusData.js
-		J/awtjs/Image.js
-		J/awtjs/JSFont.js
 		J/awtjs/Platform.js
 		J/awtjs2d/Display.js
 		J/awtjs2d/Image.js
