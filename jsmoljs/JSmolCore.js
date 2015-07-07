@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 6/29/2015 10:14:47 AM adds Jmol.$getSize(obj)
 // BH 5/30/2015 9:33:12 AM adds class swingjs-ui to ignore 
 // BH 5/9/2015 3:38:52 PM adds data-ignoreMouse attribute for JTextField
 // BH 3/30/2015 9:46:53 PM adds JSAppletPanel for ready callback
@@ -359,6 +360,11 @@ Jmol = (function(document) {
 		return Jmol._$(id).attr("disabled", b ? null : "disabled");  
 	}
 
+  Jmol.$getSize = function(id) {
+		var o = Jmol._$(id);
+    return [ o.width(), o.height() ]
+  }
+  
 	Jmol.$setSize = function(id, w, h) {
 		return Jmol._$(id).width(w).height(h);
 	}

@@ -459,20 +459,22 @@
         } else {
               System.out.println("Jsmol.js Jmol._loadImage using data URI for " + id) 
         }
-        var mimetype = JU.Rdr.guessMimeTypeForBytes(bytes);
-  			var filename = path.substring(path.lastIndexOf("/") + 1);
-        if (filename.length == 3)
-          filename = "." + filename; // was a mime type 
-        image.src = "data:" + mimetype + ";base64," + JU.Base64.getBase64(bytes);
+        image.src = (typeof bytes == "string" ? bytes : 
+          "data:" + JU.Rdr.guessMimeTypeForBytes(bytes) + ";base64," + JU.Base64.getBase64(bytes));
       }
   		var width = image.width;
-  		var height = image.height; 
+  		var height = image.height;
+      if (echoName == "webgl") {
+       // will be antialiased
+       width /= 2;
+       height /= 2; 
+      } 
 		  canvas = Jmol._getHiddenCanvas(platform.vwr.html5Applet, id, width, height, true, false);
   		canvas.imageWidth = width;
   		canvas.imageHeight = height;
   		canvas.id = id;
   		canvas.image=image;
-  		Jmol._setCanvasImage(canvas, width, height);
+  		Jmol._setCanvasImage(canvas, width, height, image.width, image.height);
 		// return a null canvas and the error in path if there is a problem
     } else {
       System.out.println("Jsmol.js Jmol._loadImage reading cached image for " + id) 
@@ -500,12 +502,12 @@ Jmol._canvasCache = {};
 		return d;
    	}
 
-	Jmol._setCanvasImage = function(canvas, width, height) {
+	Jmol._setCanvasImage = function(canvas, width, height, imageWidth, imageHeight) {
     // called from org.jmol.awtjs2d.Platform
 		canvas.buf32 = null;
 		canvas.width = width;
 		canvas.height = height;
-		canvas.getContext("2d").drawImage(canvas.image, 0, 0, width, height);
+		canvas.getContext("2d").drawImage(canvas.image, 0, 0, imageWidth || width, imageHeight || height, 0, 0, width, height);
 	};
   
   Jmol._apply = function(f,a) {
