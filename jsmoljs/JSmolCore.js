@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 7/7/2015 1:42:31 PM Jmol._persistentMenu
 // BH 6/29/2015 10:14:47 AM adds Jmol.$getSize(obj)
 // BH 5/30/2015 9:33:12 AM adds class swingjs-ui to ignore 
 // BH 5/9/2015 3:38:52 PM adds data-ignoreMouse attribute for JTextField
@@ -153,6 +154,7 @@ Jmol = (function(document) {
 		_applets: {},
 		_asynchronous: true,
 		_ajaxQueue: [],
+    _persistentMenu: false,
 		_getZOrders: getZOrders,
 		_z:getZOrders(z),
 		_debugCode: true,  // set false in process of minimization
