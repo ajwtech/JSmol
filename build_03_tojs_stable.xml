@@ -3,8 +3,9 @@
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-    <property name="jmol.path" value="../Jmol-14_2" />
+   <property name="jmol.path" value="../Jmol-14_2" />
    <property name="jsv.path" value="../JSpecView" />
+   <property name="site.path" value="site/jsmol" />
 
    <target name="toJs" id="toJs">
   			
@@ -15,19 +16,19 @@
 
    	<echo>creating site/jsmol/j2s</echo>
    	<echo>...java</echo>
-   	<copy todir="site/jsmol/j2s/java" >
+   	<copy todir="${site.path}/j2s/java" >
       <fileset dir="j2s/java">
         <include name="**/*.js" />
       </fileset>
     </copy>
-    <copy overwrite="true" todir="site/jsmol/j2s/java" >
+    <copy overwrite="true" todir="${site.path}/j2s/java" >
       <fileset dir="bin/java">
         <include name="**/*.js" />
       </fileset>
     </copy>
 
    	<echo>...javajs</echo>
-   	<copy todir="site/jsmol/j2s/javajs" >
+   	<copy todir="${site.path}/j2s/javajs" >
         <fileset dir="bin/javajs">
           <include name="**/*.js" />
           <exclude name="**/util/**/*" />
@@ -35,7 +36,7 @@
     </copy>
    	
    	<echo>...J</echo>
-  	<copy todir="site/jsmol/j2s/J" >
+  	<copy todir="${site.path}/j2s/J" >
       <fileset dir="bin/org/jmol">
         <include name="**/*.js" />
         <exclude name="minimize/**/*" />
@@ -51,7 +52,7 @@
     </copy>
    	
    	<echo>...JM (modelset, modelsetbio, minimize)</echo>
-   	<copy todir="site/jsmol/j2s/JM" >
+   	<copy todir="${site.path}/j2s/JM" >
       <fileset dir="bin/org/jmol/modelset">
         <include name="**/*.js" />
       </fileset>
@@ -62,10 +63,10 @@
             <include name="**/*.js" />
         </fileset>
     </copy>
-   	<rename src="site/jsmol/j2s/JM/forcefield" dest="site/jsmol/j2s/JM/FF" />
+   	<rename src="${site.path}/j2s/JM/forcefield" dest="${site.path}/j2s/JM/FF" />
    	
    	<echo>...JS (script, scriptext, smiles, symmetry)</echo>
-   	<copy todir="site/jsmol/j2s/JS" >
+   	<copy todir="${site.path}/j2s/JS" >
       <fileset dir="bin/org/jmol/script">
         <include name="**/*.js" />
       </fileset>
@@ -81,7 +82,7 @@
     </copy>
    	
    	<echo>...JU (javajs/util, org/jmol/util, com/jcraft/jzlib</echo>
-   	<copy todir="site/jsmol/j2s/JU" >
+   	<copy todir="${site.path}/j2s/JU" >
       <fileset dir="bin/javajs/util">
         <include name="**/*.js" />
       </fileset>
@@ -94,14 +95,14 @@
     </copy>
    	   	
    	<echo>...JV (viewer)</echo>
-   	<copy todir="site/jsmol/j2s/JV" >
+   	<copy todir="${site.path}/j2s/JV" >
       <fileset dir="bin/org/jmol/viewer">
         <include name="**/*.js" />
       </fileset>
     </copy>
    	
    	<echo>...JSV (JSpecView)</echo>
-   	<copy todir="site/jsmol/j2s/JSV" >
+   	<copy todir="${site.path}/j2s/JSV" >
       <fileset dir="bin/jspecview">
         <include name="**/*.js" />
       </fileset>
@@ -111,77 +112,77 @@
 
     <echo>removing j2s globals Class and JavaObject</echo>
     <echo>...replacing Class.forName with Clazz._4Name</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Class.forName" value="Clazz._4Name"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="Class.forName" value="Clazz._4Name"/>
     <echo>...replacing JavaObject with Clazz._O</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token=" JavaObject" value=" Clazz._O"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token=" JavaObject" value=" Clazz._O"/>
     <echo>...removing all $fz references for sub/superclass common private function names</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="($fz =" value=""/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token=", $fz.isPrivate = true, $fz)" value=""/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="($fz =" value=""/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token=", $fz.isPrivate = true, $fz)" value=""/>
   	<echo>...changing Clazz.pu$h() to Clazz.pu$h(self.c$) (only a partial fix)</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.pu$h()" value="Clazz.pu$h(self.c$)"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="Clazz.pu$h ()" value="Clazz.pu$h(self.c$)"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="Clazz.pu$h()" value="Clazz.pu$h(self.c$)"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="Clazz.pu$h ()" value="Clazz.pu$h(self.c$)"/>
    	   	
     <echo>modifying class names to match directories</echo>
     <echo>...abbreviating class name "org.jmol.modelsetbio" and "org.jmol.modelset" to "JM"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JM"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.modelsetbio" value="JM"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.modelset" value="JM"/>
     <echo>...abbreviating class name "org.jmol.minimize" to "JM"; "org.jmol.minimize.forcefield" to "JM.FF"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.minimize.forcefield" value="JM.FF"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol/minimize/forcefield" value="JM/FF"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.minimize" value="JM"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.minimize.forcefield" value="JM.FF"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org/jmol/minimize/forcefield" value="JM/FF"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.minimize" value="JM"/>
 
     <echo>...abbreviating class name "org.jmol.script" and "org.jmol.scriptext" to "JS"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.scriptext" value="JS"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.script" value="JS"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.scriptext" value="JS"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.script" value="JS"/>
     <echo>...abbreviating class name "org.jmol.smiles" and org.jmol.symmetry to "JS"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.smiles" value="JS"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.symmetry" value="JS"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.smiles" value="JS"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.symmetry" value="JS"/>
     <echo>...abbreviating class name "org.jmol.util", "javajs.util", and "com.jcraft.jzlib" to "JU"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.util" value="JU"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JU"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.util" value="JU"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="javajs.util" value="JU"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="com.jcraft.jzlib" value="JU"/>
     <echo>...abbreviating class name "org.jmol.viewer" to "JV"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol.viewer" value="JV"/>
     <echo>...abbreviating class name "org.jmol" to "J"</echo>
    	<!-- org/jmol is for org/jmol/modelkit, org/jmol/quantum -->
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org.jmol" value="J"/>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="org/jmol" value="J"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org.jmol" value="J"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="org/jmol" value="J"/>
   	<echo>...abbreviating class name "jspecview" to "JSV"</echo>
-  	<replace dir="site/jsmol/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
+  	<replace dir="${site.path}/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
    	  	   	  	
 
   	<!-- get version information  -->		
     <echo>getting Jmol.properties and other resources</echo>
-    <copy todir="site/jsmol/j2s" >
+    <copy todir="${site.path}/j2s" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
    	
-   	<copy todir="site/jsmol/j2s/J" >
+   	<copy todir="${site.path}/j2s/J" >
   	  <fileset dir="">
   	    <include name="Jmol.properties" />
   	  </fileset>
     </copy>
    	
   	<!-- get required non-JavaScript resources -->		
-    <copy todir="site/jsmol/j2s/JM/FF/data" >
+    <copy todir="${site.path}/j2s/JM/FF/data" >
       <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
-    <copy todir="site/jsmol/j2s/J/quantum" >
+    <copy todir="${site.path}/j2s/J/quantum" >
       <fileset dir="${jmol.path}/src/org/jmol/quantum">
         <include name="*.txt" />
       </fileset>
     </copy>
-    <copy todir="site/jsmol/j2s/J/modelkit/images">
+    <copy todir="${site.path}/j2s/J/modelkit/images">
       <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
    	   	
-    <copy todir="site/jsmol/j2s/JSV/common" >
+    <copy todir="${site.path}/j2s/JSV/common" >
       <fileset dir="${jsv.path}">
         <include name="TODO.txt" />
       </fileset>
@@ -195,23 +196,23 @@
 		  </filterchain>
     </copy>
    	<echo>...adding version information to JSVersion.js</echo>
-   	<concat destfile="temp.js"><filelist dir="site/jsmol/j2s/JSV/common" files="
+   	<concat destfile="temp.js"><filelist dir="${site.path}/j2s/JSV/common" files="
    		TODO.txt
    		JSVersion.js
    		" />
    	</concat>
-  	<move file="temp.js" tofile="site/jsmol/j2s/JSV/common/JSVersion.js" />
+  	<move file="temp.js" tofile="${site.path}/j2s/JSV/common/JSVersion.js" />
 
   	<!-- get .po files from the Jmol project -->		
    	<echo>...adding .po files</echo>
-   	<copy overwrite="true" todir="site/jsmol/idioma" >
+   	<copy overwrite="true" todir="${site.path}/idioma" >
 	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
 	  </fileset>
 	</copy>
 
    	<echo>...adding j2s/img subdirectory</echo>
-  	<copy todir="site/jsmol/j2s/img">
+  	<copy todir="${site.path}/j2s/img">
   	  <fileset dir="img">
   	    <include name="**/*" />
   	  </fileset>
@@ -222,7 +223,7 @@
    	<!-- add jspecview files and subdirectories -->
 
    	<echo>...adding JSV/export/resources files</echo>
-   		<copy todir="site/jsmol/j2s/JSV/export/resources" >
+   		<copy todir="${site.path}/j2s/JSV/export/resources" >
       <fileset dir="${jsv.path}Lib/src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
@@ -242,21 +243,21 @@
     </copy>
 
    	<echo>...adding data files</echo>
-   	<copy todir="site/jsmol/data">
+   	<copy todir="${site.path}/data">
   	  <fileset dir="data">
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
    	<echo>...adding flot</echo>
-   	<copy todir="site/jsmol/flot">
+   	<copy todir="${site.path}/flot">
   	  <fileset dir="lib/flot">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
  	
  	<echo>...adding Jmol and JSpecView jar and jnlp files</echo>
-  	<copy todir="site/jsmol/java">
+  	<copy todir="${site.path}/java">
   	  <fileset dir="${jmol.path}/build">
   	    <include name="JmolApplet*.jar" />
   	  </fileset>
@@ -272,40 +273,40 @@
 	</copy>
 		
    	<echo>...adding jQuery and minimizing it</echo>
-  	<copy todir="site/jsmol/jquery">
+  	<copy todir="${site.path}/jquery">
   	  <fileset dir="lib/jquery">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/jquery" failonerror="false">
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="${site.path}/jquery" failonerror="false">
    		<arg line="--js jquery.js --js_output_file jquery.min.js" />
     </java>
 
    	<echo>...adding jsme</echo>
-  	<copy todir="site/jsmol/jsme">
+  	<copy todir="${site.path}/jsme">
   	  <fileset dir="lib/jsme">
   	    <include name="**/*" />
   	  </fileset>
     </copy>
    	<echo>......adding jsme event hooks</echo>
-  	<replace dir="site/jsmol/jsme/jsme" includes="*.html" token="var c=arguments,d;" value="var c=arguments,d;if(!(d=(!c||!c[0]||!$wnd.Jmol?a:$wnd.Jmol._jmeHook(a, c[0]))))return;"/>
+  	<replace dir="${site.path}/jsme/jsme" includes="*.html" token="var c=arguments,d;" value="var c=arguments,d;if(!(d=(!c||!c[0]||!$wnd.Jmol?a:$wnd.Jmol._jmeHook(a, c[0]))))return;"/>
    	
    	<echo>...adding js subdirectory</echo>
-   	<copy todir="site/jsmol/js">
+   	<copy todir="${site.path}/js">
   	  <fileset dir="jsmoljs">		
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
    	<echo>...adding spt subdirectory</echo>
-   	<copy todir="site/jsmol/spt">
+   	<copy todir="${site.path}/spt">
   	  <fileset dir="spt">
   	    <include name="**/*" />
   	  </fileset>
     </copy> 
    	
    	<echo>...adding jsmol.php</echo>
-  	<copy todir="site/jsmol/php">
+  	<copy todir="${site.path}/php">
   	  <fileset dir="php">
   	    <include name="**/*" />
   	  </fileset>
@@ -315,7 +316,7 @@
  
    	<echo>creating and compressing core files - warnings are OK; "does not exist" is trouble</echo>
    	<echo>...adding package.js from ${jmol.path}/srcjs/js</echo>
-   	<copy todir="site/jsmol/j2s/core">
+   	<copy todir="${site.path}/j2s/core">
   	  <fileset dir="${jmol.path}/srcjs/js">
   	    <include name="package.js" />
   	  </fileset>
@@ -390,6 +391,7 @@
     	JU/Base64.js
     	JU/BS.js
     	JU/CU.js
+    	JU/DebugJS.js
     	JU/DF.js
     	JU/Encoding.js
     	JU/Lst.js
@@ -1174,7 +1176,7 @@
     </antcall>
    	<!--
    	   	<echo>JSmol.min.core.js includes JSmol.min.js and core.z.js</echo>
-   	   	<concat destfile="site/jsmol/JSmol.min.core.js"><filelist dir="site/jsmol" files="
+   	   	<concat destfile="${site.path}/JSmol.min.core.js"><filelist dir="site/jsmol" files="
    	   		JSmol.min.js
    	   		j2s/core/core.z.js 
    	   		" />
@@ -1228,50 +1230,51 @@
 
 
   <target name="call-core" id="call-core">
-   	<echo>......Creating core${call-core.name}.js</echo> 	
-   	<concat destfile="site/jsmol/js/core${call-core.name}.js">
-   		<filelist dir="site/jsmol/j2s" files="${call-core.list}" />
+   	<echo>......Creating core${call-core.name}.js</echo>
+   	<concat destfile="${site.path}/js/core/tmp.js">
+   		<filelist dir="${site.path}/j2s" files="${call-core.list}" />
    	</concat> 
-  	<copy file="site/jsmol/js/core${call-core.name}.js" tofile="site/jsmol/js/core2.js" />
   	<!--
 	   	<echo>...removing unnecessary Clazz.defineStatics blocks</echo>
   	  This next replacement does not work, because the j2s compiler does not 
   	  distinguish between final and non-final static variable.
   	  We will have to do this on a case-by-case basis. 
   	   
-  	<replaceregexp file="site/jsmol/js/core2.js" match="(Clazz.defineStatics ?\(((?![\[\(]).)*?\);)" flags="gs" replace="/*\1*/" /> 
-  	<copy file="site/jsmol/js/core2.js" tofile="site/jsmol/js/core${call-core.name}3.js" />
+  	<replaceregexp file="${site.path}/js/core2.js" match="(Clazz.defineStatics ?\(((?![\[\(]).)*?\);)" flags="gs" replace="/*\1*/" /> 
+  	<copy file="${site.path}/js/core2.js" tofile="${site.path}/js/core${call-core.name}3.js" />
   	 -->
 
-  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz." value="Clazz_"/>
-  	<replace dir="site/jsmol/js" includes="core2.js" token="Clazz__" value="Clazz._"/>
-  	<replace dir="site/jsmol/js" includes="core2.js" token="($fz = " value=""/>
-  	<replace dir="site/jsmol/js" includes="core2.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
-   	<concat destfile="site/jsmol/js/core${call-core.name}.js"><filelist dir="site/jsmol/js" files="
+  	<replace dir="${site.path}/js/core" includes="tmp.js" token="Clazz." value="Clazz_"/>
+  	<replace dir="${site.path}/js/core" includes="tmp.js" token="Clazz__" value="Clazz._"/>
+  	<replace dir="${site.path}/js/core" includes="tmp.js" token="($fz = " value=""/>
+  	<replace dir="${site.path}/js/core" includes="tmp.js" token=", $fz.isPrivate = true, $fz)" value=""/> 	
+   	<echo>......Generating ${site.path}/j2s/core/core${call-core.name}.js</echo> 	
+   	<concat destfile="${site.path}/j2s/core/core${call-core.name}.js"><filelist dir="${site.path}/js" files="
    		core/coretop2.js
-   		core2.js
+   		core/tmp.js
    		core/corebottom2.js
    		" />
    	</concat>
-   	<echo>......Generating core${call-core.name}.z.js</echo> 	
-   	<java jar="jars/closure_compiler.jar" fork="true" dir="site/jsmol/js" failonerror="false">
-   		<arg line="--js core${call-core.name}.js --js_output_file ../j2s/core/core${call-core.name}.z.js" />
+   	<echo>......Generating ${site.path}/j2s/core/core${call-core.name}.z.js</echo> 	
+   	<java jar="jars/closure_compiler.jar" fork="true" dir="${site.path}/j2s/core" failonerror="false">
+   		<arg line="--js core${call-core.name}.js --js_output_file core${call-core.name}.z.js" />
     </java>
+ 	<delete quiet="true" file="${site.path}/js/core/tmp.js" />
   </target>
 
   <target name="call-corechop" id="call-corechop">
   	<!-- case-by-case removal of final static defs. Captures about 40 KB -->
 	<echo>Trimming unneeded final static definitions core${call-corechop.name}.js</echo>
-  	<replaceregexp file="site/jsmol/j2s/core/core${call-corechop.name}.z.js" match='\,"nada"\,.*?\)' flags="s" replace=")"/>
-  	<replaceregexp file="site/jsmol/j2s/core/core${call-corechop.name}.z.js" match='\,"ACTION_.*?\)' flags="s" replace=")"/>
-  	<replaceregexp file="site/jsmol/j2s/core/core${call-corechop.name}.z.js" match='\,"PICKING_.*?\)' flags="s" replace=")"/>
+  	<replaceregexp file="${site.path}/j2s/core/core${call-corechop.name}.z.js" match='\,"nada"\,.*?\)' flags="s" replace=")"/>
+  	<replaceregexp file="${site.path}/j2s/core/core${call-corechop.name}.z.js" match='\,"ACTION_.*?\)' flags="s" replace=")"/>
+  	<replaceregexp file="${site.path}/j2s/core/core${call-corechop.name}.z.js" match='\,"PICKING_.*?\)' flags="s" replace=")"/>
   	<!-- -->
    </target>
 	
 	
   <target name="call-min" id="call-min">
    	<echo>......Creating JSmol.${call-min.minname}.js</echo> 	
-   	<concat destfile="site/jsmol/js/JSmol.${call-min.fullname}.js">
+   	<concat destfile="${site.path}/js/JSmol.${call-min.fullname}.js">
    		<filelist dir="jsmoljs" files="${call-min.list}" />
    	</concat>   
    	<java jar="jars/closure_compiler.jar" fork="true" dir="" failonerror="false">
