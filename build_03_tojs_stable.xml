@@ -294,6 +294,7 @@
    	<echo>...adding js subdirectory</echo>
    	<copy todir="${site.path}/js">
   	  <fileset dir="jsmoljs">		
+        <include name="core/*.js" />
   	    <include name="*.js" />
   	  </fileset>
     </copy> 
