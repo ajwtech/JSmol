@@ -122,21 +122,24 @@
       <fileset dir="src" includes="**/*"/>
     </delete>
   	
-  	<echo>copying files from ${jmol.path}/srcjs (com and java)</echo>
+  	<echo>copying files from srcjs (com and java)</echo>
     <copy overwrite="true" todir="src" >
-      <fileset dir="${jmol.path}/srcjs">
+      <fileset dir="srcjs">
         <include name="com/**/*" />
         <include name="java/**/*" />
+        <include name="javajs/**/*" />
       </fileset>
     </copy>
 
+  	<!--
   	<echo>copying all files from ${jmol.path}/src/javajs</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/src">
         <include name="javajs/**/*" />
       </fileset>
     </copy>
-
+-->
+  	
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
   	<echo>copying selected files from ${jmol.path}/src/org/jmol</echo>
     <copy overwrite="true" todir="src/org/jmol" >

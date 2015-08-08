@@ -6,7 +6,7 @@
 
 	See Jmol/build.xml for details on building Jmol and JSmol. 
 	
-	1) All source Java code in JSmol is derived from Jmol and JSpecView. 
+	1) Most source Java code in JSmol is derived from Jmol and JSpecView. 
 	   Note that there are TWO JSpecView projects, JSpecView and JSpecViewLib.
 	   You need both of them. 
 	   
@@ -26,7 +26,7 @@
 	     src/java               -  modified Java classes, including awt, io, net, and util
 	     src/javajs             -  modified Java, VecMath, and Swing classes
 	     
-	   These are in Jmol/srcjs and are just copied here as needed. There are also some 
+	   These are in srcjs and are just copied into src/ from there. There are also some 
 	   java.lang and java.util classes that are defined in core.z.js (coretop.js)
 	   
 	   These include (among a few others):
@@ -122,21 +122,24 @@
       <fileset dir="src" includes="**/*"/>
     </delete>
   	
-  	<echo>copying files from ${jmol.path}/srcjs (com and java)</echo>
+  	<echo>copying files from srcjs (com, java, and javajs)</echo>
     <copy overwrite="true" todir="src" >
-      <fileset dir="${jmol.path}/srcjs">
+      <fileset dir="srcjs">
         <include name="com/**/*" />
         <include name="java/**/*" />
+        <include name="javajs/**/*" />
       </fileset>
     </copy>
 
+  	<!--
   	<echo>copying all files from ${jmol.path}/src/javajs</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/src">
         <include name="javajs/**/*" />
       </fileset>
     </copy>
-
+-->
+  	
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
   	<echo>copying selected files from ${jmol.path}/src/org/jmol</echo>
     <copy overwrite="true" todir="src/org/jmol" >
