@@ -122,7 +122,7 @@
       <fileset dir="src" includes="**/*"/>
     </delete>
   	
-  	<echo>copying files from srcjs (com and java)</echo>
+  	<echo>copying files from srcjs (com, java, and javajs)</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="srcjs">
         <include name="com/**/*" />
