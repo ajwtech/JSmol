@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 8/9/2015 6:33:33 PM correcting bug in load ASYNC for x-domain access
 // BH 7/7/2015 1:42:31 PM Jmol._persistentMenu
 // BH 6/29/2015 10:14:47 AM adds Jmol.$getSize(obj)
 // BH 5/30/2015 9:33:12 AM adds class swingjs-ui to ignore 
@@ -886,7 +887,7 @@ Jmol = (function(document) {
 
 		var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
 		var data = null;
-		if ((!fSuccess || asBase64) && (cantDoSynchronousLoad || asBase64 || !isMyHost && !isDirectCall)) {
+		if (asBase64 || !isMyHost && !isDirectCall || !fSuccess && cantDoSynchronousLoad ) {
 				data = Jmol._getRawDataFromServer("_",fileName, fSuccess, fSuccess, asBase64, true);
 		} else {
 			fileName = fileName.replace(/file:\/\/\/\//, "file://"); // opera
