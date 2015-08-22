@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 8/12/2015 11:43:52 PM adding isHttps2Http forcing call to server proxy
 // BH 8/9/2015 6:33:33 PM correcting bug in load ASYNC for x-domain access
 // BH 7/7/2015 1:42:31 PM Jmol._persistentMenu
 // BH 6/29/2015 10:14:47 AM adds Jmol.$getSize(obj)
@@ -882,12 +883,13 @@ Jmol = (function(document) {
 		if (fileName.indexOf("file:/") == 0 && fileName.indexOf("file:///") != 0)
 			fileName = "file://" + fileName.substring(5);      /// fixes IE problem
 		var isMyHost = (fileName.indexOf("://") < 0 || fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
+    var isHttps2Http = (Jmol._httpProto == "https://" && fileName.indexOf("http://") == 0);
 		var isDirectCall = Jmol._isDirectCall(fileName);
 		//if (fileName.indexOf("http://pubchem.ncbi.nlm.nih.gov/") == 0)isDirectCall = false;
 
 		var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
 		var data = null;
-		if (asBase64 || !isMyHost && !isDirectCall || !fSuccess && cantDoSynchronousLoad ) {
+		if (isHttps2Http || asBase64 || !isMyHost && !isDirectCall || !fSuccess && cantDoSynchronousLoad ) {
 				data = Jmol._getRawDataFromServer("_",fileName, fSuccess, fSuccess, asBase64, true);
 		} else {
 			fileName = fileName.replace(/file:\/\/\/\//, "file://"); // opera
