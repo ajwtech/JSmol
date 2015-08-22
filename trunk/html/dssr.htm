@@ -64,7 +64,7 @@ addModel("4mgn", "", "glyQS T box riboswitch+tRNA")
 function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)}
 function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, "select *;" + (script || text), (text || script))}
 function jmolHtml(s) { document.write(s) };
-function jmolBr() { jmolHtml("<br />") }
+function jmolBr() { jmolHtml("<br>") }
 function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)}
 function jmolScript(script) {	
 	$("#jmolCmd0").val(script);
@@ -144,12 +144,12 @@ $(document).ready(function() {
 This page demonstrates capabilities in Jmol 14.2 
 that involve RNA and DNA secondary structure
 using real-time DSSR analysis provided by <a href=http://goo.gl/ap12xJ>3DNA</a>.
-<br />
-<br />
+<br>
+<br>
 The commands being issued by the buttons are displayed in the 
 box under the applet.
-<br />
-<br />
+<br>
+<br>
 <script type="text/javascript">
 Jmol.setButtonCss(null,"style='width:140px'")
 dssrBtn('stems', 'stem');
