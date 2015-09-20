@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 15/09/2015 18:06:39 fixing mouse check for swingjs-ui since SVG element className is not a string 
 // BH 8/12/2015 11:43:52 PM adding isHttps2Http forcing call to server proxy
 // BH 8/9/2015 6:33:33 PM correcting bug in load ASYNC for x-domain access
 // BH 7/7/2015 1:42:31 PM Jmol._persistentMenu
@@ -1547,8 +1548,8 @@ Jmol = (function(document) {
 
 	Jmol._jsSetMouse = function(canvas) {
 
-    var doIgnore = function(ev) { return (!ev.target || ev.target.className.indexOf("swingjs-ui") >= 0) };
-         
+    var doIgnore = function(ev) { return (!ev.target || ("" + ev.target.className).indexOf("swingjs-ui") >= 0) };
+
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
       if (doIgnore(ev))
         return true;
