@@ -28,17 +28,13 @@ var Info = {
 	jarFile: "JmolAppletSigned0.jar",
 	isSigned: true,
 	loadStructCallback: "enableButtons",
-	script: "background black;set defaultLoadScript '"+ stemScript + ";if (!_M.dssr){calculate structure dssr};if(!h2oOn){display !water};color grey';load =1ehz/dssr;" + _1ehzScript
+	script: "background black;set defaultLoadScript '"+ stemScript + ";javascript enableButtons();if (!_M.dssr){calculate structure dssr};if(!h2oOn){display !water};color grey';load =1ehz/dssr;" + _1ehzScript
 }
 
 var hbondsON = false;
 
 function enableButtons(app,fullPath,fileName,modelName,errorMsg,status) {
   hbondsON = false;
-  if (arguments.length == 0) {
-    alert("The structure was sent to 3DNA for analysis.") 
-    status = 3;
-  }
 	var data = Jmol.evaluateVar(jmolApplet0, "(_M.dssr ? _M.dssr.counts : {})");
 	for (var i = dssrBtns.length; --i >= 0;) {
 		var name = dssrBtns[i];
