@@ -1,7 +1,7 @@
 <project name="JSmol" default="zip" basedir=".">
 	
 	   <property name="jsv.path" value="../JSpecView" />
-	   <property name="jmol.path" value="../Jmol-14_2" />
+	   <property name="jmol.path" value="../Jmol-14_4" />
 	
    <target name="zip" id="zip">
    	
