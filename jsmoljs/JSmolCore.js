@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 10/13/2015 9:32:08 PM adding Jmol.__$ as jquery object used 
 // BH 15/09/2015 18:06:39 fixing mouse check for swingjs-ui since SVG element className is not a string 
 // BH 8/12/2015 11:43:52 PM adding isHttps2Http forcing call to server proxy
 // BH 8/9/2015 6:33:33 PM correcting bug in load ASYNC for x-domain access
@@ -217,6 +218,8 @@ Jmol = (function(document) {
 
 
 (function (Jmol, $) {
+
+  Jmol.__$ = $; // local jQuery object -- important if any other module needs to access it (JSmolMenu, for example)
 
 // this library is organized into the following sections:
 
