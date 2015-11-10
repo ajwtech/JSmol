@@ -5,6 +5,8 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 10/26/2015 12:47:16 PM adding two rcsb sites for direct access
+// BH 10/23/2015 9:20:39 PM minor coding adjustment
 // BH 10/13/2015 9:32:08 PM adding Jmol.__$ as jquery object used 
 // BH 15/09/2015 18:06:39 fixing mouse check for swingjs-ui since SVG element className is not a string 
 // BH 8/12/2015 11:43:52 PM adding isHttps2Http forcing call to server proxy
@@ -171,6 +173,8 @@ Jmol = (function(document) {
 				// these sites are known to implement access-control-allow-origin * 
 				"cactus.nci.nih.gov": "%URL", 
 				"www.rcsb.org": "%URL",
+				"cdn.rcsb.org": "%URL",
+				"ftp.wwpdb.org": "%URL",
 				"pdbe.org": "%URL", 
 				"www.ebi.ac.uk": "%URL", 
 				"wwwdev.ebi.ac.uk": "%URL", 
@@ -614,9 +618,8 @@ Jmol = (function(document) {
 			return query;
 		var pt = 2;
 		var db;
-		var call = Jmol.db._DirectDatabaseCalls[query.substring(0,pt)];
-		if (!call)
-			call = Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
+		var call = Jmol.db._DirectDatabaseCalls[query.substring(0,pt)]
+      || Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
 		if (call) {
 			if (db == ":") {
 				var ql = query.toLowerCase();
