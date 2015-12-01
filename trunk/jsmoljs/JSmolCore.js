@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/1/2015 10:05:55 AM loading identical HTML5 page after Java page causes bad NPObject error 
 // BH 10/26/2015 12:47:16 PM adding two rcsb sites for direct access
 // BH 10/23/2015 9:20:39 PM minor coding adjustment
 // BH 10/13/2015 9:32:08 PM adding Jmol.__$ as jquery object used 
@@ -1117,13 +1118,15 @@ Jmol = (function(document) {
 
 	Jmol._readyCallback = function (appId,fullId,isReady,javaApplet,javaAppletPanel) {
 		appId = appId.split("_object")[0];
-    javaAppletPanel || (javaAppletPanel = javaApplet);
+    var applet = Jmol._applets[appId];
 		isReady = (isReady.booleanValue ? isReady.booleanValue() : isReady);
 		// necessary for MSIE in strict mode -- apparently, we can't call 
 		// jmol._readyCallback, but we can call Jmol._readyCallback. Go figure...
-    var applet = Jmol._applets[appId];
-    applet._appletPanel = javaAppletPanel;
-    applet._applet = javaApplet;
+    if (isReady) {
+      // when leaving page, Java applet may be dead 
+      applet._appletPanel = (javaAppletPanel || javaApplet);
+      applet._applet = javaApplet;
+    }
 		Jmol._track(applet._readyCallback(appId, fullId, isReady));
 	}
 

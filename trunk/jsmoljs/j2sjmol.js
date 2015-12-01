@@ -1217,7 +1217,7 @@ Clazz.getParamsType = function (funParams) {
 };
 
 var SAEMid = 0;
-xxxSAEMlist = "";
+//xxxSAEMlist = "";
 
 //var SAEMarray = [];
 /**
@@ -1276,9 +1276,9 @@ var searchAndExecuteMethod = function (id, objThis, claxxRef, fxName, args, _sae
 	var params = Clazz.getParamsType(args);
 
 
-var s = "SAEM " + claxxRef.__CLASS_NAME__ + "." + fxName + "(" + params+ ")\n";
-if (xxxSAEMlist.length > 300)xxxSAEMlist = "";
-xxxSAEMlist += s;
+//var s = "SAEM " + claxxRef.__CLASS_NAME__ + "." + fxName + "(" + params+ ")\n";
+//if (xxxSAEMlist.length > 300)xxxSAEMlist = "";
+//xxxSAEMlist += s;
  
 
   if (!fx)    
