@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/2/2015 1:18:15 PM adding .dcd as binary file type
 // BH 12/1/2015 10:05:55 AM loading identical HTML5 page after Java page causes bad NPObject error 
 // BH 10/26/2015 12:47:16 PM adding two rcsb sites for direct access
 // BH 10/23/2015 9:20:39 PM minor coding adjustment
@@ -869,7 +870,8 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = [".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".pse", ".map", ".omap"];
+	Jmol._binaryTypes = [".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".pse", ".map", ".omap", 
+  ".dcd"];
 
 	Jmol._isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
