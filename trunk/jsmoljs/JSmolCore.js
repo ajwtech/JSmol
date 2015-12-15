@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/14/2015 6:42:03 PM adding check for MS Edge browser, which does not support dataURI
 // BH 12/2/2015 1:18:15 PM adding .dcd as binary file type
 // BH 12/1/2015 10:05:55 AM loading identical HTML5 page after Java page causes bad NPObject error 
 // BH 10/26/2015 12:47:16 PM adding two rcsb sites for direct access
@@ -216,7 +217,8 @@ Jmol = (function(document) {
 	j._isChrome = (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0);
 	j._isSafari = (!j._isChrome && navigator.userAgent.toLowerCase().indexOf("safari") >= 0);
 	j._isMsie = (window.ActiveXObject !== undefined);
-	j._useDataURI = !j._isSafari && !j._isMsie; // safari may be OK here -- untested
+  j._isEdge = (navigator.userAgent.indexOf("Edge/") >= 0);
+	j._useDataURI = !j._isSafari && !j._isMsie && !j._isEdge; // safari may be OK here -- untested
 
 	for(var i in Jmol) j[i] = Jmol[i]; // allows pre-definition
 	return j;
