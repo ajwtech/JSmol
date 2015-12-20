@@ -863,7 +863,7 @@ public class PT {
   }
 
   /**
-   * Checks to see if an object is an array, and if it is, returns null;
+   * Checks to see if an object is an array (including typed arrays), and if it is, returns null;
    * otherwise it returns the string equivalent of that object.
    * 
    * @param x
@@ -873,9 +873,7 @@ public class PT {
     /**
      * @j2sNative
      * 
-     * var s = x.constructor.toString(); 
-     * var pt = s.indexOf("Array(");
-     * return (pt <= 0 || pt >= s.indexOf("{") ? x.toString() : null);
+     * return (x.constructor == Array || x.BYTES_PER_ELEMENT ? null : x.toString());
      * 
      */
     {
