@@ -2,7 +2,7 @@
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
-// BH 12/17/2015 4:43:05 PM adding Jmol._requestRepaint to allow for MSIE9 not having requestAnimationFrame
+// BH 12/17/2015 4:43:05 PM adding Jmol._requestRepaint to allow for MSIE9 not having 3imationFrame
 // BH 12/13/2015 11:44:39 AM using requestAnimationFrame instead of setTimeout (fixes Chrome slowness)
 // BH 10/12/2015 1:15:39 PM fix for set echo image in JavaScript
 // BH 6/12/2015 6:08:08 AM image loading from PNGJ file bytes using data uri not working
@@ -434,7 +434,7 @@
         applet._appletPanel.update(null)
     };
 		if (asNewThread) {
-			(self.requestAnimationFrame || self.setTimeout)(f); // requestAnimationFrame or (MSIE 9) setTimeout
+			requestAnimationFrame(f); // requestAnimationFrame or (MSIE 9) setTimeout
 		} else {
       f();
 		}
