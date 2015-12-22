@@ -1029,17 +1029,6 @@ Jmol = (function(document) {
 		fileLoadThread.setData(filename, filename0, data, appData);
   }
   
-	Jmol._toBytes = function(data) {
-	if (typeof data == "string") 
-		return data.getBytes();
-	// ArrayBuffer assumed here
-	data = new Uint8Array(data);
-	var b = Clazz.newByteArray(data.length, 0);
-		for (var i = data.length; --i >= 0;)
-			b[i] = data[i];
-	return b;
-	}
-
 	Jmol._doAjax = function(url, postOut, dataOut) {
 		// called by org.jmol.awtjs2d.JmolURLConnection.doAjax()
 		url = url.toString();
@@ -1107,7 +1096,7 @@ Jmol = (function(document) {
 
 	Jmol._strToBytes = function(s) {
 		if (Clazz.instanceOf(s, self.ArrayBuffer))
-			return Jmol._toBytes(s);
+			return Clazz.newByteArray(-1, s);
 		var b = Clazz.newByteArray(s.length, 0);
 		for (var i = s.length; --i >= 0;)
 			b[i] = s.charCodeAt(i) & 0xFF;
@@ -2235,7 +2224,7 @@ Jmol.Cache.put = function(filename, data) {
 			reader.onloadend = function(evt) {
 				if (evt.target.readyState == FileReader.DONE) {
 					var cacheName = "cache://DROP_" + file.name;
-					var bytes = Jmol._toBytes(evt.target.result);
+					var bytes = Clazz.newByteArray(-1, evt.target.result);
 					if (!cacheName.endsWith(".spt"))
 						me._appletPanel.cacheFileByName("cache://DROP_*",false);
 					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
