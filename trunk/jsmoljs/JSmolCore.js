@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 12/30/2015 8:18:42 PM adding AMS call to database list; allowing for ?ALLOWSORIGIN? to override settings here
 // BH 12/17/2015 4:43:05 PM adding Jmol._requestRepaint to allow for MSIE9 not having requestAnimationFrame
 // BH 12/16/2015 3:01:06 PM adding $.ajaxSetup({ mimeType: "text/plain" });
 // BH 12/14/2015 6:42:03 PM adding check for MS Edge browser, which does not support dataURI
@@ -175,16 +176,18 @@ Jmol = (function(document) {
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
 			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
-				// these sites are known to implement access-control-allow-origin * 
-				"cactus.nci.nih.gov": "%URL", 
-				"www.rcsb.org": "%URL",
-				"cdn.rcsb.org": "%URL",
-				"ftp.wwpdb.org": "%URL",
-				"pdbe.org": "%URL", 
-				"www.ebi.ac.uk": "%URL", 
-				"wwwdev.ebi.ac.uk": "%URL", 
-				"pubchem.ncbi.nlm.nih.gov":"%URL",
-				"http://www.nmrdb.org/tools/jmol/predict.php":"%URL",
+				// these sites are known to implement access-control-allow-origin *
+        // null here means no conversion necessary 
+				"cactus.nci.nih.gov": null,
+        "rruff.geo.arizona.edu": null, 
+				"www.rcsb.org": null,
+				"cdn.rcsb.org": null,
+				"ftp.wwpdb.org": null,
+				"pdbe.org": null, 
+				"www.ebi.ac.uk": null, 
+				"wwwdev.ebi.ac.uk": null, 
+				"pubchem.ncbi.nlm.nih.gov":null,
+				"http://www.nmrdb.org/tools/jmol/predict.php":null,
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
 				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
@@ -621,16 +624,16 @@ Jmol = (function(document) {
 		return (Jmol.db._databasePrefixes.indexOf(query.substring(0, 1)) >= 0);
 	}
 
-	
 	Jmol._getDirectDatabaseCall = function(query, checkXhr2) {
 		if (checkXhr2 && !Jmol.featureDetection.supportsXhr2())
 			return query;
 		var pt = 2;
-		var db;
-		var call = Jmol.db._DirectDatabaseCalls[query.substring(0,pt)]
-      || Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
+		var db = query.substring(0,pt)
+		var call = Jmol.db._DirectDatabaseCalls[db] || Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
 		if (call) {
+      // one of the special set :, =, $, ==
 			if (db == ":") {
+        // PubChem
 				var ql = query.toLowerCase();
 				if (!isNaN(parseInt(query.substring(1)))) {
 					query = "cid/" + query.substring(1);
@@ -655,7 +658,7 @@ Jmol = (function(document) {
 			} else {
 				query = call.replace(/\%FILE/, query);
 			}
-		}		
+		}
 		return query;
 	}
 
@@ -678,7 +681,7 @@ Jmol = (function(document) {
 			fileName = Jmol._getDirectDatabaseCall(fileName, true);
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
-				fileName = Jmol._getDirectDatabaseCall(fileName, false);
+				fileName = Jmol._getDirectDatabaseCall(fileName, false));
 				isRawRet && (isRawRet[0] = true);
 			}
 		}
@@ -722,7 +725,6 @@ Jmol = (function(document) {
 	Jmol._getInfoFromDatabase = function(applet, database, query){
 		if (database == "====") {
 			var data = Jmol.db._restQueryXml.replace(/QUERY/,query);
-
 			var info = {
 				dataType: "text",
 				type: "POST",
@@ -902,6 +904,10 @@ Jmol = (function(document) {
 		var isMyHost = (fileName.indexOf("://") < 0 || fileName.indexOf(document.location.protocol) == 0 && fileName.indexOf(document.location.host) >= 0);
     var isHttps2Http = (Jmol._httpProto == "https://" && fileName.indexOf("http://") == 0);
 		var isDirectCall = Jmol._isDirectCall(fileName);
+    if (!isDirectCall && fileName.indexOf("?ALLOWSORIGIN?") >= 0) {
+      isDirectCall = true;
+			fileName = fileName.replace(/\?ALLOWSORIGIN\?/,"");
+    }
 		//if (fileName.indexOf("http://pubchem.ncbi.nlm.nih.gov/") == 0)isDirectCall = false;
 
 		var cantDoSynchronousLoad = (!isMyHost && Jmol.$supportsIECrossDomainScripting());
@@ -947,6 +953,8 @@ Jmol = (function(document) {
 	}
 
 	Jmol._isDirectCall = function(url) {
+    if (url.indexOf("?ALLOWSORIGIN?") >= 0)
+      return true;
 		for (var key in Jmol.db._DirectDatabaseCalls) {
 			if (key.indexOf(".") >= 0 && url.indexOf(key) >= 0)
 				return true;

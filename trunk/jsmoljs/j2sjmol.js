@@ -43,6 +43,8 @@
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+ // BH 12/30/2015 9:13:40 PM Clazz.floatToInt should return 0 for NaN
+ // BH 12/23/2015 9:23:06 AM allowing browser to display stack for TypeError in exceptionOf
  // BH 12/21/2015 6:14:59 PM adding typeArray.buffer.slice to be compatible with Safari
  // BH 12/20/2015 6:13:52 AM adding Int8Array; streamlining array checking
  // BH 12/18/2015 5:02:52 PM adding .slice and also better array copy
@@ -870,11 +872,11 @@ Clazz.exceptionOf = function(e, clazz) {
 	if(e.__CLASS_NAME__)
 		return Clazz.instanceOf(e, clazz);
   if (!e.getMessage) {
-    e.getMessage = function() {return "" + this};
+    // Firefox at least now has a nice stack report
+    e.getMessage = function() {return "" + e + (e.stack ? "\n" + e.stack : "")};
   }
   if (!e.printStackTrace) {
-    e.printStackTrace = function(){};
-    alert(e + " try/catch path:" + Clazz.getStackTrace(-10));
+   e.printStackTrace = function(){};
   }
 	if(clazz == Error) {
 		if (("" + e).indexOf("Error") < 0)
@@ -2276,7 +2278,7 @@ Clazz.defineEnumConstant = function (clazzEnum, enumName, enumOrdinal, initialPa
 //////// (int) conversions //////////
 
 Clazz.floatToInt = function (x) {
-	return x < 0 ? Math.ceil(x) : Math.floor(x);
+	return isNaN(x) ? 0 : x < 0 ? Math.ceil(x) : Math.floor(x);
 };
 
 Clazz.floatToByte = Clazz.floatToShort = Clazz.floatToLong = Clazz.floatToInt;
