@@ -681,7 +681,7 @@ Jmol = (function(document) {
 			fileName = Jmol._getDirectDatabaseCall(fileName, true);
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
-				fileName = Jmol._getDirectDatabaseCall(fileName, false));
+				fileName = Jmol._getDirectDatabaseCall(fileName, false);
 				isRawRet && (isRawRet[0] = true);
 			}
 		}
