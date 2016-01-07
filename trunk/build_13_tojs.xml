@@ -489,6 +489,7 @@
 		J/g3d/PixelatorShaded.js
 		J/g3d/PixelatorScreened.js
 		J/g3d/Platform3D.js
+		J/g3d/PrecisionRenderer.js
 		J/g3d/SphereRenderer.js
 		J/g3d/TextRenderer.js
 		J/g3d/TextString.js
@@ -538,6 +539,7 @@
 		JM/ModelSet.js
 		JM/Orientation.js
 		JM/StateScript.js
+		JM/Structure.js
 		JM/TickInfo.js
 		JU/BoxInfo.js
 		JU/BSUtil.js
@@ -840,7 +842,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="script" />
         <param name="call-core.list" value="
-        	J/api/JmolParallelProcessor.js
+    		J/api/JmolParallelProcessor.js
         	J/api/JmolScriptEvaluator.js
         	J/api/JmolScriptFunction.js
         	J/api/JmolScriptManager.js
@@ -856,7 +858,6 @@
         	JS/ScriptInterruption.js
         	JS/ScriptManager.js
         	JS/ScriptMathProcessor.js
-        	JS/ScriptParallelProcessor.js
         	JS/ScriptParam.js
         	JS/ScriptProcess.js
         	JS/ScriptProcessRunnable.js
