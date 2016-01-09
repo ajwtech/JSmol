@@ -43,6 +43,7 @@
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+ // BH 1/8/2016 6:21:38 PM adjustments to prevent multiple load of corejmol.js 
  // BH 12/30/2015 9:13:40 PM Clazz.floatToInt should return 0 for NaN
  // BH 12/23/2015 9:23:06 AM allowing browser to display stack for TypeError in exceptionOf
  // BH 12/21/2015 6:14:59 PM adding typeArray.buffer.slice to be compatible with Safari
@@ -972,8 +973,8 @@ Clazz.overrideConstructor = function (clazzThis, funBody, funParams) {
  */
 /* public */
 Clazz.defineMethod = function (clazzThis, funName, funBody, funParams) {
-	if (Clazz.assureInnerClass) 
-    Clazz.assureInnerClass(clazzThis, funBody);
+	//if (Clazz.assureInnerClass) 
+    //Clazz.assureInnerClass(clazzThis, funBody);
 	funBody.exName = funName;
 	var fpName = formatParameters(funParams);
 	var proto = clazzThis.prototype;
@@ -1138,7 +1139,7 @@ var formatParameters = function (funParams) {
  */
 /* public */
 Clazz.overrideMethod = function(clazzThis, funName, funBody, funParams) {
-	if (Clazz.assureInnerClass) Clazz.assureInnerClass (clazzThis, funBody);
+	//if (Clazz.assureInnerClass) Clazz.assureInnerClass (clazzThis, funBody);
 	funBody.exName = funName;
 	var fpName = formatParameters(funParams);
   if (Clazz._Loader._checkLoad)
@@ -3168,9 +3169,12 @@ Clazz._innerFunctions.newInstance = function (a) {
 //////////////////////////// hotspot and unloading /////////////////////////////
 /* For hotspot and unloading */
 
+// not used in Jmol
+
+/*
 if (window["Clazz"] && !window["Clazz"].unloadClass) {
 
-/* public */
+/ * public * /
 Clazz.unloadClass = function (qClazzName) {
 	var cc = Clazz.evalType (qClazzName);
 	if (cc) {
@@ -3227,7 +3231,7 @@ Clazz.unloadClass = function (qClazzName) {
 	return false;
 };
 
-/* private */
+/ * private * /
 var cleanDelegateMethod = function (m) {
 	if (!m) 
 		return;
@@ -3240,6 +3244,7 @@ var cleanDelegateMethod = function (m) {
 };
 
 } // if (window["Clazz"] && !window["Clazz"].unloadClass)
+*/
 
 /******************************************************************************
  * Copyright (c) 2007 java2script.org and others.
@@ -3631,21 +3636,25 @@ Clazz.loadClass = function (name, onLoaded, async) {
 /* public */
 _Loader.loadClass = function (name, onLoaded, forced, async, mode) {
 
+  //System.out.println("loadClass " + name)
+  
   mode || (mode = 0); // BH: not implemented
   (async == null) && (async = false);
   
  	if (typeof onLoaded == "boolean")
 		return Clazz.evalType(name);
 
-  System.out.println("loadClass " + name)
-
 	// Make sure that packageClasspath ("java", base, true); 
 	// is called before any _Loader#loadClass is called.
 
-	if (needPackage("java"))
+	if (needPackage("java")) {
 		_Loader.loadPackage("java");
-	if (needPackage("core"))
-		_Loader.loadPackage("core");	
+  }
+    
+// BH unnecessary	
+// if (needPackage("core")) {
+//		_Loader.loadPackage("core");
+//    }	
 
 //	var swtPkg = "org.eclipse.swt";
 //	if (name.indexOf (swtPkg) == 0 || name.indexOf ("$wt") == 0) {
@@ -3771,7 +3780,7 @@ _Loader.loadPackage = function(pkg, fSuccess) {
 /* public */
 _Loader.jarClasspath = function (jar, clazzes) {
 	if (!(clazzes instanceof Array))
-		clazzes = [classes];
+		clazzes = [clazzes];
 	unwrapArray(clazzes);
 	for (var i = clazzes.length; --i >= 0;)
 		classpathMap["#" + clazzes[i]] = jar;
@@ -3954,7 +3963,8 @@ var isClassExcluded = function (clazz) {
 var excludeClassMap = {};
 
 /* private */
-var evaluate = function(file, file0, js) {
+var evaluate = function(file, file0, js, isLoaded) {
+  if (!isLoaded)
  		try {
 			eval(js + ";//# sourceURL="+file);
 		} catch (e) {      
@@ -3967,8 +3977,8 @@ var evaluate = function(file, file0, js) {
 			Clazz.alert(s);
 			throw e;
 		}
-		_Loader.onScriptLoaded(file, false);
-		tryToLoadNext(file0);
+	_Loader.onScriptLoaded(file, false);
+	tryToLoadNext(file0);
 }
 
 /* private */
@@ -4025,19 +4035,25 @@ Clazz.currentPath= "";
 var loadScript = function (node, file, why, ignoreOnload, fSuccess, _loadScript) {
 
 	Clazz.currentPath = file;
+  
 	if (ignoreOnload)alert("WHY>>")
 //BH removed	// maybe some scripts are to be loaded without needs to know onload event.
 //	if (!ignoreOnload && loadedScripts[file]) {
 //		_Loader.tryToLoadNext(file);
 //		return;
 //	}
+
+  var isLoaded = loadedScripts[file];
 	loadedScripts[file] = true;
 	// also remove from queue
 	removeArrayItem(classQueue, file);
 
-    // forces not-found message
-    isUsingXMLHttpRequest = true;
-    isAsynchronousLoading = false;
+  // forces not-found message
+  // at least for now, force synchronous transfer of all class files
+  isUsingXMLHttpRequest = true;
+  isAsynchronousLoading = false;
+  
+  
   if (_Loader._checkLoad) {
     System.out.println("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + isUsingXMLHttpRequest + " async=" + isAsynchronousLoading)
   }
@@ -4047,6 +4063,9 @@ var loadScript = function (node, file, why, ignoreOnload, fSuccess, _loadScript)
     file = file.replace(/\.z\.js/,".js");
   }
 
+  if (!isLoaded)
+    System.out.println("loadScript " + file)
+
 	_Loader.onScriptLoading(file);
 	if (isUsingXMLHttpRequest && !isAsynchronousLoading) {
 		// alert("\t" + file + (why ? "\n -- required by " + why : "") + "  ajax=" + isUsingXMLHttpRequest + " async=" + isAsynchronousLoading + " " + Clazz.getStackTrace())
@@ -4055,7 +4074,7 @@ var loadScript = function (node, file, why, ignoreOnload, fSuccess, _loadScript)
 		// from Jmol.api.Interface only
 		var data = Jmol._getFileData(file);
     try{
-		  evaluate(file, file0, data);
+		  evaluate(file, file0, data, isLoaded);
     }catch(e) {
       alert(e + " loading file " + file + " " + node.name + " " + Clazz.getStackTrace());
     }
@@ -4065,9 +4084,8 @@ var loadScript = function (node, file, why, ignoreOnload, fSuccess, _loadScript)
     }
 		return;
 	}
-  
-  
-System.out.println("for file " + file +" fSuccess = " + (fSuccess ? fSuccess.toString() : ""))
+  // not accessed in JSmol
+  alert(1)    
 	var info = {
 		dataType:"script",
 		async:true, 
@@ -4077,21 +4095,21 @@ System.out.println("for file " + file +" fSuccess = " + (fSuccess ? fSuccess.toS
 		error:W3CScriptOnCallback(file, true, fSuccess)
 	};
 	inLoadingThreads++;
-	Jmol.$ajax(info);
+  if (isLoaded)
+    setTimeout(info.success, 0);
+  else
+	 Jmol.$ajax(info);
 };
 
 /* private */
 var W3CScriptOnCallback = function (path, forError, fSuccess) {
   var s = Clazz.getStackTrace();
-  // if (!fSuccess)alert("why no fSuccess?" + s)
 	return function () {
-  //System.out.println("returning " + (fSuccess ? fSuccess.toString() : "no function ") + s) 
-		if (forError && __debuggingBH)Clazz.alert ("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
+	if (forError && __debuggingBH)Clazz.alert ("############ forError=" + forError + " path=" + path + " ####" + (forError ? "NOT" : "") + "LOADED###");
 		if (isGecko && this.timeoutHandle)
 			window.clearTimeout(this.timeoutHandle), this.timeoutHandle = null;
 		if (inLoadingThreads > 0)
 			inLoadingThreads--;
-		//System.out.println("w3ccalback for " + path + " " + inLoadingThreads + " threads")
 		this.onload = null;
 		this.onerror = null;
 		if (forError) 
@@ -4973,7 +4991,8 @@ var destroyClassNode = function (node) {
 			removeArrayItem(parents[k].musts, node) || removeArrayItem(parents[k].optionals, node);
 };
 
-/* public */
+/*
+/ * public * /
 _Loader.unloadClassExt = function (qClazzName) {
 	if (definedClasses)
 		definedClasses[qClazzName] = false;
@@ -4993,8 +5012,7 @@ _Loader.unloadClassExt = function (qClazzName) {
 	innerLoadedScripts[path] && (innerLoadedScripts[path] = false);
 	_Loader.onClassUnloaded(qClazzName);
 };
-
-/* private */
+/ * private * /
 var assureInnerClass = function (clzz, fun) {
 	clzz = clzz.__CLASS_NAME__;
 	if (Clazz.unloadedClasses[clzz]) {
@@ -5021,7 +5039,7 @@ var assureInnerClass = function (clzz, fun) {
 		Clazz.unloadedClasses[clzz] = null;
 	}
 };
-
+*/
 Clazz.binaryFolders =  _Loader.binaryFolders = [ _Loader.getJ2SLibBase() ];
 
 })(Clazz, Clazz._Loader);

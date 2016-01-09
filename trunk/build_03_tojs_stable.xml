@@ -1032,8 +1032,9 @@
        		JM/NucleicPolymer.js
        		JM/BasePair.js
        		JM/PhosphorusPolymer.js
-       		J/dssx/Bridge.js
         	J/api/DSSPInterface.js
+    		J/api/JmolBioMeshRenderer.js
+       		J/dssx/Bridge.js
        		J/dssx/DSSP.js        	
         	J/shapebio/BioShape.js
        		J/shapebio/BioShapeCollection.js
