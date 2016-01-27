@@ -1227,7 +1227,9 @@
  	<delete file="temp.js" />
    	<copy file="README-DOWNLOAD.TXT" tofile="dist/README.TXT" />
    	<echo>${jmol.path}/appletweb/jsmol.zip has been updated. 
-   		site/jsmol is available for testing</echo>
+   		site/jsmol is available for testing.</echo>
+   	<echo>You still need to run ${jmol.path}/build.xml again so that the JSmol
+   		package is properly integrated into Jmol if you want to release that</echo>
   </target>
 
 
