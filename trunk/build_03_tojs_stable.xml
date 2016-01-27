@@ -455,7 +455,6 @@
 		J/api/JmolStatusListener.js
 		J/api/JmolSyncInterface.js
 		J/api/JmolViewer.js
-    	J/api/JmolZipUtilities.js
     	J/api/Translator.js
 		J/appletjs/Jmol.js
 		J/atomdata/AtomData.js
