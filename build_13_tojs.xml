@@ -970,7 +970,6 @@
     <antcall target="call-core">
         <param name="call-core.name" value="min" />
         <param name="call-core.list" value="
-       		J/api/MinimizerInterface.js
        		JM/Minimizer.js
        		JM/MinObject.js
        		JM/MinAngle.js
@@ -1062,7 +1061,6 @@
         	JS/IsoExt.js
     		JU/Triangulator.js
     		JU/TriangleData.js
-       		J/api/VolumeDataInterface.js
        		J/jvxl/api/VertexDataServer.js
        		J/jvxl/api/MeshDataServer.js
        		J/shapesurface/Isosurface.js
