@@ -880,8 +880,7 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = [".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".pse", ".map", ".omap", 
-  ".dcd"];
+	Jmol._binaryTypes = [".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".ccp4",".map",".omap",".pse",".dcd"];
 
 	Jmol._isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
