@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 2/19/2016 10:32:18 AM typo fixed for makeLiveImage
 // BH 2/14/2016 12:31:02 PM fixed local reader not disappearing after script call
 // BH 2/14/2016 12:30:41 PM Info.appletLoadingImage: "j2s/img/JSmol_spinner.gif", 
    // can be set to "none" or some other image; see Jmol._hideLoadingSpinner(applet)
@@ -1183,7 +1184,7 @@ Jmol = (function(document) {
 			var img = ""; 
 			if (applet._coverImage){
 				var more = " onclick=\"Jmol.coverApplet(ID, false)\" title=\"" + (applet._coverTitle) + "\"";
-				var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._makeLiveImg + "\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
+				var play = "<image id=\"ID_coverclickgo\" src=\"" + applet._makeLiveImage + "\" style=\"width:25px;height:25px;position:absolute;bottom:10px;left:10px;"
 					+ "z-index:" + Jmol._getZ(applet, "coverImage")+";opacity:0.5;\"" + more + " />"  
 				img = "<div id=\"ID_coverdiv\" style=\"background-color:red;z-index:" + Jmol._getZ(applet, "coverImage")+";width:100%;height:100%;display:inline;position:absolute;top:0px;left:0px\"><image id=\"ID_coverimage\" src=\""
 				 + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
@@ -1352,7 +1353,7 @@ Jmol = (function(document) {
 		Jmol._j2sPath && (Info.j2sPath = Jmol._j2sPath);
 		obj._j2sPath = Info.j2sPath;
 		obj._coverImage = Info.coverImage;
-    obj._makeLiveImage = Info.makeLiveImage || Info._j2sPath + "/img/play_make_live.jpg";
+    obj._makeLiveImage = Info.makeLiveImage || Info.j2sPath + "/img/play_make_live.jpg";
 		obj._isCovered = !!obj._coverImage; 
 		obj._deferApplet = Info.deferApplet || obj._isCovered && obj._isJava; // must do this if covered in Java
 		obj._deferUncover = Info.deferUncover && !obj._isJava; // can't do this with Java
