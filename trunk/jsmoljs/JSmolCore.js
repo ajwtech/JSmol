@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 2/29/2016 3:59:55 PM broken cursor_wait image path when Info.j2sPath is not "j2s"
 // BH 2/19/2016 10:32:18 AM typo fixed for makeLiveImage
 // BH 2/14/2016 12:31:02 PM fixed local reader not disappearing after script call
 // BH 2/14/2016 12:30:41 PM Info.appletLoadingImage: "j2s/img/JSmol_spinner.gif", 
@@ -1190,7 +1191,7 @@ Jmol = (function(document) {
 				 + applet._coverImage + "\" style=\"width:100%;height:100%\"" + more + "/>" + play + "</div>";
 			}
       
-      var wait = (applet._isJava ? "" : "<image id=\"ID_waitimage\" src=\"j2s/img/cursor_wait.gif\" style=\"display:none;position:absolute;bottom:10px;left:10px;"
+      var wait = (applet._isJava ? "" : "<image id=\"ID_waitimage\" src=\"" + applet._j2sPath + "/img/cursor_wait.gif\" style=\"display:none;position:absolute;bottom:10px;left:10px;"
 					+ "z-index:" + Jmol._getZ(applet, "coverImage")+";\" />");  
 
 			var css = Jmol._appletCssText.replace(/\'/g,'"');
