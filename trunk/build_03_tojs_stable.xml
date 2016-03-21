@@ -1148,6 +1148,8 @@
    		JS/SmilesSearch.js
    		JS/SmilesGenerator.js
    		JS/SmilesAromatic.js
+        JS/SmilesRing.js
+        JS/SmilesRingSet.js
    		JS/SmilesAtom.js
    		JS/SmilesBond.js
    		JS/SmilesMeasure.js
