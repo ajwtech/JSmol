@@ -5,6 +5,8 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 3/23/2016 1:21:39 PM adding http://files.rcsb.org/view/%FILE.pdb as default RCSB site for "="
+
 // BH 2/29/2016 3:59:55 PM broken cursor_wait image path when Info.j2sPath is not "j2s"
 // BH 2/19/2016 10:32:18 AM typo fixed for makeLiveImage
 // BH 2/14/2016 12:31:02 PM fixed local reader not disappearing after script call
@@ -189,6 +191,7 @@ Jmol = (function(document) {
         // null here means no conversion necessary 
 				"cactus.nci.nih.gov": null,
         "rruff.geo.arizona.edu": null, 
+        "files.rcsb.org": null, 
 				"www.rcsb.org": null,
 				"cdn.rcsb.org": null,
 				"ftp.wwpdb.org": null,
@@ -199,7 +202,7 @@ Jmol = (function(document) {
 				"http://www.nmrdb.org/tools/jmol/predict.php":null,
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
 				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
-				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
+				"=": "http://files.rcsb.org/view/%FILE.pdb",
 				"*": "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
 				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
