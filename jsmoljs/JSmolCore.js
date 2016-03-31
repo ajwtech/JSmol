@@ -200,8 +200,8 @@ Jmol = (function(document) {
 				"wwwdev.ebi.ac.uk": null, 
 				"pubchem.ncbi.nlm.nih.gov":null,
 				"http://www.nmrdb.org/tools/jmol/predict.php":null,
-				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
-				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
+				"$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
+				"$$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
 				"=": "http://files.rcsb.org/view/%FILE.pdb",
 				"*": "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
@@ -294,7 +294,7 @@ Jmol = (function(document) {
 	}
 
 	Jmol._getNCIInfo = function(identifier, what, fCallback) {
-		return Jmol._getFileData("http://cactus.nci.nih.gov/chemical/structure/"+identifier +"/" + (what == "name" ? "names" : what));
+		return Jmol._getFileData("https://cactus.nci.nih.gov/chemical/structure/"+identifier +"/" + (what == "name" ? "names" : what));
 	}
 	
 
