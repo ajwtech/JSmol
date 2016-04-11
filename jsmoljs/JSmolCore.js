@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/3/2016 9:10:31 PM adding materialsproject.org for AJAX.
 // BH 3/23/2016 1:21:39 PM adding http://files.rcsb.org/view/%FILE.pdb as default RCSB site for "="
 
 // BH 2/29/2016 3:59:55 PM broken cursor_wait image path when Info.j2sPath is not "j2s"
@@ -196,6 +197,7 @@ Jmol = (function(document) {
 				"cdn.rcsb.org": null,
 				"ftp.wwpdb.org": null,
 				"pdbe.org": null, 
+				"materialsproject.org": null, 
 				"www.ebi.ac.uk": null, 
 				"wwwdev.ebi.ac.uk": null, 
 				"pubchem.ncbi.nlm.nih.gov":null,
@@ -205,7 +207,7 @@ Jmol = (function(document) {
 				"=": "http://files.rcsb.org/view/%FILE.pdb",
 				"*": "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
-				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
+				":": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
 			},
 			_restQueryUrl: "http://www.rcsb.org/pdb/rest/search",
 			_restQueryXml: "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>QUERY</keywords></orgPdbQuery>",
@@ -285,20 +287,24 @@ Jmol = (function(document) {
 	Jmol.$ajax = function (info) {
 		Jmol._ajaxCall = info.url;
 		info.cache = (info.cache != "NO");
-		if (info.url.indexOf("http://pubchem.ncbi.nlm.nih") == 0)
-			info.url = "https://" + info.url.substring(7);
-			// fluke at pubchem --- requires https now from all pages 3/8/2014
+    info.url = Jmol._fixProtocol(info.url);
 		// don't let jQuery add $_=... to URL unless we 
 		// use cache:"NO"; other packages might use $.ajaxSetup() to set this to cache:false
 		return $.ajax(info);
 	}
 
+  Jmol._fixProtocol(url) {
+  	return (url.indexOf("http://") == 0 && (
+      url.indexOf("http://pubchem") == 0 
+      || url.indexOf("http://cactus") == 0
+      || url.indexOf("http://www.materialsproject") == 0) 
+      ? "https" + url.substring(4) : url);
+  }
+  
 	Jmol._getNCIInfo = function(identifier, what, fCallback) {
 		return Jmol._getFileData("https://cactus.nci.nih.gov/chemical/structure/"+identifier +"/" + (what == "name" ? "names" : what));
 	}
 	
-
-
 	Jmol.$appEvent = function(app, subdiv, evt, f) {
 		var o = Jmol.$(app, subdiv); 
 		o.off(evt) && f && o.on(evt, f);
