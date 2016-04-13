@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/11/2016 5:34:16 PM adds direct conversion to http://files.rcsb.org/view from http://www.rcsb.org/pdb/files/1xpb.pdb
 // BH 4/3/2016 9:10:31 PM adding materialsproject.org for AJAX.
 // BH 3/23/2016 1:21:39 PM adding http://files.rcsb.org/view/%FILE.pdb as default RCSB site for "="
 
@@ -284,7 +285,7 @@ Jmol = (function(document) {
 
 	/// special functions:
 
-	Jmol.$ajax = function (info) {
+	Jmol.$ajax = function(info) {
 		Jmol._ajaxCall = info.url;
 		info.cache = (info.cache != "NO");
     info.url = Jmol._fixProtocol(info.url);
@@ -293,8 +294,11 @@ Jmol = (function(document) {
 		return $.ajax(info);
 	}
 
-  Jmol._fixProtocol(url) {
-  	return (url.indexOf("http://") == 0 && (
+  Jmol._fixProtocol = function(url) {
+  	return (
+    url.indexOf("http://www.rcsb.org/pdb/files/") == 0 ? 
+      "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
+    : url.indexOf("http://") == 0 && (
       url.indexOf("http://pubchem") == 0 
       || url.indexOf("http://cactus") == 0
       || url.indexOf("http://www.materialsproject") == 0) 
@@ -912,13 +916,13 @@ Jmol = (function(document) {
 	Jmol._getFileData = function(fileName, fSuccess, doProcess) {
 		// use host-server PHP relay if not from this host
 		var isBinary = Jmol._isBinaryUrl(fileName);
-		var isPDB = (fileName.indexOf("pdb.gz") >= 0 && fileName.indexOf("http://www.rcsb.org/pdb/files/") == 0);
-		var asBase64 = (isBinary && !Jmol._canSyncBinary(isPDB));
-		if (asBase64 && isPDB) {
+		var isPDB = (fileName.indexOf(".gz") >= 0 && fileName.indexOf("rcsb.org") >= 0);
+		if (isPDB) {
 			// avoid unnecessary binary transfer
-			fileName = fileName.replace(/pdb\.gz/,"pdb");
-			asBase64 = isBinary = false;
+			fileName = fileName.replace(/\.gz/,"");
+			isBinary = false;
 		}
+		var asBase64 = (isBinary && !Jmol._canSyncBinary(isPDB));
 		var isPost = (fileName.indexOf("?POST?") >= 0);
 		if (fileName.indexOf("file:/") == 0 && fileName.indexOf("file:///") != 0)
 			fileName = "file://" + fileName.substring(5);      /// fixes IE problem
