@@ -298,7 +298,7 @@ Jmol = (function(document) {
   Jmol._fixProtocol = function(url) {
   	return (    
     url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
-      "https://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
+      "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
     : url.indexOf("http://") == 0 && (
       url.indexOf("http://pubchem") == 0 
       || url.indexOf("http://cactus") == 0
