@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/13/2016 9:12:31 PM  url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
 // BH 4/11/2016 5:34:16 PM adds direct conversion to http://files.rcsb.org/view from http://www.rcsb.org/pdb/files/1xpb.pdb
 // BH 4/3/2016 9:10:31 PM adding materialsproject.org for AJAX.
 // BH 3/23/2016 1:21:39 PM adding http://files.rcsb.org/view/%FILE.pdb as default RCSB site for "="
@@ -295,9 +296,9 @@ Jmol = (function(document) {
 	}
 
   Jmol._fixProtocol = function(url) {
-  	return (
-    url.indexOf("http://www.rcsb.org/pdb/files/") == 0 ? 
-      "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
+  	return (    
+    url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
+      "https://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
     : url.indexOf("http://") == 0 && (
       url.indexOf("http://pubchem") == 0 
       || url.indexOf("http://cactus") == 0
