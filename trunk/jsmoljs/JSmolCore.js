@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/18/2016 10:25:08 PM adds preliminary =xxxx.mmtf reader
 // BH 4/13/2016 9:12:31 PM  url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
 // BH 4/11/2016 5:34:16 PM adds direct conversion to http://files.rcsb.org/view from http://www.rcsb.org/pdb/files/1xpb.pdb
 // BH 4/3/2016 9:10:31 PM adding materialsproject.org for AJAX.
@@ -194,14 +195,11 @@ Jmol = (function(document) {
         // null here means no conversion necessary 
 				"cactus.nci.nih.gov": null,
         "rruff.geo.arizona.edu": null, 
-        "files.rcsb.org": null, 
-				"www.rcsb.org": null,
-				"cdn.rcsb.org": null,
+        ".rcsb.org": null, 
 				"ftp.wwpdb.org": null,
 				"pdbe.org": null, 
 				"materialsproject.org": null, 
-				"www.ebi.ac.uk": null, 
-				"wwwdev.ebi.ac.uk": null, 
+				".ebi.ac.uk": null, 
 				"pubchem.ncbi.nlm.nih.gov":null,
 				"http://www.nmrdb.org/tools/jmol/predict.php":null,
 				"$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
@@ -679,7 +677,9 @@ Jmol = (function(document) {
 			} else {
 				query = encodeURIComponent(query.substring(pt));		
 			}
-			if (call.indexOf("FILENCI") >= 0) {
+      if (query.indexOf(".mmtf") >= 0) {
+        query = "http://mmtf.rcsb.org/full/" + query
+			} else if (call.indexOf("FILENCI") >= 0) {
 				query = query.replace(/\%2F/g, "/");				
 				query = call.replace(/\%FILENCI/, query);
 			} else {
@@ -906,7 +906,7 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = [".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd"];
+	Jmol._binaryTypes = ["mmtf",".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd"];
 
 	Jmol._isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
