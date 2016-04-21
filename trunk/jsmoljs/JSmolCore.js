@@ -5,6 +5,8 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 4/21/2016 9:25:39 AM adds [URL] button to file load option
+// BH 4/20/2016 2:44:50 PM fixes async load problem with Safari
 // BH 4/18/2016 10:25:08 PM adds preliminary =xxxx.mmtf reader
 // BH 4/13/2016 9:12:31 PM  url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
 // BH 4/11/2016 5:34:16 PM adds direct conversion to http://files.rcsb.org/view from http://www.rcsb.org/pdb/files/1xpb.pdb
@@ -923,7 +925,7 @@ Jmol = (function(document) {
 			fileName = fileName.replace(/\.gz/,"");
 			isBinary = false;
 		}
-		var asBase64 = (isBinary && !Jmol._canSyncBinary(isPDB));
+		var asBase64 = (isBinary && !fSuccess && !Jmol._canSyncBinary(isPDB));
 		var isPost = (fileName.indexOf("?POST?") >= 0);
 		if (fileName.indexOf("file:/") == 0 && fileName.indexOf("file:///") != 0)
 			fileName = "file://" + fileName.substring(5);      /// fixes IE problem
@@ -1038,10 +1040,16 @@ Jmol = (function(document) {
 		if (!Jmol.featureDetection.hasFileReader)
 				return fileLoadThread.setData("Local file reading is not enabled in your browser", null, null, appData);
 		if (!applet._localReader) {
-			var div = '<div id="ID" style="z-index:'+Jmol._getZ(applet, "fileOpener") + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
+			var div = '<div id="ID" style="z-index:'+Jmol._getZ(applet, "fileOpener") + ';position:absolute;background:#E0E0E0;left:10px;top:10px"><div style="margin:5px 5px 5px 5px;"><button id="ID_loadurl">URL</button><input type="file" id="ID_files" /><button id="ID_loadfile">load</button><button id="ID_cancel">cancel</button></div><div>'
 			Jmol.$after("#" + applet._id + "_appletdiv", div.replace(/ID/g, applet._id + "_localReader"));
 			applet._localReader = Jmol.$(applet, "localReader");
 		}
+		Jmol.$appEvent(applet, "localReader_loadurl", "click");
+		Jmol.$appEvent(applet, "localReader_loadurl", "click", function(evt) {
+      var file = prompt("Enter a URL");
+      if (!file)return
+      applet._script("load \"" + file + "\"");
+		});
 		Jmol.$appEvent(applet, "localReader_loadfile", "click");
 		Jmol.$appEvent(applet, "localReader_loadfile", "click", function(evt) {
 			var file = Jmol.$(applet, "localReader_files")[0].files[0];   
