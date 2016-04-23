@@ -1008,7 +1008,6 @@
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
        		J/api/JmolBioResolver.js
-	    	JM/JmolBioModel.js
        		JM/JmolBioModelSet.js
         	JM/Resolver.js
        		JM/Monomer.js
@@ -1030,7 +1029,6 @@
        		JM/NucleicPolymer.js
        		JM/BasePair.js
        		JM/PhosphorusPolymer.js
-        	J/api/DSSPInterface.js
     		J/api/JmolBioMeshRenderer.js
        		J/dssx/Bridge.js
        		J/dssx/DSSP.js        	
