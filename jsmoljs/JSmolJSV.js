@@ -9,6 +9,7 @@
 * 
 */
 
+// BH 4/24/2016 4:42:06 PM working around Resolver 2D issues
 // BH 2/2/2014 11:39:44 AM Jmol/JSME/JSV working triad
 // BH 1/30/2014 1:04:09 PM adds Info.viewSet 
 // BH 10/10/2013 1:25:28 PM JSV HTML5 option
@@ -304,7 +305,7 @@
 		this._propagateView(view, molData);
 	}
 
-	proto._propagateView = function(view, molData) {
+	proto._propagateView = function(view, molData, _jsv_propagateView) {
 		var vJmol = view.Jmol;
 		var vJME = view.JME;
 		if (vJmol) {
@@ -312,7 +313,7 @@
 			if (vJmol.applet)
 				vJmol.applet._loadModelFromView(this._currentView);
 			if (vJME)
-				vJME.applet._loadFromJmol(vJmol.applet);
+				vJME.applet._loadFromJmol(vJmol.applet, "jmeh");
 		} else if (vJME) {
 			vJME.data = molData;
 			vJME.applet._loadModelFromView(this._currentView);

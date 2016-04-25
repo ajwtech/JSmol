@@ -288,9 +288,10 @@
   	    <include name="**/*" />
   	  </fileset>
     </copy>
+   	<!--
    	<echo>......adding jsme event hooks</echo>
   	<replace dir="${site.path}/jsme/jsme" includes="*.html" token="var c=arguments,d;" value="var c=arguments,d;if(!(d=(!c||!c[0]||!$wnd.Jmol?a:$wnd.Jmol._jmeHook(a, c[0]))))return;"/>
-   	
+   	-->
    	<echo>...adding js subdirectory</echo>
    	<copy todir="${site.path}/js">
   	  <fileset dir="jsmoljs">		
@@ -1007,9 +1008,6 @@
         <param name="call-core.list" value="
        		J/adapter/readers/pdb/PdbReader.js
        		J/adapter/smarter/Structure.js
-       		J/api/JmolBioResolver.js
-       		JM/JmolBioModelSet.js
-        	JM/Resolver.js
        		JM/Monomer.js
        		JM/AlphaMonomer.js
        		JM/ProteinStructure.js
@@ -1020,7 +1018,9 @@
        		JM/AlphaPolymer.js
        		JM/AminoMonomer.js
        		JM/AminoPolymer.js
+       		JM/BioModelSet.js
        		JM/BioModel.js
+       		JM/BioResolver.js
        		JM/CarbohydrateMonomer.js
        		JM/CarbohydratePolymer.js
        		JM/PhosphorusMonomer.js
