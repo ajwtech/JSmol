@@ -563,6 +563,7 @@
 	Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {
 		// JME data is a single line with no line ending
 		jme._setCheck(false, "readmolecule");
+    jmeOrMolData = jmeOrMolData.trim();
 		if (jmeOrMolData.indexOf("\n") < 0 && jmeOrMolData.indexOf("\r") < 0)
 			jme._applet.readMolecule(jmeOrMolData);
 		else 
