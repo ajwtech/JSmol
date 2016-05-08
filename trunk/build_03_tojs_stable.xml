@@ -1119,9 +1119,7 @@
     <antcall target="call-core">
         <param name="call-core.name" value="text" />
         <param name="call-core.list" value="
-       		JM/Object2d.js
        		JM/Text.js
-       		J/shape/Object2dShape.js
        		J/shape/TextShape.js
        		J/shape/Labels.js
        		J/shape/Measures.js
