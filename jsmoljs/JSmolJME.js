@@ -433,9 +433,12 @@
 			  isOK = false;
 			} else if (jme != null) {
 				jmeSMILES = this._getSmiles();
+        alert(jmeSMILES)
 				// testing here to see that we have the same structure as in the JMOL applet
 				// feature change here --- evaluation of an atom set returns an array now, not an uninterpretable string
-        var script = "{*}.find('SMILES', '/noncanonical/" + jmeSMILES.replace(/\\/g,"\\\\")+ "')"
+        // had "/noncanonical/" here - but this is not necessary. Jmol will convert this
+         
+        var script = "{*}.find('SMILES', '" + jmeSMILES.replace(/\\/g,"\\\\")+ "')"
 				var jmolAtoms = (jmeSMILES ? jmol._evaluate(script) : []);
 				var isOK = (jmolAtoms.length > 0);
 			}
