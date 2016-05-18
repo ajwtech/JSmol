@@ -1215,11 +1215,15 @@
         " />
     </antcall>
 
+   	<!--  no longer doing this - caused problems with check-out
+   	
    	<echo>creating distribution zip file jsmol.zip and copying it to Jmol</echo>
   	<delete file="dist/*" />
     <zip zipfile="dist/jsmol.zip" basedir="site" includes="**" />
    	<copy file="dist/jsmol.zip" tofile="${jmol.path}/appletweb/jsmol.zip" />
  	<delete file="temp.js" />
+ 	
+ 	-->
    	<copy file="README-DOWNLOAD.TXT" tofile="dist/README.TXT" />
    	<echo>${jmol.path}/appletweb/jsmol.zip has been updated. 
    		site/jsmol is available for testing.</echo>
