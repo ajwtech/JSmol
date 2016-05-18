@@ -3,7 +3,7 @@
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
 	
-   <property name="jmol.path" value="../Jmol-14_4" />
+   <property name="jmol.path" value="../Jmol-14_6" />
    <property name="jsv.path" value="../JSpecView" />
    <property name="site.path" value="site/jsmol" />
 
@@ -554,7 +554,6 @@
 		JU/Geodesic.js
 		JU/Int2IntHash.js
 		JU/Node.js
-		JU/BNode.js
 		JU/Edge.js
     	JU/JmolMolecule.js
 		JU/Logger.js
