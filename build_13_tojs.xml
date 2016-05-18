@@ -555,7 +555,6 @@
 		JU/Geodesic.js
 		JU/Int2IntHash.js
 		JU/Node.js
-		JU/BNode.js
 		JU/Edge.js
     	JU/JmolMolecule.js
 		JU/Logger.js
