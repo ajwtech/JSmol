@@ -353,6 +353,7 @@
     	java/net/URLStreamHandler.js
     	java/net/URLStreamHandlerFactory.js
     	java/text/MessageFormat.js
+    	java/util/Random.js
     	java/util/AbstractCollection.js
     	java/util/AbstractList.js
     	java/util/AbstractMap.js
@@ -364,7 +365,6 @@
     	java/util/Hashtable.js
     	java/util/MapEntry.js
     	java/util/Properties.js
-    	java/util/Random.js
     	java/util/SortedMap.js
     	java/util/SortedSet.js
     	java/util/StringTokenizer.js
