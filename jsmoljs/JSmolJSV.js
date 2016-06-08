@@ -293,9 +293,12 @@
 		
 		// get the simulation into JSpecView
 		var script = this.__Info.preloadScript;
-		if (script == null) 
+		if (script == null) {
 			script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
+    }
 		script += "; LOAD ID \"" + view.info.viewID + "\" APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
+  	if (this._addC13)
+      script += "; LOAD ID \"" + view.info.viewID + "C13\" APPEND \"http://SIMULATION/C13/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
 		this._applet.runScriptNow(script);
 		// update Jmol and/or JME to correspond with the model returned.
 		molData = this._getAppletInfo("DATA_mol");
