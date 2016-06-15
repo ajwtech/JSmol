@@ -347,6 +347,7 @@
     	java/io/StringReader.js
     	java/io/Writer.js 
     	java/net/MalformedURLException.js
+    	java/net/UnknownServiceException.js
     	java/net/URL.js
     	java/net/URLConnection.js
     	java/net/URLEncoder.js
