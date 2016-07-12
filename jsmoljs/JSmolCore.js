@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 6/27/2016 1:16:57 AM adds Jmol.playAudio(fname)
 // BH 4/26/2016 4:16:07 PM adds Jmol.loadFileFromDialog(applet)
 // BH 4/21/2016 9:25:39 AM adds [URL] button to file load option
 // BH 4/20/2016 2:44:50 PM fixes async load problem with Safari
@@ -733,6 +734,13 @@ Jmol = (function(document) {
 		return fSuccess;
 	}
 	
+  Jmol._playAudio = function(filePath) {
+    var audio = document.createElement("audio");
+    audio.controls = "true";
+    audio.src = filePath;
+    audio.play();
+  }
+  
 	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
 		var isRaw = [];
 		fileName = Jmol._checkFileName(applet, fileName, isRaw);
