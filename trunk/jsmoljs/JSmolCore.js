@@ -1200,7 +1200,7 @@ Jmol = (function(document) {
       applet._appletPanel = (javaAppletPanel || javaApplet);
       applet._applet = javaApplet;
     }
-		Jmol._track(applet._readyCallback(appId, fullId, isReady));
+		Jmol._track(applet)._readyCallback(appId, fullId, isReady);
 	}
 
 	Jmol._getWrapper = function(applet, isHeader) {
