@@ -5,6 +5,7 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+// BH 7/31/2016 6:42:06 AM changes mouse wheel from -1 to 507
 // BH 6/27/2016 1:16:57 AM adds Jmol.playAudio(fname)
 // BH 4/26/2016 4:16:07 PM adds Jmol.loadFileFromDialog(applet)
 // BH 4/21/2016 9:25:39 AM adds [URL] button to file load option
@@ -1754,7 +1755,7 @@ Jmol = (function(document) {
 			var oe = ev.originalEvent;
 			var scroll = (oe.detail ? oe.detail : (Jmol.featureDetection.os == "mac" ? 1 : -1) * oe.wheelDelta); // Mac and PC are reverse; but 
 			var modifiers = Jmol._jsGetMouseModifiers(ev);
-			canvas.applet._processEvent(-1,[scroll < 0 ? -1 : 1,0,modifiers]);
+			canvas.applet._processEvent(507,[scroll < 0 ? -1 : 1,0,modifiers]);
 			return false;
 		});
 
