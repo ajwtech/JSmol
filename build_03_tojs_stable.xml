@@ -382,6 +382,7 @@
 		javajs/api/JSONEncodable.js
     	javajs/api/PlatformViewer.js
     	javajs/api/ZInputStream.js
+    	javajs/api/GenericOutputChannel.js
     	javajs/awt/Color.js
     	javajs/awt/Dimension.js
     	javajs/awt/event/Event.js
