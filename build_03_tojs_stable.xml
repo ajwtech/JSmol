@@ -63,7 +63,7 @@
             <include name="**/*.js" />
         </fileset>
     </copy>
-   	<rename src="${site.path}/j2s/JM/forcefield" dest="${site.path}/j2s/JM/FF" />
+   	<move src="${site.path}/j2s/JM/forcefield" dest="${site.path}/j2s/JM/FF" />
    	
    	<echo>...JS (script, scriptext, smiles, symmetry)</echo>
    	<copy todir="${site.path}/j2s/JS" >
