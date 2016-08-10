@@ -376,6 +376,7 @@
     	javajs/api/GenericFileInterface.js
 		javajs/api/GenericMenuInterface.js
     	javajs/api/GenericMouseInterface.js
+		javajs/api/GenericOutputChannel.js
     	javajs/api/GenericPlatform.js
     	javajs/api/JmolObjectInterface.js
     	javajs/api/JSInterface.js
