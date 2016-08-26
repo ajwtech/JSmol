@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
+
 import javajs.util.SB;
 
 public interface GenericBinaryDocument {
