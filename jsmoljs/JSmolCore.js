@@ -5,6 +5,9 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
+
+// BH 8/26/2016 6:56:31 AM chemapps.stolaf.edu exclusively https
+// BH 8/25/2016 9:47:26 PM bug fix: NCI/CADD now requires "get3d=true" not "get3d=True"
 // BH 7/31/2016 6:42:06 AM changes mouse wheel from -1 to 507
 // BH 6/27/2016 1:16:57 AM adds Jmol.playAudio(fname)
 // BH 4/26/2016 4:16:07 PM adds Jmol.loadFileFromDialog(applet)
@@ -225,7 +228,7 @@ Jmol = (function(document) {
 		_lastAppletID: null,
 		_mousePageX: null,
 		_mouseOwner: null,
-		_serverUrl: "http://your.server.here/jsmol.php",
+		_serverUrl: "https://your.server.here/jsmol.php",
 		_syncId: ("" + Math.random()).substring(3),
 		_touching: false,
 		_XhtmlElement: null,
@@ -239,7 +242,7 @@ Jmol = (function(document) {
 	  $.ajaxSetup({ mimeType: "text/plain" });
 	j._ajaxTestSite = j._httpProto + "google.com";
 	var isLocal = (j._isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
-	j._tracker = (j._httpProto == "http://" && !isLocal && 'http://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1');
+	j._tracker = (!isLocal && 'https://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1');
 	
 	j._isChrome = (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0);
 	j._isSafari = (!j._isChrome && navigator.userAgent.toLowerCase().indexOf("safari") >= 0);
@@ -300,6 +303,8 @@ Jmol = (function(document) {
 	}
 
   Jmol._fixProtocol = function(url) {
+    if (url.indexOf("get3d=True") >= 0)
+     url = url.replace(/get3d\=True/, "get3d=true"); // NCI/CADD change 08/2016
   	return (    
     url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
       "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
