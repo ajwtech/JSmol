@@ -216,7 +216,7 @@ Jmol = (function(document) {
 				"www.nmrdb.org/tools/jmol/predict.php":null,
 				"$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
 				"$$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
-				"=": "https://files.rcsb.org/view/%FILE.pdb",
+				"=": "https://files.rcsb.org/download/%FILE.pdb",
 				"*": "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
 				"==": "https://files.rcsb.org/ligands/download/%FILE.cif",
 				":": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
