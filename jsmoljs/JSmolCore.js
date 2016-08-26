@@ -6,6 +6,9 @@
 // see JSmolApi.js for public user-interface. All these are private functions
 
 
+// BH 8/26/2016 11:29:48 AM RCSB ligand 
+// BH 8/26/2016 11:29:48 AM generic fixProtocol for .gov/ to https
+// BH 8/26/2016 11:29:48 AM allows mmtf.rcsb.org/full for newer mmtf.rcsb.org/v1.0/full
 // BH 8/26/2016 6:56:31 AM chemapps.stolaf.edu exclusively https
 // BH 8/25/2016 9:47:26 PM bug fix: NCI/CADD now requires "get3d=true" not "get3d=True"
 // BH 7/31/2016 6:42:06 AM changes mouse wheel from -1 to 507
@@ -210,12 +213,12 @@ Jmol = (function(document) {
 				"materialsproject.org": null, 
 				".ebi.ac.uk": null, 
 				"pubchem.ncbi.nlm.nih.gov":null,
-				"http://www.nmrdb.org/tools/jmol/predict.php":null,
+				"www.nmrdb.org/tools/jmol/predict.php":null,
 				"$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf&get3d=True",
 				"$$": "https://cactus.nci.nih.gov/chemical/structure/%FILENCI/file?format=sdf",
-				"=": "http://files.rcsb.org/view/%FILE.pdb",
-				"*": "http://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
-				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
+				"=": "https://files.rcsb.org/view/%FILE.pdb",
+				"*": "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif",
+				"==": "https://files.rcsb.org/ligands/download/%FILE.cif",
 				":": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
 			},
 			_restQueryUrl: "http://www.rcsb.org/pdb/rest/search",
@@ -304,13 +307,15 @@ Jmol = (function(document) {
 
   Jmol._fixProtocol = function(url) {
     if (url.indexOf("get3d=True") >= 0)
-     url = url.replace(/get3d\=True/, "get3d=true"); // NCI/CADD change 08/2016
+      url = url.replace(/get3d\=True/, "get3d=true"); // NCI/CADD change 08/2016
+    if (url.indexOf("mmtf.rcsb.org/full") >= 0)
+      url = url.replace(/\/full/, "/v1.0/full");
   	return (    
     url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
       "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
     : url.indexOf("http://") == 0 && (
-      url.indexOf("http://pubchem") == 0 
-      || url.indexOf("http://cactus") == 0
+      Jmol._httpProto == "https://"
+      || url.indexOf(".gov/") > 0 
       || url.indexOf("http://www.materialsproject") == 0) 
       ? "https" + url.substring(4) : url);
   }
