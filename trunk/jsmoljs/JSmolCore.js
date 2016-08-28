@@ -8,7 +8,6 @@
 
 // BH 8/26/2016 11:29:48 AM RCSB ligand 
 // BH 8/26/2016 11:29:48 AM generic fixProtocol for .gov/ to https
-// BH 8/26/2016 11:29:48 AM allows mmtf.rcsb.org/full for newer mmtf.rcsb.org/v1.0/full
 // BH 8/26/2016 6:56:31 AM chemapps.stolaf.edu exclusively https
 // BH 8/25/2016 9:47:26 PM bug fix: NCI/CADD now requires "get3d=true" not "get3d=True"
 // BH 7/31/2016 6:42:06 AM changes mouse wheel from -1 to 507
@@ -308,8 +307,6 @@ Jmol = (function(document) {
   Jmol._fixProtocol = function(url) {
     if (url.indexOf("get3d=True") >= 0)
       url = url.replace(/get3d\=True/, "get3d=true"); // NCI/CADD change 08/2016
-    if (url.indexOf("mmtf.rcsb.org/full") >= 0)
-      url = url.replace(/\/full/, "/v1.0/full");
   	return (    
     url.indexOf("http://www.rcsb.org/pdb/files/") == 0 && url.indexOf("/ligand/") < 0 ? 
       "http://files.rcsb.org/view/" + url.substring(30).replace(/\.gz/,"")    
@@ -694,7 +691,7 @@ Jmol = (function(document) {
 				query = encodeURIComponent(query.substring(pt));		
 			}
       if (query.indexOf(".mmtf") >= 0) {
-        query = "http://mmtf.rcsb.org/full/" + query
+        query = "http://mmtf.rcsb.org/full/" + query.replace(/\.mmtf/, "");
 			} else if (call.indexOf("FILENCI") >= 0) {
 				query = query.replace(/\%2F/g, "/");				
 				query = call.replace(/\%FILENCI/, query);
