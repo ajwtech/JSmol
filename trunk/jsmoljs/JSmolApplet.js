@@ -707,6 +707,10 @@
 		}
 	}
 
+  proto._reset = function(_jmol_resetView) {
+    this._scriptWait("zap", true);
+  }
+  
 	proto._updateView = function(_jmol_updateView) {
 		if (this._viewSet == null || !this._applet)
 			return;

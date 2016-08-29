@@ -2153,11 +2153,31 @@ Jmol.View = {
 
 // methods called from other modules have no "_" in their name
 
+View.resetView = function(applet, appletNot) {
+  debugger;
+  if (appletNot) {
+  	if (!appletNot._viewSet)
+  		return;
+    var set = Jmol.View.applets[appletNot._viewSet]
+    for (var applet in set) {
+      if (applet == appletNot)
+        continue;
+      Jmol.View.resetView(applet);
+    }
+    return;
+  }
+  if (applet) {
+  	applet._reset();
+    Jmol.View.updateView(applet);
+  }
+}
+
 View.updateView = function(applet, Info, _View_updateView) {
 	// Info.chemID, Info.data, possibly Info.viewID if no chemID
 	// return from applet after asynchronous download of new data
 	if (applet._viewSet == null)
 		return;
+  Info || (Info = {});
 	Info.chemID || (applet._searchQuery = null);
 	Info.data || (Info.data = "N/A");
 	Info.type = applet._viewType;

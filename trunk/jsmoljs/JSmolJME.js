@@ -251,12 +251,17 @@
 		var me = this;
 	}
 
+  proto._reset = function(_jmol_resetView) {
+    this._script("clear");
+  }
+
 	proto._updateView = function(_jme_updateView) {
 		// called from model change without chemical identifier, possibly by user action and call to Jmol.updateView(applet)
 		if (this._viewSet != null) {
 			this._search("$" + this._getSmiles())
     }
 		var me = this;
+    // missing View.updateView?
 	}
 
 	proto._setCheck = function(b, why) {
@@ -433,7 +438,7 @@
 			  isOK = false;
 			} else if (jme != null) {
 				jmeSMILES = this._getSmiles();
-        alert(jmeSMILES)
+        //alert(jmeSMILES)
 				// testing here to see that we have the same structure as in the JMOL applet
 				// feature change here --- evaluation of an atom set returns an array now, not an uninterpretable string
         // had "/noncanonical/" here - but this is not necessary. Jmol will convert this
@@ -476,6 +481,7 @@
 		if (!this._applet)return;
 		this._setCheck(false, "readmoldata");
 		if (this._molData) {
+    //alert(format + " " + data + " reading " + this._molData)
     	Jmol.jmeReadMolecule(this, this._molData);
 //			this._applet.readMolecule(this._molData);
 			this._molData = this._applet.molFile();
@@ -535,6 +541,10 @@
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles());
     s = s.replace(/\:1/g,"");
 		s = s.replace(/@H/g,"@~").replace(/H/g,"")
+		s = s.replace(/\/\[\]/g,"/[H]")
+		s = s.replace(/\\\[\]/g,"\\[H]")
+		s = s.replace(/\[\]\//g,"[H]/")
+		s = s.replace(/\[\]\\/g,"[H]\\")
     s = s.replace(/\[\]/g,"")
     // but change [C@][H] to [C@H] and [C@]1[H] to [C@@H]1 
     s = s.replace(/\@\]\(\)/g,"@H]")
@@ -542,8 +552,10 @@
     s = s.replace(/\@\@\@/g,"@")
     s = s.replace(/\(\)/g,"");
     s = s.replace(/@~/g,"@H");
-		if (s.indexOf("\\") == 0 || s.indexOf("/") == 0)
-		  s= "[H]" + s;
+    if (s.lastIndexOf(")") == s.length - 1)
+      s += "[H]"
+    document.title=s
+    //alert("JSmolJME s is now " + s)
 		return s;
   }
 
@@ -560,7 +572,9 @@
 	// The final replacement here is to remove markings from star option.
 
 	Jmol.jmeSmiles = function(jme, withStereoChemistry) {
-		return jme._getSmiles();
+   var s = jme._getSmiles();
+   //alert(s)
+		return s;
 	}
 
 	Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {

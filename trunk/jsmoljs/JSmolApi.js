@@ -422,6 +422,10 @@
 		}
 	}  
 
+	Jmol.resetView = function(applet, appletNot) {
+    Jmol.View.resetView(applet, appletNot);
+	}
+
 	Jmol.updateView = function(applet, param1, param2) {
 		applet._updateView(param1, param2);
 	}
