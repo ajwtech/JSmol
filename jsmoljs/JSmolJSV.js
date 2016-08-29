@@ -290,12 +290,12 @@
 			this._applet.runScriptNow("SELECT ID \"" + view.info.viewID + "\"");
 			return;
 		}
-		
 		// get the simulation into JSpecView
 		var script = this.__Info.preloadScript;
-		if (script == null) {
+		if (this._addC13)
+			script = "CLOSE ALL";
+		else if (script == null)
 			script = "CLOSE VIEWS;CLOSE SIMULATIONS > 1";
-    }
 		script += "; LOAD ID \"" + view.info.viewID + "\" APPEND \"http://SIMULATION/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
   	if (this._addC13)
       script += "; LOAD ID \"" + view.info.viewID + "C13\" APPEND \"http://SIMULATION/C13/MOL=" + molData.replace(/\n/g,"\\n") + "\"";
@@ -324,6 +324,11 @@
 		this.__selectSpectrum();
 	}
 	
+  proto._reset = function(_jmol_resetView) {
+    this._script("view clear");
+  }
+  
+
 	proto._updateView = function(msgOrPanel, peakData, _jsv_updateView) {
 		if (this._viewSet == null || !this._applet || msgOrPanel && msgOrPanel.vwr)
 			return;
