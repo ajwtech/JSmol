@@ -6,6 +6,8 @@
 // see JSmolApi.js for public user-interface. All these are private functions
 
 
+// BH 9/19/2016 8:22:48 AM drag-drop broken for https (imageDrop.htm)
+// BH 9/18/2016 btoa() does not work with UTF-8 data (set language es;write menu t.mnu)
 // BH 8/26/2016 11:29:48 AM RCSB ligand 
 // BH 8/26/2016 11:29:48 AM generic fixProtocol for .gov/ to https
 // BH 8/26/2016 6:56:31 AM chemapps.stolaf.edu exclusively https
@@ -1134,17 +1136,16 @@ Jmol = (function(document) {
 			: filename.indexOf(".gif") >= 0 ? "image/gif" 
 			: filename.indexOf(".jpg") >= 0 ? "image/jpg" : ""));
 		var isString = (typeof data == "string");
-		if (!isString)
-			data = (JU ? JU : J.util).Base64.getBase64(data).toString();
-		encoding || (encoding = (isString ? "" : "base64"));
+   	data = (JU ? JU : J.util).Base64.getBase64(isString ? data.getBytes("UTF-8") : data).toString();
+		encoding || (encoding = "base64");
 		var url = Jmol._serverUrl;
 		url && url.indexOf("your.server") >= 0 && (url = "");
 		if (Jmol._useDataURI || !url) {
 			// Asynchronous output generated using an anchor tag
-			encoding || (data = btoa(data));
+			// btoa does not work with UTF-8 data///encoding || (data = btoa(data));
 			var a = document.createElement("a");
 			a.href = "data:" + mimetype + ";base64," + data;
-			a.type = mimetype || (mimetype = "text/plain");	
+			a.type = mimetype || (mimetype = "text/plain;charset=utf-8");	
 			a.download = filename;
 			a.target = "_blank";
 				$("body").append(a);
@@ -2353,7 +2354,7 @@ Jmol.Cache.put = function(filename, data) {
 				// but it will be only a URL, not an actual file. 
 				try {
 				  file = "" + oe.dataTransfer.getData("text");
-				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0) {
+				  if (file.indexOf("file:/") == 0 || file.indexOf("http:/") == 0 || file.indexOf("https:/") == 0) {
 				  	me._scriptLoad(file);
 				  	return;
 			  	}
