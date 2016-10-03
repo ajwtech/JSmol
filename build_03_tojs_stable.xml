@@ -279,7 +279,7 @@
   	  </fileset>
     </copy>
    	<java jar="jars/closure_compiler.jar" fork="true" dir="${site.path}/jquery" failonerror="false">
-   		<arg line="--js jquery.js --js_output_file jquery.min.js" />
+   		<arg line="--js jquery.js --charset UTF-8 --js_output_file jquery.min.js" />
     </java>
 
    	<echo>...adding jsme</echo>
