@@ -563,8 +563,10 @@ return"class java.lang.Float";
 return Clazz._floatToString(this.valueOf());
 };
 
+Clazz._a32 = null;
+
 Float.floatToIntBits = function(f) {
-var a = new Float32Array(1);
+var a = Clazz._a32 || (Clazz._a32 = new Float32Array(1));
 a[0] = f;
 return new Int32Array(a.buffer)[0]; 
 }
