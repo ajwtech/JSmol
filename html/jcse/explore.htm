@@ -6,11 +6,13 @@
 <script type="text/javascript" src="../js/Jmol2.js"></script>
 <script type="text/javascript">
 
+// 10/19/2016 5:19:50 PM
+
 		Jmol.Info.jarPath = "../java"
 		Jmol.Info.j2sPath = "../j2s"
+		Jmol.Info.serverURL = "https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php"
 
 datadir = "../data"
-//jmolInitialize("../java/","JmolAppletSigned0.jar")
 
 jmolSetMenuCssClass('" style="font-style:italic"')
 
@@ -63,6 +65,9 @@ function getModelSelectHtml() {
 	var isDefault = true
 	if (xxxx.indexOf("?load") == 0) {
 		defaultScript = unescape(xxxx.substring(1))
+		isDefault = false
+  } else if (xxxx.indexOf("?cod=") == 0) {
+		defaultScript = "load =cod/"+xxxx.substring(5).split(".")[0]
 		isDefault = false
 	} else if (xxxx.length > 1) {
 		selectedModel = xxxx
@@ -176,7 +181,8 @@ function errorCallback(a, b, msg) {
 function loadstructCallback() {
 	document.getElementById("note").style.display = "block"
 	document.getElementById("loading").style.display = "block"
-	setTimeout('getSymInfo()',100) // need the timeout to get another thread or this will lock 
+  Jmol.script(jmolApplet0,"set echo bottom left;echo @_modelName") 
+	setTimeout('getSymInfo()',100) // need the timeout to get another thread or this will lock
 }
 
 function pickCallback(a,b,i) {
@@ -270,7 +276,6 @@ function getSymInfo() {
 <td align=center valign=top style="width:170px">
 <h3>Jmol Crystal Symmetry Explorer</h3>
 
-
 <div id=loading style="display:none">
 
 <script type="text/javascript">
@@ -301,19 +306,11 @@ jmolButton("backgroundcolor = (backgroundcolor = '[x000000]' ? 'white' : 'black'
 jmolBr()
 </script>
 </div>
-<br>
-Produced especially for the 238th ACS Meeting in Washington, D.C., <a href=http://oasys2.confex.com/acs/238nm/techprogram/P1283308.HTM  target=_blank>Teaching Molecular Structure Using Jmol</a>
-presented by <a target=_blank href=http://stolaf.edu/people/hansonr>Bob Hanson</a>, Aug. 19, 2009.
-<br>
-<br>
-<a href=http://xrayweb.chem.ou.edu/notes/symmetry.html target=_blank>Symmetry in Crystallography</a>
-
-
 </td>
 <td align=center  valign=top>
 
 <script type="text/javascript">
-jmolApplet(["600","600"],';background white;set errorCallback "errorCallback";set loadstructcallback "loadstructCallback";set pickCallback "pickCallback";set zoomlarge false;' + defaultScript)
+jmolApplet(["600","600"],';background white;set errorCallback "errorCallback";set loadstructcallback "loadstructCallback";set pickCallback "pickCallback";set zoomlarge false;set antialiasdisplay;' + defaultScript)
 jmolSetButtonCssClass('" style="width:100px')
 jmolBr()
 jmolButton("console")
@@ -335,6 +332,8 @@ Note that all symmetry operations relating to this model are also accessible fro
 <br>
 <script type="text/javascript">
 jmolSetButtonCssClass('" style="width:160px')
+jmolButton("if (!cod) { cod = ''};var x = prompt('Enter a Crystallographic Open Database id',cod);if (x=='null') { quit }; cod = x; load @{'=cod/'+cod}","Load COD")
+jmolBr()
 jmolButton("if (!url) { url = ''};var x = prompt('Enter a URL for a structure file',url);if (x=='null') { quit }; url = x; load @url 1 packed","Load URL")
 jmolBr()
 jmolButton("load file \"?\" 1 packed","Load FILE")
@@ -345,11 +344,15 @@ jmolButton("write FILE ?","Save FILE")
 jmolBr()
 jmolButton("write STATE ?.spt","Save STATE")
 jmolBr()
-jmolButton("write IMAGE ?.jpg","Save JPG")
-jmolBr()
 jmolButton("write IMAGE ?.png","Save PNG")
 jmolBr()
-jmolButton("write ?.jmol","Save JMOL")
+jmolButton("write ?.png as PNGJ","Save PNG+Jmol")
+jmolHtml("<h3>3D printing options</h3>")
+jmolButton("script '3dprint.spt'","3D Print Wizard")
+jmolBr()
+jmolButton("save state o; axes off;unitcell off; refresh; write ?.wrl;restore state o","Save VRML")
+jmolBr()
+jmolButton("save state o; axes off;unitcell off; refresh; write ?.stl;restore state o","Save STL")
 jmolBr()
 </script>
 
