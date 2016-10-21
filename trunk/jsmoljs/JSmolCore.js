@@ -6,6 +6,7 @@
 // see JSmolApi.js for public user-interface. All these are private functions
 
 
+// BH 10/20/2016 10:00:43 AM JmolTracker.php
 // BH 9/19/2016 8:22:48 AM drag-drop broken for https (imageDrop.htm)
 // BH 9/18/2016 btoa() does not work with UTF-8 data (set language es;write menu t.mnu)
 // BH 8/26/2016 11:29:48 AM RCSB ligand 
@@ -246,7 +247,7 @@ Jmol = (function(document) {
 	  $.ajaxSetup({ mimeType: "text/plain" });
 	j._ajaxTestSite = j._httpProto + "google.com";
 	var isLocal = (j._isFile || ref.indexOf("http://localhost") == 0 || ref.indexOf("http://127.") == 0);
-	j._tracker = (!isLocal && 'https://chemapps.stolaf.edu/jmol/JmolTracker.htm?id=UA-45940799-1');
+	j._tracker = (!isLocal && 'https://chemapps.stolaf.edu/jmol/JmolTracker.php?id=UA-45940799-1');
 	
 	j._isChrome = (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0);
 	j._isSafari = (!j._isChrome && navigator.userAgent.toLowerCase().indexOf("safari") >= 0);
