@@ -2,9 +2,7 @@
  
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
-	
    <property name="jmol.path" value="../Jmol-14_6" />
-   <property name="jsv.path" value="../JSpecView" />
    <property name="site.path" value="site/jsmol" />
 
    <target name="toJs" id="toJs">
@@ -63,7 +61,7 @@
             <include name="**/*.js" />
         </fileset>
     </copy>
-   	<rename src="${site.path}/j2s/JM/forcefield" dest="${site.path}/j2s/JM/FF" />
+   	<move file="${site.path}/j2s/JM/forcefield" tofile="${site.path}/j2s/JM/FF" />
    	
    	<echo>...JS (script, scriptext, smiles, symmetry)</echo>
    	<copy todir="${site.path}/j2s/JS" >
@@ -167,33 +165,25 @@
    	
   	<!-- get required non-JavaScript resources -->		
     <copy todir="${site.path}/j2s/JM/FF/data" >
-      <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
+      <fileset dir="src/org/jmol/minimize/forcefield/data">
         <include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="${site.path}/j2s/J/quantum" >
-      <fileset dir="${jmol.path}/src/org/jmol/quantum">
+      <fileset dir="src/org/jmol/quantum">
         <include name="*.txt" />
       </fileset>
     </copy>
     <copy todir="${site.path}/j2s/J/modelkit/images">
-      <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
+      <fileset dir="src/org/jmol/modelkit/images">
         <include name="*" />
       </fileset>
     </copy>
    	   	
     <copy todir="${site.path}/j2s/JSV/common" >
-      <fileset dir="${jsv.path}">
+      <fileset dir="src/jspecview/common">
         <include name="TODO.txt" />
       </fileset>
-		  <filterchain>
-		    <striplinecomments>
-		      <comment value="#" />
-		    </striplinecomments>
-		    <linecontains>
-		      <contains value="Jmol.___" />
-		    </linecontains>
-		  </filterchain>
     </copy>
    	<echo>...adding version information to JSVersion.js</echo>
    	<concat destfile="temp.js"><filelist dir="${site.path}/j2s/JSV/common" files="
@@ -206,7 +196,7 @@
   	<!-- get .po files from the Jmol project -->		
    	<echo>...adding .po files</echo>
    	<copy overwrite="true" todir="${site.path}/idioma" >
-	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
+	  <fileset dir="src/org/jmol/translation/JmolApplet">
 	    <include name="*.po" />
 	  </fileset>
 	</copy>
@@ -224,7 +214,7 @@
 
    	<echo>...adding JSV/export/resources files</echo>
    		<copy todir="${site.path}/j2s/JSV/export/resources" >
-      <fileset dir="${jsv.path}Lib/src/jspecview/export/resources">
+      <fileset dir="src/jspecview/export/resources">
         <include name="*.vm" />
       </fileset>
     </copy>
@@ -258,18 +248,9 @@
  	
  	<echo>...adding Jmol and JSpecView jar and jnlp files</echo>
   	<copy todir="${site.path}/java">
-  	  <fileset dir="${jmol.path}/build">
-  	    <include name="JmolApplet*.jar" />
-  	  </fileset>
-  	  <fileset dir="${jsv.path}/build">
-  	    <include name="JSpecViewApplet*.jar" />
-  	  </fileset>
-     	  <fileset dir="jnlp">
-          <include name="*.jnlp" />
+  	  <fileset dir="jnlp">
+  	    <include name="*.*" />
        </fileset>
-   	  <fileset dir="jnlp">
-        <include name="*.jnlp" />
-     </fileset>
 	</copy>
 		
    	<echo>...adding jQuery and minimizing it</echo>
@@ -317,9 +298,9 @@
    	<!-- make core files -->
  
    	<echo>creating and compressing core files - warnings are OK; "does not exist" is trouble</echo>
-   	<echo>...adding package.js from ${jmol.path}/srcjs/js</echo>
+   	<echo>...adding package.js from srcjs/js</echo>
    	<copy todir="${site.path}/j2s/core">
-  	  <fileset dir="${jmol.path}/srcjs/js">
+  	  <fileset dir="srcjs/js">
   	    <include name="package.js" />
   	  </fileset>
     </copy>
@@ -376,13 +357,13 @@
     	javajs/api/GenericFileInterface.js
 		javajs/api/GenericMenuInterface.js
     	javajs/api/GenericMouseInterface.js
+		javajs/api/GenericOutputChannel.js
     	javajs/api/GenericPlatform.js
     	javajs/api/JmolObjectInterface.js
     	javajs/api/JSInterface.js
 		javajs/api/JSONEncodable.js
     	javajs/api/PlatformViewer.js
     	javajs/api/ZInputStream.js
-    	javajs/api/GenericOutputChannel.js
     	javajs/awt/Color.js
     	javajs/awt/Dimension.js
     	javajs/awt/event/Event.js
