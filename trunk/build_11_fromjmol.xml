@@ -120,6 +120,7 @@
     <delete quiet="true">
       <fileset dir="bin" includes="**/*"/>
       <fileset dir="src" includes="**/*"/>
+      <fileset dir="jnlp" includes="*.jar"/>
     </delete>
   	
   	<echo>copying files from srcjs (com, java, and javajs)</echo>
@@ -175,7 +176,48 @@
         <exclude name="*Awt*.java"/>
       </fileset>
     </copy>
- 	
+
+  	
+  	<!-- get required non-JavaScript resources -->		
+    <copy todir="src/org/jmol/minimize/forcefield/data" >
+      <fileset dir="${jmol.path}/src/org/jmol/minimize/forcefield/data">
+        <include name="*.txt" />
+      </fileset>
+    </copy>
+    <copy todir="src/org/jmol/quantum" >
+      <fileset dir="${jmol.path}/src/org/jmol/quantum">
+        <include name="*.txt" />
+      </fileset>
+    </copy>
+  	<copy overwrite="true" todir="src/org/jmol/modelkit/images" >
+      <fileset dir="${jmol.path}/src/org/jmol/modelkit/images">
+        <include name="*" />
+      </fileset>
+    </copy>
+   	   	
+  	<!-- get .po files from the Jmol project -->		
+   	<echo>...adding .po files</echo>
+   	<copy overwrite="true" todir="src/org/jmol/translation/JmolApplet" >
+	  <fileset dir="${jmol.path}/src/org/jmol/translation/JmolApplet">
+	    <include name="*.po" />
+	  </fileset>
+	</copy>
+
+ 	<echo>...adding Jmol jar files</echo>
+  	<copy todir="jnlp">
+  	  <fileset dir="${jmol.path}/build">
+  	    <include name="JmolApplet*.jar" />
+  	  </fileset>
+	</copy>
+
+   	<echo>...adding package.js from ${jmol.path}/srcjs/js</echo>
+   	<copy todir="srcjs/js">
+  	  <fileset dir="${jmol.path}/srcjs/js">
+  	    <include name="package.js" />
+  	  </fileset>
+    </copy>
+
+
    	<echo>Replacing all "org.jmol.java.BS" references with "javajs.util.BS"</echo>
 	<!-- replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type -->
   	<replace dir="src/org/jmol" includes="**/*.java" token="org.jmol.java.BS" value="javajs.util.BS" />
