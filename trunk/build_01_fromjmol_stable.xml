@@ -123,6 +123,13 @@
       <fileset dir="jnlp" includes="*.jar"/>
     </delete>
   	
+  	<echo>copying all files from ${jmol.path}/src/javajs to srcjs directory</echo>
+    <copy overwrite="true" todir="srcjs" >
+      <fileset dir="${jmol.path}/src">
+        <include name="javajs/**/*" />
+      </fileset>
+    </copy>
+  	
   	<echo>copying files from srcjs (com, java, and javajs)</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="srcjs">
@@ -132,15 +139,6 @@
       </fileset>
     </copy>
 
-  	<!--
-  	<echo>copying all files from ${jmol.path}/src/javajs</echo>
-    <copy overwrite="true" todir="src" >
-      <fileset dir="${jmol.path}/src">
-        <include name="javajs/**/*" />
-      </fileset>
-    </copy>
--->
-  	
   	<!-- copy only the essential files, excluding all classes referencing AWT and SWING -->
   	<echo>copying selected files from ${jmol.path}/src/org/jmol</echo>
     <copy overwrite="true" todir="src/org/jmol" >
