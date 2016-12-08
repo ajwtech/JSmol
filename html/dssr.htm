@@ -6,8 +6,9 @@
 
 <script type="text/javascript">
 
-// Bob Hanson 4/22/2014 6:49:57 PM  hansonr@stolaf.edu
+// BH  12/7/2016 11:47:28 PM added auto-calculate
 // BH 9/20/2015 6:46:24 AM upgrade to JSON-based data
+// Bob Hanson 4/22/2014 6:49:57 PM  hansonr@stolaf.edu
 
 var jmolApplet0; // set up in HTML table, below
 
@@ -28,13 +29,14 @@ var Info = {
 	jarFile: "JmolAppletSigned0.jar",
 	isSigned: true,
 	loadStructCallback: "enableButtons",
-	script: "background black;set defaultLoadScript '"+ stemScript + ";javascript enableButtons();if (!_M.dssr){calculate structure dssr};display nucleic;if(h2oOn){display add water};if(protOn){display add protein};color grey';load =1ehz/dssr;" + _1ehzScript
+	script: "background black;set defaultLoadScript '"+ stemScript + ";display nucleic;if(h2oOn){display add water};if(protOn){display add protein};color grey;if (!_M.dssr){calculate structure dssr};javascript enableButtons()';load =1ehz/dssr;" + _1ehzScript
 }
 
 var hbondsON = false;
 
 function enableButtons(app,fullPath,fileName,modelName,errorMsg,status) {
   hbondsON = false;
+  Jmol.scriptWait(jmolApplet0, "if (!_M.dssr){calculate structure dssr}");
 	var data = Jmol.evaluateVar(jmolApplet0, "(_M.dssr ? _M.dssr.counts : {})");
 	for (var i = dssrBtns.length; --i >= 0;) {
 		var name = dssrBtns[i];
@@ -101,6 +103,8 @@ function showDSSR(btn, data) {
 	var s = "";
 	var n = 0;
 	$("#menudiv").css('visibility', 'hidden');
+	$("#menudiv1").css('visibility', 'hidden');
+	$("#datadiv").css('visibility', 'hidden');
 	if (btn) {
 		if (dssrWhat == "counts") {
 			alert(Jmol.scriptEcho(jmolApplet0, "print _M.dssr.counts"));
@@ -121,8 +125,9 @@ function showDSSR(btn, data) {
 		jmolScript("select off *;color gray;");
 		if (dssrWhat == null) // "highlights off"
 			return;
+      
 		var data = Jmol.evaluateVar(jmolApplet0, "_M.dssr."+dssrWhat);
-		var n = data.length;
+ 		var n = data.length;
 		var s = "<select id='dssr' style='width:140px' size='"+Math.min(n+1, maxDrop)+"'>"
 		if (n > 1)
 			s += "<option value='' selected>" + (n == 2 ? "both" : "all " + n) + " " + dssrPlural + "</option>"
@@ -130,17 +135,91 @@ function showDSSR(btn, data) {
 		  s += "<option value="+(i+1)+">"+ dssrWhat + ".."+ (i + 1)+"</option>";
 		s += "</select>"
 		$("#menudiv").html(s).css('visibility', (n == 0 ? 'hidden' : 'visible'));
+		$("#datadiv").css('visibility', (n == 0 ? 'hidden' : 'visible'));
+    if (n)
+      setDataArea(data);
 		var f = function(a,e){selectOn(dssrWhat, $(e || this).val())};
 		$("#dssr").change(f).keyup(function() {var me = this;setTimeout(function(){f(0, me)}, 50)});
-		selectOn(dssrWhat, 0);
+		selectOn(dssrWhat, 0);    
+    s = "";  
+    if (n > 0) {
+      switch(dssrWhat) {
+      case "pairs":
+      case "nts":
+        switch(dssrWhat) {
+        case "pairs":
+          s = getPivotSelect("pairs", ["name"]);
+          break;
+        case "nts":
+          s = getPivotSelect("nts", ["is_modified", "baseSugar_conf", "sugar_class"]);
+          break;
+        }
+        break;
+      }
+    }      
+  }
+  $("#menudiv1").html(s).css('visibility', (s ? 'visible' : 'hidden'));
+  if (s) {
+  	var f = function(a,e){selectOn2(dssrWhat, $(e || this).val())};
+		$("#dssrwhat").change(f).keyup(function() {var me = this;setTimeout(function(){f(0, me)}, 50)});
 	}
 }
 
+function setDataArea(data) {
+      $("#dataarea").val(JSON.stringify(data, null, 2));
+}
+
+function getPivotSelect(dssrWhat, keys) {
+  var n = keys.length;
+  var data = [];
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    data.push(key);
+    var pivot = Jmol.evaluateVar(jmolApplet0, "_M.dssr."+dssrWhat+".select('(" + key +")').pivot");  
+    for (var val in pivot)
+      n++;
+    data.push(pivot);
+  }
+  var s = "<select id='dssrwhat' style='width:140px' size='"+Math.min(n, maxDrop)+"'>"
+  for (var i = 0; i < data.length; i++) {
+    var key = data[i];
+    s += "<option value='' style='font-weight:bold;background-color:#eee'>" + key + "</option>";
+    var pivot = data[++i];
+    for (var val in pivot)
+  	  s += "<option value=\"" + key + "|" + val + "\">"+ val + " ("+pivot[val]+")"+"</option>";
+  }
+	s += "</select>"
+  return s;
+}
+
 function selectOn(dssrWhat, n) {
-	jmolScript("select *;color grey;select " + dssrWhat+"; color " + (n ? "translucent " : "") + "red");
+  var select = "select " + dssrWhat;  
+  var isStem = Jmol.evaluateVar(jmolApplet0,"{visible} == {leadatom and nucleic}");
+  var color = (isStem ? "red" : "cpk");  
+  var script = "select *;color grey;"+select+"; color " + (n ? "translucent white " : color) + ";";
 	if (n) {
-		jmolScript("select @{_M.dssr."+dssrWhat+".." + n + "}; color red");
-	}
+		script += "select @{_M.dssr."+dssrWhat+".." + n + "}; color " + color;
+    setDataArea(Jmol.evaluateVar(jmolApplet0, "_M.dssr."+dssrWhat+".." + n));
+  }
+
+	jmolScript(script);
+}
+
+function selectOn2(key, what_value) {
+  lastSelect = null;
+  if (!what_value)
+    return;
+  var what = what_value.split("|")[0];
+  var value = what_value.split("|")[1];
+  var data = "_M.dssr."+key+".select('where "+what+"=\""+value.replace(/\'/g,"\\'")+ "\"')";
+  var select = "select @{"+data+"}";
+  setDataArea(Jmol.evaluateVar(jmolApplet0, data));
+
+  var isStem = Jmol.evaluateVar(jmolApplet0,"{visible} == {leadatom and nucleic}");
+  var color = (isStem ? "red" : "cpk");  
+  var t = (isStem ? "" : "translucent 1.0");
+  var script = "select *;color " + t + " grey; select "+key+"; color " + t + " white;"+select+";color " + color + ";";
+	jmolScript(script);
 }
 
 function calculateDSSR() {
@@ -149,6 +228,7 @@ function calculateDSSR() {
   else
     alert("The DSSR analysis for this structure has already been carried out; push this button if you load your structure yourself or drag-drop a structure into the JSmol frame.")
 }
+
 function openAnalysis(isText) {
   jmolScript("console");
   setTimeout(function(){jmolScript("console clear;print _M.dssr")}, 2000);
@@ -157,6 +237,9 @@ function openAnalysis(isText) {
 $(document).ready(function() {
 	
 	$("#menudiv").css("visibility","hidden");
+	$("#menudiv1").css("visibility","hidden");
+  $("#datadiv").css('visibility', 'hidden');
+
   $("#btnform")[0].reset();
 });
 </script>
@@ -166,7 +249,7 @@ $(document).ready(function() {
 <center>
 
 <table><tr>
-<td valign=top style="width:300px" rowspan=2>
+<td valign=top style="width:300px" rowspan=3>
 This page demonstrates capabilities in Jmol 
 that involve RNA and DNA secondary structure
 using real-time DSSR analysis provided by <a href=http://goo.gl/ap12xJ>3DNA</a>.
@@ -210,7 +293,12 @@ dssrBtn("counts");
 jmolBr();
 jmolBr();
 </script>
-<div id="menudiv" style="visiblity:hidden"><select><option></option></select></div>
+<table><tr>
+<td><div id="menudiv" style="visiblity:hidden"></div></td>
+<td><div id="menudiv1" style="visiblity:hidden"></div></td>
+</tr><tr>
+<td colspan=2><div id="datadiv" style="visiblity:hidden"><textarea id=dataarea style="width:280px;height:140px" wrap=off></textarea></div></td>
+</tr></table>
 
 </td>
 <td valign=top align=center>
@@ -263,7 +351,7 @@ jmolButton("write PNGJ ?.png","Save PNG+Jmol")
 </form>
 </td></tr>
 <tr>
-<td align=center>
+<td align=center valign=top>
 
 
 
