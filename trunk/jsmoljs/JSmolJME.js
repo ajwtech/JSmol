@@ -554,7 +554,6 @@
     s = s.replace(/@~/g,"@H");
     if (s.lastIndexOf(")") == s.length - 1)
       s += "[H]"
-    document.title=s
     //alert("JSmolJME s is now " + s)
 		return s;
   }
