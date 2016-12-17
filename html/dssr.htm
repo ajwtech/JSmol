@@ -6,7 +6,8 @@
 
 <script type="text/javascript">
 
-// BH  12/7/2016 11:47:28 PM added auto-calculate
+// BH 12/8/2016 1:57:17 PM added submenus and dataarea 
+// BH 12/7/2016 11:47:28 PM added auto-calculate
 // BH 9/20/2015 6:46:24 AM upgrade to JSON-based data
 // Bob Hanson 4/22/2014 6:49:57 PM  hansonr@stolaf.edu
 
@@ -145,15 +146,10 @@ function showDSSR(btn, data) {
     if (n > 0) {
       switch(dssrWhat) {
       case "pairs":
+        s = getPivotSelect("pairs", ["name"]);
+        break;
       case "nts":
-        switch(dssrWhat) {
-        case "pairs":
-          s = getPivotSelect("pairs", ["name"]);
-          break;
-        case "nts":
-          s = getPivotSelect("nts", ["is_modified", "baseSugar_conf", "sugar_class"]);
-          break;
-        }
+        s = getPivotSelect("nts", ["is_modified", "baseSugar_conf", "sugar_class"]);
         break;
       }
     }      
@@ -301,7 +297,7 @@ jmolBr();
 </tr></table>
 
 </td>
-<td valign=top align=center>
+<td valign=top align=center style="height:600px">
 
 <script type="text/javascript">
 
@@ -352,11 +348,6 @@ jmolButton("write PNGJ ?.png","Save PNG+Jmol")
 </td></tr>
 <tr>
 <td align=center valign=top>
-
-
-
-
-
 <script type="text/javascript">
 jmolBr()
 Jmol.setButtonCss(null,"style='width:120px'")
