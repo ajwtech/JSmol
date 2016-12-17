@@ -28,8 +28,14 @@ $(document).ready(function() {
 
 function loadMol() {
   var s = $("#strucfile").val();
-  s = "load data 'mydata'" + s + "\nend 'mydata'"
-  setTimeout(function() {Jmol.script(jmol, s)}, 10);
+  // check for 2D or 3D data:
+  var pt = s.indexOf("\n") + 21
+  if (s.indexOf("V2000") >= 0 && s.substring(pt, pt+2) == "2D") {
+    Jmol.jmeReadMolecule(jme, s)
+  } else {
+    s = "load data 'mydata'" + s + "\nend 'mydata'"
+    setTimeout(function() {Jmol.script(jmol, s)}, 10);
+  }
 }
 
 //Jmol._debugCode = true;//(s.indexOf("debugcode") >= 0);
@@ -61,12 +67,12 @@ var JmolInfo = {
 // called from JSmol when a model is loaded or cleared
 
 var loadStructCallback = function(app,filename) {
-if (!filename)
-  return;
- setFormat();
- if (!from2D)
-  to2D();
- showSmiles(true)
+   if (!filename)
+    return;
+   setFormat();
+   if (!from2D)
+    to2D();
+   showSmiles(true)
 }
 
 // specify drop-down options for [search]
@@ -88,16 +94,15 @@ var JMEInfo = {
 
 var from2D = false;
 function to3D() {
-from2D = true;
-Jmol.show2d(jmol, false)
-showSmiles(false)
-from2D = false;
+  from2D = true;
+  Jmol.show2d(jmol, false)
+  showSmiles(false)
+  from2D = false;
 }
 
 function to2D() {
-from2D = false;
-Jmol.show2d(jmol, true);
-showSmiles(true)
+  from2D = false;
+  Jmol.show2d(jmol, true);
 }
 
 // generate the contents of the textarea from JSmol SHOW() or WRITE() function
@@ -177,20 +182,22 @@ function cachePop() {
 <table width=1100 cellpadding=10>
 <tr><td rowspan=3 valign=top style="font-size:15pt">
 <h3>Hack-a-Mol</h3>
-This page is designed especially for students of <a target=_blank href=https://www.acs.org/content/acs/en/careers/college-to-career/chemistry-careers/cheminformatics.html>cheminformatics</a>
+This page is designed especially for students of <a  href=https://www.acs.org/content/acs/en/careers/college-to-career/chemistry-careers/cheminformatics.html>cheminformatics</a>
 who are just starting to learn about how chemical structures are represented digitally. 
 <br><br>
 With this page you can draw a structure in 2D, compare that with its 3D structure, and also see its 
 structural data in a variety of formats. You can also enter a chemical identifier 
--- a chemical name, a <a target=_blank href=http://opensmiles.org/>SMILES</a> string, or
-a <a target=_blank href=http://www.cas.org/content/chemical-substances/faqs>Chemical Abstracts Registry Number</a>, for instance -- in the box under the JSmol window.
+-- a chemical name, a <a  href=http://opensmiles.org/>SMILES</a> string, or
+a <a  href=http://www.cas.org/content/chemical-substances/faqs>Chemical Abstracts Registry Number</a>, for instance -- in the box under the JSmol window.
 <br><br>
 If you hack the structural data (carefully!) and then press ENTER, the 2D and 3D structures will update.   
 <br><br>
 You can also drag-drop a structure file into the JSmol window or copy/paste it into the textarea.
 
 <br><br>
-Author: <a target=_blank href=https://stolaf.edu/people/hansonr>Bob Hanson</a>
+<a href=https://chemapps.stolaf.edu/jmol/docs/misc/hackamolworkings.pdf>How It Works</a>
+<br><br>
+Author: <a  href=https://stolaf.edu/people/hansonr>Bob Hanson</a>
 
 <div id=log></div>
 </td>
