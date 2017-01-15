@@ -9,6 +9,7 @@
 * 
 */
 
+// BH 1/14/2017 7:12:47 PM adds proto._showTooltip
 // BH 4/24/2016 4:42:06 PM working around Resolver 2D issues
 // BH 2/2/2014 11:39:44 AM Jmol/JSME/JSV working triad
 // BH 1/30/2014 1:04:09 PM adds Info.viewSet 
@@ -248,6 +249,26 @@
 		Jmol._loadFileData(this, fileName, function(data){me._loadInline(data)}, function(data){me._loadInline(null)});
 	}
 
+  proto._showTooltip = function(text) {
+    var s = "<span id='" + this._id + "_tooltip' style='position:absolute;z-index:10000000;left:0px;top:0px;background-color:yellow'></span>";
+    var t = this._tooltip;
+    if (!t) {    
+      Jmol.$after("body",s);
+      t = this._tooltip = Jmol.$(this, "tooltip");
+    }
+    t.hide();
+    this._tooltipTimer && clearTimeout(this._tooltipTimer);
+    this._tooltipTimer1 && clearTimeout(this._tooltipTimer1); 
+    var me = this;
+    this._tooltipTimer1 = setTimeout(function(){
+      t[0].style.left = (Jmol._mousePageX+10) + "px";
+      t[0].style.top = (Jmol._mousePageY+20) + "px";
+      t[0].innerHTML = text;
+      t.show();
+      me._tooltipTimer = setTimeout(function(){t.hide()},4000);
+    },50);
+  }
+  
 	proto._loadInline = function(data) {
 		// called when loading JDX data
 		this._currentView = null;

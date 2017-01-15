@@ -6,6 +6,7 @@
 // see JSmolApi.js for public user-interface. All these are private functions
 
 
+// BH 1/14/2017 6:28:07 AM adds &debugCore
 // BH 10/20/2016 10:00:43 AM JmolTracker.php
 // BH 9/19/2016 8:22:48 AM drag-drop broken for https (imageDrop.htm)
 // BH 9/18/2016 btoa() does not work with UTF-8 data (set language es;write menu t.mnu)
@@ -198,6 +199,7 @@ Jmol = (function(document) {
 		_getZOrders: getZOrders,
 		_z:getZOrders(z),
 		_debugCode: true,  // set false in process of minimization
+    _debugCore: false, // set true using URL &debugCore
 		db: {
 			_databasePrefixes: "$=:",
 			_fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
@@ -241,6 +243,7 @@ Jmol = (function(document) {
 	}
 	
 	var ref = document.location.href.toLowerCase();
+  j._debugCore = (ref.indexOf("j2sdebugcore") >= 0);
 	j._httpProto = (ref.indexOf("https") == 0 ? "https://" : "http://"); 
 	j._isFile = (ref.indexOf("file:") == 0);
 	if (j._isFile) // ensure no attempt to read XML in local request:

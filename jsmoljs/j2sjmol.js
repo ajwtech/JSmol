@@ -43,6 +43,7 @@
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+ // BH 1/14/2017 6:23:54 AM adds URL switch  j2sDebugCore
  // BH 1/8/2016 6:21:38 PM adjustments to prevent multiple load of corejmol.js 
  // BH 12/30/2015 9:13:40 PM Clazz.floatToInt should return 0 for NaN
  // BH 12/23/2015 9:23:06 AM allowing browser to display stack for TypeError in exceptionOf
@@ -3782,6 +3783,8 @@ _Loader.jarClasspath = function (jar, clazzes) {
 	if (!(clazzes instanceof Array))
 		clazzes = [clazzes];
 	unwrapArray(clazzes);
+  if (Jmol._debugCore)
+    jar = jar.replace(/\.z\./, ".")
 	for (var i = clazzes.length; --i >= 0;)
 		classpathMap["#" + clazzes[i]] = jar;
 	classpathMap["$" + jar] = clazzes;
