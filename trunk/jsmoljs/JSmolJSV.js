@@ -617,15 +617,17 @@
 	
 Jmol._newGrayScaleImage = function(context, image, width, height, grayBuffer) {
 	var c;
+  image || (image = Jmol.$(context.canvas.applet, "image")[0]);
 	if (image == null) {
-		var id = ("" + Math.random()).substring(3);
+		var appId = context.canvas.applet._id;
+    var id = appId + "_imagediv";
 		c = document.createElement("canvas");
 		c.id = id;
 		c.style.width = width + "px";
 		c.style.height = height + "px";
 		c.width = width;
 		c.height = height;
-		var appId = context.canvas.applet._id;
+
 		var layer = document.getElementById(appId + "_contentLayer");
 		image = new Image();
 		image.canvas = c;
