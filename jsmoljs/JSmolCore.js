@@ -2019,7 +2019,7 @@ Swing.setText = function(btn) {
 }
 
 Swing.setVisible = function(c) {
-	Jmol.$setVisible(c.id, c.visible);
+	Jmol.$setVisible(c.id, c._visible);
 }
 
 Swing.setEnabled = function(c) {
@@ -2062,7 +2062,7 @@ Swing.hideMenus = function(applet) {
 	var menus = applet._menus;
 	if (menus)
 		for (var i in menus)
-			if (menus[i].visible)
+			if (menus[i]._visible)
 				Swing.hideMenu(menus[i]);
 }
 

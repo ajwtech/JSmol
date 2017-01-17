@@ -205,7 +205,7 @@
 	}
 
 	proto._searchDatabase = function(query, database) {
-		return this._applet.runScript("load ID \"" + query + "\" " + database + query)
+		return this._applet.runScript("load ID \"" + query + "\" \"" + database + query + "\"")
 	}
 
 	proto._script = function(script) {
