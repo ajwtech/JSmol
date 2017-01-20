@@ -643,7 +643,7 @@ Jmol._newGrayScaleImage = function(context, image, width, height, grayBuffer) {
 		};
 		var div = document.createElement("div");
 		image.div = div;
-		div.style.position="relative";
+		div.style.position="absolute";
 		layer.appendChild(div);
 		div.appendChild(image);
 	}
