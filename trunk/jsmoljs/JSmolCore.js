@@ -1066,7 +1066,7 @@ Jmol = (function(document) {
 		}
 		// we actually cannot suggest a fileName, I believe.
 		if (!Jmol.featureDetection.hasFileReader) {
-        var mst = "Local file reading is not enabled in your browser";
+        var msg = "Local file reading is not enabled in your browser";
 				return (fileLoadThread ? fileLoadThread.setData(msg, null, null, appData, applet) : alert(msg));
     }
 		if (!applet._localReader) {
