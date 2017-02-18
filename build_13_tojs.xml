@@ -2,7 +2,7 @@
  
    <!-- you must have checked out and built the Jmol project prior to running this. -->
 	
-   <property name="jmol.path" value="../Jmol-14_6" />
+   <property name="jmol.path" value="../Jmol" />
    <property name="site.path" value="site/jsmol" />
 
    <target name="toJs" id="toJs">
