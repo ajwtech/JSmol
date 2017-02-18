@@ -2,6 +2,7 @@
 
 // see http://peter-ertl.com/jsme
 
+// BH 2/16/2017 2:09:40 PM uses show chemical jme not show chemical/file=jme
 // BH 4/24/2016 10:51:22 PM adds getjsmeh Jmol script to derive jsme with H atoms from NCI mrv 
 // BH 9/15/2015 18:10:25 jmolAtoms no var
 // BH 6/19/2015 5:36:23 PM fix for Jmol mouse hook t.x.baseVal not implemented fully on iOS
@@ -475,7 +476,7 @@
       var data = jmol._evaluate("getJMEHs()")
       format = "jme"
     } else {
-      var data = jmol._evaluate("script('select visible;show chemical \"file?format="+format+"\"')");
+      var data = jmol._evaluate("script('select visible;show chemical "+format+"')");
     }
     this._molData = data;
 		if (!this._applet)return;
