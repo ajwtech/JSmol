@@ -145,7 +145,7 @@ function showSmiles(from3d) {
   var inchi = Jmol.evaluateVar(jmol, "show('chemical stdinchi')").trim();
   xxxi = inchi  
   $("#jsmolinchi").html(google(inchi.split("=")[1]));
-  var inchikey = Jmol.evaluateVar(jmol, "show('chemical inchikey')").trim();
+  var inchikey = Jmol.evaluateVar(jmol, "show('chemical stdinchikey')").trim();
   $("#jsmolinchikey").html(google(inchikey.split("=")[1]));
 
  });
