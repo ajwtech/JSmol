@@ -398,6 +398,7 @@
 
     <property name="jmolCoreFiles" value="
     	javajs/api/GenericBinaryDocument.js
+    	javajs/api/GenericBinaryDocumentReader.js
         javajs/api/GenericZipTools.js
         javajs/api/GenericLineReader.js
         javajs/api/GenericCifDataParser.js
