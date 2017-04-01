@@ -14,7 +14,7 @@ public class JDialog extends Container {
 
   private static final int headerHeight = 25;
   private int defaultWidth = 600;
-  private int defaultHeight = 300;
+  protected int defaultHeight = 300;
   
   private JContentPane contentPane;
   private String title;
@@ -59,6 +59,8 @@ public class JDialog extends Container {
     if (tf && html == null)
       setDialog();
     super.setVisible(tf);
+    if (tf)
+    	toFront();
   }
 
   public void dispose() {
@@ -102,10 +104,10 @@ public class JDialog extends Container {
   
   @Override
   public String toHTML() {
-    renderWidth = getSubcomponentWidth();
+    renderWidth = Math.max(width, getSubcomponentWidth());
     if (renderWidth == 0)
       renderWidth = defaultWidth;
-    renderHeight = contentPane.getSubcomponentHeight();
+    renderHeight = Math.max(height, contentPane.getSubcomponentHeight());
     if (renderHeight == 0)
       renderHeight = defaultHeight;
     int h = renderHeight - headerHeight;
@@ -121,6 +123,15 @@ public class JDialog extends Container {
     return sb.toString();
   }
 
+	public void toFront() {
+		/**
+		 * @j2sNative
+		 * 
+		 * SwingController.setFront(this);
+		 * 
+		 */
+		{}
+	}
 
 
 }
