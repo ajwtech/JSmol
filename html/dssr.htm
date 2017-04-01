@@ -30,19 +30,23 @@ var Info = {
 	jarFile: "JmolAppletSigned0.jar",
 	isSigned: true,
 	loadStructCallback: "enableButtons",
-	script: "background black;set defaultLoadScript '"+ stemScript + ";display nucleic;if(h2oOn){display add water};if(protOn){display add protein};color grey;if (!_M.dssr){calculate structure dssr};javascript enableButtons()';load =1ehz/dssr;" + _1ehzScript
+	script: "set debugscript;background black;set defaultLoadScript '"+ stemScript + ";display nucleic;if(h2oOn){display add water};if(protOn){display add protein};color grey;if (!_M.dssr){calculate structure dssr};javascript enableButtons()';load =1ehz/dssr;" + _1ehzScript
 }
 
 var hbondsON = false;
 
 function enableButtons(app,fullPath,fileName,modelName,errorMsg,status) {
   hbondsON = false;
-  Jmol.scriptWait(jmolApplet0, "if (!_M.dssr){calculate structure dssr}");
-	var data = Jmol.evaluateVar(jmolApplet0, "(_M.dssr ? _M.dssr.counts : {})");
+  var atomcount = Jmol.evaluateVar(jmolApplet0, "{*}.count")
+  var dssr = atomcount && Jmol.evaluateVar(jmolApplet0, "_M.dssr")
+  if (true || atomcount && !dssr)
+	  Jmol.scriptWait(jmolApplet0, "calculate structure dssr");
+  var counts = Jmol.evaluateVar(jmolApplet0, "(_M.dssr ? _M.dssr.counts : {})");
 	for (var i = dssrBtns.length; --i >= 0;) {
 		var name = dssrBtns[i];
-		$("#dssrBtn_"+name).prop("disabled", !data[name]);
+		$("#dssrBtn_"+name).prop("disabled", !counts[name]);
 	}
+   $("#dssrBtn_counts").prop("disabled", !counts.nts); // BH FIX
 }
 
 ///////// MODEL LIST /////////
@@ -59,6 +63,8 @@ function addModel(xxxx, load, text, script, selected) {
     .replace(/%2/, text)
     .replace(/%3/, script)
     .split("|");
+
+
   t.push(selected);    
 	Models.push(t)
 }
@@ -75,6 +81,8 @@ addModel("2mhi", "", "telomerase CR4/5 domain")
 addModel("4lvv", "", "THF Riboswitch", "rotate Y -90")
 addModel("4mgn", "", "glyQS T box riboswitch+tRNA") 
 
+addModel("1d66", "", "yeast phenylalanine tRNA -- uncorrected")
+addModel("1d66", "=1d66.cif", "yeast phenylalanine tRNA -- corrected", "rotate branch @563 @564 180;javascript calculateDSSR()")
 function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)}
 function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, "select *;" + (script || text), (text || script))}
 function jmolHtml(s) { document.write(s) };
@@ -354,12 +362,12 @@ Jmol.setButtonCss(null,"style='width:120px'")
 jmolButton("color cpk")
 jmolButton("color group")
 jmolButton("color chain")
-jmolButton("color structure")
+jmolButton("color nucleic")
 jmolBr()
 jmolButton(stemScript,"stem diag")
 jmolButton("cartoon only")
-jmolButton("backbone -0.3")
-jmolButton("spacefill only;spacefill 23%;wireframe 0.15","ball&stick")
+jmolButton("backbone -0.3;set backboneBlocks false;set backboneSteps true;", "steps")
+jmolButton("backbone -0.3;set backboneBlocks true;","blocks")
 jmolBr()
 Jmol.setButtonCss(null,"style='width:100px'")
 jmolButton("console")
