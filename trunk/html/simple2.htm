@@ -130,6 +130,8 @@ $(document).ready(function(){
 			+ Jmol.jmolLink(jmol,"set energyunits kcal;minimize energy", "kcal/mol")
 			+ "    "
 			+ Jmol.jmolLink(jmol,"set energyunits kJ;minimize energy", "kJ/mol")
+			+ "<br>"
+			+ Jmol.jmolLink(jmol,"label %[chirality];background labels yellow;set labelPointers", "Show R/S Chirality")
 			+ "<br>Background: "
 			+ Jmol.jmolRadioGroup(jmol, radios)
 		);
