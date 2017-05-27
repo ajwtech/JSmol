@@ -538,6 +538,8 @@
 		JU/GenericApplet.js
 		JU/Geodesic.js
 		JU/Int2IntHash.js
+		JU/SimpleNode.js
+		JU/SimpleEdge.js
 		JU/Node.js
 		JU/Edge.js
     	JU/JmolMolecule.js
