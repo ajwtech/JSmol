@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Jmol/JME Demo</title>
+<title>Jmol CIP Demo</title>
 <meta charset="utf-8" />
 <script type="text/javascript" src="JSmol.min.js"></script>
 <script type="text/javascript" src="js/JSmolJME.js"></script>
@@ -80,13 +80,12 @@ function showSmiles(from3d) {
 <script>
 jmol = Jmol.getApplet(jmol, JmolInfo)
 jme = Jmol.getJMEApplet(jme, JMEInfo, jmol);
-Jmol.jmolButton(jmol, "calculate chirality;label %[chirality];background label yellow","show R/S")
+Jmol.jmolButton(jmol, "calculate chirality;set labelfor {*} \"%[chirality]\";set labelfor {cipRule != '' && cipRule != '1a' && cipRule != '5'} \"%[chirality](%[cipRule])\";background label yellow;color labels black","show R/S")
 Jmol.jmolButton(jmol, "select *; write coord test.mol","save file")
 </script>
-</td>
 </tr>
 </table>
-<br>
+<br>  
 JSME SMILES: <span id="jsmesmiles"></span>
 <br>
 JSmol OpenSMILES: <span id="jsmolsmiles"></span>
