@@ -12,7 +12,7 @@
 // BH 3/1/2014 4:31:18 PM fix for evaluate returning atom sets as arrays
 // BH 1/27/2014 8:37:06 AM adding Info.viewSet  
 // BH 12/4/2013 7:44:26 PM fix for JME independent search box
-
+// BH 5/25/2017 5:11:17 AM removing Jmol changes to JSME SMILES. Problem is with incomplete assignment of H stereochemistry, as in CC[C@@H](C)[H]
 /*
 
 	Only HTML5 version (JSME) is supported.
@@ -540,21 +540,21 @@
 
   proto._getSmiles = function(withStereoChemistry) {
   	var s = (arguments.length == 0 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles());
-    s = s.replace(/\:1/g,"");
-		s = s.replace(/@H/g,"@~").replace(/H/g,"")
-		s = s.replace(/\/\[\]/g,"/[H]")
-		s = s.replace(/\\\[\]/g,"\\[H]")
-		s = s.replace(/\[\]\//g,"[H]/")
-		s = s.replace(/\[\]\\/g,"[H]\\")
-    s = s.replace(/\[\]/g,"")
-    // but change [C@][H] to [C@H] and [C@]1[H] to [C@@H]1 
-    s = s.replace(/\@\]\(\)/g,"@H]")
-    s = s.replace(/\@\](\d+)\(\)/g,"@@H]$1")
-    s = s.replace(/\@\@\@/g,"@")
-    s = s.replace(/\(\)/g,"");
-    s = s.replace(/@~/g,"@H");
-    if (s.lastIndexOf(")") == s.length - 1)
-      s += "[H]"
+//    s = s.replace(/\:1/g,"");
+//		s = s.replace(/@H/g,"@~").replace(/H/g,"")
+//		s = s.replace(/\/\[\]/g,"/[H]")
+//		s = s.replace(/\\\[\]/g,"\\[H]")
+//		s = s.replace(/\[\]\//g,"[H]/")
+//		s = s.replace(/\[\]\\/g,"[H]\\")
+//    s = s.replace(/\[\]/g,"")
+//    // but change [C@][H] to [C@H] and [C@]1[H] to [C@@H]1 
+//    s = s.replace(/\@\]\(\)/g,"@H]")
+//    s = s.replace(/\@\](\d+)\(\)/g,"@@H]$1")
+//    s = s.replace(/\@\@\@/g,"@")
+//    s = s.replace(/\(\)/g,"");
+//    s = s.replace(/@~/g,"@H");
+//    if (s.lastIndexOf(")") == s.length - 1)
+//      s += "[H]"
     //alert("JSmolJME s is now " + s)
 		return s;
   }
