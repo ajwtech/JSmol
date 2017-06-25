@@ -35,7 +35,7 @@ var JmolInfo = {
   j2sPath: "j2s",
 	isSigned: true,
   defaultModel: "",
-	script: defaultScript + ";calculate chirality;label %[chirality];background label yellow"
+	script: defaultScript + ";calculate chirality;label %[chirality];background label yellow;color labels black;set antialiasdisplay"
 }
 
 var JMEInfo = {     
@@ -80,8 +80,11 @@ function showSmiles(from3d) {
 <script>
 jmol = Jmol.getApplet(jmol, JmolInfo)
 jme = Jmol.getJMEApplet(jme, JMEInfo, jmol);
-Jmol.jmolButton(jmol, "calculate chirality;set labelfor {*} \"%[chirality]\";set labelfor {cipRule != '' && cipRule != '1a' && cipRule != '5'} \"%[chirality](%[cipRule])\";background label yellow;color labels black","show R/S")
-Jmol.jmolButton(jmol, "select *; write coord test.mol","save file")
+Jmol.jmolButton(jmol, "set labelfor {*} \"%[chirality]\";background label yellow;color labels black","show R/S")
+Jmol.jmolButton(jmol, "set labelfor {chirality != ''} \"%[chirality](%[cipRule])\";background label yellow;color labels black","show CIP rule")
+Jmol.jmolButton(jmol, "set modelkitmode @{!modelkitmode}","toggle modelKitMode")
+Jmol.jmolButton(jmol, "select *; write coord test.mol","save MOL")
+Jmol.jmolButton(jmol, "select *; write test.pngj","save PNG+Jmol")
 </script>
 </tr>
 </table>
