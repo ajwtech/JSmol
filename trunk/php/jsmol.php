@@ -93,7 +93,7 @@ $encoding = getValueSimple($values, "encoding", "");
 $call = getValueSimple($values, "call", "getRawDataFromDatabase");
 $query = getValueSimple($values, "query", "https://cactus.nci.nih.gov/chemical/structure/ethanol/file?format=sdf&get3d=True");
 $database = getValueSimple($values, "database", "_");
-
+$test = getValueSimple($values,"test","");
 $imagedata = "";
 $contentType = "";
 $output = "";
@@ -149,7 +149,10 @@ if ($call == "getInfoFromDatabase") {
 			);
 			$output = file_get_contents($query, false, $context);
 		} else {
-			$output = file_get_contents($query);
+  		$output = file_get_contents($query);
+      if ($test != "") {
+        $output = $query."<br>".$output;
+      }
 		}
 } else if ($call == "saveFile") {
 	$imagedata = $_REQUEST["data"];//getValueSimple($values, "data", ""); don't want to convert " to _ here
