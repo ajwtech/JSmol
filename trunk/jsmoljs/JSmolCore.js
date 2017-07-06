@@ -6,6 +6,7 @@
 // see JSmolApi.js for public user-interface. All these are private functions
 
 
+// BH 7/6/2017 2:22:07 AM adds BZ2 as binary
 // BH 4/13/2017 11:23:05 PM adds "binary pmesh" .pmb extension
 // BH 1/14/2017 6:28:07 AM adds &debugCore
 // BH 10/20/2016 10:00:43 AM JmolTracker.php
@@ -933,7 +934,7 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = ["mmtf",".gz",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd"];
+	Jmol._binaryTypes = ["mmtf",".gz",".bz2",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd"];
 
 	Jmol._isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
