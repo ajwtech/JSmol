@@ -194,6 +194,15 @@ public abstract class InputStream {
   }
 
     /**
+     * @j2sIgnore
+     * 
+     * @return byte as int
+     * @throws IOException
+     */
+    public int read() throws IOException {
+      return readByteAsInt();
+    }
+    /**
      * Skips over and discards <code>n</code> bytes of data from this input
      * stream. The <code>skip</code> method may, for a variety of reasons, end
      * up skipping over some smaller number of bytes, possibly <code>0</code>.
