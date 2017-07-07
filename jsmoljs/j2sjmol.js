@@ -43,6 +43,8 @@
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+
+ // BH 7/7/2017 7:10:39 AM fixes Clazz.clone for arrays
  // BH 1/14/2017 6:23:54 AM adds URL switch  j2sDebugCore
  // BH 1/8/2016 6:21:38 PM adjustments to prevent multiple load of corejmol.js 
  // BH 12/30/2015 9:13:40 PM Clazz.floatToInt should return 0 for NaN
@@ -296,7 +298,8 @@ var addProto = function(proto, name, func) {
 
 	Clazz.clone = function(me) {
 		// BH allows @j2sNative access without super constructor
-		var o = new me.constructor();
+    // BH 7/7/2017 7:20:47 AM array clone must preserve length for java.util.Hashtable.clone()
+		var o = (me instanceof Array ? new Array(me.length) : new me.constructor());
 		for (var i in me) {
 			o[i] = me[i];
       }
