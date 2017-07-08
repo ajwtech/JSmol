@@ -21,8 +21,8 @@ else if (document.location.href.indexOf("load=") >= 0)
  defaultScript = "load \"" + document.location.href.split("load=")[1].split("&")[0] + "\";"
  
 var JmolInfo = {
-	width: 500,
-	height: 500,
+	width: 1000,
+	height: 600,
 	debug: false,
 	color: "black",
 	use: "HTML5",
@@ -80,11 +80,29 @@ function showSmiles(from3d) {
 <script>
 jmol = Jmol.getApplet(jmol, JmolInfo)
 jme = Jmol.getJMEApplet(jme, JMEInfo, jmol);
-Jmol.jmolButton(jmol, "set labelfor {*} \"%[chirality]\";background label yellow;color labels black","show R/S")
-Jmol.jmolButton(jmol, "set labelfor {chirality != ''} \"%[chirality](%[cipRule])\";background label yellow;color labels black","show CIP rule")
+calcscript = ";select *;calculate chirality;set labelfor {*} \"%[chirality]\";"
+styleYellow = ";select *;font label 20;set labeloffset 10 10; background label yellow;color labels black;set labelfor {*} \"%[chirality]\";"
+style2 = ";select *;font label 20;set labelfront;set labeloffset 0 0;display remove _H;background labels none;set labelfor {chirality == ''} \"\";select {chirality == ''};spacefill off;set labelfor {*} \"%a %[chirality]\";"
+style3 = ";select *;font label 20;set labelfront;set labeloffset 0 0;display remove _H;background labels none;set labelfor {chirality == ''} \"\";select {chirality == ''};spacefill off;set labelfor {chirality != ''} \"%a %[chirality]\";"
+
+Jmol.jmolButton(jmol, "load $glucose;" + calcscript + styleYellow, "glucose");
+Jmol.jmolHtml("<center>")
+Jmol.jmolHtml("<br>")
+Jmol.jmolButton(jmol, calcscript,"show R/S")
+Jmol.jmolButton(jmol, calcscript + "set labelfor {chirality != ''} \"%[chirality](%[cipRule])\"","show CIP rule")
+Jmol.jmolButton(jmol, "if(picking != 'identify'){set picking identify" + calcscript + ";prompt 'picking set to IDENTIFY'}else{set picking invertstereo; prompt 'picking set to INVERTSTEREO - click on an atom to invert it'};set labelfor {!_H} \"%a\"","toggle select/invert center")
+Jmol.jmolHtml("<br>")
+Jmol.jmolButton(jmol, styleYellow,"display style 1")
+Jmol.jmolButton(jmol, style2,"display style 2")
+Jmol.jmolButton(jmol, style3,"display style 3")
+Jmol.jmolHtml("<br>")
+Jmol.jmolButton(jmol, "select *;invertselected plane xy;" + calcscript,"invert all chirality")
 Jmol.jmolButton(jmol, "set modelkitmode @{!modelkitmode}","toggle modelKitMode")
+Jmol.jmolHtml("<br>")
 Jmol.jmolButton(jmol, "select *; write coord test.mol","save MOL")
 Jmol.jmolButton(jmol, "select *; write test.pngj","save PNG+Jmol")
+Jmol.jmolButton(jmol, "console","open console")
+Jmol.jmolHtml("</center>")
 </script>
 </tr>
 </table>
