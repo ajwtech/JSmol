@@ -33,6 +33,13 @@
         </fileset>
     </copy>
    	
+   	<echo>...org/apache</echo>
+   	<copy todir="${site.path}/j2s/org/apache" >
+        <fileset dir="bin/org/apache">
+          <include name="**/*.js" />
+        </fileset>
+    </copy>
+   	
    	<echo>...J</echo>
   	<copy todir="${site.path}/j2s/J" >
       <fileset dir="bin/org/jmol">
