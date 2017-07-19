@@ -62,10 +62,19 @@ function showSmiles(from3d) {
 </head>
 <body>
 <table width=1000 cellpadding=10>
-<tr><td>
-</pre>
-</td>
-<td><div id="jmediv" style="position:relative;width:350px;height:300px;"></div></td>
+<tr>
+<td>
+<H3>Cahn-Ingold-Prelog Stereochemistry Page</H3>
+Draw compounds in 2D and convert them to 3D or search for models in 3D, then show Jmol's
+calculation of the <a target=_blank href=https://en.wikipedia.org/wiki/Cahn%E2%80%93Ingold%E2%80%93Prelog_priority_rules>CIP descriptors</a> 
+for that compound. You can save your work as an <a target=_blank href=https://en.wikipedia.org/wiki/Chemical_table_file#SDF>SDF model file</a>
+ or as a <a target=_blank href=http://wiki.jmol.org/index.php/File_formats/Compressed#PNGJ>PNG+Jmol image/model</a> (droppable back into this page or into Jmol).
+<br><br>
+
+<br>
+<br>
+
+<div id="jmediv" style="position:relative;width:350px;height:300px;"></div></td>
 <td>
 <input type="button" onclick="Jmol.show2d(jmol, false);showSmiles(false)" value="&#8594" />
 <br>  
@@ -88,7 +97,7 @@ style3 = ";select *;font label 20;set labelfront;set labeloffset 0 0;display rem
 Jmol.jmolButton(jmol, "load $glucose;" + calcscript + styleYellow, "glucose");
 Jmol.jmolHtml("<center>")
 Jmol.jmolHtml("<br>")
-Jmol.jmolButton(jmol, calcscript,"show R/S")
+Jmol.jmolButton(jmol, calcscript + styleYellow,"show R/S")
 Jmol.jmolButton(jmol, calcscript + "set labelfor {chirality != ''} \"%[chirality](%[cipRule])\"","show CIP rule")
 Jmol.jmolButton(jmol, "if(picking != 'identify'){set picking identify" + calcscript + ";prompt 'picking set to IDENTIFY'}else{set picking invertstereo; prompt 'picking set to INVERTSTEREO - click on an atom to invert it'};set labelfor {!_H} \"%a\"","toggle select/invert center")
 Jmol.jmolHtml("<br>")
@@ -99,7 +108,7 @@ Jmol.jmolHtml("<br>")
 Jmol.jmolButton(jmol, "select *;invertselected plane xy;" + calcscript,"invert all chirality")
 Jmol.jmolButton(jmol, "set modelkitmode @{!modelkitmode}","toggle modelKitMode")
 Jmol.jmolHtml("<br>")
-Jmol.jmolButton(jmol, "select *; write coord test.mol","save MOL")
+Jmol.jmolButton(jmol, "select *; write coord test.sdf","save SDF")
 Jmol.jmolButton(jmol, "select *; write test.pngj","save PNG+Jmol")
 Jmol.jmolButton(jmol, "console","open console")
 Jmol.jmolHtml("</center>")
