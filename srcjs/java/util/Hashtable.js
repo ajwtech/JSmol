@@ -333,9 +333,9 @@ function(){
 try{
 var hashtable=Clazz.superCall(this,java.util.Hashtable,"clone",[]);
 hashtable.elementData=new Array(this.elementData.length);
-for(var i in this.elementData){
-hashtable.elementData[i]=this.elementData[i].clone();
-}
+for(var i = this.elementData.length; --i >= 0;)
+ if (this.elementData[i] != null)
+  hashtable.elementData[i]=this.elementData[i].clone();
 return hashtable;
 }catch(e){
 if(Clazz.instanceOf(e,CloneNotSupportedException)){
