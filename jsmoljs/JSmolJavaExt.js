@@ -7,6 +7,7 @@
 // (local scope) Clazz_xxx, allowing them to be further compressed using
 // Google Closure Compiler in that same ANT task.
 
+// BH 9/18/2017 10:15:18 PM adding Integer.compare()
 // BH 4/7/2017 10:48:50 AM adds Math.signum(f)
 // BH 10/15/2016 9:28:13 AM adds Float.floatToIntBits(f)
 // BH 3/9/2016 6:25:08 PM at least allow Error() by itself to work as before (inchi.js uses this)
@@ -180,6 +181,11 @@ Integer.MIN_VALUE=Integer.prototype.MIN_VALUE=-0x80000000;
 Integer.MAX_VALUE=Integer.prototype.MAX_VALUE=0x7fffffff;
 Integer.TYPE=Integer.prototype.TYPE=Integer;
 
+
+Integer.compare = Clazz.defineMethod(Integer,"compare",
+function(i,j) {
+  return i < j ? -1 : i > j ? 1 : 0);
+},"Number,Number");
 
 Clazz.defineMethod(Integer,"bitCount",
 function(i) {
