@@ -17,7 +17,7 @@
 
 var s = unescape(document.location.search);
 var script = 'set errorCallback "myCallback";'
-	+'set measurementUnits angstroms;set zoomlarge false;'
+	+'set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
 	+'set echo top left;echo loading XXXX...;refresh;'
 	+'load ":XXXX";set echo top center;echo XXXX;'
 var xxxx = s.split("_USE=")[0]
