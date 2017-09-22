@@ -184,7 +184,7 @@ Integer.TYPE=Integer.prototype.TYPE=Integer;
 
 Integer.compare = Clazz.defineMethod(Integer,"compare",
 function(i,j) {
-  return i < j ? -1 : i > j ? 1 : 0);
+  return (i < j ? -1 : i > j ? 1 : 0);
 },"Number,Number");
 
 Clazz.defineMethod(Integer,"bitCount",
