@@ -179,6 +179,11 @@
         <include name="**/*.java" />
       </fileset>
     </copy>
+  	<copy overwrite="true" todir="src/org/qcschema" >
+      <fileset dir="${jmol.path}/src/org/qcschema">
+        <include name="**/*.java" />
+      </fileset>
+    </copy>
 
   	
   	<!-- get required non-JavaScript resources -->		
