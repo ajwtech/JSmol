@@ -1269,7 +1269,7 @@ arrs[ii]=c;
 }
 ii++;
 }
-return arrs;
+return Clazz.newByteArray(arrs);
 };
 
 /*
