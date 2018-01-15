@@ -358,7 +358,7 @@ function newBZ(i) {
  * initialize a new Brillouin subzone
  */
 function newSubZone(zone, id, index) {
-  subzone = {};
+  var subzone = {};
   subzone.index = index;
   subzone.id = zone.id + id + index + "_"
   subzone.zoneIndex = zone.index;
