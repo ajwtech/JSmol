@@ -8,6 +8,7 @@
 // validation.htm -- demonstrates loading and using validation annotations from PDBe
 
 // Bob Hanson, 7/30/2014 1:53:06 AM
+// updated 1/18/2018 8:41:06 AM for EBI Density Server localized density capability
 
 var jmolApplet0; // set up in HTML table, below
 
@@ -18,6 +19,13 @@ var s = document.location.search;
 jmol_isReady = function(applet) {
 	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
 }		
+
+jmolOnClick = function(app,desc,index) {
+ if ($("#eds_click")[0].checked) {
+    var a = "{within(group,@"+(index+1) + ")}";
+    Jmol.script(jmolApplet0, "xx = {selected};select on " + a + ";color cpk;slab 55;slab on;wireframe -0.1;set zshade;zoomto " + a + " 0;refresh;isosurface s" + index + " within " + $("#eds_distance").val() +a+" eds;select xx;{hoh}.radius = 0.1");
+  }
+}
 
 var xxxx = document.location.search
 if (xxxx.indexOf("_USE=") > 0)xxxx = xxxx.substring(0, xxxx.indexOf("_USE=") - 1);
@@ -32,12 +40,12 @@ if (xxxx.length == 5 || xxxx.length == 0) {
 
 // we add a Jmol script highlightValidation() function to the start-up script
  
-	script = "function highlightValidation(type){\n\
-							select *;wireframe only;\n\
+	script = "set pickcallback 'jmolOnClick';function highlightValidation(type, dozoomout){\n\
+							isosurface delete; if (dozoomout){zoom {*} 0}; set zshade off;select *;wireframe only;{hoh}.radius = 0.1;\n\
 							select on within(validation,@type);\n\
 							wireframe 0.2;spacefill 23%;\n\
 							set echo bottom left;if ({selected} == 0){echo no issues reported} else {echo};\n\
-							var x = '%[validation.'+type+']';\n\
+							var x = '%U %[validation.'+type+']';\n\
 							script inline @{'set hoverlabel \"'+ x + '\"'};\n\
 							}\n" + script;
 							
@@ -75,7 +83,7 @@ function addModel(xxxx, text) {
 addModel("1cbs", "small")
 addModel("1blu","Fe/S")
 addModel("1d66","transcription")
-addModel("2x9t","ribosome (Java recommended)")
+//addModel("4v5j","ribosome (Java recommended)")
 
 // these are conveniences that mimic behavior of Jmol.js
 
@@ -95,7 +103,7 @@ var types = [
 	["chirality issues", "chirals"],
 	null,
 	["bond distance problems", "bond_lengths"],
-	["bond angles problems", "bond_angles"],
+	["bond angle problems", "bond_angles"],
 	["aromatic ring planarity", "planes"],
 	null,
 	["Ramachandran issues", "rama"],
@@ -105,17 +113,26 @@ var types = [
 	
 // the left-panel buttons run the highlightValidation() function within Jmol
 
+function highlightValidation(type) {
+  var dozoomout = $("#dozoomout")[0].checked;
+  Jmol.script(jmolApplet0, "highlightValidation('" + type[1]+"'," + dozoomout + ")");
+}
+
 function createButtons() {
 	Jmol.setButtonCss(null,"style='width:180px'")
 	for (var i = 0; i < types.length; i++) {
-		var type = types[i];
-		if (type) {
-			Jmol.jmolButton("jmolApplet0", "highlightValidation('" + type[1]+"')", type[0], "val_" + type[1]);
-		}
+    setButton(types[i]);
 		jmolBr();
 	}
 	$("input[id^='val_']").prop("disabled",true)
 }
+
+function setButton(type) {
+		if (type) {
+			Jmol.jmolButton("jmolApplet0", [function(){highlightValidation(type)}], type[0], "val_" + type[1]);
+		}
+}
+
 function fileLoaded() {
 // enable only the relevant buttons, and label them with counts
 	x =(Jmol.getPropertyAsString(jmolApplet0, "validationInfo.types"))
@@ -128,6 +145,9 @@ function fileLoaded() {
 		$("#val_"+type[1]).prop("disabled",(n == 0))
 		$("#val_"+type[1]).val(type[0] + (n == 0 ? "" : " (" + n + ")"));
 	}
+  var id = Jmol.evaluateVar(jmolApplet0, "_M.name").toLowerCase();
+  $("#summary_report")[0].href = "http://www.ebi.ac.uk/pdbe/entry-files/download/" + id + "_validation.pdf"
+  $("#full_report")[0].href = "http://www.ebi.ac.uk/pdbe/entry-files/download/" + id + "_full_validation.pdf"
 }
 
 
@@ -139,7 +159,27 @@ function fileLoaded() {
 
 
 <table><tr>
-<td>
+<td rowspan=2>
+This page visualizes 
+<a target=_blank href="https://www.ebi.ac.uk/pdbe/about/news/overview-pdb-validation-reports-published-structure">validation</a>
+data <br>brought into Jmol using the <br><b>/val</b> LOAD option. <br>For example: <b>load *1cbs/val</b>
+<br>
+<br>
+<script type="text/javascript">
+createButtons();
+</script>
+<br>
+<input id="dozoomout" type="checkbox" checked="true">Zoom out automatically 
+  <br>
+<a id="summary_report" target="_blank" href="">summary report (PDF)</a>
+<br>
+<a id="full_report" target="_blank" href="">full report (PDF)</a>
+<br>
+<br>
+<input id="eds_click" type="checkbox" checked="true">Click on an atom to center it<br> and show the electron density <br>within 
+<input id="eds_distance" type="text" size="1" value="3"/> Angstroms <br>of its group. <a href="javascript:Jmol.script(jmolApplet0, 'zoomto {*} 0')">zoom out</a>
+<br>
+<br>
 <i>set platformSpeed...</i>
 <br>
 <a href="javascript:Jmol.script(jmolApplet0, 'set platformSpeed 8')">8</a>
@@ -150,13 +190,8 @@ function fileLoaded() {
 <a href="javascript:Jmol.script(jmolApplet0, 'set platformSpeed 3')">3</a>
 <a href="javascript:Jmol.script(jmolApplet0, 'set platformSpeed 2')">2</a>
 <a href="javascript:Jmol.script(jmolApplet0, 'set platformSpeed 1')">1</a>
-<br>
-<br>
-<script type="text/javascript">
-createButtons();
 
 
-</script>
 </td>
 <td align=center>
 
@@ -193,13 +228,9 @@ jmolBr()
 
 </script>
 </form>
-<a href="validation.htm?_USE=JAVA">Java version</a>
-<br>
-<a href="validation.htm?_USE=HTML5">HTML5 version</a>
 
 </td></tr>
 <tr>
-<td></td>
 <td align=center>
 
 
