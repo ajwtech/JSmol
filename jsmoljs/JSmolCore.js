@@ -750,7 +750,7 @@ Jmol = (function(document) {
 		return fSuccess;
 	}
 	
-  Jmol._playAudio = function(filePath) {
+  Jmol.playAudio = function(filePath) {
     var audio = document.createElement("audio");
     audio.controls = "true";
     audio.src = filePath;
