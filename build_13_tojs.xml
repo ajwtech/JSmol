@@ -155,7 +155,9 @@
   	<echo>...abbreviating class name "jspecview" to "JSV"</echo>
   	<replace dir="${site.path}/j2s" includes="**/*.js" token="jspecview" value="JSV"/>
    	  	   	  	
-
+  	<echo>...fixing JmolAudio - transpiler not ignoring interface</echo>
+  	<replace file="${site.path}/j2s/JU/JmolAudio.js" token="javax.sound.sampled.LineListener, " value=""/>   	
+   	
   	<!-- get version information  -->		
     <echo>getting Jmol.properties and other resources</echo>
     <copy todir="${site.path}/j2s" >
