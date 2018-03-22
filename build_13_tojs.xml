@@ -377,7 +377,6 @@
     	javajs/awt/Color.js
     	javajs/awt/Dimension.js
     	javajs/awt/event/Event.js
-    	javajs/awt/Font.js
     	JU/A4.js
     	JU/AjaxURLConnection.js
     	JU/AjaxURLStreamHandler.js
@@ -455,6 +454,7 @@
 		J/atomdata/AtomData.js
     	J/atomdata/AtomDataServer.js
 		J/atomdata/RadiusData.js
+    	J/awtjs/Font.js
 		J/awtjs/Platform.js
 		J/awtjs2d/Display.js
 		J/awtjs2d/Image.js
