@@ -139,8 +139,8 @@ if ($call == "getInfoFromDatabase") {
 	$isBinary = (strpos($query, ".gz") >= 0);
 		if ($database != "_")
 			$query = $database.$query;
-		if (strpos(strtolower($query), 'https://') !== 0 && strpos($query, 'http://') !== 0) {
-      $output = "";
+		if (strpos(strtolower($query), 'https://') !== 0 && strpos(strtolower($query), 'http://') !== 0) {
+      $output = "invalid url";
     } else if (strpos($query, '?POST?') > 0) {
 			list($query,$data) = explode('?POST?', $query, 2);
 			$context = stream_context_create(array('http' => array(
