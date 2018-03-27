@@ -3,6 +3,7 @@
 // jsmol.php
 // Bob Hanson hansonr@stolaf.edu 1/11/2013
 //
+// 27 MAR 2018 -- security upgrade
 // 31 MAR 2016 -- https://cactus -> https://cactus
 // 09 Nov 2015 -- bug fix for www.pdb --> www.rcsb
 // 23 Mar 2015 -- checking for missing :// in queries
@@ -135,10 +136,10 @@ if ($call == "getInfoFromDatabase") {
 	}
 	
 } else if ($call == "getRawDataFromDatabase") {
-	$isBinary = (strpos(".gz", $query) >= 0);
+	$isBinary = (strpos($query, ".gz") >= 0);
 		if ($database != "_")
 			$query = $database.$query;
-		if (strpos($query, '://') == 0) {
+		if (strpos(strtolower($query), 'file://') === 0) {
       $output = "";
     } else if (strpos($query, '?POST?') > 0) {
 			list($query,$data) = explode('?POST?', $query, 2);
