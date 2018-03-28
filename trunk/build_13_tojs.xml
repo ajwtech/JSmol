@@ -361,19 +361,20 @@
     	java/util/SortedSet.js
     	java/util/StringTokenizer.js
     	javajs/api/BytePoster.js
-    	javajs/api/EventManager.js
-    	javajs/api/FontManager.js
     	javajs/api/GenericColor.js
     	javajs/api/GenericFileInterface.js
-		javajs/api/GenericMenuInterface.js
-    	javajs/api/GenericMouseInterface.js
 		javajs/api/GenericOutputChannel.js
-    	javajs/api/GenericPlatform.js
-    	javajs/api/JmolObjectInterface.js
     	javajs/api/JSInterface.js
 		javajs/api/JSONEncodable.js
-    	javajs/api/PlatformViewer.js
     	javajs/api/ZInputStream.js
+    	javajs/api/js/J2SObjectInterface.js
+
+		javajs/awt/GenericMenuInterface.js
+    	javajs/awt/GenericMouseInterface.js
+    	javajs/awt/GenericPlatform.js
+    	javajs/awt/PlatformViewer.js
+    	javajs/awt/EventManager.js
+    	javajs/awt/FontManager.js
     	javajs/awt/Color.js
     	javajs/awt/Dimension.js
     	javajs/awt/event/Event.js
@@ -411,6 +412,7 @@
         javajs/api/GenericLineReader.js
         javajs/api/GenericCifDataParser.js
     	javajs/api/Interface.js
+    	javajs/awt/Font.js
     	JU/BArray.js
 		JU/LimitedLineReader.js
     	JU/Matrix.js
@@ -454,7 +456,6 @@
 		J/atomdata/AtomData.js
     	J/atomdata/AtomDataServer.js
 		J/atomdata/RadiusData.js
-    	J/awtjs/Font.js
 		J/awtjs/Platform.js
 		J/awtjs2d/Display.js
 		J/awtjs2d/Image.js
@@ -716,7 +717,7 @@
         <param name="call-core.name" value="jsvmenu" />
         <param name="call-core.list" value="
        		../js/JSmolMenu.js
-        	javajs/api/GenericMenuInterface.js
+        	javajs/awt/GenericMenuInterface.js
         	JSV/api/JSVPopupMenu.js
         	JSV/js2d/JsPopup.js
         	JSV/popup/JSVGenericPopup.js
@@ -921,41 +922,41 @@
         javajs/awt/LayoutManager.js
         javajs/awt/event/ActionEvent.js
         javajs/awt/event/ItemEvent.js
-        javajs/swing/AbstractButton.js
-        javajs/swing/AbstractTableModel.js
-        javajs/swing/ButtonGroup.js
-        javajs/swing/Cell.js
-        javajs/swing/ColumnSelectionModel.js
-        javajs/swing/Document.js
-        javajs/swing/FlowLayout.js
-        javajs/swing/Grid.js
-        javajs/swing/GridBagConstraints.js
-        javajs/swing/GridBagLayout.js
-        javajs/swing/Insets.js
-        javajs/swing/JButton.js
-        javajs/swing/JCheckBox.js
-        javajs/swing/JCheckBoxMenuItem.js
-        javajs/swing/JComboBox.js
-        javajs/swing/JComponent.js
-        javajs/swing/JComponentImp.js
-        javajs/swing/JContentPane.js
-        javajs/swing/JDialog.js
-        javajs/swing/JEditorPane.js
-        javajs/swing/JLabel.js
-        javajs/swing/JMenu.js
-        javajs/swing/JMenuItem.js
-        javajs/swing/JPanel.js
-        javajs/swing/JPopupMenu.js
-        javajs/swing/JRadioButtonMenuItem.js
-        javajs/swing/JScrollPane.js
-        javajs/swing/JSplitPane.js
-        javajs/swing/JTable.js
-        javajs/swing/JTextField.js
-        javajs/swing/JTextPane.js
-        javajs/swing/ListSelectionModel.js
-        javajs/swing/SwingConstants.js
-        javajs/swing/TableCellRenderer.js
-        javajs/swing/TableColumn.js
+        J/awtjs/swing/AbstractButton.js
+        J/awtjs/swing/AbstractTableModel.js
+        J/awtjs/swing/ButtonGroup.js
+        J/awtjs/swing/Cell.js
+        J/awtjs/swing/ColumnSelectionModel.js
+        J/awtjs/swing/Document.js
+        J/awtjs/swing/FlowLayout.js
+        J/awtjs/swing/Grid.js
+        J/awtjs/swing/GridBagConstraints.js
+        J/awtjs/swing/GridBagLayout.js
+        J/awtjs/swing/Insets.js
+        J/awtjs/swing/JButton.js
+        J/awtjs/swing/JCheckBox.js
+        J/awtjs/swing/JCheckBoxMenuItem.js
+        J/awtjs/swing/JComboBox.js
+        J/awtjs/swing/JComponent.js
+        J/awtjs/swing/JComponentImp.js
+        J/awtjs/swing/JContentPane.js
+        J/awtjs/swing/JDialog.js
+        J/awtjs/swing/JEditorPane.js
+        J/awtjs/swing/JLabel.js
+        J/awtjs/swing/JMenu.js
+        J/awtjs/swing/JMenuItem.js
+        J/awtjs/swing/JPanel.js
+        J/awtjs/swing/JPopupMenu.js
+        J/awtjs/swing/JRadioButtonMenuItem.js
+        J/awtjs/swing/JScrollPane.js
+        J/awtjs/swing/JSplitPane.js
+        J/awtjs/swing/JTable.js
+        J/awtjs/swing/JTextField.js
+        J/awtjs/swing/JTextPane.js
+        J/awtjs/swing/ListSelectionModel.js
+        J/awtjs/swing/SwingConstants.js
+        J/awtjs/swing/TableCellRenderer.js
+        J/awtjs/swing/TableColumn.js
     	J/popup/GenericSwingPopup.js
         J/popup/PopupResource.js
     	J/popup/JSSwingPopupHelper.js
