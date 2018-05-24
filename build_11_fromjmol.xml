@@ -123,19 +123,18 @@
       <fileset dir="jnlp" includes="*.jar"/>
     </delete>
   	
-  	<echo>copying all files from ${jmol.path}/src/javajs to srcjs directory</echo>
-    <copy overwrite="true" todir="srcjs" >
+  	<echo>copying all files from ${jmol.path}/src/javajs to src directory</echo>
+    <copy overwrite="true" todir="src" >
       <fileset dir="${jmol.path}/src">
         <include name="javajs/**/*" />
       </fileset>
     </copy>
   	
-  	<echo>copying files from srcjs (com, java, and javajs)</echo>
+  	<echo>copying files from srcjs (com, java)</echo>
     <copy overwrite="true" todir="src" >
       <fileset dir="srcjs">
         <include name="com/**/*" />
         <include name="java/**/*" />
-        <include name="javajs/**/*" />
       </fileset>
     </copy>
 
@@ -227,9 +226,9 @@
 
 
    	<echo>Replacing all "org.jmol.java.BS" references with "javajs.util.BS"</echo>
-	<!-- replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type -->
+	<!-- no longer replace org.jmol.java.BS with javajs.util.BS, since JavaScript does not have LONG data type
   	<replace dir="src/org/jmol" includes="**/*.java" token="org.jmol.java.BS" value="javajs.util.BS" />
-  	  	
+  	  	 -->
    	<echo>Now run build_02_fromjspecview.xml</echo>
 
   </target>
