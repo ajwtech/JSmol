@@ -590,8 +590,8 @@ Clazz.overrideConstructor(Float, function(v){
 });
 
 Float.serialVersionUID=Float.prototype.serialVersionUID=-2671257302660747028;
-Float.MIN_VALUE=Float.prototype.MIN_VALUE=3.4028235e+38;
-Float.MAX_VALUE=Float.prototype.MAX_VALUE=1.4e-45;
+Float.MIN_VALUE=Float.prototype.MIN_VALUE=1.4e-45;
+Float.MAX_VALUE=Float.prototype.MAX_VALUE=3.4028235e+38;
 Float.NEGATIVE_INFINITY=Number.NEGATIVE_INFINITY;
 Float.POSITIVE_INFINITY=Number.POSITIVE_INFINITY;
 Float.NaN=Number.NaN;
