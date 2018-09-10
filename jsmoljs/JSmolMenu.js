@@ -152,7 +152,7 @@ Swing.disposeMenu = function(menu) {
 }
 
 Swing.initMenuItem = function(item) {
-  // called by java.awtjs.swing.AbstractButton
+  // called by org.jmol.awtjs.swing.AbstractButton
   item.applet = item.popupMenu.applet;
   item.id = Swing.getMenuID(item);
   item.icon && (item.icon = '<img src="' + item.applet._j2sPath + '/' + item.icon + '" style="max-height: 20px;" />')
