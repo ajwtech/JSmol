@@ -64,7 +64,7 @@ try{
 
 /*
 
-Jmol.Swing methods to coordinate with javajs.swing.JPopupMenu && javajs.swing.AbstractButton
+Jmol.Swing methods to coordinate with org.jmol.awtjs.swing.JPopupMenu && org.jmol.awtjs.swing.AbstractButton
 classes, which call SwingController (aka Jmol.Swing in this case)
 @author: Bob Hanson 2/17/2014 8:21:10 AM
 
@@ -104,7 +104,7 @@ Swing.__getMenuStyle = function(applet) { return '\
 	.jmolPopupMenu .ui-state-disabled .ui-icon{filter:Alpha(Opacity=35)}'};
 
 Swing.setMenu = function(menu) {
-  // called by javajs.swing.JPopupMenu
+  // called by org.jmol.awtjs.swing.JPopupMenu
   // note that the z-index is only set by the FIRST applet accessing this method
 	Swing.__getMenuStyle && Jmol.$after("head", '<style>'+Swing.__getMenuStyle(menu.applet)+'</style>');  
 	Swing.__getStyle = null; // once only
@@ -119,7 +119,7 @@ Swing.setMenu = function(menu) {
 }
 
 Swing.showMenu = function(menu, x, y) {
-  // called by javajs.swing.JPopupMenu
+  // called by org.jmol.awtjs.swing.JPopupMenu
   // allow for a user callback for customization of menu
   if (Jmol._showMenuCallback)
 		Jmol._showMenuCallback(menu, x, y);
@@ -143,7 +143,7 @@ Swing.showMenu = function(menu, x, y) {
 }
 
 Swing.disposeMenu = function(menu) {
-  // called by javajs.swing.JPopupMenu
+  // called by org.jmol.awtjs.swing.JPopupMenu
   if (Jmol._persistentMenu)
   	return
   Swing.hideMenu(menu);
@@ -152,7 +152,7 @@ Swing.disposeMenu = function(menu) {
 }
 
 Swing.initMenuItem = function(item) {
-  // called by javajs.swing.AbstractButton
+  // called by java.awtjs.swing.AbstractButton
   item.applet = item.popupMenu.applet;
   item.id = Swing.getMenuID(item);
   item.icon && (item.icon = '<img src="' + item.applet._j2sPath + '/' + item.icon + '" style="max-height: 20px;" />')
@@ -182,7 +182,7 @@ Swing.bindMenuActionCommands = function(menu, isBind) {
 	if (isBind)
 		Jmol.$documentOn('click', menu.id, function() {	
 			if (menu.itemListener) {
-				menu.selected = (menu.btnType == javajs.swing.JMenuItem.TYPE_CHECKBOX ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
+				menu.selected = (menu.btnType == org.jmol.awtjs.swing.JMenuItem.TYPE_CHECKBOX ? Jmol.$prop(menu.id + "-cb", "checked") : true); 
 				Swing.hideMenus(menu.applet);
 				menu.itemListener.itemStateChanged({getSource:function(){return menu}});
 			}	else if (menu.actionListener) {
